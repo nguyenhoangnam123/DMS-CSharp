@@ -136,7 +136,7 @@ namespace DMS.Services.MStoreChecking
                 await UOW.Begin();
                 await UOW.StoreCheckingRepository.Create(StoreChecking);
                 await UOW.Commit();
-
+                NotifyUsed(StoreChecking);
                 await Logging.CreateAuditLog(StoreChecking, new { }, nameof(StoreCheckingService));
                 return await UOW.StoreCheckingRepository.Get(StoreChecking.Id);
             }
@@ -171,26 +171,10 @@ namespace DMS.Services.MStoreChecking
                 await UOW.StoreCheckingRepository.Update(StoreChecking);
                 await UOW.Commit();
 
-                var newData = await UOW.StoreCheckingRepository.Get(StoreChecking.Id);
-                List<long> AlbumIds = new List<long>();
-                if (StoreChecking.StoreCheckingImageMappings != null)
-                {
-                    foreach (StoreCheckingImageMapping StoreCheckingImageMapping in StoreChecking.StoreCheckingImageMappings)
-                    {
-                        AlbumIds.Add(StoreCheckingImageMapping.AlbumId);
-                    }
-                }
-                List<EventMessage<Album>> messages = AlbumIds.Select(a => new EventMessage<Album>
-                {
-                    RowId = Guid.NewGuid(),
-                    Time = StaticParams.DateTimeNow,
-                    EntityName = nameof(Album),
-                    Content = new Album { Id = a },
-                }).ToList();
-                // phai check quan he lien ket 1:1, hay 1:n hay n:m de publishSingle, hay publishList
-                RabbitManager.PublishList(messages, RoutingKeyEnum.AlbumUsed);
-                await Logging.CreateAuditLog(newData, oldData, nameof(StoreCheckingService));
-                return newData;
+                StoreChecking = await UOW.StoreCheckingRepository.Get(StoreChecking.Id);
+                NotifyUsed(StoreChecking);
+                await Logging.CreateAuditLog(StoreChecking, oldData, nameof(StoreCheckingService));
+                return StoreChecking;
             }
             catch (Exception ex)
             {
@@ -225,26 +209,11 @@ namespace DMS.Services.MStoreChecking
                 await UOW.StoreCheckingRepository.Update(StoreChecking);
                 await UOW.Commit();
 
-                var newData = await UOW.StoreCheckingRepository.Get(StoreChecking.Id);
-                List<long> AlbumIds = new List<long>();
-                if (StoreChecking.StoreCheckingImageMappings != null)
-                {
-                    foreach (StoreCheckingImageMapping StoreCheckingImageMapping in StoreChecking.StoreCheckingImageMappings)
-                    {
-                        AlbumIds.Add(StoreCheckingImageMapping.AlbumId);
-                    }
-                }
-                List<EventMessage<Album>> messages = AlbumIds.Select(a => new EventMessage<Album>
-                {
-                    RowId = Guid.NewGuid(),
-                    Time = StaticParams.DateTimeNow,
-                    EntityName = nameof(Album),
-                    Content = new Album { Id = a },
-                }).ToList();
-                // phai check quan he lien ket 1:1, hay 1:n hay n:m de publishSingle, hay publishList
-                RabbitManager.PublishList(messages, RoutingKeyEnum.AlbumUsed);
-                await Logging.CreateAuditLog(newData, oldData, nameof(StoreCheckingService));
-                return newData;
+                StoreChecking = await UOW.StoreCheckingRepository.Get(StoreChecking.Id);
+                NotifyUsed(StoreChecking);
+
+                await Logging.CreateAuditLog(StoreChecking, oldData, nameof(StoreCheckingService));
+                return StoreChecking;
             }
             catch (Exception ex)
             {
@@ -715,6 +684,39 @@ namespace DMS.Services.MStoreChecking
                 Store.Distance = sCoord.GetDistanceTo(eCoord);
             }
             return Stores;
+        }
+
+        private void NotifyUsed(StoreChecking StoreChecking)
+        {
+            {
+                EventMessage<Store> StoreMessage = new EventMessage<Store>
+                {
+                    Content = new Store { Id = StoreChecking.StoreId },
+                    EntityName = nameof(Store),
+                    RowId = Guid.NewGuid(),
+                    Time = StaticParams.DateTimeNow,
+                };
+                RabbitManager.PublishSingle(StoreMessage, RoutingKeyEnum.StoreUsed);
+            }
+            {
+                List<long> AlbumIds = new List<long>();
+                if (StoreChecking.StoreCheckingImageMappings != null)
+                {
+                    foreach (StoreCheckingImageMapping StoreCheckingImageMapping in StoreChecking.StoreCheckingImageMappings)
+                    {
+                        AlbumIds.Add(StoreCheckingImageMapping.AlbumId);
+                    }
+                }
+                List<EventMessage<Album>> messages = AlbumIds.Select(a => new EventMessage<Album>
+                {
+                    RowId = Guid.NewGuid(),
+                    Time = StaticParams.DateTimeNow,
+                    EntityName = nameof(Album),
+                    Content = new Album { Id = a },
+                }).ToList();
+                // phai check quan he lien ket 1:1, hay 1:n hay n:m de publishSingle, hay publishList
+                RabbitManager.PublishList(messages, RoutingKeyEnum.AlbumUsed);
+            }
         }
     }
 }

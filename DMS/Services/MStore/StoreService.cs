@@ -577,7 +577,7 @@ namespace DMS.Services.MStore
                 EventMessage<StoreType> StoreTypeMessage = new EventMessage<StoreType>
                 {
                     Content = new StoreType { Id = Store.StoreTypeId },
-                    EntityName = nameof(Item),
+                    EntityName = nameof(StoreType),
                     RowId = Guid.NewGuid(),
                     Time = StaticParams.DateTimeNow,
                 };
