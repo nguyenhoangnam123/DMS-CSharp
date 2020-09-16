@@ -561,7 +561,7 @@ namespace DMS.Rpc.monitor.monitor_store_images
 
             DateTime End = MonitorStoreImage_MonitorStoreImageFilterDTO.CheckIn?.LessEqual == null ?
                     LocalEndDay(CurrentContext) :
-                    MonitorStoreImage_MonitorStoreImageFilterDTO.CheckIn.LessEqual.Value.AddDays(1).AddSeconds(-1);
+                    MonitorStoreImage_MonitorStoreImageFilterDTO.CheckIn.LessEqual.Value;
 
             string path = "Templates/Monitor_Store_Image.xlsx";
             byte[] arr = System.IO.File.ReadAllBytes(path);
