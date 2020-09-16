@@ -35,6 +35,7 @@ namespace DMS.Rpc.mobile
         public const string SingleListTaxType = Default + "/single-list-tax-type";
         public const string SingleListUnitOfMeasure = Default + "/single-list-unit-of-measure";
         public const string SingleListProblemType = Default + "/single-list-problem-type";
+        public const string SingleListStoreScoutingType = Default + "/single-list-store-scouting-type";
         public const string SingleListProvince = Default + "/single-list-province";
         public const string SingleListDistrict = Default + "/single-list-district";
         public const string SingleListWard = Default + "/single-list-ward";
@@ -93,7 +94,7 @@ namespace DMS.Rpc.mobile
                 Detail, CheckIn,  UpdateStoreChecking, CheckOut,
                 CreateIndirectSalesOrder, CreateProblem, SaveImage, GetSurveyForm, SaveSurveyForm,
                 CountItem, ListItem, CountStorePlanned, ListStorePlanned, CountStoreUnPlanned, ListStoreUnPlanned, CountStoreInScope, ListStoreInScope, CountProblem, ListProblem, CountSurvey, ListSurvey, CountStoreScouting, ListStoreScouting,
-                SingleListAlbum, SingleListAppUser, SingleListStore, SingleListTaxType, SingleListUnitOfMeasure, SingleListProblemType, SingleListProvince, SingleListDistrict, SingleListWard, } },
+                SingleListAlbum, SingleListAppUser, SingleListStore, SingleListTaxType, SingleListUnitOfMeasure, SingleListProblemType, SingleListStoreScoutingType, SingleListProvince, SingleListDistrict, SingleListWard, } },
         };
     }
 }

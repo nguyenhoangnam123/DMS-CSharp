@@ -22,6 +22,7 @@ namespace DMS.Rpc.store_scouting
         public long CreatorId { get; set; }
         public long OrganizationId { get; set; }
         public long StoreScoutingStatusId { get; set; }
+        public long StoreScoutingTypeId { get; set; }
         public string Link { get; set; }
         public long? StoreId { get; set; }
         public Guid RowId { get; set; }
@@ -30,6 +31,7 @@ namespace DMS.Rpc.store_scouting
         public StoreScouting_OrganizationDTO Organization { get; set; }
         public StoreScouting_ProvinceDTO Province { get; set; }
         public StoreScouting_StoreScoutingStatusDTO StoreScoutingStatus { get; set; }
+        public StoreScouting_StoreScoutingTypeDTO StoreScoutingType { get; set; }
         public StoreScouting_StoreDTO Store { get; set; }
         public StoreScouting_WardDTO Ward { get; set; }
         public DateTime CreatedAt { get; set; }
@@ -61,6 +63,7 @@ namespace DMS.Rpc.store_scouting
             this.Province = StoreScouting.Province == null ? null : new StoreScouting_ProvinceDTO(StoreScouting.Province);
             this.Store = StoreScouting.Store == null ? null : new StoreScouting_StoreDTO(StoreScouting.Store);
             this.StoreScoutingStatus = StoreScouting.StoreScoutingStatus == null ? null : new StoreScouting_StoreScoutingStatusDTO(StoreScouting.StoreScoutingStatus);
+            this.StoreScoutingType = StoreScouting.StoreScoutingType == null ? null : new StoreScouting_StoreScoutingTypeDTO(StoreScouting.StoreScoutingType);
             this.Ward = StoreScouting.Ward == null ? null : new StoreScouting_WardDTO(StoreScouting.Ward);
             this.CreatedAt = StoreScouting.CreatedAt;
             this.UpdatedAt = StoreScouting.UpdatedAt;
@@ -85,6 +88,7 @@ namespace DMS.Rpc.store_scouting
         public IdFilter StoreId { get; set; }
         public IdFilter AppUserId { get; set; }
         public IdFilter StoreScoutingStatusId { get; set; }
+        public IdFilter StoreScoutingTypeId { get; set; }
         public DateFilter CreatedAt { get; set; }
         public DateFilter UpdatedAt { get; set; }
         public StoreScoutingOrder OrderBy { get; set; }

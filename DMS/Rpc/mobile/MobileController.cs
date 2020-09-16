@@ -1248,6 +1248,7 @@ namespace DMS.Rpc.mobile
             StoreScouting.Longitude = Mobile_StoreScoutingDTO.Longitude;
             StoreScouting.CreatorId = Mobile_StoreScoutingDTO.CreatorId;
             StoreScouting.StoreScoutingStatusId = Mobile_StoreScoutingDTO.StoreScoutingStatusId;
+            StoreScouting.StoreScoutingTypeId = Mobile_StoreScoutingDTO.StoreScoutingTypeId;
             StoreScouting.Creator = Mobile_StoreScoutingDTO.Creator == null ? null : new AppUser
             {
                 Id = Mobile_StoreScoutingDTO.Creator.Id,
@@ -1300,6 +1301,12 @@ namespace DMS.Rpc.mobile
                 Id = Mobile_StoreScoutingDTO.StoreScoutingStatus.Id,
                 Code = Mobile_StoreScoutingDTO.StoreScoutingStatus.Code,
                 Name = Mobile_StoreScoutingDTO.StoreScoutingStatus.Name,
+            };
+            StoreScouting.StoreScoutingType = Mobile_StoreScoutingDTO.StoreScoutingType == null ? null : new StoreScoutingType
+            {
+                Id = Mobile_StoreScoutingDTO.StoreScoutingType.Id,
+                Code = Mobile_StoreScoutingDTO.StoreScoutingType.Code,
+                Name = Mobile_StoreScoutingDTO.StoreScoutingType.Name,
             };
             StoreScouting.Ward = Mobile_StoreScoutingDTO.Ward == null ? null : new Ward
             {

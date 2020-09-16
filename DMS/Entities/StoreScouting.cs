@@ -21,6 +21,7 @@ namespace DMS.Entities
         public long CreatorId { get; set; }
         public long OrganizationId { get; set; }
         public long StoreScoutingStatusId { get; set; }
+        public long StoreScoutingTypeId { get; set; }
         public string Link { get; set; }
         public long? StoreId { get; set; }
         public Guid RowId { get; set; }
@@ -29,6 +30,7 @@ namespace DMS.Entities
         public District District { get; set; }
         public Province Province { get; set; }
         public StoreScoutingStatus StoreScoutingStatus { get; set; }
+        public StoreScoutingType StoreScoutingType { get; set; }
         public Ward Ward { get; set; }
         public Store Store { get; set; }
         public DateTime CreatedAt { get; set; }
@@ -59,6 +61,7 @@ namespace DMS.Entities
         public DecimalFilter Longitude { get; set; }
         public IdFilter AppUserId { get; set; }
         public IdFilter StoreScoutingStatusId { get; set; }
+        public IdFilter StoreScoutingTypeId { get; set; }
         public DateFilter CreatedAt { get; set; }
         public DateFilter UpdatedAt { get; set; }
         public List<StoreScoutingFilter> OrFilter { get; set; }
@@ -83,8 +86,10 @@ namespace DMS.Entities
         Creator = 12,
         StoreScoutingStatus = 13,
         Organization = 14,
+        StoreScoutingType = 15,
         CreatedAt = 50,
         UpdatedAt = 51,
+        
     }
 
     [Flags]
@@ -105,5 +110,6 @@ namespace DMS.Entities
         Creator = E._12,
         StoreScoutingStatus = E._13,
         Organization = E._14,
+        StoreScoutingType = E._13,
     }
 }

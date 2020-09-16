@@ -22,11 +22,13 @@ namespace DMS.Rpc.mobile
         public decimal Longitude { get; set; }
         public long CreatorId { get; set; }
         public long StoreScoutingStatusId { get; set; }
+        public long StoreScoutingTypeId { get; set; }
         public Mobile_OrganizationDTO Organization { get; set; }
         public Mobile_AppUserDTO Creator { get; set; }
         public Mobile_DistrictDTO District { get; set; }
         public Mobile_ProvinceDTO Province { get; set; }
         public Mobile_StoreScoutingStatusDTO StoreScoutingStatus { get; set; }
+        public Mobile_StoreScoutingTypeDTO StoreScoutingType { get; set; }
         public Mobile_WardDTO Ward { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
@@ -52,6 +54,7 @@ namespace DMS.Rpc.mobile
             this.District = StoreScouting.District == null ? null : new Mobile_DistrictDTO(StoreScouting.District);
             this.Province = StoreScouting.Province == null ? null : new Mobile_ProvinceDTO(StoreScouting.Province);
             this.StoreScoutingStatus = StoreScouting.StoreScoutingStatus == null ? null : new Mobile_StoreScoutingStatusDTO(StoreScouting.StoreScoutingStatus);
+            this.StoreScoutingType = StoreScouting.StoreScoutingType == null ? null : new Mobile_StoreScoutingTypeDTO(StoreScouting.StoreScoutingType);
             this.Ward = StoreScouting.Ward == null ? null : new Mobile_WardDTO(StoreScouting.Ward);
             this.StoreScoutingImageMappings = StoreScouting.StoreScoutingImageMappings?.Select(x => new Mobile_StoreScoutingImageMappingDTO(x)).ToList();
             this.CreatedAt = StoreScouting.CreatedAt;

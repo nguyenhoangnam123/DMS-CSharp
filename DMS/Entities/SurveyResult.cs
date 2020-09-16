@@ -47,6 +47,7 @@ namespace DMS.Entities
         public IdFilter Id { get; set; }
         public IdFilter SurveyId { get; set; }
         public IdFilter AppUserId { get; set; }
+        public IdFilter OrganizationId { get; set; }
         public IdFilter StoreId { get; set; }
         public DateFilter Time { get; set; }
         public List<SurveyFilter> OrFilter { get; set; }
