@@ -16,11 +16,7 @@ namespace DMS.Rpc.dashboards.mobile
         public const string CountStoreChecking = Default + "/count-store-checking";
         public const string Revenue = Default + "/revenue";
         public const string SalesQuantity = Default + "/sales-quantity";
-        //public const string StatisticIndirectSalesOrder = Default + "/statistic-indirect-sales-order";
-
-        //public const string ListIndirectSalesOrder = Default + "/list-indirect-sales-order";
-        //public const string ListComment = Default + "/list-comment";
-
-        //public const string FilterListTime = Default + "/filter-list-time";
+        public const string KpiGeneral = Default + "/kpi-general";
+        public const string SingleListPeriod = Default + "/single-list-period";
     }
 }
