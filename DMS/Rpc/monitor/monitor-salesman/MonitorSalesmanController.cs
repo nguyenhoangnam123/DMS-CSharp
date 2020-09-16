@@ -279,6 +279,7 @@ namespace DMS.Rpc.monitor.monitor_salesman
                     }
 
                     MonitorSalesman_StoreCheckingDTO.Image = StoreCheckingImageMappingDAOs.Where(sc => sc.StoreId == StoreId).Select(sc => sc.Image?.Url).FirstOrDefault();
+                    MonitorSalesman_StoreCheckingDTO.StoreId = StoreDAO.Id;
                     MonitorSalesman_StoreCheckingDTO.StoreCode = StoreDAO.Code;
                     MonitorSalesman_StoreCheckingDTO.StoreName = StoreDAO.Name;
                     MonitorSalesman_StoreCheckingDTO.Address = StoreDAO.Address;

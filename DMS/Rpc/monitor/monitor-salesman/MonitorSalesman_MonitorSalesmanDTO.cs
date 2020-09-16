@@ -33,6 +33,7 @@ namespace DMS.Rpc.monitor.monitor_salesman
     public class MonitorSalesman_StoreCheckingDTO : DataDTO
     {
         public long Id { get; set; }
+        public long StoreId { get; set; }
         public string StoreCode { get; set; }
         public string StoreName { get; set; }
         public string Address { get; set; }
