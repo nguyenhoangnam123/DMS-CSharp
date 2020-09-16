@@ -248,6 +248,11 @@ namespace DMS.Services.MDirectSalesOrder
             try
             {
                 var oldData = await UOW.DirectSalesOrderRepository.Get(DirectSalesOrder.Id);
+                if (oldData.SaleEmployeeId != DirectSalesOrder.SaleEmployeeId)
+                {
+                    var SaleEmployee = await UOW.AppUserRepository.Get(DirectSalesOrder.SaleEmployeeId);
+                    DirectSalesOrder.OrganizationId = SaleEmployee.OrganizationId;
+                }
                 await Calculator(DirectSalesOrder);
                 await UOW.Begin();
                 await UOW.DirectSalesOrderRepository.Update(DirectSalesOrder);

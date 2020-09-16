@@ -215,6 +215,7 @@ namespace DMS.Repositories
             {
                 Id = x.Id,
                 AppUserId = x.AppUserId,
+                OrganizationId = x.OrganizationId,
                 StoreId = x.StoreId,
                 SurveyId = x.SurveyId,
                 Time = x.Time,
@@ -287,6 +288,7 @@ namespace DMS.Repositories
             SurveyResult.RowId = Guid.NewGuid();
             SurveyResultDAO SurveyResultDAO = new SurveyResultDAO();
             SurveyResultDAO.AppUserId = SurveyResult.AppUserId;
+            SurveyResultDAO.OrganizationId = SurveyResult.OrganizationId;
             SurveyResultDAO.RespondentPhone = SurveyResult.RespondentPhone;
             SurveyResultDAO.RespondentName = SurveyResult.RespondentName;
             SurveyResultDAO.RespondentEmail = SurveyResult.RespondentEmail;
