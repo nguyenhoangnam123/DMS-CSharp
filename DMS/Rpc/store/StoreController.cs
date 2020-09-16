@@ -385,9 +385,10 @@ namespace DMS.Rpc.store
                     if(Store == null)
                     {
                         Store = new Store();
-                        Stores.Add(Store);
+                        Store.Code = CodeValue;
                     }
-                    Store.Code = CodeValue;
+                    Stores.Add(Store);
+
                     Store.Name = NameValue;
                     Store.LegalEntity = LegalEntityValue;
                     Store.TaxCode = TaxCodeValue;
