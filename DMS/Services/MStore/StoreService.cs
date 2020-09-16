@@ -424,8 +424,8 @@ namespace DMS.Services.MStore
                     Store Store = dbStores.Where(p => p.Code == item.Code)
                                 .FirstOrDefault();
 
-                    Store.UnsignName = Store.Name.ChangeToEnglishChar();
-                    Store.UnsignAddress = Store.Address.ChangeToEnglishChar();
+                    item.UnsignName = item.Name.ChangeToEnglishChar();
+                    item.UnsignAddress = item.Address.ChangeToEnglishChar();
 
                     if (Store != null)
                     {

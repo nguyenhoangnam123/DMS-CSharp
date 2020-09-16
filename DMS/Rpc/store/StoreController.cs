@@ -368,7 +368,11 @@ namespace DMS.Rpc.store
 
                     string AddressValue = worksheet.Cells[i + StartRow, AddressColumn].Value?.ToString();
                     string LongitudeValue = worksheet.Cells[i + StartRow, LongitudeColumn].Value?.ToString();
+                    if (LongitudeValue.Contains(","))
+                        LongitudeValue = LongitudeValue.Replace(",", ".");
                     string LatitudeValue = worksheet.Cells[i + StartRow, LatitudeColumn].Value?.ToString();
+                    if (LatitudeValue.Contains(","))
+                        LatitudeValue = LatitudeValue.Replace(",", ".");
 
                     string DeliveryAddressValue = worksheet.Cells[i + StartRow, DeliveryAddressColumn].Value?.ToString();
                     string DeliveryLongitudeValue = worksheet.Cells[i + StartRow, DeliveryLongitudeColumn].Value?.ToString();
@@ -382,12 +386,16 @@ namespace DMS.Rpc.store
                     #endregion
 
                     Store Store = All.Where(x => x.Code == CodeValue).FirstOrDefault();
-                    if(Store == null)
+
+                    if (Store == null)
                     {
                         Store = new Store();
                         Store.Code = CodeValue;
                     }
-                    Stores.Add(Store);
+                    if (Stores.Any(s => s.Code == Store.Code))
+                        continue;
+                    else
+                        Stores.Add(Store);
 
                     Store.Name = NameValue;
                     Store.LegalEntity = LegalEntityValue;
@@ -403,7 +411,7 @@ namespace DMS.Rpc.store
                     Store.OwnerName = OwnerNameValue;
                     Store.OwnerPhone = OwnerPhoneValue;
                     Store.OwnerEmail = OwnerEmailValue;
-                    
+
                     Store.Organization = new Organization()
                     {
                         Code = OrganizationCodeValue
