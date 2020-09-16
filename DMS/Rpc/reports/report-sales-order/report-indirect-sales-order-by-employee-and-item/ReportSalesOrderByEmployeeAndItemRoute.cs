@@ -8,8 +8,8 @@ namespace DMS.Rpc.reports.report_sales_order.report_indirect_sales_order_by_empl
 {
     public class ReportSalesOrderByEmployeeAndItemRoute : Root
     {
-        public const string Parent = Module + "/sales-order-report";
-        public const string Master = Module + "/sales-order-report/indirect-sales-order-by-employee-and-items-report-master";
+        public const string Parent = Module + "/indirect-sales-order-report";
+        public const string Master = Module + "/indirect-sales-order-report/indirect-sales-order-by-employee-and-items-report-master";
 
         private const string Default = Rpc + Module + "/indirect-sales-order-by-employee-and-items-report";
         public const string Count = Default + "/count";
