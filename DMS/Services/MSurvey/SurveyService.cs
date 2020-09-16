@@ -368,9 +368,11 @@ namespace DMS.Services.MSurvey
 
             try
             {
+                AppUser AppUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
                 SurveyResult SurveyResult = new SurveyResult();
                 SurveyResult.SurveyId = Survey.Id;
                 SurveyResult.AppUserId = CurrentContext.UserId;
+                SurveyResult.OrganizationId = AppUser.OrganizationId;
                 SurveyResult.StoreId = Survey.StoreId;
                 SurveyResult.StoreScoutingId = Survey.StoreScoutingId;
                 SurveyResult.SurveyRespondentTypeId = Survey.SurveyRespondentTypeId;

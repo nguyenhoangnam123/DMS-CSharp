@@ -170,10 +170,13 @@ namespace DMS.Services.MERoute
             try
             {
                 var CurrentUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
-                var SaleEmployee = await UOW.AppUserRepository.Get(ERoute.SaleEmployeeId);
                 var oldData = await UOW.ERouteRepository.Get(ERoute.Id);
+                if (oldData.SaleEmployeeId != ERoute.SaleEmployeeId)
+                {
+                    var SaleEmployee = await UOW.AppUserRepository.Get(ERoute.SaleEmployeeId);
+                    ERoute.OrganizationId = SaleEmployee.OrganizationId;
+                }
                 ERoute = await CalculateTime(ERoute);
-                ERoute.OrganizationId = SaleEmployee.OrganizationId;
                 await UOW.Begin();
                 await UOW.ERouteRepository.Update(ERoute);
                 await UOW.Commit();

@@ -14,6 +14,7 @@ namespace DMS.Entities
         public string RespondentPhone { get; set; }
         public string RespondentEmail { get; set; }
         public string RespondentAddress { get; set; }
+        public long OrganizationId { get; set; }
         public long AppUserId { get; set; }
         public long? StoreId { get; set; }
         public long? StoreScoutingId { get; set; }

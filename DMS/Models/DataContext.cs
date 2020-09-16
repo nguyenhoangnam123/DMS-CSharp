@@ -3214,6 +3214,10 @@ namespace DMS.Models
 
                 entity.Property(e => e.Telephone).HasMaxLength(500);
 
+                entity.Property(e => e.UnsignAddress).HasMaxLength(3000);
+
+                entity.Property(e => e.UnsignName).HasMaxLength(500);
+
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
                 entity.HasOne(d => d.District)

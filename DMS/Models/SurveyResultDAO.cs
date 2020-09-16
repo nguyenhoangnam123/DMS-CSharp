@@ -14,6 +14,7 @@ namespace DMS.Models
 
         public long Id { get; set; }
         public long SurveyId { get; set; }
+        public long OrganizationId { get; set; }
         public long AppUserId { get; set; }
         public long? StoreScoutingId { get; set; }
         public long? StoreId { get; set; }
