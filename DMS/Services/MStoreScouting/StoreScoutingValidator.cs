@@ -68,19 +68,24 @@ namespace DMS.Services.MStoreScouting
 
         private async Task<bool> ValidateOwnerPhone(StoreScouting StoreScouting)
         {
-            if (!string.IsNullOrWhiteSpace(StoreScouting.OwnerPhone) && StoreScouting.OwnerPhone.Length > 255)
-                StoreScouting.AddError(nameof(StoreScoutingValidator), nameof(StoreScouting.OwnerPhone), ErrorCode.OwnerPhoneOverLength);
-            else
+            if (!string.IsNullOrWhiteSpace(StoreScouting.OwnerPhone)) 
             {
-                StoreScoutingFilter StoreScoutingFilter = new StoreScoutingFilter
+                if (StoreScouting.OwnerPhone.Length > 255)
                 {
-                    OwnerPhone = new StringFilter { Equal = StoreScouting.OwnerPhone },
-                    Id = new IdFilter { NotEqual = StoreScouting.Id }
-                };
+                    StoreScouting.AddError(nameof(StoreScoutingValidator), nameof(StoreScouting.OwnerPhone), ErrorCode.OwnerPhoneOverLength);
+                }
+                else
+                {
+                    StoreScoutingFilter StoreScoutingFilter = new StoreScoutingFilter
+                    {
+                        OwnerPhone = new StringFilter { Equal = StoreScouting.OwnerPhone },
+                        Id = new IdFilter { NotEqual = StoreScouting.Id }
+                    };
 
-                int count = await UOW.StoreScoutingRepository.Count(StoreScoutingFilter);
-                if (count != 0)
-                    StoreScouting.AddError(nameof(StoreScoutingValidator), nameof(StoreScouting.OwnerPhone), ErrorCode.OwnerPhoneInUsed);
+                    int count = await UOW.StoreScoutingRepository.Count(StoreScoutingFilter);
+                    if (count != 0)
+                        StoreScouting.AddError(nameof(StoreScoutingValidator), nameof(StoreScouting.OwnerPhone), ErrorCode.OwnerPhoneInUsed);
+                }
             }
             return StoreScouting.IsValidated;
         }
