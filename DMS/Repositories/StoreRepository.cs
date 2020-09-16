@@ -41,13 +41,15 @@ namespace DMS.Repositories
                 query = query.Where(q =>
                 q.Code.ToLower().Contains(filter.Search.ToLower()) ||
                 q.Address.ToLower().Contains(filter.Search.ToLower()) ||
+                q.UnsignAddress.ToLower().Contains(filter.Search.ToLower()) ||
+                q.UnsignName.ToLower().Contains(filter.Search.ToLower()) ||
                 q.Name.ToLower().Contains(filter.Search.ToLower()));
             if (filter.Id != null)
                 query = query.Where(q => q.Id, filter.Id);
             if (filter.Code != null)
                 query = query.Where(q => q.Code, filter.Code);
             if (filter.Name != null)
-                query = query.Where(q => q.Name, filter.Name);
+                query = query.Where(q => q.Name, filter.Name).Union(query.Where(q => q.UnsignName, filter.Name));
             if (filter.ParentStoreId != null && filter.ParentStoreId.HasValue)
                 query = query.Where(q => q.ParentStoreId.HasValue).Where(q => q.ParentStoreId.Value, filter.ParentStoreId);
             if (filter.StoreCheckingStatusId != null)
@@ -117,7 +119,7 @@ namespace DMS.Repositories
             if (filter.WardId != null)
                 query = query.Where(q => q.WardId, filter.WardId);
             if (filter.Address != null)
-                query = query.Where(q => q.Address, filter.Address);
+                query = query.Where(q => q.Address, filter.Address).Union(query.Where(q => q.UnsignAddress, filter.Address));
             if (filter.DeliveryAddress != null)
                 query = query.Where(q => q.DeliveryAddress, filter.DeliveryAddress);
             if (filter.Latitude != null)
@@ -386,6 +388,7 @@ namespace DMS.Repositories
                 Id = filter.Selects.Contains(StoreSelect.Id) ? q.Id : default(long),
                 Code = filter.Selects.Contains(StoreSelect.Code) ? q.Code : default(string),
                 Name = filter.Selects.Contains(StoreSelect.Name) ? q.Name : default(string),
+                UnsignName = filter.Selects.Contains(StoreSelect.UnsignName) ? q.UnsignName : default(string),
                 ParentStoreId = filter.Selects.Contains(StoreSelect.ParentStore) ? q.ParentStoreId : default(long?),
                 OrganizationId = filter.Selects.Contains(StoreSelect.Organization) ? q.OrganizationId : default(long),
                 StoreTypeId = filter.Selects.Contains(StoreSelect.StoreType) ? q.StoreTypeId : default(long),
@@ -396,6 +399,7 @@ namespace DMS.Repositories
                 DistrictId = filter.Selects.Contains(StoreSelect.District) ? q.DistrictId : default(long),
                 WardId = filter.Selects.Contains(StoreSelect.Ward) ? q.WardId : default(long),
                 Address = filter.Selects.Contains(StoreSelect.Address) ? q.Address : default(string),
+                UnsignAddress = filter.Selects.Contains(StoreSelect.UnsignAddress) ? q.UnsignAddress : default(string),
                 DeliveryAddress = filter.Selects.Contains(StoreSelect.DeliveryAddress) ? q.DeliveryAddress : default(string),
                 Latitude = filter.Selects.Contains(StoreSelect.Latitude) ? q.Latitude : default(decimal),
                 Longitude = filter.Selects.Contains(StoreSelect.Longitude) ? q.Longitude : default(decimal),
@@ -610,6 +614,7 @@ namespace DMS.Repositories
                     Id = x.Id,
                     Code = x.Code,
                     Name = x.Name,
+                    UnsignName = x.UnsignName,
                     ParentStoreId = x.ParentStoreId,
                     OrganizationId = x.OrganizationId,
                     StoreTypeId = x.StoreTypeId,
@@ -620,6 +625,7 @@ namespace DMS.Repositories
                     DistrictId = x.DistrictId,
                     WardId = x.WardId,
                     Address = x.Address,
+                    UnsignAddress = x.UnsignAddress,
                     DeliveryAddress = x.DeliveryAddress,
                     Latitude = x.Latitude,
                     Longitude = x.Longitude,
@@ -773,6 +779,7 @@ namespace DMS.Repositories
             StoreDAO.Id = Store.Id;
             StoreDAO.Code = Store.Code;
             StoreDAO.Name = Store.Name;
+            StoreDAO.UnsignName = Store.UnsignName;
             StoreDAO.ParentStoreId = Store.ParentStoreId;
             StoreDAO.OrganizationId = Store.OrganizationId;
             StoreDAO.StoreTypeId = Store.StoreTypeId;
@@ -783,6 +790,7 @@ namespace DMS.Repositories
             StoreDAO.DistrictId = Store.DistrictId;
             StoreDAO.WardId = Store.WardId;
             StoreDAO.Address = Store.Address;
+            StoreDAO.UnsignAddress = Store.UnsignAddress;
             StoreDAO.DeliveryAddress = Store.DeliveryAddress;
             StoreDAO.Latitude = Store.Latitude;
             StoreDAO.Longitude = Store.Longitude;
@@ -815,6 +823,7 @@ namespace DMS.Repositories
             StoreDAO.Id = Store.Id;
             StoreDAO.Code = Store.Code;
             StoreDAO.Name = Store.Name;
+            StoreDAO.UnsignName = Store.UnsignName;
             StoreDAO.ParentStoreId = Store.ParentStoreId;
             StoreDAO.OrganizationId = Store.OrganizationId;
             StoreDAO.StoreTypeId = Store.StoreTypeId;
@@ -825,6 +834,7 @@ namespace DMS.Repositories
             StoreDAO.DistrictId = Store.DistrictId;
             StoreDAO.WardId = Store.WardId;
             StoreDAO.Address = Store.Address;
+            StoreDAO.UnsignAddress = Store.UnsignAddress;
             StoreDAO.DeliveryAddress = Store.DeliveryAddress;
             StoreDAO.Latitude = Store.Latitude;
             StoreDAO.Longitude = Store.Longitude;
@@ -859,6 +869,7 @@ namespace DMS.Repositories
                 StoreDAO.Id = Store.Id;
                 StoreDAO.Code = Store.Code;
                 StoreDAO.Name = Store.Name;
+                StoreDAO.UnsignName = Store.UnsignName;
                 StoreDAO.ParentStoreId = Store.ParentStoreId;
                 StoreDAO.OrganizationId = Store.OrganizationId;
                 StoreDAO.StoreTypeId = Store.StoreTypeId;
@@ -869,6 +880,7 @@ namespace DMS.Repositories
                 StoreDAO.DistrictId = Store.DistrictId;
                 StoreDAO.WardId = Store.WardId;
                 StoreDAO.Address = Store.Address;
+                StoreDAO.UnsignAddress = Store.UnsignAddress;
                 StoreDAO.DeliveryAddress = Store.DeliveryAddress;
                 StoreDAO.Latitude = Store.Latitude;
                 StoreDAO.Longitude = Store.Longitude;
