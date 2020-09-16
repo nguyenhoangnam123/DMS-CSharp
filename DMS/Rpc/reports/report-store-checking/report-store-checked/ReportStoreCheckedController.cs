@@ -462,43 +462,30 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
 
             DateTime End = ReportStoreChecked_ReportStoreCheckedFilterDTO.CheckIn?.LessEqual == null ?
                 LocalEndDay(CurrentContext) :
-                ReportStoreChecked_ReportStoreCheckedFilterDTO.CheckIn.LessEqual.Value.AddDays(1).AddSeconds(-1);
+                ReportStoreChecked_ReportStoreCheckedFilterDTO.CheckIn.LessEqual.Value;
 
             ReportStoreChecked_ReportStoreCheckedFilterDTO.Skip = 0;
             ReportStoreChecked_ReportStoreCheckedFilterDTO.Take = int.MaxValue;
             List<ReportStoreChecked_ReportStoreCheckedDTO> ReportStoreChecked_ReportStoreCheckedDTOs = (await List(ReportStoreChecked_ReportStoreCheckedFilterDTO)).Value;
 
             List<ReportStoreChecked_ExportDTO> ReportStoreChecked_ExportDTOs = new List<ReportStoreChecked_ExportDTO>();
+            
             foreach (ReportStoreChecked_ReportStoreCheckedDTO ReportStoreChecked_ReportStoreCheckedDTO in ReportStoreChecked_ReportStoreCheckedDTOs)
             {
-                foreach (var SaleEmployee in ReportStoreChecked_ReportStoreCheckedDTO.SaleEmployees)
+                ReportStoreChecked_ExportDTO ReportStoreChecked_ExportDTO = new ReportStoreChecked_ExportDTO(ReportStoreChecked_ReportStoreCheckedDTO);
+                ReportStoreChecked_ExportDTOs.Add(ReportStoreChecked_ExportDTO);
+            }
+
+            var STT = 1;
+            foreach (ReportStoreChecked_ExportDTO ReportStoreChecked_ExportDTO in ReportStoreChecked_ExportDTOs)
+            {
+                foreach (var SaleEmployee in ReportStoreChecked_ExportDTO.SalesEmployees)
                 {
-                    foreach (var StoreCheckingGroupByDate in SaleEmployee.StoreCheckingGroupByDates)
+                    SaleEmployee.STT = STT++;
+                    foreach (var ReportStoreChecked_ExportGroupByDateDTO in SaleEmployee.Dates)
                     {
-                        foreach (var StoreChecking in StoreCheckingGroupByDate.StoreCheckings)
-                        {
-                            ReportStoreChecked_ExportDTO ReportStoreChecked_ExportDTO = new ReportStoreChecked_ExportDTO
-                            {
-                                OrganizationName = ReportStoreChecked_ReportStoreCheckedDTO.OrganizationName,
-                                Username = SaleEmployee.Username,
-                                DisplayName = SaleEmployee.DisplayName,
-                                Date = StoreCheckingGroupByDate.DateString,
-                                DayOfWeek = StoreCheckingGroupByDate.DayOfWeek,
-                                StoreCode = StoreChecking.StoreCode,
-                                StoreName = StoreChecking.StoreName,
-                                StoreAddress = StoreChecking.StoreAddress,
-                                Device = StoreChecking.DeviceName,
-                                CheckIn = StoreChecking.eCheckIn,
-                                CheckOut = StoreChecking.eCheckOut,
-                                CheckInDistance = StoreChecking.CheckInDistance,
-                                CheckOutDistance = StoreChecking.CheckOutDistance,
-                                Duration = StoreChecking.Duaration,
-                                Image = StoreChecking.ImageCounter > 0 ? "X" : "",
-                                Planned = StoreChecking.Planned ? "X" : "",
-                                Order = StoreChecking.SalesOrder ? "X" : "",
-                            };
-                            ReportStoreChecked_ExportDTOs.Add(ReportStoreChecked_ExportDTO);
-                        }
+                        ReportStoreChecked_ExportGroupByDateDTO.Date = ReportStoreChecked_ExportGroupByDateDTO.Date.AddHours(CurrentContext.TimeZone);
+                        ReportStoreChecked_ExportGroupByDateDTO.DateString = ReportStoreChecked_ExportGroupByDateDTO.Date.ToString("dd-MM-yyyy");
                     }
                 }
             }

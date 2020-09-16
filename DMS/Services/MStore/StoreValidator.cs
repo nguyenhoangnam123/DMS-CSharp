@@ -41,7 +41,8 @@ namespace DMS.Services.MStore
             AddressEmpty,
             AddressOverLength,
             DeliveryAddressOverLength,
-            LocationEmpty,
+            LongitudeInvalid,
+            LatitudeInvalid,
             OwnerNameEmpty,
             OwnerNameOverLength,
             OwnerPhoneEmpty,
@@ -339,13 +340,14 @@ namespace DMS.Services.MStore
         }
         private async Task<bool> ValidateLocation(Store Store)
         {
-            if (Store.Longitude == null)
+            if (!(-180 <= Store.Longitude && Store.Longitude <= 180))
             {
-                Store.AddError(nameof(StoreValidator), nameof(Store.Longitude), ErrorCode.LocationEmpty);
+                Store.AddError(nameof(StoreValidator), nameof(Store.Longitude), ErrorCode.LongitudeInvalid);
             }
-            if (Store.Latitude == null)
+
+            if (!(-90 <= Store.Latitude && Store.Latitude <= 90))
             {
-                Store.AddError(nameof(StoreValidator), nameof(Store.Latitude), ErrorCode.LocationEmpty);
+                Store.AddError(nameof(StoreValidator), nameof(Store.Latitude), ErrorCode.LatitudeInvalid);
             }
             return Store.IsValidated;
         }

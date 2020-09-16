@@ -531,8 +531,9 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
                     SaleEmployeeDTO.StoresVisitedRatio = SaleEmployeeDTO.StoresVisitedPLanned == null || SaleEmployeeDTO.StoresVisitedPLanned.Value == 0
                         ? null
                         : (decimal?)Math.Round((SaleEmployeeDTO.StoresVisited.Value / SaleEmployeeDTO.StoresVisitedPLanned.Value) * 100, 2);
-                    #endregion
                 }
+                #endregion
+
                 #region Số cửa hàng tạo mới
                 //kế hoạch
                 SaleEmployeeDTO.NewStoreCreatedPlanned = KpiGeneralPeriodReport_SaleEmployeeDetailDTOs

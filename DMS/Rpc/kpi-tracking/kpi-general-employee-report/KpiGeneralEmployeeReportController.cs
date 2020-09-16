@@ -334,7 +334,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_employee_report
                 Period.TotalIndirectOrdersPLanned = KpiGeneralContentKpiPeriodMappings
                         .Where(x => x.KpiPeriodId == Period.KpiPeriodId &&
                         x.KpiGeneralContent.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.TOTAL_INDIRECT_SALES_ORDER.Id)
-                        .Select(x => x.Value == null ? 0 : x.Value.Value)
+                        .Select(x => x.Value)
                         .FirstOrDefault();
                 //thực hiện
                 Period.TotalIndirectOrders = Period.TotalIndirectOrdersPLanned == null ? null : (decimal?)IndirectSalesOrders.Count();
@@ -349,7 +349,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_employee_report
                 Period.TotalIndirectQuantityPlanned = KpiGeneralContentKpiPeriodMappings
                         .Where(x => x.KpiPeriodId == Period.KpiPeriodId &&
                         x.KpiGeneralContent.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.TOTAL_INDIRECT_SALES_QUANTITY.Id)
-                        .Select(x => x.Value == null ? 0 : x.Value.Value)
+                        .Select(x => x.Value)
                         .FirstOrDefault();
                 //thực hiện
                 foreach (var IndirectSalesOrder in IndirectSalesOrders)
@@ -373,7 +373,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_employee_report
                 Period.TotalIndirectSalesAmountPlanned = KpiGeneralContentKpiPeriodMappings
                         .Where(x => x.KpiPeriodId == Period.KpiPeriodId &&
                         x.KpiGeneralContent.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.TOTAL_INDIRECT_SALES_AMOUNT.Id)
-                        .Select(x => x.Value == null ? 0 : x.Value.Value)
+                        .Select(x => x.Value)
                         .FirstOrDefault();
                 //thực hiện
                 Period.TotalIndirectSalesAmount = Period.TotalIndirectSalesAmountPlanned == null ? null : (decimal?)IndirectSalesOrders.Sum(x => x.Total);
@@ -388,7 +388,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_employee_report
                 Period.SkuIndirectOrderPlanned = KpiGeneralContentKpiPeriodMappings
                         .Where(x => x.KpiPeriodId == Period.KpiPeriodId &&
                         x.KpiGeneralContent.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.SKU_INDIRECT_SALES_ORDER.Id)
-                        .Select(x => x.Value == null ? 0 : x.Value.Value)
+                        .Select(x => x.Value)
                         .FirstOrDefault();
                 //thực hiện
                 Period.SKUIndirectItems = new HashSet<long>();
@@ -415,7 +415,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_employee_report
                 Period.TotalDirectOrdersPLanned = KpiGeneralContentKpiPeriodMappings
                         .Where(x => x.KpiPeriodId == Period.KpiPeriodId &&
                         x.KpiGeneralContent.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.TOTAL_DIRECT_SALES_ORDER.Id)
-                        .Select(x => x.Value == null ? 0 : x.Value.Value)
+                        .Select(x => x.Value)
                         .FirstOrDefault();
                 //thực hiện
                 Period.TotalDirectOrders = Period.TotalDirectOrdersPLanned == null ? null : (decimal?)DirectSalesOrders.Count();
@@ -430,7 +430,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_employee_report
                 Period.TotalDirectQuantityPlanned = KpiGeneralContentKpiPeriodMappings
                         .Where(x => x.KpiPeriodId == Period.KpiPeriodId &&
                         x.KpiGeneralContent.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.TOTAL_DIRECT_SALES_QUANTITY.Id)
-                        .Select(x => x.Value == null ? 0 : x.Value.Value)
+                        .Select(x => x.Value)
                         .FirstOrDefault();
                 //thực hiện
                 foreach (var DirectSalesOrder in DirectSalesOrders)
@@ -454,7 +454,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_employee_report
                 Period.TotalDirectSalesAmountPlanned = KpiGeneralContentKpiPeriodMappings
                         .Where(x => x.KpiPeriodId == Period.KpiPeriodId &&
                         x.KpiGeneralContent.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.TOTAL_DIRECT_SALES_AMOUNT.Id)
-                        .Select(x => x.Value == null ? 0 : x.Value.Value)
+                        .Select(x => x.Value)
                         .FirstOrDefault();
                 //thực hiện
                 Period.TotalDirectSalesAmount = Period.TotalDirectSalesAmountPlanned == null ? null : (decimal?)DirectSalesOrders.Sum(x => x.Total);
@@ -469,26 +469,29 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_employee_report
                 Period.SkuDirectOrderPlanned = KpiGeneralContentKpiPeriodMappings
                         .Where(x => x.KpiPeriodId == Period.KpiPeriodId &&
                         x.KpiGeneralContent.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.SKU_DIRECT_SALES_ORDER.Id)
-                        .Select(x => x.Value == null ? 0 : x.Value.Value)
+                        .Select(x => x.Value)
                         .FirstOrDefault();
                 //thực hiện
-                Period.SKUIndirectItems = new HashSet<long>();
-                foreach (var DirectSalesOrder in DirectSalesOrders)
+                if (Period.SkuDirectOrderPlanned.HasValue)
                 {
-                    foreach (var content in DirectSalesOrder.DirectSalesOrderContents)
+                    Period.SKUIndirectItems = new HashSet<long>();
+                    foreach (var DirectSalesOrder in DirectSalesOrders)
                     {
-                        Period.SKUIndirectItems.Add(content.ItemId);
+                        foreach (var content in DirectSalesOrder.DirectSalesOrderContents)
+                        {
+                            Period.SKUIndirectItems.Add(content.ItemId);
+                        }
                     }
+                    Period.SkuDirectOrder = Period.TotalDirectOrders == null || Period.TotalDirectOrders == 0 ? null :
+                        (decimal?)
+                        Math.Round(Period.SKUIndirectItems.Count() / Period.TotalDirectOrders.Value, 2);
+                    if (Period.SkuDirectOrderPlanned == null)
+                        Period.SkuDirectOrder = null;
+                    //tỉ lệ
+                    Period.SkuDirectOrderRatio = Period.SkuDirectOrderPlanned == null || Period.SkuDirectOrderPlanned == 0 ? null :
+                        (decimal?)
+                        Math.Round((Period.SkuDirectOrder.Value / Period.SkuDirectOrderPlanned.Value) * 100, 2);
                 }
-                Period.SkuDirectOrder = Period.TotalDirectOrders == null || Period.TotalDirectOrders == 0 ? null :
-                    (decimal?)
-                    Math.Round(Period.SKUIndirectItems.Count() / Period.TotalDirectOrders.Value, 2);
-                if (Period.SkuDirectOrderPlanned == null)
-                    Period.SkuDirectOrder = null;
-                //tỉ lệ
-                Period.SkuDirectOrderRatio = Period.SkuDirectOrderPlanned == null || Period.SkuDirectOrderPlanned == 0 ? null :
-                    (decimal?)
-                    Math.Round((Period.SkuDirectOrder.Value / Period.SkuDirectOrderPlanned.Value) * 100, 2);
                 #endregion
 
                 #region Số cửa hàng viếng thăm
@@ -496,20 +499,23 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_employee_report
                 Period.StoresVisitedPLanned = KpiGeneralContentKpiPeriodMappings
                        .Where(x => x.KpiPeriodId == Period.KpiPeriodId &&
                        x.KpiGeneralContent.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.STORE_VISITED.Id)
-                       .Select(x => x.Value == null ? 0 : x.Value.Value)
+                       .Select(x => x.Value)
                        .FirstOrDefault();
                 //thực hiện
-                Period.StoreIds = new HashSet<long>();
-                foreach (var StoreChecking in StoreCheckings)
+                if (Period.StoresVisitedPLanned.HasValue)
                 {
-                    Period.StoreIds.Add(StoreChecking.StoreId);
+                    Period.StoreIds = new HashSet<long>();
+                    foreach (var StoreChecking in StoreCheckings)
+                    {
+                        Period.StoreIds.Add(StoreChecking.StoreId);
+                    }
+                    if (Period.StoresVisitedPLanned == 0)
+                        Period.StoreIds = null;
+                    //tỉ lệ
+                    Period.StoresVisitedRatio = Period.StoresVisitedPLanned == null || Period.StoresVisitedPLanned == 0 ? null :
+                        (decimal?)
+                        Math.Round((Period.StoresVisited.Value / Period.StoresVisitedPLanned.Value) * 100, 2);
                 }
-                if (Period.StoresVisitedPLanned == 0)
-                    Period.StoreIds = null;
-                //tỉ lệ
-                Period.StoresVisitedRatio = Period.StoresVisitedPLanned == null || Period.StoresVisitedPLanned == 0 ? null :
-                    (decimal?)
-                    Math.Round((Period.StoresVisited.Value / Period.StoresVisitedPLanned.Value) * 100, 2);
                 #endregion
 
                 #region Số cửa hàng tạo mới
@@ -517,7 +523,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_employee_report
                 Period.NewStoreCreatedPlanned = KpiGeneralContentKpiPeriodMappings
                         .Where(x => x.KpiPeriodId == Period.KpiPeriodId &&
                         x.KpiGeneralContent.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.NEW_STORE_CREATED.Id)
-                        .Select(x => x.Value == null ? 0 : x.Value.Value)
+                        .Select(x => x.Value)
                         .FirstOrDefault();
                 //thực hiện
                 Period.NewStoreCreated = Period.NewStoreCreatedPlanned == null ? null :
@@ -540,7 +546,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_employee_report
                 Period.NumberOfStoreVisitsPlanned = KpiGeneralContentKpiPeriodMappings
                         .Where(x => x.KpiPeriodId == Period.KpiPeriodId &&
                         x.KpiGeneralContent.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.NUMBER_OF_STORE_VISIT.Id)
-                        .Select(x => x.Value == null ? 0 : x.Value.Value)
+                        .Select(x => x.Value)
                         .FirstOrDefault();
                 //thực hiện
                 Period.NumberOfStoreVisits = Period.NumberOfStoreVisitsPlanned == null ? null :

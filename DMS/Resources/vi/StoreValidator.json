@@ -51,10 +51,10 @@
       "AddressOverLength": "Tên địa chỉ quá dài"
     },
     "Longitude": {
-      "LocationEmpty": "Chưa chọn địa điểm"
+      "LongitudeInvalid": "Kinh độ không hợp lệ"
     },
     "Latitude": {
-      "LocationEmpty": "Chưa chọn địa điểm"
+      "LatitudeInvalid": "Vĩ độ không hợp lệ"
     },
     "OwnerName": {
       "OwnerNameEmpty": "Chưa nhập tên chủ đại lý",

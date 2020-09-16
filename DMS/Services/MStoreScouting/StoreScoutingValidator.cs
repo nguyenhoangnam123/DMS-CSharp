@@ -68,14 +68,12 @@ namespace DMS.Services.MStoreScouting
 
         private async Task<bool> ValidateOwnerPhone(StoreScouting StoreScouting)
         {
-            if (string.IsNullOrWhiteSpace(StoreScouting.OwnerPhone))
-            {
-                StoreScouting.AddError(nameof(StoreScoutingValidator), nameof(StoreScouting.OwnerPhone), ErrorCode.OwnerPhoneEmpty);
-            }
-            else
+            if (!string.IsNullOrWhiteSpace(StoreScouting.OwnerPhone)) 
             {
                 if (StoreScouting.OwnerPhone.Length > 255)
+                {
                     StoreScouting.AddError(nameof(StoreScoutingValidator), nameof(StoreScouting.OwnerPhone), ErrorCode.OwnerPhoneOverLength);
+                }
                 else
                 {
                     StoreScoutingFilter StoreScoutingFilter = new StoreScoutingFilter

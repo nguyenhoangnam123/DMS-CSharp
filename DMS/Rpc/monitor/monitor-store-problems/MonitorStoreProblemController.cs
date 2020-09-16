@@ -193,7 +193,7 @@ namespace DMS.Rpc.monitor_store_problems
 
             DateTime End = MonitorStoreProblem_ProblemFilterDTO.NoteAt?.LessEqual == null ?
                     LocalEndDay(CurrentContext) :
-                    MonitorStoreProblem_ProblemFilterDTO.NoteAt.LessEqual.Value.AddDays(1).AddSeconds(-1);
+                    MonitorStoreProblem_ProblemFilterDTO.NoteAt.LessEqual.Value;
 
             string path = "Templates/Monitor_Store_Problem_Report.xlsx";
             byte[] arr = System.IO.File.ReadAllBytes(path);
