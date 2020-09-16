@@ -13,12 +13,12 @@ namespace DMS.Rpc.kpi_tracking.kpi_item_report
 
         //Sản lượng theo đơn hàng gián tiếp
         public decimal? IndirectQuantityPlanned { get; set; }
-        public decimal IndirectQuantity { get; set; }
+        public decimal? IndirectQuantity { get; set; }
         public decimal? IndirectQuantityRatio { get; set; }
 
         //Doanh số theo đơn hàng gián tiếp
         public decimal? IndirectRevenuePlanned { get; set; }
-        public decimal IndirectRevenue { get; set; }
+        public decimal? IndirectRevenue { get; set; }
         public decimal? IndirectRevenueRatio { get; set; }
 
         //Số đơn hàng gián tiếp
@@ -28,7 +28,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_item_report
         {
             get
             {
-                if (IndirectSalesOrderIds == null) return null;
+                if (IndirectSalesOrderIds == null || IndirectAmountPlanned == null) return null;
                 return IndirectSalesOrderIds.Count;
             }
         }
@@ -41,7 +41,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_item_report
         {
             get
             {
-                if (StoreIndirectIds == null) return null;
+                if (StoreIndirectIds == null || IndirectStorePlanned == null) return null;
                 return StoreIndirectIds.Count;
             }
         }
@@ -49,12 +49,12 @@ namespace DMS.Rpc.kpi_tracking.kpi_item_report
 
         //Sản lượng theo đơn hàng trực tiếp
         public decimal? DirectQuantityPlanned { get; set; }
-        public decimal DirectQuantity { get; set; }
+        public decimal? DirectQuantity { get; set; }
         public decimal? DirectQuantityRatio { get; set; }
 
         //Doanh số theo đơn hàng trực tiếp
         public decimal? DirectRevenuePlanned { get; set; }
-        public decimal DirectRevenue { get; set; }
+        public decimal? DirectRevenue { get; set; }
         public decimal? DirectRevenueRatio { get; set; }
 
         //Số đơn hàng trực tiếp
@@ -64,7 +64,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_item_report
         {
             get
             {
-                if (DirectSalesOrderIds == null) return null;
+                if (DirectSalesOrderIds == null || DirectAmountPlanned == null) return null;
                 return DirectSalesOrderIds.Count;
             }
         }
@@ -77,7 +77,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_item_report
         {
             get
             {
-                if (StoreDirectIds == null) return null;
+                if (StoreDirectIds == null || DirectStorePlanned == null) return null;
                 return StoreDirectIds.Count;
             }
         }

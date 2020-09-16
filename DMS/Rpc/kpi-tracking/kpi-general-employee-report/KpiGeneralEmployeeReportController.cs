@@ -472,23 +472,26 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_employee_report
                         .Select(x => x.Value == null ? 0 : x.Value.Value)
                         .FirstOrDefault();
                 //thực hiện
-                Period.SKUIndirectItems = new HashSet<long>();
-                foreach (var DirectSalesOrder in DirectSalesOrders)
+                if (Period.SkuDirectOrderPlanned.HasValue)
                 {
-                    foreach (var content in DirectSalesOrder.DirectSalesOrderContents)
+                    Period.SKUIndirectItems = new HashSet<long>();
+                    foreach (var DirectSalesOrder in DirectSalesOrders)
                     {
-                        Period.SKUIndirectItems.Add(content.ItemId);
+                        foreach (var content in DirectSalesOrder.DirectSalesOrderContents)
+                        {
+                            Period.SKUIndirectItems.Add(content.ItemId);
+                        }
                     }
+                    Period.SkuDirectOrder = Period.TotalDirectOrders == null || Period.TotalDirectOrders == 0 ? null :
+                        (decimal?)
+                        Math.Round(Period.SKUIndirectItems.Count() / Period.TotalDirectOrders.Value, 2);
+                    if (Period.SkuDirectOrderPlanned == null)
+                        Period.SkuDirectOrder = null;
+                    //tỉ lệ
+                    Period.SkuDirectOrderRatio = Period.SkuDirectOrderPlanned == null || Period.SkuDirectOrderPlanned == 0 ? null :
+                        (decimal?)
+                        Math.Round((Period.SkuDirectOrder.Value / Period.SkuDirectOrderPlanned.Value) * 100, 2);
                 }
-                Period.SkuDirectOrder = Period.TotalDirectOrders == null || Period.TotalDirectOrders == 0 ? null :
-                    (decimal?)
-                    Math.Round(Period.SKUIndirectItems.Count() / Period.TotalDirectOrders.Value, 2);
-                if (Period.SkuDirectOrderPlanned == null)
-                    Period.SkuDirectOrder = null;
-                //tỉ lệ
-                Period.SkuDirectOrderRatio = Period.SkuDirectOrderPlanned == null || Period.SkuDirectOrderPlanned == 0 ? null :
-                    (decimal?)
-                    Math.Round((Period.SkuDirectOrder.Value / Period.SkuDirectOrderPlanned.Value) * 100, 2);
                 #endregion
 
                 #region Số cửa hàng viếng thăm
@@ -499,17 +502,20 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_employee_report
                        .Select(x => x.Value == null ? 0 : x.Value.Value)
                        .FirstOrDefault();
                 //thực hiện
-                Period.StoreIds = new HashSet<long>();
-                foreach (var StoreChecking in StoreCheckings)
+                if (Period.StoresVisitedPLanned.HasValue)
                 {
-                    Period.StoreIds.Add(StoreChecking.StoreId);
+                    Period.StoreIds = new HashSet<long>();
+                    foreach (var StoreChecking in StoreCheckings)
+                    {
+                        Period.StoreIds.Add(StoreChecking.StoreId);
+                    }
+                    if (Period.StoresVisitedPLanned == 0)
+                        Period.StoreIds = null;
+                    //tỉ lệ
+                    Period.StoresVisitedRatio = Period.StoresVisitedPLanned == null || Period.StoresVisitedPLanned == 0 ? null :
+                        (decimal?)
+                        Math.Round((Period.StoresVisited.Value / Period.StoresVisitedPLanned.Value) * 100, 2);
                 }
-                if (Period.StoresVisitedPLanned == 0)
-                    Period.StoreIds = null;
-                //tỉ lệ
-                Period.StoresVisitedRatio = Period.StoresVisitedPLanned == null || Period.StoresVisitedPLanned == 0 ? null :
-                    (decimal?)
-                    Math.Round((Period.StoresVisited.Value / Period.StoresVisitedPLanned.Value) * 100, 2);
                 #endregion
 
                 #region Số cửa hàng tạo mới

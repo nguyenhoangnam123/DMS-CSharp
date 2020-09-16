@@ -372,20 +372,28 @@ namespace DMS.Rpc.kpi_tracking.kpi_item_report
                             x.KpiCriteriaItemId == KpiCriteriaItemEnum.INDIRECT_QUANTITY.Id)
                             .Select(x => x.Value).FirstOrDefault();
                     //thực hiện
-                    foreach (var IndirectSalesOrder in IndirectSalesOrders)
+                    if(ItemContent.IndirectQuantityPlanned == null)
                     {
-                        foreach (var content in IndirectSalesOrder.IndirectSalesOrderContents)
-                        {
-                            if (content.ItemId == ItemContent.ItemId)
-                            {
-                                ItemContent.IndirectQuantity += content.RequestedQuantity;
-                            }    
-                        }
+                        ItemContent.IndirectQuantity = null;
                     }
-                    //tỉ lệ
-                    ItemContent.IndirectQuantityRatio = ItemContent.IndirectQuantityPlanned == 0 || ItemContent.IndirectQuantityPlanned  == null ?
-                        null : (decimal?)
-                        Math.Round((ItemContent.IndirectQuantity / ItemContent.IndirectQuantityPlanned.Value) * 100, 2);
+                    else
+                    {
+                        ItemContent.IndirectQuantity = 0;
+                        foreach (var IndirectSalesOrder in IndirectSalesOrders)
+                        {
+                            foreach (var content in IndirectSalesOrder.IndirectSalesOrderContents)
+                            {
+                                if (content.ItemId == ItemContent.ItemId)
+                                {
+                                    ItemContent.IndirectQuantity += content.RequestedQuantity;
+                                }
+                            }
+                        }
+                        //tỉ lệ
+                        ItemContent.IndirectQuantityRatio = ItemContent.IndirectQuantityPlanned == 0 || ItemContent.IndirectQuantityPlanned == null ?
+                            null : (decimal?)
+                            Math.Round((ItemContent.IndirectQuantity.Value / ItemContent.IndirectQuantityPlanned.Value) * 100, 2);
+                    }
                     #endregion
 
                     #region Doanh thu theo đơn hàng gián tiếp
@@ -397,23 +405,31 @@ namespace DMS.Rpc.kpi_tracking.kpi_item_report
                             .Select(x => x.Value).FirstOrDefault();
 
                     //thực hiện
-                    foreach (var IndirectSalesOrder in IndirectSalesOrders)
+                    if(ItemContent.IndirectRevenuePlanned == null)
                     {
-                        foreach (var content in IndirectSalesOrder.IndirectSalesOrderContents)
+                        ItemContent.IndirectRevenue = null;
+                    }
+                    else
+                    {
+                        ItemContent.IndirectRevenue = 0;
+                        foreach (var IndirectSalesOrder in IndirectSalesOrders)
                         {
-                            if (content.ItemId == ItemContent.ItemId)
+                            foreach (var content in IndirectSalesOrder.IndirectSalesOrderContents)
                             {
-                                ItemContent.IndirectRevenue += content.Amount;
-                                ItemContent.IndirectRevenue += content.TaxAmount ?? 0;
-                                ItemContent.IndirectRevenue -= content.GeneralDiscountAmount ?? 0;
+                                if (content.ItemId == ItemContent.ItemId)
+                                {
+                                    ItemContent.IndirectRevenue += content.Amount;
+                                    ItemContent.IndirectRevenue += content.TaxAmount ?? 0;
+                                    ItemContent.IndirectRevenue -= content.GeneralDiscountAmount ?? 0;
+                                }
                             }
                         }
+                        ItemContent.IndirectRevenue = Math.Round(ItemContent.IndirectRevenue.Value, 0);
+                        //tỉ lệ
+                        ItemContent.IndirectRevenueRatio = ItemContent.IndirectRevenuePlanned == 0 || ItemContent.IndirectRevenuePlanned == null ?
+                            null : (decimal?)
+                            Math.Round((ItemContent.IndirectRevenue.Value / ItemContent.IndirectRevenuePlanned.Value) * 100, 2);
                     }
-                    ItemContent.IndirectRevenue = Math.Round(ItemContent.IndirectRevenue, 0);
-                    //tỉ lệ
-                    ItemContent.IndirectRevenueRatio = ItemContent.IndirectRevenuePlanned == 0 || ItemContent.IndirectRevenuePlanned == null ?
-                        null : (decimal?)
-                        Math.Round((ItemContent.IndirectRevenue / ItemContent.IndirectRevenuePlanned.Value) * 100, 2);
                     #endregion
 
                     #region Số đơn hàng gián tiếp
@@ -470,20 +486,29 @@ namespace DMS.Rpc.kpi_tracking.kpi_item_report
                             x.KpiCriteriaItemId == KpiCriteriaItemEnum.DIRECT_QUANTITY.Id)
                             .Select(x => x.Value).FirstOrDefault();
                     //thực hiện
-                    foreach (var DirectSalesOrder in DirectSalesOrders)
+                    if(ItemContent.DirectQuantityPlanned == null)
                     {
-                        foreach (var content in DirectSalesOrder.DirectSalesOrderContents)
+                        ItemContent.DirectQuantity = null;
+                    }
+                    else
+                    {
+                        ItemContent.DirectQuantity = 0;
+                        foreach (var DirectSalesOrder in DirectSalesOrders)
                         {
-                            if (content.ItemId == ItemContent.ItemId)
+                            foreach (var content in DirectSalesOrder.DirectSalesOrderContents)
                             {
-                                ItemContent.DirectQuantity += content.RequestedQuantity;
+                                if (content.ItemId == ItemContent.ItemId)
+                                {
+                                    ItemContent.DirectQuantity += content.RequestedQuantity;
+                                }
                             }
                         }
+                        //tỉ lệ
+                        ItemContent.DirectQuantityRatio = ItemContent.DirectQuantityPlanned == 0 || ItemContent.DirectQuantityPlanned == null ?
+                            null : (decimal?)
+                            Math.Round((ItemContent.DirectQuantity.Value / ItemContent.DirectQuantityPlanned.Value) * 100, 2);
                     }
-                    //tỉ lệ
-                    ItemContent.DirectQuantityRatio = ItemContent.DirectQuantityPlanned == 0 || ItemContent.DirectQuantityPlanned == null ?
-                        null : (decimal?)
-                        Math.Round((ItemContent.DirectQuantity / ItemContent.DirectQuantityPlanned.Value) * 100, 2);
+                    
                     #endregion
 
                     #region Doanh thu theo đơn hàng trực tiếp
@@ -495,23 +520,32 @@ namespace DMS.Rpc.kpi_tracking.kpi_item_report
                             .Select(x => x.Value).FirstOrDefault();
 
                     //thực hiện
-                    foreach (var DirectSalesOrder in DirectSalesOrders)
+                    if(ItemContent.DirectRevenuePlanned == null)
                     {
-                        foreach (var content in DirectSalesOrder.DirectSalesOrderContents)
+                        ItemContent.DirectRevenue = null;
+                    }
+                    else
+                    {
+                        ItemContent.DirectRevenue = 0;
+                        foreach (var DirectSalesOrder in DirectSalesOrders)
                         {
-                            if (content.ItemId == ItemContent.ItemId)
+                            foreach (var content in DirectSalesOrder.DirectSalesOrderContents)
                             {
-                                ItemContent.DirectRevenue += content.Amount;
-                                ItemContent.DirectRevenue += content.TaxAmount ?? 0;
-                                ItemContent.DirectRevenue -= content.GeneralDiscountAmount ?? 0;
+                                if (content.ItemId == ItemContent.ItemId)
+                                {
+                                    ItemContent.DirectRevenue += content.Amount;
+                                    ItemContent.DirectRevenue += content.TaxAmount ?? 0;
+                                    ItemContent.DirectRevenue -= content.GeneralDiscountAmount ?? 0;
+                                }
                             }
                         }
+                        ItemContent.DirectRevenue = Math.Round(ItemContent.DirectRevenue.Value, 0);
+
+                        //tỉ lệ
+                        ItemContent.DirectRevenueRatio = ItemContent.DirectRevenuePlanned == 0 || ItemContent.DirectRevenuePlanned == null ?
+                            null : (decimal?)
+                            Math.Round((ItemContent.DirectRevenue.Value / ItemContent.DirectRevenuePlanned.Value) * 100, 2);
                     }
-                    ItemContent.DirectRevenue = Math.Round(ItemContent.DirectRevenue, 0);
-                    //tỉ lệ
-                    ItemContent.DirectRevenueRatio = ItemContent.DirectRevenuePlanned == 0 || ItemContent.DirectRevenuePlanned == null ?
-                        null : (decimal?)
-                        Math.Round((ItemContent.DirectRevenue / ItemContent.DirectRevenuePlanned.Value) * 100, 2);
                     #endregion
 
                     #region Số đơn hàng trực tiếp
