@@ -146,10 +146,7 @@ namespace DMS.Rpc.workflow_definition
                 return Forbid();
 
             WorkflowDefinition WorkflowDefinition = ConvertDTOToEntity(WorkflowDefinition_WorkflowDefinitionDTO);
-            WorkflowDefinition.CreatorId = CurrentContext.UserId;
-            WorkflowDefinition.StatusId = StatusEnum.INACTIVE.Id;
-            WorkflowDefinition.Id = 0;
-            WorkflowDefinition = await WorkflowDefinitionService.Create(WorkflowDefinition);
+            WorkflowDefinition = await WorkflowDefinitionService.Clone(WorkflowDefinition);
             WorkflowDefinition_WorkflowDefinitionDTO = new WorkflowDefinition_WorkflowDefinitionDTO(WorkflowDefinition);
             if (WorkflowDefinition.IsValidated)
                 return WorkflowDefinition_WorkflowDefinitionDTO;

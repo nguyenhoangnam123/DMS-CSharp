@@ -1,6 +1,7 @@
 ﻿using Common;
 using DMS.Entities;
 using DMS.Enums;
+using DMS.Helpers;
 using DMS.Repositories;
 using Helpers;
 using System;
@@ -17,6 +18,7 @@ namespace DMS.Services.MWorkflow
         Task<WorkflowDefinition> Get(long Id);
         Task<WorkflowDefinition> Create(WorkflowDefinition WorkflowDefinition);
         Task<WorkflowDefinition> Update(WorkflowDefinition WorkflowDefinition);
+        Task<WorkflowDefinition> Clone(WorkflowDefinition WorkflowDefinition);
         Task<WorkflowDefinition> Delete(WorkflowDefinition WorkflowDefinition);
         Task<List<WorkflowDefinition>> BulkDelete(List<WorkflowDefinition> WorkflowDefinitions);
         Task<List<WorkflowDefinition>> Import(List<WorkflowDefinition> WorkflowDefinitions);
@@ -132,6 +134,61 @@ namespace DMS.Services.MWorkflow
                 var oldData = await UOW.WorkflowDefinitionRepository.Get(WorkflowDefinition.Id);
                 await UOW.Begin();
                 await UOW.WorkflowDefinitionRepository.Update(WorkflowDefinition);
+                await UOW.Commit();
+
+                var newData = await UOW.WorkflowDefinitionRepository.Get(WorkflowDefinition.Id);
+                await Logging.CreateAuditLog(newData, oldData, nameof(WorkflowDefinitionService));
+                return newData;
+            }
+            catch (Exception ex)
+            {
+                await UOW.Rollback();
+                if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(WorkflowDefinitionService));
+                    throw new MessageException(ex);
+                }
+                else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(WorkflowDefinitionService));
+                    throw new MessageException(ex.InnerException);
+                }
+            }
+        }
+
+        public async Task<WorkflowDefinition> Clone(WorkflowDefinition WorkflowDefinition)
+        {
+            try
+            {
+                var oldData = await UOW.WorkflowDefinitionRepository.Get(WorkflowDefinition.Id);
+                await UOW.Begin();
+                WorkflowDefinition = oldData.Clone();
+                WorkflowDefinition.CreatorId = CurrentContext.UserId;
+                WorkflowDefinition.StatusId = StatusEnum.INACTIVE.Id;
+                WorkflowDefinition.Used = false;
+                WorkflowDefinition.Id = 0;
+                WorkflowDefinition.Code = $"{WorkflowDefinition.Code}_Clone";
+                WorkflowDefinition.Name = $"{WorkflowDefinition.Name}_Clone";
+                WorkflowDefinition.WorkflowDirections = new List<WorkflowDirection>();
+                WorkflowDefinition.WorkflowSteps = new List<WorkflowStep>();
+                
+                await UOW.WorkflowDefinitionRepository.Create(WorkflowDefinition);
+                foreach (var WorkflowStep in oldData.WorkflowSteps)
+                {
+                    WorkflowStep.Id = 0;
+                    WorkflowStep.WorkflowDefinitionId = WorkflowDefinition.Id;
+                    WorkflowDefinition.WorkflowSteps.Add(WorkflowStep);
+                }
+                await UOW.WorkflowStepRepository.BulkMerge(WorkflowDefinition.WorkflowSteps);
+                foreach (var WorkflowDirection in oldData.WorkflowDirections)
+                {
+                    WorkflowDirection.Id = 0;
+                    WorkflowDirection.WorkflowDefinitionId = WorkflowDefinition.Id;
+                    WorkflowDirection.FromStepId = WorkflowDefinition.WorkflowSteps.Where(x => x.Code == WorkflowDirection.FromStep.Code).Select(x => x.Id).FirstOrDefault();
+                    WorkflowDirection.ToStepId = WorkflowDefinition.WorkflowSteps.Where(x => x.Code == WorkflowDirection.ToStep.Code).Select(x => x.Id).FirstOrDefault();
+                    WorkflowDefinition.WorkflowDirections.Add(WorkflowDirection);
+                }
+                await UOW.WorkflowDirectionRepository.BulkMerge(WorkflowDefinition.WorkflowDirections);
                 await UOW.Commit();
 
                 var newData = await UOW.WorkflowDefinitionRepository.Get(WorkflowDefinition.Id);

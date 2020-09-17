@@ -16,8 +16,8 @@ namespace DMS.Rpc.store_scouting_type
 {
     public class StoreScoutingTypeRoute : Root
     {
-        public const string Master = Module + "/store-scouting-type/store-scouting-type-master";
-        public const string Detail = Module + "/store-scouting-type/store-scouting-type-detail/*";
+        public const string Master = Module + "/location/store-scouting-type/store-scouting-type-master";
+        public const string Detail = Module + "/location/store-scouting-type/store-scouting-type-detail/*";
         private const string Default = Rpc + Module + "/store-scouting-type";
         public const string Count = Default + "/count";
         public const string List = Default + "/list";
