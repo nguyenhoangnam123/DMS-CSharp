@@ -238,6 +238,27 @@ namespace DMS.Rpc.mobile
             return Mobile_ProblemTypeDTOs;
         }
 
+        [Route(MobileRoute.SingleListStoreScoutingType), HttpPost]
+        public async Task<List<Mobile_StoreScoutingTypeDTO>> SingleListStoreScoutingType()
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            StoreScoutingTypeFilter StoreScoutingTypeFilter = new StoreScoutingTypeFilter();
+            StoreScoutingTypeFilter.Skip = 0;
+            StoreScoutingTypeFilter.Take = 20;
+            StoreScoutingTypeFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+            StoreScoutingTypeFilter.OrderBy = StoreScoutingTypeOrder.Id;
+            StoreScoutingTypeFilter.OrderType = OrderType.ASC;
+            StoreScoutingTypeFilter.Selects = StoreScoutingTypeSelect.ALL;
+
+            List<StoreScoutingType> StoreScoutingTypes = await StoreScoutingTypeService.List(StoreScoutingTypeFilter);
+            List<Mobile_StoreScoutingTypeDTO> Mobile_StoreScoutingTypeDTOs = StoreScoutingTypes
+
+                .Select(x => new Mobile_StoreScoutingTypeDTO(x)).ToList();
+            return Mobile_StoreScoutingTypeDTOs;
+        }
+
         [Route(MobileRoute.SingleListBrand), HttpPost]
         public async Task<List<Mobile_BrandDTO>> SingleListBrand([FromBody] Mobile_BrandFilterDTO Mobile_BrandFilterDTO)
         {
