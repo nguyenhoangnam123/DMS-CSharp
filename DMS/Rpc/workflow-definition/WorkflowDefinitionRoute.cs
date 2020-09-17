@@ -16,6 +16,7 @@ namespace DMS.Rpc.workflow_definition
         public const string GetDirection = Default + "/get-direction";
         public const string Create = Default + "/create";
         public const string Update = Default + "/update";
+        public const string Clone = Default + "/clone";
         public const string Delete = Default + "/delete";
         public const string Export = Default + "/export";
 
@@ -57,7 +58,7 @@ namespace DMS.Rpc.workflow_definition
                 Parent,
                 Master, Count, List, Get,
                 FilterListAppUser, FilterListWorkflowType, FilterListWorkflowDirection, FilterListWorkflowStep, FilterListWorkflowParameter, FilterListRole, FilterListStatus,
-                Detail, Update,
+                Detail, Update, Clone,
                 SingleListAppUser, SingleListWorkflowType, SingleListWorkflowDirection, SingleListWorkflowStep, SingleListWorkflowParameter, SingleListRole, SingleListStatus } },
             { "Xoá", new List<string> {
                 Parent,
