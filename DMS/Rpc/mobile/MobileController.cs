@@ -36,6 +36,7 @@ using DMS.Services.MProblemType;
 using DMS.Services.MColor;
 using DMS.Models;
 using GeoCoordinatePortable;
+using DMS.Services.MStoreScoutingType;
 
 namespace DMS.Rpc.mobile
 {
@@ -58,6 +59,7 @@ namespace DMS.Rpc.mobile
         private IProductService ProductService;
         private IProblemService ProblemService;
         private IProblemTypeService ProblemTypeService;
+        private IStoreScoutingTypeService StoreScoutingTypeService;
         private ISurveyService SurveyService;
         private IProvinceService ProvinceService;
         private IDistrictService DistrictService;
@@ -85,6 +87,7 @@ namespace DMS.Rpc.mobile
             ITaxTypeService TaxTypeService,
             IProblemService ProblemService,
             IProblemTypeService ProblemTypeService,
+            IStoreScoutingTypeService StoreScoutingTypeService,
             ISurveyService SurveyService,
             IProvinceService ProvinceService,
             IDistrictService DistrictService,
@@ -113,6 +116,7 @@ namespace DMS.Rpc.mobile
             this.ProductService = ProductService;
             this.ProblemService = ProblemService;
             this.ProblemTypeService = ProblemTypeService;
+            this.StoreScoutingTypeService = StoreScoutingTypeService;
             this.SurveyService = SurveyService;
             this.ProvinceService = ProvinceService;
             this.DistrictService = DistrictService;
