@@ -1,5 +1,6 @@
 using Common;
 using DMS.Entities;
+using DMS.Enums;
 using DMS.Services.MAppUser;
 using DMS.Services.MRole;
 using DMS.Services.MStatus;
@@ -128,6 +129,27 @@ namespace DMS.Rpc.workflow_definition
 
             WorkflowDefinition WorkflowDefinition = ConvertDTOToEntity(WorkflowDefinition_WorkflowDefinitionDTO);
             WorkflowDefinition = await WorkflowDefinitionService.Update(WorkflowDefinition);
+            WorkflowDefinition_WorkflowDefinitionDTO = new WorkflowDefinition_WorkflowDefinitionDTO(WorkflowDefinition);
+            if (WorkflowDefinition.IsValidated)
+                return WorkflowDefinition_WorkflowDefinitionDTO;
+            else
+                return BadRequest(WorkflowDefinition_WorkflowDefinitionDTO);
+        }
+
+        [Route(WorkflowDefinitionRoute.Clone), HttpPost]
+        public async Task<ActionResult<WorkflowDefinition_WorkflowDefinitionDTO>> Clone([FromBody] WorkflowDefinition_WorkflowDefinitionDTO WorkflowDefinition_WorkflowDefinitionDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            if (!await HasPermission(WorkflowDefinition_WorkflowDefinitionDTO.Id))
+                return Forbid();
+
+            WorkflowDefinition WorkflowDefinition = ConvertDTOToEntity(WorkflowDefinition_WorkflowDefinitionDTO);
+            WorkflowDefinition.CreatorId = CurrentContext.UserId;
+            WorkflowDefinition.StatusId = StatusEnum.INACTIVE.Id;
+            WorkflowDefinition.Id = 0;
+            WorkflowDefinition = await WorkflowDefinitionService.Create(WorkflowDefinition);
             WorkflowDefinition_WorkflowDefinitionDTO = new WorkflowDefinition_WorkflowDefinitionDTO(WorkflowDefinition);
             if (WorkflowDefinition.IsValidated)
                 return WorkflowDefinition_WorkflowDefinitionDTO;
