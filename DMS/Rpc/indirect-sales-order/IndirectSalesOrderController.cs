@@ -1,6 +1,7 @@
 ﻿using Common;
 using DMS.Entities;
 using DMS.Enums;
+using DMS.Helpers;
 using DMS.Services.MAppUser;
 using DMS.Services.MEditedPriceStatus;
 using DMS.Services.MIndirectSalesOrder;
@@ -16,9 +17,14 @@ using DMS.Services.MTaxType;
 using DMS.Services.MUnitOfMeasure;
 using DMS.Services.MUnitOfMeasureGrouping;
 using DMS.Services.MWorkflow;
+using GleamTech.DocumentUltimate;
+using Helpers;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using System.Dynamic;
+using System.IO;
 using System.Linq;
+using System.Net.Mime;
 using System.Threading.Tasks;
 
 namespace DMS.Rpc.indirect_sales_order
@@ -191,7 +197,7 @@ namespace DMS.Rpc.indirect_sales_order
 
 
         [Route(IndirectSalesOrderRoute.Get), HttpPost]
-        public async Task<ActionResult<IndirectSalesOrder_IndirectSalesOrderDTO>> Get([FromBody]IndirectSalesOrder_IndirectSalesOrderDTO IndirectSalesOrder_IndirectSalesOrderDTO)
+        public async Task<ActionResult<IndirectSalesOrder_IndirectSalesOrderDTO>> Get([FromBody] IndirectSalesOrder_IndirectSalesOrderDTO IndirectSalesOrder_IndirectSalesOrderDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
@@ -322,6 +328,63 @@ namespace DMS.Rpc.indirect_sales_order
                 return IndirectSalesOrder_IndirectSalesOrderDTO;
             else
                 return BadRequest(IndirectSalesOrder_IndirectSalesOrderDTO);
+        }
+
+        [Route(IndirectSalesOrderRoute.Print), HttpGet]
+        public async Task<ActionResult> Print([FromQuery] long Id)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+            var IndirectSalesOrder = await IndirectSalesOrderService.Get(Id);
+            if (IndirectSalesOrder == null)
+                return Content("Đơn hàng không tồn tại");
+            IndirectSalesOrder_PrintDTO IndirectSalesOrder_PrintDTO = new IndirectSalesOrder_PrintDTO(IndirectSalesOrder);
+            var culture = System.Globalization.CultureInfo.GetCultureInfo("en-EN");
+            var STT = 1;
+            foreach (var IndirectSalesOrderContent in IndirectSalesOrder_PrintDTO.Contents)
+            {
+                IndirectSalesOrderContent.STT = STT++;
+                IndirectSalesOrderContent.AmountString = IndirectSalesOrderContent.Amount.ToString("N0", culture);
+                IndirectSalesOrderContent.PrimaryPriceString = IndirectSalesOrderContent.PrimaryPrice.ToString("N0", culture);
+                IndirectSalesOrderContent.QuantityString = IndirectSalesOrderContent.Quantity.ToString("N0", culture);
+                IndirectSalesOrderContent.RequestedQuantityString = IndirectSalesOrderContent.RequestedQuantity.ToString("N0", culture);
+                IndirectSalesOrderContent.SalePriceString = IndirectSalesOrderContent.SalePrice.ToString("N0", culture);
+                IndirectSalesOrderContent.DiscountString = IndirectSalesOrderContent.DiscountPercentage.HasValue ? IndirectSalesOrderContent.DiscountPercentage.Value.ToString("N0", culture) + "%" : "";
+                IndirectSalesOrderContent.TaxPercentageString = IndirectSalesOrderContent.TaxPercentage.HasValue ? IndirectSalesOrderContent.TaxPercentage.Value.ToString("N0", culture) + "%" : "";
+            }
+            foreach (var IndirectSalesOrderPromotion in IndirectSalesOrder_PrintDTO.Promotions)
+            {
+                IndirectSalesOrderPromotion.STT = STT++;
+                IndirectSalesOrderPromotion.QuantityString = IndirectSalesOrderPromotion.Quantity.ToString("N0", culture);
+                IndirectSalesOrderPromotion.RequestedQuantityString = IndirectSalesOrderPromotion.RequestedQuantity.ToString("N0", culture);
+            }
+
+            IndirectSalesOrder_PrintDTO.SubTotalString = IndirectSalesOrder_PrintDTO.SubTotal.ToString("N0", culture);
+            IndirectSalesOrder_PrintDTO.Discount = IndirectSalesOrder_PrintDTO.GeneralDiscountAmount.HasValue ? IndirectSalesOrder_PrintDTO.GeneralDiscountAmount.Value.ToString("N0", culture) : "";
+            IndirectSalesOrder_PrintDTO.Tax = IndirectSalesOrder_PrintDTO.TotalTaxAmount.ToString("N0", culture);
+            IndirectSalesOrder_PrintDTO.TotalString = IndirectSalesOrder_PrintDTO.Total.ToString("N0", culture);
+            IndirectSalesOrder_PrintDTO.TotalText = Utils.ConvertAmountTostring((long)IndirectSalesOrder_PrintDTO.Total);
+
+            string path = "Templates/Print_Indirect.docx";
+            byte[] arr = System.IO.File.ReadAllBytes(path);
+            dynamic Data = new ExpandoObject();
+            Data.Order = IndirectSalesOrder_PrintDTO;
+            MemoryStream MemoryStream = new MemoryStream();
+            MemoryStream input = new MemoryStream(arr);
+            MemoryStream output = new MemoryStream();
+            using (var document = StaticParams.DocumentFactory.Open(input, output, "docx"))
+            {
+                document.Process(Data);
+            };
+            var documentConverter = new DocumentConverter(output, DocumentFormat.Docx);
+            documentConverter.ConvertTo(MemoryStream, DocumentFormat.Pdf);
+            ContentDisposition cd = new ContentDisposition
+            {
+                FileName = $"Don-hang-{IndirectSalesOrder.Code}.pdf",
+                Inline = true,
+            };
+            Response.Headers.Add("Content-Disposition", cd.ToString());
+            return File(MemoryStream.ToArray(), "application/pdf;charset=utf-8");
         }
 
         private async Task<bool> HasPermission(long Id)

@@ -221,9 +221,9 @@ namespace Common
         {
             get
             {
-                return string.IsNullOrWhiteSpace(Equal) || string.IsNullOrWhiteSpace(NotEqual) || string.IsNullOrWhiteSpace(Contain)
+                return !(string.IsNullOrWhiteSpace(Equal) || string.IsNullOrWhiteSpace(NotEqual) || string.IsNullOrWhiteSpace(Contain)
                     || string.IsNullOrWhiteSpace(NotContain) || string.IsNullOrWhiteSpace(StartWith) || string.IsNullOrWhiteSpace(NotStartWith)
-                    || string.IsNullOrWhiteSpace(EndWith) || string.IsNullOrWhiteSpace(NotEndWith);
+                    || string.IsNullOrWhiteSpace(EndWith) || string.IsNullOrWhiteSpace(NotEndWith));
             }
         }
     }
