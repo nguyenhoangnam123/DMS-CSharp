@@ -203,35 +203,46 @@ namespace DMS.Repositories
         }
         public async Task<bool> Create(WorkflowStep WorkflowStep)
         {
-            WorkflowStepDAO WorkflowStepDAO = new WorkflowStepDAO();
-            WorkflowStepDAO.Id = WorkflowStep.Id;
-            WorkflowStepDAO.WorkflowDefinitionId = WorkflowStep.WorkflowDefinitionId;
-            WorkflowStepDAO.Code = WorkflowStep.Code;
-            WorkflowStepDAO.Name = WorkflowStep.Name;
-            WorkflowStepDAO.RoleId = WorkflowStep.RoleId;
-            WorkflowStepDAO.SubjectMailForReject = WorkflowStep.SubjectMailForReject;
-            WorkflowStepDAO.BodyMailForReject = WorkflowStep.BodyMailForReject;
-            DataContext.WorkflowStep.Add(WorkflowStepDAO);
-            await DataContext.SaveChangesAsync();
-            WorkflowStep.Id = WorkflowStepDAO.Id;
-            await SaveReference(WorkflowStep);
+            WorkflowDefinitionDAO WorkflowDefinitionDAO = await DataContext.WorkflowDefinition
+                .Where(x => x.Id == WorkflowStep.WorkflowDefinitionId)
+                .FirstOrDefaultAsync();
+            if (WorkflowDefinitionDAO.Used == false)
+            {
+                WorkflowStepDAO WorkflowStepDAO = new WorkflowStepDAO();
+                WorkflowStepDAO.Id = WorkflowStep.Id;
+                WorkflowStepDAO.WorkflowDefinitionId = WorkflowStep.WorkflowDefinitionId;
+                WorkflowStepDAO.Code = WorkflowStep.Code;
+                WorkflowStepDAO.Name = WorkflowStep.Name;
+                WorkflowStepDAO.RoleId = WorkflowStep.RoleId;
+                WorkflowStepDAO.SubjectMailForReject = WorkflowStep.SubjectMailForReject;
+                WorkflowStepDAO.BodyMailForReject = WorkflowStep.BodyMailForReject;
+                DataContext.WorkflowStep.Add(WorkflowStepDAO);
+                await DataContext.SaveChangesAsync();
+                WorkflowStep.Id = WorkflowStepDAO.Id;
+            }
             return true;
         }
 
         public async Task<bool> Update(WorkflowStep WorkflowStep)
         {
-            WorkflowStepDAO WorkflowStepDAO = DataContext.WorkflowStep.Where(x => x.Id == WorkflowStep.Id).FirstOrDefault();
+            WorkflowStepDAO WorkflowStepDAO = await DataContext.WorkflowStep
+                .Where(x => x.Id == WorkflowStep.Id)
+                .FirstOrDefaultAsync();
             if (WorkflowStepDAO == null)
                 return false;
-            WorkflowStepDAO.Id = WorkflowStep.Id;
-            WorkflowStepDAO.WorkflowDefinitionId = WorkflowStep.WorkflowDefinitionId;
-            WorkflowStepDAO.Code = WorkflowStep.Code;
-            WorkflowStepDAO.Name = WorkflowStep.Name;
-            WorkflowStepDAO.RoleId = WorkflowStep.RoleId;
+            WorkflowDefinitionDAO WorkflowDefinitionDAO = await DataContext.WorkflowDefinition
+                .Where(x => x.Id == WorkflowStepDAO.WorkflowDefinitionId)
+                .FirstOrDefaultAsync();
+
+            if (WorkflowDefinitionDAO.Used == false)
+            {
+                WorkflowStepDAO.Code = WorkflowStep.Code;
+                WorkflowStepDAO.Name = WorkflowStep.Name;
+                WorkflowStepDAO.RoleId = WorkflowStep.RoleId;
+            }
             WorkflowStepDAO.SubjectMailForReject = WorkflowStep.SubjectMailForReject;
             WorkflowStepDAO.BodyMailForReject = WorkflowStep.BodyMailForReject;
             await DataContext.SaveChangesAsync();
-            await SaveReference(WorkflowStep);
             return true;
         }
 
@@ -270,10 +281,6 @@ namespace DMS.Repositories
             await DataContext.WorkflowStep
                 .Where(x => Ids.Contains(x.Id)).DeleteFromQueryAsync();
             return true;
-        }
-
-        private async Task SaveReference(WorkflowStep WorkflowStep)
-        {
         }
 
     }

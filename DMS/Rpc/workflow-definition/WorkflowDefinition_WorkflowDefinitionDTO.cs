@@ -26,6 +26,7 @@ namespace DMS.Rpc.workflow_definition
         public List<WorkflowDefinition_WorkflowStepDTO> WorkflowSteps { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
+        public bool Used { get; set; }
         public WorkflowDefinition_WorkflowDefinitionDTO() { }
         public WorkflowDefinition_WorkflowDefinitionDTO(WorkflowDefinition WorkflowDefinition)
         {
@@ -40,6 +41,7 @@ namespace DMS.Rpc.workflow_definition
             this.StatusId = WorkflowDefinition.StatusId;
             this.CreatedAt = WorkflowDefinition.CreatedAt;
             this.UpdatedAt = WorkflowDefinition.UpdatedAt;
+            this.Used = WorkflowDefinition.Used;
             this.Creator = WorkflowDefinition.Creator == null ? null : new WorkflowDefinition_AppUserDTO(WorkflowDefinition.Creator);
             this.Modifier = WorkflowDefinition.Modifier == null ? null : new WorkflowDefinition_AppUserDTO(WorkflowDefinition.Modifier);
             this.Status = WorkflowDefinition.Status == null ? null : new WorkflowDefinition_StatusDTO(WorkflowDefinition.Status);

@@ -307,37 +307,53 @@ namespace DMS.Repositories
         }
         public async Task<bool> Create(WorkflowDirection WorkflowDirection)
         {
-            WorkflowDirectionDAO WorkflowDirectionDAO = new WorkflowDirectionDAO();
-            WorkflowDirectionDAO.Id = WorkflowDirection.Id;
-            WorkflowDirectionDAO.WorkflowDefinitionId = WorkflowDirection.WorkflowDefinitionId;
-            WorkflowDirectionDAO.FromStepId = WorkflowDirection.FromStepId;
-            WorkflowDirectionDAO.ToStepId = WorkflowDirection.ToStepId;
-            WorkflowDirectionDAO.StatusId = WorkflowDirection.StatusId;
-            WorkflowDirectionDAO.SubjectMailForCreator = WorkflowDirection.SubjectMailForCreator;
-            WorkflowDirectionDAO.SubjectMailForCurrentStep = WorkflowDirection.SubjectMailForCurrentStep;
-            WorkflowDirectionDAO.SubjectMailForNextStep = WorkflowDirection.SubjectMailForNextStep;
-            WorkflowDirectionDAO.BodyMailForCreator = WorkflowDirection.BodyMailForCreator;
-            WorkflowDirectionDAO.BodyMailForCurrentStep = WorkflowDirection.BodyMailForCurrentStep;
-            WorkflowDirectionDAO.BodyMailForNextStep = WorkflowDirection.BodyMailForNextStep;
-            WorkflowDirectionDAO.CreatedAt = StaticParams.DateTimeNow;
-            WorkflowDirectionDAO.UpdatedAt = StaticParams.DateTimeNow;
-            DataContext.WorkflowDirection.Add(WorkflowDirectionDAO);
-            await DataContext.SaveChangesAsync();
-            WorkflowDirection.Id = WorkflowDirectionDAO.Id;
-            await SaveReference(WorkflowDirection);
+            WorkflowDefinitionDAO WorkflowDefinitionDAO = await DataContext.WorkflowDefinition
+               .Where(x => x.Id == WorkflowDirection.WorkflowDefinitionId)
+               .FirstOrDefaultAsync();
+            if (WorkflowDefinitionDAO == null)
+                return false;
+
+            if (WorkflowDefinitionDAO.Used == false)
+            {
+                WorkflowDirectionDAO WorkflowDirectionDAO = new WorkflowDirectionDAO();
+                WorkflowDirectionDAO.Id = WorkflowDirection.Id;
+                WorkflowDirectionDAO.WorkflowDefinitionId = WorkflowDirection.WorkflowDefinitionId;
+                WorkflowDirectionDAO.FromStepId = WorkflowDirection.FromStepId;
+                WorkflowDirectionDAO.ToStepId = WorkflowDirection.ToStepId;
+                WorkflowDirectionDAO.StatusId = WorkflowDirection.StatusId;
+                WorkflowDirectionDAO.SubjectMailForCreator = WorkflowDirection.SubjectMailForCreator;
+                WorkflowDirectionDAO.SubjectMailForCurrentStep = WorkflowDirection.SubjectMailForCurrentStep;
+                WorkflowDirectionDAO.SubjectMailForNextStep = WorkflowDirection.SubjectMailForNextStep;
+                WorkflowDirectionDAO.BodyMailForCreator = WorkflowDirection.BodyMailForCreator;
+                WorkflowDirectionDAO.BodyMailForCurrentStep = WorkflowDirection.BodyMailForCurrentStep;
+                WorkflowDirectionDAO.BodyMailForNextStep = WorkflowDirection.BodyMailForNextStep;
+                WorkflowDirectionDAO.CreatedAt = StaticParams.DateTimeNow;
+                WorkflowDirectionDAO.UpdatedAt = StaticParams.DateTimeNow;
+                DataContext.WorkflowDirection.Add(WorkflowDirectionDAO);
+                await DataContext.SaveChangesAsync();
+                WorkflowDirection.Id = WorkflowDirectionDAO.Id;
+                await SaveReference(WorkflowDirection);
+            }
             return true;
         }
 
         public async Task<bool> Update(WorkflowDirection WorkflowDirection)
         {
-            WorkflowDirectionDAO WorkflowDirectionDAO = DataContext.WorkflowDirection.Where(x => x.Id == WorkflowDirection.Id).FirstOrDefault();
+            WorkflowDirectionDAO WorkflowDirectionDAO = await DataContext.WorkflowDirection
+                .Where(x => x.Id == WorkflowDirection.Id)
+                .FirstOrDefaultAsync();
+            WorkflowDefinitionDAO WorkflowDefinitionDAO = await DataContext.WorkflowDefinition
+                .Where(x => x.Id == WorkflowDirectionDAO.WorkflowDefinitionId)
+                .FirstOrDefaultAsync();
             if (WorkflowDirectionDAO == null)
                 return false;
-            WorkflowDirectionDAO.Id = WorkflowDirection.Id;
-            WorkflowDirectionDAO.WorkflowDefinitionId = WorkflowDirection.WorkflowDefinitionId;
-            WorkflowDirectionDAO.FromStepId = WorkflowDirection.FromStepId;
-            WorkflowDirectionDAO.ToStepId = WorkflowDirection.ToStepId;
-            WorkflowDirectionDAO.StatusId = WorkflowDirection.StatusId;
+
+            if (WorkflowDefinitionDAO.Used == false)
+            {
+                WorkflowDirectionDAO.FromStepId = WorkflowDirection.FromStepId;
+                WorkflowDirectionDAO.ToStepId = WorkflowDirection.ToStepId;
+                WorkflowDirectionDAO.StatusId = WorkflowDirection.StatusId;
+            }
             WorkflowDirectionDAO.SubjectMailForCreator = WorkflowDirection.SubjectMailForCreator;
             WorkflowDirectionDAO.SubjectMailForCurrentStep = WorkflowDirection.SubjectMailForCurrentStep;
             WorkflowDirectionDAO.SubjectMailForNextStep = WorkflowDirection.SubjectMailForNextStep;
@@ -352,7 +368,19 @@ namespace DMS.Repositories
 
         public async Task<bool> Delete(WorkflowDirection WorkflowDirection)
         {
-            await DataContext.WorkflowDirection.Where(x => x.Id == WorkflowDirection.Id).DeleteFromQueryAsync();
+            WorkflowDirectionDAO WorkflowDirectionDAO = await DataContext.WorkflowDirection
+               .Where(x => x.Id == WorkflowDirection.Id)
+               .FirstOrDefaultAsync();
+            WorkflowDefinitionDAO WorkflowDefinitionDAO = await DataContext.WorkflowDefinition
+                .Where(x => x.Id == WorkflowDirectionDAO.WorkflowDefinitionId)
+                .FirstOrDefaultAsync();
+            if (WorkflowDirectionDAO == null)
+                return false;
+
+            if (WorkflowDefinitionDAO.Used == false)
+            {
+                await DataContext.WorkflowDirection.Where(x => x.Id == WorkflowDirection.Id).DeleteFromQueryAsync();
+            }
             return true;
         }
 

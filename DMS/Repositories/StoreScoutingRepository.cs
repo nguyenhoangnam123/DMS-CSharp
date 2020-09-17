@@ -566,7 +566,7 @@ namespace DMS.Repositories
             await DataContext.SaveChangesAsync();
             StoreScouting.Id = StoreScoutingDAO.Id;
             StoreScoutingDAO.Code = StoreScoutingDAO.Id.ToString();
-           await SaveReference(StoreScouting);
+            await SaveReference(StoreScouting);
             return true;
         }
 
