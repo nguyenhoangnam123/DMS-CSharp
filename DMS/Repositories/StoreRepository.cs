@@ -48,7 +48,7 @@ namespace DMS.Repositories
                 query = query.Where(q => q.Id, filter.Id);
             if (filter.Code != null)
                 query = query.Where(q => q.Code, filter.Code);
-            if (filter.Name != null)
+            if (filter.Name != null && filter.Name.HasValue)
                 query = query.Where(q => q.Name, filter.Name).Union(query.Where(q => q.UnsignName, filter.Name));
             if (filter.ParentStoreId != null && filter.ParentStoreId.HasValue)
                 query = query.Where(q => q.ParentStoreId.HasValue).Where(q => q.ParentStoreId.Value, filter.ParentStoreId);
@@ -118,7 +118,7 @@ namespace DMS.Repositories
                 query = query.Where(q => q.DistrictId, filter.DistrictId);
             if (filter.WardId != null)
                 query = query.Where(q => q.WardId, filter.WardId);
-            if (filter.Address != null)
+            if (filter.Address != null && filter.Address.HasValue)
                 query = query.Where(q => q.Address, filter.Address).Union(query.Where(q => q.UnsignAddress, filter.Address));
             if (filter.DeliveryAddress != null)
                 query = query.Where(q => q.DeliveryAddress, filter.DeliveryAddress);
