@@ -18,7 +18,7 @@ namespace DMS.Services.MWorkflow
         Task<WorkflowDefinition> Get(long Id);
         Task<WorkflowDefinition> Create(WorkflowDefinition WorkflowDefinition);
         Task<WorkflowDefinition> Update(WorkflowDefinition WorkflowDefinition);
-        Task<WorkflowDefinition> Clone(WorkflowDefinition WorkflowDefinition);
+        Task<WorkflowDefinition> Clone(long Id);
         Task<WorkflowDefinition> Delete(WorkflowDefinition WorkflowDefinition);
         Task<List<WorkflowDefinition>> BulkDelete(List<WorkflowDefinition> WorkflowDefinitions);
         Task<List<WorkflowDefinition>> Import(List<WorkflowDefinition> WorkflowDefinitions);
@@ -156,13 +156,13 @@ namespace DMS.Services.MWorkflow
             }
         }
 
-        public async Task<WorkflowDefinition> Clone(WorkflowDefinition WorkflowDefinition)
+        public async Task<WorkflowDefinition> Clone(long Id)
         {
             try
             {
-                var oldData = await UOW.WorkflowDefinitionRepository.Get(WorkflowDefinition.Id);
+                var oldData = await UOW.WorkflowDefinitionRepository.Get(Id);
                 await UOW.Begin();
-                WorkflowDefinition = oldData.Clone();
+                WorkflowDefinition WorkflowDefinition = oldData.Clone();
                 WorkflowDefinition.CreatorId = CurrentContext.UserId;
                 WorkflowDefinition.StatusId = StatusEnum.INACTIVE.Id;
                 WorkflowDefinition.Used = false;
@@ -180,12 +180,20 @@ namespace DMS.Services.MWorkflow
                     WorkflowDefinition.WorkflowSteps.Add(WorkflowStep);
                 }
                 await UOW.WorkflowStepRepository.BulkMerge(WorkflowDefinition.WorkflowSteps);
+
+                var WorkflowSteps = await UOW.WorkflowStepRepository.List(new WorkflowStepFilter
+                {
+                    Skip = 0,
+                    Take = int.MaxValue,
+                    Selects = WorkflowStepSelect.ALL,
+                    WorkflowDefinitionId = new IdFilter { Equal = Id }
+                });
                 foreach (var WorkflowDirection in oldData.WorkflowDirections)
                 {
                     WorkflowDirection.Id = 0;
                     WorkflowDirection.WorkflowDefinitionId = WorkflowDefinition.Id;
-                    WorkflowDirection.FromStepId = WorkflowDefinition.WorkflowSteps.Where(x => x.Code == WorkflowDirection.FromStep.Code).Select(x => x.Id).FirstOrDefault();
-                    WorkflowDirection.ToStepId = WorkflowDefinition.WorkflowSteps.Where(x => x.Code == WorkflowDirection.ToStep.Code).Select(x => x.Id).FirstOrDefault();
+                    WorkflowDirection.FromStepId = WorkflowSteps.Where(x => x.Code == WorkflowDirection.FromStep.Code).Select(x => x.Id).FirstOrDefault();
+                    WorkflowDirection.ToStepId = WorkflowSteps.Where(x => x.Code == WorkflowDirection.ToStep.Code).Select(x => x.Id).FirstOrDefault();
                     WorkflowDefinition.WorkflowDirections.Add(WorkflowDirection);
                 }
                 await UOW.WorkflowDirectionRepository.BulkMerge(WorkflowDefinition.WorkflowDirections);
