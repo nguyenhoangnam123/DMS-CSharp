@@ -104,6 +104,7 @@ namespace DMS.Services.MWorkflow
 
             if (WorkflowDefinition == null)
                 return WorkflowActionEnum.NO_WORKFLOW;
+            NotifyUsed(WorkflowDefinition);
             WorkflowDefinition = await UOW.WorkflowDefinitionRepository.Get(WorkflowDefinition.Id);
 
             // Kiểm tra trong workflow definition chọn được có workflow step nào thoả mãn việc step NGUỒN là 1 trong các role của user đang đăng nhập không
@@ -676,5 +677,14 @@ namespace DMS.Services.MWorkflow
             return WorkflowActionEnum.OK;
         }
 
+        private void NotifyUsed(WorkflowDefinition WorkflowDefinition)
+        {
+            {
+                EventMessage<WorkflowDefinition> WorkflowDefinitionMessage = new EventMessage<WorkflowDefinition>(
+                    new WorkflowDefinition { Id = WorkflowDefinition.Id },
+                    Guid.NewGuid());
+                RabbitManager.PublishSingle(WorkflowDefinitionMessage, RoutingKeyEnum.WorkflowDefinitionUsed);
+            }
+        }
     }
 }

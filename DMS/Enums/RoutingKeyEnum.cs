@@ -34,5 +34,6 @@ namespace DMS.Enums
         public static GenericEnum SurveyUsed = new GenericEnum { Id = 110, Code = "Survey.Used", Name = "Survey Used" };
         public static GenericEnum TaxTypeUsed = new GenericEnum { Id = 111, Code = "TaxType.Used", Name = "TaxType Used" };
         public static GenericEnum UnitOfMeasureUsed = new GenericEnum { Id = 112, Code = "UnitOfMeasure.Used", Name = "UnitOfMeasure Used" };
+        public static GenericEnum WorkflowDefinitionUsed = new GenericEnum { Id = 113, Code = "WorkflowDefinition.Used", Name = "WorkflowDefinition Used" };
     }
 }

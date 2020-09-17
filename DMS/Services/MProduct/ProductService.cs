@@ -494,7 +494,7 @@ namespace DMS.Services.MProduct
             catch (Exception ex)
             {
                 await UOW.Rollback();
-                
+
                 if (ex.InnerException == null)
                 {
                     await Logging.CreateSystemLog(ex, nameof(ProductService));
@@ -657,35 +657,23 @@ namespace DMS.Services.MProduct
         private void NotifyUsed(Product Product)
         {
             {
-                EventMessage<ProductType> ProductTypeMessage = new EventMessage<ProductType>
-                {
-                    Content = new ProductType { Id = Product.ProductTypeId },
-                    EntityName = nameof(Item),
-                    RowId = Guid.NewGuid(),
-                    Time = StaticParams.DateTimeNow,
-                };
+                EventMessage<ProductType> ProductTypeMessage = new EventMessage<ProductType>(
+                     new ProductType { Id = Product.ProductTypeId },
+                     Guid.NewGuid());
                 RabbitManager.PublishSingle(ProductTypeMessage, RoutingKeyEnum.ProductTypeUsed);
             }
 
             {
-                EventMessage<UnitOfMeasure> UnitOfMeasureMessage = new EventMessage<UnitOfMeasure>
-                {
-                    Content = new UnitOfMeasure { Id = Product.UnitOfMeasureId },
-                    EntityName = nameof(Item),
-                    RowId = Guid.NewGuid(),
-                    Time = StaticParams.DateTimeNow,
-                };
+                EventMessage<UnitOfMeasure> UnitOfMeasureMessage = new EventMessage<UnitOfMeasure>(
+                    new UnitOfMeasure { Id = Product.UnitOfMeasureId }, 
+                    Guid.NewGuid());
                 RabbitManager.PublishSingle(UnitOfMeasureMessage, RoutingKeyEnum.UnitOfMeasureUsed);
             }
 
             {
-                EventMessage<TaxType> TaxTypeMessage = new EventMessage<TaxType>
-                {
-                    Content = new TaxType { Id = Product.TaxTypeId },
-                    EntityName = nameof(Item),
-                    RowId = Guid.NewGuid(),
-                    Time = StaticParams.DateTimeNow,
-                };
+                EventMessage<TaxType> TaxTypeMessage = new EventMessage<TaxType>(
+                    new TaxType { Id = Product.TaxTypeId },
+                    Guid.NewGuid());
                 RabbitManager.PublishSingle(TaxTypeMessage, RoutingKeyEnum.TaxTypeUsed);
             }
         }
