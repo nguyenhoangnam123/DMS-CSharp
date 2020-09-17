@@ -125,6 +125,7 @@ namespace DMS.Services.MRole
                     break;
                 }
                 Role.Id = 0;
+                Role.AppUserRoleMappings = new List<AppUserRoleMapping>();
                 await UOW.Begin();
                 await UOW.RoleRepository.Create(Role);
                 foreach(Permission Permission in listPermissionsInDb)
