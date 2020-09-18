@@ -19,8 +19,11 @@ namespace DMS.Models
         public long RoleId { get; set; }
         public string SubjectMailForReject { get; set; }
         public string BodyMailForReject { get; set; }
+        public long StatusId { get; set; }
+        public DateTime UpdatedAt { get; set; }
 
         public virtual RoleDAO Role { get; set; }
+        public virtual StatusDAO Status { get; set; }
         public virtual WorkflowDefinitionDAO WorkflowDefinition { get; set; }
         public virtual ICollection<RequestWorkflowStepMappingDAO> RequestWorkflowStepMappings { get; set; }
         public virtual ICollection<WorkflowDirectionDAO> WorkflowDirectionFromSteps { get; set; }

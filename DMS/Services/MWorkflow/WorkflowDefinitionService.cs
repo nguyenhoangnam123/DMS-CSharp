@@ -103,6 +103,7 @@ namespace DMS.Services.MWorkflow
             {
                 await UOW.Begin();
                 WorkflowDefinition.CreatorId = CurrentContext.UserId;
+                WorkflowDefinition.ModifierId = CurrentContext.UserId;
                 await UOW.WorkflowDefinitionRepository.Create(WorkflowDefinition);
                 await UOW.Commit();
 
@@ -132,6 +133,7 @@ namespace DMS.Services.MWorkflow
             try
             {
                 var oldData = await UOW.WorkflowDefinitionRepository.Get(WorkflowDefinition.Id);
+                WorkflowDefinition.ModifierId = CurrentContext.UserId;
                 await UOW.Begin();
                 await UOW.WorkflowDefinitionRepository.Update(WorkflowDefinition);
                 await UOW.Commit();
@@ -164,6 +166,7 @@ namespace DMS.Services.MWorkflow
                 await UOW.Begin();
                 WorkflowDefinition WorkflowDefinition = oldData.Clone();
                 WorkflowDefinition.CreatorId = CurrentContext.UserId;
+                WorkflowDefinition.ModifierId = CurrentContext.UserId; 
                 WorkflowDefinition.StatusId = StatusEnum.INACTIVE.Id;
                 WorkflowDefinition.Used = false;
                 WorkflowDefinition.Id = 0;

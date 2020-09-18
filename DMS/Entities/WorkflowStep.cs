@@ -15,7 +15,11 @@ namespace DMS.Entities
         public long RoleId { get; set; }
         public string SubjectMailForReject { get; set; }
         public string BodyMailForReject { get; set; }
+        public long ModifierId { get; set; }
+        public long StatusId { get; set; }
+        public bool Used { get; set; }
         public Role Role { get; set; }
+        public Status Status { get; set; }
         public WorkflowDefinition WorkflowDefinition { get; set; }
         public List<WorkflowParameter> WorkflowParameters { get; set; }
 
@@ -60,5 +64,6 @@ namespace DMS.Entities
         Code = E._2,
         Name = E._3,
         Role = E._4,
+        Status = E._5,
     }
 }

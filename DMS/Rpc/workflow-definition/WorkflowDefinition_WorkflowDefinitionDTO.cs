@@ -12,7 +12,7 @@ namespace DMS.Rpc.workflow_definition
         public string Code { get; set; }
         public string Name { get; set; }
         public long CreatorId { get; set; }
-        public long? ModifierId { get; set; }
+        public long ModifierId { get; set; }
         public long WorkflowTypeId { get; set; }
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }

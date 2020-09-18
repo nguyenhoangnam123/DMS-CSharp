@@ -262,6 +262,7 @@ namespace DMS.Repositories
                     Code = x.Status.Code,
                     Name = x.Status.Name,
                 },
+                Used = x.WorkflowDefinition.Used,
             }).FirstOrDefaultAsync();
 
             if (WorkflowDirection == null)
@@ -312,6 +313,7 @@ namespace DMS.Repositories
                .FirstOrDefaultAsync();
             if (WorkflowDefinitionDAO == null)
                 return false;
+            WorkflowDefinitionDAO.ModifierId = WorkflowDirection.ModifierId;
 
             if (WorkflowDefinitionDAO.Used == false)
             {
@@ -327,7 +329,6 @@ namespace DMS.Repositories
                 WorkflowDirectionDAO.BodyMailForCreator = WorkflowDirection.BodyMailForCreator;
                 WorkflowDirectionDAO.BodyMailForCurrentStep = WorkflowDirection.BodyMailForCurrentStep;
                 WorkflowDirectionDAO.BodyMailForNextStep = WorkflowDirection.BodyMailForNextStep;
-                WorkflowDirectionDAO.CreatedAt = StaticParams.DateTimeNow;
                 WorkflowDirectionDAO.UpdatedAt = StaticParams.DateTimeNow;
                 DataContext.WorkflowDirection.Add(WorkflowDirectionDAO);
                 await DataContext.SaveChangesAsync();
@@ -347,6 +348,7 @@ namespace DMS.Repositories
                 .FirstOrDefaultAsync();
             if (WorkflowDirectionDAO == null)
                 return false;
+            WorkflowDefinitionDAO.ModifierId = WorkflowDirection.ModifierId;
 
             if (WorkflowDefinitionDAO.Used == false)
             {
@@ -374,6 +376,8 @@ namespace DMS.Repositories
             WorkflowDefinitionDAO WorkflowDefinitionDAO = await DataContext.WorkflowDefinition
                 .Where(x => x.Id == WorkflowDirectionDAO.WorkflowDefinitionId)
                 .FirstOrDefaultAsync();
+            WorkflowDefinitionDAO.ModifierId = WorkflowDirection.ModifierId;
+            await DataContext.SaveChangesAsync();
             if (WorkflowDirectionDAO == null)
                 return false;
 
@@ -401,7 +405,6 @@ namespace DMS.Repositories
                 WorkflowDirectionDAO.BodyMailForCreator = WorkflowDirection.BodyMailForCreator;
                 WorkflowDirectionDAO.BodyMailForCurrentStep = WorkflowDirection.BodyMailForCurrentStep;
                 WorkflowDirectionDAO.BodyMailForNextStep = WorkflowDirection.BodyMailForNextStep;
-                WorkflowDirectionDAO.CreatedAt = StaticParams.DateTimeNow;
                 WorkflowDirectionDAO.UpdatedAt = StaticParams.DateTimeNow;
                 WorkflowDirectionDAOs.Add(WorkflowDirectionDAO);
             }

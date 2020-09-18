@@ -106,6 +106,7 @@ namespace DMS.Services.MWorkflow
 
             try
             {
+                WorkflowDirection.ModifierId = CurrentContext.UserId;
                 await UOW.Begin();
                 await UOW.WorkflowDirectionRepository.Create(WorkflowDirection);
                 await UOW.Commit();
@@ -136,7 +137,7 @@ namespace DMS.Services.MWorkflow
             try
             {
                 var oldData = await UOW.WorkflowDirectionRepository.Get(WorkflowDirection.Id);
-
+                WorkflowDirection.ModifierId = CurrentContext.UserId;
                 await UOW.Begin();
                 await UOW.WorkflowDirectionRepository.Update(WorkflowDirection);
                 await UOW.Commit();
@@ -168,6 +169,7 @@ namespace DMS.Services.MWorkflow
 
             try
             {
+                WorkflowDirection.ModifierId = CurrentContext.UserId;
                 await UOW.Begin();
                 await UOW.WorkflowDirectionRepository.Delete(WorkflowDirection);
                 await UOW.Commit();
@@ -197,6 +199,7 @@ namespace DMS.Services.MWorkflow
 
             try
             {
+                WorkflowDirections.ForEach(x => x.ModifierId = CurrentContext.UserId);
                 await UOW.Begin();
                 await UOW.WorkflowDirectionRepository.BulkDelete(WorkflowDirections);
                 await UOW.Commit();
@@ -225,6 +228,7 @@ namespace DMS.Services.MWorkflow
                 return WorkflowDirections;
             try
             {
+                WorkflowDirections.ForEach(x => x.ModifierId = CurrentContext.UserId);
                 await UOW.Begin();
                 await UOW.WorkflowDirectionRepository.BulkMerge(WorkflowDirections);
                 await UOW.Commit();

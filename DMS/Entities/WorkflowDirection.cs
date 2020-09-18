@@ -21,6 +21,8 @@ namespace DMS.Entities
         public string BodyMailForCurrentStep { get; set; }
         public string BodyMailForNextStep { get; set; }
         public long StatusId { get; set; }
+        public long ModifierId { get; set; }
+        public bool Used { get; set; }
         public DateTime UpdatedAt { get; set; }
         public Status Status { get; set; }
         public WorkflowDefinition WorkflowDefinition { get; set; }

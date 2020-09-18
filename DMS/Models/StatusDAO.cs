@@ -41,6 +41,7 @@ namespace DMS.Models
             Warehouses = new HashSet<WarehouseDAO>();
             WorkflowDefinitions = new HashSet<WorkflowDefinitionDAO>();
             WorkflowDirections = new HashSet<WorkflowDirectionDAO>();
+            WorkflowSteps = new HashSet<WorkflowStepDAO>();
         }
 
         public long Id { get; set; }
@@ -81,5 +82,6 @@ namespace DMS.Models
         public virtual ICollection<WarehouseDAO> Warehouses { get; set; }
         public virtual ICollection<WorkflowDefinitionDAO> WorkflowDefinitions { get; set; }
         public virtual ICollection<WorkflowDirectionDAO> WorkflowDirections { get; set; }
+        public virtual ICollection<WorkflowStepDAO> WorkflowSteps { get; set; }
     }
 }

@@ -1,6 +1,7 @@
 using Common;
 using DMS.Entities;
 using DMS.Models;
+using Helpers;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -127,12 +128,19 @@ namespace DMS.Repositories
                 Code = filter.Selects.Contains(WorkflowStepSelect.Code) ? q.Code : default(string),
                 Name = filter.Selects.Contains(WorkflowStepSelect.Name) ? q.Name : default(string),
                 RoleId = filter.Selects.Contains(WorkflowStepSelect.Role) ? q.RoleId : default(long),
+                StatusId = filter.Selects.Contains(WorkflowStepSelect.Status) ? q.StatusId : default(long),
                 Role = filter.Selects.Contains(WorkflowStepSelect.Role) && q.Role != null ? new Role
                 {
                     Id = q.Role.Id,
                     Code = q.Role.Code,
                     Name = q.Role.Name,
                     StatusId = q.Role.StatusId,
+                } : null,
+                Status = filter.Selects.Contains(WorkflowStepSelect.Status) && q.Status != null ? new Status
+                {
+                    Id = q.Status.Id,
+                    Code = q.Status.Code,
+                    Name = q.Status.Name,
                 } : null,
                 WorkflowDefinition = filter.Selects.Contains(WorkflowStepSelect.WorkflowDefinition) && q.WorkflowDefinition != null ? new WorkflowDefinition
                 {
@@ -143,6 +151,7 @@ namespace DMS.Repositories
                     EndDate = q.WorkflowDefinition.EndDate,
                     StatusId = q.WorkflowDefinition.StatusId,
                 } : null,
+                Used = q.WorkflowDefinition.Used,
             }).ToListAsync();
             return WorkflowSteps;
         }
@@ -174,8 +183,15 @@ namespace DMS.Repositories
                 Code = x.Code,
                 Name = x.Name,
                 RoleId = x.RoleId,
+                StatusId = x.StatusId,
                 SubjectMailForReject = x.SubjectMailForReject,
                 BodyMailForReject = x.BodyMailForReject,
+                Status = x.Status == null ? null : new Status
+                {
+                    Id = x.Status.Id,
+                    Code = x.Status.Code,
+                    Name = x.Status.Name,
+                },
                 Role = x.Role == null ? null : new Role
                 {
                     Id = x.Role.Id,
@@ -194,6 +210,7 @@ namespace DMS.Repositories
                     StatusId = x.WorkflowDefinition.StatusId,
                     UpdatedAt = x.WorkflowDefinition.UpdatedAt,
                 },
+                Used = x.WorkflowDefinition.Used,
             }).FirstOrDefaultAsync();
 
             if (WorkflowStep == null)
@@ -206,6 +223,10 @@ namespace DMS.Repositories
             WorkflowDefinitionDAO WorkflowDefinitionDAO = await DataContext.WorkflowDefinition
                 .Where(x => x.Id == WorkflowStep.WorkflowDefinitionId)
                 .FirstOrDefaultAsync();
+            if (WorkflowDefinitionDAO == null)
+                return false;
+            WorkflowDefinitionDAO.ModifierId = WorkflowStep.ModifierId;
+            await DataContext.SaveChangesAsync();
             if (WorkflowDefinitionDAO.Used == false)
             {
                 WorkflowStepDAO WorkflowStepDAO = new WorkflowStepDAO();
@@ -216,6 +237,8 @@ namespace DMS.Repositories
                 WorkflowStepDAO.RoleId = WorkflowStep.RoleId;
                 WorkflowStepDAO.SubjectMailForReject = WorkflowStep.SubjectMailForReject;
                 WorkflowStepDAO.BodyMailForReject = WorkflowStep.BodyMailForReject;
+                WorkflowStepDAO.UpdatedAt = StaticParams.DateTimeNow;
+                WorkflowStepDAO.StatusId = WorkflowStep.StatusId;
                 DataContext.WorkflowStep.Add(WorkflowStepDAO);
                 await DataContext.SaveChangesAsync();
                 WorkflowStep.Id = WorkflowStepDAO.Id;
@@ -233,25 +256,42 @@ namespace DMS.Repositories
             WorkflowDefinitionDAO WorkflowDefinitionDAO = await DataContext.WorkflowDefinition
                 .Where(x => x.Id == WorkflowStepDAO.WorkflowDefinitionId)
                 .FirstOrDefaultAsync();
-
+            if (WorkflowDefinitionDAO == null)
+                return false;
+            WorkflowDefinitionDAO.ModifierId = WorkflowStep.ModifierId;
+            await DataContext.SaveChangesAsync();
             if (WorkflowDefinitionDAO.Used == false)
             {
                 WorkflowStepDAO.Code = WorkflowStep.Code;
                 WorkflowStepDAO.Name = WorkflowStep.Name;
                 WorkflowStepDAO.RoleId = WorkflowStep.RoleId;
+                WorkflowStepDAO.StatusId = WorkflowStep.StatusId;
             }
             WorkflowStepDAO.SubjectMailForReject = WorkflowStep.SubjectMailForReject;
             WorkflowStepDAO.BodyMailForReject = WorkflowStep.BodyMailForReject;
+            WorkflowStepDAO.UpdatedAt = StaticParams.DateTimeNow;
             await DataContext.SaveChangesAsync();
             return true;
         }
 
         public async Task<bool> Delete(WorkflowStep WorkflowStep)
         {
-            await DataContext.WorkflowDirection.Where(x => x.FromStepId == WorkflowStep.Id).DeleteFromQueryAsync();
-            await DataContext.WorkflowDirection.Where(x => x.ToStepId == WorkflowStep.Id).DeleteFromQueryAsync();
-            await DataContext.WorkflowStep.Where(x => x.Id == WorkflowStep.Id).DeleteFromQueryAsync();
-            return true;
+            WorkflowDefinitionDAO WorkflowDefinitionDAO = await DataContext.WorkflowDefinition
+                .Where(x => x.Id == WorkflowStep.WorkflowDefinitionId)
+                .FirstOrDefaultAsync();
+            if (WorkflowDefinitionDAO == null)
+                return false;
+            if (WorkflowDefinitionDAO.Used == false)
+            {
+                WorkflowDefinitionDAO.ModifierId = WorkflowStep.ModifierId;
+                await DataContext.SaveChangesAsync();
+
+                await DataContext.WorkflowDirection.Where(x => x.FromStepId == WorkflowStep.Id).DeleteFromQueryAsync();
+                await DataContext.WorkflowDirection.Where(x => x.ToStepId == WorkflowStep.Id).DeleteFromQueryAsync();
+                await DataContext.WorkflowStep.Where(x => x.Id == WorkflowStep.Id).DeleteFromQueryAsync();
+                return true;
+            }
+            return false;
         }
 
         public async Task<bool> BulkMerge(List<WorkflowStep> WorkflowSteps)

@@ -20,6 +20,7 @@ namespace DMS.Rpc.workflow_direction
         public string BodyMailForNextStep { get; set; }
         public DateTime UpdatedAt { get; set; }
         public long StatusId { get; set; }
+        public bool Used { get; set; }
         public WorkflowDirection_StatusDTO Status { get; set; }
         public WorkflowDirection_WorkflowStepDTO FromStep { get; set; }
         public WorkflowDirection_WorkflowStepDTO ToStep { get; set; }
@@ -41,6 +42,7 @@ namespace DMS.Rpc.workflow_direction
             this.BodyMailForNextStep = WorkflowDirection.BodyMailForNextStep;
             this.UpdatedAt = WorkflowDirection.UpdatedAt;
             this.StatusId = WorkflowDirection.StatusId;
+            this.Used = WorkflowDirection.Used;
             this.Status = WorkflowDirection.Status == null ? null : new WorkflowDirection_StatusDTO(WorkflowDirection.Status);
             this.FromStep = WorkflowDirection.FromStep == null ? null : new WorkflowDirection_WorkflowStepDTO(WorkflowDirection.FromStep);
             this.ToStep = WorkflowDirection.ToStep == null ? null : new WorkflowDirection_WorkflowStepDTO(WorkflowDirection.ToStep);

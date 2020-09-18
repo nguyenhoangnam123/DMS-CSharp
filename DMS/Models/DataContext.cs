@@ -4152,6 +4152,7 @@ namespace DMS.Models
                 entity.HasOne(d => d.Modifier)
                     .WithMany(p => p.WorkflowDefinitionModifiers)
                     .HasForeignKey(d => d.ModifierId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_WorkflowDefinition_AppUser1");
 
                 entity.HasOne(d => d.Status)
@@ -4176,10 +4177,6 @@ namespace DMS.Models
                 entity.Property(e => e.BodyMailForCurrentStep).HasMaxLength(4000);
 
                 entity.Property(e => e.BodyMailForNextStep).HasMaxLength(4000);
-
-                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
-
-                entity.Property(e => e.DeletedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.SubjectMailForCreator).HasMaxLength(500);
 
@@ -4333,13 +4330,23 @@ namespace DMS.Models
                     .IsRequired()
                     .HasMaxLength(500);
 
+                entity.Property(e => e.StatusId).HasDefaultValueSql("((1))");
+
                 entity.Property(e => e.SubjectMailForReject).HasMaxLength(4000);
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
                 entity.HasOne(d => d.Role)
                     .WithMany(p => p.WorkflowSteps)
                     .HasForeignKey(d => d.RoleId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_WorkflowStep_Role");
+
+                entity.HasOne(d => d.Status)
+                    .WithMany(p => p.WorkflowSteps)
+                    .HasForeignKey(d => d.StatusId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_WorkflowStep_Status");
 
                 entity.HasOne(d => d.WorkflowDefinition)
                     .WithMany(p => p.WorkflowSteps)

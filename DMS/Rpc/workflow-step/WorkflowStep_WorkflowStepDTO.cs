@@ -14,7 +14,10 @@ namespace DMS.Rpc.workflow_step
         public long RoleId { get; set; }
         public string SubjectMailForReject { get; set; }
         public string BodyMailForReject { get; set; }
+        public long StatusId { get; set; }
+        public bool Used { get; set; }
         public WorkflowStep_RoleDTO Role { get; set; }
+        public WorkflowStep_StatusDTO Status { get; set; }
         public WorkflowStep_WorkflowDefinitionDTO WorkflowDefinition { get; set; }
         public List<WorkflowStep_WorkflowParameterDTO> WorkflowParameters { get; set; }
         public WorkflowStep_WorkflowStepDTO() { }
@@ -25,9 +28,12 @@ namespace DMS.Rpc.workflow_step
             this.Code = WorkflowStep.Code;
             this.Name = WorkflowStep.Name;
             this.RoleId = WorkflowStep.RoleId;
+            this.StatusId = WorkflowStep.StatusId;
             this.SubjectMailForReject = WorkflowStep.SubjectMailForReject;
             this.BodyMailForReject = WorkflowStep.BodyMailForReject;
+            this.Used = WorkflowStep.Used;
             this.Role = WorkflowStep.Role == null ? null : new WorkflowStep_RoleDTO(WorkflowStep.Role);
+            this.Status = WorkflowStep.Status == null ? null : new WorkflowStep_StatusDTO(WorkflowStep.Status);
             this.WorkflowDefinition = WorkflowStep.WorkflowDefinition == null ? null : new WorkflowStep_WorkflowDefinitionDTO(WorkflowStep.WorkflowDefinition);
             this.WorkflowParameters = WorkflowStep.WorkflowParameters?.Select(p => new WorkflowStep_WorkflowParameterDTO(p)).ToList();
             this.Errors = WorkflowStep.Errors;

@@ -467,41 +467,5 @@ namespace DMS.Repositories
                 .UpdateFromQueryAsync(x => new WorkflowDefinitionDAO { DeletedAt = StaticParams.DateTimeNow });
             return true;
         }
-
-        //private async Task SaveReference(WorkflowDefinition WorkflowDefinition)
-        //{
-        //    await DataContext.WorkflowStep.Where(s => s.WorkflowDefinitionId == WorkflowDefinition.Id).DeleteFromQueryAsync();
-        //    if (WorkflowDefinition.WorkflowSteps != null)
-        //    {
-        //        List<WorkflowStepDAO> WorkflowStepDAOs = new List<WorkflowStepDAO>();
-        //        foreach (WorkflowStep WorkflowStep in WorkflowDefinition.WorkflowSteps)
-        //        {
-        //            WorkflowStepDAO WorkflowStepDAO = new WorkflowStepDAO();
-        //            WorkflowStepDAO.WorkflowDefinitionId = WorkflowDefinition.Id;
-        //            WorkflowStepDAO.Code = WorkflowStep.Code;
-        //            WorkflowStepDAO.Name = WorkflowStep.Name;
-        //            WorkflowStepDAO.RoleId = WorkflowStep.RoleId;
-        //            WorkflowStepDAOs.Add(WorkflowStepDAO);
-        //        }
-        //        await DataContext.WorkflowStep.BulkMergeAsync(WorkflowStepDAOs);
-
-        //        await DataContext.WorkflowDirection.Where(d => d.WorkflowDefinitionId == WorkflowDefinition.Id).DeleteFromQueryAsync();
-        //        if (WorkflowDefinition.WorkflowDirections != null)
-        //        {
-        //            List<WorkflowDirectionDAO> WorkflowDirectionDAOs = new List<WorkflowDirectionDAO>();
-        //            foreach (WorkflowDirection WorkflowDirection in WorkflowDefinition.WorkflowDirections)
-        //            {
-        //                WorkflowDirectionDAO WorkflowDirectionDAO = new WorkflowDirectionDAO();
-        //                WorkflowDirectionDAO.WorkflowDefinitionId = WorkflowDefinition.Id;
-        //                WorkflowDirectionDAO.FromStepId = WorkflowStepDAOs.Where(s => s.Name == WorkflowDirection.FromStep.Name).Select(s => s.Id).FirstOrDefault();
-        //                WorkflowDirectionDAO.ToStepId = WorkflowStepDAOs.Where(s => s.Name == WorkflowDirection.ToStep.Name).Select(s => s.Id).FirstOrDefault();
-        //                WorkflowDirectionDAO.CreatedAt = StaticParams.DateTimeNow;
-        //                WorkflowDirectionDAO.UpdatedAt = StaticParams.DateTimeNow;
-        //                WorkflowDirectionDAOs.Add(WorkflowDirectionDAO);
-        //            }
-        //            await DataContext.WorkflowDirection.BulkMergeAsync(WorkflowDirectionDAOs);
-        //        }
-        //    }
-        //}
     }
 }
