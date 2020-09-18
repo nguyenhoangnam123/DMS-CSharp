@@ -169,6 +169,11 @@ namespace DMS.Rpc.dashboards.mobile
                 }
                 KpiYearId = StaticParams.DateTimeNow.AddHours(CurrentContext.TimeZone).Year;
             }
+            else
+            {
+                KpiPeriodId = KpiPeriodEnum.PERIOD_MONTH01.Id;
+                KpiYearId = StaticParams.DateTimeNow.AddHours(CurrentContext.TimeZone).Year;
+            }
 
             DateTime StartDate, EndDate;
             (StartDate, EndDate) = DateTimeConvert(KpiPeriodId, KpiYearId);
@@ -324,7 +329,7 @@ namespace DMS.Rpc.dashboards.mobile
                         SKUIndirectItems.Add(content.ItemId);
                     }
                     DashboardMobile_KpiGeneralCriterialDTO.Value = TotalIndirectOrders == 0 ? 
-                        null : (decimal?)Math.Round((decimal)SKUIndirectItems.Count() / TotalIndirectOrders, 2);
+                        null : (decimal?)SKUIndirectItems.Count();
 
                     DashboardMobile_KpiGeneralCriterialDTO.Value = (decimal?)IndirectSalesOrderDAOs
                         .Sum(iso => iso.Total);
@@ -374,7 +379,7 @@ namespace DMS.Rpc.dashboards.mobile
                         SKUDirectItems.Add(content.ItemId);
                     }
                     DashboardMobile_KpiGeneralCriterialDTO.Value = TotalDirectOrders == 0 ?
-                        null : (decimal?)Math.Round((decimal)SKUDirectItems.Count() / TotalDirectOrders, 2);
+                        null : (decimal?)SKUDirectItems.Count();
 
                     DashboardMobile_KpiGeneralCriterialDTO.KpiCriterialName = KpiCriteriaGeneralEnum.SKU_DIRECT_SALES_ORDER.Name;
                 }
