@@ -6,7 +6,7 @@
     },
     "WorkflowDefinitionId": {
       "WorkflowDefinitionIdNotExisted": "Workflow không tồn tại."
-    }
+    },
     "Code": {
       "CodeEmpty": "Mã chưa được nhập.",
       "CodeHasSpecialCharacter": "Mã có chứa kí tự đặc biệt.",
