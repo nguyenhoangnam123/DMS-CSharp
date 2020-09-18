@@ -425,19 +425,22 @@ namespace DMS.Repositories
         private async Task SaveReference(WorkflowDirection WorkflowDirection)
         {
             await DataContext.WorkflowDirectionCondition.Where(x => x.WorkflowDirectionId == WorkflowDirection.Id).DeleteFromQueryAsync();
-            List<WorkflowDirectionConditionDAO> WorkflowDirectionConditionDAOs = new List<WorkflowDirectionConditionDAO>();
-            foreach (WorkflowDirectionCondition WorkflowDirectionCondition in WorkflowDirection.WorkflowDirectionConditions)
+            if(WorkflowDirection.WorkflowDirectionConditions != null)
             {
-                WorkflowDirectionConditionDAO WorkflowDirectionConditionDAO = new WorkflowDirectionConditionDAO
+                List<WorkflowDirectionConditionDAO> WorkflowDirectionConditionDAOs = new List<WorkflowDirectionConditionDAO>();
+                foreach (WorkflowDirectionCondition WorkflowDirectionCondition in WorkflowDirection.WorkflowDirectionConditions)
                 {
-                    Value = WorkflowDirectionCondition.Value,
-                    WorkflowDirectionId = WorkflowDirection.Id,
-                    WorkflowOperatorId = WorkflowDirectionCondition.WorkflowOperatorId,
-                    WorkflowParameterId = WorkflowDirectionCondition.WorkflowParameterId,
-                };
-                WorkflowDirectionConditionDAOs.Add(WorkflowDirectionConditionDAO);
+                    WorkflowDirectionConditionDAO WorkflowDirectionConditionDAO = new WorkflowDirectionConditionDAO
+                    {
+                        Value = WorkflowDirectionCondition.Value,
+                        WorkflowDirectionId = WorkflowDirection.Id,
+                        WorkflowOperatorId = WorkflowDirectionCondition.WorkflowOperatorId,
+                        WorkflowParameterId = WorkflowDirectionCondition.WorkflowParameterId,
+                    };
+                    WorkflowDirectionConditionDAOs.Add(WorkflowDirectionConditionDAO);
+                }
+                await DataContext.WorkflowDirectionCondition.BulkMergeAsync(WorkflowDirectionConditionDAOs);
             }
-            await DataContext.WorkflowDirectionCondition.BulkMergeAsync(WorkflowDirectionConditionDAOs);
         }
 
     }
