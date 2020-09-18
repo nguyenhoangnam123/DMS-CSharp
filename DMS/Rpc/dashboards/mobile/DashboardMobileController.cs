@@ -183,7 +183,7 @@ namespace DMS.Rpc.dashboards.mobile
                                join k in DataContext.KpiGeneral on kc.KpiGeneralId equals k.Id
                                where k.EmployeeId == SaleEmployeeId &&
                                k.KpiYearId == KpiYearId &&
-                               kcm.KpiPeriodId == KpiPeriodId &&
+                               (DashboardMobile_KpiGeneralCriterialFilterDTO.Period.Equal == YEAR || kcm.KpiPeriodId == KpiPeriodId) &&
                                kcm.Value.HasValue &&
                                k.StatusId == StatusEnum.ACTIVE.Id &&
                                k.DeletedAt == null
