@@ -22,10 +22,12 @@ namespace DMS.Rpc.workflow_step
 
         public const string FilterListAppUser = Default + "/filter-list-app-user";
         public const string FilterListRole = Default + "/filter-list-role";
+        public const string FilterListStatus = Default + "/filter-list-status";
         public const string FilterListWorkflowDefinition = Default + "/filter-list-workflow-definition";
 
         public const string SingleListAppUser = Default + "/single-list-app-user";
         public const string SingleListRole = Default + "/single-list-role";
+        public const string SingleListStatus = Default + "/single-list-status";
         public const string SingleListWorkflowDefinition = Default + "/single-list-workflow-definition";
 
         public static Dictionary<string, long> Filters = new Dictionary<string, long>
@@ -37,33 +39,33 @@ namespace DMS.Rpc.workflow_step
             { "Tìm kiếm", new List<string> {
                 Parent,
                 Master, Count, List, Get,
-                FilterListRole, FilterListWorkflowDefinition, FilterListAppUser} },
+                FilterListRole, FilterListWorkflowDefinition, FilterListAppUser, FilterListStatus,} },
             { "Thêm", new List<string> {
                 Parent,
                 Master, Count, List, Get,
-                FilterListRole, FilterListWorkflowDefinition,
+                FilterListRole, FilterListWorkflowDefinition, FilterListStatus,
                 Detail, Create,
-                SingleListRole, SingleListWorkflowDefinition, SingleListAppUser} },
+                SingleListRole, SingleListWorkflowDefinition, SingleListAppUser, SingleListStatus,} },
             { "Sửa", new List<string> {
                 Parent,
                 Master, Count, List, Get,
-                FilterListRole, FilterListWorkflowDefinition,
+                FilterListRole, FilterListWorkflowDefinition, FilterListStatus,
                 Detail, Update,
-                SingleListRole, SingleListWorkflowDefinition, SingleListAppUser} },
+                SingleListRole, SingleListWorkflowDefinition, SingleListAppUser, SingleListStatus,} },
             { "Xoá", new List<string> {
                 Parent,
                 Master, Count, List, Get,
-                FilterListRole, FilterListWorkflowDefinition,
+                FilterListRole, FilterListWorkflowDefinition, FilterListStatus,
                 Delete, } },
             { "Xoá nhiều", new List<string> {
                 Parent,
                 Master, Count, List, Get,
-                FilterListRole, FilterListWorkflowDefinition,
+                FilterListRole, FilterListWorkflowDefinition, FilterListStatus,
                 BulkDelete } },
             { "Nhập excel", new List<string> {
                 Parent,
                 Master, Count, List, Get,
-                FilterListRole, FilterListWorkflowDefinition,
+                FilterListRole, FilterListWorkflowDefinition, FilterListStatus,
                 ExportTemplate, } },
         };
     }

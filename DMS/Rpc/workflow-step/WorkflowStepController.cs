@@ -2,6 +2,7 @@ using Common;
 using DMS.Entities;
 using DMS.Services.MAppUser;
 using DMS.Services.MRole;
+using DMS.Services.MStatus;
 using DMS.Services.MWorkflow;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -21,16 +22,19 @@ namespace DMS.Rpc.workflow_step
         private IWorkflowDefinitionService WorkflowDefinitionService;
         private IWorkflowStepService WorkflowStepService;
         private ICurrentContext CurrentContext;
+        private IStatusService StatusService;
         public WorkflowStepController(
             IAppUserService AppUserService,
             IRoleService RoleService,
             IWorkflowDefinitionService WorkflowDefinitionService,
             IWorkflowStepService WorkflowStepService,
+            IStatusService StatusService,
             ICurrentContext CurrentContext
         )
         {
             this.AppUserService = AppUserService;
             this.RoleService = RoleService;
+            this.StatusService = StatusService;
             this.WorkflowDefinitionService = WorkflowDefinitionService;
             this.WorkflowStepService = WorkflowStepService;
             this.CurrentContext = CurrentContext;
@@ -605,6 +609,21 @@ namespace DMS.Rpc.workflow_step
                 .Select(x => new WorkflowStep_WorkflowDefinitionDTO(x)).ToList();
             return WorkflowStep_WorkflowDefinitionDTOs;
         }
+        [Route(WorkflowStepRoute.FilterListStatus), HttpPost]
+        public async Task<List<WorkflowStep_StatusDTO>> FilterListStatus()
+        {
+            StatusFilter StatusFilter = new StatusFilter();
+            StatusFilter.Skip = 0;
+            StatusFilter.Take = 20;
+            StatusFilter.OrderBy = StatusOrder.Id;
+            StatusFilter.OrderType = OrderType.ASC;
+            StatusFilter.Selects = StatusSelect.ALL;
+
+            List<Status> Statuses = await StatusService.List(StatusFilter);
+            List<WorkflowStep_StatusDTO> WorkflowStep_StatusDTOs = Statuses
+                .Select(x => new WorkflowStep_StatusDTO(x)).ToList();
+            return WorkflowStep_StatusDTOs;
+        }
 
         [Route(WorkflowStepRoute.SingleListAppUser), HttpPost]
         public async Task<List<WorkflowStep_AppUserDTO>> SingleListAppUser([FromBody] WorkflowStep_AppUserFilterDTO WorkflowStep_AppUserFilterDTO)
@@ -691,6 +710,21 @@ namespace DMS.Rpc.workflow_step
             return WorkflowStep_WorkflowDefinitionDTOs;
         }
 
+        [Route(WorkflowStepRoute.SingleListStatus), HttpPost]
+        public async Task<List<WorkflowStep_StatusDTO>> SingleListStatus()
+        {
+            StatusFilter StatusFilter = new StatusFilter();
+            StatusFilter.Skip = 0;
+            StatusFilter.Take = 20;
+            StatusFilter.OrderBy = StatusOrder.Id;
+            StatusFilter.OrderType = OrderType.ASC;
+            StatusFilter.Selects = StatusSelect.ALL;
+
+            List<Status> Statuses = await StatusService.List(StatusFilter);
+            List<WorkflowStep_StatusDTO> WorkflowStep_StatusDTOs = Statuses
+                .Select(x => new WorkflowStep_StatusDTO(x)).ToList();
+            return WorkflowStep_StatusDTOs;
+        }
     }
 }
 
