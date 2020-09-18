@@ -21,10 +21,12 @@ namespace DMS.Services.MWorkflow
         public enum ErrorCode
         {
             IdNotExisted,
+            WorkflowDefinitionIdNotExisted,
             WorkflowStepInUsed,
             CodeEmpty,
             CodeHasSpecialCharacter,
             CodeExisted,
+            CodeOverLength,
             NameEmpty,
             NameOverLength,
             RoleNotExisted,
@@ -56,11 +58,31 @@ namespace DMS.Services.MWorkflow
             return count == 1;
         }
 
+        public async Task<bool> ValidateWorkflowDefinitionId(WorkflowStep WorkflowStep)
+        {
+            WorkflowDefinitionFilter WorkflowDefinitionFilter = new WorkflowDefinitionFilter
+            {
+                Skip = 0,
+                Take = 10,
+                Id = new IdFilter { Equal = WorkflowStep.WorkflowDefinitionId },
+                Selects = WorkflowDefinitionSelect.Id
+            };
+
+            int count = await UOW.WorkflowDefinitionRepository.Count(WorkflowDefinitionFilter);
+            if (count == 0)
+                WorkflowStep.AddError(nameof(WorkflowStepValidator), nameof(WorkflowStep.WorkflowDefinition), ErrorCode.WorkflowDefinitionIdNotExisted);
+            return count == 1;
+        }
+
         private async Task<bool> ValidateCode(WorkflowStep WorkflowStep)
         {
             if (string.IsNullOrWhiteSpace(WorkflowStep.Code))
             {
                 WorkflowStep.AddError(nameof(WorkflowStepValidator), nameof(WorkflowStep.Code), ErrorCode.CodeEmpty);
+            }
+            else if(WorkflowStep.Code.Length > 255)
+            {
+                WorkflowStep.AddError(nameof(WorkflowStepValidator), nameof(WorkflowStep.Name), ErrorCode.CodeOverLength);
             }
             else
             {
@@ -74,6 +96,7 @@ namespace DMS.Services.MWorkflow
                 {
                     Skip = 0,
                     Take = 10,
+                    WorkflowDefinitionId = new IdFilter { Equal = WorkflowStep.WorkflowDefinitionId },
                     Id = new IdFilter { NotEqual = WorkflowStep.Id },
                     Code = new StringFilter { Equal = WorkflowStep.Code },
                     Selects = WorkflowStepSelect.Code
@@ -135,6 +158,7 @@ namespace DMS.Services.MWorkflow
 
         public async Task<bool> Create(WorkflowStep WorkflowStep)
         {
+            await ValidateWorkflowDefinitionId(WorkflowStep);
             await ValidateCode(WorkflowStep);
             await ValidateName(WorkflowStep);
             await ValidateRole(WorkflowStep);
@@ -146,6 +170,7 @@ namespace DMS.Services.MWorkflow
         {
             if (await ValidateId(WorkflowStep))
             {
+                await ValidateWorkflowDefinitionId(WorkflowStep);
                 await ValidateCode(WorkflowStep);
                 await ValidateName(WorkflowStep);
                 await ValidateRole(WorkflowStep);
