@@ -209,21 +209,9 @@ namespace DMS.Services.MERoute
                     foreach (var ERouteContent in ERoute.ERouteContents)
                     {
                         if (listIdsNotExisted.Contains(ERouteContent.StoreId))
-                            ERouteContent.AddError(nameof(ERouteValidator), nameof(ERouteContent.Store), ErrorCode.StoreEmpty);
+                            ERouteContent.AddError(nameof(ERouteValidator), nameof(ERouteContent.Store), ErrorCode.StoreNotInERouteScope);
                         else
                         {
-                            if (ERoute.SaleEmployeeId != 0)
-                            {
-                                AppUser SaleEmployee = await UOW.AppUserRepository.Get(ERoute.SaleEmployeeId);
-                                if (SaleEmployee != null)
-                                {
-                                    if (!IdsInDB.Contains(ERouteContent.StoreId))
-                                    {
-                                        ERouteContent.AddError(nameof(ERouteValidator), nameof(ERouteContent.Store), ErrorCode.StoreNotInERouteScope);
-                                    }
-                                }
-                            }
-
                             var days = new List<bool>
                             {
                                 ERouteContent.Monday,
