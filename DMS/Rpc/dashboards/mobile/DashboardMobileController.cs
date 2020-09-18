@@ -177,6 +177,10 @@ namespace DMS.Rpc.dashboards.mobile
 
             DateTime StartDate, EndDate;
             (StartDate, EndDate) = DateTimeConvert(KpiPeriodId, KpiYearId);
+            if(DashboardMobile_KpiGeneralCriterialFilterDTO.Period.Equal == YEAR)
+            {
+                EndDate = EndDate.AddYears(1).AddSeconds(-1);
+            }
 
             var query_detail = from kcm in DataContext.KpiGeneralContentKpiPeriodMapping
                                join kc in DataContext.KpiGeneralContent on kcm.KpiGeneralContentId equals kc.Id
