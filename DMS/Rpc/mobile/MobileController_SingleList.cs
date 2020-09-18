@@ -467,6 +467,7 @@ namespace DMS.Rpc.mobile
             Mobile_StoreDTO.AlbumImageMappings = Albums
                 .SelectMany(x => x.AlbumImageMappings
                 .Where(x => x.StoreId == Mobile_StoreDTO.Id)
+                .Where(x => x.SaleEmployeeId.HasValue && x.SaleEmployeeId.Value == CurrentContext.UserId)
                 .Where(x => x.ShootingAt.AddHours(CurrentContext.TimeZone).Date == StaticParams.DateTimeNow.AddHours(CurrentContext.TimeZone).Date)
                 .Select(m => new Mobile_AlbumImageMappingDTO
                 {
@@ -500,7 +501,8 @@ namespace DMS.Rpc.mobile
             var query = from scim in DataContext.StoreCheckingImageMapping
                         join a in DataContext.Album on scim.AlbumId equals a.Id
                         join i in DataContext.Image on scim.ImageId equals i.Id
-                        where StoreCheckingIds.Contains(scim.StoreCheckingId)
+                        where StoreCheckingIds.Contains(scim.StoreCheckingId) &&
+                        scim.SaleEmployeeId == CurrentContext.UserId
                         select new Mobile_AlbumImageMappingDTO
                         {
                             AlbumId = scim.AlbumId,
