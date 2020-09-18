@@ -80,7 +80,7 @@ namespace DMS.Repositories
                             query = query.OrderBy(q => q.Id);
                             break;
                         case WorkflowStepOrder.WorkflowDefinition:
-                            query = query.OrderBy(q => q.WorkflowDefinitionId);
+                            query = query.OrderBy(q => q.WorkflowDefinition.Name);
                             break;
                         case WorkflowStepOrder.Code:
                             query = query.OrderBy(q => q.Code);
@@ -89,7 +89,7 @@ namespace DMS.Repositories
                             query = query.OrderBy(q => q.Name);
                             break;
                         case WorkflowStepOrder.Role:
-                            query = query.OrderBy(q => q.RoleId);
+                            query = query.OrderBy(q => q.Role.Name);
                             break;
                     }
                     break;
@@ -100,7 +100,7 @@ namespace DMS.Repositories
                             query = query.OrderByDescending(q => q.Id);
                             break;
                         case WorkflowStepOrder.WorkflowDefinition:
-                            query = query.OrderByDescending(q => q.WorkflowDefinitionId);
+                            query = query.OrderByDescending(q => q.WorkflowDefinition.Name);
                             break;
                         case WorkflowStepOrder.Code:
                             query = query.OrderByDescending(q => q.Code);
@@ -109,7 +109,7 @@ namespace DMS.Repositories
                             query = query.OrderByDescending(q => q.Name);
                             break;
                         case WorkflowStepOrder.Role:
-                            query = query.OrderByDescending(q => q.RoleId);
+                            query = query.OrderByDescending(q => q.Role.Name);
                             break;
                     }
                     break;

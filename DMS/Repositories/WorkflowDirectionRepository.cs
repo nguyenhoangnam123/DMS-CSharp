@@ -85,13 +85,13 @@ namespace DMS.Repositories
                             query = query.OrderBy(q => q.Id);
                             break;
                         case WorkflowDirectionOrder.WorkflowDefinition:
-                            query = query.OrderBy(q => q.WorkflowDefinitionId);
+                            query = query.OrderBy(q => q.WorkflowDefinition.Name);
                             break;
                         case WorkflowDirectionOrder.FromStep:
-                            query = query.OrderBy(q => q.FromStepId);
+                            query = query.OrderBy(q => q.FromStep.Name);
                             break;
                         case WorkflowDirectionOrder.ToStep:
-                            query = query.OrderBy(q => q.ToStepId);
+                            query = query.OrderBy(q => q.ToStep.Name);
                             break;
                         case WorkflowDirectionOrder.Status:
                             query = query.OrderBy(q => q.StatusId);
@@ -108,13 +108,13 @@ namespace DMS.Repositories
                             query = query.OrderByDescending(q => q.Id);
                             break;
                         case WorkflowDirectionOrder.WorkflowDefinition:
-                            query = query.OrderByDescending(q => q.WorkflowDefinitionId);
+                            query = query.OrderByDescending(q => q.WorkflowDefinition.Name);
                             break;
                         case WorkflowDirectionOrder.FromStep:
-                            query = query.OrderByDescending(q => q.FromStepId);
+                            query = query.OrderByDescending(q => q.FromStep.Name);
                             break;
                         case WorkflowDirectionOrder.ToStep:
-                            query = query.OrderByDescending(q => q.ToStepId);
+                            query = query.OrderByDescending(q => q.ToStep.Name);
                             break;
                         case WorkflowDirectionOrder.Status:
                             query = query.OrderByDescending(q => q.StatusId);
