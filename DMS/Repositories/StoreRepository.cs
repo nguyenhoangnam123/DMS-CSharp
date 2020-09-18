@@ -771,6 +771,24 @@ namespace DMS.Repositories
                         ThumbnailUrl = x.Image.ThumbnailUrl,
                     }
                 }).ToListAsync();
+
+            Store.AlbumImageMappings = await DataContext.AlbumImageMapping
+                .Where(x => x.StoreId == Id).Select(x => new AlbumImageMapping
+                {
+                    StoreId = x.StoreId,
+                    ImageId = x.ImageId,
+                    ShootingAt = x.ShootingAt,
+                    SaleEmployeeId = x.SaleEmployeeId,
+                    Distance = x.Distance,
+                    AlbumId = x.AlbumId,
+                    Image = new Image
+                    {
+                        Id = x.Image.Id,
+                        Name = x.Image.Name,
+                        Url = x.Image.Url,
+                        ThumbnailUrl = x.Image.ThumbnailUrl,
+                    }
+                }).ToListAsync();
             return Store;
         }
         public async Task<bool> Create(Store Store)
