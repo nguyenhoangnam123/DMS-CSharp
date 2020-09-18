@@ -34,6 +34,7 @@ namespace DMS.Rpc.workflow_step
     public class WorkflowStep_RoleFilterDTO : FilterDTO
     {
 
+        public IdFilter WorkflowDefinitionId { get; set; }
         public IdFilter Id { get; set; }
 
         public StringFilter Code { get; set; }

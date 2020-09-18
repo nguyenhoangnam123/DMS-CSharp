@@ -4,6 +4,7 @@ using DMS.Repositories;
 using Helpers;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace DMS.Services.MWorkflow
@@ -19,6 +20,7 @@ namespace DMS.Services.MWorkflow
         Task<List<WorkflowStep>> BulkDelete(List<WorkflowStep> WorkflowSteps);
         Task<List<WorkflowStep>> Import(List<WorkflowStep> WorkflowSteps);
         WorkflowStepFilter ToFilter(WorkflowStepFilter WorkflowStepFilter);
+        Task<List<Role>> ListRole(IdFilter WorkflowDefinitionId, RoleFilter RoleFilter);
     }
 
     public class WorkflowStepService : BaseService, IWorkflowStepService
@@ -270,6 +272,24 @@ namespace DMS.Services.MWorkflow
                 }
             }
             return filter;
+        }
+
+        public async Task<List<Role>> ListRole(IdFilter WorkflowDefinitionId, RoleFilter RoleFilter)
+        {
+            List<WorkflowStep> workflowSteps = await UOW.WorkflowStepRepository.List(new WorkflowStepFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                WorkflowDefinitionId = WorkflowDefinitionId,
+                Selects = WorkflowStepSelect.Role,
+                OrderBy = WorkflowStepOrder.Role,
+                OrderType = OrderType.ASC,
+            });
+            List<long> RoleIds = workflowSteps.Select(x => x.RoleId).ToList();
+            if (RoleFilter.Id == null) RoleFilter.Id = new IdFilter();
+            RoleFilter.Id.In = RoleIds;
+            List<Role> Roles = await UOW.RoleRepository.List(RoleFilter);
+            return Roles;
         }
     }
 }

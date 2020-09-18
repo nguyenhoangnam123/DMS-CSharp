@@ -570,10 +570,14 @@ namespace DMS.Rpc.workflow_step
             RoleFilter.Name = WorkflowStep_RoleFilterDTO.Name;
             RoleFilter.StatusId = WorkflowStep_RoleFilterDTO.StatusId;
 
-            List<Role> Roles = await RoleService.List(RoleFilter);
-            List<WorkflowStep_RoleDTO> WorkflowStep_RoleDTOs = Roles
-                .Select(x => new WorkflowStep_RoleDTO(x)).ToList();
-            return WorkflowStep_RoleDTOs;
+            if (WorkflowStep_RoleFilterDTO.WorkflowDefinitionId.HasValue)
+            {
+                List<Role> Roles = await WorkflowStepService.ListRole(WorkflowStep_RoleFilterDTO.WorkflowDefinitionId, RoleFilter);
+                List<WorkflowStep_RoleDTO> WorkflowStep_RoleDTOs = Roles
+                    .Select(x => new WorkflowStep_RoleDTO(x)).ToList();
+                return WorkflowStep_RoleDTOs;
+            }
+            return new List<WorkflowStep_RoleDTO>();
         }
         [Route(WorkflowStepRoute.FilterListWorkflowDefinition), HttpPost]
         public async Task<List<WorkflowStep_WorkflowDefinitionDTO>> FilterListWorkflowDefinition([FromBody] WorkflowStep_WorkflowDefinitionFilterDTO WorkflowStep_WorkflowDefinitionFilterDTO)
@@ -651,10 +655,14 @@ namespace DMS.Rpc.workflow_step
             RoleFilter.Name = WorkflowStep_RoleFilterDTO.Name;
             RoleFilter.StatusId = WorkflowStep_RoleFilterDTO.StatusId;
 
-            List<Role> Roles = await RoleService.List(RoleFilter);
-            List<WorkflowStep_RoleDTO> WorkflowStep_RoleDTOs = Roles
-                .Select(x => new WorkflowStep_RoleDTO(x)).ToList();
-            return WorkflowStep_RoleDTOs;
+            if (WorkflowStep_RoleFilterDTO.WorkflowDefinitionId.HasValue)
+            {
+                List<Role> Roles = await WorkflowStepService.ListRole(WorkflowStep_RoleFilterDTO.WorkflowDefinitionId, RoleFilter);
+                List<WorkflowStep_RoleDTO> WorkflowStep_RoleDTOs = Roles
+                    .Select(x => new WorkflowStep_RoleDTO(x)).ToList();
+                return WorkflowStep_RoleDTOs;
+            }
+            return new List<WorkflowStep_RoleDTO>();
         }
         [Route(WorkflowStepRoute.SingleListWorkflowDefinition), HttpPost]
         public async Task<List<WorkflowStep_WorkflowDefinitionDTO>> SingleListWorkflowDefinition([FromBody] WorkflowStep_WorkflowDefinitionFilterDTO WorkflowStep_WorkflowDefinitionFilterDTO)
