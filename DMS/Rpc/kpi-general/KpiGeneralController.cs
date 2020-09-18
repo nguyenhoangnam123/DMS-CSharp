@@ -269,8 +269,12 @@ namespace DMS.Rpc.kpi_general
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
             FileInfo FileInfo = new FileInfo(file.FileName);
+            StringBuilder errorContent = new StringBuilder();
             if (!FileInfo.Extension.Equals(".xlsx"))
-                return BadRequest(new { message = "Định dạng file không hợp lệ" });
+            {
+                errorContent.AppendLine("Định dạng file không hợp lệ");
+                return BadRequest(errorContent.ToString());
+            }
 
             var AppUser = await AppUserService.Get(CurrentContext.UserId);
 
@@ -284,14 +288,16 @@ namespace DMS.Rpc.kpi_general
             List<AppUser> Employees = await AppUserService.List(EmployeeFilter);
 
             List<KpiGeneral> KpiGenerals = new List<KpiGeneral>();
-            StringBuilder errorContent = new StringBuilder();
+            
             using (ExcelPackage excelPackage = new ExcelPackage(file.OpenReadStream()))
             {
                 ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets["KPI nhan vien"];
 
                 if (worksheet == null)
-                    return BadRequest(new { message = "File không đúng biểu mẫu import" });
-
+                {
+                    errorContent.AppendLine("File không đúng biểu mẫu import");
+                    return BadRequest(errorContent.ToString());
+                }
                 int StartColumn = 1;
                 int StartRow = 6;
                 int UsernameColumn = 0 + StartColumn;
@@ -320,7 +326,10 @@ namespace DMS.Rpc.kpi_general
                 if (long.TryParse(KpiYearValue, out long KpiYearId))
                     KpiYear = KpiYearEnum.KpiYearEnumList.Where(x => x.Id == KpiYearId).FirstOrDefault();
                 else
-                    return BadRequest(new { message = "Chưa chọn năm Kpi hoặc năm không hợp lệ" });
+                {
+                    errorContent.AppendLine("Chưa chọn năm Kpi hoặc năm không hợp lệ");
+                    return BadRequest(errorContent.ToString());
+                }
 
                 for (int i = StartRow; i <= worksheet.Dimension.End.Row; i++)
                 {
