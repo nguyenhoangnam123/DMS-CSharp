@@ -48,11 +48,18 @@ namespace DMS.Rpc.app_user
                 FilterListPosition, FilterListOrganization, FilterListStatus,
                 SingleListOrganization, SingleListPosition, SingleListSex, SingleListStatus, SingleListRole, SingleListStore, SingleListStoreGrouping, SingleListStoreType,
                 CountRole, ListRole}},
-            { "Sửa", new List<string> {
+            { "Thiết lập phạm vi đi tuyến", new List<string> {
                 Parent,
                 Master, Count, List, Get,
                 FilterListPosition,
-                Detail, Get, Update, UpdateRole,
+                Detail, Get, Update,
+                SingleListOrganization, SingleListPosition, SingleListSex, SingleListStatus, SingleListRole, SingleListStore, SingleListStoreGrouping, SingleListStoreType,
+                CountRole, ListRole, CountStore, ListStore}},
+            { "Thiết lập vai trò", new List<string> {
+                Parent,
+                Master, Count, List, Get,
+                FilterListPosition,
+                Detail, Get, UpdateRole,
                 SingleListOrganization, SingleListPosition, SingleListSex, SingleListStatus, SingleListRole, SingleListStore, SingleListStoreGrouping, SingleListStoreType,
                 CountRole, ListRole, CountStore, ListStore}},
         };

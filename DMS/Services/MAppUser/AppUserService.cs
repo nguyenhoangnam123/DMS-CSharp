@@ -105,9 +105,9 @@ namespace DMS.Services.MAppUser
             try
             {
                 var oldData = await UOW.AppUserRepository.Get(AppUser.Id);
-
+                oldData.AppUserStoreMappings = AppUser.AppUserStoreMappings;
                 await UOW.Begin();
-                await UOW.AppUserRepository.Update(AppUser);
+                await UOW.AppUserRepository.Update(oldData);
                 await UOW.Commit();
 
                 var newData = await UOW.AppUserRepository.Get(AppUser.Id);
