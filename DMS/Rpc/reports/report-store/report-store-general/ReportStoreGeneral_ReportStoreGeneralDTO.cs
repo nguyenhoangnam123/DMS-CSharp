@@ -7,6 +7,7 @@ namespace DMS.Rpc.reports.report_store.report_store_general
 {
     public class ReportStoreGeneral_ReportStoreGeneralDTO : DataDTO
     {
+        public long OrganizationId { get; set; }
         public string OrganizationName { get; set; }
         public List<ReportStoreGeneral_StoreDetailDTO> Stores { get; set; }
     }

@@ -322,25 +322,29 @@ namespace DMS.Rpc.reports.report_store.report_store_general
                 Address = s.Address,
                 Phone = s.Telephone,
                 OrganizationId = s.OrganizationId,
-                Organization = s.Organization == null ? null : new ReportStoreGeneral_OrganizationDTO
-                {
-                    Id = s.Organization.Id,
-                    Code = s.Organization.Code,
-                    Name = s.Organization.Name
-                }
             }).ToList();
 
-            StoreIds = ReportStoreGeneral_StoreDTOs.Select(x => x.Id).ToList();
-            List<string> OrganizationNames = ReportStoreGeneral_StoreDTOs.Select(s => s.Organization.Name).Distinct().ToList();
-            OrganizationNames = OrganizationNames.OrderBy(x => x).ToList();
-            List<ReportStoreGeneral_ReportStoreGeneralDTO> ReportStoreGeneral_ReportStoreGeneralDTOs = OrganizationNames.Select(on => new ReportStoreGeneral_ReportStoreGeneralDTO
+            OrganizationIds = StoreDAOs.Select(x => x.OrganizationId).Distinct().ToList();
+            List<Organization> Organizations = await OrganizationService.List(new OrganizationFilter
             {
-                OrganizationName = on,
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = OrganizationSelect.Id | OrganizationSelect.Code | OrganizationSelect.Name,
+                Id = new IdFilter { In = OrganizationIds },
+                OrderBy = OrganizationOrder.Id,
+                OrderType = OrderType.ASC
+            });
+
+            StoreIds = ReportStoreGeneral_StoreDTOs.Select(x => x.Id).ToList();
+            List<ReportStoreGeneral_ReportStoreGeneralDTO> ReportStoreGeneral_ReportStoreGeneralDTOs = Organizations.Select(on => new ReportStoreGeneral_ReportStoreGeneralDTO
+            {
+                OrganizationId = on.Id,
+                OrganizationName = on.Name,
             }).ToList();
             foreach (ReportStoreGeneral_ReportStoreGeneralDTO ReportStoreGeneral_ReportStoreGeneralDTO in ReportStoreGeneral_ReportStoreGeneralDTOs)
             {
                 ReportStoreGeneral_ReportStoreGeneralDTO.Stores = ReportStoreGeneral_StoreDTOs
-                    .Where(x => x.Organization.Name == ReportStoreGeneral_ReportStoreGeneralDTO.OrganizationName)
+                    .Where(x => x.OrganizationId == ReportStoreGeneral_ReportStoreGeneralDTO.OrganizationId)
                     .Select(x => new ReportStoreGeneral_StoreDetailDTO
                     {
                         Id = x.Id,
@@ -470,7 +474,7 @@ namespace DMS.Rpc.reports.report_store.report_store_general
             ReportStoreGeneral_ReportStoreGeneralFilterDTO.Skip = 0;
             ReportStoreGeneral_ReportStoreGeneralFilterDTO.Take = int.MaxValue;
             List<ReportStoreGeneral_ReportStoreGeneralDTO> ReportStoreGeneral_ReportStoreGeneralDTOs = (await List(ReportStoreGeneral_ReportStoreGeneralFilterDTO)).Value;
-
+            ReportStoreGeneral_ReportStoreGeneralDTOs = ReportStoreGeneral_ReportStoreGeneralDTOs.OrderBy(x => x.OrganizationId).ToList();
             long stt = 1;
             foreach (ReportStoreGeneral_ReportStoreGeneralDTO ReportStoreGeneral_ReportStoreGeneralDTO in ReportStoreGeneral_ReportStoreGeneralDTOs)
             {
