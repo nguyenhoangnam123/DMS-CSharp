@@ -2,6 +2,7 @@ using Common;
 using DMS.Entities;
 using DMS.Enums;
 using DMS.Repositories;
+using Helpers;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -30,7 +31,8 @@ namespace DMS.Services.MWorkflow
             NameOverLength,
             WorkflowTypeNotExisted,
             WorkflowTypeEmpty,
-            StatusNotExisted
+            StatusNotExisted,
+            EndDateInvalid
         }
 
         private IUOW UOW;
@@ -131,6 +133,21 @@ namespace DMS.Services.MWorkflow
             var count = await UOW.RequestWorkflowDefinitionMappingRepository.Count(RequestWorkflowDefinitionMappingFilter);
             if (count != 0)
                 WorkflowDefinition.AddError(nameof(WorkflowDefinitionValidator), nameof(WorkflowDefinition.Id), ErrorCode.WorkflowDefinitionInUsed);
+            return WorkflowDefinition.IsValidated;
+        }
+
+        private async Task<bool> ValidateDate(WorkflowDefinition WorkflowDefinition)
+        {
+            if (WorkflowDefinition.StartDate.HasValue)
+            {
+                if (WorkflowDefinition.EndDate.HasValue)
+                {
+                    if (WorkflowDefinition.EndDate.Value < StaticParams.DateTimeNow || WorkflowDefinition.EndDate.Value <= WorkflowDefinition.StartDate)
+                    {
+                        WorkflowDefinition.AddError(nameof(WorkflowDefinitionValidator), nameof(WorkflowDefinition.EndDate), ErrorCode.EndDateInvalid);
+                    }
+                }
+            }
             return WorkflowDefinition.IsValidated;
         }
 

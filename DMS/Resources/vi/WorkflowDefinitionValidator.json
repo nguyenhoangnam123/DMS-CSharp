@@ -1,0 +1,28 @@
+﻿{
+  "WorkflowDefinition": {
+    "Id": {
+      "IdNotExisted": "Id không tồn tại",
+      "WorkflowDefinitionInUsed": "Workflow hiện tại đang được sử dụng."
+    },
+    "Code": {
+      "CodeEmpty": "Mã chưa được nhập.",
+      "CodeHasSpecialCharacter": "Mã có chứa kí tự đặc biệt.",
+      "CodeExisted": "Mã đã tồn tại.",
+      "CodeOverLength": "Mã dài hơn 255 ký tự."
+    },
+    "Name": {
+      "NameEmpty": "Tên chưa được nhập.",
+      "NameOverLength": "Tên dài hơn 255 ký tự."
+    },
+    "WorkflowType": {
+      "WorkflowTypeNotExisted": "Đối tượng áp dụng không tồn tại",
+      "WorkfloWorkflowTypeEmptywTypeNotExisted": "Chưa chọn đối tượng áp dụng"
+    },
+    "Status": {
+      "StatusNotExisted": "Trạng thái không tồn tại"
+    },
+    "EndDate": {
+      "EndDateInvalid": "Thời gian áp dụng không hợp lệ"
+    }
+  }
+}
