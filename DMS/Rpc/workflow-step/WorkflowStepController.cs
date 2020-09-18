@@ -574,7 +574,7 @@ namespace DMS.Rpc.workflow_step
             RoleFilter.Name = WorkflowStep_RoleFilterDTO.Name;
             RoleFilter.StatusId = WorkflowStep_RoleFilterDTO.StatusId;
 
-            if (WorkflowStep_RoleFilterDTO.WorkflowDefinitionId.HasValue)
+            if (WorkflowStep_RoleFilterDTO.WorkflowDefinitionId != null && WorkflowStep_RoleFilterDTO.WorkflowDefinitionId.HasValue)
             {
                 List<Role> Roles = await WorkflowStepService.ListRole(WorkflowStep_RoleFilterDTO.WorkflowDefinitionId, RoleFilter);
                 List<WorkflowStep_RoleDTO> WorkflowStep_RoleDTOs = Roles
@@ -674,7 +674,7 @@ namespace DMS.Rpc.workflow_step
             RoleFilter.Name = WorkflowStep_RoleFilterDTO.Name;
             RoleFilter.StatusId = WorkflowStep_RoleFilterDTO.StatusId;
 
-            if (WorkflowStep_RoleFilterDTO.WorkflowDefinitionId.HasValue)
+            if (WorkflowStep_RoleFilterDTO.WorkflowDefinitionId != null && WorkflowStep_RoleFilterDTO.WorkflowDefinitionId.HasValue)
             {
                 List<Role> Roles = await WorkflowStepService.ListRole(WorkflowStep_RoleFilterDTO.WorkflowDefinitionId, RoleFilter);
                 List<WorkflowStep_RoleDTO> WorkflowStep_RoleDTOs = Roles
