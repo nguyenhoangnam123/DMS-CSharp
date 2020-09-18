@@ -1,5 +1,6 @@
 using Common;
 using DMS.Entities;
+using DMS.Enums;
 using DMS.Repositories;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,7 +32,8 @@ namespace DMS.Services.MWorkflow
             SubjectMailForCurrentOverLength,
             SubjectMailForNextStepOverLength,
             WorkflowDefinitionEmpty,
-            WorkflowDefinitionNotExisted
+            WorkflowDefinitionNotExisted,
+            WorkflowDirectionExisted
         }
 
         private IUOW UOW;
@@ -118,6 +120,21 @@ namespace DMS.Services.MWorkflow
                 if(WorkflowDirection.ToStepId == WorkflowDirection.FromStepId)
                 {
                     WorkflowDirection.AddError(nameof(WorkflowDirectionValidator), nameof(WorkflowDirection.ToStep), ErrorCode.ToStepNotSameFromStep);
+                }
+                else
+                {
+                    var WFoldData = await UOW.WorkflowDefinitionRepository.Get(WorkflowDirection.WorkflowDefinitionId);
+                    if(WFoldData != null)
+                    {
+                        var countDirection = WFoldData.WorkflowDirections
+                            .Where(x => x.FromStepId == WorkflowDirection.FromStepId && x.ToStepId == WorkflowDirection.ToStepId &&
+                            x.StatusId == StatusEnum.ACTIVE.Id)
+                            .Count();
+                        if(countDirection != 0)
+                        {
+                            WorkflowDirection.AddError(nameof(WorkflowDirectionValidator), nameof(WorkflowDirection.Id), ErrorCode.WorkflowDirectionExisted);
+                        }
+                    }
                 }
             }
             return WorkflowDirection.IsValidated;

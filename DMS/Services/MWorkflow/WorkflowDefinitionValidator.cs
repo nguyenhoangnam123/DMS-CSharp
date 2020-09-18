@@ -156,6 +156,7 @@ namespace DMS.Services.MWorkflow
             await ValidateCode(WorkflowDefinition);
             await ValidateName(WorkflowDefinition);
             await ValidateWorkflowType(WorkflowDefinition);
+            await ValidateDate(WorkflowDefinition);
             await ValidateStatusId(WorkflowDefinition);
             return WorkflowDefinition.IsValidated;
         }
@@ -167,6 +168,7 @@ namespace DMS.Services.MWorkflow
                 await ValidateCode(WorkflowDefinition);
                 await ValidateName(WorkflowDefinition);
                 await ValidateWorkflowType(WorkflowDefinition);
+                await ValidateDate(WorkflowDefinition);
                 await ValidateStatusId(WorkflowDefinition);
             }
             return WorkflowDefinition.IsValidated;
