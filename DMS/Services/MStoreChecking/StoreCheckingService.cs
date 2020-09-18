@@ -532,6 +532,8 @@ namespace DMS.Services.MStoreChecking
         private async Task<List<Store>> CheckStoreChecking(List<Store> Stores)
         {
             List<long> StoreIds = Stores.Select(x => x.Id).ToList();
+            DateTime StartToday = StaticParams.DateTimeNow.AddHours(CurrentContext.TimeZone).Date.AddHours(0 - CurrentContext.TimeZone);
+            DateTime EndToday = StartToday.AddDays(1);
             StoreCheckingFilter StoreCheckingFilter = new StoreCheckingFilter
             {
                 Skip = 0,
@@ -539,7 +541,7 @@ namespace DMS.Services.MStoreChecking
                 Selects = StoreCheckingSelect.ALL,
                 StoreId = new IdFilter { In = StoreIds },
                 SaleEmployeeId = new IdFilter { Equal = CurrentContext.UserId },
-                CheckOutAt = new DateFilter { GreaterEqual = StaticParams.DateTimeNow.Date, Less = StaticParams.DateTimeNow.Date.AddDays(1) }
+                CheckOutAt = new DateFilter { GreaterEqual = StartToday, Less = EndToday }
             };
             List<StoreChecking> StoreCheckings = await UOW.StoreCheckingRepository.List(StoreCheckingFilter);
             foreach (var Store in Stores)
@@ -577,7 +579,7 @@ namespace DMS.Services.MStoreChecking
         // Lấy danh sách tất cả các đại lý theo kế hoạch
         private async Task<Dictionary<long, long>> ListOnlineStoreIds(IdFilter ERouteId)
         {
-            DateTime Now = StaticParams.DateTimeNow.Date;
+            DateTime Now = StaticParams.DateTimeNow.AddHours(CurrentContext.TimeZone).Date.AddHours(0 - CurrentContext.TimeZone);
             List<long> ERouteIds = (await UOW.ERouteRepository.List(new ERouteFilter
             {
                 Skip = 0,
@@ -627,7 +629,7 @@ namespace DMS.Services.MStoreChecking
 
         private async Task<Dictionary<long, long>> ListOfflineStoreIds(IdFilter ERouteId)
         {
-            DateTime Now = StaticParams.DateTimeNow.Date;
+            DateTime Now = StaticParams.DateTimeNow.AddHours(CurrentContext.TimeZone).Date.AddHours(0 - CurrentContext.TimeZone);
             List<long> ERouteIds = (await UOW.ERouteRepository.List(new ERouteFilter
             {
                 Skip = 0,

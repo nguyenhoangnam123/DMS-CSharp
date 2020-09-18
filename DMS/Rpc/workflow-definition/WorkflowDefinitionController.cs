@@ -145,8 +145,7 @@ namespace DMS.Rpc.workflow_definition
             if (!await HasPermission(WorkflowDefinition_WorkflowDefinitionDTO.Id))
                 return Forbid();
 
-            WorkflowDefinition WorkflowDefinition = ConvertDTOToEntity(WorkflowDefinition_WorkflowDefinitionDTO);
-            WorkflowDefinition = await WorkflowDefinitionService.Clone(WorkflowDefinition);
+            WorkflowDefinition WorkflowDefinition = await WorkflowDefinitionService.Clone(WorkflowDefinition_WorkflowDefinitionDTO.Id);
             WorkflowDefinition_WorkflowDefinitionDTO = new WorkflowDefinition_WorkflowDefinitionDTO(WorkflowDefinition);
             if (WorkflowDefinition.IsValidated)
                 return WorkflowDefinition_WorkflowDefinitionDTO;

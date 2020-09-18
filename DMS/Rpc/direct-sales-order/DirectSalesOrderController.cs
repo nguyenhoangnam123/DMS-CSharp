@@ -20,6 +20,12 @@ using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Dynamic;
+using DMS.Helpers;
+using Helpers;
+using System.IO;
+using GleamTech.DocumentUltimate;
+using System.Net.Mime;
 
 namespace DMS.Rpc.direct_sales_order
 {
@@ -220,6 +226,63 @@ namespace DMS.Rpc.direct_sales_order
                 return DirectSalesOrder_DirectSalesOrderDTO;
             else
                 return BadRequest(DirectSalesOrder_DirectSalesOrderDTO);
+        }
+
+        [Route(DirectSalesOrderRoute.Print), HttpGet]
+        public async Task<ActionResult> Print([FromQuery] long Id)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+            var DirectSalesOrder = await DirectSalesOrderService.Get(Id);
+            if (DirectSalesOrder == null)
+                return Content("Đơn hàng không tồn tại");
+            DirectSalesOrder_PrintDTO DirectSalesOrder_PrintDTO = new DirectSalesOrder_PrintDTO(DirectSalesOrder);
+            var culture = System.Globalization.CultureInfo.GetCultureInfo("en-EN");
+            var STT = 1;
+            foreach (var DirectSalesOrderContent in DirectSalesOrder_PrintDTO.Contents)
+            {
+                DirectSalesOrderContent.STT = STT++;
+                DirectSalesOrderContent.AmountString = DirectSalesOrderContent.Amount.ToString("N0", culture);
+                DirectSalesOrderContent.PrimaryPriceString = DirectSalesOrderContent.PrimaryPrice.ToString("N0", culture);
+                DirectSalesOrderContent.QuantityString = DirectSalesOrderContent.Quantity.ToString("N0", culture);
+                DirectSalesOrderContent.RequestedQuantityString = DirectSalesOrderContent.RequestedQuantity.ToString("N0", culture);
+                DirectSalesOrderContent.SalePriceString = DirectSalesOrderContent.SalePrice.ToString("N0", culture);
+                DirectSalesOrderContent.DiscountString = DirectSalesOrderContent.DiscountPercentage.HasValue ? DirectSalesOrderContent.DiscountPercentage.Value.ToString("N0", culture) + "%" : "";
+                DirectSalesOrderContent.TaxPercentageString = DirectSalesOrderContent.TaxPercentage.HasValue ? DirectSalesOrderContent.TaxPercentage.Value.ToString("N0", culture) + "%" : "";
+            }
+            foreach (var DirectSalesOrderPromotion in DirectSalesOrder_PrintDTO.Promotions)
+            {
+                DirectSalesOrderPromotion.STT = STT++;
+                DirectSalesOrderPromotion.QuantityString = DirectSalesOrderPromotion.Quantity.ToString("N0", culture);
+                DirectSalesOrderPromotion.RequestedQuantityString = DirectSalesOrderPromotion.RequestedQuantity.ToString("N0", culture);
+            }
+
+            DirectSalesOrder_PrintDTO.SubTotalString = DirectSalesOrder_PrintDTO.SubTotal.ToString("N0", culture);
+            DirectSalesOrder_PrintDTO.Discount = DirectSalesOrder_PrintDTO.GeneralDiscountAmount.HasValue ? DirectSalesOrder_PrintDTO.GeneralDiscountAmount.Value.ToString("N0", culture) : "";
+            DirectSalesOrder_PrintDTO.Tax = DirectSalesOrder_PrintDTO.TotalTaxAmount.ToString("N0", culture);
+            DirectSalesOrder_PrintDTO.TotalString = DirectSalesOrder_PrintDTO.Total.ToString("N0", culture);
+            DirectSalesOrder_PrintDTO.TotalText = Utils.ConvertAmountTostring((long)DirectSalesOrder_PrintDTO.Total);
+
+            string path = "Templates/Print_Direct.docx";
+            byte[] arr = System.IO.File.ReadAllBytes(path);
+            dynamic Data = new ExpandoObject();
+            Data.Order = DirectSalesOrder_PrintDTO;
+            MemoryStream MemoryStream = new MemoryStream();
+            MemoryStream input = new MemoryStream(arr);
+            MemoryStream output = new MemoryStream();
+            using (var document = StaticParams.DocumentFactory.Open(input, output, "docx"))
+            {
+                document.Process(Data);
+            };
+            var documentConverter = new DocumentConverter(output, DocumentFormat.Docx);
+            documentConverter.ConvertTo(MemoryStream, DocumentFormat.Pdf);
+            ContentDisposition cd = new ContentDisposition
+            {
+                FileName = $"Don-hang-{DirectSalesOrder.Code}.pdf",
+                Inline = true,
+            };
+            Response.Headers.Add("Content-Disposition", cd.ToString());
+            return File(MemoryStream.ToArray(), "application/pdf;charset=utf-8");
         }
 
         private async Task<bool> HasPermission(long Id)

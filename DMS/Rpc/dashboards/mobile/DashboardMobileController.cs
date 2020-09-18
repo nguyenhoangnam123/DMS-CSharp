@@ -169,6 +169,11 @@ namespace DMS.Rpc.dashboards.mobile
                 }
                 KpiYearId = StaticParams.DateTimeNow.AddHours(CurrentContext.TimeZone).Year;
             }
+            else
+            {
+                KpiPeriodId = KpiPeriodEnum.PERIOD_MONTH01.Id;
+                KpiYearId = StaticParams.DateTimeNow.AddHours(CurrentContext.TimeZone).Year;
+            }
 
             DateTime StartDate, EndDate;
             (StartDate, EndDate) = DateTimeConvert(KpiPeriodId, KpiYearId);
@@ -178,7 +183,8 @@ namespace DMS.Rpc.dashboards.mobile
                                join k in DataContext.KpiGeneral on kc.KpiGeneralId equals k.Id
                                where k.EmployeeId == SaleEmployeeId &&
                                k.KpiYearId == KpiYearId &&
-                               kcm.KpiPeriodId == KpiPeriodId &&
+                               (DashboardMobile_KpiGeneralCriterialFilterDTO.Period.Equal == YEAR || kcm.KpiPeriodId == KpiPeriodId) &&
+                               kcm.Value.HasValue &&
                                k.StatusId == StatusEnum.ACTIVE.Id &&
                                k.DeletedAt == null
                                select new
@@ -285,7 +291,7 @@ namespace DMS.Rpc.dashboards.mobile
                 #region Số đơn hàng gián tiếp
                 if (DashboardMobile_KpiGeneralCriterialDTO.KpiCriterialId == KpiCriteriaGeneralEnum.TOTAL_INDIRECT_SALES_ORDER.Id || DashboardMobile_KpiGeneralCriterialDTO.Plan.HasValue)
                 {
-                    DashboardMobile_KpiGeneralCriterialDTO.Value = (decimal?)IndirectSalesOrderDAOs.Count();
+                    DashboardMobile_KpiGeneralCriterialDTO.Value = IndirectSalesOrderDAOs.Count();
                     DashboardMobile_KpiGeneralCriterialDTO.KpiCriterialName = KpiCriteriaGeneralEnum.TOTAL_INDIRECT_SALES_ORDER.Name;
                 }
                 #endregion
@@ -293,7 +299,7 @@ namespace DMS.Rpc.dashboards.mobile
                 #region Tổng sản lượng theo đơn gián tiếp
                 if (DashboardMobile_KpiGeneralCriterialDTO.KpiCriterialId == KpiCriteriaGeneralEnum.TOTAL_INDIRECT_SALES_QUANTITY.Id || DashboardMobile_KpiGeneralCriterialDTO.Plan.HasValue)
                 {
-                    DashboardMobile_KpiGeneralCriterialDTO.Value = (decimal?)IndirectSalesOrderDAOs
+                    DashboardMobile_KpiGeneralCriterialDTO.Value = IndirectSalesOrderDAOs
                         .SelectMany(c => c.IndirectSalesOrderContents)
                         .Select(q => q.RequestedQuantity)
                         .DefaultIfEmpty(0).Sum();
@@ -304,7 +310,7 @@ namespace DMS.Rpc.dashboards.mobile
                 #region Doanh thu theo đơn hàng gián tiếp
                 if (DashboardMobile_KpiGeneralCriterialDTO.KpiCriterialId == KpiCriteriaGeneralEnum.TOTAL_INDIRECT_SALES_AMOUNT.Id || DashboardMobile_KpiGeneralCriterialDTO.Plan.HasValue)
                 {
-                    DashboardMobile_KpiGeneralCriterialDTO.Value = (decimal?)IndirectSalesOrderDAOs
+                    DashboardMobile_KpiGeneralCriterialDTO.Value = IndirectSalesOrderDAOs
                         .Sum(iso => iso.Total);
                     DashboardMobile_KpiGeneralCriterialDTO.KpiCriterialName = KpiCriteriaGeneralEnum.TOTAL_INDIRECT_SALES_AMOUNT.Name;
                 }
@@ -324,9 +330,9 @@ namespace DMS.Rpc.dashboards.mobile
                         SKUIndirectItems.Add(content.ItemId);
                     }
                     DashboardMobile_KpiGeneralCriterialDTO.Value = TotalIndirectOrders == 0 ? 
-                        null : (decimal?)Math.Round((decimal)SKUIndirectItems.Count() / TotalIndirectOrders, 2);
+                        0 : SKUIndirectItems.Count();
 
-                    DashboardMobile_KpiGeneralCriterialDTO.Value = (decimal?)IndirectSalesOrderDAOs
+                    DashboardMobile_KpiGeneralCriterialDTO.Value = IndirectSalesOrderDAOs
                         .Sum(iso => iso.Total);
                     DashboardMobile_KpiGeneralCriterialDTO.KpiCriterialName = KpiCriteriaGeneralEnum.SKU_INDIRECT_SALES_ORDER.Name;
                 }
@@ -335,7 +341,7 @@ namespace DMS.Rpc.dashboards.mobile
                 #region Số đơn hàng trực tiếp
                 if (DashboardMobile_KpiGeneralCriterialDTO.KpiCriterialId == KpiCriteriaGeneralEnum.TOTAL_DIRECT_SALES_ORDER.Id || DashboardMobile_KpiGeneralCriterialDTO.Plan.HasValue)
                 {
-                    DashboardMobile_KpiGeneralCriterialDTO.Value = (decimal?)DirectSalesOrderDAOs.Count();
+                    DashboardMobile_KpiGeneralCriterialDTO.Value = DirectSalesOrderDAOs.Count();
                     DashboardMobile_KpiGeneralCriterialDTO.KpiCriterialName = KpiCriteriaGeneralEnum.TOTAL_DIRECT_SALES_ORDER.Name;
                 }
                 #endregion
@@ -343,7 +349,7 @@ namespace DMS.Rpc.dashboards.mobile
                 #region Tổng sản lượng theo đơn trực tiếp
                 if (DashboardMobile_KpiGeneralCriterialDTO.KpiCriterialId == KpiCriteriaGeneralEnum.TOTAL_DIRECT_SALES_QUANTITY.Id || DashboardMobile_KpiGeneralCriterialDTO.Plan.HasValue)
                 {
-                    DashboardMobile_KpiGeneralCriterialDTO.Value = (decimal?)DirectSalesOrderDAOs
+                    DashboardMobile_KpiGeneralCriterialDTO.Value = DirectSalesOrderDAOs
                         .SelectMany(c => c.DirectSalesOrderContents)
                         .Select(q => q.RequestedQuantity)
                         .DefaultIfEmpty(0).Sum();
@@ -354,7 +360,7 @@ namespace DMS.Rpc.dashboards.mobile
                 #region Doanh thu theo đơn hàng trực tiếp
                 if (DashboardMobile_KpiGeneralCriterialDTO.KpiCriterialId == KpiCriteriaGeneralEnum.TOTAL_DIRECT_SALES_AMOUNT.Id || DashboardMobile_KpiGeneralCriterialDTO.Plan.HasValue)
                 {
-                    DashboardMobile_KpiGeneralCriterialDTO.Value = (decimal?)DirectSalesOrderDAOs
+                    DashboardMobile_KpiGeneralCriterialDTO.Value = DirectSalesOrderDAOs
                         .Sum(iso => iso.Total);
                     DashboardMobile_KpiGeneralCriterialDTO.KpiCriterialName = KpiCriteriaGeneralEnum.TOTAL_DIRECT_SALES_AMOUNT.Name;
                 }
@@ -374,7 +380,7 @@ namespace DMS.Rpc.dashboards.mobile
                         SKUDirectItems.Add(content.ItemId);
                     }
                     DashboardMobile_KpiGeneralCriterialDTO.Value = TotalDirectOrders == 0 ?
-                        null : (decimal?)Math.Round((decimal)SKUDirectItems.Count() / TotalDirectOrders, 2);
+                        0 : SKUDirectItems.Count();
 
                     DashboardMobile_KpiGeneralCriterialDTO.KpiCriterialName = KpiCriteriaGeneralEnum.SKU_DIRECT_SALES_ORDER.Name;
                 }
@@ -384,7 +390,7 @@ namespace DMS.Rpc.dashboards.mobile
                 if (DashboardMobile_KpiGeneralCriterialDTO.KpiCriterialId == KpiCriteriaGeneralEnum.STORE_VISITED.Id || DashboardMobile_KpiGeneralCriterialDTO.Plan.HasValue)
                 {
                     DashboardMobile_KpiGeneralCriterialDTO.Value = StoreCheckingDAOs.Select(x => x.StoreId).Distinct().Count() == 0 ? 
-                        null : (decimal?)StoreCheckingDAOs.Select(x => x.StoreId).Distinct().Count();
+                        0 : StoreCheckingDAOs.Select(x => x.StoreId).Distinct().Count();
                     DashboardMobile_KpiGeneralCriterialDTO.KpiCriterialName = KpiCriteriaGeneralEnum.STORE_VISITED.Name;
                 }
                 #endregion
@@ -392,12 +398,12 @@ namespace DMS.Rpc.dashboards.mobile
                 #region Số cửa hàng tạo mới
                 if (DashboardMobile_KpiGeneralCriterialDTO.KpiCriterialId == KpiCriteriaGeneralEnum.NEW_STORE_CREATED.Id || DashboardMobile_KpiGeneralCriterialDTO.Plan.HasValue)
                 {
-                    DashboardMobile_KpiGeneralCriterialDTO.Value = (decimal?)StoreScoutingDAOs
+                    DashboardMobile_KpiGeneralCriterialDTO.Value = StoreScoutingDAOs
                         .SelectMany(sc => sc.Stores)
                         .Where(x => x.StoreScoutingId.HasValue)
                         .Select(z => z.StoreScoutingId.Value)
                         .Count() == 0 ?
-                        null : (decimal?)StoreScoutingDAOs.SelectMany(sc => sc.Stores)
+                        0 : StoreScoutingDAOs.SelectMany(sc => sc.Stores)
                         .Where(x => x.StoreScoutingId.HasValue)
                         .Select(z => z.StoreScoutingId.Value)
                         .Count();
@@ -408,9 +414,9 @@ namespace DMS.Rpc.dashboards.mobile
                 #region Số lần viếng thăm cửa hàng
                 if (DashboardMobile_KpiGeneralCriterialDTO.KpiCriterialId == KpiCriteriaGeneralEnum.NUMBER_OF_STORE_VISIT.Id || DashboardMobile_KpiGeneralCriterialDTO.Plan.HasValue)
                 {
-                    DashboardMobile_KpiGeneralCriterialDTO.Value = (decimal?)StoreCheckingDAOs
+                    DashboardMobile_KpiGeneralCriterialDTO.Value = StoreCheckingDAOs
                         .Count() == 0 ?
-                        null : (decimal?)StoreScoutingDAOs.Count();
+                        0 : StoreScoutingDAOs.Count();
                     DashboardMobile_KpiGeneralCriterialDTO.KpiCriterialName = KpiCriteriaGeneralEnum.NUMBER_OF_STORE_VISIT.Name;
                 }
                 #endregion
