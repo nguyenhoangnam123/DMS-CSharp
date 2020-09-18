@@ -454,7 +454,7 @@ namespace DMS.Rpc.mobile
 
             Store Store = await StoreService.Get(Mobile_StoreDTO.Id);
             Mobile_StoreDTO = new Mobile_StoreDTO(Store);
-            DateTime Start = StaticParams.DateTimeNow.AddHours(CurrentContext.TimeZone).Date;
+            DateTime Start = StaticParams.DateTimeNow.AddHours(CurrentContext.TimeZone).Date.AddHours(0-CurrentContext.TimeZone);
             DateTime End = Start.AddDays(1).AddSeconds(-1);
             List<Album> Albums = await AlbumService.List(new AlbumFilter
             {
@@ -468,7 +468,7 @@ namespace DMS.Rpc.mobile
                 .SelectMany(x => x.AlbumImageMappings
                 .Where(x => x.StoreId == Mobile_StoreDTO.Id)
                 .Where(x => x.SaleEmployeeId.HasValue && x.SaleEmployeeId.Value == CurrentContext.UserId)
-                .Where(x => x.ShootingAt.AddHours(CurrentContext.TimeZone).Date == StaticParams.DateTimeNow.AddHours(CurrentContext.TimeZone).Date)
+                .Where(x => Start <= x.ShootingAt && x.ShootingAt <= End)
                 .Select(m => new Mobile_AlbumImageMappingDTO
                 {
                     AlbumId = m.AlbumId,
