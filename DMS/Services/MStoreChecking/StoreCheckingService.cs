@@ -458,6 +458,7 @@ namespace DMS.Services.MStoreChecking
                 {
                     StoreFilter.OrganizationId = new IdFilter { Equal = AppUser.OrganizationId };
                 }
+                StoreFilter.SalesEmployeeId = new IdFilter { Equal = CurrentContext.UserId };
                 var count = await UOW.StoreRepository.Count(StoreFilter);
                 return count;
             }
@@ -504,7 +505,7 @@ namespace DMS.Services.MStoreChecking
                 {
                     StoreFilter.OrganizationId = new IdFilter { Equal = AppUser.OrganizationId };
                 }
-
+                StoreFilter.SalesEmployeeId = new IdFilter { Equal = CurrentContext.UserId };
                 Stores = await UOW.StoreRepository.List(StoreFilter);
                 if (CurrentContext.Latitude.HasValue && CurrentContext.Longitude.HasValue)
                 {
