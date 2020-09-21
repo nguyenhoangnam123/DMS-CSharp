@@ -34,9 +34,11 @@
       "StoreScoutingHasRejected": "Yêu cầu cắm cờ đã bị từ chối"
     },
     "Longitude": {
+      "LongitudeEmpty": "Chưa nhập kinh độ",
       "LongitudeInvalid": "Kinh độ không hợp lệ"
     },
     "Latitude": {
+      "LatitudeEmpty": "Chưa nhập vĩ độ",
       "LatitudeInvalid": "Vĩ độ không hợp lệ"
     }
   }

@@ -41,6 +41,8 @@ namespace DMS.Services.MStoreScouting
             StoreScoutingHasRejected,
             LongitudeInvalid,
             LatitudeInvalid,
+            LongitudeEmpty,
+            LatitudeEmpty,
         }
 
         private IUOW UOW;
@@ -178,12 +180,20 @@ namespace DMS.Services.MStoreScouting
 
         private async Task<bool> ValidateLocation(StoreScouting StoreScouting)
         {
-            if (!(-180 <= StoreScouting.Longitude && StoreScouting.Longitude <= 180))
+            if(StoreScouting.Longitude == 0)
+            {
+                StoreScouting.AddError(nameof(StoreScoutingValidator), nameof(StoreScouting.Longitude), ErrorCode.LongitudeEmpty);
+            }
+            else if (!(-180 <= StoreScouting.Longitude && StoreScouting.Longitude <= 180))
             {
                 StoreScouting.AddError(nameof(StoreScoutingValidator), nameof(StoreScouting.Longitude), ErrorCode.LongitudeInvalid);
             }
 
-            if (!(-90 <= StoreScouting.Latitude && StoreScouting.Latitude <= 90))
+            if(StoreScouting.Latitude == 0)
+            {
+                StoreScouting.AddError(nameof(StoreScoutingValidator), nameof(StoreScouting.Latitude), ErrorCode.LatitudeEmpty);
+            }
+            else if (!(-90 <= StoreScouting.Latitude && StoreScouting.Latitude <= 90))
             {
                 StoreScouting.AddError(nameof(StoreScoutingValidator), nameof(StoreScouting.Latitude), ErrorCode.LatitudeInvalid);
             }
