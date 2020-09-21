@@ -383,6 +383,7 @@ namespace DMS.Repositories
 
             if (WorkflowDefinitionDAO.Used == false)
             {
+                await DataContext.WorkflowDirectionCondition.Where(x => x.WorkflowDirectionId == WorkflowDirection.Id).DeleteFromQueryAsync();
                 await DataContext.WorkflowDirection.Where(x => x.Id == WorkflowDirection.Id).DeleteFromQueryAsync();
             }
             return true;
