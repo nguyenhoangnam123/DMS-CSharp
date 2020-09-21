@@ -18,6 +18,7 @@ namespace DMS.Models
         public long CreatorId { get; set; }
         public long ModifierId { get; set; }
         public long WorkflowTypeId { get; set; }
+        public long OrganizationId { get; set; }
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
         public long StatusId { get; set; }
