@@ -405,7 +405,7 @@ namespace DMS.Rpc.monitor.monitor_store_checker
                 .Where(x => x.SaleEmployeeId == SaleEmployeeId)
                 .Where(x => x.ShootingAt >= Start && x.ShootingAt <= End)
                 .ToListAsync();
-            var AlbumImageMapping_StoreIds = ProblemDAOs.Select(x => x.StoreId).Distinct().ToList();
+            var AlbumImageMapping_StoreIds = AlbumImageMappingDAOs.Select(x => x.StoreId).Distinct().ToList();
             StoreIds.AddRange(AlbumImageMapping_StoreIds);
 
             StoreIds = StoreIds.Distinct().ToList();

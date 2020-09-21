@@ -345,7 +345,7 @@ namespace DMS.Rpc.monitor.monitor_salesman
                 .Where(x => x.ShootingAt >= Start && x.ShootingAt <= End)
                 .Where(x => x.DeletedAt == null)
                 .ToListAsync();
-            var AlbumImageMapping_StoreIds = ProblemDAOs.Select(x => x.StoreId).Distinct().ToList();
+            var AlbumImageMapping_StoreIds = AlbumImageMappingDAOs.Select(x => x.StoreId).Distinct().ToList();
             StoreIds.AddRange(AlbumImageMapping_StoreIds);
 
             StoreIds = StoreIds.Distinct().ToList();
