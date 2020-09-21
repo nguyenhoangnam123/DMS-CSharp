@@ -26,6 +26,7 @@ namespace DMS.Rpc.mobile
         public string OtherName { get; set; }
         public string TechnicalName { get; set; }
         public string Note { get; set; }
+        public Mobile_BrandDTO Brand { get; set; }
         public Mobile_ProductTypeDTO ProductType { get; set; }
         public Mobile_SupplierDTO Supplier { get; set; }
         public Mobile_TaxTypeDTO TaxType { get; set; }
@@ -54,6 +55,7 @@ namespace DMS.Rpc.mobile
             this.OtherName = Product.OtherName;
             this.TechnicalName = Product.TechnicalName;
             this.Note = Product.Note;
+            this.Brand = Product.Brand == null ? null : new Mobile_BrandDTO(Product.Brand);
             this.ProductType = Product.ProductType == null ? null : new Mobile_ProductTypeDTO(Product.ProductType);
             this.Supplier = Product.Supplier == null ? null : new Mobile_SupplierDTO(Product.Supplier);
             this.TaxType = Product.TaxType == null ? null : new Mobile_TaxTypeDTO(Product.TaxType);
