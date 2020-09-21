@@ -38,7 +38,9 @@ namespace DMS.Services.MStoreScouting
             DistrictNotExisted,
             WardNotExisted,
             StoreScoutingHasOpened,
-            StoreScoutingHasRejected
+            StoreScoutingHasRejected,
+            LongitudeInvalid,
+            LatitudeInvalid,
         }
 
         private IUOW UOW;
@@ -174,6 +176,20 @@ namespace DMS.Services.MStoreScouting
             return StoreScouting.IsValidated;
         }
 
+        private async Task<bool> ValidateLocation(StoreScouting StoreScouting)
+        {
+            if (!(-180 <= StoreScouting.Longitude && StoreScouting.Longitude <= 180))
+            {
+                StoreScouting.AddError(nameof(StoreScoutingValidator), nameof(StoreScouting.Longitude), ErrorCode.LongitudeInvalid);
+            }
+
+            if (!(-90 <= StoreScouting.Latitude && StoreScouting.Latitude <= 90))
+            {
+                StoreScouting.AddError(nameof(StoreScoutingValidator), nameof(StoreScouting.Latitude), ErrorCode.LatitudeInvalid);
+            }
+            return StoreScouting.IsValidated;
+        }
+
         private async Task<bool> ValidateStatus(StoreScouting StoreScouting)
         {
             if (StoreScouting.StoreScoutingStatusId == Enums.StoreScoutingStatusEnum.OPENED.Id)
@@ -191,6 +207,7 @@ namespace DMS.Services.MStoreScouting
             await ValidateProvinceId(StoreScouting);
             await ValidateDistrictId(StoreScouting);
             await ValidateWardId(StoreScouting);
+            await ValidateLocation(StoreScouting);
             return StoreScouting.IsValidated;
         }
 
@@ -205,6 +222,7 @@ namespace DMS.Services.MStoreScouting
                 await ValidateDistrictId(StoreScouting);
                 await ValidateWardId(StoreScouting);
                 await ValidateStatus(StoreScouting);
+                await ValidateLocation(StoreScouting);
             }
             return StoreScouting.IsValidated;
         }

@@ -32,6 +32,12 @@
     "StoreScoutingStatus": {
       "StoreScoutingHasOpened": "Yêu cầu cắm cờ đã được mở",
       "StoreScoutingHasRejected": "Yêu cầu cắm cờ đã bị từ chối"
+    },
+    "Longitude": {
+      "LongitudeInvalid": "Kinh độ không hợp lệ"
+    },
+    "Latitude": {
+      "LatitudeInvalid": "Vĩ độ không hợp lệ"
     }
   }
 }
