@@ -52,6 +52,12 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
 
     public class ReportStoreChecked_ExportContentDTO : DataDTO
     {
+        public long STT { get; set; }
+        public string Username { get; set; }
+        public string DisplayName { get; set; }
+        public string DateString { get; set; }
+        public string DayOfWeek { get; set; }
+
         public string StoreCode { get; set; }
         public string StoreName { get; set; }
         public string StoreAddress { get; set; }

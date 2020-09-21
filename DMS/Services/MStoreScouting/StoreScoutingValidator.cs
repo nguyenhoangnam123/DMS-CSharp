@@ -38,7 +38,11 @@ namespace DMS.Services.MStoreScouting
             DistrictNotExisted,
             WardNotExisted,
             StoreScoutingHasOpened,
-            StoreScoutingHasRejected
+            StoreScoutingHasRejected,
+            LongitudeInvalid,
+            LatitudeInvalid,
+            LongitudeEmpty,
+            LatitudeEmpty,
         }
 
         private IUOW UOW;
@@ -174,6 +178,28 @@ namespace DMS.Services.MStoreScouting
             return StoreScouting.IsValidated;
         }
 
+        private async Task<bool> ValidateLocation(StoreScouting StoreScouting)
+        {
+            if(StoreScouting.Longitude == 0)
+            {
+                StoreScouting.AddError(nameof(StoreScoutingValidator), nameof(StoreScouting.Longitude), ErrorCode.LongitudeEmpty);
+            }
+            else if (!(-180 <= StoreScouting.Longitude && StoreScouting.Longitude <= 180))
+            {
+                StoreScouting.AddError(nameof(StoreScoutingValidator), nameof(StoreScouting.Longitude), ErrorCode.LongitudeInvalid);
+            }
+
+            if(StoreScouting.Latitude == 0)
+            {
+                StoreScouting.AddError(nameof(StoreScoutingValidator), nameof(StoreScouting.Latitude), ErrorCode.LatitudeEmpty);
+            }
+            else if (!(-90 <= StoreScouting.Latitude && StoreScouting.Latitude <= 90))
+            {
+                StoreScouting.AddError(nameof(StoreScoutingValidator), nameof(StoreScouting.Latitude), ErrorCode.LatitudeInvalid);
+            }
+            return StoreScouting.IsValidated;
+        }
+
         private async Task<bool> ValidateStatus(StoreScouting StoreScouting)
         {
             if (StoreScouting.StoreScoutingStatusId == Enums.StoreScoutingStatusEnum.OPENED.Id)
@@ -191,6 +217,7 @@ namespace DMS.Services.MStoreScouting
             await ValidateProvinceId(StoreScouting);
             await ValidateDistrictId(StoreScouting);
             await ValidateWardId(StoreScouting);
+            await ValidateLocation(StoreScouting);
             return StoreScouting.IsValidated;
         }
 
@@ -205,6 +232,7 @@ namespace DMS.Services.MStoreScouting
                 await ValidateDistrictId(StoreScouting);
                 await ValidateWardId(StoreScouting);
                 await ValidateStatus(StoreScouting);
+                await ValidateLocation(StoreScouting);
             }
             return StoreScouting.IsValidated;
         }

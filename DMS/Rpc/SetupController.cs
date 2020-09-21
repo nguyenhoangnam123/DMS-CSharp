@@ -22,6 +22,19 @@ namespace DMS.Rpc
             this.DataContext = DataContext;
         }
 
+        [HttpGet, Route("rpc/dms/setup/unsign")]
+        public bool Unsign(int year)
+        {
+            List<StoreDAO> Stores = DataContext.Store.ToList();
+            foreach(var Store in Stores)
+            {
+                Store.UnsignName = Store.Name?.ChangeToEnglishChar();
+                Store.UnsignAddress = Store.Address?.ChangeToEnglishChar();
+            }
+            DataContext.BulkMerge(Stores);
+            return true;
+        }
+
         [HttpGet, Route("rpc/dms/setup/year/{year}")]
         public bool ChangeYear(int year)
         {

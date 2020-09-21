@@ -32,10 +32,12 @@ namespace DMS.Repositories
             this.DataContext = DataContext;
         }
 
-        private IQueryable<StoreDAO> DynamicFilter(IQueryable<StoreDAO> query, StoreFilter filter)
+        private IQueryable<StoreDAO> DynamicFilter(IQueryable<StoreDAO> query, StoreFilter filter, Guid RequestId)
         {
             if (filter == null)
                 return query.Where(q => false);
+
+
             query = query.Where(q => !q.DeletedAt.HasValue);
             if (filter.Search != null)
                 query = query.Where(q =>
@@ -45,7 +47,25 @@ namespace DMS.Repositories
                 q.UnsignName.ToLower().Contains(filter.Search.ToLower()) ||
                 q.Name.ToLower().Contains(filter.Search.ToLower()));
             if (filter.Id != null)
-                query = query.Where(q => q.Id, filter.Id);
+            {
+                if (filter.Id.In != null)
+                {
+                    List<StoreIdFilterDAO> StoreIdFilterDAOs = filter.Id.In.Select(x => new StoreIdFilterDAO
+                    {
+                        RequestId = RequestId,
+                        StoreId = x,
+                    }).ToList();
+                    DataContext.StoreIdFilter.BulkInsert(StoreIdFilterDAOs);
+                    query = from q in query
+                            join id in DataContext.StoreIdFilter on q.Id equals id.StoreId
+                            where id.RequestId == RequestId
+                            select q;
+                }
+                else
+                {
+                    query = query.Where(q => q.Id, filter.Id);
+                }
+            }
             if (filter.Code != null)
                 query = query.Where(q => q.Code, filter.Code);
             if (filter.Name != null && filter.Name.HasValue)
@@ -138,11 +158,11 @@ namespace DMS.Repositories
                 query = query.Where(q => q.OwnerEmail, filter.OwnerEmail);
             if (filter.StatusId != null)
                 query = query.Where(q => q.StatusId, filter.StatusId);
-            query = OrFilter(query, filter);
+            query = OrFilter(query, filter, RequestId);
             return query;
         }
 
-        private IQueryable<StoreDAO> OrFilter(IQueryable<StoreDAO> query, StoreFilter filter)
+        private IQueryable<StoreDAO> OrFilter(IQueryable<StoreDAO> query, StoreFilter filter, Guid RequestId)
         {
             if (filter.OrFilter == null || filter.OrFilter.Count == 0)
                 return query;
@@ -230,7 +250,7 @@ namespace DMS.Repositories
             return initQuery;
         }
 
-        private IQueryable<StoreDAO> DynamicOrder(IQueryable<StoreDAO> query, StoreFilter filter)
+        private IQueryable<StoreDAO> DynamicOrder(IQueryable<StoreDAO> query, StoreFilter filter, Guid RequestId)
         {
             switch (filter.OrderType)
             {
@@ -381,7 +401,7 @@ namespace DMS.Repositories
             return query;
         }
 
-        private async Task<List<Store>> DynamicSelect(IQueryable<StoreDAO> query, StoreFilter filter)
+        private async Task<List<Store>> DynamicSelect(IQueryable<StoreDAO> query, StoreFilter filter, Guid RequestId)
         {
             List<Store> Stores = await query.Select(q => new Store()
             {
@@ -525,37 +545,52 @@ namespace DMS.Repositories
                     DistrictId = q.Ward.DistrictId,
                     StatusId = q.Ward.StatusId,
                 } : null,
-                StoreImageMappings = filter.Selects.Contains(StoreSelect.StoreImageMappings) && q.StoreImageMappings != null ? q.StoreImageMappings.Skip(0).Take(1).Select(x => new StoreImageMapping
+                Used = q.Used,
+            }).ToListAsync();
+
+            if (filter.Selects.Contains(StoreSelect.StoreImageMappings))
+            {
+                var StoreIds = Stores.Select(x => x.Id).ToList();
+                var StoreImageMappings = await DataContext.StoreImageMapping.Where(x => StoreIds.Contains(x.StoreId)).Select(x => new StoreImageMapping
                 {
                     StoreId = x.StoreId,
                     ImageId = x.ImageId,
-                    Image = new Image
+                    Image = x.Image == null ? null : new Image
                     {
                         Id = x.Image.Id,
                         Name = x.Image.Name,
                         Url = x.Image.Url,
                         ThumbnailUrl = x.Image.ThumbnailUrl,
                     }
-                }).ToList() : null,
-                Used = q.Used,
-            }).ToListAsync();
+                }).ToListAsync();
+                foreach (var Store in Stores)
+                {
+                    Store.StoreImageMappings = StoreImageMappings.Where(x => x.StoreId == Store.Id).Skip(0).Take(1).ToList();
+                }
+            }
+
             return Stores;
         }
 
         public async Task<int> Count(StoreFilter filter)
         {
+            Guid RequestId = Guid.NewGuid();
             IQueryable<StoreDAO> Stores = DataContext.Store;
-            Stores = DynamicFilter(Stores, filter);
-            return await Stores.CountAsync();
+            Stores = DynamicFilter(Stores, filter, RequestId);
+            int count = await Stores.CountAsync();
+            await DataContext.StoreIdFilter.Where(x => x.RequestId == RequestId).DeleteFromQueryAsync();
+            return count;
         }
 
         public async Task<List<Store>> List(StoreFilter filter)
         {
             if (filter == null) return new List<Store>();
+            Guid RequestId = Guid.NewGuid();
             IQueryable<StoreDAO> StoreDAOs = DataContext.Store.AsNoTracking();
-            StoreDAOs = DynamicFilter(StoreDAOs, filter);
-            StoreDAOs = DynamicOrder(StoreDAOs, filter);
-            List<Store> Stores = await DynamicSelect(StoreDAOs, filter);
+            StoreDAOs = DynamicFilter(StoreDAOs, filter, RequestId);
+            StoreDAOs = DynamicOrder(StoreDAOs, filter, RequestId);
+            List<Store> Stores = await DynamicSelect(StoreDAOs, filter, RequestId);
+            await DataContext.StoreIdFilter.Where(x => x.RequestId == RequestId).DeleteFromQueryAsync();
             return Stores;
         }
 
@@ -576,9 +611,12 @@ namespace DMS.Repositories
                     filter.OrganizationId.In.Add(OrganizationId.Value);
                 filter.OrganizationId.In.Add(AppUserDAO.OrganizationId);
             }
+            Guid RequestId = Guid.NewGuid();
             IQueryable<StoreDAO> Stores = DataContext.Store;
-            Stores = DynamicFilter(Stores, filter);
-            return await Stores.CountAsync();
+            Stores = DynamicFilter(Stores, filter, RequestId);
+            int count = await Stores.CountAsync();
+            await DataContext.StoreIdFilter.Where(x => x.RequestId == RequestId).DeleteFromQueryAsync();
+            return count;
         }
 
         public async Task<List<Store>> ListInScoped(StoreFilter filter, long AppUserId)
@@ -597,12 +635,15 @@ namespace DMS.Repositories
                 filter.OrganizationId = new IdFilter { In = new List<long>() };
                 if (OrganizationId.HasValue)
                     filter.OrganizationId.In.Add(OrganizationId.Value);
-                filter.OrganizationId.In.Add(AppUserDAO.OrganizationId);
+                else
+                    filter.OrganizationId.In.Add(AppUserDAO.OrganizationId);
             }
+            Guid RequestId = Guid.NewGuid();
             IQueryable<StoreDAO> StoreDAOs = DataContext.Store.AsNoTracking();
-            StoreDAOs = DynamicFilter(StoreDAOs, filter);
-            StoreDAOs = DynamicOrder(StoreDAOs, filter);
-            List<Store> Stores = await DynamicSelect(StoreDAOs, filter);
+            StoreDAOs = DynamicFilter(StoreDAOs, filter, RequestId);
+            StoreDAOs = DynamicOrder(StoreDAOs, filter, RequestId);
+            List<Store> Stores = await DynamicSelect(StoreDAOs, filter, RequestId);
+            await DataContext.StoreIdFilter.Where(x => x.RequestId == RequestId).DeleteFromQueryAsync();
             return Stores;
         }
 

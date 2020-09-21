@@ -481,12 +481,21 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
             {
                 foreach (var SaleEmployee in ReportStoreChecked_ExportDTO.SalesEmployees)
                 {
-                    SaleEmployee.STT = STT++;
                     foreach (var ReportStoreChecked_ExportGroupByDateDTO in SaleEmployee.Dates)
                     {
                         ReportStoreChecked_ExportGroupByDateDTO.Date = ReportStoreChecked_ExportGroupByDateDTO.Date.AddHours(CurrentContext.TimeZone);
                         ReportStoreChecked_ExportGroupByDateDTO.DateString = ReportStoreChecked_ExportGroupByDateDTO.Date.ToString("dd-MM-yyyy");
+                        foreach(var Content in ReportStoreChecked_ExportGroupByDateDTO.Contents)
+                        {
+                            Content.STT = STT;
+                            STT++;
+                            Content.Username = SaleEmployee.Username;
+                            Content.DisplayName = SaleEmployee.DisplayName;
+                            Content.DateString = ReportStoreChecked_ExportGroupByDateDTO.DateString;
+                            Content.DayOfWeek = ReportStoreChecked_ExportGroupByDateDTO.DayOfWeek;
+                        }    
                     }
+
                 }
             }
 
