@@ -333,7 +333,7 @@ namespace DMS.Rpc.monitor.monitor_salesman
             List<StoreDAO> StoreDAOs = await DataContext.Store.Where(s => StoreIds.Contains(s.Id)).ToListAsync();
 
             List<ProblemDAO> ProblemDAOs = await DataContext.Problem.Where(p =>
-                StoreIds.Contains(p.StoreId) &&
+                p.CreatorId == SaleEmployeeId &&
                 p.NoteAt >= Start && p.NoteAt <= End
             ).ToListAsync();
             List<StoreCheckingImageMappingDAO> StoreCheckingImageMappingDAOs = await DataContext.StoreCheckingImageMapping.Where(sc => StoreCheckingIds.Contains(sc.StoreCheckingId))
