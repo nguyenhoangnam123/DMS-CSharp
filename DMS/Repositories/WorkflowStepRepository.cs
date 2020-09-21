@@ -307,6 +307,7 @@ namespace DMS.Repositories
                 WorkflowStepDAO.RoleId = WorkflowStep.RoleId;
                 WorkflowStepDAO.SubjectMailForReject = WorkflowStep.SubjectMailForReject;
                 WorkflowStepDAO.BodyMailForReject = WorkflowStep.BodyMailForReject;
+                WorkflowStepDAO.UpdatedAt = StaticParams.DateTimeNow;
                 WorkflowStepDAOs.Add(WorkflowStepDAO);
             }
             await DataContext.BulkMergeAsync(WorkflowStepDAOs);
