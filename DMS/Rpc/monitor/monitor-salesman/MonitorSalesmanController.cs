@@ -2,6 +2,7 @@
 using DMS.Entities;
 using DMS.Enums;
 using DMS.Models;
+using DMS.Repositories;
 using DMS.Rpc.monitor;
 using DMS.Services.MAppUser;
 using DMS.Services.MOrganization;
@@ -329,21 +330,26 @@ namespace DMS.Rpc.monitor.monitor_salesman
                 .ToListAsync();
             List<long> SalesOrder_StoreIds = IndirectSalesOrderDAOs.Select(o => o.BuyerStoreId).ToList();
             StoreIds.AddRange(SalesOrder_StoreIds);
-            StoreIds = StoreIds.Distinct().ToList();
-            List<StoreDAO> StoreDAOs = await DataContext.Store.Where(s => StoreIds.Contains(s.Id)).ToListAsync();
 
             List<ProblemDAO> ProblemDAOs = await DataContext.Problem.Where(p =>
                 p.CreatorId == SaleEmployeeId &&
                 p.NoteAt >= Start && p.NoteAt <= End
             ).ToListAsync();
+            var Problem_StoreIds = ProblemDAOs.Select(x => x.StoreId).Distinct().ToList();
+            StoreIds.AddRange(Problem_StoreIds);
             List<StoreCheckingImageMappingDAO> StoreCheckingImageMappingDAOs = await DataContext.StoreCheckingImageMapping.Where(sc => StoreCheckingIds.Contains(sc.StoreCheckingId))
                 .Include(sc => sc.Image)
                 .ToListAsync();
             List<AlbumImageMappingDAO> AlbumImageMappingDAOs = await DataContext.AlbumImageMapping
                 .Where(x => x.SaleEmployeeId == SaleEmployeeId)
                 .Where(x => x.ShootingAt >= Start && x.ShootingAt <= End)
+                .Where(x => x.DeletedAt == null)
                 .ToListAsync();
+            var AlbumImageMapping_StoreIds = AlbumImageMappingDAOs.Select(x => x.StoreId).Distinct().ToList();
+            StoreIds.AddRange(AlbumImageMapping_StoreIds);
 
+            StoreIds = StoreIds.Distinct().ToList();
+            List<StoreDAO> StoreDAOs = await DataContext.Store.Where(s => StoreIds.Contains(s.Id)).ToListAsync();
             List<MonitorSalesman_MonitorSalesmanDetailDTO> MonitorStoreChecker_MonitorStoreCheckerDetailDTOs = new List<MonitorSalesman_MonitorSalesmanDetailDTO>();
             foreach (long StoreId in StoreIds)
             {
