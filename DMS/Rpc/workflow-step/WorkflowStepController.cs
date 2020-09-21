@@ -67,7 +67,7 @@ namespace DMS.Rpc.workflow_step
         }
 
         [Route(WorkflowStepRoute.Get), HttpPost]
-        public async Task<ActionResult<WorkflowStep_WorkflowStepDTO>> Get([FromBody]WorkflowStep_WorkflowStepDTO WorkflowStep_WorkflowStepDTO)
+        public async Task<ActionResult<WorkflowStep_WorkflowStepDTO>> Get([FromBody] WorkflowStep_WorkflowStepDTO WorkflowStep_WorkflowStepDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
@@ -583,6 +583,7 @@ namespace DMS.Rpc.workflow_step
             }
             return new List<WorkflowStep_RoleDTO>();
         }
+
         [Route(WorkflowStepRoute.FilterListWorkflowDefinition), HttpPost]
         public async Task<List<WorkflowStep_WorkflowDefinitionDTO>> FilterListWorkflowDefinition([FromBody] WorkflowStep_WorkflowDefinitionFilterDTO WorkflowStep_WorkflowDefinitionFilterDTO)
         {
@@ -674,14 +675,10 @@ namespace DMS.Rpc.workflow_step
             RoleFilter.Name = WorkflowStep_RoleFilterDTO.Name;
             RoleFilter.StatusId = WorkflowStep_RoleFilterDTO.StatusId;
 
-            if (WorkflowStep_RoleFilterDTO.WorkflowDefinitionId != null && WorkflowStep_RoleFilterDTO.WorkflowDefinitionId.HasValue)
-            {
-                List<Role> Roles = await WorkflowStepService.ListRole(WorkflowStep_RoleFilterDTO.WorkflowDefinitionId, RoleFilter);
-                List<WorkflowStep_RoleDTO> WorkflowStep_RoleDTOs = Roles
-                    .Select(x => new WorkflowStep_RoleDTO(x)).ToList();
-                return WorkflowStep_RoleDTOs;
-            }
-            return new List<WorkflowStep_RoleDTO>();
+            List<Role> Roles = await RoleService.List(RoleFilter);
+            List<WorkflowStep_RoleDTO> WorkflowStep_RoleDTOs = Roles
+                .Select(x => new WorkflowStep_RoleDTO(x)).ToList();
+            return WorkflowStep_RoleDTOs;
         }
         [Route(WorkflowStepRoute.SingleListWorkflowDefinition), HttpPost]
         public async Task<List<WorkflowStep_WorkflowDefinitionDTO>> SingleListWorkflowDefinition([FromBody] WorkflowStep_WorkflowDefinitionFilterDTO WorkflowStep_WorkflowDefinitionFilterDTO)
