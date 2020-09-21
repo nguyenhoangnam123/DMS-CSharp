@@ -454,7 +454,7 @@ namespace DMS.Rpc.mobile
 
             Store Store = await StoreService.Get(Mobile_StoreDTO.Id);
             Mobile_StoreDTO = new Mobile_StoreDTO(Store);
-            DateTime Start = StaticParams.DateTimeNow.AddHours(CurrentContext.TimeZone).Date.AddHours(0-CurrentContext.TimeZone);
+            DateTime Start = StaticParams.DateTimeNow.AddHours(CurrentContext.TimeZone).Date.AddHours(0 - CurrentContext.TimeZone);
             DateTime End = Start.AddDays(1).AddSeconds(-1);
             List<Album> Albums = await AlbumService.List(new AlbumFilter
             {

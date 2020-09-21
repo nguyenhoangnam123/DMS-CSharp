@@ -153,6 +153,7 @@ namespace DMS.Repositories
                             ImageId = x.ImageId,
                             StoreId = x.StoreId,
                             ShootingAt = x.ShootingAt,
+                            SaleEmployeeId = x.SaleEmployeeId,
                             Distance = x.Distance,
                             Image = x.Image == null ? null : new Image
                             {
