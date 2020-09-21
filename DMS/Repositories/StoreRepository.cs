@@ -597,7 +597,8 @@ namespace DMS.Repositories
                 filter.OrganizationId = new IdFilter { In = new List<long>() };
                 if (OrganizationId.HasValue)
                     filter.OrganizationId.In.Add(OrganizationId.Value);
-                filter.OrganizationId.In.Add(AppUserDAO.OrganizationId);
+                else
+                    filter.OrganizationId.In.Add(AppUserDAO.OrganizationId);
             }
             IQueryable<StoreDAO> StoreDAOs = DataContext.Store.AsNoTracking();
             StoreDAOs = DynamicFilter(StoreDAOs, filter);
