@@ -14,9 +14,11 @@ namespace DMS.Rpc.workflow_definition
         public long CreatorId { get; set; }
         public long ModifierId { get; set; }
         public long WorkflowTypeId { get; set; }
+        public long OrganizationId { get; set; }
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
         public long StatusId { get; set; }
+        public WorkflowDefinition_OrganizationDTO Organization { get; set; }
         public WorkflowDefinition_AppUserDTO Creator { get; set; }
         public WorkflowDefinition_AppUserDTO Modifier { get; set; }
         public WorkflowDefinition_StatusDTO Status { get; set; }
@@ -39,9 +41,11 @@ namespace DMS.Rpc.workflow_definition
             this.StartDate = WorkflowDefinition.StartDate;
             this.EndDate = WorkflowDefinition.EndDate;
             this.StatusId = WorkflowDefinition.StatusId;
+            this.OrganizationId = WorkflowDefinition.OrganizationId;
             this.CreatedAt = WorkflowDefinition.CreatedAt;
             this.UpdatedAt = WorkflowDefinition.UpdatedAt;
             this.Used = WorkflowDefinition.Used;
+            this.Organization = WorkflowDefinition.Organization == null ? null : new WorkflowDefinition_OrganizationDTO(WorkflowDefinition.Organization);
             this.Creator = WorkflowDefinition.Creator == null ? null : new WorkflowDefinition_AppUserDTO(WorkflowDefinition.Creator);
             this.Modifier = WorkflowDefinition.Modifier == null ? null : new WorkflowDefinition_AppUserDTO(WorkflowDefinition.Modifier);
             this.Status = WorkflowDefinition.Status == null ? null : new WorkflowDefinition_StatusDTO(WorkflowDefinition.Status);

@@ -418,6 +418,7 @@ namespace DMS.Rpc.workflow_definition
             WorkflowDefinition.StartDate = WorkflowDefinition_WorkflowDefinitionDTO.StartDate;
             WorkflowDefinition.EndDate = WorkflowDefinition_WorkflowDefinitionDTO.EndDate;
             WorkflowDefinition.StatusId = WorkflowDefinition_WorkflowDefinitionDTO.StatusId;
+            WorkflowDefinition.OrganizationId = WorkflowDefinition_WorkflowDefinitionDTO.OrganizationId;
             WorkflowDefinition.CreatedAt = WorkflowDefinition_WorkflowDefinitionDTO.CreatedAt;
             WorkflowDefinition.UpdatedAt = WorkflowDefinition_WorkflowDefinitionDTO.UpdatedAt;
             WorkflowDefinition.WorkflowType = WorkflowDefinition_WorkflowDefinitionDTO.WorkflowType == null ? null : new WorkflowType
@@ -425,6 +426,19 @@ namespace DMS.Rpc.workflow_definition
                 Id = WorkflowDefinition_WorkflowDefinitionDTO.WorkflowType.Id,
                 Code = WorkflowDefinition_WorkflowDefinitionDTO.WorkflowType.Code,
                 Name = WorkflowDefinition_WorkflowDefinitionDTO.WorkflowType.Name,
+            };
+            WorkflowDefinition.Organization = WorkflowDefinition_WorkflowDefinitionDTO.Organization == null ? null : new Organization
+            {
+                Id = WorkflowDefinition_WorkflowDefinitionDTO.Organization.Id,
+                Code = WorkflowDefinition_WorkflowDefinitionDTO.Organization.Code,
+                Name = WorkflowDefinition_WorkflowDefinitionDTO.Organization.Name,
+                ParentId = WorkflowDefinition_WorkflowDefinitionDTO.Organization.ParentId,
+                Path = WorkflowDefinition_WorkflowDefinitionDTO.Organization.Path,
+                Level = WorkflowDefinition_WorkflowDefinitionDTO.Organization.Level,
+                StatusId = WorkflowDefinition_WorkflowDefinitionDTO.Organization.StatusId,
+                Phone = WorkflowDefinition_WorkflowDefinitionDTO.Organization.Phone,
+                Address = WorkflowDefinition_WorkflowDefinitionDTO.Organization.Address,
+                Email = WorkflowDefinition_WorkflowDefinitionDTO.Organization.Email,
             };
             WorkflowDefinition.WorkflowDirections = WorkflowDefinition_WorkflowDefinitionDTO.WorkflowDirections?
                 .Select(x => new WorkflowDirection

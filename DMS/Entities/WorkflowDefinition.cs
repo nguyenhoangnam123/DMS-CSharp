@@ -91,5 +91,6 @@ namespace DMS.Entities
         UpdatedAt = E._9,
         Creator = E._10,
         Modifier = E._11,
+        Organization = E._12,
     }
 }

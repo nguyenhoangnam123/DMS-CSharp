@@ -29,6 +29,7 @@ namespace DMS.Models
 
         public virtual AppUserDAO Creator { get; set; }
         public virtual AppUserDAO Modifier { get; set; }
+        public virtual OrganizationDAO Organization { get; set; }
         public virtual StatusDAO Status { get; set; }
         public virtual WorkflowTypeDAO WorkflowType { get; set; }
         public virtual ICollection<RequestWorkflowDefinitionMappingDAO> RequestWorkflowDefinitionMappings { get; set; }

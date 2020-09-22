@@ -23,6 +23,7 @@ namespace DMS.Models
             StoreScoutings = new HashSet<StoreScoutingDAO>();
             Stores = new HashSet<StoreDAO>();
             Warehouses = new HashSet<WarehouseDAO>();
+            WorkflowDefinitions = new HashSet<WorkflowDefinitionDAO>();
         }
 
         public long Id { get; set; }
@@ -58,5 +59,6 @@ namespace DMS.Models
         public virtual ICollection<StoreScoutingDAO> StoreScoutings { get; set; }
         public virtual ICollection<StoreDAO> Stores { get; set; }
         public virtual ICollection<WarehouseDAO> Warehouses { get; set; }
+        public virtual ICollection<WorkflowDefinitionDAO> WorkflowDefinitions { get; set; }
     }
 }

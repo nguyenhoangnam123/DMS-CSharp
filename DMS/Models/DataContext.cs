@@ -4204,6 +4204,12 @@ namespace DMS.Models
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_WorkflowDefinition_AppUser1");
 
+                entity.HasOne(d => d.Organization)
+                    .WithMany(p => p.WorkflowDefinitions)
+                    .HasForeignKey(d => d.OrganizationId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_WorkflowDefinition_Organization");
+
                 entity.HasOne(d => d.Status)
                     .WithMany(p => p.WorkflowDefinitions)
                     .HasForeignKey(d => d.StatusId)

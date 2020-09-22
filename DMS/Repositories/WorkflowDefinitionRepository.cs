@@ -188,11 +188,22 @@ namespace DMS.Repositories
                 CreatorId = filter.Selects.Contains(WorkflowDefinitionSelect.Creator) ? q.CreatorId : default(long),
                 ModifierId = filter.Selects.Contains(WorkflowDefinitionSelect.Modifier) ? q.ModifierId : default(long),
                 WorkflowTypeId = filter.Selects.Contains(WorkflowDefinitionSelect.WorkflowType) ? q.WorkflowTypeId : default(long),
+                OrganizationId = filter.Selects.Contains(WorkflowDefinitionSelect.Organization) ? q.OrganizationId : default(long),
                 StartDate = filter.Selects.Contains(WorkflowDefinitionSelect.StartDate) ? q.StartDate : default(DateTime?),
                 EndDate = filter.Selects.Contains(WorkflowDefinitionSelect.EndDate) ? q.EndDate : default(DateTime?),
                 StatusId = filter.Selects.Contains(WorkflowDefinitionSelect.Status) ? q.StatusId : default(long),
                 CreatedAt = filter.Selects.Contains(WorkflowDefinitionSelect.CreatedAt) ? q.CreatedAt : default(DateTime),
                 UpdatedAt = filter.Selects.Contains(WorkflowDefinitionSelect.UpdatedAt) ? q.UpdatedAt : default(DateTime),
+                Organization = filter.Selects.Contains(WorkflowDefinitionSelect.Organization) && q.Organization != null ? new Organization
+                {
+                    Id = q.Organization.Id,
+                    Code = q.Organization.Code,
+                    Name = q.Organization.Name,
+                    ParentId = q.Organization.ParentId,
+                    Path = q.Organization.Path,
+                    Level = q.Organization.Level,
+                    StatusId = q.Organization.StatusId,
+                } : null,
                 Creator = filter.Selects.Contains(WorkflowDefinitionSelect.Creator) && q.Creator != null ? new AppUser
                 {
                     Id = q.Creator.Id,
@@ -259,9 +270,20 @@ namespace DMS.Repositories
                 StartDate = x.StartDate,
                 EndDate = x.EndDate,
                 StatusId = x.StatusId,
+                OrganizationId = x.OrganizationId,
                 CreatedAt = x.CreatedAt,
                 UpdatedAt = x.UpdatedAt,
                 Used = x.Used,
+                Organization = x.Organization == null ? null : new Organization
+                {
+                    Id = x.Organization.Id,
+                    Code = x.Organization.Code,
+                    Name = x.Organization.Name,
+                    ParentId = x.Organization.ParentId,
+                    Path = x.Organization.Path,
+                    Level = x.Organization.Level,
+                    StatusId = x.Organization.StatusId,
+                },
                 Creator = x.Creator == null ? null : new AppUser
                 {
                     Id = x.Creator.Id,
@@ -399,6 +421,7 @@ namespace DMS.Repositories
             WorkflowDefinitionDAO.CreatorId = WorkflowDefinition.CreatorId;
             WorkflowDefinitionDAO.ModifierId = WorkflowDefinition.ModifierId;
             WorkflowDefinitionDAO.WorkflowTypeId = WorkflowDefinition.WorkflowTypeId;
+            WorkflowDefinitionDAO.OrganizationId = WorkflowDefinition.OrganizationId;
             WorkflowDefinitionDAO.StartDate = WorkflowDefinition.StartDate;
             WorkflowDefinitionDAO.EndDate = WorkflowDefinition.EndDate;
             WorkflowDefinitionDAO.StatusId = WorkflowDefinition.StatusId;
@@ -421,6 +444,7 @@ namespace DMS.Repositories
             WorkflowDefinitionDAO.Code = WorkflowDefinition.Code;
             WorkflowDefinitionDAO.CreatorId = WorkflowDefinition.CreatorId;
             WorkflowDefinitionDAO.ModifierId = WorkflowDefinition.ModifierId;
+            WorkflowDefinitionDAO.OrganizationId = WorkflowDefinition.OrganizationId;
             WorkflowDefinitionDAO.WorkflowTypeId = WorkflowDefinition.WorkflowTypeId;
             WorkflowDefinitionDAO.StartDate = WorkflowDefinition.StartDate;
             WorkflowDefinitionDAO.EndDate = WorkflowDefinition.EndDate;
