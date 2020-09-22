@@ -650,10 +650,15 @@ namespace DMS.Services.MDirectSalesOrder
             {
                 Skip = 0,
                 Take = int.MaxValue,
-                Path = new StringFilter { StartWith = CurrrentUser.Organization.Path },
-                Selects = OrganizationSelect.Id
+                Selects = OrganizationSelect.ALL,
+                StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id }
             };
-            var OrganizationIds = (await UOW.OrganizationRepository.List(OrganizationFilter)).Select(x => x.Id).ToList();
+
+            var Organizations = await UOW.OrganizationRepository.List(OrganizationFilter);
+            var OrganizationIds = Organizations
+                .Where(x => x.Path.StartsWith(CurrrentUser.Organization.Path) || CurrrentUser.Organization.Path.StartsWith(x.Path))
+                .Select(x => x.Id)
+                .ToList();
 
 
             var ItemIds = Items.Select(x => x.Id).ToList();
@@ -699,7 +704,7 @@ namespace DMS.Services.MDirectSalesOrder
                     Selects = PriceListItemMappingSelect.ALL,
                     PriceListTypeId = new IdFilter { Equal = PriceListTypeEnum.STORETYPE.Id },
                     SalesOrderTypeId = new IdFilter { Equal = SalesOrderTypeEnum.DIRECT.Id },
-                    StoreGroupingId = new IdFilter { Equal = Store.StoreTypeId },
+                    StoreTypeId = new IdFilter { Equal = Store.StoreTypeId },
                     OrganizationId = new IdFilter { In = OrganizationIds },
                     StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id }
                 };
