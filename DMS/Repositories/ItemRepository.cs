@@ -495,6 +495,18 @@ namespace DMS.Repositories
 
             if (Item == null)
                 return null;
+            Item.Product.ProductProductGroupingMappings = await DataContext.ProductProductGroupingMapping.Where(x => x.ProductId == Item.ProductId).Select(x => new ProductProductGroupingMapping
+            {
+                ProductId = x.ProductId,
+                ProductGroupingId = x.ProductGroupingId,
+                ProductGrouping = x.ProductGrouping == null ? null : new ProductGrouping
+                {
+                    Id = x.ProductGrouping.Id,
+                    Code = x.ProductGrouping.Code,
+                    Name = x.ProductGrouping.Name,
+                }
+            }).ToListAsync();
+
             if (Item.Product.UnitOfMeasureGroupingId.HasValue)
             {
                 List<UnitOfMeasureGroupingContent> UnitOfMeasureGroupingContents = await DataContext.UnitOfMeasureGroupingContent
