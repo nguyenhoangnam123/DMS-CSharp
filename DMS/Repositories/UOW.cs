@@ -15,6 +15,7 @@ namespace DMS.Repositories
         IBannerRepository BannerRepository { get; }
         IBrandRepository BrandRepository { get; }
         IColorRepository ColorRepository { get; }
+        IComboRepository ComboRepository { get; }
         IDirectSalesOrderContentRepository DirectSalesOrderContentRepository { get; }
         IDirectSalesOrderRepository DirectSalesOrderRepository { get; }
         IDirectSalesOrderPromotionRepository DirectSalesOrderPromotionRepository { get; }
@@ -63,6 +64,16 @@ namespace DMS.Repositories
         IProductRepository ProductRepository { get; }
         IProductGroupingRepository ProductGroupingRepository { get; }
         IProductTypeRepository ProductTypeRepository { get; }
+        IPromotionComboRepository PromotionComboRepository { get; }
+        IPromotionRepository PromotionRepository { get; }
+        IPromotionDirectSalesOrderRepository PromotionDirectSalesOrderRepository { get; }
+        IPromotionDiscountTypeRepository PromotionDiscountTypeRepository { get; }
+        IPromotionPolicyRepository PromotionPolicyRepository { get; }
+        IPromotionSamePriceRepository PromotionSamePriceRepository { get; }
+        IPromotionStoreRepository PromotionStoreRepository { get; }
+        IPromotionStoreGroupingRepository PromotionStoreGroupingRepository { get; }
+        IPromotionStoreTypeRepository PromotionStoreTypeRepository { get; }
+        IPromotionTypeRepository PromotionTypeRepository { get; }
         IProvinceRepository ProvinceRepository { get; }
         IRequestStateRepository RequestStateRepository { get; }
         IRequestWorkflowDefinitionMappingRepository RequestWorkflowDefinitionMappingRepository { get; }
@@ -116,6 +127,7 @@ namespace DMS.Repositories
         public IBannerRepository BannerRepository { get; private set; }
         public IBrandRepository BrandRepository { get; private set; }
         public IColorRepository ColorRepository { get; private set; }
+        public IComboRepository ComboRepository { get; private set; }
         public IDirectSalesOrderContentRepository DirectSalesOrderContentRepository { get; private set; }
         public IDirectSalesOrderRepository DirectSalesOrderRepository { get; private set; }
         public IDirectSalesOrderPromotionRepository DirectSalesOrderPromotionRepository { get; private set; }
@@ -164,6 +176,16 @@ namespace DMS.Repositories
         public IProductRepository ProductRepository { get; private set; }
         public IProductGroupingRepository ProductGroupingRepository { get; private set; }
         public IProductTypeRepository ProductTypeRepository { get; private set; }
+        public IPromotionComboRepository PromotionComboRepository { get; private set; }
+        public IPromotionRepository PromotionRepository { get; private set; }
+        public IPromotionDirectSalesOrderRepository PromotionDirectSalesOrderRepository { get; private set; }
+        public IPromotionDiscountTypeRepository PromotionDiscountTypeRepository { get; private set; }
+        public IPromotionPolicyRepository PromotionPolicyRepository { get; private set; }
+        public IPromotionSamePriceRepository PromotionSamePriceRepository { get; private set; }
+        public IPromotionStoreRepository PromotionStoreRepository { get; private set; }
+        public IPromotionStoreGroupingRepository PromotionStoreGroupingRepository { get; private set; }
+        public IPromotionStoreTypeRepository PromotionStoreTypeRepository { get; private set; }
+        public IPromotionTypeRepository PromotionTypeRepository { get; private set; }
         public IProvinceRepository ProvinceRepository { get; private set; }
         public IRequestStateRepository RequestStateRepository { get; private set; }
         public IRequestWorkflowDefinitionMappingRepository RequestWorkflowDefinitionMappingRepository { get; private set; }
@@ -216,6 +238,7 @@ namespace DMS.Repositories
             BrandRepository = new BrandRepository(DataContext);
             BannerRepository = new BannerRepository(DataContext);
             ColorRepository = new ColorRepository(DataContext);
+            ComboRepository = new ComboRepository(DataContext);
             DirectSalesOrderContentRepository = new DirectSalesOrderContentRepository(DataContext);
             DirectSalesOrderRepository = new DirectSalesOrderRepository(DataContext);
             DirectSalesOrderPromotionRepository = new DirectSalesOrderPromotionRepository(DataContext);
@@ -264,6 +287,16 @@ namespace DMS.Repositories
             ProductRepository = new ProductRepository(DataContext);
             ProductGroupingRepository = new ProductGroupingRepository(DataContext);
             ProductTypeRepository = new ProductTypeRepository(DataContext);
+            PromotionComboRepository = new PromotionComboRepository(DataContext);
+            PromotionRepository = new PromotionRepository(DataContext);
+            PromotionDirectSalesOrderRepository = new PromotionDirectSalesOrderRepository(DataContext);
+            PromotionDiscountTypeRepository = new PromotionDiscountTypeRepository(DataContext);
+            PromotionPolicyRepository = new PromotionPolicyRepository(DataContext);
+            PromotionSamePriceRepository = new PromotionSamePriceRepository(DataContext);
+            PromotionStoreRepository = new PromotionStoreRepository(DataContext);
+            PromotionStoreGroupingRepository = new PromotionStoreGroupingRepository(DataContext);
+            PromotionStoreTypeRepository = new PromotionStoreTypeRepository(DataContext);
+            PromotionTypeRepository = new PromotionTypeRepository(DataContext);
             ProvinceRepository = new ProvinceRepository(DataContext);
             RequestStateRepository = new RequestStateRepository(DataContext);
             RequestWorkflowDefinitionMappingRepository = new RequestWorkflowDefinitionMappingRepository(DataContext);

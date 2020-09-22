@@ -11,6 +11,7 @@ namespace DMS.Models
             PromotionDirectSalesOrders = new HashSet<PromotionDirectSalesOrderDAO>();
             PromotionStoreGroupings = new HashSet<PromotionStoreGroupingDAO>();
             PromotionStoreTypes = new HashSet<PromotionStoreTypeDAO>();
+            PromotionStores = new HashSet<PromotionStoreDAO>();
         }
 
         public long Id { get; set; }
@@ -21,5 +22,6 @@ namespace DMS.Models
         public virtual ICollection<PromotionDirectSalesOrderDAO> PromotionDirectSalesOrders { get; set; }
         public virtual ICollection<PromotionStoreGroupingDAO> PromotionStoreGroupings { get; set; }
         public virtual ICollection<PromotionStoreTypeDAO> PromotionStoreTypes { get; set; }
+        public virtual ICollection<PromotionStoreDAO> PromotionStores { get; set; }
     }
 }
