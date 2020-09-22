@@ -100,9 +100,11 @@ namespace DMS.Models
         public virtual DbSet<PromotionPromotionPolicyMappingDAO> PromotionPromotionPolicyMapping { get; set; }
         public virtual DbSet<PromotionSamePriceDAO> PromotionSamePrice { get; set; }
         public virtual DbSet<PromotionSamePriceItemMappingDAO> PromotionSamePriceItemMapping { get; set; }
+        public virtual DbSet<PromotionStoreDAO> PromotionStore { get; set; }
         public virtual DbSet<PromotionStoreGroupingDAO> PromotionStoreGrouping { get; set; }
         public virtual DbSet<PromotionStoreGroupingItemMappingDAO> PromotionStoreGroupingItemMapping { get; set; }
         public virtual DbSet<PromotionStoreGroupingMappingDAO> PromotionStoreGroupingMapping { get; set; }
+        public virtual DbSet<PromotionStoreItemMappingDAO> PromotionStoreItemMapping { get; set; }
         public virtual DbSet<PromotionStoreMappingDAO> PromotionStoreMapping { get; set; }
         public virtual DbSet<PromotionStoreTypeDAO> PromotionStoreType { get; set; }
         public virtual DbSet<PromotionStoreTypeItemMappingDAO> PromotionStoreTypeItemMapping { get; set; }
@@ -2673,6 +2675,33 @@ namespace DMS.Models
                     .HasConstraintName("FK_PromotionSamePriceItemMapping_PromotionSamePrice");
             });
 
+            modelBuilder.Entity<PromotionStoreDAO>(entity =>
+            {
+                entity.ToTable("PromotionStore", "PRO");
+
+                entity.Property(e => e.DiscountPercentage).HasColumnType("decimal(8, 2)");
+
+                entity.Property(e => e.DiscountValue).HasColumnType("decimal(18, 4)");
+
+                entity.Property(e => e.FromValue).HasColumnType("decimal(18, 4)");
+
+                entity.Property(e => e.Note).HasMaxLength(2000);
+
+                entity.Property(e => e.ToValue).HasColumnType("decimal(18, 4)");
+
+                entity.HasOne(d => d.PromotionDiscountType)
+                    .WithMany(p => p.PromotionStores)
+                    .HasForeignKey(d => d.PromotionDiscountTypeId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PromotionStore_PromotionDiscountType");
+
+                entity.HasOne(d => d.Promotion)
+                    .WithMany(p => p.PromotionStores)
+                    .HasForeignKey(d => d.PromotionId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PromotionStore_Promotion");
+            });
+
             modelBuilder.Entity<PromotionStoreGroupingDAO>(entity =>
             {
                 entity.ToTable("PromotionStoreGrouping", "PRO");
@@ -2740,6 +2769,25 @@ namespace DMS.Models
                     .HasForeignKey(d => d.StoreGroupingId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_PromotionStoreGroupingMapping_StoreGrouping");
+            });
+
+            modelBuilder.Entity<PromotionStoreItemMappingDAO>(entity =>
+            {
+                entity.HasKey(e => new { e.PromotionStoreId, e.ItemId });
+
+                entity.ToTable("PromotionStoreItemMapping", "PRO");
+
+                entity.HasOne(d => d.Item)
+                    .WithMany(p => p.PromotionStoreItemMappings)
+                    .HasForeignKey(d => d.ItemId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PromotionStoreItemMapping_Item");
+
+                entity.HasOne(d => d.PromotionStore)
+                    .WithMany(p => p.PromotionStoreItemMappings)
+                    .HasForeignKey(d => d.PromotionStoreId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PromotionStoreItemMapping_PromotionStore");
             });
 
             modelBuilder.Entity<PromotionStoreMappingDAO>(entity =>
