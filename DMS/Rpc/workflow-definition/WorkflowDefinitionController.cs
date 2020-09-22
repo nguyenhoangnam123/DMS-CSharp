@@ -522,6 +522,7 @@ namespace DMS.Rpc.workflow_definition
             WorkflowDefinitionFilter.StartDate = WorkflowDefinition_WorkflowDefinitionFilterDTO.StartDate;
             WorkflowDefinitionFilter.EndDate = WorkflowDefinition_WorkflowDefinitionFilterDTO.EndDate;
             WorkflowDefinitionFilter.StatusId = WorkflowDefinition_WorkflowDefinitionFilterDTO.StatusId;
+            WorkflowDefinitionFilter.OrganizationId = WorkflowDefinition_WorkflowDefinitionFilterDTO.OrganizationId;
             WorkflowDefinitionFilter.CreatedAt = WorkflowDefinition_WorkflowDefinitionFilterDTO.CreatedAt;
             WorkflowDefinitionFilter.UpdatedAt = WorkflowDefinition_WorkflowDefinitionFilterDTO.UpdatedAt;
             return WorkflowDefinitionFilter;

@@ -693,6 +693,7 @@ namespace DMS.Rpc.e_route
             StoreFilter.OwnerName = ERoute_StoreFilterDTO.OwnerName;
             StoreFilter.OwnerPhone = ERoute_StoreFilterDTO.OwnerPhone;
             StoreFilter.OwnerEmail = ERoute_StoreFilterDTO.OwnerEmail;
+            StoreFilter.SalesEmployeeId = ERoute_StoreFilterDTO.SaleEmployeeId;
             StoreFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
             if (StoreFilter.Id == null) StoreFilter.Id = new IdFilter();
@@ -708,7 +709,8 @@ namespace DMS.Rpc.e_route
                 }
             }
             StoreFilter = StoreService.ToFilter(StoreFilter);
-            return await ERouteService.CountStore(StoreFilter, StoreFilter.SalesEmployeeId?.Equal);
+            int count = await ERouteService.CountStore(StoreFilter, StoreFilter.SalesEmployeeId?.Equal);
+            return count;
         }
 
         [Route(ERouteRoute.ListStore), HttpPost]
@@ -739,6 +741,7 @@ namespace DMS.Rpc.e_route
             StoreFilter.OwnerName = ERoute_StoreFilterDTO.OwnerName;
             StoreFilter.OwnerPhone = ERoute_StoreFilterDTO.OwnerPhone;
             StoreFilter.OwnerEmail = ERoute_StoreFilterDTO.OwnerEmail;
+            StoreFilter.SalesEmployeeId = ERoute_StoreFilterDTO.SaleEmployeeId;
             StoreFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
             if (StoreFilter.Id == null) StoreFilter.Id = new IdFilter();

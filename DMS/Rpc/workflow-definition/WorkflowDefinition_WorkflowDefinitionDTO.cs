@@ -65,6 +65,7 @@ namespace DMS.Rpc.workflow_definition
         public IdFilter CreatorId { get; set; }
         public IdFilter ModifierId { get; set; }
         public IdFilter WorkflowTypeId { get; set; }
+        public IdFilter OrganizationId { get; set; }
         public DateFilter StartDate { get; set; }
         public DateFilter EndDate { get; set; }
         public IdFilter StatusId { get; set; }

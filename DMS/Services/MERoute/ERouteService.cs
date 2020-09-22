@@ -380,9 +380,9 @@ namespace DMS.Services.MERoute
         {
             int count = 0;
             if (AppUserId.HasValue)
-                await UOW.StoreRepository.CountInScoped(StoreFilter, AppUserId.Value);
+                count = await UOW.StoreRepository.CountInScoped(StoreFilter, AppUserId.Value);
             else
-                await UOW.StoreRepository.CountInScoped(StoreFilter, CurrentContext.UserId);
+                count = await UOW.StoreRepository.CountInScoped(StoreFilter, CurrentContext.UserId);
             return count;
         }
         public async Task<List<Store>> ListStore(StoreFilter StoreFilter, long? AppUserId)
