@@ -28,6 +28,19 @@ namespace DMS.Repositories
             if (filter == null)
                 return query.Where(q => false);
             query = query.Where(q => q.PriceList.DeletedAt == null);
+
+            query = from q in query
+                    join p in DataContext.PriceList on q.PriceListId equals p.Id
+                    where p.StartDate.HasValue == false ||
+                    (
+                        p.StartDate.HasValue == true &&
+                        (
+                            (p.StartDate.Value <= StaticParams.DateTimeNow && p.EndDate.HasValue == false) ||
+                            (p.StartDate.Value <= StaticParams.DateTimeNow && p.EndDate.HasValue == true && StaticParams.DateTimeNow <= p.EndDate.Value)
+                        )
+                    )
+                    select q;
+
             if (filter.PriceListId != null)
                 query = query.Where(q => q.PriceListId, filter.PriceListId);
             if (filter.ItemId != null)
