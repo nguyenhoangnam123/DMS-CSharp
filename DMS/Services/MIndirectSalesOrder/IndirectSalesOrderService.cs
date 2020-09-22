@@ -682,7 +682,7 @@ namespace DMS.Services.MIndirectSalesOrder
                     Selects = PriceListItemMappingSelect.ALL,
                     PriceListTypeId = new IdFilter { Equal = PriceListTypeEnum.STORETYPE.Id },
                     SalesOrderTypeId = new IdFilter { Equal = SalesOrderTypeEnum.INDIRECT.Id },
-                    StoreGroupingId = new IdFilter { Equal = Store.StoreTypeId },
+                    StoreTypeId = new IdFilter { Equal = Store.StoreTypeId },
                     OrganizationId = new IdFilter { In = OrganizationIds },
                     StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id }
                 };
