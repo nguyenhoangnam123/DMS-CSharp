@@ -25,7 +25,7 @@
     <PackageReference Include="EntityFrameworkCore.Scaffolding.Handlebars" Version="3.8.3" />
     <PackageReference Include="EPPlus" Version="5.3.1" />
     <PackageReference Include="GeoCoordinate.NetCore" Version="1.0.0.1" />
-    <PackageReference Include="GleamTech.DocumentUltimate" Version="5.5.1" />
+    <PackageReference Include="GleamTech.DocumentUltimate" Version="5.6.0" />
     <PackageReference Include="Hangfire" Version="1.7.12" />
     <PackageReference Include="Html2Markdown" Version="3.3.1.407" />
     <PackageReference Include="HtmlAgilityPack" Version="1.11.24" />

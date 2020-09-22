@@ -194,7 +194,7 @@ namespace DMS.Services.MDirectSalesOrder
                 await UOW.DirectSalesOrderRepository.Create(DirectSalesOrder);
                 DirectSalesOrder.Code = DirectSalesOrder.Id.ToString();
                 await UOW.DirectSalesOrderRepository.Update(DirectSalesOrder);
-                await WorkflowService.Initialize(DirectSalesOrder.RowId, WorkflowTypeEnum.STORE.Id, MapParameters(DirectSalesOrder));
+                await WorkflowService.Initialize(DirectSalesOrder.RowId, WorkflowTypeEnum.DIRECT_SALES_ORDER.Id, DirectSalesOrder.OrganizationId, MapParameters(DirectSalesOrder));
                 await UOW.Commit();
                 DirectSalesOrder = await UOW.DirectSalesOrderRepository.Get(DirectSalesOrder.Id);
 
@@ -801,7 +801,7 @@ namespace DMS.Services.MDirectSalesOrder
             else
                 DirectSalesOrder = await Update(DirectSalesOrder);
             Dictionary<string, string> Parameters = MapParameters(DirectSalesOrder);
-            GenericEnum Action = await WorkflowService.Approve(DirectSalesOrder.RowId, WorkflowTypeEnum.DIRECT_SALES_ORDER.Id, Parameters);
+            GenericEnum Action = await WorkflowService.Approve(DirectSalesOrder.RowId, WorkflowTypeEnum.DIRECT_SALES_ORDER.Id, DirectSalesOrder.OrganizationId, Parameters);
             if (Action.Id != WorkflowActionEnum.OK.Id)
                 return null;
             return await Get(DirectSalesOrder.Id);
@@ -811,7 +811,7 @@ namespace DMS.Services.MDirectSalesOrder
         {
             DirectSalesOrder = await UOW.DirectSalesOrderRepository.Get(DirectSalesOrder.Id);
             Dictionary<string, string> Parameters = MapParameters(DirectSalesOrder);
-            GenericEnum Action = await WorkflowService.Reject(DirectSalesOrder.RowId, WorkflowTypeEnum.DIRECT_SALES_ORDER.Id, Parameters);
+            GenericEnum Action = await WorkflowService.Reject(DirectSalesOrder.RowId, WorkflowTypeEnum.DIRECT_SALES_ORDER.Id, DirectSalesOrder.OrganizationId, Parameters);
             if (Action.Id != WorkflowActionEnum.OK.Id)
                 return null;
             return await Get(DirectSalesOrder.Id);

@@ -51,6 +51,7 @@ namespace DMS.Entities
         public DateFilter StartDate { get; set; }
         public DateFilter EndDate { get; set; }
         public IdFilter StatusId { get; set; }
+        public IdFilter OrganizationId { get; set; }
         public DateFilter CreatedAt { get; set; }
         public DateFilter UpdatedAt { get; set; }
         public List<WorkflowDefinitionFilter> OrFilter { get; set; }

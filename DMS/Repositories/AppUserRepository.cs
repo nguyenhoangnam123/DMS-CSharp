@@ -57,13 +57,13 @@ namespace DMS.Repositories
                 if (filter.OrganizationId.Equal != null)
                 {
                     OrganizationDAO OrganizationDAO = DataContext.Organization
-                        .Where(o => o.Id == filter.OrganizationId.Equal.Value).FirstOrDefault();
+                        .Where(o => o.Id == filter.OrganizationId.Equal.Value && o.StatusId == 1).FirstOrDefault();
                     query = query.Where(q => q.Organization.Path.StartsWith(OrganizationDAO.Path));
                 }
                 if (filter.OrganizationId.NotEqual != null)
                 {
                     OrganizationDAO OrganizationDAO = DataContext.Organization
-                        .Where(o => o.Id == filter.OrganizationId.NotEqual.Value).FirstOrDefault();
+                        .Where(o => o.Id == filter.OrganizationId.NotEqual.Value && o.StatusId == 1).FirstOrDefault();
                     query = query.Where(q => !q.Organization.Path.StartsWith(OrganizationDAO.Path));
                 }
                 if (filter.OrganizationId.In != null)
