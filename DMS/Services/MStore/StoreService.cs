@@ -534,7 +534,7 @@ namespace DMS.Services.MStore
             else
                 Store = await Update(Store);
             Dictionary<string, string> Parameters = MapParameters(Store);
-            GenericEnum Action = await WorkflowService.Approve(Store.RowId, WorkflowTypeEnum.STORE.Id, Store.OrganizationId, Parameters);
+            GenericEnum Action = await WorkflowService.Approve(Store.RowId, WorkflowTypeEnum.STORE.Id, Parameters);
             if (Action != WorkflowActionEnum.OK)
                 return null;
             return await Get(Store.Id);
@@ -544,7 +544,7 @@ namespace DMS.Services.MStore
         {
             Store = await UOW.StoreRepository.Get(Store.Id);
             Dictionary<string, string> Parameters = MapParameters(Store);
-            GenericEnum Action = await WorkflowService.Reject(Store.RowId, WorkflowTypeEnum.STORE.Id, Store.OrganizationId, Parameters);
+            GenericEnum Action = await WorkflowService.Reject(Store.RowId, WorkflowTypeEnum.STORE.Id, Parameters);
             if (Action != WorkflowActionEnum.OK)
                 return null;
             return await Get(Store.Id);

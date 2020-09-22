@@ -801,7 +801,7 @@ namespace DMS.Services.MDirectSalesOrder
             else
                 DirectSalesOrder = await Update(DirectSalesOrder);
             Dictionary<string, string> Parameters = MapParameters(DirectSalesOrder);
-            GenericEnum Action = await WorkflowService.Approve(DirectSalesOrder.RowId, WorkflowTypeEnum.DIRECT_SALES_ORDER.Id, DirectSalesOrder.OrganizationId, Parameters);
+            GenericEnum Action = await WorkflowService.Approve(DirectSalesOrder.RowId, WorkflowTypeEnum.DIRECT_SALES_ORDER.Id, Parameters);
             if (Action.Id != WorkflowActionEnum.OK.Id)
                 return null;
             return await Get(DirectSalesOrder.Id);
@@ -811,7 +811,7 @@ namespace DMS.Services.MDirectSalesOrder
         {
             DirectSalesOrder = await UOW.DirectSalesOrderRepository.Get(DirectSalesOrder.Id);
             Dictionary<string, string> Parameters = MapParameters(DirectSalesOrder);
-            GenericEnum Action = await WorkflowService.Reject(DirectSalesOrder.RowId, WorkflowTypeEnum.DIRECT_SALES_ORDER.Id, DirectSalesOrder.OrganizationId, Parameters);
+            GenericEnum Action = await WorkflowService.Reject(DirectSalesOrder.RowId, WorkflowTypeEnum.DIRECT_SALES_ORDER.Id, Parameters);
             if (Action.Id != WorkflowActionEnum.OK.Id)
                 return null;
             return await Get(DirectSalesOrder.Id);
