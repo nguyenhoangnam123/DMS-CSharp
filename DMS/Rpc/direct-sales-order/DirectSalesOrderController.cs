@@ -274,15 +274,13 @@ namespace DMS.Rpc.direct_sales_order
             {
                 document.Process(Data);
             };
-            var documentConverter = new DocumentConverter(output, DocumentFormat.Docx);
-            documentConverter.ConvertTo(MemoryStream, DocumentFormat.Pdf);
             ContentDisposition cd = new ContentDisposition
             {
-                FileName = $"Don-hang-{DirectSalesOrder.Code}.pdf",
-                Inline = true,
+                FileName = $"Don-hang-truc-tiep{DirectSalesOrder.Code}.docx",
+                Inline = false,
             };
             Response.Headers.Add("Content-Disposition", cd.ToString());
-            return File(MemoryStream.ToArray(), "application/pdf;charset=utf-8");
+            return File(output.ToArray(), "application/vnd.openxmlformats-officedocument.wordprocessingml.document;charset=utf-8");
         }
 
         private async Task<bool> HasPermission(long Id)
