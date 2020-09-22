@@ -27,6 +27,7 @@ namespace DMS.Rpc.workflow_definition
         public const string FilterListWorkflowParameter = Default + "/filter-list-workflow-parameter";
         public const string FilterListRole = Default + "/filter-list-role";
         public const string FilterListStatus = Default + "/filter-list-status";
+        public const string FilterListOrganization = Default + "/filter-list-organization";
 
         public const string SingleListAppUser = Default + "/single-list-app-user";
         public const string SingleListWorkflowType = Default + "/single-list-workflow-type";
@@ -35,6 +36,7 @@ namespace DMS.Rpc.workflow_definition
         public const string SingleListWorkflowParameter = Default + "/single-list-workflow-parameter";
         public const string SingleListRole = Default + "/single-list-role";
         public const string SingleListStatus = Default + "/single-list-status";
+        public const string SingleListOrganization = Default + "/single-list-organization";
 
         public const string CountDirection = Default + "/count-direction";
         public const string ListDirection = Default + "/list-direction";
@@ -47,25 +49,32 @@ namespace DMS.Rpc.workflow_definition
             { "Tìm kiếm", new List<string> {
                 Parent,
                 Master, Count, List, Get, Preview, GetDirection,
-                FilterListAppUser, FilterListWorkflowType, FilterListWorkflowDirection, FilterListWorkflowStep, FilterListWorkflowParameter, FilterListRole, FilterListStatus } },
+                FilterListAppUser, FilterListWorkflowType, FilterListWorkflowDirection, FilterListWorkflowStep, FilterListWorkflowParameter, 
+                FilterListRole, FilterListStatus, FilterListOrganization } },
             { "Thêm", new List<string> {
                 Parent,
                 Master, Count, List, Get,
-                FilterListAppUser, FilterListWorkflowType, FilterListWorkflowDirection, FilterListWorkflowStep, FilterListWorkflowParameter, FilterListRole, FilterListStatus,
+                FilterListAppUser, FilterListWorkflowType, FilterListWorkflowDirection, FilterListWorkflowStep, FilterListWorkflowParameter, 
+                FilterListRole, FilterListStatus, FilterListOrganization,
                 Detail, Create,
-                SingleListAppUser, SingleListWorkflowType, SingleListWorkflowDirection, SingleListWorkflowStep, SingleListWorkflowParameter, SingleListRole, SingleListStatus } },
+                SingleListAppUser, SingleListWorkflowType, SingleListWorkflowDirection, SingleListWorkflowStep, SingleListWorkflowParameter, 
+                SingleListRole, SingleListStatus, SingleListOrganization } },
             { "Sửa", new List<string> {
                 Parent,
                 Master, Count, List, Get,
-                FilterListAppUser, FilterListWorkflowType, FilterListWorkflowDirection, FilterListWorkflowStep, FilterListWorkflowParameter, FilterListRole, FilterListStatus,
+                FilterListAppUser, FilterListWorkflowType, FilterListWorkflowDirection, FilterListWorkflowStep, FilterListWorkflowParameter, 
+                FilterListRole, FilterListStatus, FilterListOrganization,
                 Detail, Update, Clone,
-                SingleListAppUser, SingleListWorkflowType, SingleListWorkflowDirection, SingleListWorkflowStep, SingleListWorkflowParameter, SingleListRole, SingleListStatus } },
+                SingleListAppUser, SingleListWorkflowType, SingleListWorkflowDirection, SingleListWorkflowStep, SingleListWorkflowParameter, 
+                SingleListRole, SingleListStatus, SingleListOrganization } },
             { "Xoá", new List<string> {
                 Parent,
                 Master, Count, List, Get,
-                FilterListAppUser, FilterListWorkflowType, FilterListWorkflowDirection, FilterListWorkflowStep, FilterListWorkflowParameter, FilterListRole, FilterListStatus,
+                FilterListAppUser, FilterListWorkflowType, FilterListWorkflowDirection, FilterListWorkflowStep, FilterListWorkflowParameter, 
+                FilterListRole, FilterListStatus, FilterListOrganization,
                 Detail, Delete,
-                SingleListAppUser, SingleListWorkflowType, SingleListWorkflowDirection, SingleListWorkflowStep, SingleListWorkflowParameter, SingleListRole, SingleListStatus } },
+                SingleListAppUser, SingleListWorkflowType, SingleListWorkflowDirection, SingleListWorkflowStep, SingleListWorkflowParameter, 
+                SingleListRole, SingleListStatus, SingleListOrganization } },
         };
     }
 }
