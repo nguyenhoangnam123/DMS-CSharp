@@ -24,6 +24,7 @@ namespace DMS.Services.MDirectSalesOrder
         Task<DirectSalesOrder> Create(DirectSalesOrder DirectSalesOrder);
         Task<DirectSalesOrder> Update(DirectSalesOrder DirectSalesOrder);
         Task<DirectSalesOrder> Delete(DirectSalesOrder DirectSalesOrder);
+        Task<DirectSalesOrder> Send(DirectSalesOrder DirectSalesOrder);
         Task<DirectSalesOrder> Approve(DirectSalesOrder DirectSalesOrder);
         Task<DirectSalesOrder> Reject(DirectSalesOrder DirectSalesOrder);
         Task<List<DirectSalesOrder>> BulkDelete(List<DirectSalesOrder> DirectSalesOrders);
@@ -194,7 +195,7 @@ namespace DMS.Services.MDirectSalesOrder
                 await UOW.DirectSalesOrderRepository.Create(DirectSalesOrder);
                 DirectSalesOrder.Code = DirectSalesOrder.Id.ToString();
                 await UOW.DirectSalesOrderRepository.Update(DirectSalesOrder);
-                await WorkflowService.Initialize(DirectSalesOrder.RowId, WorkflowTypeEnum.DIRECT_SALES_ORDER.Id, DirectSalesOrder.OrganizationId, MapParameters(DirectSalesOrder));
+
                 await UOW.Commit();
                 DirectSalesOrder = await UOW.DirectSalesOrderRepository.Get(DirectSalesOrder.Id);
 
@@ -794,12 +795,22 @@ namespace DMS.Services.MDirectSalesOrder
             return Items;
         }
 
-        public async Task<DirectSalesOrder> Approve(DirectSalesOrder DirectSalesOrder)
+        public async Task<DirectSalesOrder> Send(DirectSalesOrder DirectSalesOrder)
         {
             if (DirectSalesOrder.Id == 0)
                 DirectSalesOrder = await Create(DirectSalesOrder);
             else
                 DirectSalesOrder = await Update(DirectSalesOrder);
+            Dictionary<string, string> Parameters = MapParameters(DirectSalesOrder);
+            GenericEnum Action = await WorkflowService.Send(DirectSalesOrder.RowId, WorkflowTypeEnum.DIRECT_SALES_ORDER.Id, DirectSalesOrder.OrganizationId, Parameters);
+            if (Action.Id != WorkflowActionEnum.OK.Id)
+                return null;
+            return await Get(DirectSalesOrder.Id);
+        }
+
+        public async Task<DirectSalesOrder> Approve(DirectSalesOrder DirectSalesOrder)
+        {
+            DirectSalesOrder = await Update(DirectSalesOrder);
             Dictionary<string, string> Parameters = MapParameters(DirectSalesOrder);
             GenericEnum Action = await WorkflowService.Approve(DirectSalesOrder.RowId, WorkflowTypeEnum.DIRECT_SALES_ORDER.Id, Parameters);
             if (Action.Id != WorkflowActionEnum.OK.Id)

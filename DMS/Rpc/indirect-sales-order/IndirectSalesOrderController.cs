@@ -267,7 +267,7 @@ namespace DMS.Rpc.indirect_sales_order
                 return Forbid();
 
             IndirectSalesOrder IndirectSalesOrder = ConvertDTOToEntity(IndirectSalesOrder_IndirectSalesOrderDTO);
-            IndirectSalesOrder = await IndirectSalesOrderService.Approve(IndirectSalesOrder);
+            IndirectSalesOrder = await IndirectSalesOrderService.Send(IndirectSalesOrder);
             IndirectSalesOrder_IndirectSalesOrderDTO = new IndirectSalesOrder_IndirectSalesOrderDTO(IndirectSalesOrder);
             if (IndirectSalesOrder.IsValidated)
                 return IndirectSalesOrder_IndirectSalesOrderDTO;

@@ -174,6 +174,25 @@ namespace DMS.Rpc.direct_sales_order
                 return BadRequest(DirectSalesOrder_DirectSalesOrderDTO);
         }
 
+        [Route(DirectSalesOrderRoute.Send), HttpPost]
+        public async Task<ActionResult<DirectSalesOrder_DirectSalesOrderDTO>> Send([FromBody] DirectSalesOrder_DirectSalesOrderDTO DirectSalesOrder_DirectSalesOrderDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            if (!await HasPermission(DirectSalesOrder_DirectSalesOrderDTO.Id))
+                return Forbid();
+
+            DirectSalesOrder DirectSalesOrder = ConvertDTOToEntity(DirectSalesOrder_DirectSalesOrderDTO);
+            DirectSalesOrder = await DirectSalesOrderService.Send(DirectSalesOrder);
+            DirectSalesOrder_DirectSalesOrderDTO = new DirectSalesOrder_DirectSalesOrderDTO(DirectSalesOrder);
+            if (DirectSalesOrder.IsValidated)
+                return DirectSalesOrder_DirectSalesOrderDTO;
+            else
+                return BadRequest(DirectSalesOrder_DirectSalesOrderDTO);
+        }
+
+
         [Route(DirectSalesOrderRoute.Approve), HttpPost]
         public async Task<ActionResult<DirectSalesOrder_DirectSalesOrderDTO>> Approve([FromBody] DirectSalesOrder_DirectSalesOrderDTO DirectSalesOrder_DirectSalesOrderDTO)
         {

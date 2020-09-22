@@ -25,6 +25,7 @@ namespace DMS.Services.MIndirectSalesOrder
         Task<IndirectSalesOrder> Create(IndirectSalesOrder IndirectSalesOrder);
         Task<IndirectSalesOrder> Update(IndirectSalesOrder IndirectSalesOrder);
         Task<IndirectSalesOrder> Delete(IndirectSalesOrder IndirectSalesOrder);
+        Task<IndirectSalesOrder> Send(IndirectSalesOrder IndirectSalesOrder);
         Task<IndirectSalesOrder> Approve(IndirectSalesOrder IndirectSalesOrder);
         Task<IndirectSalesOrder> Reject(IndirectSalesOrder IndirectSalesOrder);
         Task<List<IndirectSalesOrder>> BulkDelete(List<IndirectSalesOrder> IndirectSalesOrders);
@@ -777,12 +778,25 @@ namespace DMS.Services.MIndirectSalesOrder
             return Items;
         }
 
-        public async Task<IndirectSalesOrder> Approve(IndirectSalesOrder IndirectSalesOrder)
+        public async Task<IndirectSalesOrder> Send(IndirectSalesOrder IndirectSalesOrder)
         {
             if (IndirectSalesOrder.Id == 0)
                 IndirectSalesOrder = await Create(IndirectSalesOrder);
             else
                 IndirectSalesOrder = await Update(IndirectSalesOrder);
+            if (IndirectSalesOrder.IsValidated == false)
+                return IndirectSalesOrder;
+            Dictionary<string, string> Parameters = await MapParameters(IndirectSalesOrder);
+            GenericEnum Action = await WorkflowService.Send(IndirectSalesOrder.RowId, WorkflowTypeEnum.INDIRECT_SALES_ORDER.Id, IndirectSalesOrder.OrganizationId, Parameters);
+            if (Action != WorkflowActionEnum.OK)
+                return null;
+            return await Get(IndirectSalesOrder.Id);
+        }
+
+        public async Task<IndirectSalesOrder> Approve(IndirectSalesOrder IndirectSalesOrder)
+        {
+
+            IndirectSalesOrder = await Update(IndirectSalesOrder);
             if (IndirectSalesOrder.IsValidated == false)
                 return IndirectSalesOrder;
             Dictionary<string, string> Parameters = await MapParameters(IndirectSalesOrder);

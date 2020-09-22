@@ -25,6 +25,7 @@ namespace DMS.Services.MStore
         Task<Store> Create(Store Store);
         Task<Store> Update(Store Store);
         Task<Store> Delete(Store Store);
+        Task<Store> Send(Store Store);
         Task<Store> Approve(Store Store);
         Task<Store> Reject(Store Store);
         Task<List<Store>> BulkDelete(List<Store> Stores);
@@ -170,7 +171,7 @@ namespace DMS.Services.MStore
                 if (Store.StoreScoutingId.HasValue)
                 {
                     StoreScouting StoreScouting = await UOW.StoreScoutingRepository.Get(Store.StoreScoutingId.Value);
-                    if(StoreScouting != null)
+                    if (StoreScouting != null)
                     {
                         StoreScouting.StoreScoutingStatusId = Enums.StoreScoutingStatusEnum.OPENED.Id;
                     }
@@ -202,7 +203,6 @@ namespace DMS.Services.MStore
                     }).ToList();
                     await UOW.StoreRepository.Update(Store);
                 }
-                await WorkflowService.Initialize(Store.RowId, WorkflowTypeEnum.STORE.Id, Store.OrganizationId, MapParameters(Store));
                 await UOW.Commit();
 
                 NotifyUsed(Store);
@@ -223,7 +223,7 @@ namespace DMS.Services.MStore
                     };
                     UserNotifications.Add(UserNotification);
                 }
-                
+
                 await NotificationService.BulkSend(UserNotifications);
 
                 await Logging.CreateAuditLog(Store, new { }, nameof(StoreService));
@@ -452,7 +452,7 @@ namespace DMS.Services.MStore
                         long ParentStoreId = dbStores.Where(p => p.Code == store.ParentStore.Code)
                                     .Select(x => x.Id)
                                     .FirstOrDefault();
-                        if(ParentStoreId != 0)
+                        if (ParentStoreId != 0)
                             store.ParentStoreId = ParentStoreId;
                     }
                 }
@@ -527,12 +527,21 @@ namespace DMS.Services.MStore
             return Image;
         }
 
-        public async Task<Store> Approve(Store Store)
+        public async Task<Store> Send(Store Store)
         {
             if (Store.Id == 0)
                 Store = await Create(Store);
             else
                 Store = await Update(Store);
+            Dictionary<string, string> Parameters = MapParameters(Store);
+            GenericEnum Action = await WorkflowService.Send(Store.RowId, WorkflowTypeEnum.STORE.Id, Store.OrganizationId, Parameters);
+            if (Action != WorkflowActionEnum.OK)
+                return null;
+            return await Get(Store.Id);
+        }
+        public async Task<Store> Approve(Store Store)
+        {
+            Store = await Update(Store);
             Dictionary<string, string> Parameters = MapParameters(Store);
             GenericEnum Action = await WorkflowService.Approve(Store.RowId, WorkflowTypeEnum.STORE.Id, Parameters);
             if (Action != WorkflowActionEnum.OK)
@@ -578,7 +587,7 @@ namespace DMS.Services.MStore
                     OrganizationId = new IdFilter { In = OrganizationIds }
                 })).Select(x => x.Id).Distinct().ToList();
             }
-            
+
             return Ids;
         }
 
@@ -595,5 +604,7 @@ namespace DMS.Services.MStore
                 RabbitManager.PublishSingle(StoreTypeMessage, RoutingKeyEnum.StoreTypeUsed);
             }
         }
+
+
     }
 }

@@ -16,7 +16,6 @@ namespace DMS.Services.MWorkflow
     {
         Task<RequestState> GetRequestState(Guid RequestId);
         Task<List<RequestWorkflowStepMapping>> ListRequestWorkflowStepMapping(Guid RequestId);
-        Task<GenericEnum> Initialize(Guid RequestId, long WorkflowTypeId, long OrganiaztionId, Dictionary<string, string> Parameters);
         Task<GenericEnum> Send(Guid RequestId, long WorkflowTypeId, long OrganiaztionId, Dictionary<string, string> Parameters);
         Task<GenericEnum> Approve(Guid RequestId, long WorkflowTypeId, Dictionary<string, string> Parameters);
         Task<GenericEnum> Reject(Guid RequestId, long WorkflowTypeId, Dictionary<string, string> Parameters);
