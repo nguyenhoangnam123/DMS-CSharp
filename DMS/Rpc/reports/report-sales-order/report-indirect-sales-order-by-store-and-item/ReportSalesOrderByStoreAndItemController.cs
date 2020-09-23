@@ -274,11 +274,20 @@ namespace DMS.Rpc.reports.report_sales_order.report_indirect_sales_order_by_stor
                 var listId = new List<long> { StoreGroupingId.Value };
                 StoreGroupingIds = StoreGroupingIds.Intersect(listId).ToList();
             }
+
+            Guid RequestId = Guid.NewGuid();
+            List<StoreIdFilterDAO> StoreIdFilterDAOs = StoreIds.Select(x => new StoreIdFilterDAO
+            {
+                RequestId = RequestId,
+                StoreId = x,
+            }).ToList();
+            await DataContext.StoreIdFilter.BulkInsertAsync(StoreIdFilterDAOs);
             var query = from i in DataContext.IndirectSalesOrder
                         join s in DataContext.Store on i.BuyerStoreId equals s.Id
                         join o in DataContext.Organization on s.OrganizationId equals o.Id
+                        join sid in DataContext.StoreIdFilter on i.BuyerStoreId equals sid.StoreId
                         where i.OrderDate >= Start && i.OrderDate <= End &&
-                        (StoreIds.Contains(i.BuyerStoreId)) &&
+                        sid.RequestId == RequestId &&
                         (StoreTypeIds.Contains(s.StoreTypeId)) &&
                         (
                             (
@@ -307,7 +316,8 @@ namespace DMS.Rpc.reports.report_sales_order.report_indirect_sales_order_by_stor
 
                         };
 
-            List<Store> Stores = await query.Distinct().ToListAsync();
+            List<Store> Stores = (await query.ToListAsync()).Distinct().ToList();
+            await DataContext.StoreIdFilter.Where(x => x.RequestId == RequestId).DeleteFromQueryAsync();
 
             Stores = Stores.OrderBy(x => x.OrganizationId).ThenBy(x => x.Name)
                 .Skip(ReportSalesOrderByStoreAndItem_ReportSalesOrderByStoreAndItemFilterDTO.Skip)
@@ -532,11 +542,20 @@ namespace DMS.Rpc.reports.report_sales_order.report_indirect_sales_order_by_stor
                 StoreGroupingIds = StoreGroupingIds.Intersect(listId).ToList();
             }
 
+            Guid RequestId = Guid.NewGuid();
+            List<StoreIdFilterDAO> StoreIdFilterDAOs = StoreIds.Select(x => new StoreIdFilterDAO
+            {
+                RequestId = RequestId,
+                StoreId = x,
+            }).ToList();
+            await DataContext.StoreIdFilter.BulkInsertAsync(StoreIdFilterDAOs);
+
             var query = from i in DataContext.IndirectSalesOrder
                         join s in DataContext.Store on i.BuyerStoreId equals s.Id
                         join o in DataContext.Organization on s.OrganizationId equals o.Id
+                        join sid in DataContext.StoreIdFilter on i.BuyerStoreId equals sid.StoreId
                         where i.OrderDate >= Start && i.OrderDate <= End &&
-                        (StoreIds.Contains(i.BuyerStoreId)) &&
+                        sid.RequestId == RequestId &&
                         (StoreTypeIds.Contains(s.StoreTypeId)) &&
                         (
                             (
@@ -564,8 +583,8 @@ namespace DMS.Rpc.reports.report_sales_order.report_indirect_sales_order_by_stor
                             }
                         };
 
-            List<Store> Stores = await query.Distinct().ToListAsync();
-
+            List<Store> Stores = (await query.ToListAsync()).Distinct().ToList();
+            await DataContext.StoreIdFilter.Where(x => x.RequestId == RequestId).DeleteFromQueryAsync();
             Stores = Stores.ToList();
 
             List<string> OrganizationNames = Stores.Select(s => s.Organization.Name).Distinct().ToList();
