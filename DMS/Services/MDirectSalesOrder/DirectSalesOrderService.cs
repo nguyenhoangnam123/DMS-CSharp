@@ -551,10 +551,20 @@ namespace DMS.Services.MDirectSalesOrder
                     DirectSalesOrderContent.RequestedQuantity = DirectSalesOrderContent.Quantity * UOM.Factor.Value;
 
                     //Trường hợp không sửa giá, giá bán = giá bán cơ sở của sản phẩm * hệ số quy đổi của đơn vị tính
-                    if (DirectSalesOrder.EditedPriceStatusId == Enums.EditedPriceStatusEnum.INACTIVE.Id)
+                    if (DirectSalesOrder.EditedPriceStatusId == EditedPriceStatusEnum.INACTIVE.Id)
                     {
                         DirectSalesOrderContent.SalePrice = Item.SalePrice * UOM.Factor.Value;
+                        DirectSalesOrderContent.EditedPriceStatusId = EditedPriceStatusEnum.INACTIVE.Id;
                     }
+
+                    if (DirectSalesOrder.EditedPriceStatusId == EditedPriceStatusEnum.ACTIVE.Id)
+                    {
+                        if (DirectSalesOrderContent.SalePrice == Item.SalePrice * UOM.Factor.Value)
+                            DirectSalesOrderContent.EditedPriceStatusId = EditedPriceStatusEnum.INACTIVE.Id;
+                        else
+                            DirectSalesOrderContent.EditedPriceStatusId = EditedPriceStatusEnum.ACTIVE.Id;
+                    }
+
                     //giá tiền từng line trước chiết khấu
                     var SubAmount = DirectSalesOrderContent.Quantity * DirectSalesOrderContent.SalePrice;
                     if (DirectSalesOrderContent.DiscountPercentage.HasValue)

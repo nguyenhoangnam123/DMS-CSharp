@@ -18,6 +18,7 @@ namespace DMS.Models
         public Guid RowId { get; set; }
 
         public virtual PromotionDAO Promotion { get; set; }
+        public virtual PromotionPolicyDAO PromotionPolicy { get; set; }
         public virtual ICollection<PromotionSamePriceItemMappingDAO> PromotionSamePriceItemMappings { get; set; }
     }
 }

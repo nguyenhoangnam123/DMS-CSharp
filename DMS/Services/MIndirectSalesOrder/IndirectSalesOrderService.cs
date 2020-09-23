@@ -533,6 +533,7 @@ namespace DMS.Services.MIndirectSalesOrder
                     if (IndirectSalesOrder.EditedPriceStatusId == EditedPriceStatusEnum.INACTIVE.Id)
                     {
                         IndirectSalesOrderContent.SalePrice = Item.SalePrice * UOM.Factor.Value;
+                        IndirectSalesOrderContent.EditedPriceStatusId = EditedPriceStatusEnum.INACTIVE.Id;
                     }
 
                     if (IndirectSalesOrder.EditedPriceStatusId == EditedPriceStatusEnum.ACTIVE.Id)

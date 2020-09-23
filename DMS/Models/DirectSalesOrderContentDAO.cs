@@ -20,6 +20,7 @@ namespace DMS.Models
         /// Giá bán theo đơn vị xuất hàng
         /// </summary>
         public decimal SalePrice { get; set; }
+        public long EditedPriceStatusId { get; set; }
         public decimal? DiscountPercentage { get; set; }
         public decimal? DiscountAmount { get; set; }
         public decimal? GeneralDiscountPercentage { get; set; }
@@ -30,6 +31,7 @@ namespace DMS.Models
         public long? Factor { get; set; }
 
         public virtual DirectSalesOrderDAO DirectSalesOrder { get; set; }
+        public virtual EditedPriceStatusDAO EditedPriceStatus { get; set; }
         public virtual ItemDAO Item { get; set; }
         public virtual UnitOfMeasureDAO PrimaryUnitOfMeasure { get; set; }
         public virtual UnitOfMeasureDAO UnitOfMeasure { get; set; }

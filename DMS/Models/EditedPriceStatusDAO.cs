@@ -7,6 +7,7 @@ namespace DMS.Models
     {
         public EditedPriceStatusDAO()
         {
+            DirectSalesOrderContents = new HashSet<DirectSalesOrderContentDAO>();
             DirectSalesOrders = new HashSet<DirectSalesOrderDAO>();
             IndirectSalesOrderContents = new HashSet<IndirectSalesOrderContentDAO>();
             IndirectSalesOrders = new HashSet<IndirectSalesOrderDAO>();
@@ -16,6 +17,7 @@ namespace DMS.Models
         public string Code { get; set; }
         public string Name { get; set; }
 
+        public virtual ICollection<DirectSalesOrderContentDAO> DirectSalesOrderContents { get; set; }
         public virtual ICollection<DirectSalesOrderDAO> DirectSalesOrders { get; set; }
         public virtual ICollection<IndirectSalesOrderContentDAO> IndirectSalesOrderContents { get; set; }
         public virtual ICollection<IndirectSalesOrderDAO> IndirectSalesOrders { get; set; }

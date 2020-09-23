@@ -14,6 +14,7 @@ namespace DMS.Rpc.direct_sales_order
         public long RequestedQuantity { get; set; }
         public decimal PrimaryPrice { get; set; }
         public decimal SalePrice { get; set; }
+        public long EditedPriceStatusId { get; set; }
         public decimal? DiscountPercentage { get; set; }
         public decimal? DiscountAmount { get; set; }
         public decimal? GeneralDiscountPercentage { get; set; }
@@ -22,6 +23,7 @@ namespace DMS.Rpc.direct_sales_order
         public decimal? TaxPercentage { get; set; }
         public decimal? TaxAmount { get; set; }
         public long? Factor { get; set; }
+        public DirectSalesOrder_EditedPriceStatusDTO EditedPriceStatus { get; set; }
         public DirectSalesOrder_ItemDTO Item { get; set; }
         public DirectSalesOrder_UnitOfMeasureDTO PrimaryUnitOfMeasure { get; set; }
         public DirectSalesOrder_TaxTypeDTO TaxType { get; set; }
@@ -39,6 +41,7 @@ namespace DMS.Rpc.direct_sales_order
             this.RequestedQuantity = DirectSalesOrderContent.RequestedQuantity;
             this.PrimaryPrice = DirectSalesOrderContent.PrimaryPrice;
             this.SalePrice = DirectSalesOrderContent.SalePrice;
+            this.EditedPriceStatusId = DirectSalesOrderContent.EditedPriceStatusId;
             this.DiscountPercentage = DirectSalesOrderContent.DiscountPercentage;
             this.DiscountAmount = DirectSalesOrderContent.DiscountAmount;
             this.GeneralDiscountPercentage = DirectSalesOrderContent.GeneralDiscountPercentage;
@@ -47,6 +50,7 @@ namespace DMS.Rpc.direct_sales_order
             this.TaxPercentage = DirectSalesOrderContent.TaxPercentage;
             this.TaxAmount = DirectSalesOrderContent.TaxAmount;
             this.Factor = DirectSalesOrderContent.Factor;
+            this.EditedPriceStatus = DirectSalesOrderContent.EditedPriceStatus == null ? null : new DirectSalesOrder_EditedPriceStatusDTO(DirectSalesOrderContent.EditedPriceStatus);
             this.Item = DirectSalesOrderContent.Item == null ? null : new DirectSalesOrder_ItemDTO(DirectSalesOrderContent.Item);
             this.PrimaryUnitOfMeasure = DirectSalesOrderContent.PrimaryUnitOfMeasure == null ? null : new DirectSalesOrder_UnitOfMeasureDTO(DirectSalesOrderContent.PrimaryUnitOfMeasure);
             this.UnitOfMeasure = DirectSalesOrderContent.UnitOfMeasure == null ? null : new DirectSalesOrder_UnitOfMeasureDTO(DirectSalesOrderContent.UnitOfMeasure);

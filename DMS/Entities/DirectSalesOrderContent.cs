@@ -17,6 +17,7 @@ namespace DMS.Entities
         public long RequestedQuantity { get; set; }
         public decimal PrimaryPrice { get; set; }
         public decimal SalePrice { get; set; }
+        public long EditedPriceStatusId { get; set; }
         public decimal? DiscountPercentage { get; set; }
         public decimal? DiscountAmount { get; set; }
         public decimal? GeneralDiscountPercentage { get; set; }
@@ -25,6 +26,7 @@ namespace DMS.Entities
         public decimal? TaxPercentage { get; set; }
         public decimal? TaxAmount { get; set; }
         public long? Factor { get; set; }
+        public EditedPriceStatus EditedPriceStatus { get; set; }
         public Item Item { get; set; }
         public DirectSalesOrder DirectSalesOrder { get; set; }
         public UnitOfMeasure PrimaryUnitOfMeasure { get; set; }

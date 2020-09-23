@@ -99,6 +99,7 @@ namespace DMS.Models
         public virtual DbSet<PromotionPolicyDAO> PromotionPolicy { get; set; }
         public virtual DbSet<PromotionProductDAO> PromotionProduct { get; set; }
         public virtual DbSet<PromotionProductGroupingDAO> PromotionProductGrouping { get; set; }
+        public virtual DbSet<PromotionProductGroupingItemMappingDAO> PromotionProductGroupingItemMapping { get; set; }
         public virtual DbSet<PromotionProductItemMappingDAO> PromotionProductItemMapping { get; set; }
         public virtual DbSet<PromotionProductTypeDAO> PromotionProductType { get; set; }
         public virtual DbSet<PromotionProductTypeItemMappingDAO> PromotionProductTypeItemMapping { get; set; }
@@ -737,6 +738,12 @@ namespace DMS.Models
                     .HasForeignKey(d => d.DirectSalesOrderId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_DirectSalesOrderContent_DirectSalesOrder");
+
+                entity.HasOne(d => d.EditedPriceStatus)
+                    .WithMany(p => p.DirectSalesOrderContents)
+                    .HasForeignKey(d => d.EditedPriceStatusId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_DirectSalesOrderContent_EditedPriceStatus");
 
                 entity.HasOne(d => d.Item)
                     .WithMany(p => p.DirectSalesOrderContents)
@@ -2661,6 +2668,8 @@ namespace DMS.Models
 
             modelBuilder.Entity<PromotionProductGroupingDAO>(entity =>
             {
+                entity.ToTable("PromotionProductGrouping", "PRO");
+
                 entity.Property(e => e.DiscountPercentage).HasColumnType("decimal(8, 2)");
 
                 entity.Property(e => e.DiscountValue).HasColumnType("decimal(18, 4)");
@@ -2696,9 +2705,30 @@ namespace DMS.Models
                     .HasConstraintName("FK_PromotionProductGrouping_PromotionPolicy");
             });
 
+            modelBuilder.Entity<PromotionProductGroupingItemMappingDAO>(entity =>
+            {
+                entity.HasKey(e => new { e.PromotionProductGroupingId, e.ItemId });
+
+                entity.ToTable("PromotionProductGroupingItemMapping", "PRO");
+
+                entity.HasOne(d => d.Item)
+                    .WithMany(p => p.PromotionProductGroupingItemMappings)
+                    .HasForeignKey(d => d.ItemId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PromotionProductGroupingItemMapping_Item");
+
+                entity.HasOne(d => d.PromotionProductGrouping)
+                    .WithMany(p => p.PromotionProductGroupingItemMappings)
+                    .HasForeignKey(d => d.PromotionProductGroupingId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PromotionProductGroupingItemMapping_PromotionProductGrouping");
+            });
+
             modelBuilder.Entity<PromotionProductItemMappingDAO>(entity =>
             {
                 entity.HasKey(e => new { e.PromotionProductId, e.ItemId });
+
+                entity.ToTable("PromotionProductItemMapping", "PRO");
 
                 entity.HasOne(d => d.Item)
                     .WithMany(p => p.PromotionProductItemMappings)
@@ -2715,6 +2745,8 @@ namespace DMS.Models
 
             modelBuilder.Entity<PromotionProductTypeDAO>(entity =>
             {
+                entity.ToTable("PromotionProductType", "PRO");
+
                 entity.Property(e => e.DiscountPercentage).HasColumnType("decimal(8, 2)");
 
                 entity.Property(e => e.DiscountValue).HasColumnType("decimal(18, 4)");
@@ -2753,6 +2785,8 @@ namespace DMS.Models
             modelBuilder.Entity<PromotionProductTypeItemMappingDAO>(entity =>
             {
                 entity.HasKey(e => new { e.PromotionProductTypeId, e.ItemId });
+
+                entity.ToTable("PromotionProductTypeItemMapping", "PRO");
 
                 entity.HasOne(d => d.Item)
                     .WithMany(p => p.PromotionProductTypeItemMappings)
@@ -2807,6 +2841,12 @@ namespace DMS.Models
                     .HasForeignKey(d => d.PromotionId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_PromotionSamePrice_Promotion");
+
+                entity.HasOne(d => d.PromotionPolicy)
+                    .WithMany(p => p.PromotionSamePrices)
+                    .HasForeignKey(d => d.PromotionPolicyId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PromotionSamePrice_PromotionPolicy");
             });
 
             modelBuilder.Entity<PromotionSamePriceItemMappingDAO>(entity =>
