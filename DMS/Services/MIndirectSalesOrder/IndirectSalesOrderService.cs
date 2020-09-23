@@ -499,7 +499,6 @@ namespace DMS.Services.MIndirectSalesOrder
                     var Item = Items.Where(x => x.Id == IndirectSalesOrderContent.ItemId).FirstOrDefault();
                     var Product = Products.Where(x => IndirectSalesOrderContent.Item.ProductId == x.Id).FirstOrDefault();
                     IndirectSalesOrderContent.PrimaryUnitOfMeasureId = Product.UnitOfMeasureId;
-                    IndirectSalesOrderContent.PrimaryPrice = Item.SalePrice;
 
                     List<UnitOfMeasure> UnitOfMeasures = new List<UnitOfMeasure>();
                     if (Product.UnitOfMeasureGroupingId.HasValue)
@@ -532,6 +531,7 @@ namespace DMS.Services.MIndirectSalesOrder
                     //Trường hợp không sửa giá, giá bán = giá bán cơ sở của sản phẩm * hệ số quy đổi của đơn vị tính
                     if (IndirectSalesOrder.EditedPriceStatusId == EditedPriceStatusEnum.INACTIVE.Id)
                     {
+                        IndirectSalesOrderContent.PrimaryPrice = Item.SalePrice;
                         IndirectSalesOrderContent.SalePrice = Item.SalePrice * UOM.Factor.Value;
                         IndirectSalesOrderContent.EditedPriceStatusId = EditedPriceStatusEnum.INACTIVE.Id;
                     }
