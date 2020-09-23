@@ -37,8 +37,6 @@ namespace DMS.Repositories
                 query = query.Where(q => q.Id, filter.Id);
             if (filter.Note != null)
                 query = query.Where(q => q.Note, filter.Note);
-            if (filter.Name != null)
-                query = query.Where(q => q.Name, filter.Name);
             if (filter.PromotionId != null)
                 query = query.Where(q => q.PromotionId, filter.PromotionId);
             query = OrFilter(query, filter);
@@ -57,8 +55,6 @@ namespace DMS.Repositories
                     queryable = queryable.Where(q => q.Id, PromotionComboFilter.Id);
                 if (PromotionComboFilter.Note != null)
                     queryable = queryable.Where(q => q.Note, PromotionComboFilter.Note);
-                if (PromotionComboFilter.Name != null)
-                    queryable = queryable.Where(q => q.Name, PromotionComboFilter.Name);
                 if (PromotionComboFilter.PromotionId != null)
                     queryable = queryable.Where(q => q.PromotionId, PromotionComboFilter.PromotionId);
                 initQuery = initQuery.Union(queryable);
@@ -79,9 +75,6 @@ namespace DMS.Repositories
                         case PromotionComboOrder.Note:
                             query = query.OrderBy(q => q.Note);
                             break;
-                        case PromotionComboOrder.Name:
-                            query = query.OrderBy(q => q.Name);
-                            break;
                         case PromotionComboOrder.Promotion:
                             query = query.OrderBy(q => q.PromotionId);
                             break;
@@ -95,9 +88,6 @@ namespace DMS.Repositories
                             break;
                         case PromotionComboOrder.Note:
                             query = query.OrderByDescending(q => q.Note);
-                            break;
-                        case PromotionComboOrder.Name:
-                            query = query.OrderByDescending(q => q.Name);
                             break;
                         case PromotionComboOrder.Promotion:
                             query = query.OrderByDescending(q => q.PromotionId);
@@ -115,7 +105,6 @@ namespace DMS.Repositories
             {
                 Id = filter.Selects.Contains(PromotionComboSelect.Id) ? q.Id : default(long),
                 Note = filter.Selects.Contains(PromotionComboSelect.Note) ? q.Note : default(string),
-                Name = filter.Selects.Contains(PromotionComboSelect.Name) ? q.Name : default(string),
                 PromotionId = filter.Selects.Contains(PromotionComboSelect.Promotion) ? q.PromotionId : default(long),
                 Promotion = filter.Selects.Contains(PromotionComboSelect.Promotion) && q.Promotion != null ? new Promotion
                 {
@@ -158,7 +147,6 @@ namespace DMS.Repositories
             {
                 Id = x.Id,
                 Note = x.Note,
-                Name = x.Name,
                 PromotionId = x.PromotionId,
                 Promotion = x.Promotion == null ? null : new Promotion
                 {
@@ -203,7 +191,6 @@ namespace DMS.Repositories
             PromotionComboDAO PromotionComboDAO = new PromotionComboDAO();
             PromotionComboDAO.Id = PromotionCombo.Id;
             PromotionComboDAO.Note = PromotionCombo.Note;
-            PromotionComboDAO.Name = PromotionCombo.Name;
             PromotionComboDAO.PromotionId = PromotionCombo.PromotionId;
             DataContext.PromotionCombo.Add(PromotionComboDAO);
             await DataContext.SaveChangesAsync();
@@ -219,7 +206,6 @@ namespace DMS.Repositories
                 return false;
             PromotionComboDAO.Id = PromotionCombo.Id;
             PromotionComboDAO.Note = PromotionCombo.Note;
-            PromotionComboDAO.Name = PromotionCombo.Name;
             PromotionComboDAO.PromotionId = PromotionCombo.PromotionId;
             await DataContext.SaveChangesAsync();
             await SaveReference(PromotionCombo);
@@ -240,7 +226,6 @@ namespace DMS.Repositories
                 PromotionComboDAO PromotionComboDAO = new PromotionComboDAO();
                 PromotionComboDAO.Id = PromotionCombo.Id;
                 PromotionComboDAO.Note = PromotionCombo.Note;
-                PromotionComboDAO.Name = PromotionCombo.Name;
                 PromotionComboDAO.PromotionId = PromotionCombo.PromotionId;
                 PromotionComboDAOs.Add(PromotionComboDAO);
             }

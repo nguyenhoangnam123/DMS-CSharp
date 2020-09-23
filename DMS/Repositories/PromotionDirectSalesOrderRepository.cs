@@ -35,8 +35,6 @@ namespace DMS.Repositories
                 return query.Where(q => false);
             if (filter.Id != null)
                 query = query.Where(q => q.Id, filter.Id);
-            if (filter.Name != null)
-                query = query.Where(q => q.Name, filter.Name);
             if (filter.PromotionId != null)
                 query = query.Where(q => q.PromotionId, filter.PromotionId);
             if (filter.Note != null)
@@ -65,8 +63,6 @@ namespace DMS.Repositories
                 IQueryable<PromotionDirectSalesOrderDAO> queryable = query;
                 if (PromotionDirectSalesOrderFilter.Id != null)
                     queryable = queryable.Where(q => q.Id, PromotionDirectSalesOrderFilter.Id);
-                if (PromotionDirectSalesOrderFilter.Name != null)
-                    queryable = queryable.Where(q => q.Name, PromotionDirectSalesOrderFilter.Name);
                 if (PromotionDirectSalesOrderFilter.PromotionId != null)
                     queryable = queryable.Where(q => q.PromotionId, PromotionDirectSalesOrderFilter.PromotionId);
                 if (PromotionDirectSalesOrderFilter.Note != null)
@@ -96,9 +92,6 @@ namespace DMS.Repositories
                         case PromotionDirectSalesOrderOrder.Id:
                             query = query.OrderBy(q => q.Id);
                             break;
-                        case PromotionDirectSalesOrderOrder.Name:
-                            query = query.OrderBy(q => q.Name);
-                            break;
                         case PromotionDirectSalesOrderOrder.Promotion:
                             query = query.OrderBy(q => q.PromotionId);
                             break;
@@ -127,9 +120,6 @@ namespace DMS.Repositories
                     {
                         case PromotionDirectSalesOrderOrder.Id:
                             query = query.OrderByDescending(q => q.Id);
-                            break;
-                        case PromotionDirectSalesOrderOrder.Name:
-                            query = query.OrderByDescending(q => q.Name);
                             break;
                         case PromotionDirectSalesOrderOrder.Promotion:
                             query = query.OrderByDescending(q => q.PromotionId);
@@ -164,7 +154,6 @@ namespace DMS.Repositories
             List<PromotionDirectSalesOrder> PromotionDirectSalesOrders = await query.Select(q => new PromotionDirectSalesOrder()
             {
                 Id = filter.Selects.Contains(PromotionDirectSalesOrderSelect.Id) ? q.Id : default(long),
-                Name = filter.Selects.Contains(PromotionDirectSalesOrderSelect.Name) ? q.Name : default(string),
                 PromotionId = filter.Selects.Contains(PromotionDirectSalesOrderSelect.Promotion) ? q.PromotionId : default(long),
                 Note = filter.Selects.Contains(PromotionDirectSalesOrderSelect.Note) ? q.Note : default(string),
                 FromValue = filter.Selects.Contains(PromotionDirectSalesOrderSelect.FromValue) ? q.FromValue : default(decimal),
@@ -218,7 +207,6 @@ namespace DMS.Repositories
             .Where(x => x.Id == Id).Select(x => new PromotionDirectSalesOrder()
             {
                 Id = x.Id,
-                Name = x.Name,
                 PromotionId = x.PromotionId,
                 Note = x.Note,
                 FromValue = x.FromValue,
@@ -277,7 +265,6 @@ namespace DMS.Repositories
         {
             PromotionDirectSalesOrderDAO PromotionDirectSalesOrderDAO = new PromotionDirectSalesOrderDAO();
             PromotionDirectSalesOrderDAO.Id = PromotionDirectSalesOrder.Id;
-            PromotionDirectSalesOrderDAO.Name = PromotionDirectSalesOrder.Name;
             PromotionDirectSalesOrderDAO.PromotionId = PromotionDirectSalesOrder.PromotionId;
             PromotionDirectSalesOrderDAO.Note = PromotionDirectSalesOrder.Note;
             PromotionDirectSalesOrderDAO.FromValue = PromotionDirectSalesOrder.FromValue;
@@ -298,7 +285,6 @@ namespace DMS.Repositories
             if (PromotionDirectSalesOrderDAO == null)
                 return false;
             PromotionDirectSalesOrderDAO.Id = PromotionDirectSalesOrder.Id;
-            PromotionDirectSalesOrderDAO.Name = PromotionDirectSalesOrder.Name;
             PromotionDirectSalesOrderDAO.PromotionId = PromotionDirectSalesOrder.PromotionId;
             PromotionDirectSalesOrderDAO.Note = PromotionDirectSalesOrder.Note;
             PromotionDirectSalesOrderDAO.FromValue = PromotionDirectSalesOrder.FromValue;
@@ -324,7 +310,6 @@ namespace DMS.Repositories
             {
                 PromotionDirectSalesOrderDAO PromotionDirectSalesOrderDAO = new PromotionDirectSalesOrderDAO();
                 PromotionDirectSalesOrderDAO.Id = PromotionDirectSalesOrder.Id;
-                PromotionDirectSalesOrderDAO.Name = PromotionDirectSalesOrder.Name;
                 PromotionDirectSalesOrderDAO.PromotionId = PromotionDirectSalesOrder.PromotionId;
                 PromotionDirectSalesOrderDAO.Note = PromotionDirectSalesOrder.Note;
                 PromotionDirectSalesOrderDAO.FromValue = PromotionDirectSalesOrder.FromValue;

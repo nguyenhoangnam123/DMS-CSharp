@@ -37,8 +37,6 @@ namespace DMS.Repositories
                 query = query.Where(q => q.Id, filter.Id);
             if (filter.Note != null)
                 query = query.Where(q => q.Note, filter.Note);
-            if (filter.Name != null)
-                query = query.Where(q => q.Name, filter.Name);
             if (filter.PromotionId != null)
                 query = query.Where(q => q.PromotionId, filter.PromotionId);
             if (filter.Price != null)
@@ -59,8 +57,6 @@ namespace DMS.Repositories
                     queryable = queryable.Where(q => q.Id, PromotionSamePriceFilter.Id);
                 if (PromotionSamePriceFilter.Note != null)
                     queryable = queryable.Where(q => q.Note, PromotionSamePriceFilter.Note);
-                if (PromotionSamePriceFilter.Name != null)
-                    queryable = queryable.Where(q => q.Name, PromotionSamePriceFilter.Name);
                 if (PromotionSamePriceFilter.PromotionId != null)
                     queryable = queryable.Where(q => q.PromotionId, PromotionSamePriceFilter.PromotionId);
                 if (PromotionSamePriceFilter.Price != null)
@@ -83,9 +79,6 @@ namespace DMS.Repositories
                         case PromotionSamePriceOrder.Note:
                             query = query.OrderBy(q => q.Note);
                             break;
-                        case PromotionSamePriceOrder.Name:
-                            query = query.OrderBy(q => q.Name);
-                            break;
                         case PromotionSamePriceOrder.Promotion:
                             query = query.OrderBy(q => q.PromotionId);
                             break;
@@ -102,9 +95,6 @@ namespace DMS.Repositories
                             break;
                         case PromotionSamePriceOrder.Note:
                             query = query.OrderByDescending(q => q.Note);
-                            break;
-                        case PromotionSamePriceOrder.Name:
-                            query = query.OrderByDescending(q => q.Name);
                             break;
                         case PromotionSamePriceOrder.Promotion:
                             query = query.OrderByDescending(q => q.PromotionId);
@@ -125,7 +115,6 @@ namespace DMS.Repositories
             {
                 Id = filter.Selects.Contains(PromotionSamePriceSelect.Id) ? q.Id : default(long),
                 Note = filter.Selects.Contains(PromotionSamePriceSelect.Note) ? q.Note : default(string),
-                Name = filter.Selects.Contains(PromotionSamePriceSelect.Name) ? q.Name : default(string),
                 PromotionId = filter.Selects.Contains(PromotionSamePriceSelect.Promotion) ? q.PromotionId : default(long),
                 Price = filter.Selects.Contains(PromotionSamePriceSelect.Price) ? q.Price : default(decimal),
                 Promotion = filter.Selects.Contains(PromotionSamePriceSelect.Promotion) && q.Promotion != null ? new Promotion
@@ -169,7 +158,6 @@ namespace DMS.Repositories
             {
                 Id = x.Id,
                 Note = x.Note,
-                Name = x.Name,
                 PromotionId = x.PromotionId,
                 Price = x.Price,
                 Promotion = x.Promotion == null ? null : new Promotion
@@ -197,7 +185,6 @@ namespace DMS.Repositories
             PromotionSamePriceDAO PromotionSamePriceDAO = new PromotionSamePriceDAO();
             PromotionSamePriceDAO.Id = PromotionSamePrice.Id;
             PromotionSamePriceDAO.Note = PromotionSamePrice.Note;
-            PromotionSamePriceDAO.Name = PromotionSamePrice.Name;
             PromotionSamePriceDAO.PromotionId = PromotionSamePrice.PromotionId;
             PromotionSamePriceDAO.Price = PromotionSamePrice.Price;
             DataContext.PromotionSamePrice.Add(PromotionSamePriceDAO);
@@ -214,7 +201,6 @@ namespace DMS.Repositories
                 return false;
             PromotionSamePriceDAO.Id = PromotionSamePrice.Id;
             PromotionSamePriceDAO.Note = PromotionSamePrice.Note;
-            PromotionSamePriceDAO.Name = PromotionSamePrice.Name;
             PromotionSamePriceDAO.PromotionId = PromotionSamePrice.PromotionId;
             PromotionSamePriceDAO.Price = PromotionSamePrice.Price;
             await DataContext.SaveChangesAsync();
@@ -236,7 +222,6 @@ namespace DMS.Repositories
                 PromotionSamePriceDAO PromotionSamePriceDAO = new PromotionSamePriceDAO();
                 PromotionSamePriceDAO.Id = PromotionSamePrice.Id;
                 PromotionSamePriceDAO.Note = PromotionSamePrice.Note;
-                PromotionSamePriceDAO.Name = PromotionSamePrice.Name;
                 PromotionSamePriceDAO.PromotionId = PromotionSamePrice.PromotionId;
                 PromotionSamePriceDAO.Price = PromotionSamePrice.Price;
                 PromotionSamePriceDAOs.Add(PromotionSamePriceDAO);

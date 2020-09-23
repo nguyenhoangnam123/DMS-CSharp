@@ -9,6 +9,9 @@ namespace DMS.Models
         {
             PromotionCombos = new HashSet<PromotionComboDAO>();
             PromotionDirectSalesOrders = new HashSet<PromotionDirectSalesOrderDAO>();
+            PromotionProductGroupings = new HashSet<PromotionProductGroupingDAO>();
+            PromotionProductTypes = new HashSet<PromotionProductTypeDAO>();
+            PromotionProducts = new HashSet<PromotionProductDAO>();
             PromotionPromotionPolicyMappings = new HashSet<PromotionPromotionPolicyMappingDAO>();
             PromotionSamePrices = new HashSet<PromotionSamePriceDAO>();
             PromotionStoreGroupingMappings = new HashSet<PromotionStoreGroupingMappingDAO>();
@@ -39,6 +42,9 @@ namespace DMS.Models
         public virtual StatusDAO Status { get; set; }
         public virtual ICollection<PromotionComboDAO> PromotionCombos { get; set; }
         public virtual ICollection<PromotionDirectSalesOrderDAO> PromotionDirectSalesOrders { get; set; }
+        public virtual ICollection<PromotionProductGroupingDAO> PromotionProductGroupings { get; set; }
+        public virtual ICollection<PromotionProductTypeDAO> PromotionProductTypes { get; set; }
+        public virtual ICollection<PromotionProductDAO> PromotionProducts { get; set; }
         public virtual ICollection<PromotionPromotionPolicyMappingDAO> PromotionPromotionPolicyMappings { get; set; }
         public virtual ICollection<PromotionSamePriceDAO> PromotionSamePrices { get; set; }
         public virtual ICollection<PromotionStoreGroupingMappingDAO> PromotionStoreGroupingMappings { get; set; }

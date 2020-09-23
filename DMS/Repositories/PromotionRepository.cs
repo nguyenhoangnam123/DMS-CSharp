@@ -288,7 +288,6 @@ namespace DMS.Repositories
                 {
                     Id = x.Id,
                     Note = x.Note,
-                    Name = x.Name,
                     PromotionId = x.PromotionId,
                 }).ToListAsync();
             Promotion.PromotionDirectSalesOrders = await DataContext.PromotionDirectSalesOrder.AsNoTracking()
@@ -296,7 +295,6 @@ namespace DMS.Repositories
                 .Select(x => new PromotionDirectSalesOrder
                 {
                     Id = x.Id,
-                    Name = x.Name,
                     PromotionId = x.PromotionId,
                     Note = x.Note,
                     FromValue = x.FromValue,
@@ -338,7 +336,6 @@ namespace DMS.Repositories
                 {
                     Id = x.Id,
                     Note = x.Note,
-                    Name = x.Name,
                     PromotionId = x.PromotionId,
                     Price = x.Price,
                 }).ToListAsync();
@@ -571,7 +568,6 @@ namespace DMS.Repositories
                     PromotionComboDAO PromotionComboDAO = new PromotionComboDAO();
                     PromotionComboDAO.Id = PromotionCombo.Id;
                     PromotionComboDAO.Note = PromotionCombo.Note;
-                    PromotionComboDAO.Name = PromotionCombo.Name;
                     PromotionComboDAO.PromotionId = Promotion.Id;
                     PromotionComboDAOs.Add(PromotionComboDAO);
                 }
@@ -587,7 +583,6 @@ namespace DMS.Repositories
                 {
                     PromotionDirectSalesOrderDAO PromotionDirectSalesOrderDAO = new PromotionDirectSalesOrderDAO();
                     PromotionDirectSalesOrderDAO.Id = PromotionDirectSalesOrder.Id;
-                    PromotionDirectSalesOrderDAO.Name = PromotionDirectSalesOrder.Name;
                     PromotionDirectSalesOrderDAO.PromotionId = Promotion.Id;
                     PromotionDirectSalesOrderDAO.Note = PromotionDirectSalesOrder.Note;
                     PromotionDirectSalesOrderDAO.FromValue = PromotionDirectSalesOrder.FromValue;
@@ -627,7 +622,6 @@ namespace DMS.Repositories
                     PromotionSamePriceDAO PromotionSamePriceDAO = new PromotionSamePriceDAO();
                     PromotionSamePriceDAO.Id = PromotionSamePrice.Id;
                     PromotionSamePriceDAO.Note = PromotionSamePrice.Note;
-                    PromotionSamePriceDAO.Name = PromotionSamePrice.Name;
                     PromotionSamePriceDAO.PromotionId = Promotion.Id;
                     PromotionSamePriceDAO.Price = PromotionSamePrice.Price;
                     PromotionSamePriceDAOs.Add(PromotionSamePriceDAO);

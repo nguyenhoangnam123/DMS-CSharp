@@ -148,7 +148,6 @@ namespace DMS.Repositories
                 {
                     Id = q.PromotionCombo.Id,
                     Note = q.PromotionCombo.Note,
-                    Name = q.PromotionCombo.Name,
                     PromotionId = q.PromotionCombo.PromotionId,
                 } : null,
                 PromotionDiscountType = filter.Selects.Contains(ComboSelect.PromotionDiscountType) && q.PromotionDiscountType != null ? new PromotionDiscountType
@@ -197,7 +196,6 @@ namespace DMS.Repositories
                 {
                     Id = x.PromotionCombo.Id,
                     Note = x.PromotionCombo.Note,
-                    Name = x.PromotionCombo.Name,
                     PromotionId = x.PromotionCombo.PromotionId,
                 },
                 PromotionDiscountType = x.PromotionDiscountType == null ? null : new PromotionDiscountType

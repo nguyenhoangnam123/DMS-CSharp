@@ -41,6 +41,7 @@ namespace DMS.Models
         /// Giá bán theo đơn vị xuất hàng
         /// </summary>
         public decimal SalePrice { get; set; }
+        public long EditedPriceStatusId { get; set; }
         /// <summary>
         /// % chiết khấu theo dòng
         /// </summary>
@@ -71,6 +72,7 @@ namespace DMS.Models
         public decimal Amount { get; set; }
         public long? Factor { get; set; }
 
+        public virtual EditedPriceStatusDAO EditedPriceStatus { get; set; }
         public virtual IndirectSalesOrderDAO IndirectSalesOrder { get; set; }
         public virtual ItemDAO Item { get; set; }
         public virtual UnitOfMeasureDAO PrimaryUnitOfMeasure { get; set; }

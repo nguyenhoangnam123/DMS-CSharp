@@ -10,6 +10,7 @@ namespace DMS.Models
             Items = new HashSet<ItemDAO>();
             ProductImageMappings = new HashSet<ProductImageMappingDAO>();
             ProductProductGroupingMappings = new HashSet<ProductProductGroupingMappingDAO>();
+            PromotionProducts = new HashSet<PromotionProductDAO>();
             VariationGroupings = new HashSet<VariationGroupingDAO>();
         }
 
@@ -51,6 +52,7 @@ namespace DMS.Models
         public virtual ICollection<ItemDAO> Items { get; set; }
         public virtual ICollection<ProductImageMappingDAO> ProductImageMappings { get; set; }
         public virtual ICollection<ProductProductGroupingMappingDAO> ProductProductGroupingMappings { get; set; }
+        public virtual ICollection<PromotionProductDAO> PromotionProducts { get; set; }
         public virtual ICollection<VariationGroupingDAO> VariationGroupings { get; set; }
     }
 }

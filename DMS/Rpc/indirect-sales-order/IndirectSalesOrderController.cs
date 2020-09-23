@@ -194,8 +194,6 @@ namespace DMS.Rpc.indirect_sales_order
             return IndirectSalesOrder_IndirectSalesOrderDTOs;
         }
 
-
-
         [Route(IndirectSalesOrderRoute.Get), HttpPost]
         public async Task<ActionResult<IndirectSalesOrder_IndirectSalesOrderDTO>> Get([FromBody] IndirectSalesOrder_IndirectSalesOrderDTO IndirectSalesOrder_IndirectSalesOrderDTO)
         {
@@ -274,7 +272,6 @@ namespace DMS.Rpc.indirect_sales_order
             else
                 return BadRequest(IndirectSalesOrder_IndirectSalesOrderDTO);
         }
-
 
         [Route(IndirectSalesOrderRoute.Approve), HttpPost]
         public async Task<ActionResult<IndirectSalesOrder_IndirectSalesOrderDTO>> Approve([FromBody] IndirectSalesOrder_IndirectSalesOrderDTO IndirectSalesOrder_IndirectSalesOrderDTO)

@@ -8,6 +8,7 @@ namespace DMS.Models
         public ProductTypeDAO()
         {
             Products = new HashSet<ProductDAO>();
+            PromotionProductTypes = new HashSet<PromotionProductTypeDAO>();
         }
 
         public long Id { get; set; }
@@ -22,5 +23,6 @@ namespace DMS.Models
 
         public virtual StatusDAO Status { get; set; }
         public virtual ICollection<ProductDAO> Products { get; set; }
+        public virtual ICollection<PromotionProductTypeDAO> PromotionProductTypes { get; set; }
     }
 }

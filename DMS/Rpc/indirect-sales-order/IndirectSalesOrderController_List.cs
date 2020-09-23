@@ -63,7 +63,6 @@ namespace DMS.Rpc.indirect_sales_order
             if (StoreFilter.Id == null) StoreFilter.Id = new IdFilter();
             StoreFilter.Id.In = await FilterStore(StoreService, OrganizationService, CurrentContext);
 
-
             List<Store> Stores = await StoreService.List(StoreFilter);
             List<IndirectSalesOrder_StoreDTO> IndirectSalesOrder_StoreDTOs = Stores
                 .Select(x => new IndirectSalesOrder_StoreDTO(x)).ToList();

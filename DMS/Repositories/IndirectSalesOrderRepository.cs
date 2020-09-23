@@ -636,6 +636,7 @@ namespace DMS.Repositories
                     RequestedQuantity = x.RequestedQuantity,
                     PrimaryPrice = x.PrimaryPrice,
                     SalePrice = x.SalePrice,
+                    EditedPriceStatusId = x.EditedPriceStatusId,
                     DiscountPercentage = x.DiscountPercentage,
                     DiscountAmount = x.DiscountAmount,
                     GeneralDiscountPercentage = x.GeneralDiscountPercentage,
@@ -644,6 +645,12 @@ namespace DMS.Repositories
                     TaxPercentage = x.TaxPercentage,
                     TaxAmount = x.TaxAmount,
                     Factor = x.Factor,
+                    EditedPriceStatus = x.EditedPriceStatus == null ? null : new EditedPriceStatus
+                    {
+                        Id = x.EditedPriceStatus.Id,
+                        Code = x.EditedPriceStatus.Code,
+                        Name = x.EditedPriceStatus.Name,
+                    },
                     Item = x.Item == null ? null : new Item
                     {
                         Id = x.Item.Id,
@@ -911,6 +918,7 @@ namespace DMS.Repositories
                     IndirectSalesOrderContentDAO.RequestedQuantity = IndirectSalesOrderContent.RequestedQuantity;
                     IndirectSalesOrderContentDAO.PrimaryPrice = IndirectSalesOrderContent.PrimaryPrice;
                     IndirectSalesOrderContentDAO.SalePrice = IndirectSalesOrderContent.SalePrice;
+                    IndirectSalesOrderContentDAO.EditedPriceStatusId = IndirectSalesOrderContent.EditedPriceStatusId;
                     IndirectSalesOrderContentDAO.DiscountPercentage = IndirectSalesOrderContent.DiscountPercentage;
                     IndirectSalesOrderContentDAO.DiscountAmount = IndirectSalesOrderContent.DiscountAmount;
                     IndirectSalesOrderContentDAO.GeneralDiscountPercentage = IndirectSalesOrderContent.GeneralDiscountPercentage;

@@ -11,7 +11,7 @@ namespace DMS.Models
         }
 
         public long Id { get; set; }
-        public string Name { get; set; }
+        public long PromotionPolicyId { get; set; }
         public long PromotionId { get; set; }
         public string Note { get; set; }
         public decimal FromValue { get; set; }
@@ -23,6 +23,7 @@ namespace DMS.Models
 
         public virtual PromotionDAO Promotion { get; set; }
         public virtual PromotionDiscountTypeDAO PromotionDiscountType { get; set; }
+        public virtual PromotionPolicyDAO PromotionPolicy { get; set; }
         public virtual ICollection<PromotionDirectSalesOrderItemMappingDAO> PromotionDirectSalesOrderItemMappings { get; set; }
     }
 }
