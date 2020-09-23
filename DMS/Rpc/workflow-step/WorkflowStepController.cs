@@ -700,7 +700,7 @@ namespace DMS.Rpc.workflow_step
             WorkflowDefinitionFilter.EndDate = WorkflowStep_WorkflowDefinitionFilterDTO.EndDate;
             WorkflowDefinitionFilter.StatusId = WorkflowStep_WorkflowDefinitionFilterDTO.StatusId;
             WorkflowDefinitionFilter.UpdatedAt = WorkflowStep_WorkflowDefinitionFilterDTO.UpdatedAt;
-
+            WorkflowDefinitionFilter.Used = false;
             List<WorkflowDefinition> WorkflowDefinitions = await WorkflowDefinitionService.List(WorkflowDefinitionFilter);
             List<WorkflowStep_WorkflowDefinitionDTO> WorkflowStep_WorkflowDefinitionDTOs = WorkflowDefinitions
                 .Select(x => new WorkflowStep_WorkflowDefinitionDTO(x)).ToList();

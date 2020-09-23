@@ -5,7 +5,8 @@
       "WorkflowStepInUsed": "Bước hiện tại đang được sử dụng."
     },
     "WorkflowDefinitionId": {
-      "WorkflowDefinitionIdNotExisted": "Workflow không tồn tại."
+      "WorkflowDefinitionIdNotExisted": "Workflow không tồn tại.",
+      "WorkflowDefinitionInUsed": "Workflow đã được sử dụng."
     },
     "Code": {
       "CodeEmpty": "Mã chưa được nhập.",

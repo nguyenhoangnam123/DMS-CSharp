@@ -56,6 +56,8 @@ namespace DMS.Repositories
                 query = query.Where(q => q.CreatedAt, filter.CreatedAt);
             if (filter.UpdatedAt != null)
                 query = query.Where(q => q.UpdatedAt, filter.UpdatedAt);
+            if (filter.Used != null)
+                query = query.Where(q => q.Used == filter.Used.Value);
             if (filter.OrganizationId != null)
             {
                 if (filter.OrganizationId.Equal != null)
@@ -88,7 +90,7 @@ namespace DMS.Repositories
                     List<long> Ids = Branches.Select(o => o.Id).ToList();
                     query = query.Where(q => !Ids.Contains(q.OrganizationId));
                 }
-            }   
+            }
             query = OrFilter(query, filter);
             return query;
         }

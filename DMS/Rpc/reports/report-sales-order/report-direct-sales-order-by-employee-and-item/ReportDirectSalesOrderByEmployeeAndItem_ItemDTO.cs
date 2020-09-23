@@ -18,7 +18,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_by_employ
         public decimal Discount { get; set; }
         public decimal Revenue { get; set; }
         public long BuyerStoreCounter => StoreIds?.Count() ?? 0;
-        public long tSalesOrderCounter => DirectSalesOrderIds?.Count() ?? 0;
+        public long SalesOrderCounter => DirectSalesOrderIds?.Count() ?? 0;
         internal HashSet<long> StoreIds { get; set; }
         internal HashSet<long> DirectSalesOrderIds { get; set; }
     }

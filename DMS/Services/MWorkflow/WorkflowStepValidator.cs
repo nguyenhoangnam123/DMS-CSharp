@@ -22,6 +22,7 @@ namespace DMS.Services.MWorkflow
         {
             IdNotExisted,
             WorkflowDefinitionIdNotExisted,
+            WorkflowDefinitionInUsed,
             WorkflowStepInUsed,
             CodeEmpty,
             CodeHasSpecialCharacter,
@@ -60,18 +61,13 @@ namespace DMS.Services.MWorkflow
 
         public async Task<bool> ValidateWorkflowDefinitionId(WorkflowStep WorkflowStep)
         {
-            WorkflowDefinitionFilter WorkflowDefinitionFilter = new WorkflowDefinitionFilter
-            {
-                Skip = 0,
-                Take = 10,
-                Id = new IdFilter { Equal = WorkflowStep.WorkflowDefinitionId },
-                Selects = WorkflowDefinitionSelect.Id
-            };
+            WorkflowDefinition WorkflowDefinition = await UOW.WorkflowDefinitionRepository.Get(WorkflowStep.WorkflowDefinitionId);
 
-            int count = await UOW.WorkflowDefinitionRepository.Count(WorkflowDefinitionFilter);
-            if (count == 0)
+            if (WorkflowDefinition == null)
                 WorkflowStep.AddError(nameof(WorkflowStepValidator), nameof(WorkflowStep.WorkflowDefinition), ErrorCode.WorkflowDefinitionIdNotExisted);
-            return count == 1;
+            else if (WorkflowDefinition.Used)
+                WorkflowStep.AddError(nameof(WorkflowStepValidator), nameof(WorkflowStep.WorkflowDefinition), ErrorCode.WorkflowDefinitionInUsed);
+            return WorkflowStep.IsValidated;
         }
 
         private async Task<bool> ValidateCode(WorkflowStep WorkflowStep)
