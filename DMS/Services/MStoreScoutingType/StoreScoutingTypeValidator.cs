@@ -66,8 +66,7 @@ namespace DMS.Services.MStoreScoutingType
             }
             else
             {
-                var Code = StoreScoutingType.Code;
-                if (StoreScoutingType.Code.Contains(" ") || !FilterExtension.ChangeToEnglishChar(Code).Equals(StoreScoutingType.Code))
+                if (!StoreScoutingType.Code.ChangeToEnglishChar().Equals(StoreScoutingType.Code))
                 {
                     StoreScoutingType.AddError(nameof(StoreScoutingTypeValidator), nameof(StoreScoutingType.Code), ErrorCode.CodeHasSpecialCharacter);
                 }
@@ -107,7 +106,7 @@ namespace DMS.Services.MStoreScoutingType
             return StoreScoutingType.IsValidated;
         }
 
-        public async Task<bool>Create(StoreScoutingType StoreScoutingType)
+        public async Task<bool> Create(StoreScoutingType StoreScoutingType)
         {
             await ValidateCode(StoreScoutingType);
             await ValidateName(StoreScoutingType);
@@ -138,7 +137,7 @@ namespace DMS.Services.MStoreScoutingType
             }
             return StoreScoutingType.IsValidated;
         }
-        
+
         public async Task<bool> BulkDelete(List<StoreScoutingType> StoreScoutingTypes)
         {
             foreach (StoreScoutingType StoreScoutingType in StoreScoutingTypes)
@@ -147,7 +146,7 @@ namespace DMS.Services.MStoreScoutingType
             }
             return StoreScoutingTypes.All(x => x.IsValidated);
         }
-        
+
         public async Task<bool> Import(List<StoreScoutingType> StoreScoutingTypes)
         {
             return true;
