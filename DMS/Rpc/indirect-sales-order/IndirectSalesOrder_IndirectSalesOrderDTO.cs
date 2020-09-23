@@ -53,11 +53,11 @@ namespace DMS.Rpc.indirect_sales_order
             this.RequestStateId = IndirectSalesOrder.RequestStateId;
             this.EditedPriceStatusId = IndirectSalesOrder.EditedPriceStatusId;
             this.Note = IndirectSalesOrder.Note;
-            this.SubTotal = IndirectSalesOrder.SubTotal;
+            this.SubTotal = Math.Round(IndirectSalesOrder.SubTotal, 0);
             this.GeneralDiscountPercentage = IndirectSalesOrder.GeneralDiscountPercentage;
             this.GeneralDiscountAmount = IndirectSalesOrder.GeneralDiscountAmount;
             this.TotalTaxAmount = IndirectSalesOrder.TotalTaxAmount;
-            this.Total = IndirectSalesOrder.Total;
+            this.Total = Math.Round(IndirectSalesOrder.Total, 0);
             this.BuyerStore = IndirectSalesOrder.BuyerStore == null ? null : new IndirectSalesOrder_StoreDTO(IndirectSalesOrder.BuyerStore);
             this.EditedPriceStatus = IndirectSalesOrder.EditedPriceStatus == null ? null : new IndirectSalesOrder_EditedPriceStatusDTO(IndirectSalesOrder.EditedPriceStatus);
             this.RequestState = IndirectSalesOrder.RequestState == null ? null : new IndirectSalesOrder_RequestStateDTO(IndirectSalesOrder.RequestState);
