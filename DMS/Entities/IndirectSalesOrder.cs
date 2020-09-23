@@ -61,6 +61,7 @@ namespace DMS.Entities
         public StringFilter DeliveryAddress { get; set; }
         public IdFilter SellerStoreId { get; set; }
         public IdFilter AppUserId { get; set; }
+        public IdFilter ApproverId { get; set; }
         public DateFilter OrderDate { get; set; }
         public DateFilter DeliveryDate { get; set; }
         public IdFilter RequestStateId { get; set; }

@@ -17,7 +17,7 @@ namespace DMS.Rpc.direct_sales_order
         public const string Create = Default + "/create";
         public const string Update = Default + "/update";
         public const string Delete = Default + "/delete";
-        public const string Send = Default + "/approve";
+        public const string Send = Default + "/send";
         public const string Approve = Default + "/approve";
         public const string Reject = Default + "/reject";
         public const string Export = Default + "/export";

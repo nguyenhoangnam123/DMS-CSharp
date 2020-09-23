@@ -121,6 +121,7 @@ namespace DMS.Rpc.indirect_sales_order
                 throw new BindException(ModelState);
 
             IndirectSalesOrderFilter IndirectSalesOrderFilter = ConvertFilterDTOToFilterEntity(IndirectSalesOrder_IndirectSalesOrderFilterDTO);
+            IndirectSalesOrderFilter.RequestStateId = new IdFilter { Equal = RequestStateEnum.NEW.Id };
             IndirectSalesOrderFilter = await IndirectSalesOrderService.ToFilter(IndirectSalesOrderFilter);
             int count = await IndirectSalesOrderService.Count(IndirectSalesOrderFilter);
             return count;
@@ -133,6 +134,7 @@ namespace DMS.Rpc.indirect_sales_order
                 throw new BindException(ModelState);
 
             IndirectSalesOrderFilter IndirectSalesOrderFilter = ConvertFilterDTOToFilterEntity(IndirectSalesOrder_IndirectSalesOrderFilterDTO);
+            IndirectSalesOrderFilter.RequestStateId = new IdFilter { Equal = RequestStateEnum.NEW.Id };
             IndirectSalesOrderFilter = await IndirectSalesOrderService.ToFilter(IndirectSalesOrderFilter);
             List<IndirectSalesOrder> IndirectSalesOrders = await IndirectSalesOrderService.List(IndirectSalesOrderFilter);
             List<IndirectSalesOrder_IndirectSalesOrderDTO> IndirectSalesOrder_IndirectSalesOrderDTOs = IndirectSalesOrders
@@ -148,6 +150,7 @@ namespace DMS.Rpc.indirect_sales_order
                 throw new BindException(ModelState);
 
             IndirectSalesOrderFilter IndirectSalesOrderFilter = ConvertFilterDTOToFilterEntity(IndirectSalesOrder_IndirectSalesOrderFilterDTO);
+            IndirectSalesOrderFilter.RequestStateId = new IdFilter { Equal = RequestStateEnum.APPROVING.Id };
             IndirectSalesOrderFilter = await IndirectSalesOrderService.ToFilter(IndirectSalesOrderFilter);
             int count = await IndirectSalesOrderService.Count(IndirectSalesOrderFilter);
             return count;
