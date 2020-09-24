@@ -64,16 +64,21 @@ namespace DMS.Services.MWorkflow
             return RequestWorkflowStepMappings;
         }
 
+        /// <summary>
+        /// Trả về trạng thái chung của request
+        /// </summary>
+        /// <param name="RequestId"></param>
+        /// <returns>Request State Enum</returns>
         private async Task<GenericEnum> IsInitializedStep(Guid RequestId)
         {
             RequestWorkflowDefinitionMapping RequestWorkflowDefinitionMapping = await UOW.RequestWorkflowDefinitionMappingRepository.Get(RequestId);
             if (RequestWorkflowDefinitionMapping == null)
-                return WorkflowActionEnum.NO_WORKFLOW;
+                return RequestStateEnum.APPROVED;
             else
             {
                 if (RequestWorkflowDefinitionMapping.RequestStateId == RequestStateEnum.REJECTED.Id)
-                    return WorkflowActionEnum.NO_NEXTSTEP;
-                return WorkflowActionEnum.OK;
+                    return RequestStateEnum.REJECTED;
+                return RequestStateEnum.APPROVING;
             }
         }
         private async Task<bool> IsStartedStep(Guid RequestId)
@@ -87,6 +92,15 @@ namespace DMS.Services.MWorkflow
                 return false;
             return false;
         }
+
+        /// <summary>
+        /// Trả về trạng thái sau khi khởi tạo
+        /// </summary>
+        /// <param name="RequestId">Guid đại diện cho 1 request</param>
+        /// <param name="WorkflowTypeId"></param>
+        /// <param name="OrganizationId"></param>
+        /// <param name="Parameters"></param>
+        /// <returns>Request State Enum</returns>
         public async Task<GenericEnum> Initialize(Guid RequestId, long WorkflowTypeId, long OrganizationId, Dictionary<string, string> Parameters)
         {
             // Tìm kiếm workflow definition đang active mà phù hợp với request hiện tại
@@ -115,7 +129,7 @@ namespace DMS.Services.MWorkflow
             }
 
             if (WorkflowDefinition == null)
-                return WorkflowActionEnum.NO_WORKFLOW;
+                return RequestStateEnum.APPROVED;
             NotifyUsed(WorkflowDefinition);
             WorkflowDefinition = await UOW.WorkflowDefinitionRepository.Get(WorkflowDefinition.Id);
 
@@ -133,7 +147,7 @@ namespace DMS.Services.MWorkflow
                     }
                 }
                 if (ShouldInit == false)
-                    return WorkflowActionEnum.NO_BEGIN_STEP;
+                    return RequestStateEnum.APPROVED;
             }
 
             // Xoá tất cả thông tin cũ của workflow
@@ -165,7 +179,7 @@ namespace DMS.Services.MWorkflow
 
             // Update các parameter chính từ request vào workflow để chạy điều kiện theo giá trị của request
             await UpdateParameters(RequestId, WorkflowDefinition, Parameters);
-            return WorkflowActionEnum.OK;
+            return RequestStateEnum.APPROVING;
         }
 
         private async Task<bool> StartStep(Guid RequestId, Dictionary<string, string> Parameters)
@@ -397,8 +411,6 @@ namespace DMS.Services.MWorkflow
                 }
             }
 
-            if (RequestState == null)
-                return null;
             RequestWorkflowDefinitionMapping = new RequestWorkflowDefinitionMapping
             {
                 RequestId = RequestId,
@@ -646,52 +658,47 @@ namespace DMS.Services.MWorkflow
             return result;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="RequestId"></param>
+        /// <param name="WorkflowTypeId"></param>
+        /// <param name="OrganiaztionId"></param>
+        /// <param name="Parameters"></param>
+        /// <returns>Request State Enum</returns>
         public async Task<GenericEnum> Send(Guid RequestId, long WorkflowTypeId, long OrganiaztionId, Dictionary<string, string> Parameters)
         {
-            GenericEnum Initialized = await IsInitializedStep(RequestId);
-
-            if (Initialized != WorkflowActionEnum.OK)
+            GenericEnum RequestState = await Initialize(RequestId, WorkflowTypeId, OrganiaztionId, Parameters);
+            if (RequestState == RequestStateEnum.APPROVED)
+                return RequestStateEnum.APPROVED;
+            bool IsStarted = await StartStep(RequestId, Parameters);
+            if (IsStarted)
             {
-                GenericEnum Action = await Initialize(RequestId, WorkflowTypeId, OrganiaztionId, Parameters);
-                if (Action != WorkflowActionEnum.OK)
-                    return Action;
+                RequestState = await Approve(RequestId, WorkflowTypeId, Parameters);
+                return RequestState;
             }
-            await Approve(RequestId, WorkflowTypeId, Parameters);
-            return WorkflowActionEnum.OK;
+            return RequestStateEnum.APPROVED;
         }
+
+        /// <summary>
+        /// Thực hiện phê duyệt bản ghi
+        /// </summary>
+        /// <param name="RequestId"></param>
+        /// <param name="WorkflowTypeId"></param>
+        /// <param name="Parameters"></param>
+        /// <returns>Request State Enum</returns>
         public async Task<GenericEnum> Approve(Guid RequestId, long WorkflowTypeId, Dictionary<string, string> Parameters)
         {
-            bool Started = await IsStartedStep(RequestId);
-            if (Started)
-            {
-                await ApproveStep(RequestId, Parameters);
-            }
-            else
-            {
-                await StartStep(RequestId, Parameters);
-                await ApproveStep(RequestId, Parameters);
-            }
-            await EndStep(RequestId, Parameters);
-            return WorkflowActionEnum.OK;
+            await ApproveStep(RequestId, Parameters);
+            GenericEnum RequestState = await EndStep(RequestId, Parameters);
+            return RequestState;
         }
 
         public async Task<GenericEnum> Reject(Guid RequestId, long WorkflowTypeId, Dictionary<string, string> Parameters)
         {
-            GenericEnum Action = await IsInitializedStep(RequestId);
-            if (Action != WorkflowActionEnum.OK)
-                return Action;
-            bool Started = await IsStartedStep(RequestId);
-            if (Started)
-            {
-                await RejectStep(RequestId, Parameters);
-            }
-            else
-            {
-                await StartStep(RequestId, Parameters);
-                await RejectStep(RequestId, Parameters);
-            }
-            await EndStep(RequestId, Parameters);
-            return WorkflowActionEnum.OK;
+            await RejectStep(RequestId, Parameters);
+            GenericEnum RequestState = await EndStep(RequestId, Parameters);
+            return RequestState;
         }
 
         private void NotifyUsed(WorkflowDefinition WorkflowDefinition)

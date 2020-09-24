@@ -310,9 +310,6 @@ namespace DMS.Services.MIndirectSalesOrder
                 IndirectSalesOrder.Code = IndirectSalesOrder.Id.ToString();
                 await UOW.IndirectSalesOrderRepository.Update(IndirectSalesOrder);
 
-                //Dictionary<string, string> Paramters = await MapParameters(IndirectSalesOrder);
-                //await WorkflowService.Initialize(IndirectSalesOrder.RowId, WorkflowTypeEnum.INDIRECT_SALES_ORDER.Id, Paramters);
-
                 await UOW.Commit();
                 IndirectSalesOrder = await UOW.IndirectSalesOrderRepository.Get(IndirectSalesOrder.Id);
 
@@ -941,6 +938,9 @@ namespace DMS.Services.MIndirectSalesOrder
             GenericEnum Action = await WorkflowService.Send(IndirectSalesOrder.RowId, WorkflowTypeEnum.INDIRECT_SALES_ORDER.Id, IndirectSalesOrder.OrganizationId, Parameters);
             if (Action != WorkflowActionEnum.OK)
                 return null;
+            RequestState RequestState = await WorkflowService.GetRequestState(IndirectSalesOrder.RowId);
+            IndirectSalesOrder.RequestStateId = RequestState.Id;
+            await UOW.IndirectSalesOrderRepository.UpdateState(IndirectSalesOrder);
             return await Get(IndirectSalesOrder.Id);
         }
 
@@ -954,6 +954,9 @@ namespace DMS.Services.MIndirectSalesOrder
             GenericEnum Action = await WorkflowService.Approve(IndirectSalesOrder.RowId, WorkflowTypeEnum.INDIRECT_SALES_ORDER.Id, Parameters);
             if (Action != WorkflowActionEnum.OK)
                 return null;
+            RequestState RequestState = await WorkflowService.GetRequestState(IndirectSalesOrder.RowId);
+            IndirectSalesOrder.RequestStateId = RequestState.Id;
+            await UOW.IndirectSalesOrderRepository.UpdateState(IndirectSalesOrder);
             return await Get(IndirectSalesOrder.Id);
         }
 
@@ -964,6 +967,9 @@ namespace DMS.Services.MIndirectSalesOrder
             GenericEnum Action = await WorkflowService.Reject(IndirectSalesOrder.RowId, WorkflowTypeEnum.INDIRECT_SALES_ORDER.Id, Parameters);
             if (Action != WorkflowActionEnum.OK)
                 return null;
+            RequestState RequestState = await WorkflowService.GetRequestState(IndirectSalesOrder.RowId);
+            IndirectSalesOrder.RequestStateId = RequestState.Id;
+            await UOW.IndirectSalesOrderRepository.UpdateState(IndirectSalesOrder);
             return await Get(IndirectSalesOrder.Id);
         }
 

@@ -27,6 +27,7 @@ namespace DMS.Repositories
         Task<IndirectSalesOrder> Get(long Id);
         Task<bool> Create(IndirectSalesOrder IndirectSalesOrder);
         Task<bool> Update(IndirectSalesOrder IndirectSalesOrder);
+        Task<bool> UpdateState(IndirectSalesOrder IndirectSalesOrder);
         Task<bool> Delete(IndirectSalesOrder IndirectSalesOrder);
         Task<bool> BulkMerge(List<IndirectSalesOrder> IndirectSalesOrders);
         Task<bool> BulkDelete(List<IndirectSalesOrder> IndirectSalesOrders);
@@ -1097,6 +1098,13 @@ namespace DMS.Repositories
                 }
             }
             await DataContext.IndirectSalesOrderTransaction.BulkMergeAsync(IndirectSalesOrderTransactionDAOs);
+        }
+
+        public async Task<bool> UpdateState(IndirectSalesOrder IndirectSalesOrder)
+        {
+            await DataContext.IndirectSalesOrder.Where(x => x.Id == IndirectSalesOrder.Id)
+                .UpdateFromQueryAsync(x => new IndirectSalesOrderDAO { RequestStateId = IndirectSalesOrder.RequestStateId });
+            return true;
         }
     }
 }
