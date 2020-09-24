@@ -54,14 +54,14 @@ namespace DMS.Rpc.app_user
                 FilterListPosition,
                 Detail, Get, Update,
                 SingleListOrganization, SingleListPosition, SingleListSex, SingleListStatus, SingleListRole, SingleListStore, SingleListStoreGrouping, SingleListStoreType,
-                CountRole, ListRole}},
+                CountStore, ListStore}},
             { "Thiết lập vai trò", new List<string> {
                 Parent,
                 Master, Count, List, Get,
                 FilterListPosition,
                 Detail, Get, UpdateRole,
                 SingleListOrganization, SingleListPosition, SingleListSex, SingleListStatus, SingleListRole, SingleListStore, SingleListStoreGrouping, SingleListStoreType,
-                }},
+                CountRole, ListRole, }},
         };
     }
 }
