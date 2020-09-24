@@ -57,6 +57,7 @@ namespace DMS.Rpc.mobile
         public const string CountBuyerStore = Default + "/count-buyer-store";
         public const string ListBuyerStore = Default + "/list-buyer-store";
         public const string GetStore = Default + "/get-store";
+        public const string CreateStore = Default + "/create-store";
         public const string UpdateStore = Default + "/update-store";
         public const string CountStorePlanned = Default + "/count-store-planned";
         public const string ListStorePlanned = Default + "/list-store-planned";

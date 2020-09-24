@@ -1088,6 +1088,62 @@ namespace DMS.Rpc.mobile
             return Ok(Mobile_AlbumDTO);
         }
 
+        [Route(MobileRoute.CreateStore), HttpPost]
+        public async Task<ActionResult<Mobile_StoreDTO>> CreateStore([FromBody] Mobile_StoreDTO Mobile_StoreDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            var CurrentUser = await AppUserService.Get(CurrentContext.UserId);
+
+            Store Store = new Store()
+            {
+                Name = Mobile_StoreDTO.Name,
+                OwnerName = Mobile_StoreDTO.OwnerName,
+                OwnerPhone = Mobile_StoreDTO.OwnerPhone,
+                StoreTypeId = Mobile_StoreDTO.StoreTypeId,
+                ProvinceId = Mobile_StoreDTO.ProvinceId,
+                DistrictId = Mobile_StoreDTO.DistrictId,
+                WardId = Mobile_StoreDTO.WardId,
+                Address = Mobile_StoreDTO.Address,
+                Latitude = Mobile_StoreDTO.Latitude,
+                Longitude = Mobile_StoreDTO.Longitude,
+                OrganizationId = CurrentUser.OrganizationId,
+                StatusId = StatusEnum.ACTIVE.Id,
+                StoreType = Mobile_StoreDTO.StoreType == null ? null : new StoreType
+                {
+                    Id = Mobile_StoreDTO.StoreType.Id,
+                    Code = Mobile_StoreDTO.StoreType.Code,
+                    Name = Mobile_StoreDTO.StoreType.Name,
+                },
+                Province = Mobile_StoreDTO.Province == null ? null : new Province
+                {
+                    Id = Mobile_StoreDTO.Province.Id,
+                    Code = Mobile_StoreDTO.Province.Code,
+                    Name = Mobile_StoreDTO.Province.Name,
+                },
+                District = Mobile_StoreDTO.District == null ? null : new District
+                {
+                    Id = Mobile_StoreDTO.District.Id,
+                    Code = Mobile_StoreDTO.District.Code,
+                    Name = Mobile_StoreDTO.District.Name,
+                },
+                Ward = Mobile_StoreDTO.Ward == null ? null : new Ward
+                {
+                    Id = Mobile_StoreDTO.Ward.Id,
+                    Code = Mobile_StoreDTO.Ward.Code,
+                    Name = Mobile_StoreDTO.Ward.Name,
+                },
+            };
+            Store.BaseLanguage = CurrentContext.Language;
+            Store = await StoreService.Create(Store);
+            Mobile_StoreDTO = new Mobile_StoreDTO(Store);
+            if (Store.IsValidated)
+                return Mobile_StoreDTO;
+            else
+                return BadRequest(Mobile_StoreDTO);
+        }
+
         [Route(MobileRoute.UpdateStore), HttpPost]
         public async Task<ActionResult<Mobile_StoreDTO>> Update([FromBody] Mobile_StoreDTO Mobile_StoreDTO)
         {
@@ -1120,7 +1176,6 @@ namespace DMS.Rpc.mobile
             else
                 return BadRequest(Mobile_StoreDTO);
         }
-
 
         [Route(MobileRoute.GetNotification), HttpPost]
         public async Task<ActionResult<Mobile_NotificationDTO>> GetNotification([FromBody] Mobile_NotificationDTO Mobile_NotificationDTO)

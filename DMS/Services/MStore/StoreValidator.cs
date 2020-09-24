@@ -456,7 +456,7 @@ namespace DMS.Services.MStore
 
         public async Task<bool> Create(Store Store)
         {
-            await ValidateCode(Store);
+            //await ValidateCode(Store);
             await ValidateName(Store);
             await ValidateOrganizationId(Store);
             await ValidateParentStoreId(Store);
@@ -483,7 +483,7 @@ namespace DMS.Services.MStore
         {
             if (await ValidateId(Store))
             {
-                await ValidateCode(Store);
+                //await ValidateCode(Store);
                 await ValidateName(Store);
                 await ValidateOrganizationId(Store);
                 await ValidateParentStoreId(Store);
@@ -530,12 +530,12 @@ namespace DMS.Services.MStore
 
         public async Task<bool> Import(List<Store> Stores)
         {
-            var listCodeInDB = (await UOW.StoreRepository.List(new StoreFilter
-            {
-                Skip = 0,
-                Take = int.MaxValue,
-                Selects = StoreSelect.Code
-            })).Select(e => e.Code);
+            //var listCodeInDB = (await UOW.StoreRepository.List(new StoreFilter
+            //{
+            //    Skip = 0,
+            //    Take = int.MaxValue,
+            //    Selects = StoreSelect.Code
+            //})).Select(e => e.Code);
 
             var listOrganizationCodeInDB = (await UOW.OrganizationRepository.List(new OrganizationFilter
             {
@@ -575,10 +575,10 @@ namespace DMS.Services.MStore
             })).Select(e => e.Code);
             foreach (var Store in Stores)
             {
-                if (Store.Code.Contains(" "))
-                {
-                    Store.AddError(nameof(StoreValidator), nameof(Store.Code), ErrorCode.CodeHasSpecialCharacter);
-                }
+                //if (Store.Code.Contains(" "))
+                //{
+                //    Store.AddError(nameof(StoreValidator), nameof(Store.Code), ErrorCode.CodeHasSpecialCharacter);
+                //}
                 if (!listOrganizationCodeInDB.Contains(Store.Organization.Code))
                 {
                     Store.AddError(nameof(StoreValidator), nameof(Store.Organization), ErrorCode.OrganizationNotExisted);
