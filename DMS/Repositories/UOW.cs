@@ -28,6 +28,7 @@ namespace DMS.Repositories
         IERouteTypeRepository ERouteTypeRepository { get; }
         IEventMessageRepository EventMessageRepository { get; }
         IFieldRepository FieldRepository { get; }
+        IIdGenerateRepository IdGenerateRepository { get; }
         IImageRepository ImageRepository { get; }
         IIndirectSalesOrderContentRepository IndirectSalesOrderContentRepository { get; }
         IIndirectSalesOrderRepository IndirectSalesOrderRepository { get; }
@@ -143,6 +144,7 @@ namespace DMS.Repositories
         public IERouteTypeRepository ERouteTypeRepository { get; private set; }
         public IFieldRepository FieldRepository { get; private set; }
         public IEventMessageRepository EventMessageRepository { get; private set; }
+        public IIdGenerateRepository IdGenerateRepository { get; private set; }
         public IImageRepository ImageRepository { get; private set; }
         public IIndirectSalesOrderContentRepository IndirectSalesOrderContentRepository { get; private set; }
         public IIndirectSalesOrderRepository IndirectSalesOrderRepository { get; private set; }
@@ -257,6 +259,7 @@ namespace DMS.Repositories
             ERouteTypeRepository = new ERouteTypeRepository(DataContext);
             FieldRepository = new FieldRepository(DataContext);
             EventMessageRepository = new EventMessageRepository(DataContext);
+            IdGenerateRepository = new IdGenerateRepository(DataContext);
             ImageRepository = new ImageRepository(DataContext);
             IndirectSalesOrderContentRepository = new IndirectSalesOrderContentRepository(DataContext);
             IndirectSalesOrderRepository = new IndirectSalesOrderRepository(DataContext);

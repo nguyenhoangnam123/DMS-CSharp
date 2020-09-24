@@ -348,12 +348,7 @@ namespace DMS.Rpc.store
                         break;
 
                     string CodeValue = worksheet.Cells[i + StartRow, CodeColumn].Value?.ToString();
-                    if (string.IsNullOrWhiteSpace(CodeValue) && i != worksheet.Dimension.End.Row)
-                    {
-                        errorContent.AppendLine($"Lỗi dòng thứ {i + 1}: Chưa nhập mã sản phẩm");
-                    }
-                    else if (string.IsNullOrWhiteSpace(CodeValue) && i == worksheet.Dimension.End.Row)
-                        break;
+                    
                     string NameValue = worksheet.Cells[i + StartRow, NameColumn].Value?.ToString();
                     string OrganizationCodeValue = worksheet.Cells[i + StartRow, OrganizationCodeColumn].Value?.ToString();
                     string ParentStoreCodeValue = worksheet.Cells[i + StartRow, ParentStoreCodeColumn].Value?.ToString();
@@ -385,17 +380,26 @@ namespace DMS.Rpc.store
                     string StatusNameValue = worksheet.Cells[i + StartRow, StatusColumn].Value?.ToString();
                     #endregion
 
-                    Store Store = All.Where(x => x.Code == CodeValue).FirstOrDefault();
-
-                    if (Store == null)
+                    Store Store;
+                    if (!string.IsNullOrWhiteSpace(CodeValue))
+                    {
+                        Store = All.Where(x => x.Code == CodeValue).FirstOrDefault();
+                        if(Store == null)
+                        {
+                            errorContent.AppendLine($"Lỗi dòng thứ {i + 1}: Mã đại lý không tồn tại");
+                            continue;
+                        }
+                        else
+                        {
+                            if (!Stores.Any(s => s.Code == Store.Code))
+                                Stores.Add(Store);
+                        }
+                    }
+                    else
                     {
                         Store = new Store();
-                        Store.Code = CodeValue;
-                    }
-                    if (Stores.Any(s => s.Code == Store.Code))
-                        continue;
-                    else
                         Stores.Add(Store);
+                    }
 
                     Store.Name = NameValue;
                     Store.LegalEntity = LegalEntityValue;

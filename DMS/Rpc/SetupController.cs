@@ -11,6 +11,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 
 namespace DMS.Rpc
 {
@@ -22,11 +24,27 @@ namespace DMS.Rpc
             this.DataContext = DataContext;
         }
 
+        [HttpGet, Route("rpc/dms/setup/count")]
+        public async Task Count()
+        {
+            List<StoreDAO> Stores = await DataContext.Store.OrderByDescending(x => x.CreatedAt).ToListAsync();
+            List<OrganizationDAO> Organizations = await DataContext.Organization.OrderByDescending(x => x.CreatedAt).ToListAsync();
+            List<StoreTypeDAO> StoreTypes = await DataContext.StoreType.OrderByDescending(x => x.CreatedAt).ToListAsync();
+            var counter = Stores.Count();
+            foreach (var Store in Stores)
+            {
+                var Organization = Organizations.Where(x => x.Id == Store.OrganizationId).Select(x => x.Code).FirstOrDefault();
+                var StoreType = StoreTypes.Where(x => x.Id == Store.StoreTypeId).Select(x => x.Code).FirstOrDefault();
+                Store.Code = $"{Organization}.{StoreType}.{(10000000 + counter--).ToString().Substring(1)}";
+            }
+            await DataContext.SaveChangesAsync();
+        }
+
         [HttpGet, Route("rpc/dms/setup/unsign")]
         public bool Unsign(int year)
         {
             List<StoreDAO> Stores = DataContext.Store.ToList();
-            foreach(var Store in Stores)
+            foreach (var Store in Stores)
             {
                 Store.UnsignName = Store.Name?.ChangeToEnglishChar();
                 Store.UnsignAddress = Store.Address?.ChangeToEnglishChar();
@@ -600,8 +618,31 @@ namespace DMS.Rpc
             InitSystemConfigurationEnum();
             InitWorkflowEnum();
             InitColorEnum();
+            InitIdGenerate();
             return Ok();
         }
+
+        private void InitIdGenerate()
+        {
+            //Store
+            var count = DataContext.IdGenerate.Where(x => x.IdGenerateTypeId == IdGenerateTypeEnum.STORE.Id).Count();
+            if (count == 0)
+            {
+                List<IdGenerateDAO> StoreIds = new List<IdGenerateDAO>();
+                for (int i = 1; i < 10000000; i++)
+                {
+                    IdGenerateDAO IdGenerateDAO = new IdGenerateDAO
+                    {
+                        IdGenerateTypeId = IdGenerateTypeEnum.STORE.Id,
+                        Counter = i,
+                        Used = false
+                    };
+                    StoreIds.Add(IdGenerateDAO);
+                }
+                DataContext.IdGenerate.BulkSynchronize(StoreIds);
+            }
+        }
+
         private void InitStatusEnum()
         {
             List<StatusDAO> StatusEnumList = StatusEnum.StatusEnumList.Select(item => new StatusDAO
