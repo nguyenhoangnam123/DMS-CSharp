@@ -470,9 +470,16 @@ namespace DMS.Repositories
 
         public async Task<int> Count(IndirectSalesOrderFilter filter)
         {
-            IQueryable<IndirectSalesOrderDAO> IndirectSalesOrders = DataContext.IndirectSalesOrder.AsNoTracking();
-            IndirectSalesOrders = DynamicFilter(IndirectSalesOrders, filter);
-            return await IndirectSalesOrders.CountAsync();
+            IQueryable<IndirectSalesOrderDAO> IndirectSalesOrderDAOs = DataContext.IndirectSalesOrder.AsNoTracking();
+            IndirectSalesOrderDAOs = DynamicFilter(IndirectSalesOrderDAOs, filter);
+            IndirectSalesOrderDAOs = from q in IndirectSalesOrderDAOs
+                                     join r in DataContext.RequestWorkflowDefinitionMapping on q.RowId equals r.RequestId
+                                     join step in DataContext.WorkflowStep on r.WorkflowDefinitionId equals step.WorkflowDefinitionId
+                                     join rstep in DataContext.RequestWorkflowStepMapping on step.Id equals rstep.WorkflowStepId
+                                     where q.SaleEmployeeId == filter.ApproverId.Equal || 
+                                     rstep.AppUserId == filter.ApproverId.Equal
+                                     select q;
+            return await IndirectSalesOrderDAOs.CountAsync();
         }
 
         public async Task<List<IndirectSalesOrder>> List(IndirectSalesOrderFilter filter)
@@ -480,6 +487,14 @@ namespace DMS.Repositories
             if (filter == null) return new List<IndirectSalesOrder>();
             IQueryable<IndirectSalesOrderDAO> IndirectSalesOrderDAOs = DataContext.IndirectSalesOrder.AsNoTracking();
             IndirectSalesOrderDAOs = DynamicFilter(IndirectSalesOrderDAOs, filter);
+            IndirectSalesOrderDAOs = from q in IndirectSalesOrderDAOs
+                                     join r in DataContext.RequestWorkflowDefinitionMapping on q.RowId equals r.RequestId
+                                     join step in DataContext.WorkflowStep on r.WorkflowDefinitionId equals step.WorkflowDefinitionId
+                                     join rstep in DataContext.RequestWorkflowStepMapping on step.Id equals rstep.WorkflowStepId
+                                     where q.SaleEmployeeId == filter.ApproverId.Equal ||
+                                     rstep.AppUserId == filter.ApproverId.Equal
+                                     select q;
+
             IndirectSalesOrderDAOs = DynamicOrder(IndirectSalesOrderDAOs, filter);
             List<IndirectSalesOrder> IndirectSalesOrders = await DynamicSelect(IndirectSalesOrderDAOs, filter);
             return IndirectSalesOrders;
@@ -491,7 +506,8 @@ namespace DMS.Repositories
             IndirectSalesOrderDAOs = DynamicFilter(IndirectSalesOrderDAOs, filter);
             IndirectSalesOrderDAOs = from q in IndirectSalesOrderDAOs
                                      join r in DataContext.RequestWorkflowDefinitionMapping on q.RowId equals r.RequestId
-                                     where r.RequestStateId == RequestStateEnum.NEW.Id
+                                     where r.RequestStateId == RequestStateEnum.NEW.Id &&
+                                     q.SaleEmployeeId == filter.ApproverId.Equal
                                      select q;
 
             return await IndirectSalesOrderDAOs.CountAsync();
@@ -504,7 +520,8 @@ namespace DMS.Repositories
             IndirectSalesOrderDAOs = DynamicFilter(IndirectSalesOrderDAOs, filter);
             IndirectSalesOrderDAOs = from q in IndirectSalesOrderDAOs
                                      join r in DataContext.RequestWorkflowDefinitionMapping on q.RowId equals r.RequestId
-                                     where r.RequestStateId == RequestStateEnum.NEW.Id
+                                     where r.RequestStateId == RequestStateEnum.NEW.Id &&
+                                     q.SaleEmployeeId == filter.ApproverId.Equal
                                      select q;
 
             IndirectSalesOrderDAOs = DynamicOrder(IndirectSalesOrderDAOs, filter);
