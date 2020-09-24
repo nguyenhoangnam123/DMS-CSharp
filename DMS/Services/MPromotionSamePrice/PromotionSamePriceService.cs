@@ -264,16 +264,8 @@ namespace DMS.Services.MPromotionSamePrice
                         
                         subFilter.Note = FilterBuilder.Merge(subFilter.Note, FilterPermissionDefinition.StringFilter);
                         
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.Name))
-                        
-                        
-                        
-                        
-                        
-                        
-                        subFilter.Name = FilterBuilder.Merge(subFilter.Name, FilterPermissionDefinition.StringFilter);
-                        
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.PromotionId))
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.PromotionPolicyId))
+                        subFilter.PromotionPolicyId = FilterBuilder.Merge(subFilter.PromotionPolicyId, FilterPermissionDefinition.IdFilter);                    if (FilterPermissionDefinition.Name == nameof(subFilter.PromotionId))
                         subFilter.PromotionId = FilterBuilder.Merge(subFilter.PromotionId, FilterPermissionDefinition.IdFilter);                    if (FilterPermissionDefinition.Name == nameof(subFilter.Price))
                         
                         

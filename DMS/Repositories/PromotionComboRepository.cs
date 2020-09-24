@@ -37,6 +37,8 @@ namespace DMS.Repositories
                 query = query.Where(q => q.Id, filter.Id);
             if (filter.Note != null)
                 query = query.Where(q => q.Note, filter.Note);
+            if (filter.PromotionPolicyId != null)
+                query = query.Where(q => q.PromotionPolicyId, filter.PromotionPolicyId);
             if (filter.PromotionId != null)
                 query = query.Where(q => q.PromotionId, filter.PromotionId);
             query = OrFilter(query, filter);
@@ -55,6 +57,8 @@ namespace DMS.Repositories
                     queryable = queryable.Where(q => q.Id, PromotionComboFilter.Id);
                 if (PromotionComboFilter.Note != null)
                     queryable = queryable.Where(q => q.Note, PromotionComboFilter.Note);
+                if (PromotionComboFilter.PromotionPolicyId != null)
+                    queryable = queryable.Where(q => q.PromotionPolicyId, PromotionComboFilter.PromotionPolicyId);
                 if (PromotionComboFilter.PromotionId != null)
                     queryable = queryable.Where(q => q.PromotionId, PromotionComboFilter.PromotionId);
                 initQuery = initQuery.Union(queryable);
@@ -75,6 +79,9 @@ namespace DMS.Repositories
                         case PromotionComboOrder.Note:
                             query = query.OrderBy(q => q.Note);
                             break;
+                        case PromotionComboOrder.PromotionPolicy:
+                            query = query.OrderBy(q => q.PromotionPolicyId);
+                            break;
                         case PromotionComboOrder.Promotion:
                             query = query.OrderBy(q => q.PromotionId);
                             break;
@@ -88,6 +95,9 @@ namespace DMS.Repositories
                             break;
                         case PromotionComboOrder.Note:
                             query = query.OrderByDescending(q => q.Note);
+                            break;
+                        case PromotionComboOrder.PromotionPolicy:
+                            query = query.OrderByDescending(q => q.PromotionPolicyId);
                             break;
                         case PromotionComboOrder.Promotion:
                             query = query.OrderByDescending(q => q.PromotionId);
@@ -105,6 +115,7 @@ namespace DMS.Repositories
             {
                 Id = filter.Selects.Contains(PromotionComboSelect.Id) ? q.Id : default(long),
                 Note = filter.Selects.Contains(PromotionComboSelect.Note) ? q.Note : default(string),
+                PromotionPolicyId = filter.Selects.Contains(PromotionComboSelect.PromotionPolicy) ? q.PromotionPolicyId : default(long),
                 PromotionId = filter.Selects.Contains(PromotionComboSelect.Promotion) ? q.PromotionId : default(long),
                 Promotion = filter.Selects.Contains(PromotionComboSelect.Promotion) && q.Promotion != null ? new Promotion
                 {
@@ -118,6 +129,12 @@ namespace DMS.Repositories
                     Note = q.Promotion.Note,
                     Priority = q.Promotion.Priority,
                     StatusId = q.Promotion.StatusId,
+                } : null,
+                PromotionPolicy = filter.Selects.Contains(PromotionComboSelect.PromotionPolicy) && q.PromotionPolicy != null ? new PromotionPolicy
+                {
+                    Id = q.PromotionPolicy.Id,
+                    Code = q.PromotionPolicy.Code,
+                    Name = q.PromotionPolicy.Name,
                 } : null,
             }).ToListAsync();
             return PromotionCombos;
@@ -147,6 +164,7 @@ namespace DMS.Repositories
             {
                 Id = x.Id,
                 Note = x.Note,
+                PromotionPolicyId = x.PromotionPolicyId,
                 PromotionId = x.PromotionId,
                 Promotion = x.Promotion == null ? null : new Promotion
                 {
@@ -160,6 +178,12 @@ namespace DMS.Repositories
                     Note = x.Promotion.Note,
                     Priority = x.Promotion.Priority,
                     StatusId = x.Promotion.StatusId,
+                },
+                PromotionPolicy = x.PromotionPolicy == null ? null : new PromotionPolicy
+                {
+                    Id = x.PromotionPolicy.Id,
+                    Code = x.PromotionPolicy.Code,
+                    Name = x.PromotionPolicy.Name,
                 },
             }).FirstOrDefaultAsync();
 
@@ -191,6 +215,7 @@ namespace DMS.Repositories
             PromotionComboDAO PromotionComboDAO = new PromotionComboDAO();
             PromotionComboDAO.Id = PromotionCombo.Id;
             PromotionComboDAO.Note = PromotionCombo.Note;
+            PromotionComboDAO.PromotionPolicyId = PromotionCombo.PromotionPolicyId;
             PromotionComboDAO.PromotionId = PromotionCombo.PromotionId;
             DataContext.PromotionCombo.Add(PromotionComboDAO);
             await DataContext.SaveChangesAsync();
@@ -206,6 +231,7 @@ namespace DMS.Repositories
                 return false;
             PromotionComboDAO.Id = PromotionCombo.Id;
             PromotionComboDAO.Note = PromotionCombo.Note;
+            PromotionComboDAO.PromotionPolicyId = PromotionCombo.PromotionPolicyId;
             PromotionComboDAO.PromotionId = PromotionCombo.PromotionId;
             await DataContext.SaveChangesAsync();
             await SaveReference(PromotionCombo);
@@ -226,6 +252,7 @@ namespace DMS.Repositories
                 PromotionComboDAO PromotionComboDAO = new PromotionComboDAO();
                 PromotionComboDAO.Id = PromotionCombo.Id;
                 PromotionComboDAO.Note = PromotionCombo.Note;
+                PromotionComboDAO.PromotionPolicyId = PromotionCombo.PromotionPolicyId;
                 PromotionComboDAO.PromotionId = PromotionCombo.PromotionId;
                 PromotionComboDAOs.Add(PromotionComboDAO);
             }
