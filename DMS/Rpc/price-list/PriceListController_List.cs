@@ -93,6 +93,8 @@ namespace DMS.Rpc.price_list
             StoreGroupingFilter.Level = PriceList_StoreGroupingFilterDTO.Level;
             StoreGroupingFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
+            if (StoreGroupingFilter.Id == null) StoreGroupingFilter.Id = new IdFilter();
+            StoreGroupingFilter.Id.In = await FilterStoreGrouping(StoreGroupingService, CurrentContext);
             List<StoreGrouping> StoreGroupings = await StoreGroupingService.List(StoreGroupingFilter);
             List<PriceList_StoreGroupingDTO> PriceList_StoreGroupingDTOs = StoreGroupings
                 .Select(x => new PriceList_StoreGroupingDTO(x)).ToList();
@@ -132,6 +134,8 @@ namespace DMS.Rpc.price_list
             StoreFilter.WorkflowDefinitionId = PriceList_StoreFilterDTO.WorkflowDefinitionId;
             StoreFilter.RequestStateId = PriceList_StoreFilterDTO.RequestStateId;
 
+            if (StoreFilter.Id == null) StoreFilter.Id = new IdFilter();
+            StoreFilter.Id.In = await FilterStore(StoreService, OrganizationService, CurrentContext);
             List<Store> Stores = await StoreService.List(StoreFilter);
             List<PriceList_StoreDTO> PriceList_StoreDTOs = Stores
                 .Select(x => new PriceList_StoreDTO(x)).ToList();
@@ -151,6 +155,8 @@ namespace DMS.Rpc.price_list
             StoreTypeFilter.Name = PriceList_StoreTypeFilterDTO.Name;
             StoreTypeFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
+            if (StoreTypeFilter.Id == null) StoreTypeFilter.Id = new IdFilter();
+            StoreTypeFilter.Id.In = await FilterStoreType(StoreTypeService, CurrentContext);
             List<StoreType> StoreTypes = await StoreTypeService.List(StoreTypeFilter);
             List<PriceList_StoreTypeDTO> PriceList_StoreTypeDTOs = StoreTypes
                 .Select(x => new PriceList_StoreTypeDTO(x)).ToList();
@@ -289,6 +295,8 @@ namespace DMS.Rpc.price_list
             StoreGroupingFilter.Level = PriceList_StoreGroupingFilterDTO.Level;
             StoreGroupingFilter.StatusId = PriceList_StoreGroupingFilterDTO.StatusId;
 
+            if (StoreGroupingFilter.Id == null) StoreGroupingFilter.Id = new IdFilter();
+            StoreGroupingFilter.Id.In = await FilterStoreGrouping(StoreGroupingService, CurrentContext);
             List<StoreGrouping> StoreGroupings = await StoreGroupingService.List(StoreGroupingFilter);
             List<PriceList_StoreGroupingDTO> PriceList_StoreGroupingDTOs = StoreGroupings
                 .Select(x => new PriceList_StoreGroupingDTO(x)).ToList();
@@ -328,6 +336,8 @@ namespace DMS.Rpc.price_list
             StoreFilter.WorkflowDefinitionId = PriceList_StoreFilterDTO.WorkflowDefinitionId;
             StoreFilter.RequestStateId = PriceList_StoreFilterDTO.RequestStateId;
 
+            if (StoreFilter.Id == null) StoreFilter.Id = new IdFilter();
+            StoreFilter.Id.In = await FilterStore(StoreService, OrganizationService, CurrentContext);
             List<Store> Stores = await StoreService.List(StoreFilter);
             List<PriceList_StoreDTO> PriceList_StoreDTOs = Stores
                 .Select(x => new PriceList_StoreDTO(x)).ToList();
@@ -347,6 +357,8 @@ namespace DMS.Rpc.price_list
             StoreTypeFilter.Name = PriceList_StoreTypeFilterDTO.Name;
             StoreTypeFilter.StatusId = PriceList_StoreTypeFilterDTO.StatusId;
 
+            if (StoreTypeFilter.Id == null) StoreTypeFilter.Id = new IdFilter();
+            StoreTypeFilter.Id.In = await FilterStoreType(StoreTypeService, CurrentContext);
             List<StoreType> StoreTypes = await StoreTypeService.List(StoreTypeFilter);
             List<PriceList_StoreTypeDTO> PriceList_StoreTypeDTOs = StoreTypes
                 .Select(x => new PriceList_StoreTypeDTO(x)).ToList();
@@ -451,6 +463,8 @@ namespace DMS.Rpc.price_list
             ProductTypeFilter.Description = PriceList_ProductTypeFilterDTO.Description;
             ProductTypeFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
+            if (ProductTypeFilter.Id == null) ProductTypeFilter.Id = new IdFilter();
+            ProductTypeFilter.Id.In = await FilterProductType(ProductTypeService, CurrentContext);
             List<ProductType> ProductTypes = await ProductTypeService.List(ProductTypeFilter);
             List<PriceList_ProductTypeDTO> PriceList_ProductTypeDTOs = ProductTypes
                 .Select(x => new PriceList_ProductTypeDTO(x)).ToList();
@@ -470,6 +484,8 @@ namespace DMS.Rpc.price_list
             ProductGroupingFilter.Selects = ProductGroupingSelect.Id | ProductGroupingSelect.Code
                 | ProductGroupingSelect.Name | ProductGroupingSelect.Parent;
 
+            if (ProductGroupingFilter.Id == null) ProductGroupingFilter.Id = new IdFilter();
+            ProductGroupingFilter.Id.In = await FilterProductGrouping(ProductGroupingService, CurrentContext);
             List<ProductGrouping> ProductGroupings = await ProductGroupingService.List(ProductGroupingFilter);
             List<PriceList_ProductGroupingDTO> PriceList_ProductGroupingDTOs = ProductGroupings
                 .Select(x => new PriceList_ProductGroupingDTO(x)).ToList();
@@ -558,6 +574,8 @@ namespace DMS.Rpc.price_list
             StoreFilter.WorkflowDefinitionId = PriceList_StoreFilterDTO.WorkflowDefinitionId;
             StoreFilter.RequestStateId = PriceList_StoreFilterDTO.RequestStateId;
 
+            if (StoreFilter.Id == null) StoreFilter.Id = new IdFilter();
+            StoreFilter.Id.In = await FilterStore(StoreService, OrganizationService, CurrentContext);
             return await StoreService.Count(StoreFilter);
         }
 
@@ -598,6 +616,8 @@ namespace DMS.Rpc.price_list
             StoreFilter.WorkflowDefinitionId = PriceList_StoreFilterDTO.WorkflowDefinitionId;
             StoreFilter.RequestStateId = PriceList_StoreFilterDTO.RequestStateId;
 
+            if (StoreFilter.Id == null) StoreFilter.Id = new IdFilter();
+            StoreFilter.Id.In = await FilterStore(StoreService, OrganizationService, CurrentContext);
             List<Store> Stores = await StoreService.List(StoreFilter);
             List<PriceList_StoreDTO> PriceList_StoreDTOs = Stores
                 .Select(x => new PriceList_StoreDTO(x)).ToList();

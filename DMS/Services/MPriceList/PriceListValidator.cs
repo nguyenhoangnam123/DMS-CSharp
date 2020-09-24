@@ -157,7 +157,7 @@ namespace DMS.Services.MPriceList
                 var PriceListTypeIds = PriceListTypeEnum.PriceListTypeEnumList.Select(x => x.Id).ToList();
                 if (!PriceListTypeIds.Contains(PriceList.PriceListTypeId))
                 {
-                    PriceList.AddError(nameof(PriceListValidator), nameof(PriceList.Organization), ErrorCode.PriceListTypeNotExisted);
+                    PriceList.AddError(nameof(PriceListValidator), nameof(PriceList.PriceListType), ErrorCode.PriceListTypeNotExisted);
                 }
             }
             return PriceList.IsValidated;
@@ -174,7 +174,7 @@ namespace DMS.Services.MPriceList
                 var SalesOrderTypeIds = SalesOrderTypeEnum.SalesOrderTypeEnumList.Select(x => x.Id).ToList();
                 if (!SalesOrderTypeIds.Contains(PriceList.SalesOrderTypeId))
                 {
-                    PriceList.AddError(nameof(PriceListValidator), nameof(PriceList.Organization), ErrorCode.SalesOrderTypeNotExisted);
+                    PriceList.AddError(nameof(PriceListValidator), nameof(PriceList.SalesOrderType), ErrorCode.SalesOrderTypeNotExisted);
                 }
             }
             return PriceList.IsValidated;
