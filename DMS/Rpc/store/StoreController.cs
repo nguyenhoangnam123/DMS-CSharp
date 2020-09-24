@@ -1,6 +1,7 @@
 ﻿using Common;
 using DMS.Entities;
 using DMS.Enums;
+using DMS.Services.MAppUser;
 using DMS.Services.MDistrict;
 using DMS.Services.MOrganization;
 using DMS.Services.MProvince;
@@ -26,6 +27,7 @@ namespace DMS.Rpc.store
 {
     public class StoreController : RpcController
     {
+        private IAppUserService AppUserService;
         private IDistrictService DistrictService;
         private IOrganizationService OrganizationService;
         private IProvinceService ProvinceService;
@@ -38,6 +40,7 @@ namespace DMS.Rpc.store
         private IStoreService StoreService;
         private ICurrentContext CurrentContext;
         public StoreController(
+            IAppUserService AppUserService,
             IDistrictService DistrictService,
             IOrganizationService OrganizationService,
             IProvinceService ProvinceService,
@@ -51,6 +54,7 @@ namespace DMS.Rpc.store
             ICurrentContext CurrentContext
         )
         {
+            this.AppUserService = AppUserService;
             this.DistrictService = DistrictService;
             this.OrganizationService = OrganizationService;
             this.ProvinceService = ProvinceService;
@@ -1094,6 +1098,12 @@ namespace DMS.Rpc.store
                 Code = Store_StoreDTO.Status.Code,
                 Name = Store_StoreDTO.Status.Name,
             };
+            Store.RequestState = Store_StoreDTO.RequestState == null ? null : new RequestState
+            {
+                Id = Store_StoreDTO.RequestState.Id,
+                Code = Store_StoreDTO.RequestState.Code,
+                Name = Store_StoreDTO.RequestState.Name,
+            };
             Store.StoreScouting = Store_StoreDTO.StoreScouting == null ? null : new StoreScouting
             {
                 Id = Store_StoreDTO.StoreScouting.Id,
@@ -1132,6 +1142,15 @@ namespace DMS.Rpc.store
                 Priority = Store_StoreDTO.Ward.Priority,
                 DistrictId = Store_StoreDTO.Ward.DistrictId,
                 StatusId = Store_StoreDTO.Ward.StatusId,
+            };
+            Store.AppUser = Store_StoreDTO.AppUser == null ? null : new AppUser
+            {
+                Id = Store_StoreDTO.AppUser.Id,
+                Username = Store_StoreDTO.AppUser.Username,
+                DisplayName = Store_StoreDTO.AppUser.DisplayName,
+                Address = Store_StoreDTO.AppUser.Address,
+                Email = Store_StoreDTO.AppUser.Email,
+                Phone = Store_StoreDTO.AppUser.Phone,
             };
             Store.StoreImageMappings = Store_StoreDTO.StoreImageMappings?
                 .Select(x => new StoreImageMapping
@@ -1180,8 +1199,37 @@ namespace DMS.Rpc.store
             StoreFilter.OwnerName = Store_StoreFilterDTO.OwnerName;
             StoreFilter.OwnerPhone = Store_StoreFilterDTO.OwnerPhone;
             StoreFilter.OwnerEmail = Store_StoreFilterDTO.OwnerEmail;
+            StoreFilter.AppUserId = Store_StoreFilterDTO.AppUserId;
             StoreFilter.StatusId = Store_StoreFilterDTO.StatusId;
+            StoreFilter.RequestStateId = Store_StoreFilterDTO.RequestStateId;
             return StoreFilter;
+        }
+
+        [Route(StoreRoute.FilterListAppUser), HttpPost]
+        public async Task<List<Store_AppUserDTO>> FilterListAppUser([FromBody] Store_AppUserFilterDTO Store_AppUserFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            AppUserFilter AppUserFilter = new AppUserFilter();
+            AppUserFilter.Skip = 0;
+            AppUserFilter.Take = 20;
+            AppUserFilter.OrderBy = AppUserOrder.Id;
+            AppUserFilter.OrderType = OrderType.ASC;
+            AppUserFilter.Selects = AppUserSelect.ALL;
+            AppUserFilter.Id = Store_AppUserFilterDTO.Id;
+            AppUserFilter.Username = Store_AppUserFilterDTO.Username;
+            AppUserFilter.DisplayName = Store_AppUserFilterDTO.DisplayName;
+            AppUserFilter.Address = Store_AppUserFilterDTO.Address;
+            AppUserFilter.Email = Store_AppUserFilterDTO.Email;
+
+            if (AppUserFilter.Id == null) AppUserFilter.Id = new IdFilter();
+            AppUserFilter.Id.In = await FilterAppUser(AppUserService, OrganizationService, CurrentContext);
+
+            List<AppUser> AppUsers = await AppUserService.List(AppUserFilter);
+            List<Store_AppUserDTO> Store_AppUserDTOs = AppUsers
+                .Select(x => new Store_AppUserDTO(x)).ToList();
+            return Store_AppUserDTOs;
         }
 
         [Route(StoreRoute.FilterListDistrict), HttpPost]
@@ -1313,6 +1361,32 @@ namespace DMS.Rpc.store
             return Store_StatusDTOs;
         }
 
+        [Route(StoreRoute.SingleListAppUser), HttpPost]
+        public async Task<List<Store_AppUserDTO>> SingleListAppUser([FromBody] Store_AppUserFilterDTO Store_AppUserFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            AppUserFilter AppUserFilter = new AppUserFilter();
+            AppUserFilter.Skip = 0;
+            AppUserFilter.Take = 20;
+            AppUserFilter.OrderBy = AppUserOrder.Id;
+            AppUserFilter.OrderType = OrderType.ASC;
+            AppUserFilter.Selects = AppUserSelect.ALL;
+            AppUserFilter.Id = Store_AppUserFilterDTO.Id;
+            AppUserFilter.Username = Store_AppUserFilterDTO.Username;
+            AppUserFilter.DisplayName = Store_AppUserFilterDTO.DisplayName;
+            AppUserFilter.Address = Store_AppUserFilterDTO.Address;
+            AppUserFilter.Email = Store_AppUserFilterDTO.Email;
+
+            if (AppUserFilter.Id == null) AppUserFilter.Id = new IdFilter();
+            AppUserFilter.Id.In = await FilterAppUser(AppUserService, OrganizationService, CurrentContext);
+
+            List<AppUser> AppUsers = await AppUserService.List(AppUserFilter);
+            List<Store_AppUserDTO> Store_AppUserDTOs = AppUsers
+                .Select(x => new Store_AppUserDTO(x)).ToList();
+            return Store_AppUserDTOs;
+        }
 
         [Route(StoreRoute.SingleListOrganization), HttpPost]
         public async Task<List<Store_OrganizationDTO>> SingleListOrganization()

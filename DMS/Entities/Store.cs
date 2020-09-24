@@ -33,13 +33,15 @@ namespace DMS.Entities
         public string OwnerEmail { get; set; }
         public string TaxCode { get; set; }
         public string LegalEntity { get; set; }
+        public long? AppUserId { get; set; }
         public long StatusId { get; set; }
         public Guid RowId { get; set; }
-        public long? RequestStateId { get; set; }
+        public long RequestStateId { get; set; }
         public bool HasEroute { get; set; }
         public bool HasChecking { get; set; }
         public bool Used { get; set; }
         public long? StoreScoutingId { get; set; }
+        public AppUser AppUser { get; set; }
         public District District { get; set; }
         public Organization Organization { get; set; }
         public Store ParentStore { get; set; }
@@ -95,6 +97,7 @@ namespace DMS.Entities
         public StringFilter OwnerName { get; set; }
         public StringFilter OwnerPhone { get; set; }
         public StringFilter OwnerEmail { get; set; }
+        public IdFilter AppUserId { get; set; }
         public IdFilter StatusId { get; set; }
         public IdFilter WorkflowDefinitionId { get; set; }
         public IdFilter RequestStateId { get; set; }
@@ -130,7 +133,9 @@ namespace DMS.Entities
         Status = 21,
         StoreScouting = 22,
         UnsignName = 23,
-        UnsignAddress = 24
+        UnsignAddress = 24,
+        AppUser = 25,
+        RequestState = 26,
     }
 
     [Flags]
@@ -164,6 +169,8 @@ namespace DMS.Entities
         LegalEntity = E._25,
         StoreScouting = E._26,
         UnsignName = E._27,
-        UnsignAddress = E._28
+        UnsignAddress = E._28,
+        AppUser = E._25,
+        RequestState = E._26
     }
 }

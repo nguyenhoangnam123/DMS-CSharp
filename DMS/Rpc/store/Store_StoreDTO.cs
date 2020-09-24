@@ -34,7 +34,10 @@ namespace DMS.Rpc.store
         public bool HasEroute { get; set; }
         public bool HasChecking { get; set; }
         public bool Used { get; set; }
+        public long? AppUserId { get; set; }
         public long? StoreScoutingId { get; set; }
+        public long RequestStateId { get; set; }
+        public Store_AppUserDTO AppUser { get; set; }
         public Store_DistrictDTO District { get; set; }
         public Store_OrganizationDTO Organization { get; set; }
         public Store_StoreDTO ParentStore { get; set; }
@@ -45,6 +48,7 @@ namespace DMS.Rpc.store
         public Store_StoreTypeDTO StoreType { get; set; }
         public Store_WardDTO Ward { get; set; }
         public Store_StoreScoutingDTO StoreScouting { get; set; }
+        public Store_RequestStateDTO RequestState { get; set; }
         public List<Store_StoreImageMappingDTO> StoreImageMappings { get; set; }
         public List<Store_StoreCheckingDTO> StoreCheckings { get; set; }
         public Store_StoreDTO() { }
@@ -78,6 +82,8 @@ namespace DMS.Rpc.store
             this.HasChecking = Store.HasChecking;
             this.Used = Store.Used;
             this.StoreScoutingId = Store.StoreScoutingId;
+            this.AppUserId = Store.AppUserId;
+            this.RequestStateId = Store.RequestStateId;
             this.District = Store.District == null ? null : new Store_DistrictDTO(Store.District);
             this.Organization = Store.Organization == null ? null : new Store_OrganizationDTO(Store.Organization);
             this.ParentStore = Store.ParentStore == null ? null : new Store_StoreDTO(Store.ParentStore);
@@ -88,6 +94,8 @@ namespace DMS.Rpc.store
             this.StoreType = Store.StoreType == null ? null : new Store_StoreTypeDTO(Store.StoreType);
             this.Ward = Store.Ward == null ? null : new Store_WardDTO(Store.Ward);
             this.StoreScouting = Store.StoreScouting == null ? null : new Store_StoreScoutingDTO(Store.StoreScouting);
+            this.AppUser = Store.AppUser == null ? null : new Store_AppUserDTO(Store.AppUser);
+            this.RequestState = Store.RequestState == null ? null : new Store_RequestStateDTO(Store.RequestState);
             this.StoreImageMappings = Store.StoreImageMappings?.Select(x => new Store_StoreImageMappingDTO(x)).ToList();
             this.StoreCheckings = Store.StoreCheckings?.Select(x => new Store_StoreCheckingDTO(x)).ToList();
             this.Errors = Store.Errors;
@@ -118,7 +126,9 @@ namespace DMS.Rpc.store
         public StringFilter OwnerPhone { get; set; }
         public StringFilter OwnerEmail { get; set; }
         public IdFilter StatusId { get; set; }
+        public IdFilter AppUserId { get; set; }
         public IdFilter StoreStatusId { get; set; }
+        public IdFilter RequestStateId { get; set; }
         public StoreOrder OrderBy { get; set; }
     }
 }

@@ -43,6 +43,7 @@ namespace DMS.Rpc.store_scouting
         public const string FilterListProvince = Default + "/filter-list-province";
         public const string FilterListStore = Default + "/filter-list-store";
         public const string FilterListStoreScoutingStatus = Default + "/filter-list-store-scouting-status";
+        public const string FilterListStoreScoutingType = Default + "/filter-list-store-scouting-type";
         public const string FilterListWard = Default + "/filter-list-ward";
         
         public const string SingleListAppUser = Default + "/single-list-app-user";
@@ -70,26 +71,26 @@ namespace DMS.Rpc.store_scouting
             { "Tìm kiếm", new List<string> {
                 Parent,
                 Master, Count, List, Get, 
-                FilterListAppUser, FilterListDistrict, FilterListOrganization, FilterListProvince, FilterListStore, FilterListStoreScoutingStatus, FilterListWard, } },
+                FilterListAppUser, FilterListDistrict, FilterListOrganization, FilterListProvince, FilterListStore, FilterListStoreScoutingStatus, FilterListWard, FilterListStoreScoutingType } },
 
             { "Thêm", new List<string> {
                 Parent,
                 Master, Count, List, Get, 
-                FilterListAppUser, FilterListDistrict, FilterListOrganization, FilterListProvince, FilterListStore, FilterListStoreScoutingStatus, FilterListWard, 
+                FilterListAppUser, FilterListDistrict, FilterListOrganization, FilterListProvince, FilterListStore, FilterListStoreScoutingStatus, FilterListWard, FilterListStoreScoutingType,
                 Detail, Create, 
                 SingleListAppUser, SingleListDistrict, SingleListOrganization, SingleListProvince, SingleListStore, SingleListStoreScoutingStatus, SingleListWard, } },
 
             { "Sửa", new List<string> {
                 Parent,
                 Master, Count, List, Get,  
-                FilterListAppUser, FilterListDistrict, FilterListOrganization, FilterListProvince, FilterListStore, FilterListStoreScoutingStatus, FilterListWard, 
+                FilterListAppUser, FilterListDistrict, FilterListOrganization, FilterListProvince, FilterListStore, FilterListStoreScoutingStatus, FilterListWard, FilterListStoreScoutingType,
                 Detail, Update, 
                 SingleListAppUser, SingleListDistrict, SingleListOrganization, SingleListProvince, SingleListStore, SingleListStoreScoutingStatus, SingleListWard, } },
 
             { "Xoá", new List<string> {
                 Parent,
                 Master, Count, List, Get,
-                FilterListAppUser, FilterListDistrict, FilterListOrganization, FilterListProvince, FilterListStore, FilterListStoreScoutingStatus, FilterListWard,
+                FilterListAppUser, FilterListDistrict, FilterListOrganization, FilterListProvince, FilterListStore, FilterListStoreScoutingStatus, FilterListWard, FilterListStoreScoutingType,
                 Detail, Delete,
                 SingleListAppUser, SingleListDistrict, SingleListOrganization, SingleListProvince, SingleListStore, SingleListStoreScoutingStatus, SingleListWard, } },
 
@@ -97,14 +98,14 @@ namespace DMS.Rpc.store_scouting
             { "Từ chối", new List<string> {
                 Parent,
                 Master, Count, List, Get, 
-                FilterListAppUser, FilterListDistrict, FilterListOrganization, FilterListProvince, FilterListStore, FilterListStoreScoutingStatus, FilterListWard, 
+                FilterListAppUser, FilterListDistrict, FilterListOrganization, FilterListProvince, FilterListStore, FilterListStoreScoutingStatus, FilterListWard, FilterListStoreScoutingType,
                 Detail, Reject, 
                 SingleListAppUser, SingleListDistrict, SingleListOrganization, SingleListProvince, SingleListStore, SingleListStoreScoutingStatus, SingleListWard, } },
 
             { "Xuất Excel", new List<string> {
                 Parent,
                 Master, Count, List, Get,
-                FilterListAppUser, FilterListDistrict, FilterListOrganization, FilterListProvince, FilterListStore, FilterListStoreScoutingStatus, FilterListWard,
+                FilterListAppUser, FilterListDistrict, FilterListOrganization, FilterListProvince, FilterListStore, FilterListStoreScoutingStatus, FilterListWard, FilterListStoreScoutingType,
                 Export} },
         };
     }

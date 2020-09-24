@@ -50,6 +50,7 @@ namespace DMS.Models
         public string OwnerEmail { get; set; }
         public string TaxCode { get; set; }
         public string LegalEntity { get; set; }
+        public long? AppUserId { get; set; }
         public long StatusId { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
@@ -57,11 +58,14 @@ namespace DMS.Models
         public Guid RowId { get; set; }
         public bool Used { get; set; }
         public long? StoreScoutingId { get; set; }
+        public long RequestStateId { get; set; }
 
+        public virtual AppUserDAO AppUser { get; set; }
         public virtual DistrictDAO District { get; set; }
         public virtual OrganizationDAO Organization { get; set; }
         public virtual StoreDAO ParentStore { get; set; }
         public virtual ProvinceDAO Province { get; set; }
+        public virtual RequestStateDAO RequestState { get; set; }
         public virtual ResellerDAO Reseller { get; set; }
         public virtual StatusDAO Status { get; set; }
         public virtual StoreGroupingDAO StoreGrouping { get; set; }

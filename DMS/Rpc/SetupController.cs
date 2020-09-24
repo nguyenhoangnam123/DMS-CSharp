@@ -24,21 +24,21 @@ namespace DMS.Rpc
             this.DataContext = DataContext;
         }
 
-        [HttpGet, Route("rpc/dms/setup/count")]
-        public async Task Count()
-        {
-            List<StoreDAO> Stores = await DataContext.Store.OrderByDescending(x => x.CreatedAt).ToListAsync();
-            List<OrganizationDAO> Organizations = await DataContext.Organization.OrderByDescending(x => x.CreatedAt).ToListAsync();
-            List<StoreTypeDAO> StoreTypes = await DataContext.StoreType.OrderByDescending(x => x.CreatedAt).ToListAsync();
-            var counter = Stores.Count();
-            foreach (var Store in Stores)
-            {
-                var Organization = Organizations.Where(x => x.Id == Store.OrganizationId).Select(x => x.Code).FirstOrDefault();
-                var StoreType = StoreTypes.Where(x => x.Id == Store.StoreTypeId).Select(x => x.Code).FirstOrDefault();
-                Store.Code = $"{Organization}.{StoreType}.{(10000000 + counter--).ToString().Substring(1)}";
-            }
-            await DataContext.SaveChangesAsync();
-        }
+        //[HttpGet, Route("rpc/dms/setup/count")]
+        //public async Task Count()
+        //{
+        //    List<StoreDAO> Stores = await DataContext.Store.OrderByDescending(x => x.CreatedAt).ToListAsync();
+        //    List<OrganizationDAO> Organizations = await DataContext.Organization.OrderByDescending(x => x.CreatedAt).ToListAsync();
+        //    List<StoreTypeDAO> StoreTypes = await DataContext.StoreType.OrderByDescending(x => x.CreatedAt).ToListAsync();
+        //    var counter = Stores.Count();
+        //    foreach (var Store in Stores)
+        //    {
+        //        var Organization = Organizations.Where(x => x.Id == Store.OrganizationId).Select(x => x.Code).FirstOrDefault();
+        //        var StoreType = StoreTypes.Where(x => x.Id == Store.StoreTypeId).Select(x => x.Code).FirstOrDefault();
+        //        Store.Code = $"{Organization}.{StoreType}.{(10000000 + counter--).ToString().Substring(1)}";
+        //    }
+        //    await DataContext.SaveChangesAsync();
+        //}
 
         [HttpGet, Route("rpc/dms/setup/unsign")]
         public bool Unsign(int year)

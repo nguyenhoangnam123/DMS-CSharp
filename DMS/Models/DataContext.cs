@@ -1,7 +1,6 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Thinktecture;
 
 namespace DMS.Models
 {
@@ -192,7 +191,6 @@ namespace DMS.Models
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.ConfigureTempTable<long>();
             modelBuilder.Entity<ActionDAO>(entity =>
             {
                 entity.ToTable("Action", "PER");
@@ -3488,6 +3486,11 @@ namespace DMS.Models
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
+                entity.HasOne(d => d.AppUser)
+                    .WithMany(p => p.Stores)
+                    .HasForeignKey(d => d.AppUserId)
+                    .HasConstraintName("FK_Store_AppUser");
+
                 entity.HasOne(d => d.District)
                     .WithMany(p => p.Stores)
                     .HasForeignKey(d => d.DistrictId)
@@ -3508,6 +3511,12 @@ namespace DMS.Models
                     .WithMany(p => p.Stores)
                     .HasForeignKey(d => d.ProvinceId)
                     .HasConstraintName("FK_Store_Province");
+
+                entity.HasOne(d => d.RequestState)
+                    .WithMany(p => p.Stores)
+                    .HasForeignKey(d => d.RequestStateId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Store_RequestState");
 
                 entity.HasOne(d => d.Reseller)
                     .WithMany(p => p.Stores)

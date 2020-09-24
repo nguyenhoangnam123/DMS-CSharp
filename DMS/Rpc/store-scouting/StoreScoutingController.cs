@@ -17,6 +17,7 @@ using DMS.Services.MOrganization;
 using DMS.Services.MProvince;
 using DMS.Services.MStore;
 using DMS.Services.MStoreScoutingStatus;
+using DMS.Services.MStoreScoutingType;
 using DMS.Services.MWard;
 using DMS.Enums;
 using System.Dynamic;
@@ -33,6 +34,7 @@ namespace DMS.Rpc.store_scouting
         private IStoreScoutingStatusService StoreScoutingStatusService;
         private IWardService WardService;
         private IStoreScoutingService StoreScoutingService;
+        private IStoreScoutingTypeService StoreScoutingTypeService;
         private ICurrentContext CurrentContext;
         public StoreScoutingController(
             IAppUserService AppUserService,
@@ -43,6 +45,7 @@ namespace DMS.Rpc.store_scouting
             IStoreScoutingStatusService StoreScoutingStatusService,
             IWardService WardService,
             IStoreScoutingService StoreScoutingService,
+            IStoreScoutingTypeService StoreScoutingTypeService,
             ICurrentContext CurrentContext
         )
         {
@@ -54,6 +57,7 @@ namespace DMS.Rpc.store_scouting
             this.StoreScoutingStatusService = StoreScoutingStatusService;
             this.WardService = WardService;
             this.StoreScoutingService = StoreScoutingService;
+            this.StoreScoutingTypeService = StoreScoutingTypeService;
             this.CurrentContext = CurrentContext;
         }
 
@@ -735,7 +739,26 @@ namespace DMS.Rpc.store_scouting
                 .Select(x => new StoreScouting_WardDTO(x)).ToList();
             return StoreScouting_WardDTOs;
         }
+        [Route(StoreScoutingRoute.FilterListStoreScoutingType), HttpPost]
+        public async Task<List<StoreScouting_StoreScoutingTypeDTO>> SingleListStoreScoutingType()
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
 
+            StoreScoutingTypeFilter StoreScoutingTypeFilter = new StoreScoutingTypeFilter();
+            StoreScoutingTypeFilter.Skip = 0;
+            StoreScoutingTypeFilter.Take = 20;
+            StoreScoutingTypeFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+            StoreScoutingTypeFilter.OrderBy = StoreScoutingTypeOrder.Id;
+            StoreScoutingTypeFilter.OrderType = OrderType.ASC;
+            StoreScoutingTypeFilter.Selects = StoreScoutingTypeSelect.ALL;
+
+            List<StoreScoutingType> StoreScoutingTypes = await StoreScoutingTypeService.List(StoreScoutingTypeFilter);
+            List<StoreScouting_StoreScoutingTypeDTO> StoreScouting_StoreScoutingTypeDTOs = StoreScoutingTypes
+
+                .Select(x => new StoreScouting_StoreScoutingTypeDTO(x)).ToList();
+            return StoreScouting_StoreScoutingTypeDTOs;
+        }
     }
 }
 
