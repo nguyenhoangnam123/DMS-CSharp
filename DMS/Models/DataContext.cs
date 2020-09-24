@@ -38,6 +38,7 @@ namespace DMS.Models
         public virtual DbSet<FieldDAO> Field { get; set; }
         public virtual DbSet<FieldTypeDAO> FieldType { get; set; }
         public virtual DbSet<HashDAO> Hash { get; set; }
+        public virtual DbSet<IdGenerateDAO> IdGenerate { get; set; }
         public virtual DbSet<ImageDAO> Image { get; set; }
         public virtual DbSet<IndirectSalesOrderDAO> IndirectSalesOrder { get; set; }
         public virtual DbSet<IndirectSalesOrderContentDAO> IndirectSalesOrderContent { get; set; }
@@ -3210,7 +3211,7 @@ namespace DMS.Models
                     .WithMany(p => p.RequestWorkflowStepMappings)
                     .HasForeignKey(d => d.WorkflowStepId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_StoreWorkflow_WorkflowStep");
+                    .HasConstraintName("FK_RequestWorkflow_WorkflowStep");
             });
 
             modelBuilder.Entity<ResellerDAO>(entity =>
