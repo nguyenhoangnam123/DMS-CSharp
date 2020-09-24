@@ -77,6 +77,7 @@ namespace DMS.Services.MIndirectSalesOrder
         {
             try
             {
+                IndirectSalesOrderFilter.ApproverId = new IdFilter { Equal = CurrentContext.UserId };
                 int result = await UOW.IndirectSalesOrderRepository.Count(IndirectSalesOrderFilter);
                 return result;
             }
@@ -99,6 +100,7 @@ namespace DMS.Services.MIndirectSalesOrder
         {
             try
             {
+                IndirectSalesOrderFilter.ApproverId = new IdFilter { Equal = CurrentContext.UserId };
                 List<IndirectSalesOrder> IndirectSalesOrders = await UOW.IndirectSalesOrderRepository.List(IndirectSalesOrderFilter);
                 return IndirectSalesOrders;
             }
