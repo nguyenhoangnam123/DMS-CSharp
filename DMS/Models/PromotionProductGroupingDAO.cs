@@ -5,6 +5,11 @@ namespace DMS.Models
 {
     public partial class PromotionProductGroupingDAO
     {
+        public PromotionProductGroupingDAO()
+        {
+            PromotionProductGroupingItemMappings = new HashSet<PromotionProductGroupingItemMappingDAO>();
+        }
+
         public long Id { get; set; }
         public long PromotionPolicyId { get; set; }
         public long PromotionId { get; set; }
@@ -21,5 +26,6 @@ namespace DMS.Models
         public virtual PromotionDAO Promotion { get; set; }
         public virtual PromotionDiscountTypeDAO PromotionDiscountType { get; set; }
         public virtual PromotionPolicyDAO PromotionPolicy { get; set; }
+        public virtual ICollection<PromotionProductGroupingItemMappingDAO> PromotionProductGroupingItemMappings { get; set; }
     }
 }

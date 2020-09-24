@@ -22,6 +22,7 @@ namespace DMS.Models
             PriceListItemHistories = new HashSet<PriceListItemHistoryDAO>();
             PriceListItemMappings = new HashSet<PriceListItemMappingDAO>();
             PromotionDirectSalesOrderItemMappings = new HashSet<PromotionDirectSalesOrderItemMappingDAO>();
+            PromotionProductGroupingItemMappings = new HashSet<PromotionProductGroupingItemMappingDAO>();
             PromotionProductItemMappings = new HashSet<PromotionProductItemMappingDAO>();
             PromotionProductTypeItemMappings = new HashSet<PromotionProductTypeItemMappingDAO>();
             PromotionSamePriceItemMappings = new HashSet<PromotionSamePriceItemMappingDAO>();
@@ -61,6 +62,7 @@ namespace DMS.Models
         public virtual ICollection<PriceListItemHistoryDAO> PriceListItemHistories { get; set; }
         public virtual ICollection<PriceListItemMappingDAO> PriceListItemMappings { get; set; }
         public virtual ICollection<PromotionDirectSalesOrderItemMappingDAO> PromotionDirectSalesOrderItemMappings { get; set; }
+        public virtual ICollection<PromotionProductGroupingItemMappingDAO> PromotionProductGroupingItemMappings { get; set; }
         public virtual ICollection<PromotionProductItemMappingDAO> PromotionProductItemMappings { get; set; }
         public virtual ICollection<PromotionProductTypeItemMappingDAO> PromotionProductTypeItemMappings { get; set; }
         public virtual ICollection<PromotionSamePriceItemMappingDAO> PromotionSamePriceItemMappings { get; set; }

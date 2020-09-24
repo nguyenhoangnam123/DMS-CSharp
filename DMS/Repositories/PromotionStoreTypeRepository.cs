@@ -35,6 +35,8 @@ namespace DMS.Repositories
                 return query.Where(q => false);
             if (filter.Id != null)
                 query = query.Where(q => q.Id, filter.Id);
+            if (filter.PromotionPolicyId != null)
+                query = query.Where(q => q.PromotionPolicyId, filter.PromotionPolicyId);
             if (filter.PromotionId != null)
                 query = query.Where(q => q.PromotionId, filter.PromotionId);
             if (filter.Note != null)
@@ -63,6 +65,8 @@ namespace DMS.Repositories
                 IQueryable<PromotionStoreTypeDAO> queryable = query;
                 if (PromotionStoreTypeFilter.Id != null)
                     queryable = queryable.Where(q => q.Id, PromotionStoreTypeFilter.Id);
+                if (PromotionStoreTypeFilter.PromotionPolicyId != null)
+                    queryable = queryable.Where(q => q.PromotionPolicyId, PromotionStoreTypeFilter.PromotionPolicyId);
                 if (PromotionStoreTypeFilter.PromotionId != null)
                     queryable = queryable.Where(q => q.PromotionId, PromotionStoreTypeFilter.PromotionId);
                 if (PromotionStoreTypeFilter.Note != null)
@@ -92,6 +96,9 @@ namespace DMS.Repositories
                         case PromotionStoreTypeOrder.Id:
                             query = query.OrderBy(q => q.Id);
                             break;
+                        case PromotionStoreTypeOrder.PromotionPolicy:
+                            query = query.OrderBy(q => q.PromotionPolicyId);
+                            break;
                         case PromotionStoreTypeOrder.Promotion:
                             query = query.OrderBy(q => q.PromotionId);
                             break;
@@ -120,6 +127,9 @@ namespace DMS.Repositories
                     {
                         case PromotionStoreTypeOrder.Id:
                             query = query.OrderByDescending(q => q.Id);
+                            break;
+                        case PromotionStoreTypeOrder.PromotionPolicy:
+                            query = query.OrderByDescending(q => q.PromotionPolicyId);
                             break;
                         case PromotionStoreTypeOrder.Promotion:
                             query = query.OrderByDescending(q => q.PromotionId);
@@ -154,6 +164,7 @@ namespace DMS.Repositories
             List<PromotionStoreType> PromotionStoreTypes = await query.Select(q => new PromotionStoreType()
             {
                 Id = filter.Selects.Contains(PromotionStoreTypeSelect.Id) ? q.Id : default(long),
+                PromotionPolicyId = filter.Selects.Contains(PromotionStoreTypeSelect.PromotionPolicy) ? q.PromotionPolicyId : default(long),
                 PromotionId = filter.Selects.Contains(PromotionStoreTypeSelect.Promotion) ? q.PromotionId : default(long),
                 Note = filter.Selects.Contains(PromotionStoreTypeSelect.Note) ? q.Note : default(string),
                 FromValue = filter.Selects.Contains(PromotionStoreTypeSelect.FromValue) ? q.FromValue : default(decimal),
@@ -179,6 +190,12 @@ namespace DMS.Repositories
                     Id = q.PromotionDiscountType.Id,
                     Code = q.PromotionDiscountType.Code,
                     Name = q.PromotionDiscountType.Name,
+                } : null,
+                PromotionPolicy = filter.Selects.Contains(PromotionStoreTypeSelect.PromotionPolicy) && q.PromotionPolicy != null ? new PromotionPolicy
+                {
+                    Id = q.PromotionPolicy.Id,
+                    Code = q.PromotionPolicy.Code,
+                    Name = q.PromotionPolicy.Name,
                 } : null,
             }).ToListAsync();
             return PromotionStoreTypes;
@@ -207,6 +224,7 @@ namespace DMS.Repositories
             .Where(x => x.Id == Id).Select(x => new PromotionStoreType()
             {
                 Id = x.Id,
+                PromotionPolicyId = x.PromotionPolicyId,
                 PromotionId = x.PromotionId,
                 Note = x.Note,
                 FromValue = x.FromValue,
@@ -232,6 +250,12 @@ namespace DMS.Repositories
                     Id = x.PromotionDiscountType.Id,
                     Code = x.PromotionDiscountType.Code,
                     Name = x.PromotionDiscountType.Name,
+                },
+                PromotionPolicy = x.PromotionPolicy == null ? null : new PromotionPolicy
+                {
+                    Id = x.PromotionPolicy.Id,
+                    Code = x.PromotionPolicy.Code,
+                    Name = x.PromotionPolicy.Name,
                 },
             }).FirstOrDefaultAsync();
 
@@ -265,6 +289,7 @@ namespace DMS.Repositories
         {
             PromotionStoreTypeDAO PromotionStoreTypeDAO = new PromotionStoreTypeDAO();
             PromotionStoreTypeDAO.Id = PromotionStoreType.Id;
+            PromotionStoreTypeDAO.PromotionPolicyId = PromotionStoreType.PromotionPolicyId;
             PromotionStoreTypeDAO.PromotionId = PromotionStoreType.PromotionId;
             PromotionStoreTypeDAO.Note = PromotionStoreType.Note;
             PromotionStoreTypeDAO.FromValue = PromotionStoreType.FromValue;
@@ -285,6 +310,7 @@ namespace DMS.Repositories
             if (PromotionStoreTypeDAO == null)
                 return false;
             PromotionStoreTypeDAO.Id = PromotionStoreType.Id;
+            PromotionStoreTypeDAO.PromotionPolicyId = PromotionStoreType.PromotionPolicyId;
             PromotionStoreTypeDAO.PromotionId = PromotionStoreType.PromotionId;
             PromotionStoreTypeDAO.Note = PromotionStoreType.Note;
             PromotionStoreTypeDAO.FromValue = PromotionStoreType.FromValue;
@@ -310,6 +336,7 @@ namespace DMS.Repositories
             {
                 PromotionStoreTypeDAO PromotionStoreTypeDAO = new PromotionStoreTypeDAO();
                 PromotionStoreTypeDAO.Id = PromotionStoreType.Id;
+                PromotionStoreTypeDAO.PromotionPolicyId = PromotionStoreType.PromotionPolicyId;
                 PromotionStoreTypeDAO.PromotionId = PromotionStoreType.PromotionId;
                 PromotionStoreTypeDAO.Note = PromotionStoreType.Note;
                 PromotionStoreTypeDAO.FromValue = PromotionStoreType.FromValue;

@@ -18,7 +18,17 @@ namespace DMS.Services.MPromotion
         Task<List<Promotion>> List(PromotionFilter PromotionFilter);
         Task<Promotion> Get(long Id);
         Task<Promotion> Create(Promotion Promotion);
+        Task<Promotion> CreateDraft();
         Task<Promotion> Update(Promotion Promotion);
+        Task<PromotionPromotionPolicyMapping> UpdateDirectSalesOrder(PromotionPromotionPolicyMapping PromotionPromotionPolicyMapping);
+        //Task<PromotionPromotionPolicyMapping> UpdateStore(PromotionPromotionPolicyMapping PromotionPromotionPolicyMapping);
+        //Task<PromotionPromotionPolicyMapping> UpdateStoreGrouping(PromotionPromotionPolicyMapping PromotionPromotionPolicyMapping);
+        //Task<PromotionPromotionPolicyMapping> UpdateStoreType(PromotionPromotionPolicyMapping PromotionPromotionPolicyMapping);
+        //Task<PromotionPromotionPolicyMapping> UpdateProduct(PromotionPromotionPolicyMapping PromotionPromotionPolicyMapping);
+        //Task<PromotionPromotionPolicyMapping> UpdateProductGrouping(PromotionPromotionPolicyMapping PromotionPromotionPolicyMapping);
+        //Task<PromotionPromotionPolicyMapping> UpdateProductType(PromotionPromotionPolicyMapping PromotionPromotionPolicyMapping);
+        //Task<PromotionPromotionPolicyMapping> UpdateCombo(PromotionPromotionPolicyMapping PromotionPromotionPolicyMapping);
+        //Task<PromotionPromotionPolicyMapping> UpdateSamePrice(PromotionPromotionPolicyMapping PromotionPromotionPolicyMapping);
         Task<Promotion> Delete(Promotion Promotion);
         Task<List<Promotion>> BulkDelete(List<Promotion> Promotions);
         Task<List<Promotion>> Import(List<Promotion> Promotions);
@@ -94,7 +104,27 @@ namespace DMS.Services.MPromotion
                 return null;
             return Promotion;
         }
-       
+
+        public async Task<Promotion> CreateDraft()
+        {
+            Promotion Promotion = new Promotion();
+            Promotion.StatusId = StatusEnum.INACTIVE.Id;
+            foreach (var PromotionPolicy in PromotionPolicyEnum.PromotionPolicyEnumList)
+            {
+                PromotionPromotionPolicyMapping PromotionPromotionPolicyMapping = new PromotionPromotionPolicyMapping();
+                PromotionPromotionPolicyMapping.PromotionPolicyId = PromotionPolicy.Id;
+                PromotionPromotionPolicyMapping.StatusId = StatusEnum.INACTIVE.Id;
+                PromotionPromotionPolicyMapping.PromotionPolicy = new PromotionPolicy
+                {
+                    Id = PromotionPolicy.Id,
+                    Name = PromotionPolicy.Name,
+                    Code = PromotionPolicy.Code,
+                };
+                Promotion.PromotionPromotionPolicyMappings.Add(PromotionPromotionPolicyMapping);
+            }
+            return Promotion;
+        }
+
         public async Task<Promotion> Create(Promotion Promotion)
         {
             if (!await PromotionValidator.Create(Promotion))
@@ -155,6 +185,294 @@ namespace DMS.Services.MPromotion
                 }
             }
         }
+
+        public async Task<PromotionPromotionPolicyMapping> UpdateDirectSalesOrder(PromotionPromotionPolicyMapping PromotionPromotionPolicyMapping)
+        {
+            if (!await PromotionValidator.UpdateDirectSalesOrder(PromotionPromotionPolicyMapping))
+                return PromotionPromotionPolicyMapping;
+            try
+            {
+                var oldData = await UOW.PromotionPolicyRepository.GetMapping(PromotionPromotionPolicyMapping.PromotionPolicyId, PromotionPromotionPolicyMapping.PromotionId);
+
+                await UOW.Begin();
+                await UOW.PromotionRepository.UpdateDirectSalesOrder(PromotionPromotionPolicyMapping);
+                await UOW.Commit();
+
+                PromotionPromotionPolicyMapping = await UOW.PromotionPolicyRepository.GetMapping(PromotionPromotionPolicyMapping.PromotionPolicyId, PromotionPromotionPolicyMapping.PromotionId);
+                await Logging.CreateAuditLog(PromotionPromotionPolicyMapping, oldData, nameof(PromotionService));
+                return PromotionPromotionPolicyMapping;
+            }
+            catch (Exception ex)
+            {
+                await UOW.Rollback();
+                if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(PromotionService));
+                    throw new MessageException(ex);
+                }
+                else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(PromotionService));
+                    throw new MessageException(ex.InnerException);
+                }
+            }
+        }
+
+        //public async Task<PromotionPromotionPolicyMapping> UpdateStore(PromotionPromotionPolicyMapping PromotionPromotionPolicyMapping)
+        //{
+        //    if (!await PromotionValidator.Update(Promotion))
+        //        return Promotion;
+        //    try
+        //    {
+        //        var oldData = await UOW.PromotionRepository.Get(Promotion.Id);
+
+        //        await UOW.Begin();
+        //        await UOW.PromotionRepository.Update(Promotion);
+        //        await UOW.Commit();
+
+        //        Promotion = await UOW.PromotionRepository.Get(Promotion.Id);
+        //        await Logging.CreateAuditLog(Promotion, oldData, nameof(PromotionService));
+        //        return Promotion;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        await UOW.Rollback();
+        //        if (ex.InnerException == null)
+        //        {
+        //            await Logging.CreateSystemLog(ex, nameof(PromotionService));
+        //            throw new MessageException(ex);
+        //        }
+        //        else
+        //        {
+        //            await Logging.CreateSystemLog(ex.InnerException, nameof(PromotionService));
+        //            throw new MessageException(ex.InnerException);
+        //        }
+        //    }
+        //}
+
+        //public async Task<PromotionPromotionPolicyMapping> UpdateStoreGrouping(PromotionPromotionPolicyMapping PromotionPromotionPolicyMapping)
+        //{
+        //    if (!await PromotionValidator.Update(Promotion))
+        //        return Promotion;
+        //    try
+        //    {
+        //        var oldData = await UOW.PromotionRepository.Get(Promotion.Id);
+
+        //        await UOW.Begin();
+        //        await UOW.PromotionRepository.Update(Promotion);
+        //        await UOW.Commit();
+
+        //        Promotion = await UOW.PromotionRepository.Get(Promotion.Id);
+        //        await Logging.CreateAuditLog(Promotion, oldData, nameof(PromotionService));
+        //        return Promotion;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        await UOW.Rollback();
+        //        if (ex.InnerException == null)
+        //        {
+        //            await Logging.CreateSystemLog(ex, nameof(PromotionService));
+        //            throw new MessageException(ex);
+        //        }
+        //        else
+        //        {
+        //            await Logging.CreateSystemLog(ex.InnerException, nameof(PromotionService));
+        //            throw new MessageException(ex.InnerException);
+        //        }
+        //    }
+        //}
+
+        //public async Task<PromotionPromotionPolicyMapping> UpdateStoreType(PromotionPromotionPolicyMapping PromotionPromotionPolicyMapping)
+        //{
+        //    if (!await PromotionValidator.Update(Promotion))
+        //        return Promotion;
+        //    try
+        //    {
+        //        var oldData = await UOW.PromotionRepository.Get(Promotion.Id);
+
+        //        await UOW.Begin();
+        //        await UOW.PromotionRepository.Update(Promotion);
+        //        await UOW.Commit();
+
+        //        Promotion = await UOW.PromotionRepository.Get(Promotion.Id);
+        //        await Logging.CreateAuditLog(Promotion, oldData, nameof(PromotionService));
+        //        return Promotion;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        await UOW.Rollback();
+        //        if (ex.InnerException == null)
+        //        {
+        //            await Logging.CreateSystemLog(ex, nameof(PromotionService));
+        //            throw new MessageException(ex);
+        //        }
+        //        else
+        //        {
+        //            await Logging.CreateSystemLog(ex.InnerException, nameof(PromotionService));
+        //            throw new MessageException(ex.InnerException);
+        //        }
+        //    }
+        //}
+
+        //public async Task<PromotionPromotionPolicyMapping> UpdateProduct(PromotionPromotionPolicyMapping PromotionPromotionPolicyMapping)
+        //{
+        //    if (!await PromotionValidator.Update(Promotion))
+        //        return Promotion;
+        //    try
+        //    {
+        //        var oldData = await UOW.PromotionRepository.Get(Promotion.Id);
+
+        //        await UOW.Begin();
+        //        await UOW.PromotionRepository.Update(Promotion);
+        //        await UOW.Commit();
+
+        //        Promotion = await UOW.PromotionRepository.Get(Promotion.Id);
+        //        await Logging.CreateAuditLog(Promotion, oldData, nameof(PromotionService));
+        //        return Promotion;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        await UOW.Rollback();
+        //        if (ex.InnerException == null)
+        //        {
+        //            await Logging.CreateSystemLog(ex, nameof(PromotionService));
+        //            throw new MessageException(ex);
+        //        }
+        //        else
+        //        {
+        //            await Logging.CreateSystemLog(ex.InnerException, nameof(PromotionService));
+        //            throw new MessageException(ex.InnerException);
+        //        }
+        //    }
+        //}
+
+        //public async Task<PromotionPromotionPolicyMapping> UpdateProductGrouping(PromotionPromotionPolicyMapping PromotionPromotionPolicyMapping)
+        //{
+        //    if (!await PromotionValidator.Update(Promotion))
+        //        return Promotion;
+        //    try
+        //    {
+        //        var oldData = await UOW.PromotionRepository.Get(Promotion.Id);
+
+        //        await UOW.Begin();
+        //        await UOW.PromotionRepository.Update(Promotion);
+        //        await UOW.Commit();
+
+        //        Promotion = await UOW.PromotionRepository.Get(Promotion.Id);
+        //        await Logging.CreateAuditLog(Promotion, oldData, nameof(PromotionService));
+        //        return Promotion;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        await UOW.Rollback();
+        //        if (ex.InnerException == null)
+        //        {
+        //            await Logging.CreateSystemLog(ex, nameof(PromotionService));
+        //            throw new MessageException(ex);
+        //        }
+        //        else
+        //        {
+        //            await Logging.CreateSystemLog(ex.InnerException, nameof(PromotionService));
+        //            throw new MessageException(ex.InnerException);
+        //        }
+        //    }
+        //}
+
+        //public async Task<PromotionPromotionPolicyMapping> UpdateProductType(PromotionPromotionPolicyMapping PromotionPromotionPolicyMapping)
+        //{
+        //    if (!await PromotionValidator.Update(Promotion))
+        //        return Promotion;
+        //    try
+        //    {
+        //        var oldData = await UOW.PromotionRepository.Get(Promotion.Id);
+
+        //        await UOW.Begin();
+        //        await UOW.PromotionRepository.Update(Promotion);
+        //        await UOW.Commit();
+
+        //        Promotion = await UOW.PromotionRepository.Get(Promotion.Id);
+        //        await Logging.CreateAuditLog(Promotion, oldData, nameof(PromotionService));
+        //        return Promotion;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        await UOW.Rollback();
+        //        if (ex.InnerException == null)
+        //        {
+        //            await Logging.CreateSystemLog(ex, nameof(PromotionService));
+        //            throw new MessageException(ex);
+        //        }
+        //        else
+        //        {
+        //            await Logging.CreateSystemLog(ex.InnerException, nameof(PromotionService));
+        //            throw new MessageException(ex.InnerException);
+        //        }
+        //    }
+        //}
+
+        //public async Task<PromotionPromotionPolicyMapping> UpdateCombo(PromotionPromotionPolicyMapping PromotionPromotionPolicyMapping)
+        //{
+        //    if (!await PromotionValidator.Update(Promotion))
+        //        return Promotion;
+        //    try
+        //    {
+        //        var oldData = await UOW.PromotionRepository.Get(Promotion.Id);
+
+        //        await UOW.Begin();
+        //        await UOW.PromotionRepository.Update(Promotion);
+        //        await UOW.Commit();
+
+        //        Promotion = await UOW.PromotionRepository.Get(Promotion.Id);
+        //        await Logging.CreateAuditLog(Promotion, oldData, nameof(PromotionService));
+        //        return Promotion;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        await UOW.Rollback();
+        //        if (ex.InnerException == null)
+        //        {
+        //            await Logging.CreateSystemLog(ex, nameof(PromotionService));
+        //            throw new MessageException(ex);
+        //        }
+        //        else
+        //        {
+        //            await Logging.CreateSystemLog(ex.InnerException, nameof(PromotionService));
+        //            throw new MessageException(ex.InnerException);
+        //        }
+        //    }
+        //}
+
+        //public async Task<PromotionPromotionPolicyMapping> UpdateSamePrice(PromotionPromotionPolicyMapping PromotionPromotionPolicyMapping)
+        //{
+        //    if (!await PromotionValidator.Update(Promotion))
+        //        return Promotion;
+        //    try
+        //    {
+        //        var oldData = await UOW.PromotionRepository.Get(Promotion.Id);
+
+        //        await UOW.Begin();
+        //        await UOW.PromotionRepository.Update(Promotion);
+        //        await UOW.Commit();
+
+        //        Promotion = await UOW.PromotionRepository.Get(Promotion.Id);
+        //        await Logging.CreateAuditLog(Promotion, oldData, nameof(PromotionService));
+        //        return Promotion;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        await UOW.Rollback();
+        //        if (ex.InnerException == null)
+        //        {
+        //            await Logging.CreateSystemLog(ex, nameof(PromotionService));
+        //            throw new MessageException(ex);
+        //        }
+        //        else
+        //        {
+        //            await Logging.CreateSystemLog(ex.InnerException, nameof(PromotionService));
+        //            throw new MessageException(ex.InnerException);
+        //        }
+        //    }
+        //}
 
         public async Task<Promotion> Delete(Promotion Promotion)
         {

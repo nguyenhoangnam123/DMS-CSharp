@@ -12,6 +12,17 @@ namespace DMS.Entities
         public string Code { get; set; }
         public string Name { get; set; }
 
+        public List<PromotionDirectSalesOrder> PromotionDirectSalesOrders { get; set; }
+        public List<PromotionStore> PromotionStores { get; set; }
+        public List<PromotionStoreGrouping> PromotionStoreGroupings { get; set; }
+        public List<PromotionStoreType> PromotionStoreTypes { get; set; }
+        public List<PromotionProduct> PromotionProducts { get; set; }
+        public List<PromotionProductGrouping> PromotionProductGroupings { get; set; }
+        public List<PromotionProductType> PromotionProductTypes { get; set; }
+        public List<PromotionSamePrice> PromotionSamePrices { get; set; }
+        public List<PromotionCombo> PromotionCombos { get; set; }
+
+        public List<PromotionPromotionPolicyMapping> PromotionPromotionPolicyMappings { get; set; }
         public bool Equals(PromotionPolicy other)
         {
             return other != null && Id == other.Id;

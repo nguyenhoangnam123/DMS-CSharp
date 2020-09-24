@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Helpers;
+using DMS.Enums;
 
 namespace DMS.Repositories
 {
@@ -15,6 +16,7 @@ namespace DMS.Repositories
         Task<int> Count(PromotionPolicyFilter PromotionPolicyFilter);
         Task<List<PromotionPolicy>> List(PromotionPolicyFilter PromotionPolicyFilter);
         Task<PromotionPolicy> Get(long Id);
+        Task<PromotionPromotionPolicyMapping> GetMapping(long Id, long PromotionId);
     }
     public class PromotionPolicyRepository : IPromotionPolicyRepository
     {
@@ -55,7 +57,7 @@ namespace DMS.Repositories
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;
-        }    
+        }
 
         private IQueryable<PromotionPolicyDAO> DynamicOrder(IQueryable<PromotionPolicyDAO> query, PromotionPolicyFilter filter)
         {
@@ -136,6 +138,319 @@ namespace DMS.Repositories
                 return null;
 
             return PromotionPolicy;
+        }
+
+        public async Task<PromotionPromotionPolicyMapping> GetMapping(long Id, long PromotionId)
+        {
+            PromotionPromotionPolicyMapping PromotionPromotionPolicyMapping = await DataContext.PromotionPromotionPolicyMapping.AsNoTracking()
+            .Where(x => x.PromotionPolicyId == Id && x.PromotionId == PromotionId)
+            .Select(x => new PromotionPromotionPolicyMapping
+            {
+                PromotionPolicyId = x.PromotionPolicyId,
+                PromotionId = x.PromotionId,
+                Note = x.Note,
+                StatusId = x.StatusId,
+                PromotionPolicy = x.PromotionPolicy == null ? null : new PromotionPolicy
+                {
+                    Id = x.PromotionPolicy.Id,
+                    Code = x.PromotionPolicy.Code,
+                    Name = x.PromotionPolicy.Name,
+                }
+            }).FirstOrDefaultAsync();
+
+            if (PromotionPromotionPolicyMapping == null)
+                return null;
+            if(PromotionPromotionPolicyMapping.PromotionPolicy != null)
+            {
+                if (Id == PromotionPolicyEnum.SALES_ORDER.Id)
+                {
+                    PromotionPromotionPolicyMapping.PromotionPolicy.PromotionDirectSalesOrders = await DataContext.PromotionDirectSalesOrder.AsNoTracking()
+                        .Where(x => x.PromotionId == PromotionId)
+                        .Select(x => new PromotionDirectSalesOrder
+                        {
+                            Id = x.Id,
+                            PromotionPolicyId = x.PromotionPolicyId,
+                            PromotionId = x.PromotionId,
+                            Note = x.Note,
+                            FromValue = x.FromValue,
+                            ToValue = x.ToValue,
+                            PromotionDiscountTypeId = x.PromotionDiscountTypeId,
+                            DiscountPercentage = x.DiscountPercentage,
+                            DiscountValue = x.DiscountValue,
+                            PromotionDiscountType = new PromotionDiscountType
+                            {
+                                Id = x.PromotionDiscountType.Id,
+                                Code = x.PromotionDiscountType.Code,
+                                Name = x.PromotionDiscountType.Name,
+                            },
+                            PromotionPolicy = new PromotionPolicy
+                            {
+                                Id = x.PromotionPolicy.Id,
+                                Code = x.PromotionPolicy.Code,
+                                Name = x.PromotionPolicy.Name,
+                            },
+                        }).ToListAsync();
+                }
+                else if (Id == PromotionPolicyEnum.STORE.Id)
+                {
+                    PromotionPromotionPolicyMapping.PromotionPolicy.PromotionStores = await DataContext.PromotionStore.AsNoTracking()
+                    .Where(x => x.PromotionId == PromotionId)
+                    .Select(x => new PromotionStore
+                    {
+                        Id = x.Id,
+                        PromotionPolicyId = x.PromotionPolicyId,
+                        PromotionId = x.PromotionId,
+                        Note = x.Note,
+                        FromValue = x.FromValue,
+                        ToValue = x.ToValue,
+                        PromotionDiscountTypeId = x.PromotionDiscountTypeId,
+                        DiscountPercentage = x.DiscountPercentage,
+                        DiscountValue = x.DiscountValue,
+                        PromotionDiscountType = new PromotionDiscountType
+                        {
+                            Id = x.PromotionDiscountType.Id,
+                            Code = x.PromotionDiscountType.Code,
+                            Name = x.PromotionDiscountType.Name,
+                        },
+                        PromotionPolicy = new PromotionPolicy
+                        {
+                            Id = x.PromotionPolicy.Id,
+                            Code = x.PromotionPolicy.Code,
+                            Name = x.PromotionPolicy.Name,
+                        },
+                    }).ToListAsync();
+                }
+                else if (Id == PromotionPolicyEnum.STORE_GROUPING.Id)
+                {
+                    PromotionPromotionPolicyMapping.PromotionPolicy.PromotionStoreGroupings = await DataContext.PromotionStoreGrouping.AsNoTracking()
+                    .Where(x => x.PromotionId == PromotionId)
+                    .Select(x => new PromotionStoreGrouping
+                    {
+                        Id = x.Id,
+                        PromotionPolicyId = x.PromotionPolicyId,
+                        PromotionId = x.PromotionId,
+                        Note = x.Note,
+                        FromValue = x.FromValue,
+                        ToValue = x.ToValue,
+                        PromotionDiscountTypeId = x.PromotionDiscountTypeId,
+                        DiscountPercentage = x.DiscountPercentage,
+                        DiscountValue = x.DiscountValue,
+                        PromotionDiscountType = new PromotionDiscountType
+                        {
+                            Id = x.PromotionDiscountType.Id,
+                            Code = x.PromotionDiscountType.Code,
+                            Name = x.PromotionDiscountType.Name,
+                        },
+                        PromotionPolicy = new PromotionPolicy
+                        {
+                            Id = x.PromotionPolicy.Id,
+                            Code = x.PromotionPolicy.Code,
+                            Name = x.PromotionPolicy.Name,
+                        },
+                    }).ToListAsync();
+                }
+                else if (Id == PromotionPolicyEnum.STORE_TYPE.Id)
+                {
+                    PromotionPromotionPolicyMapping.PromotionPolicy.PromotionStoreTypes = await DataContext.PromotionStoreType.AsNoTracking()
+                    .Where(x => x.PromotionId == PromotionId)
+                    .Select(x => new PromotionStoreType
+                    {
+                        Id = x.Id,
+                        PromotionPolicyId = x.PromotionPolicyId,
+                        PromotionId = x.PromotionId,
+                        Note = x.Note,
+                        FromValue = x.FromValue,
+                        ToValue = x.ToValue,
+                        PromotionDiscountTypeId = x.PromotionDiscountTypeId,
+                        DiscountPercentage = x.DiscountPercentage,
+                        DiscountValue = x.DiscountValue,
+                        PromotionDiscountType = new PromotionDiscountType
+                        {
+                            Id = x.PromotionDiscountType.Id,
+                            Code = x.PromotionDiscountType.Code,
+                            Name = x.PromotionDiscountType.Name,
+                        },
+                        PromotionPolicy = new PromotionPolicy
+                        {
+                            Id = x.PromotionPolicy.Id,
+                            Code = x.PromotionPolicy.Code,
+                            Name = x.PromotionPolicy.Name,
+                        },
+                    }).ToListAsync();
+                }
+                else if (Id == PromotionPolicyEnum.PRODUCT.Id)
+                {
+                    PromotionPromotionPolicyMapping.PromotionPolicy.PromotionProducts = await DataContext.PromotionProduct.AsNoTracking()
+                    .Where(x => x.PromotionId == PromotionId)
+                    .Select(x => new PromotionProduct
+                    {
+                        Id = x.Id,
+                        PromotionPolicyId = x.PromotionPolicyId,
+                        PromotionId = x.PromotionId,
+                        ProductId = x.ProductId,
+                        Note = x.Note,
+                        FromValue = x.FromValue,
+                        ToValue = x.ToValue,
+                        PromotionDiscountTypeId = x.PromotionDiscountTypeId,
+                        DiscountPercentage = x.DiscountPercentage,
+                        DiscountValue = x.DiscountValue,
+                        Product = new Product
+                        {
+                            Id = x.Product.Id,
+                            Code = x.Product.Code,
+                            SupplierCode = x.Product.SupplierCode,
+                            Name = x.Product.Name,
+                            Description = x.Product.Description,
+                            ScanCode = x.Product.ScanCode,
+                            ERPCode = x.Product.ERPCode,
+                            ProductTypeId = x.Product.ProductTypeId,
+                            SupplierId = x.Product.SupplierId,
+                            BrandId = x.Product.BrandId,
+                            UnitOfMeasureId = x.Product.UnitOfMeasureId,
+                            UnitOfMeasureGroupingId = x.Product.UnitOfMeasureGroupingId,
+                            SalePrice = x.Product.SalePrice,
+                            RetailPrice = x.Product.RetailPrice,
+                            TaxTypeId = x.Product.TaxTypeId,
+                            StatusId = x.Product.StatusId,
+                            OtherName = x.Product.OtherName,
+                            TechnicalName = x.Product.TechnicalName,
+                            Note = x.Product.Note,
+                            IsNew = x.Product.IsNew,
+                            UsedVariationId = x.Product.UsedVariationId,
+                            Used = x.Product.Used,
+                        },
+                        PromotionDiscountType = new PromotionDiscountType
+                        {
+                            Id = x.PromotionDiscountType.Id,
+                            Code = x.PromotionDiscountType.Code,
+                            Name = x.PromotionDiscountType.Name,
+                        },
+                        PromotionPolicy = new PromotionPolicy
+                        {
+                            Id = x.PromotionPolicy.Id,
+                            Code = x.PromotionPolicy.Code,
+                            Name = x.PromotionPolicy.Name,
+                        },
+                    }).ToListAsync();
+                }
+                else if (Id == PromotionPolicyEnum.PRODUCT_GROUPING.Id)
+                {
+                    PromotionPromotionPolicyMapping.PromotionPolicy.PromotionProductGroupings = await DataContext.PromotionProductGrouping.AsNoTracking()
+                    .Where(x => x.PromotionId == PromotionId)
+                    .Select(x => new PromotionProductGrouping
+                    {
+                        Id = x.Id,
+                        PromotionPolicyId = x.PromotionPolicyId,
+                        PromotionId = x.PromotionId,
+                        ProductGroupingId = x.ProductGroupingId,
+                        Note = x.Note,
+                        FromValue = x.FromValue,
+                        ToValue = x.ToValue,
+                        PromotionDiscountTypeId = x.PromotionDiscountTypeId,
+                        DiscountPercentage = x.DiscountPercentage,
+                        DiscountValue = x.DiscountValue,
+                        ProductGrouping = new ProductGrouping
+                        {
+                            Id = x.ProductGrouping.Id,
+                            Code = x.ProductGrouping.Code,
+                            Name = x.ProductGrouping.Name,
+                            Description = x.ProductGrouping.Description,
+                            ParentId = x.ProductGrouping.ParentId,
+                            Path = x.ProductGrouping.Path,
+                            Level = x.ProductGrouping.Level,
+                        },
+                        PromotionDiscountType = new PromotionDiscountType
+                        {
+                            Id = x.PromotionDiscountType.Id,
+                            Code = x.PromotionDiscountType.Code,
+                            Name = x.PromotionDiscountType.Name,
+                        },
+                        PromotionPolicy = new PromotionPolicy
+                        {
+                            Id = x.PromotionPolicy.Id,
+                            Code = x.PromotionPolicy.Code,
+                            Name = x.PromotionPolicy.Name,
+                        },
+                    }).ToListAsync();
+                }
+                else if (Id == PromotionPolicyEnum.PRODUCT_TYPE.Id)
+                {
+                    PromotionPromotionPolicyMapping.PromotionPolicy.PromotionProductTypes = await DataContext.PromotionProductType.AsNoTracking()
+                    .Where(x => x.PromotionId == PromotionId)
+                    .Select(x => new PromotionProductType
+                    {
+                        Id = x.Id,
+                        PromotionPolicyId = x.PromotionPolicyId,
+                        PromotionId = x.PromotionId,
+                        ProductTypeId = x.ProductTypeId,
+                        Note = x.Note,
+                        FromValue = x.FromValue,
+                        ToValue = x.ToValue,
+                        PromotionDiscountTypeId = x.PromotionDiscountTypeId,
+                        DiscountPercentage = x.DiscountPercentage,
+                        DiscountValue = x.DiscountValue,
+                        ProductType = new ProductType
+                        {
+                            Id = x.ProductType.Id,
+                            Code = x.ProductType.Code,
+                            Name = x.ProductType.Name,
+                            Description = x.ProductType.Description,
+                            StatusId = x.ProductType.StatusId,
+                            Used = x.ProductType.Used,
+                        },
+                        PromotionDiscountType = new PromotionDiscountType
+                        {
+                            Id = x.PromotionDiscountType.Id,
+                            Code = x.PromotionDiscountType.Code,
+                            Name = x.PromotionDiscountType.Name,
+                        },
+                        PromotionPolicy = new PromotionPolicy
+                        {
+                            Id = x.PromotionPolicy.Id,
+                            Code = x.PromotionPolicy.Code,
+                            Name = x.PromotionPolicy.Name,
+                        },
+                    }).ToListAsync();
+                }
+                else if (Id == PromotionPolicyEnum.COMBO.Id)
+                {
+                    PromotionPromotionPolicyMapping.PromotionPolicy.PromotionCombos = await DataContext.PromotionCombo.AsNoTracking()
+                    .Where(x => x.PromotionId == PromotionId)
+                    .Select(x => new PromotionCombo
+                    {
+                        Id = x.Id,
+                        Note = x.Note,
+                        PromotionPolicyId = x.PromotionPolicyId,
+                        PromotionId = x.PromotionId,
+                        PromotionPolicy = new PromotionPolicy
+                        {
+                            Id = x.PromotionPolicy.Id,
+                            Code = x.PromotionPolicy.Code,
+                            Name = x.PromotionPolicy.Name,
+                        },
+                    }).ToListAsync();
+                }
+                else if (Id == PromotionPolicyEnum.SAME_PRICE.Id)
+                {
+                    PromotionPromotionPolicyMapping.PromotionPolicy.PromotionSamePrices = await DataContext.PromotionSamePrice.AsNoTracking()
+                    .Where(x => x.PromotionId == PromotionId)
+                    .Select(x => new PromotionSamePrice
+                    {
+                        Id = x.Id,
+                        Note = x.Note,
+                        PromotionPolicyId = x.PromotionPolicyId,
+                        PromotionId = x.PromotionId,
+                        Price = x.Price,
+                        PromotionPolicy = new PromotionPolicy
+                        {
+                            Id = x.PromotionPolicy.Id,
+                            Code = x.PromotionPolicy.Code,
+                            Name = x.PromotionPolicy.Name,
+                        },
+                    }).ToListAsync();
+                }
+            }
+            return PromotionPromotionPolicyMapping;
         }
     }
 }

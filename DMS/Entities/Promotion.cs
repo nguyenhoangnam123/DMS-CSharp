@@ -21,16 +21,22 @@ namespace DMS.Entities
         public Organization Organization { get; set; }
         public PromotionType PromotionType { get; set; }
         public Status Status { get; set; }
-        public List<PromotionCombo> PromotionCombos { get; set; }
+        
         public List<PromotionDirectSalesOrder> PromotionDirectSalesOrders { get; set; }
-        public List<PromotionPromotionPolicyMapping> PromotionPromotionPolicyMappings { get; set; }
-        public List<PromotionSamePrice> PromotionSamePrices { get; set; }
-        public List<PromotionStoreGroupingMapping> PromotionStoreGroupingMappings { get; set; }
+        public List<PromotionStore> PromotionStores { get; set; }
         public List<PromotionStoreGrouping> PromotionStoreGroupings { get; set; }
+        public List<PromotionStoreType> PromotionStoreTypes { get; set; }
+        public List<PromotionProduct> PromotionProducts { get; set; }
+        public List<PromotionProductGrouping> PromotionProductGroupings { get; set; }
+        public List<PromotionProductType> PromotionProductTypes { get; set; }
+        public List<PromotionSamePrice> PromotionSamePrices { get; set; }
+        public List<PromotionCombo> PromotionCombos { get; set; }
+
+        public List<PromotionPromotionPolicyMapping> PromotionPromotionPolicyMappings { get; set; }
+        public List<PromotionStoreGroupingMapping> PromotionStoreGroupingMappings { get; set; }
         public List<PromotionStoreMapping> PromotionStoreMappings { get; set; }
         public List<PromotionStoreTypeMapping> PromotionStoreTypeMappings { get; set; }
-        public List<PromotionStoreType> PromotionStoreTypes { get; set; }
-        public List<PromotionStore> PromotionStores { get; set; }
+        
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
 

@@ -731,6 +731,39 @@ namespace DMS.Rpc
             DataContext.PriceListType.BulkSynchronize(PriceListTypeEnumList);
         }
 
+        private void InitPromotionTypeEnum()
+        {
+            List<PromotionTypeDAO> PromotionTypeEnumList = PromotionTypeEnum.PromotionTypeEnumList.Select(item => new PromotionTypeDAO
+            {
+                Id = item.Id,
+                Code = item.Code,
+                Name = item.Name,
+            }).ToList();
+            DataContext.PromotionType.BulkSynchronize(PromotionTypeEnumList);
+        }
+
+        private void InitPromotionPolicyEnum()
+        {
+            List<PromotionPolicyDAO> PromotionPolicyEnumList = PromotionPolicyEnum.PromotionPolicyEnumList.Select(item => new PromotionPolicyDAO
+            {
+                Id = item.Id,
+                Code = item.Code,
+                Name = item.Name,
+            }).ToList();
+            DataContext.PromotionPolicy.BulkSynchronize(PromotionPolicyEnumList);
+        }
+
+        private void InitPromotionDiscountTypeEnum()
+        {
+            List<PromotionDiscountTypeDAO> PromotionDiscountTypeEnumList = PromotionDiscountTypeEnum.PromotionDiscountTypeEnumList.Select(item => new PromotionDiscountTypeDAO
+            {
+                Id = item.Id,
+                Code = item.Code,
+                Name = item.Name,
+            }).ToList();
+            DataContext.PromotionDiscountType.BulkSynchronize(PromotionDiscountTypeEnumList);
+        }
+
         private void InitSalesOrderTypeEnum()
         {
             List<SalesOrderTypeDAO> SalesOrderTypeEnumList = SalesOrderTypeEnum.SalesOrderTypeEnumList.Select(item => new SalesOrderTypeDAO

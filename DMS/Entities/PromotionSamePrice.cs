@@ -10,10 +10,12 @@ namespace DMS.Entities
     {
         public long Id { get; set; }
         public string Note { get; set; }
-        public string Name { get; set; }
+        public long PromotionPolicyId { get; set; }
         public long PromotionId { get; set; }
         public decimal Price { get; set; }
+        public Guid RowId { get; set; }
         public Promotion Promotion { get; set; }
+        public PromotionPolicy PromotionPolicy { get; set; }
 
         public bool Equals(PromotionSamePrice other)
         {
@@ -29,7 +31,7 @@ namespace DMS.Entities
     {
         public IdFilter Id { get; set; }
         public StringFilter Note { get; set; }
-        public StringFilter Name { get; set; }
+        public IdFilter PromotionPolicyId { get; set; }
         public IdFilter PromotionId { get; set; }
         public DecimalFilter Price { get; set; }
         public List<PromotionSamePriceFilter> OrFilter { get; set; }
@@ -42,7 +44,7 @@ namespace DMS.Entities
     {
         Id = 0,
         Note = 1,
-        Name = 2,
+        PromotionPolicy = 2,
         Promotion = 3,
         Price = 4,
     }
@@ -53,7 +55,7 @@ namespace DMS.Entities
         ALL = E.ALL,
         Id = E._0,
         Note = E._1,
-        Name = E._2,
+        PromotionPolicy = E._2,
         Promotion = E._3,
         Price = E._4,
     }

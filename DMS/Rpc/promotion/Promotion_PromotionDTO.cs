@@ -21,16 +21,11 @@ namespace DMS.Rpc.promotion
         public Promotion_OrganizationDTO Organization { get; set; }
         public Promotion_PromotionTypeDTO PromotionType { get; set; }
         public Promotion_StatusDTO Status { get; set; }
-        public List<Promotion_PromotionComboDTO> PromotionCombos { get; set; }
-        public List<Promotion_PromotionDirectSalesOrderDTO> PromotionDirectSalesOrders { get; set; }
+        
         public List<Promotion_PromotionPromotionPolicyMappingDTO> PromotionPromotionPolicyMappings { get; set; }
-        public List<Promotion_PromotionSamePriceDTO> PromotionSamePrices { get; set; }
-        public List<Promotion_PromotionStoreGroupingMappingDTO> PromotionStoreGroupingMappings { get; set; }
-        public List<Promotion_PromotionStoreGroupingDTO> PromotionStoreGroupings { get; set; }
         public List<Promotion_PromotionStoreMappingDTO> PromotionStoreMappings { get; set; }
+        public List<Promotion_PromotionStoreGroupingMappingDTO> PromotionStoreGroupingMappings { get; set; }
         public List<Promotion_PromotionStoreTypeMappingDTO> PromotionStoreTypeMappings { get; set; }
-        public List<Promotion_PromotionStoreTypeDTO> PromotionStoreTypes { get; set; }
-        public List<Promotion_PromotionStoreDTO> PromotionStores { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public Promotion_PromotionDTO() {}
@@ -49,16 +44,11 @@ namespace DMS.Rpc.promotion
             this.Organization = Promotion.Organization == null ? null : new Promotion_OrganizationDTO(Promotion.Organization);
             this.PromotionType = Promotion.PromotionType == null ? null : new Promotion_PromotionTypeDTO(Promotion.PromotionType);
             this.Status = Promotion.Status == null ? null : new Promotion_StatusDTO(Promotion.Status);
-            this.PromotionCombos = Promotion.PromotionCombos?.Select(x => new Promotion_PromotionComboDTO(x)).ToList();
-            this.PromotionDirectSalesOrders = Promotion.PromotionDirectSalesOrders?.Select(x => new Promotion_PromotionDirectSalesOrderDTO(x)).ToList();
             this.PromotionPromotionPolicyMappings = Promotion.PromotionPromotionPolicyMappings?.Select(x => new Promotion_PromotionPromotionPolicyMappingDTO(x)).ToList();
-            this.PromotionSamePrices = Promotion.PromotionSamePrices?.Select(x => new Promotion_PromotionSamePriceDTO(x)).ToList();
             this.PromotionStoreGroupingMappings = Promotion.PromotionStoreGroupingMappings?.Select(x => new Promotion_PromotionStoreGroupingMappingDTO(x)).ToList();
-            this.PromotionStoreGroupings = Promotion.PromotionStoreGroupings?.Select(x => new Promotion_PromotionStoreGroupingDTO(x)).ToList();
             this.PromotionStoreMappings = Promotion.PromotionStoreMappings?.Select(x => new Promotion_PromotionStoreMappingDTO(x)).ToList();
             this.PromotionStoreTypeMappings = Promotion.PromotionStoreTypeMappings?.Select(x => new Promotion_PromotionStoreTypeMappingDTO(x)).ToList();
-            this.PromotionStoreTypes = Promotion.PromotionStoreTypes?.Select(x => new Promotion_PromotionStoreTypeDTO(x)).ToList();
-            this.PromotionStores = Promotion.PromotionStores?.Select(x => new Promotion_PromotionStoreDTO(x)).ToList();
+            
             this.CreatedAt = Promotion.CreatedAt;
             this.UpdatedAt = Promotion.UpdatedAt;
             this.Errors = Promotion.Errors;

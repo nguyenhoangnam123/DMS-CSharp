@@ -17,6 +17,15 @@ namespace DMS.Repositories
         Task<Promotion> Get(long Id);
         Task<bool> Create(Promotion Promotion);
         Task<bool> Update(Promotion Promotion);
+        Task<bool> UpdateDirectSalesOrder(PromotionPromotionPolicyMapping PromotionPromotionPolicyMapping);
+        //Task<bool> UpdateStore(PromotionPromotionPolicyMapping PromotionPromotionPolicyMapping);
+        //Task<bool> UpdateStoreGrouping(PromotionPromotionPolicyMapping PromotionPromotionPolicyMapping);
+        //Task<bool> UpdateStoreType(PromotionPromotionPolicyMapping PromotionPromotionPolicyMapping);
+        //Task<bool> UpdateProduct(PromotionPromotionPolicyMapping PromotionPromotionPolicyMapping);
+        //Task<bool> UpdateProductGrouping(PromotionPromotionPolicyMapping PromotionPromotionPolicyMapping);
+        //Task<bool> UpdateProductType(PromotionPromotionPolicyMapping PromotionPromotionPolicyMapping);
+        //Task<bool> UpdateCombo(PromotionPromotionPolicyMapping PromotionPromotionPolicyMapping);
+        //Task<bool> UpdateSamePrice(PromotionPromotionPolicyMapping PromotionPromotionPolicyMapping);
         Task<bool> Delete(Promotion Promotion);
         Task<bool> BulkMerge(List<Promotion> Promotions);
         Task<bool> BulkDelete(List<Promotion> Promotions);
@@ -288,13 +297,21 @@ namespace DMS.Repositories
                 {
                     Id = x.Id,
                     Note = x.Note,
+                    PromotionPolicyId = x.PromotionPolicyId,
                     PromotionId = x.PromotionId,
+                    PromotionPolicy = new PromotionPolicy
+                    {
+                        Id = x.PromotionPolicy.Id,
+                        Code = x.PromotionPolicy.Code,
+                        Name = x.PromotionPolicy.Name,
+                    },
                 }).ToListAsync();
             Promotion.PromotionDirectSalesOrders = await DataContext.PromotionDirectSalesOrder.AsNoTracking()
                 .Where(x => x.PromotionId == Promotion.Id)
                 .Select(x => new PromotionDirectSalesOrder
                 {
                     Id = x.Id,
+                    PromotionPolicyId = x.PromotionPolicyId,
                     PromotionId = x.PromotionId,
                     Note = x.Note,
                     FromValue = x.FromValue,
@@ -307,6 +324,137 @@ namespace DMS.Repositories
                         Id = x.PromotionDiscountType.Id,
                         Code = x.PromotionDiscountType.Code,
                         Name = x.PromotionDiscountType.Name,
+                    },
+                    PromotionPolicy = new PromotionPolicy
+                    {
+                        Id = x.PromotionPolicy.Id,
+                        Code = x.PromotionPolicy.Code,
+                        Name = x.PromotionPolicy.Name,
+                    },
+                }).ToListAsync();
+            Promotion.PromotionProductGroupings = await DataContext.PromotionProductGrouping.AsNoTracking()
+                .Where(x => x.PromotionId == Promotion.Id)
+                .Select(x => new PromotionProductGrouping
+                {
+                    Id = x.Id,
+                    PromotionPolicyId = x.PromotionPolicyId,
+                    PromotionId = x.PromotionId,
+                    ProductGroupingId = x.ProductGroupingId,
+                    Note = x.Note,
+                    FromValue = x.FromValue,
+                    ToValue = x.ToValue,
+                    PromotionDiscountTypeId = x.PromotionDiscountTypeId,
+                    DiscountPercentage = x.DiscountPercentage,
+                    DiscountValue = x.DiscountValue,
+                    ProductGrouping = new ProductGrouping
+                    {
+                        Id = x.ProductGrouping.Id,
+                        Code = x.ProductGrouping.Code,
+                        Name = x.ProductGrouping.Name,
+                        Description = x.ProductGrouping.Description,
+                        ParentId = x.ProductGrouping.ParentId,
+                        Path = x.ProductGrouping.Path,
+                        Level = x.ProductGrouping.Level,
+                    },
+                    PromotionDiscountType = new PromotionDiscountType
+                    {
+                        Id = x.PromotionDiscountType.Id,
+                        Code = x.PromotionDiscountType.Code,
+                        Name = x.PromotionDiscountType.Name,
+                    },
+                    PromotionPolicy = new PromotionPolicy
+                    {
+                        Id = x.PromotionPolicy.Id,
+                        Code = x.PromotionPolicy.Code,
+                        Name = x.PromotionPolicy.Name,
+                    },
+                }).ToListAsync();
+            Promotion.PromotionProductTypes = await DataContext.PromotionProductType.AsNoTracking()
+                .Where(x => x.PromotionId == Promotion.Id)
+                .Select(x => new PromotionProductType
+                {
+                    Id = x.Id,
+                    PromotionPolicyId = x.PromotionPolicyId,
+                    PromotionId = x.PromotionId,
+                    ProductTypeId = x.ProductTypeId,
+                    Note = x.Note,
+                    FromValue = x.FromValue,
+                    ToValue = x.ToValue,
+                    PromotionDiscountTypeId = x.PromotionDiscountTypeId,
+                    DiscountPercentage = x.DiscountPercentage,
+                    DiscountValue = x.DiscountValue,
+                    ProductType = new ProductType
+                    {
+                        Id = x.ProductType.Id,
+                        Code = x.ProductType.Code,
+                        Name = x.ProductType.Name,
+                        Description = x.ProductType.Description,
+                        StatusId = x.ProductType.StatusId,
+                        Used = x.ProductType.Used,
+                    },
+                    PromotionDiscountType = new PromotionDiscountType
+                    {
+                        Id = x.PromotionDiscountType.Id,
+                        Code = x.PromotionDiscountType.Code,
+                        Name = x.PromotionDiscountType.Name,
+                    },
+                    PromotionPolicy = new PromotionPolicy
+                    {
+                        Id = x.PromotionPolicy.Id,
+                        Code = x.PromotionPolicy.Code,
+                        Name = x.PromotionPolicy.Name,
+                    },
+                }).ToListAsync();
+            Promotion.PromotionProducts = await DataContext.PromotionProduct.AsNoTracking()
+                .Where(x => x.PromotionId == Promotion.Id)
+                .Select(x => new PromotionProduct
+                {
+                    Id = x.Id,
+                    PromotionPolicyId = x.PromotionPolicyId,
+                    PromotionId = x.PromotionId,
+                    ProductId = x.ProductId,
+                    Note = x.Note,
+                    FromValue = x.FromValue,
+                    ToValue = x.ToValue,
+                    PromotionDiscountTypeId = x.PromotionDiscountTypeId,
+                    DiscountPercentage = x.DiscountPercentage,
+                    DiscountValue = x.DiscountValue,
+                    Product = new Product
+                    {
+                        Id = x.Product.Id,
+                        Code = x.Product.Code,
+                        SupplierCode = x.Product.SupplierCode,
+                        Name = x.Product.Name,
+                        Description = x.Product.Description,
+                        ScanCode = x.Product.ScanCode,
+                        ERPCode = x.Product.ERPCode,
+                        ProductTypeId = x.Product.ProductTypeId,
+                        SupplierId = x.Product.SupplierId,
+                        BrandId = x.Product.BrandId,
+                        UnitOfMeasureId = x.Product.UnitOfMeasureId,
+                        UnitOfMeasureGroupingId = x.Product.UnitOfMeasureGroupingId,
+                        SalePrice = x.Product.SalePrice,
+                        RetailPrice = x.Product.RetailPrice,
+                        TaxTypeId = x.Product.TaxTypeId,
+                        StatusId = x.Product.StatusId,
+                        OtherName = x.Product.OtherName,
+                        TechnicalName = x.Product.TechnicalName,
+                        Note = x.Product.Note,
+                        IsNew = x.Product.IsNew,
+                        UsedVariationId = x.Product.UsedVariationId,
+                        Used = x.Product.Used,
+                    },
+                    PromotionDiscountType = new PromotionDiscountType
+                    {
+                        Id = x.PromotionDiscountType.Id,
+                        Code = x.PromotionDiscountType.Code,
+                        Name = x.PromotionDiscountType.Name,
+                    },
+                    PromotionPolicy = new PromotionPolicy
+                    {
+                        Id = x.PromotionPolicy.Id,
+                        Code = x.PromotionPolicy.Code,
+                        Name = x.PromotionPolicy.Name,
                     },
                 }).ToListAsync();
             Promotion.PromotionPromotionPolicyMappings = await DataContext.PromotionPromotionPolicyMapping.AsNoTracking()
@@ -336,8 +484,15 @@ namespace DMS.Repositories
                 {
                     Id = x.Id,
                     Note = x.Note,
+                    PromotionPolicyId = x.PromotionPolicyId,
                     PromotionId = x.PromotionId,
                     Price = x.Price,
+                    PromotionPolicy = new PromotionPolicy
+                    {
+                        Id = x.PromotionPolicy.Id,
+                        Code = x.PromotionPolicy.Code,
+                        Name = x.PromotionPolicy.Name,
+                    },
                 }).ToListAsync();
             Promotion.PromotionStoreGroupingMappings = await DataContext.PromotionStoreGroupingMapping.AsNoTracking()
                 .Where(x => x.PromotionId == Promotion.Id)
@@ -362,6 +517,7 @@ namespace DMS.Repositories
                 .Select(x => new PromotionStoreGrouping
                 {
                     Id = x.Id,
+                    PromotionPolicyId = x.PromotionPolicyId,
                     PromotionId = x.PromotionId,
                     Note = x.Note,
                     FromValue = x.FromValue,
@@ -374,6 +530,12 @@ namespace DMS.Repositories
                         Id = x.PromotionDiscountType.Id,
                         Code = x.PromotionDiscountType.Code,
                         Name = x.PromotionDiscountType.Name,
+                    },
+                    PromotionPolicy = new PromotionPolicy
+                    {
+                        Id = x.PromotionPolicy.Id,
+                        Code = x.PromotionPolicy.Code,
+                        Name = x.PromotionPolicy.Name,
                     },
                 }).ToListAsync();
             Promotion.PromotionStoreMappings = await DataContext.PromotionStoreMapping.AsNoTracking()
@@ -437,6 +599,7 @@ namespace DMS.Repositories
                 .Select(x => new PromotionStoreType
                 {
                     Id = x.Id,
+                    PromotionPolicyId = x.PromotionPolicyId,
                     PromotionId = x.PromotionId,
                     Note = x.Note,
                     FromValue = x.FromValue,
@@ -450,12 +613,19 @@ namespace DMS.Repositories
                         Code = x.PromotionDiscountType.Code,
                         Name = x.PromotionDiscountType.Name,
                     },
+                    PromotionPolicy = new PromotionPolicy
+                    {
+                        Id = x.PromotionPolicy.Id,
+                        Code = x.PromotionPolicy.Code,
+                        Name = x.PromotionPolicy.Name,
+                    },
                 }).ToListAsync();
             Promotion.PromotionStores = await DataContext.PromotionStore.AsNoTracking()
                 .Where(x => x.PromotionId == Promotion.Id)
                 .Select(x => new PromotionStore
                 {
                     Id = x.Id,
+                    PromotionPolicyId = x.PromotionPolicyId,
                     PromotionId = x.PromotionId,
                     Note = x.Note,
                     FromValue = x.FromValue,
@@ -468,6 +638,12 @@ namespace DMS.Repositories
                         Id = x.PromotionDiscountType.Id,
                         Code = x.PromotionDiscountType.Code,
                         Name = x.PromotionDiscountType.Name,
+                    },
+                    PromotionPolicy = new PromotionPolicy
+                    {
+                        Id = x.PromotionPolicy.Id,
+                        Code = x.PromotionPolicy.Code,
+                        Name = x.PromotionPolicy.Name,
                     },
                 }).ToListAsync();
 
@@ -516,6 +692,340 @@ namespace DMS.Repositories
             return true;
         }
 
+        public async Task<bool> UpdateDirectSalesOrder(PromotionPromotionPolicyMapping PromotionPromotionPolicyMapping)
+        {
+            PromotionPromotionPolicyMappingDAO PromotionPromotionPolicyMappingDAO = DataContext.PromotionPromotionPolicyMapping
+                .Where(x => x.PromotionId == PromotionPromotionPolicyMapping.PromotionId &&
+                x.PromotionPolicyId == PromotionPromotionPolicyMapping.PromotionPolicyId)
+                .FirstOrDefault();
+            if (PromotionPromotionPolicyMappingDAO == null)
+                return false;
+            PromotionPromotionPolicyMappingDAO.Note = PromotionPromotionPolicyMapping.Note;
+
+            var PromotionDirectSalesOrderIds = PromotionPromotionPolicyMapping.PromotionPolicy.PromotionDirectSalesOrders.Where(x => x.Id != 0).Select(x => x.Id).ToList();
+            await DataContext.PromotionDirectSalesOrderItemMapping
+                .Where(x => PromotionDirectSalesOrderIds.Contains(x.PromotionDirectSalesOrderId)).DeleteFromQueryAsync();
+            await DataContext.PromotionDirectSalesOrder
+                .Where(x => x.PromotionId == PromotionPromotionPolicyMapping.PromotionId)
+                .DeleteFromQueryAsync();
+            List<PromotionDirectSalesOrderDAO> PromotionDirectSalesOrderDAOs = new List<PromotionDirectSalesOrderDAO>();
+            if (PromotionPromotionPolicyMapping.PromotionPolicy.PromotionDirectSalesOrders != null)
+            {
+                foreach (PromotionDirectSalesOrder PromotionDirectSalesOrder in PromotionPromotionPolicyMapping.PromotionPolicy.PromotionDirectSalesOrders)
+                {
+                    PromotionDirectSalesOrderDAO PromotionDirectSalesOrderDAO = new PromotionDirectSalesOrderDAO();
+                    PromotionDirectSalesOrderDAO.Id = PromotionDirectSalesOrder.Id;
+                    PromotionDirectSalesOrderDAO.PromotionPolicyId = PromotionDirectSalesOrder.PromotionPolicyId;
+                    PromotionDirectSalesOrderDAO.PromotionId = PromotionPromotionPolicyMapping.PromotionId;
+                    PromotionDirectSalesOrderDAO.Note = PromotionDirectSalesOrder.Note;
+                    PromotionDirectSalesOrderDAO.FromValue = PromotionDirectSalesOrder.FromValue;
+                    PromotionDirectSalesOrderDAO.ToValue = PromotionDirectSalesOrder.ToValue;
+                    PromotionDirectSalesOrderDAO.PromotionDiscountTypeId = PromotionDirectSalesOrder.PromotionDiscountTypeId;
+                    PromotionDirectSalesOrderDAO.DiscountPercentage = PromotionDirectSalesOrder.DiscountPercentage;
+                    PromotionDirectSalesOrderDAO.DiscountValue = PromotionDirectSalesOrder.DiscountValue;
+                    PromotionDirectSalesOrderDAO.RowId = Guid.NewGuid();
+                    PromotionDirectSalesOrderDAOs.Add(PromotionDirectSalesOrderDAO);
+                    PromotionDirectSalesOrder.RowId = PromotionDirectSalesOrderDAO.RowId;
+                }
+                await DataContext.PromotionDirectSalesOrder.BulkMergeAsync(PromotionDirectSalesOrderDAOs);
+
+                List<PromotionDirectSalesOrderItemMappingDAO> PromotionDirectSalesOrderItemMappingDAOs = new List<PromotionDirectSalesOrderItemMappingDAO>();
+                foreach (PromotionDirectSalesOrder PromotionDirectSalesOrder in PromotionPromotionPolicyMapping.PromotionPolicy.PromotionDirectSalesOrders)
+                {
+                    PromotionDirectSalesOrder.Id = PromotionDirectSalesOrderDAOs.Where(x => x.RowId == PromotionDirectSalesOrder.RowId).Select(x => x.Id).FirstOrDefault();
+                    if (PromotionDirectSalesOrder.PromotionDirectSalesOrderItemMappings != null)
+                    {
+                        foreach (var PromotionDirectSalesOrderItemMapping in PromotionDirectSalesOrder.PromotionDirectSalesOrderItemMappings)
+                        {
+                            PromotionDirectSalesOrderItemMappingDAO PromotionDirectSalesOrderItemMappingDAO = new PromotionDirectSalesOrderItemMappingDAO();
+                            PromotionDirectSalesOrderItemMappingDAO.ItemId = PromotionDirectSalesOrderItemMapping.ItemId;
+                            PromotionDirectSalesOrderItemMappingDAO.PromotionDirectSalesOrderId = PromotionDirectSalesOrder.Id;
+                            PromotionDirectSalesOrderItemMappingDAO.Quantity = PromotionDirectSalesOrderItemMapping.Quantity;
+                            PromotionDirectSalesOrderItemMappingDAOs.Add(PromotionDirectSalesOrderItemMappingDAO);
+                        }
+                    }
+                }
+                await DataContext.PromotionDirectSalesOrderItemMapping.BulkMergeAsync(PromotionDirectSalesOrderItemMappingDAOs);
+            }
+
+            await DataContext.SaveChangesAsync();
+            return true;
+        }
+
+        //public async Task<bool> UpdateStore(Promotion Promotion)
+        //{
+        //    PromotionDAO PromotionDAO = DataContext.Promotion.Where(x => x.Id == Promotion.Id).FirstOrDefault();
+        //    if (PromotionDAO == null)
+        //        return false;
+        //    PromotionDAO.UpdatedAt = StaticParams.DateTimeNow;
+
+        //    await DataContext.PromotionStore
+        //        .Where(x => x.PromotionId == Promotion.Id)
+        //        .DeleteFromQueryAsync();
+        //    List<PromotionStoreDAO> PromotionStoreDAOs = new List<PromotionStoreDAO>();
+        //    if (Promotion.PromotionStores != null)
+        //    {
+        //        foreach (PromotionStore PromotionStore in Promotion.PromotionStores)
+        //        {
+        //            PromotionStoreDAO PromotionStoreDAO = new PromotionStoreDAO();
+        //            PromotionStoreDAO.Id = PromotionStore.Id;
+        //            PromotionStoreDAO.PromotionPolicyId = PromotionStore.PromotionPolicyId;
+        //            PromotionStoreDAO.PromotionId = Promotion.Id;
+        //            PromotionStoreDAO.Note = PromotionStore.Note;
+        //            PromotionStoreDAO.FromValue = PromotionStore.FromValue;
+        //            PromotionStoreDAO.ToValue = PromotionStore.ToValue;
+        //            PromotionStoreDAO.PromotionDiscountTypeId = PromotionStore.PromotionDiscountTypeId;
+        //            PromotionStoreDAO.DiscountPercentage = PromotionStore.DiscountPercentage;
+        //            PromotionStoreDAO.DiscountValue = PromotionStore.DiscountValue;
+        //            PromotionStoreDAO.RowId = Guid.NewGuid();
+        //            PromotionStoreDAOs.Add(PromotionStoreDAO);
+        //            PromotionStore.RowId = PromotionStoreDAO.RowId;
+        //        }
+        //        await DataContext.PromotionStore.BulkMergeAsync(PromotionStoreDAOs);
+        //    }
+        //    await DataContext.SaveChangesAsync();
+        //    return true;
+        //}
+
+        //public async Task<bool> UpdateStoreGrouping(Promotion Promotion)
+        //{
+        //    PromotionDAO PromotionDAO = DataContext.Promotion.Where(x => x.Id == Promotion.Id).FirstOrDefault();
+        //    if (PromotionDAO == null)
+        //        return false;
+        //    PromotionDAO.UpdatedAt = StaticParams.DateTimeNow;
+
+        //    await DataContext.PromotionStoreGrouping
+        //        .Where(x => x.PromotionId == Promotion.Id)
+        //        .DeleteFromQueryAsync();
+        //    List<PromotionStoreGroupingDAO> PromotionStoreGroupingDAOs = new List<PromotionStoreGroupingDAO>();
+        //    if (Promotion.PromotionStoreGroupings != null)
+        //    {
+        //        foreach (PromotionStoreGrouping PromotionStoreGrouping in Promotion.PromotionStoreGroupings)
+        //        {
+        //            PromotionStoreGroupingDAO PromotionStoreGroupingDAO = new PromotionStoreGroupingDAO();
+        //            PromotionStoreGroupingDAO.Id = PromotionStoreGrouping.Id;
+        //            PromotionStoreGroupingDAO.PromotionPolicyId = PromotionStoreGrouping.PromotionPolicyId;
+        //            PromotionStoreGroupingDAO.PromotionId = Promotion.Id;
+        //            PromotionStoreGroupingDAO.Note = PromotionStoreGrouping.Note;
+        //            PromotionStoreGroupingDAO.FromValue = PromotionStoreGrouping.FromValue;
+        //            PromotionStoreGroupingDAO.ToValue = PromotionStoreGrouping.ToValue;
+        //            PromotionStoreGroupingDAO.PromotionDiscountTypeId = PromotionStoreGrouping.PromotionDiscountTypeId;
+        //            PromotionStoreGroupingDAO.DiscountPercentage = PromotionStoreGrouping.DiscountPercentage;
+        //            PromotionStoreGroupingDAO.DiscountValue = PromotionStoreGrouping.DiscountValue;
+        //            PromotionStoreGroupingDAO.RowId = Guid.NewGuid();
+        //            PromotionStoreGroupingDAOs.Add(PromotionStoreGroupingDAO);
+        //            PromotionStoreGrouping.RowId = PromotionStoreGroupingDAO.RowId;
+        //        }
+        //        await DataContext.PromotionStoreGrouping.BulkMergeAsync(PromotionStoreGroupingDAOs);
+        //    }
+        //    await DataContext.SaveChangesAsync();
+        //    return true;
+        //}
+
+        //public async Task<bool> UpdateStoreType(Promotion Promotion)
+        //{
+        //    PromotionDAO PromotionDAO = DataContext.Promotion.Where(x => x.Id == Promotion.Id).FirstOrDefault();
+        //    if (PromotionDAO == null)
+        //        return false;
+        //    PromotionDAO.UpdatedAt = StaticParams.DateTimeNow;
+
+        //    await DataContext.PromotionStoreType
+        //        .Where(x => x.PromotionId == Promotion.Id)
+        //        .DeleteFromQueryAsync();
+        //    List<PromotionStoreTypeDAO> PromotionStoreTypeDAOs = new List<PromotionStoreTypeDAO>();
+        //    if (Promotion.PromotionStoreTypes != null)
+        //    {
+        //        foreach (PromotionStoreType PromotionStoreType in Promotion.PromotionStoreTypes)
+        //        {
+        //            PromotionStoreTypeDAO PromotionStoreTypeDAO = new PromotionStoreTypeDAO();
+        //            PromotionStoreTypeDAO.Id = PromotionStoreType.Id;
+        //            PromotionStoreTypeDAO.PromotionPolicyId = PromotionStoreType.PromotionPolicyId;
+        //            PromotionStoreTypeDAO.PromotionId = Promotion.Id;
+        //            PromotionStoreTypeDAO.Note = PromotionStoreType.Note;
+        //            PromotionStoreTypeDAO.FromValue = PromotionStoreType.FromValue;
+        //            PromotionStoreTypeDAO.ToValue = PromotionStoreType.ToValue;
+        //            PromotionStoreTypeDAO.PromotionDiscountTypeId = PromotionStoreType.PromotionDiscountTypeId;
+        //            PromotionStoreTypeDAO.DiscountPercentage = PromotionStoreType.DiscountPercentage;
+        //            PromotionStoreTypeDAO.DiscountValue = PromotionStoreType.DiscountValue;
+        //            PromotionStoreTypeDAO.RowId = Guid.NewGuid();
+        //            PromotionStoreTypeDAOs.Add(PromotionStoreTypeDAO);
+        //            PromotionStoreType.RowId = PromotionStoreTypeDAO.RowId;
+        //        }
+        //        await DataContext.PromotionStoreType.BulkMergeAsync(PromotionStoreTypeDAOs);
+        //    }
+        //    await DataContext.SaveChangesAsync();
+        //    return true;
+        //}
+
+        //public async Task<bool> UpdateProduct(Promotion Promotion)
+        //{
+        //    PromotionDAO PromotionDAO = DataContext.Promotion.Where(x => x.Id == Promotion.Id).FirstOrDefault();
+        //    if (PromotionDAO == null)
+        //        return false;
+        //    PromotionDAO.UpdatedAt = StaticParams.DateTimeNow;
+
+        //    await DataContext.PromotionProduct
+        //        .Where(x => x.PromotionId == Promotion.Id)
+        //        .DeleteFromQueryAsync();
+        //    List<PromotionProductDAO> PromotionProductDAOs = new List<PromotionProductDAO>();
+        //    if (Promotion.PromotionProducts != null)
+        //    {
+        //        foreach (PromotionProduct PromotionProduct in Promotion.PromotionProducts)
+        //        {
+        //            PromotionProductDAO PromotionProductDAO = new PromotionProductDAO();
+        //            PromotionProductDAO.Id = PromotionProduct.Id;
+        //            PromotionProductDAO.PromotionPolicyId = PromotionProduct.PromotionPolicyId;
+        //            PromotionProductDAO.PromotionId = Promotion.Id;
+        //            PromotionProductDAO.ProductId = PromotionProduct.ProductId;
+        //            PromotionProductDAO.Note = PromotionProduct.Note;
+        //            PromotionProductDAO.FromValue = PromotionProduct.FromValue;
+        //            PromotionProductDAO.ToValue = PromotionProduct.ToValue;
+        //            PromotionProductDAO.PromotionDiscountTypeId = PromotionProduct.PromotionDiscountTypeId;
+        //            PromotionProductDAO.DiscountPercentage = PromotionProduct.DiscountPercentage;
+        //            PromotionProductDAO.DiscountValue = PromotionProduct.DiscountValue;
+        //            PromotionProductDAO.RowId = Guid.NewGuid();
+        //            PromotionProductDAOs.Add(PromotionProductDAO);
+        //            PromotionProduct.RowId = PromotionProductDAO.RowId;
+        //        }
+        //        await DataContext.PromotionProduct.BulkMergeAsync(PromotionProductDAOs);
+        //    }
+        //    await DataContext.SaveChangesAsync();
+        //    return true;
+        //}
+
+        //public async Task<bool> UpdateProductGrouping(Promotion Promotion)
+        //{
+        //    PromotionDAO PromotionDAO = DataContext.Promotion.Where(x => x.Id == Promotion.Id).FirstOrDefault();
+        //    if (PromotionDAO == null)
+        //        return false;
+        //    PromotionDAO.UpdatedAt = StaticParams.DateTimeNow;
+
+        //    await DataContext.PromotionProductGrouping
+        //        .Where(x => x.PromotionId == Promotion.Id)
+        //        .DeleteFromQueryAsync();
+        //    List<PromotionProductGroupingDAO> PromotionProductGroupingDAOs = new List<PromotionProductGroupingDAO>();
+        //    if (Promotion.PromotionProductGroupings != null)
+        //    {
+        //        foreach (PromotionProductGrouping PromotionProductGrouping in Promotion.PromotionProductGroupings)
+        //        {
+        //            PromotionProductGroupingDAO PromotionProductGroupingDAO = new PromotionProductGroupingDAO();
+        //            PromotionProductGroupingDAO.Id = PromotionProductGrouping.Id;
+        //            PromotionProductGroupingDAO.PromotionPolicyId = PromotionProductGrouping.PromotionPolicyId;
+        //            PromotionProductGroupingDAO.PromotionId = Promotion.Id;
+        //            PromotionProductGroupingDAO.ProductGroupingId = PromotionProductGrouping.ProductGroupingId;
+        //            PromotionProductGroupingDAO.Note = PromotionProductGrouping.Note;
+        //            PromotionProductGroupingDAO.FromValue = PromotionProductGrouping.FromValue;
+        //            PromotionProductGroupingDAO.ToValue = PromotionProductGrouping.ToValue;
+        //            PromotionProductGroupingDAO.PromotionDiscountTypeId = PromotionProductGrouping.PromotionDiscountTypeId;
+        //            PromotionProductGroupingDAO.DiscountPercentage = PromotionProductGrouping.DiscountPercentage;
+        //            PromotionProductGroupingDAO.DiscountValue = PromotionProductGrouping.DiscountValue;
+        //            PromotionProductGroupingDAO.RowId = Guid.NewGuid();
+        //            PromotionProductGroupingDAOs.Add(PromotionProductGroupingDAO);
+        //            PromotionProductGrouping.RowId = PromotionProductGroupingDAO.RowId;
+        //        }
+        //        await DataContext.PromotionProductGrouping.BulkMergeAsync(PromotionProductGroupingDAOs);
+        //    }
+        //    await DataContext.SaveChangesAsync();
+        //    return true;
+        //}
+
+        //public async Task<bool> UpdateProductType(Promotion Promotion)
+        //{
+        //    PromotionDAO PromotionDAO = DataContext.Promotion.Where(x => x.Id == Promotion.Id).FirstOrDefault();
+        //    if (PromotionDAO == null)
+        //        return false;
+        //    PromotionDAO.UpdatedAt = StaticParams.DateTimeNow;
+
+        //    await DataContext.PromotionProductType
+        //        .Where(x => x.PromotionId == Promotion.Id)
+        //        .DeleteFromQueryAsync();
+        //    List<PromotionProductTypeDAO> PromotionProductTypeDAOs = new List<PromotionProductTypeDAO>();
+        //    if (Promotion.PromotionProductTypes != null)
+        //    {
+        //        foreach (PromotionProductType PromotionProductType in Promotion.PromotionProductTypes)
+        //        {
+        //            PromotionProductTypeDAO PromotionProductTypeDAO = new PromotionProductTypeDAO();
+        //            PromotionProductTypeDAO.Id = PromotionProductType.Id;
+        //            PromotionProductTypeDAO.PromotionPolicyId = PromotionProductType.PromotionPolicyId;
+        //            PromotionProductTypeDAO.PromotionId = Promotion.Id;
+        //            PromotionProductTypeDAO.ProductTypeId = PromotionProductType.ProductTypeId;
+        //            PromotionProductTypeDAO.Note = PromotionProductType.Note;
+        //            PromotionProductTypeDAO.FromValue = PromotionProductType.FromValue;
+        //            PromotionProductTypeDAO.ToValue = PromotionProductType.ToValue;
+        //            PromotionProductTypeDAO.PromotionDiscountTypeId = PromotionProductType.PromotionDiscountTypeId;
+        //            PromotionProductTypeDAO.DiscountPercentage = PromotionProductType.DiscountPercentage;
+        //            PromotionProductTypeDAO.DiscountValue = PromotionProductType.DiscountValue;
+        //            PromotionProductTypeDAO.RowId = Guid.NewGuid();
+        //            PromotionProductTypeDAOs.Add(PromotionProductTypeDAO);
+        //            PromotionProductType.RowId = PromotionProductTypeDAO.RowId;
+        //        }
+        //        await DataContext.PromotionProductType.BulkMergeAsync(PromotionProductTypeDAOs);
+        //    }
+        //    await DataContext.SaveChangesAsync();
+        //    return true;
+        //}
+
+        //public async Task<bool> UpdateCombo(Promotion Promotion)
+        //{
+        //    PromotionDAO PromotionDAO = DataContext.Promotion.Where(x => x.Id == Promotion.Id).FirstOrDefault();
+        //    if (PromotionDAO == null)
+        //        return false;
+        //    PromotionDAO.UpdatedAt = StaticParams.DateTimeNow;
+
+        //    await DataContext.PromotionCombo
+        //        .Where(x => x.PromotionId == Promotion.Id)
+        //        .DeleteFromQueryAsync();
+        //    List<PromotionComboDAO> PromotionComboDAOs = new List<PromotionComboDAO>();
+        //    if (Promotion.PromotionCombos != null)
+        //    {
+        //        foreach (PromotionCombo PromotionCombo in Promotion.PromotionCombos)
+        //        {
+        //            PromotionComboDAO PromotionComboDAO = new PromotionComboDAO();
+        //            PromotionComboDAO.Id = PromotionCombo.Id;
+        //            PromotionComboDAO.Note = PromotionCombo.Note;
+        //            PromotionComboDAO.PromotionPolicyId = PromotionCombo.PromotionPolicyId;
+        //            PromotionComboDAO.PromotionId = Promotion.Id;
+        //            PromotionComboDAO.RowId = Guid.NewGuid();
+        //            PromotionComboDAOs.Add(PromotionComboDAO);
+        //            PromotionCombo.RowId = PromotionComboDAO.RowId;
+        //        }
+        //        await DataContext.PromotionCombo.BulkMergeAsync(PromotionComboDAOs);
+        //    }
+        //    await DataContext.SaveChangesAsync();
+        //    return true;
+        //}
+
+        //public async Task<bool> UpdateSamePrice(Promotion Promotion)
+        //{
+        //    PromotionDAO PromotionDAO = DataContext.Promotion.Where(x => x.Id == Promotion.Id).FirstOrDefault();
+        //    if (PromotionDAO == null)
+        //        return false;
+        //    PromotionDAO.UpdatedAt = StaticParams.DateTimeNow;
+
+        //    await DataContext.PromotionSamePrice
+        //        .Where(x => x.PromotionId == Promotion.Id)
+        //        .DeleteFromQueryAsync();
+        //    List<PromotionSamePriceDAO> PromotionSamePriceDAOs = new List<PromotionSamePriceDAO>();
+        //    if (Promotion.PromotionSamePrices != null)
+        //    {
+        //        foreach (PromotionSamePrice PromotionSamePrice in Promotion.PromotionSamePrices)
+        //        {
+        //            PromotionSamePriceDAO PromotionSamePriceDAO = new PromotionSamePriceDAO();
+        //            PromotionSamePriceDAO.Id = PromotionSamePrice.Id;
+        //            PromotionSamePriceDAO.Note = PromotionSamePrice.Note;
+        //            PromotionSamePriceDAO.PromotionPolicyId = PromotionSamePrice.PromotionPolicyId;
+        //            PromotionSamePriceDAO.PromotionId = Promotion.Id;
+        //            PromotionSamePriceDAO.Price = PromotionSamePrice.Price;
+        //            PromotionSamePriceDAO.RowId = Guid.NewGuid();
+        //            PromotionSamePriceDAOs.Add(PromotionSamePriceDAO);
+        //            PromotionSamePrice.RowId = PromotionSamePriceDAO.RowId;
+        //        }
+        //        await DataContext.PromotionSamePrice.BulkMergeAsync(PromotionSamePriceDAOs);
+        //    }
+        //    await DataContext.SaveChangesAsync();
+        //    return true;
+        //}
+
         public async Task<bool> Delete(Promotion Promotion)
         {
             await DataContext.Promotion.Where(x => x.Id == Promotion.Id).UpdateFromQueryAsync(x => new PromotionDAO { DeletedAt = StaticParams.DateTimeNow, UpdatedAt = StaticParams.DateTimeNow });
@@ -557,43 +1067,6 @@ namespace DMS.Repositories
 
         private async Task SaveReference(Promotion Promotion)
         {
-            await DataContext.PromotionCombo
-                .Where(x => x.PromotionId == Promotion.Id)
-                .DeleteFromQueryAsync();
-            List<PromotionComboDAO> PromotionComboDAOs = new List<PromotionComboDAO>();
-            if (Promotion.PromotionCombos != null)
-            {
-                foreach (PromotionCombo PromotionCombo in Promotion.PromotionCombos)
-                {
-                    PromotionComboDAO PromotionComboDAO = new PromotionComboDAO();
-                    PromotionComboDAO.Id = PromotionCombo.Id;
-                    PromotionComboDAO.Note = PromotionCombo.Note;
-                    PromotionComboDAO.PromotionId = Promotion.Id;
-                    PromotionComboDAOs.Add(PromotionComboDAO);
-                }
-                await DataContext.PromotionCombo.BulkMergeAsync(PromotionComboDAOs);
-            }
-            await DataContext.PromotionDirectSalesOrder
-                .Where(x => x.PromotionId == Promotion.Id)
-                .DeleteFromQueryAsync();
-            List<PromotionDirectSalesOrderDAO> PromotionDirectSalesOrderDAOs = new List<PromotionDirectSalesOrderDAO>();
-            if (Promotion.PromotionDirectSalesOrders != null)
-            {
-                foreach (PromotionDirectSalesOrder PromotionDirectSalesOrder in Promotion.PromotionDirectSalesOrders)
-                {
-                    PromotionDirectSalesOrderDAO PromotionDirectSalesOrderDAO = new PromotionDirectSalesOrderDAO();
-                    PromotionDirectSalesOrderDAO.Id = PromotionDirectSalesOrder.Id;
-                    PromotionDirectSalesOrderDAO.PromotionId = Promotion.Id;
-                    PromotionDirectSalesOrderDAO.Note = PromotionDirectSalesOrder.Note;
-                    PromotionDirectSalesOrderDAO.FromValue = PromotionDirectSalesOrder.FromValue;
-                    PromotionDirectSalesOrderDAO.ToValue = PromotionDirectSalesOrder.ToValue;
-                    PromotionDirectSalesOrderDAO.PromotionDiscountTypeId = PromotionDirectSalesOrder.PromotionDiscountTypeId;
-                    PromotionDirectSalesOrderDAO.DiscountPercentage = PromotionDirectSalesOrder.DiscountPercentage;
-                    PromotionDirectSalesOrderDAO.DiscountValue = PromotionDirectSalesOrder.DiscountValue;
-                    PromotionDirectSalesOrderDAOs.Add(PromotionDirectSalesOrderDAO);
-                }
-                await DataContext.PromotionDirectSalesOrder.BulkMergeAsync(PromotionDirectSalesOrderDAOs);
-            }
             await DataContext.PromotionPromotionPolicyMapping
                 .Where(x => x.PromotionId == Promotion.Id)
                 .DeleteFromQueryAsync();
@@ -611,23 +1084,7 @@ namespace DMS.Repositories
                 }
                 await DataContext.PromotionPromotionPolicyMapping.BulkMergeAsync(PromotionPromotionPolicyMappingDAOs);
             }
-            await DataContext.PromotionSamePrice
-                .Where(x => x.PromotionId == Promotion.Id)
-                .DeleteFromQueryAsync();
-            List<PromotionSamePriceDAO> PromotionSamePriceDAOs = new List<PromotionSamePriceDAO>();
-            if (Promotion.PromotionSamePrices != null)
-            {
-                foreach (PromotionSamePrice PromotionSamePrice in Promotion.PromotionSamePrices)
-                {
-                    PromotionSamePriceDAO PromotionSamePriceDAO = new PromotionSamePriceDAO();
-                    PromotionSamePriceDAO.Id = PromotionSamePrice.Id;
-                    PromotionSamePriceDAO.Note = PromotionSamePrice.Note;
-                    PromotionSamePriceDAO.PromotionId = Promotion.Id;
-                    PromotionSamePriceDAO.Price = PromotionSamePrice.Price;
-                    PromotionSamePriceDAOs.Add(PromotionSamePriceDAO);
-                }
-                await DataContext.PromotionSamePrice.BulkMergeAsync(PromotionSamePriceDAOs);
-            }
+            
             await DataContext.PromotionStoreGroupingMapping
                 .Where(x => x.PromotionId == Promotion.Id)
                 .DeleteFromQueryAsync();
@@ -643,27 +1100,7 @@ namespace DMS.Repositories
                 }
                 await DataContext.PromotionStoreGroupingMapping.BulkMergeAsync(PromotionStoreGroupingMappingDAOs);
             }
-            await DataContext.PromotionStoreGrouping
-                .Where(x => x.PromotionId == Promotion.Id)
-                .DeleteFromQueryAsync();
-            List<PromotionStoreGroupingDAO> PromotionStoreGroupingDAOs = new List<PromotionStoreGroupingDAO>();
-            if (Promotion.PromotionStoreGroupings != null)
-            {
-                foreach (PromotionStoreGrouping PromotionStoreGrouping in Promotion.PromotionStoreGroupings)
-                {
-                    PromotionStoreGroupingDAO PromotionStoreGroupingDAO = new PromotionStoreGroupingDAO();
-                    PromotionStoreGroupingDAO.Id = PromotionStoreGrouping.Id;
-                    PromotionStoreGroupingDAO.PromotionId = Promotion.Id;
-                    PromotionStoreGroupingDAO.Note = PromotionStoreGrouping.Note;
-                    PromotionStoreGroupingDAO.FromValue = PromotionStoreGrouping.FromValue;
-                    PromotionStoreGroupingDAO.ToValue = PromotionStoreGrouping.ToValue;
-                    PromotionStoreGroupingDAO.PromotionDiscountTypeId = PromotionStoreGrouping.PromotionDiscountTypeId;
-                    PromotionStoreGroupingDAO.DiscountPercentage = PromotionStoreGrouping.DiscountPercentage;
-                    PromotionStoreGroupingDAO.DiscountValue = PromotionStoreGrouping.DiscountValue;
-                    PromotionStoreGroupingDAOs.Add(PromotionStoreGroupingDAO);
-                }
-                await DataContext.PromotionStoreGrouping.BulkMergeAsync(PromotionStoreGroupingDAOs);
-            }
+            
             await DataContext.PromotionStoreMapping
                 .Where(x => x.PromotionId == Promotion.Id)
                 .DeleteFromQueryAsync();
@@ -694,49 +1131,6 @@ namespace DMS.Repositories
                 }
                 await DataContext.PromotionStoreTypeMapping.BulkMergeAsync(PromotionStoreTypeMappingDAOs);
             }
-            await DataContext.PromotionStoreType
-                .Where(x => x.PromotionId == Promotion.Id)
-                .DeleteFromQueryAsync();
-            List<PromotionStoreTypeDAO> PromotionStoreTypeDAOs = new List<PromotionStoreTypeDAO>();
-            if (Promotion.PromotionStoreTypes != null)
-            {
-                foreach (PromotionStoreType PromotionStoreType in Promotion.PromotionStoreTypes)
-                {
-                    PromotionStoreTypeDAO PromotionStoreTypeDAO = new PromotionStoreTypeDAO();
-                    PromotionStoreTypeDAO.Id = PromotionStoreType.Id;
-                    PromotionStoreTypeDAO.PromotionId = Promotion.Id;
-                    PromotionStoreTypeDAO.Note = PromotionStoreType.Note;
-                    PromotionStoreTypeDAO.FromValue = PromotionStoreType.FromValue;
-                    PromotionStoreTypeDAO.ToValue = PromotionStoreType.ToValue;
-                    PromotionStoreTypeDAO.PromotionDiscountTypeId = PromotionStoreType.PromotionDiscountTypeId;
-                    PromotionStoreTypeDAO.DiscountPercentage = PromotionStoreType.DiscountPercentage;
-                    PromotionStoreTypeDAO.DiscountValue = PromotionStoreType.DiscountValue;
-                    PromotionStoreTypeDAOs.Add(PromotionStoreTypeDAO);
-                }
-                await DataContext.PromotionStoreType.BulkMergeAsync(PromotionStoreTypeDAOs);
-            }
-            await DataContext.PromotionStore
-                .Where(x => x.PromotionId == Promotion.Id)
-                .DeleteFromQueryAsync();
-            List<PromotionStoreDAO> PromotionStoreDAOs = new List<PromotionStoreDAO>();
-            if (Promotion.PromotionStores != null)
-            {
-                foreach (PromotionStore PromotionStore in Promotion.PromotionStores)
-                {
-                    PromotionStoreDAO PromotionStoreDAO = new PromotionStoreDAO();
-                    PromotionStoreDAO.Id = PromotionStore.Id;
-                    PromotionStoreDAO.PromotionId = Promotion.Id;
-                    PromotionStoreDAO.Note = PromotionStore.Note;
-                    PromotionStoreDAO.FromValue = PromotionStore.FromValue;
-                    PromotionStoreDAO.ToValue = PromotionStore.ToValue;
-                    PromotionStoreDAO.PromotionDiscountTypeId = PromotionStore.PromotionDiscountTypeId;
-                    PromotionStoreDAO.DiscountPercentage = PromotionStore.DiscountPercentage;
-                    PromotionStoreDAO.DiscountValue = PromotionStore.DiscountValue;
-                    PromotionStoreDAOs.Add(PromotionStoreDAO);
-                }
-                await DataContext.PromotionStore.BulkMergeAsync(PromotionStoreDAOs);
-            }
         }
-        
     }
 }

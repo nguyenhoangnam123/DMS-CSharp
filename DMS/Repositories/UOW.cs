@@ -69,6 +69,9 @@ namespace DMS.Repositories
         IPromotionDirectSalesOrderRepository PromotionDirectSalesOrderRepository { get; }
         IPromotionDiscountTypeRepository PromotionDiscountTypeRepository { get; }
         IPromotionPolicyRepository PromotionPolicyRepository { get; }
+        IPromotionProductRepository PromotionProductRepository { get; }
+        IPromotionProductGroupingRepository PromotionProductGroupingRepository { get; }
+        IPromotionProductTypeRepository PromotionProductTypeRepository { get; }
         IPromotionSamePriceRepository PromotionSamePriceRepository { get; }
         IPromotionStoreRepository PromotionStoreRepository { get; }
         IPromotionStoreGroupingRepository PromotionStoreGroupingRepository { get; }
@@ -181,6 +184,9 @@ namespace DMS.Repositories
         public IPromotionDirectSalesOrderRepository PromotionDirectSalesOrderRepository { get; private set; }
         public IPromotionDiscountTypeRepository PromotionDiscountTypeRepository { get; private set; }
         public IPromotionPolicyRepository PromotionPolicyRepository { get; private set; }
+        public IPromotionProductRepository PromotionProductRepository { get; private set; }
+        public IPromotionProductGroupingRepository PromotionProductGroupingRepository { get; private set; }
+        public IPromotionProductTypeRepository PromotionProductTypeRepository { get; private set; }
         public IPromotionSamePriceRepository PromotionSamePriceRepository { get; private set; }
         public IPromotionStoreRepository PromotionStoreRepository { get; private set; }
         public IPromotionStoreGroupingRepository PromotionStoreGroupingRepository { get; private set; }
@@ -292,6 +298,9 @@ namespace DMS.Repositories
             PromotionDirectSalesOrderRepository = new PromotionDirectSalesOrderRepository(DataContext);
             PromotionDiscountTypeRepository = new PromotionDiscountTypeRepository(DataContext);
             PromotionPolicyRepository = new PromotionPolicyRepository(DataContext);
+            PromotionProductRepository = new PromotionProductRepository(DataContext);
+            PromotionProductGroupingRepository = new PromotionProductGroupingRepository(DataContext);
+            PromotionProductTypeRepository = new PromotionProductTypeRepository(DataContext);
             PromotionSamePriceRepository = new PromotionSamePriceRepository(DataContext);
             PromotionStoreRepository = new PromotionStoreRepository(DataContext);
             PromotionStoreGroupingRepository = new PromotionStoreGroupingRepository(DataContext);

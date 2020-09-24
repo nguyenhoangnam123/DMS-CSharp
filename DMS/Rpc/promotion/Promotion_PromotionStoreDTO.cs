@@ -9,6 +9,7 @@ namespace DMS.Rpc.promotion
     public class Promotion_PromotionStoreDTO : DataDTO
     {
         public long Id { get; set; }
+        public long PromotionPolicyId { get; set; }
         public long PromotionId { get; set; }
         public string Note { get; set; }
         public decimal FromValue { get; set; }
@@ -17,11 +18,13 @@ namespace DMS.Rpc.promotion
         public decimal? DiscountPercentage { get; set; }
         public decimal? DiscountValue { get; set; }
         public Promotion_PromotionDiscountTypeDTO PromotionDiscountType { get; set; }   
+        public Promotion_PromotionPolicyDTO PromotionPolicy { get; set; }   
         
         public Promotion_PromotionStoreDTO() {}
         public Promotion_PromotionStoreDTO(PromotionStore PromotionStore)
         {
             this.Id = PromotionStore.Id;
+            this.PromotionPolicyId = PromotionStore.PromotionPolicyId;
             this.PromotionId = PromotionStore.PromotionId;
             this.Note = PromotionStore.Note;
             this.FromValue = PromotionStore.FromValue;
@@ -30,6 +33,7 @@ namespace DMS.Rpc.promotion
             this.DiscountPercentage = PromotionStore.DiscountPercentage;
             this.DiscountValue = PromotionStore.DiscountValue;
             this.PromotionDiscountType = PromotionStore.PromotionDiscountType == null ? null : new Promotion_PromotionDiscountTypeDTO(PromotionStore.PromotionDiscountType);
+            this.PromotionPolicy = PromotionStore.PromotionPolicy == null ? null : new Promotion_PromotionPolicyDTO(PromotionStore.PromotionPolicy);
             this.Errors = PromotionStore.Errors;
         }
     }
@@ -38,6 +42,8 @@ namespace DMS.Rpc.promotion
     {
         
         public IdFilter Id { get; set; }
+        
+        public IdFilter PromotionPolicyId { get; set; }
         
         public IdFilter PromotionId { get; set; }
         

@@ -10,16 +10,18 @@ namespace DMS.Rpc.promotion
     {
         public long Id { get; set; }
         public string Note { get; set; }
-        public string Name { get; set; }
+        public long PromotionPolicyId { get; set; }
         public long PromotionId { get; set; }
+        public Promotion_PromotionPolicyDTO PromotionPolicy { get; set; }   
         
         public Promotion_PromotionComboDTO() {}
         public Promotion_PromotionComboDTO(PromotionCombo PromotionCombo)
         {
             this.Id = PromotionCombo.Id;
             this.Note = PromotionCombo.Note;
-            this.Name = PromotionCombo.Name;
+            this.PromotionPolicyId = PromotionCombo.PromotionPolicyId;
             this.PromotionId = PromotionCombo.PromotionId;
+            this.PromotionPolicy = PromotionCombo.PromotionPolicy == null ? null : new Promotion_PromotionPolicyDTO(PromotionCombo.PromotionPolicy);
             this.Errors = PromotionCombo.Errors;
         }
     }
@@ -31,7 +33,7 @@ namespace DMS.Rpc.promotion
         
         public StringFilter Note { get; set; }
         
-        public StringFilter Name { get; set; }
+        public IdFilter PromotionPolicyId { get; set; }
         
         public IdFilter PromotionId { get; set; }
         
