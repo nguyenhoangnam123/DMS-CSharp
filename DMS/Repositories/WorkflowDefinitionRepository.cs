@@ -145,7 +145,7 @@ namespace DMS.Repositories
                             query = query.OrderBy(q => q.Name);
                             break;
                         case WorkflowDefinitionOrder.WorkflowType:
-                            query = query.OrderBy(q => q.WorkflowTypeId);
+                            query = query.OrderBy(q => q.WorkflowType.Name);
                             break;
                         case WorkflowDefinitionOrder.Modifier:
                             query = query.OrderBy(q => q.Modifier);
@@ -189,7 +189,7 @@ namespace DMS.Repositories
                             query = query.OrderByDescending(q => q.Modifier);
                             break;
                         case WorkflowDefinitionOrder.WorkflowType:
-                            query = query.OrderByDescending(q => q.WorkflowTypeId);
+                            query = query.OrderByDescending(q => q.WorkflowType.Name);
                             break;
                         case WorkflowDefinitionOrder.StartDate:
                             query = query.OrderByDescending(q => q.StartDate);
