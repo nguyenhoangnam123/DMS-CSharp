@@ -33,6 +33,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Winton.Extensions.Configuration.Consul;
 using Z.EntityFramework.Extensions;
+using Thinktecture;
 
 namespace DMS
 {
@@ -79,7 +80,7 @@ namespace DMS
                 {
                     options.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
                     options.SerializerSettings.DateParseHandling = DateParseHandling.DateTimeOffset;
-                    options.SerializerSettings.DateFormatHandling = DateFormatHandling.IsoDateFormat; 
+                    options.SerializerSettings.DateFormatHandling = DateFormatHandling.IsoDateFormat;
                     options.SerializerSettings.DateFormatString = "yyyy-MM-ddTHH:mm:ss.fffK";
                 });
 
@@ -90,7 +91,10 @@ namespace DMS
             services.AddHostedService<ConsumeRabbitMQHostedService>();
 
             services.AddDbContext<DataContext>(options =>
-              options.UseSqlServer(Configuration.GetConnectionString("DataContext")));
+              options.UseSqlServer(Configuration.GetConnectionString("DataContext"), sqlOptions =>
+              {
+                  sqlOptions.AddTempTableSupport();
+              }));
             EntityFrameworkManager.ContextFactory = context =>
             {
                 var optionsBuilder = new DbContextOptionsBuilder<DataContext>();

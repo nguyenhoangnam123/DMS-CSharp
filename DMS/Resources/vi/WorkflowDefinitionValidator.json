@@ -16,7 +16,10 @@
     },
     "WorkflowType": {
       "WorkflowTypeNotExisted": "Đối tượng áp dụng không tồn tại",
-      "WorkfloWorkflowTypeEmptywTypeNotExisted": "Chưa chọn đối tượng áp dụng"
+      "WorkflowTypeEmpty": "Chưa chọn đối tượng áp dụng"
+    },
+    "Organization": {
+      "OrganizationNotExisted": "Chưa chọn đơn vị quản lý."
     },
     "Status": {
       "StatusNotExisted": "Trạng thái không tồn tại"
