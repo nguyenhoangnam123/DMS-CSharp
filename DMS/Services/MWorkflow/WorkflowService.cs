@@ -112,7 +112,7 @@ namespace DMS.Services.MWorkflow
                 StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id },
                 StartDate = new DateFilter { LessEqual = StaticParams.DateTimeNow },
                 WorkflowTypeId = new IdFilter { Equal = WorkflowTypeId },
-                Selects = WorkflowDefinitionSelect.Id,
+                Selects = WorkflowDefinitionSelect.Id | WorkflowDefinitionSelect.Organization,
                 Skip = 0,
                 Take = int.MaxValue,
             });

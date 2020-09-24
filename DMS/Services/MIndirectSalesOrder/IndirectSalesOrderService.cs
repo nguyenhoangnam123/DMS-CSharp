@@ -309,7 +309,7 @@ namespace DMS.Services.MIndirectSalesOrder
                 await UOW.IndirectSalesOrderRepository.Create(IndirectSalesOrder);
                 IndirectSalesOrder.Code = IndirectSalesOrder.Id.ToString();
                 await UOW.IndirectSalesOrderRepository.Update(IndirectSalesOrder);
-
+                await UOW.IndirectSalesOrderRepository.UpdateState(IndirectSalesOrder);
                 await UOW.Commit();
                 IndirectSalesOrder = await UOW.IndirectSalesOrderRepository.Get(IndirectSalesOrder.Id);
 
@@ -935,9 +935,7 @@ namespace DMS.Services.MIndirectSalesOrder
             if (IndirectSalesOrder.IsValidated == false)
                 return IndirectSalesOrder;
             Dictionary<string, string> Parameters = await MapParameters(IndirectSalesOrder);
-            GenericEnum Action = await WorkflowService.Send(IndirectSalesOrder.RowId, WorkflowTypeEnum.INDIRECT_SALES_ORDER.Id, IndirectSalesOrder.OrganizationId, Parameters);
-            if (Action != WorkflowActionEnum.OK)
-                return null;
+            await WorkflowService.Send(IndirectSalesOrder.RowId, WorkflowTypeEnum.INDIRECT_SALES_ORDER.Id, IndirectSalesOrder.OrganizationId, Parameters);
             RequestState RequestState = await WorkflowService.GetRequestState(IndirectSalesOrder.RowId);
             IndirectSalesOrder.RequestStateId = RequestState.Id;
             await UOW.IndirectSalesOrderRepository.UpdateState(IndirectSalesOrder);

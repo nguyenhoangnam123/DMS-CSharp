@@ -491,7 +491,8 @@ namespace DMS.Repositories
             IndirectSalesOrderDAOs = DynamicFilter(IndirectSalesOrderDAOs, filter);
             IndirectSalesOrderDAOs = from q in IndirectSalesOrderDAOs
                                      join r in DataContext.RequestWorkflowDefinitionMapping on q.RowId equals r.RequestId
-                                     where r.RequestStateId == RequestStateEnum.NEW.Id
+                                     where r.RequestStateId == RequestStateEnum.NEW.Id &&
+                                     q.SaleEmployeeId == filter.ApproverId.Equal
                                      select q;
 
             return await IndirectSalesOrderDAOs.CountAsync();
@@ -504,7 +505,8 @@ namespace DMS.Repositories
             IndirectSalesOrderDAOs = DynamicFilter(IndirectSalesOrderDAOs, filter);
             IndirectSalesOrderDAOs = from q in IndirectSalesOrderDAOs
                                      join r in DataContext.RequestWorkflowDefinitionMapping on q.RowId equals r.RequestId
-                                     where r.RequestStateId == RequestStateEnum.NEW.Id
+                                     where r.RequestStateId == RequestStateEnum.NEW.Id &&
+                                     q.SaleEmployeeId == filter.ApproverId.Equal
                                      select q;
 
             IndirectSalesOrderDAOs = DynamicOrder(IndirectSalesOrderDAOs, filter);
