@@ -484,8 +484,15 @@ namespace DMS.Rpc.workflow_step
             WorkflowStep.Code = WorkflowStep_WorkflowStepDTO.Code;
             WorkflowStep.Name = WorkflowStep_WorkflowStepDTO.Name;
             WorkflowStep.RoleId = WorkflowStep_WorkflowStepDTO.RoleId;
+            WorkflowStep.StatusId = WorkflowStep_WorkflowStepDTO.StatusId;
             WorkflowStep.SubjectMailForReject = WorkflowStep_WorkflowStepDTO.SubjectMailForReject;
             WorkflowStep.BodyMailForReject = WorkflowStep_WorkflowStepDTO.BodyMailForReject;
+            WorkflowStep.Status = WorkflowStep_WorkflowStepDTO.Status == null ? null : new Status
+            {
+                Id = WorkflowStep_WorkflowStepDTO.Status.Id,
+                Code = WorkflowStep_WorkflowStepDTO.Status.Code,
+                Name = WorkflowStep_WorkflowStepDTO.Status.Name,
+            };
             WorkflowStep.Role = WorkflowStep_WorkflowStepDTO.Role == null ? null : new Role
             {
                 Id = WorkflowStep_WorkflowStepDTO.Role.Id,
