@@ -255,16 +255,8 @@ namespace DMS.Services.MPromotionDirectSalesOrder
                 foreach (FilterPermissionDefinition FilterPermissionDefinition in FilterPermissionDefinitions)
                 {
                     if (FilterPermissionDefinition.Name == nameof(subFilter.Id))
-                        subFilter.Id = FilterBuilder.Merge(subFilter.Id, FilterPermissionDefinition.IdFilter);                    if (FilterPermissionDefinition.Name == nameof(subFilter.Name))
-                        
-                        
-                        
-                        
-                        
-                        
-                        subFilter.Name = FilterBuilder.Merge(subFilter.Name, FilterPermissionDefinition.StringFilter);
-                        
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.PromotionId))
+                        subFilter.Id = FilterBuilder.Merge(subFilter.Id, FilterPermissionDefinition.IdFilter);                    if (FilterPermissionDefinition.Name == nameof(subFilter.PromotionPolicyId))
+                        subFilter.PromotionPolicyId = FilterBuilder.Merge(subFilter.PromotionPolicyId, FilterPermissionDefinition.IdFilter);                    if (FilterPermissionDefinition.Name == nameof(subFilter.PromotionId))
                         subFilter.PromotionId = FilterBuilder.Merge(subFilter.PromotionId, FilterPermissionDefinition.IdFilter);                    if (FilterPermissionDefinition.Name == nameof(subFilter.Note))
                         
                         

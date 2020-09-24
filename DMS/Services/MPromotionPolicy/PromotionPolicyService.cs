@@ -16,6 +16,7 @@ namespace DMS.Services.MPromotionPolicy
     {
         Task<int> Count(PromotionPolicyFilter PromotionPolicyFilter);
         Task<List<PromotionPolicy>> List(PromotionPolicyFilter PromotionPolicyFilter);
+        Task<PromotionPromotionPolicyMapping> GetMapping(long Id, long PromotionId);
     }
 
     public class PromotionPolicyService : BaseService, IPromotionPolicyService
@@ -65,6 +66,28 @@ namespace DMS.Services.MPromotionPolicy
             {
                 List<PromotionPolicy> PromotionPolicys = await UOW.PromotionPolicyRepository.List(PromotionPolicyFilter);
                 return PromotionPolicys;
+            }
+            catch (Exception ex)
+            {
+                if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(PromotionPolicyService));
+                    throw new MessageException(ex);
+                }
+                else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(PromotionPolicyService));
+                    throw new MessageException(ex.InnerException);
+                }
+            }
+        }
+
+        public async Task<PromotionPromotionPolicyMapping> GetMapping(long Id, long PromotionId)
+        {
+            try
+            {
+                PromotionPromotionPolicyMapping PromotionPromotionPolicyMapping = await UOW.PromotionPolicyRepository.GetMapping(Id, PromotionId);
+                return PromotionPromotionPolicyMapping;
             }
             catch (Exception ex)
             {

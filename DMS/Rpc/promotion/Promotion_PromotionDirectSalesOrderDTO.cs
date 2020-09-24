@@ -9,7 +9,7 @@ namespace DMS.Rpc.promotion
     public class Promotion_PromotionDirectSalesOrderDTO : DataDTO
     {
         public long Id { get; set; }
-        public string Name { get; set; }
+        public long PromotionPolicyId { get; set; }
         public long PromotionId { get; set; }
         public string Note { get; set; }
         public decimal FromValue { get; set; }
@@ -18,12 +18,13 @@ namespace DMS.Rpc.promotion
         public decimal? DiscountPercentage { get; set; }
         public decimal? DiscountValue { get; set; }
         public Promotion_PromotionDiscountTypeDTO PromotionDiscountType { get; set; }   
+        public Promotion_PromotionPolicyDTO PromotionPolicy { get; set; }   
         
         public Promotion_PromotionDirectSalesOrderDTO() {}
         public Promotion_PromotionDirectSalesOrderDTO(PromotionDirectSalesOrder PromotionDirectSalesOrder)
         {
             this.Id = PromotionDirectSalesOrder.Id;
-            this.Name = PromotionDirectSalesOrder.Name;
+            this.PromotionPolicyId = PromotionDirectSalesOrder.PromotionPolicyId;
             this.PromotionId = PromotionDirectSalesOrder.PromotionId;
             this.Note = PromotionDirectSalesOrder.Note;
             this.FromValue = PromotionDirectSalesOrder.FromValue;
@@ -32,6 +33,7 @@ namespace DMS.Rpc.promotion
             this.DiscountPercentage = PromotionDirectSalesOrder.DiscountPercentage;
             this.DiscountValue = PromotionDirectSalesOrder.DiscountValue;
             this.PromotionDiscountType = PromotionDirectSalesOrder.PromotionDiscountType == null ? null : new Promotion_PromotionDiscountTypeDTO(PromotionDirectSalesOrder.PromotionDiscountType);
+            this.PromotionPolicy = PromotionDirectSalesOrder.PromotionPolicy == null ? null : new Promotion_PromotionPolicyDTO(PromotionDirectSalesOrder.PromotionPolicy);
             this.Errors = PromotionDirectSalesOrder.Errors;
         }
     }
@@ -41,7 +43,7 @@ namespace DMS.Rpc.promotion
         
         public IdFilter Id { get; set; }
         
-        public StringFilter Name { get; set; }
+        public IdFilter PromotionPolicyId { get; set; }
         
         public IdFilter PromotionId { get; set; }
         
