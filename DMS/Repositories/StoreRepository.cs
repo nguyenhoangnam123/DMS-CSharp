@@ -8,6 +8,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Thinktecture;
+using Thinktecture.EntityFrameworkCore.TempTables;
 
 namespace DMS.Repositories
 {
@@ -32,7 +34,7 @@ namespace DMS.Repositories
             this.DataContext = DataContext;
         }
 
-        private IQueryable<StoreDAO> DynamicFilter(IQueryable<StoreDAO> query, StoreFilter filter, Guid RequestId)
+        private async Task<IQueryable<StoreDAO>> DynamicFilter(IQueryable<StoreDAO> query, StoreFilter filter, Guid RequestId)
         {
             if (filter == null)
                 return query.Where(q => false);
@@ -50,16 +52,12 @@ namespace DMS.Repositories
             {
                 if (filter.Id.In != null)
                 {
-                    List<StoreIdFilterDAO> StoreIdFilterDAOs = filter.Id.In.Select(x => new StoreIdFilterDAO
-                    {
-                        RequestId = RequestId,
-                        StoreId = x,
-                    }).ToList();
-                    DataContext.StoreIdFilter.BulkInsert(StoreIdFilterDAOs);
-                    query = from q in query
-                            join id in DataContext.StoreIdFilter on q.Id equals id.StoreId
-                            where id.RequestId == RequestId
-                            select q;
+                    ITempTableQuery<TempTable<long>> tempTableQuery = await DataContext
+                        .BulkInsertValuesIntoTempTableAsync<long>(filter.Id.In);
+                    query = query.Join(tempTableQuery.Query,
+                                       c => c.Id,
+                                       t => t.Column1,
+                                       (c, t) => c);
                 }
                 else
                 {
@@ -576,9 +574,8 @@ namespace DMS.Repositories
         {
             Guid RequestId = Guid.NewGuid();
             IQueryable<StoreDAO> Stores = DataContext.Store;
-            Stores = DynamicFilter(Stores, filter, RequestId);
+            Stores = await DynamicFilter(Stores, filter, RequestId);
             int count = await Stores.CountAsync();
-            await DataContext.StoreIdFilter.Where(x => x.RequestId == RequestId).DeleteFromQueryAsync();
             return count;
         }
 
@@ -587,10 +584,9 @@ namespace DMS.Repositories
             if (filter == null) return new List<Store>();
             Guid RequestId = Guid.NewGuid();
             IQueryable<StoreDAO> StoreDAOs = DataContext.Store.AsNoTracking();
-            StoreDAOs = DynamicFilter(StoreDAOs, filter, RequestId);
+            StoreDAOs = await DynamicFilter(StoreDAOs, filter, RequestId);
             StoreDAOs = DynamicOrder(StoreDAOs, filter, RequestId);
             List<Store> Stores = await DynamicSelect(StoreDAOs, filter, RequestId);
-            await DataContext.StoreIdFilter.Where(x => x.RequestId == RequestId).DeleteFromQueryAsync();
             return Stores;
         }
 
@@ -613,9 +609,8 @@ namespace DMS.Repositories
             }
             Guid RequestId = Guid.NewGuid();
             IQueryable<StoreDAO> Stores = DataContext.Store;
-            Stores = DynamicFilter(Stores, filter, RequestId);
+            Stores = await DynamicFilter(Stores, filter, RequestId);
             int count = await Stores.CountAsync();
-            await DataContext.StoreIdFilter.Where(x => x.RequestId == RequestId).DeleteFromQueryAsync();
             return count;
         }
 
@@ -640,10 +635,9 @@ namespace DMS.Repositories
             }
             Guid RequestId = Guid.NewGuid();
             IQueryable<StoreDAO> StoreDAOs = DataContext.Store.AsNoTracking();
-            StoreDAOs = DynamicFilter(StoreDAOs, filter, RequestId);
+            StoreDAOs = await DynamicFilter(StoreDAOs, filter, RequestId);
             StoreDAOs = DynamicOrder(StoreDAOs, filter, RequestId);
             List<Store> Stores = await DynamicSelect(StoreDAOs, filter, RequestId);
-            await DataContext.StoreIdFilter.Where(x => x.RequestId == RequestId).DeleteFromQueryAsync();
             return Stores;
         }
 

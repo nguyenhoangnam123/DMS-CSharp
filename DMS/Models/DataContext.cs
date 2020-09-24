@@ -137,7 +137,6 @@ namespace DMS.Models
         public virtual DbSet<StoreCheckingDAO> StoreChecking { get; set; }
         public virtual DbSet<StoreCheckingImageMappingDAO> StoreCheckingImageMapping { get; set; }
         public virtual DbSet<StoreGroupingDAO> StoreGrouping { get; set; }
-        public virtual DbSet<StoreIdFilterDAO> StoreIdFilter { get; set; }
         public virtual DbSet<StoreImageDAO> StoreImage { get; set; }
         public virtual DbSet<StoreImageMappingDAO> StoreImageMapping { get; set; }
         public virtual DbSet<StoreScoutingDAO> StoreScouting { get; set; }
