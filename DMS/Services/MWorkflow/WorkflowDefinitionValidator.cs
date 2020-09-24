@@ -32,7 +32,8 @@ namespace DMS.Services.MWorkflow
             WorkflowTypeNotExisted,
             WorkflowTypeEmpty,
             StatusNotExisted,
-            EndDateInvalid
+            EndDateInvalid,
+            OrganizationNotExisted,
         }
 
         private IUOW UOW;
@@ -121,6 +122,14 @@ namespace DMS.Services.MWorkflow
             return WorkflowDefinition.IsValidated;
         }
 
+        private async Task<bool> ValidateOrganizationId(WorkflowDefinition WorkflowDefinition)
+        {
+            Organization Organization = await UOW.OrganizationRepository.Get(WorkflowDefinition.OrganizationId);
+            if (Organization == null)
+                WorkflowDefinition.AddError(nameof(WorkflowDefinitionValidator), nameof(WorkflowDefinition.Organization), ErrorCode.OrganizationNotExisted);
+            return WorkflowDefinition.IsValidated;
+        }
+
         private async Task<bool> WorkflowDefinitionInUsed(WorkflowDefinition WorkflowDefinition)
         {
             RequestWorkflowDefinitionMappingFilter RequestWorkflowDefinitionMappingFilter = new RequestWorkflowDefinitionMappingFilter
@@ -158,6 +167,7 @@ namespace DMS.Services.MWorkflow
             await ValidateWorkflowType(WorkflowDefinition);
             await ValidateDate(WorkflowDefinition);
             await ValidateStatusId(WorkflowDefinition);
+            await ValidateOrganizationId(WorkflowDefinition);
             return WorkflowDefinition.IsValidated;
         }
 
@@ -170,6 +180,7 @@ namespace DMS.Services.MWorkflow
                 await ValidateWorkflowType(WorkflowDefinition);
                 await ValidateDate(WorkflowDefinition);
                 await ValidateStatusId(WorkflowDefinition);
+                await ValidateOrganizationId(WorkflowDefinition);
             }
             return WorkflowDefinition.IsValidated;
         }
