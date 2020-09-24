@@ -121,9 +121,8 @@ namespace DMS.Rpc.indirect_sales_order
                 throw new BindException(ModelState);
 
             IndirectSalesOrderFilter IndirectSalesOrderFilter = ConvertFilterDTOToFilterEntity(IndirectSalesOrder_IndirectSalesOrderFilterDTO);
-            IndirectSalesOrderFilter.RequestStateId = new IdFilter { Equal = RequestStateEnum.NEW.Id };
             IndirectSalesOrderFilter = await IndirectSalesOrderService.ToFilter(IndirectSalesOrderFilter);
-            int count = await IndirectSalesOrderService.Count(IndirectSalesOrderFilter);
+            int count = await IndirectSalesOrderService.CountNew(IndirectSalesOrderFilter);
             return count;
         }
 
@@ -134,9 +133,8 @@ namespace DMS.Rpc.indirect_sales_order
                 throw new BindException(ModelState);
 
             IndirectSalesOrderFilter IndirectSalesOrderFilter = ConvertFilterDTOToFilterEntity(IndirectSalesOrder_IndirectSalesOrderFilterDTO);
-            IndirectSalesOrderFilter.RequestStateId = new IdFilter { Equal = RequestStateEnum.NEW.Id };
             IndirectSalesOrderFilter = await IndirectSalesOrderService.ToFilter(IndirectSalesOrderFilter);
-            List<IndirectSalesOrder> IndirectSalesOrders = await IndirectSalesOrderService.List(IndirectSalesOrderFilter);
+            List<IndirectSalesOrder> IndirectSalesOrders = await IndirectSalesOrderService.ListNew(IndirectSalesOrderFilter);
             List<IndirectSalesOrder_IndirectSalesOrderDTO> IndirectSalesOrder_IndirectSalesOrderDTOs = IndirectSalesOrders
                 .Select(c => new IndirectSalesOrder_IndirectSalesOrderDTO(c)).ToList();
             return IndirectSalesOrder_IndirectSalesOrderDTOs;
@@ -150,9 +148,8 @@ namespace DMS.Rpc.indirect_sales_order
                 throw new BindException(ModelState);
 
             IndirectSalesOrderFilter IndirectSalesOrderFilter = ConvertFilterDTOToFilterEntity(IndirectSalesOrder_IndirectSalesOrderFilterDTO);
-            IndirectSalesOrderFilter.RequestStateId = new IdFilter { Equal = RequestStateEnum.APPROVING.Id };
             IndirectSalesOrderFilter = await IndirectSalesOrderService.ToFilter(IndirectSalesOrderFilter);
-            int count = await IndirectSalesOrderService.Count(IndirectSalesOrderFilter);
+            int count = await IndirectSalesOrderService.CountPending(IndirectSalesOrderFilter);
             return count;
         }
 
@@ -164,7 +161,7 @@ namespace DMS.Rpc.indirect_sales_order
 
             IndirectSalesOrderFilter IndirectSalesOrderFilter = ConvertFilterDTOToFilterEntity(IndirectSalesOrder_IndirectSalesOrderFilterDTO);
             IndirectSalesOrderFilter = await IndirectSalesOrderService.ToFilter(IndirectSalesOrderFilter);
-            List<IndirectSalesOrder> IndirectSalesOrders = await IndirectSalesOrderService.List(IndirectSalesOrderFilter);
+            List<IndirectSalesOrder> IndirectSalesOrders = await IndirectSalesOrderService.ListPending(IndirectSalesOrderFilter);
             List<IndirectSalesOrder_IndirectSalesOrderDTO> IndirectSalesOrder_IndirectSalesOrderDTOs = IndirectSalesOrders
                 .Select(c => new IndirectSalesOrder_IndirectSalesOrderDTO(c)).ToList();
             return IndirectSalesOrder_IndirectSalesOrderDTOs;
@@ -179,7 +176,7 @@ namespace DMS.Rpc.indirect_sales_order
 
             IndirectSalesOrderFilter IndirectSalesOrderFilter = ConvertFilterDTOToFilterEntity(IndirectSalesOrder_IndirectSalesOrderFilterDTO);
             IndirectSalesOrderFilter = await IndirectSalesOrderService.ToFilter(IndirectSalesOrderFilter);
-            int count = await IndirectSalesOrderService.Count(IndirectSalesOrderFilter);
+            int count = await IndirectSalesOrderService.CountCompleted(IndirectSalesOrderFilter);
             return count;
         }
 
@@ -191,7 +188,7 @@ namespace DMS.Rpc.indirect_sales_order
 
             IndirectSalesOrderFilter IndirectSalesOrderFilter = ConvertFilterDTOToFilterEntity(IndirectSalesOrder_IndirectSalesOrderFilterDTO);
             IndirectSalesOrderFilter = await IndirectSalesOrderService.ToFilter(IndirectSalesOrderFilter);
-            List<IndirectSalesOrder> IndirectSalesOrders = await IndirectSalesOrderService.List(IndirectSalesOrderFilter);
+            List<IndirectSalesOrder> IndirectSalesOrders = await IndirectSalesOrderService.ListCompleted(IndirectSalesOrderFilter);
             List<IndirectSalesOrder_IndirectSalesOrderDTO> IndirectSalesOrder_IndirectSalesOrderDTOs = IndirectSalesOrders
                 .Select(c => new IndirectSalesOrder_IndirectSalesOrderDTO(c)).ToList();
             return IndirectSalesOrder_IndirectSalesOrderDTOs;

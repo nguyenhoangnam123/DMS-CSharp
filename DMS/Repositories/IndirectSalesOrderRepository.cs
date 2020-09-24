@@ -101,19 +101,7 @@ namespace DMS.Repositories
             if (filter.Note != null)
                 query = query.Where(q => q.Note, filter.Note);
             if (filter.RequestStateId != null && filter.UserId.HasValue)
-            {
-                if (filter.RequestStateId.Equal.HasValue)
-                {
-                    query = from q in query
-                            join def in DataContext.RequestWorkflowDefinitionMapping on q.RowId equals def.RequestId
-                            join step_mapping in DataContext.RequestWorkflowStepMapping on q.RowId equals step_mapping.RequestId
-                            join step in DataContext.WorkflowStep on step_mapping.WorkflowStepId equals step.Id
-                            join appuser_role in DataContext.AppUserRoleMapping on step.RoleId equals appuser_role.RoleId
-                            where appuser_role.AppUserId == filter.UserId.Value
-                            select q;
-                }
-
-            }
+                query = query.Where(q => q.RequestStateId, filter.RequestStateId);
             if (filter.SubTotal != null)
                 query = query.Where(q => q.SubTotal, filter.SubTotal);
             if (filter.GeneralDiscountPercentage != null)

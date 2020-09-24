@@ -20,6 +20,12 @@ namespace DMS.Services.MIndirectSalesOrder
     {
         Task<int> Count(IndirectSalesOrderFilter IndirectSalesOrderFilter);
         Task<List<IndirectSalesOrder>> List(IndirectSalesOrderFilter IndirectSalesOrderFilter);
+        Task<int> CountNew(IndirectSalesOrderFilter IndirectSalesOrderFilter);
+        Task<List<IndirectSalesOrder>> ListNew(IndirectSalesOrderFilter IndirectSalesOrderFilter);
+        Task<int> CountPending(IndirectSalesOrderFilter IndirectSalesOrderFilter);
+        Task<List<IndirectSalesOrder>> ListPending(IndirectSalesOrderFilter IndirectSalesOrderFilter);
+        Task<int> CountCompleted(IndirectSalesOrderFilter IndirectSalesOrderFilter);
+        Task<List<IndirectSalesOrder>> ListCompleted(IndirectSalesOrderFilter IndirectSalesOrderFilter);
         Task<IndirectSalesOrder> Get(long Id);
         Task<List<Item>> ListItem(ItemFilter ItemFilter, long? StoreId);
         Task<IndirectSalesOrder> Create(IndirectSalesOrder IndirectSalesOrder);
@@ -94,6 +100,141 @@ namespace DMS.Services.MIndirectSalesOrder
             try
             {
                 List<IndirectSalesOrder> IndirectSalesOrders = await UOW.IndirectSalesOrderRepository.List(IndirectSalesOrderFilter);
+                return IndirectSalesOrders;
+            }
+            catch (Exception ex)
+            {
+                if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(IndirectSalesOrderService));
+                    throw new MessageException(ex);
+                }
+                else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(IndirectSalesOrderService));
+                    throw new MessageException(ex.InnerException);
+                }
+            }
+        }
+        public async Task<int> CountNew(IndirectSalesOrderFilter IndirectSalesOrderFilter)
+        {
+            try
+            {
+                IndirectSalesOrderFilter.ApproverId = new IdFilter { Equal = CurrentContext.UserId };
+                int result = await UOW.IndirectSalesOrderRepository.CountNew(IndirectSalesOrderFilter);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(IndirectSalesOrderService));
+                    throw new MessageException(ex);
+                }
+                else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(IndirectSalesOrderService));
+                    throw new MessageException(ex.InnerException);
+                }
+            }
+        }
+
+        public async Task<List<IndirectSalesOrder>> ListNew(IndirectSalesOrderFilter IndirectSalesOrderFilter)
+        {
+            try
+            {
+                IndirectSalesOrderFilter.ApproverId = new IdFilter { Equal = CurrentContext.UserId };
+                List<IndirectSalesOrder> IndirectSalesOrders = await UOW.IndirectSalesOrderRepository.ListNew(IndirectSalesOrderFilter);
+                return IndirectSalesOrders;
+            }
+            catch (Exception ex)
+            {
+                if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(IndirectSalesOrderService));
+                    throw new MessageException(ex);
+                }
+                else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(IndirectSalesOrderService));
+                    throw new MessageException(ex.InnerException);
+                }
+            }
+        }
+        public async Task<int> CountPending(IndirectSalesOrderFilter IndirectSalesOrderFilter)
+        {
+            try
+            {
+                IndirectSalesOrderFilter.ApproverId = new IdFilter { Equal = CurrentContext.UserId };
+                int result = await UOW.IndirectSalesOrderRepository.CountPending(IndirectSalesOrderFilter);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(IndirectSalesOrderService));
+                    throw new MessageException(ex);
+                }
+                else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(IndirectSalesOrderService));
+                    throw new MessageException(ex.InnerException);
+                }
+            }
+        }
+
+        public async Task<List<IndirectSalesOrder>> ListPending(IndirectSalesOrderFilter IndirectSalesOrderFilter)
+        {
+            try
+            {
+                IndirectSalesOrderFilter.ApproverId = new IdFilter { Equal = CurrentContext.UserId };
+                List<IndirectSalesOrder> IndirectSalesOrders = await UOW.IndirectSalesOrderRepository.ListPending(IndirectSalesOrderFilter);
+                return IndirectSalesOrders;
+            }
+            catch (Exception ex)
+            {
+                if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(IndirectSalesOrderService));
+                    throw new MessageException(ex);
+                }
+                else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(IndirectSalesOrderService));
+                    throw new MessageException(ex.InnerException);
+                }
+            }
+        }
+        public async Task<int> CountCompleted(IndirectSalesOrderFilter IndirectSalesOrderFilter)
+        {
+            try
+            {
+                IndirectSalesOrderFilter.ApproverId = new IdFilter { Equal = CurrentContext.UserId };
+                int result = await UOW.IndirectSalesOrderRepository.CountCompleted(IndirectSalesOrderFilter);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(IndirectSalesOrderService));
+                    throw new MessageException(ex);
+                }
+                else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(IndirectSalesOrderService));
+                    throw new MessageException(ex.InnerException);
+                }
+            }
+        }
+
+        public async Task<List<IndirectSalesOrder>> ListCompleted(IndirectSalesOrderFilter IndirectSalesOrderFilter)
+        {
+            try
+            {
+                IndirectSalesOrderFilter.ApproverId = new IdFilter { Equal = CurrentContext.UserId };
+                List<IndirectSalesOrder> IndirectSalesOrders = await UOW.IndirectSalesOrderRepository.ListCompleted(IndirectSalesOrderFilter);
                 return IndirectSalesOrders;
             }
             catch (Exception ex)
@@ -230,6 +371,7 @@ namespace DMS.Services.MIndirectSalesOrder
                     var SaleEmployee = await UOW.AppUserRepository.Get(IndirectSalesOrder.SaleEmployeeId);
                     IndirectSalesOrder.OrganizationId = SaleEmployee.OrganizationId;
                 }
+                IndirectSalesOrder.RequestStateId = oldData.RequestStateId;
                 await Calculator(IndirectSalesOrder);
                 await UOW.Begin();
                 await UOW.IndirectSalesOrderRepository.Update(IndirectSalesOrder);
