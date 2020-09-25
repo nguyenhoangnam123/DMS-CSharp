@@ -424,7 +424,7 @@ namespace DMS.Repositories
         {
             IQueryable<IndirectSalesOrderDAO> IndirectSalesOrderDAOs = DataContext.IndirectSalesOrder.AsNoTracking();
             IndirectSalesOrderDAOs = DynamicFilter(IndirectSalesOrderDAOs, filter);
-            return await IndirectSalesOrderDAOs.CountAsync();
+            return await IndirectSalesOrderDAOs.Distinct().CountAsync();
         }
 
         public async Task<List<IndirectSalesOrder>> List(IndirectSalesOrderFilter filter)
@@ -479,7 +479,7 @@ namespace DMS.Repositories
                                      q.SaleEmployeeId == filter.ApproverId.Equal
                                      select q;
 
-            return await IndirectSalesOrderDAOs.CountAsync();
+            return await IndirectSalesOrderDAOs.Distinct().CountAsync();
         }
 
         public async Task<List<IndirectSalesOrder>> ListNew(IndirectSalesOrderFilter filter)
@@ -513,7 +513,7 @@ namespace DMS.Repositories
                                          rstep.AppUserId == filter.ApproverId.Equal
                                          select q;
             }
-            return await IndirectSalesOrderDAOs.CountAsync();
+            return await IndirectSalesOrderDAOs.Distinct().CountAsync();
         }
 
         public async Task<List<IndirectSalesOrder>> ListPending(IndirectSalesOrderFilter filter)
@@ -553,7 +553,7 @@ namespace DMS.Repositories
                                          rstep.AppUserId == filter.ApproverId.Equal
                                          select q;
             }
-            return await IndirectSalesOrderDAOs.CountAsync();
+            return await IndirectSalesOrderDAOs.Distinct().CountAsync();
         }
 
         public async Task<List<IndirectSalesOrder>> ListCompleted(IndirectSalesOrderFilter filter)
