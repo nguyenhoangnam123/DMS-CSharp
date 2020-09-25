@@ -1,7 +1,6 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Thinktecture;
 
 namespace DMS.Models
 {
@@ -192,7 +191,6 @@ namespace DMS.Models
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.ConfigureTempTable<long>();
             modelBuilder.Entity<ActionDAO>(entity =>
             {
                 entity.ToTable("Action", "PER");
@@ -1140,6 +1138,10 @@ namespace DMS.Models
                     .HasMaxLength(50)
                     .HasComment("Mã đơn hàng");
 
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+
                 entity.Property(e => e.DeliveryAddress)
                     .HasMaxLength(4000)
                     .HasComment("Địa chỉ giao hàng");
@@ -1189,6 +1191,8 @@ namespace DMS.Models
                 entity.Property(e => e.TotalTaxAmount)
                     .HasColumnType("decimal(18, 4)")
                     .HasComment("Tổng thuế");
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
                 entity.HasOne(d => d.BuyerStore)
                     .WithMany(p => p.IndirectSalesOrderBuyerStores)

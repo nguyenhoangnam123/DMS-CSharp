@@ -2,6 +2,7 @@ using Common;
 using DMS.Entities;
 using DMS.Enums;
 using DMS.Models;
+using Helpers;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -261,6 +262,9 @@ namespace DMS.Repositories
                         case IndirectSalesOrderOrder.Total:
                             query = query.OrderBy(q => q.Total);
                             break;
+                        case IndirectSalesOrderOrder.UpdatedAt:
+                            query = query.OrderBy(q => q.Total);
+                            break;
                     }
                     break;
                 case OrderType.DESC:
@@ -320,10 +324,16 @@ namespace DMS.Repositories
                         case IndirectSalesOrderOrder.Total:
                             query = query.OrderByDescending(q => q.Total);
                             break;
+                        case IndirectSalesOrderOrder.UpdatedAt:
+                            query = query.OrderByDescending(q => q.UpdatedAt);
+                            break;
                     }
                     break;
+                default:
+                    query = query.OrderBy(q => q.UpdatedAt);
+                    break;
             }
-            query = query.Skip(filter.Skip).Take(filter.Take);
+
             return query;
         }
 
@@ -381,7 +391,9 @@ namespace DMS.Repositories
                     Name = q.SellerStore.Name,
                 } : null,
                 RowId = q.RowId,
-            }).Distinct().ToListAsync();
+                CreatedAt = q.CreatedAt,
+                UpdatedAt = q.UpdatedAt,
+            }).Distinct().Skip(filter.Skip).Take(filter.Take).ToListAsync();
 
             List<Guid> RowIds = IndirectSalesOrders.Select(x => x.RowId).ToList();
             List<RequestWorkflowDefinitionMappingDAO> RequestWorkflowDefinitionMappingDAOs = await DataContext.RequestWorkflowDefinitionMapping
@@ -448,7 +460,8 @@ namespace DMS.Repositories
                                      where q.SaleEmployeeId == filter.ApproverId.Equal ||
                                      rstep.AppUserId == filter.ApproverId.Equal
                                      select q;
-            return await IndirectSalesOrderDAOs.Distinct().CountAsync();
+            int count = await IndirectSalesOrderDAOs.Distinct().CountAsync();
+            return count;
         }
 
         public async Task<List<IndirectSalesOrder>> ListAll(IndirectSalesOrderFilter filter)
@@ -545,7 +558,7 @@ namespace DMS.Repositories
                                          join r in DataContext.RequestWorkflowDefinitionMapping on q.RowId equals r.RequestId
                                          join step in DataContext.WorkflowStep on r.WorkflowDefinitionId equals step.WorkflowDefinitionId
                                          join rstep in DataContext.RequestWorkflowStepMapping on step.Id equals rstep.WorkflowStepId
-                                         where 
+                                         where
                                          (q.RequestStateId != RequestStateEnum.NEW.Id) &&
                                          (rstep.WorkflowStateId == WorkflowStateEnum.APPROVED.Id || rstep.WorkflowStateId == WorkflowStateEnum.REJECTED.Id) &&
                                          rstep.AppUserId == filter.ApproverId.Equal
@@ -601,6 +614,8 @@ namespace DMS.Repositories
                 Total = x.Total,
                 RowId = x.RowId,
                 StoreCheckingId = x.StoreCheckingId,
+                CreatedAt = x.CreatedAt,
+                UpdatedAt = x.UpdatedAt,
                 BuyerStore = x.BuyerStore == null ? null : new Store
                 {
                     Id = x.BuyerStore.Id,
@@ -903,6 +918,8 @@ namespace DMS.Repositories
             IndirectSalesOrderDAO.Total = IndirectSalesOrder.Total;
             IndirectSalesOrderDAO.RowId = Guid.NewGuid();
             IndirectSalesOrderDAO.StoreCheckingId = IndirectSalesOrder.StoreCheckingId;
+            IndirectSalesOrderDAO.CreatedAt = StaticParams.DateTimeNow;
+            IndirectSalesOrderDAO.UpdatedAt = StaticParams.DateTimeNow;
             DataContext.IndirectSalesOrder.Add(IndirectSalesOrderDAO);
             await DataContext.SaveChangesAsync();
             IndirectSalesOrder.Id = IndirectSalesOrderDAO.Id;
@@ -935,6 +952,7 @@ namespace DMS.Repositories
             IndirectSalesOrderDAO.TotalTaxAmount = IndirectSalesOrder.TotalTaxAmount;
             IndirectSalesOrderDAO.Total = IndirectSalesOrder.Total;
             IndirectSalesOrderDAO.StoreCheckingId = IndirectSalesOrder.StoreCheckingId;
+            IndirectSalesOrderDAO.UpdatedAt = StaticParams.DateTimeNow;
             await DataContext.SaveChangesAsync();
             await SaveReference(IndirectSalesOrder);
             return true;

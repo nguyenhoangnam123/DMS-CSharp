@@ -27,6 +27,8 @@ namespace DMS.Rpc.indirect_sales_order
         public decimal? GeneralDiscountAmount { get; set; }
         public decimal TotalTaxAmount { get; set; }
         public decimal Total { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; }
         public IndirectSalesOrder_StoreDTO BuyerStore { get; set; }
         public IndirectSalesOrder_EditedPriceStatusDTO EditedPriceStatus { get; set; }
         public IndirectSalesOrder_RequestStateDTO RequestState { get; set; }
@@ -58,6 +60,8 @@ namespace DMS.Rpc.indirect_sales_order
             this.GeneralDiscountAmount = IndirectSalesOrder.GeneralDiscountAmount;
             this.TotalTaxAmount = IndirectSalesOrder.TotalTaxAmount;
             this.Total = Math.Round(IndirectSalesOrder.Total, 0);
+            this.CreatedAt = IndirectSalesOrder.CreatedAt;
+            this.UpdatedAt = IndirectSalesOrder.UpdatedAt;
             this.BuyerStore = IndirectSalesOrder.BuyerStore == null ? null : new IndirectSalesOrder_StoreDTO(IndirectSalesOrder.BuyerStore);
             this.EditedPriceStatus = IndirectSalesOrder.EditedPriceStatus == null ? null : new IndirectSalesOrder_EditedPriceStatusDTO(IndirectSalesOrder.EditedPriceStatus);
             this.RequestState = IndirectSalesOrder.RequestState == null ? null : new IndirectSalesOrder_RequestStateDTO(IndirectSalesOrder.RequestState);
