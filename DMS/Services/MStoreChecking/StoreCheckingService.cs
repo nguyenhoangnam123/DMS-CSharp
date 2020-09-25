@@ -263,6 +263,9 @@ namespace DMS.Services.MStoreChecking
             int take = StoreFilter.Take;
             StoreFilter.Skip = 0;
             StoreFilter.Take = int.MaxValue;
+            StoreFilter.Selects = StoreSelect.Id | StoreSelect.Code | StoreSelect.Name |
+                StoreSelect.Address | StoreSelect.Telephone | StoreSelect.Latitude |
+                StoreSelect.Longitude | StoreSelect.HasChecking;
             var AppUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
             StoreFilter.OrganizationId = new IdFilter { Equal = AppUser.OrganizationId };
             Stores = await UOW.StoreRepository.List(StoreFilter);
@@ -327,6 +330,9 @@ namespace DMS.Services.MStoreChecking
                 StoreFilter.SalesEmployeeId = new IdFilter { Equal = CurrentContext.UserId };
                 StoreFilter.Skip = 0;
                 StoreFilter.Take = int.MaxValue;
+                StoreFilter.Selects = StoreSelect.Id | StoreSelect.Code | StoreSelect.Name |
+                StoreSelect.Address | StoreSelect.Telephone | StoreSelect.Latitude |
+                StoreSelect.Longitude | StoreSelect.HasChecking;
                 Stores = await UOW.StoreRepository.List(StoreFilter);
                 if (CurrentContext.Latitude.HasValue && CurrentContext.Longitude.HasValue)
                 {
@@ -493,6 +499,9 @@ namespace DMS.Services.MStoreChecking
                 int take = StoreFilter.Take;
                 StoreFilter.Skip = 0;
                 StoreFilter.Take = int.MaxValue;
+                StoreFilter.Selects = StoreSelect.Id | StoreSelect.Code | StoreSelect.Name |
+                StoreSelect.Address | StoreSelect.Telephone | StoreSelect.Latitude |
+                StoreSelect.Longitude | StoreSelect.HasChecking;
                 if (AppUser.AppUserStoreMappings != null && AppUser.AppUserStoreMappings.Count > 0)
                 {
                     StoreFilter.OrganizationId = new IdFilter { Equal = AppUser.OrganizationId };
