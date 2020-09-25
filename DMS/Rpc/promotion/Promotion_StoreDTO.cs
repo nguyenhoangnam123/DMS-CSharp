@@ -64,7 +64,9 @@ namespace DMS.Rpc.promotion
         public bool Used { get; set; }
         
         public long? StoreScoutingId { get; set; }
-        
+        public Promotion_OrganizationDTO Organization { get; set; }
+        public Promotion_StoreGroupingDTO StoreGrouping { get; set; }
+        public Promotion_StoreTypeDTO StoreType { get; set; }
 
         public Promotion_StoreDTO() {}
         public Promotion_StoreDTO(Store Store)
@@ -125,7 +127,9 @@ namespace DMS.Rpc.promotion
             this.Used = Store.Used;
             
             this.StoreScoutingId = Store.StoreScoutingId;
-            
+            this.Organization = Store.Organization == null ? null : new Promotion_OrganizationDTO(Store.Organization);
+            this.StoreGrouping = Store.StoreGrouping == null ? null : new Promotion_StoreGroupingDTO(Store.StoreGrouping);
+            this.StoreType = Store.StoreType == null ? null : new Promotion_StoreTypeDTO(Store.StoreType);
             this.Errors = Store.Errors;
         }
     }
