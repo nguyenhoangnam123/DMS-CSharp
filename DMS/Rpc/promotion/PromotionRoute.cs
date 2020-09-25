@@ -118,15 +118,15 @@ namespace DMS.Rpc.promotion
                 Master, Count, List, Get, GetPreview,
                 FilterListOrganization, FilterListPromotionType, FilterListStatus, FilterListPromotionPolicy, FilterListPromotionDiscountType, FilterListProductGrouping, FilterListProductType, FilterListProduct, FilterListStoreGrouping, FilterListStore, FilterListStoreType,  
                 Detail, Create, CreateDraft, UpdateDirectSalesOrder, UpdateStore, UpdateStoreGrouping, UpdateStoreType, UpdateProduct, UpdateProductGrouping, UpdateProductType, UpdateCombo, UpdateSamePrice,
-                SingleListOrganization, SingleListPromotionType, SingleListStatus, SingleListPromotionPolicy, SingleListPromotionDiscountType, SingleListProductGrouping, SingleListProductType, SingleListProduct, SingleListStoreGrouping, SingleListStore, SingleListStoreType, 
-                Count, List, Count, List, Count, List, Count, List, Count, List, Count, List, Count, List, Count, List, Count, List, Count, List, Count, List, Count, List, Count, List, Count, List, Count, List, Count, List, Count, List, Count, List, Count, List, Count, List,  } },
+                SingleListOrganization, SingleListPromotionType, SingleListStatus, SingleListPromotionPolicy, SingleListPromotionDiscountType, SingleListProductGrouping, SingleListProductType, SingleListProduct, SingleListStoreGrouping, SingleListStore, SingleListStoreType,
+                CountStoreGrouping, ListStoreGrouping, CountStore, ListStore, CountStoreType, ListStoreType } },
 
             { "Sửa", new List<string> { 
                 Master, Count, List, Get, GetPreview,
                 FilterListOrganization, FilterListPromotionType, FilterListStatus, FilterListPromotionPolicy, FilterListPromotionDiscountType, FilterListProductGrouping, FilterListProductType, FilterListProduct, FilterListStoreGrouping, FilterListStore, FilterListStoreType,  
                 Detail, Update, CreateDraft, UpdateDirectSalesOrder, UpdateStore, UpdateStoreGrouping, UpdateStoreType, UpdateProduct, UpdateProductGrouping, UpdateProductType, UpdateCombo, UpdateSamePrice,
-                SingleListOrganization, SingleListPromotionType, SingleListStatus, SingleListPromotionPolicy, SingleListPromotionDiscountType, SingleListProductGrouping, SingleListProductType, SingleListProduct, SingleListStoreGrouping, SingleListStore, SingleListStoreType,  
-                Count, List, Count, List, Count, List, Count, List, Count, List, Count, List, Count, List, Count, List, Count, List, Count, List, Count, List, Count, List, Count, List, Count, List, Count, List, Count, List, Count, List, Count, List, Count, List, Count, List,  } },
+                SingleListOrganization, SingleListPromotionType, SingleListStatus, SingleListPromotionPolicy, SingleListPromotionDiscountType, SingleListProductGrouping, SingleListProductType, SingleListProduct, SingleListStoreGrouping, SingleListStore, SingleListStoreType,
+                CountStoreGrouping, ListStoreGrouping, CountStore, ListStore, CountStoreType, ListStoreType } },
 
             { "Xoá", new List<string> { 
                 Master, Count, List, Get, GetPreview,

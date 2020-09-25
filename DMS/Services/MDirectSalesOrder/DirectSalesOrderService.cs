@@ -552,14 +552,14 @@ namespace DMS.Services.MDirectSalesOrder
                     //Trường hợp không sửa giá, giá bán = giá bán cơ sở của sản phẩm * hệ số quy đổi của đơn vị tính
                     if (DirectSalesOrder.EditedPriceStatusId == EditedPriceStatusEnum.INACTIVE.Id)
                     {
-                        DirectSalesOrderContent.PrimaryPrice = Item.SalePrice;
-                        DirectSalesOrderContent.SalePrice = Item.SalePrice * UOM.Factor.Value;
+                        //DirectSalesOrderContent.PrimaryPrice = Item.SalePrice;
+                        DirectSalesOrderContent.SalePrice = DirectSalesOrderContent.PrimaryPrice * UOM.Factor.Value;
                         DirectSalesOrderContent.EditedPriceStatusId = EditedPriceStatusEnum.INACTIVE.Id;
                     }
 
                     if (DirectSalesOrder.EditedPriceStatusId == EditedPriceStatusEnum.ACTIVE.Id)
                     {
-                        if (DirectSalesOrderContent.SalePrice == Item.SalePrice * UOM.Factor.Value)
+                        if (DirectSalesOrderContent.SalePrice == DirectSalesOrderContent.PrimaryPrice * UOM.Factor.Value)
                             DirectSalesOrderContent.EditedPriceStatusId = EditedPriceStatusEnum.INACTIVE.Id;
                         else
                             DirectSalesOrderContent.EditedPriceStatusId = EditedPriceStatusEnum.ACTIVE.Id;
@@ -803,6 +803,11 @@ namespace DMS.Services.MDirectSalesOrder
                         result[ItemId] = Items.Where(x => x.Id == ItemId).Select(x => x.SalePrice).FirstOrDefault();
                     }
                 }
+            }
+
+            foreach (var item in Items)
+            {
+                item.SalePrice = result[item.Id];
             }
 
             return Items;
