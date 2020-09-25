@@ -171,6 +171,7 @@ namespace DMS.Entities
         UnsignName = E._27,
         UnsignAddress = E._28,
         AppUser = E._25,
-        RequestState = E._26
+        RequestState = E._26,
+        HasChecking = E._27,
     }
 }

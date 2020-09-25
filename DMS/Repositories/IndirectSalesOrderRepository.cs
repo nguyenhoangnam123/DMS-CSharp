@@ -354,27 +354,6 @@ namespace DMS.Repositories
                     Id = q.BuyerStore.Id,
                     Code = q.BuyerStore.Code,
                     Name = q.BuyerStore.Name,
-                    ParentStoreId = q.BuyerStore.ParentStoreId,
-                    OrganizationId = q.BuyerStore.OrganizationId,
-                    StoreTypeId = q.BuyerStore.StoreTypeId,
-                    StoreGroupingId = q.BuyerStore.StoreGroupingId,
-                    ResellerId = q.BuyerStore.ResellerId,
-                    Telephone = q.BuyerStore.Telephone,
-                    ProvinceId = q.BuyerStore.ProvinceId,
-                    DistrictId = q.BuyerStore.DistrictId,
-                    WardId = q.BuyerStore.WardId,
-                    Address = q.BuyerStore.Address,
-                    DeliveryAddress = q.BuyerStore.DeliveryAddress,
-                    Latitude = q.BuyerStore.Latitude,
-                    Longitude = q.BuyerStore.Longitude,
-                    DeliveryLatitude = q.BuyerStore.DeliveryLatitude,
-                    DeliveryLongitude = q.BuyerStore.DeliveryLongitude,
-                    OwnerName = q.BuyerStore.OwnerName,
-                    OwnerPhone = q.BuyerStore.OwnerPhone,
-                    OwnerEmail = q.BuyerStore.OwnerEmail,
-                    TaxCode = q.BuyerStore.TaxCode,
-                    LegalEntity = q.BuyerStore.LegalEntity,
-                    StatusId = q.BuyerStore.StatusId,
                 } : null,
                 EditedPriceStatus = filter.Selects.Contains(IndirectSalesOrderSelect.EditedPriceStatus) && q.EditedPriceStatus != null ? new EditedPriceStatus
                 {
@@ -387,52 +366,22 @@ namespace DMS.Repositories
                     Id = q.Organization.Id,
                     Code = q.Organization.Code,
                     Name = q.Organization.Name,
-                    Address = q.Organization.Address,
-                    Phone = q.Organization.Phone,
                     Path = q.Organization.Path,
-                    ParentId = q.Organization.ParentId,
-                    Email = q.Organization.Email,
-                    StatusId = q.Organization.StatusId,
-                    Level = q.Organization.Level
                 } : null,
                 SaleEmployee = filter.Selects.Contains(IndirectSalesOrderSelect.SaleEmployee) && q.SaleEmployee != null ? new AppUser
                 {
                     Id = q.SaleEmployee.Id,
                     Username = q.SaleEmployee.Username,
                     DisplayName = q.SaleEmployee.DisplayName,
-                    Address = q.SaleEmployee.Address,
-                    Email = q.SaleEmployee.Email,
-                    Phone = q.SaleEmployee.Phone,
                 } : null,
                 SellerStore = filter.Selects.Contains(IndirectSalesOrderSelect.SellerStore) && q.SellerStore != null ? new Store
                 {
                     Id = q.SellerStore.Id,
                     Code = q.SellerStore.Code,
                     Name = q.SellerStore.Name,
-                    ParentStoreId = q.SellerStore.ParentStoreId,
-                    OrganizationId = q.SellerStore.OrganizationId,
-                    StoreTypeId = q.SellerStore.StoreTypeId,
-                    StoreGroupingId = q.SellerStore.StoreGroupingId,
-                    ResellerId = q.SellerStore.ResellerId,
-                    Telephone = q.SellerStore.Telephone,
-                    ProvinceId = q.SellerStore.ProvinceId,
-                    DistrictId = q.SellerStore.DistrictId,
-                    WardId = q.SellerStore.WardId,
-                    Address = q.SellerStore.Address,
-                    DeliveryAddress = q.SellerStore.DeliveryAddress,
-                    Latitude = q.SellerStore.Latitude,
-                    Longitude = q.SellerStore.Longitude,
-                    DeliveryLatitude = q.SellerStore.DeliveryLatitude,
-                    DeliveryLongitude = q.SellerStore.DeliveryLongitude,
-                    OwnerName = q.SellerStore.OwnerName,
-                    OwnerPhone = q.SellerStore.OwnerPhone,
-                    OwnerEmail = q.SellerStore.OwnerEmail,
-                    TaxCode = q.SellerStore.TaxCode,
-                    LegalEntity = q.SellerStore.LegalEntity,
-                    StatusId = q.SellerStore.StatusId,
                 } : null,
                 RowId = q.RowId,
-            }).ToListAsync();
+            }).Distinct().ToListAsync();
 
             List<Guid> RowIds = IndirectSalesOrders.Select(x => x.RowId).ToList();
             List<RequestWorkflowDefinitionMappingDAO> RequestWorkflowDefinitionMappingDAOs = await DataContext.RequestWorkflowDefinitionMapping
@@ -475,7 +424,7 @@ namespace DMS.Repositories
         {
             IQueryable<IndirectSalesOrderDAO> IndirectSalesOrderDAOs = DataContext.IndirectSalesOrder.AsNoTracking();
             IndirectSalesOrderDAOs = DynamicFilter(IndirectSalesOrderDAOs, filter);
-            return await IndirectSalesOrderDAOs.CountAsync();
+            return await IndirectSalesOrderDAOs.Distinct().CountAsync();
         }
 
         public async Task<List<IndirectSalesOrder>> List(IndirectSalesOrderFilter filter)
@@ -499,7 +448,7 @@ namespace DMS.Repositories
                                      where q.SaleEmployeeId == filter.ApproverId.Equal ||
                                      rstep.AppUserId == filter.ApproverId.Equal
                                      select q;
-            return await IndirectSalesOrderDAOs.CountAsync();
+            return await IndirectSalesOrderDAOs.Distinct().CountAsync();
         }
 
         public async Task<List<IndirectSalesOrder>> ListAll(IndirectSalesOrderFilter filter)
@@ -530,7 +479,7 @@ namespace DMS.Repositories
                                      q.SaleEmployeeId == filter.ApproverId.Equal
                                      select q;
 
-            return await IndirectSalesOrderDAOs.CountAsync();
+            return await IndirectSalesOrderDAOs.Distinct().CountAsync();
         }
 
         public async Task<List<IndirectSalesOrder>> ListNew(IndirectSalesOrderFilter filter)
@@ -564,7 +513,7 @@ namespace DMS.Repositories
                                          rstep.AppUserId == filter.ApproverId.Equal
                                          select q;
             }
-            return await IndirectSalesOrderDAOs.CountAsync();
+            return await IndirectSalesOrderDAOs.Distinct().CountAsync();
         }
 
         public async Task<List<IndirectSalesOrder>> ListPending(IndirectSalesOrderFilter filter)
@@ -604,7 +553,7 @@ namespace DMS.Repositories
                                          rstep.AppUserId == filter.ApproverId.Equal
                                          select q;
             }
-            return await IndirectSalesOrderDAOs.CountAsync();
+            return await IndirectSalesOrderDAOs.Distinct().CountAsync();
         }
 
         public async Task<List<IndirectSalesOrder>> ListCompleted(IndirectSalesOrderFilter filter)
