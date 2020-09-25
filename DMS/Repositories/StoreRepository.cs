@@ -34,7 +34,7 @@ namespace DMS.Repositories
             this.DataContext = DataContext;
         }
 
-        private async Task<IQueryable<StoreDAO>> DynamicFilter(IQueryable<StoreDAO> query, StoreFilter filter, Guid RequestId)
+        private async Task<IQueryable<StoreDAO>> DynamicFilter(IQueryable<StoreDAO> query, StoreFilter filter)
         {
             if (filter == null)
                 return query.Where(q => false);
@@ -53,7 +53,7 @@ namespace DMS.Repositories
                 if (filter.Id.In != null)
                 {
                     ITempTableQuery<TempTable<long>> tempTableQuery = await DataContext
-                        .BulkInsertValuesIntoTempTableAsync<long>(filter.Id.In);
+                        .BulkInsertValuesIntoTempTableAsync<long>(filter.Id.In.Distinct().ToList());
                     query = query.Join(tempTableQuery.Query,
                                        c => c.Id,
                                        t => t.Column1,
@@ -160,11 +160,11 @@ namespace DMS.Repositories
                 query = query.Where(q => q.AppUserId, filter.AppUserId);
             if (filter.RequestStateId != null)
                 query = query.Where(q => q.RequestStateId, filter.RequestStateId);
-            query = OrFilter(query, filter, RequestId);
+            query = OrFilter(query, filter);
             return query;
         }
 
-        private IQueryable<StoreDAO> OrFilter(IQueryable<StoreDAO> query, StoreFilter filter, Guid RequestId)
+        private IQueryable<StoreDAO> OrFilter(IQueryable<StoreDAO> query, StoreFilter filter)
         {
             if (filter.OrFilter == null || filter.OrFilter.Count == 0)
                 return query;
@@ -256,7 +256,7 @@ namespace DMS.Repositories
             return initQuery;
         }
 
-        private IQueryable<StoreDAO> DynamicOrder(IQueryable<StoreDAO> query, StoreFilter filter, Guid RequestId)
+        private IQueryable<StoreDAO> DynamicOrder(IQueryable<StoreDAO> query, StoreFilter filter)
         {
             switch (filter.OrderType)
             {
@@ -419,7 +419,7 @@ namespace DMS.Repositories
             return query;
         }
 
-        private async Task<List<Store>> DynamicSelect(IQueryable<StoreDAO> query, StoreFilter filter, Guid RequestId)
+        private async Task<List<Store>> DynamicSelect(IQueryable<StoreDAO> query, StoreFilter filter)
         {
             List<Store> Stores = await query.Select(q => new Store()
             {
@@ -617,9 +617,8 @@ namespace DMS.Repositories
 
         public async Task<int> Count(StoreFilter filter)
         {
-            Guid RequestId = Guid.NewGuid();
             IQueryable<StoreDAO> Stores = DataContext.Store;
-            Stores = await DynamicFilter(Stores, filter, RequestId);
+            Stores = await DynamicFilter(Stores, filter);
             int count = await Stores.CountAsync();
             return count;
         }
@@ -627,11 +626,10 @@ namespace DMS.Repositories
         public async Task<List<Store>> List(StoreFilter filter)
         {
             if (filter == null) return new List<Store>();
-            Guid RequestId = Guid.NewGuid();
             IQueryable<StoreDAO> StoreDAOs = DataContext.Store.AsNoTracking();
-            StoreDAOs = await DynamicFilter(StoreDAOs, filter, RequestId);
-            StoreDAOs = DynamicOrder(StoreDAOs, filter, RequestId);
-            List<Store> Stores = await DynamicSelect(StoreDAOs, filter, RequestId);
+            StoreDAOs = await DynamicFilter(StoreDAOs, filter);
+            StoreDAOs = DynamicOrder(StoreDAOs, filter);
+            List<Store> Stores = await DynamicSelect(StoreDAOs, filter);
             return Stores;
         }
 
@@ -652,9 +650,8 @@ namespace DMS.Repositories
                     filter.OrganizationId.In.Add(OrganizationId.Value);
                 filter.OrganizationId.In.Add(AppUserDAO.OrganizationId);
             }
-            Guid RequestId = Guid.NewGuid();
             IQueryable<StoreDAO> Stores = DataContext.Store;
-            Stores = await DynamicFilter(Stores, filter, RequestId);
+            Stores = await DynamicFilter(Stores, filter);
             int count = await Stores.CountAsync();
             return count;
         }
@@ -678,11 +675,11 @@ namespace DMS.Repositories
                 else
                     filter.OrganizationId.In.Add(AppUserDAO.OrganizationId);
             }
-            Guid RequestId = Guid.NewGuid();
+
             IQueryable<StoreDAO> StoreDAOs = DataContext.Store.AsNoTracking();
-            StoreDAOs = await DynamicFilter(StoreDAOs, filter, RequestId);
-            StoreDAOs = DynamicOrder(StoreDAOs, filter, RequestId);
-            List<Store> Stores = await DynamicSelect(StoreDAOs, filter, RequestId);
+            StoreDAOs = await DynamicFilter(StoreDAOs, filter);
+            StoreDAOs = DynamicOrder(StoreDAOs, filter);
+            List<Store> Stores = await DynamicSelect(StoreDAOs, filter);
             return Stores;
         }
 
