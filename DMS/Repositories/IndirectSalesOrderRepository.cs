@@ -474,8 +474,7 @@ namespace DMS.Repositories
             IQueryable<IndirectSalesOrderDAO> IndirectSalesOrderDAOs = DataContext.IndirectSalesOrder.AsNoTracking();
             IndirectSalesOrderDAOs = DynamicFilter(IndirectSalesOrderDAOs, filter);
             IndirectSalesOrderDAOs = from q in IndirectSalesOrderDAOs
-                                     join r in DataContext.RequestWorkflowDefinitionMapping on q.RowId equals r.RequestId
-                                     where r.RequestStateId == RequestStateEnum.NEW.Id &&
+                                     where q.RequestStateId == RequestStateEnum.NEW.Id &&
                                      q.SaleEmployeeId == filter.ApproverId.Equal
                                      select q;
 
@@ -488,8 +487,7 @@ namespace DMS.Repositories
             IQueryable<IndirectSalesOrderDAO> IndirectSalesOrderDAOs = DataContext.IndirectSalesOrder.AsNoTracking();
             IndirectSalesOrderDAOs = DynamicFilter(IndirectSalesOrderDAOs, filter);
             IndirectSalesOrderDAOs = from q in IndirectSalesOrderDAOs
-                                     join r in DataContext.RequestWorkflowDefinitionMapping on q.RowId equals r.RequestId
-                                     where r.RequestStateId == RequestStateEnum.NEW.Id &&
+                                     where q.RequestStateId == RequestStateEnum.NEW.Id &&
                                      q.SaleEmployeeId == filter.ApproverId.Equal
                                      select q;
 
