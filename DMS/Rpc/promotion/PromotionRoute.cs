@@ -52,7 +52,7 @@ namespace DMS.Rpc.promotion
         public const string ExportTemplateStore = Default + "/export-template-store";
         public const string BulkDelete = Default + "/bulk-delete";
 
-        public const string GetMpping = Default + "/get-mpping";
+        public const string GetMpping = Default + "/get-mapping";
         public const string UpdateDirectSalesOrder = Default + "/update-sales-order";
         public const string UpdateStore = Default + "/update-store";
         public const string UpdateStoreGrouping = Default + "/update-store-grouping";
