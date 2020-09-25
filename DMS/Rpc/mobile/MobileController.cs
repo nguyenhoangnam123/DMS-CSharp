@@ -1109,6 +1109,7 @@ namespace DMS.Rpc.mobile
                 Latitude = Mobile_StoreDTO.Latitude,
                 Longitude = Mobile_StoreDTO.Longitude,
                 OrganizationId = CurrentUser.OrganizationId,
+                Organization = CurrentUser.Organization,
                 StatusId = StatusEnum.ACTIVE.Id,
                 StoreType = Mobile_StoreDTO.StoreType == null ? null : new StoreType
                 {

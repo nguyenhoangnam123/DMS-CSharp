@@ -11,7 +11,8 @@
     },
     "SaleEmployee": {
       "SaleEmployeeNotExisted": "Nhân viên kinh doanh không tồn tại",
-      "SaleEmployeeEmpty": "Chưa chọn nhân viên kinh doanh"
+      "SaleEmployeeEmpty": "Chưa chọn nhân viên kinh doanh",
+      "SaleEmployeeNotInOrg": "Nhân viên kinh doanh không thuộc đơn vị quản lý hiện tại"
     },
     "OrderDate": {
       "OrderDateEmpty": "Chưa nhập ngày đặt hàng"

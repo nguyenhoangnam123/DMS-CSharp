@@ -78,7 +78,7 @@ namespace DMS.Services.MWorkflow
             {
                 if (RequestWorkflowDefinitionMapping.RequestStateId == RequestStateEnum.REJECTED.Id)
                     return RequestStateEnum.REJECTED;
-                return RequestStateEnum.APPROVING;
+                return RequestStateEnum.PENDING;
             }
         }
         private async Task<bool> IsStartedStep(Guid RequestId)
@@ -86,7 +86,7 @@ namespace DMS.Services.MWorkflow
             RequestWorkflowDefinitionMapping RequestWorkflowDefinitionMapping = await UOW.RequestWorkflowDefinitionMappingRepository.Get(RequestId);
             if (RequestWorkflowDefinitionMapping == null)
                 return false;
-            if (RequestWorkflowDefinitionMapping.RequestStateId == RequestStateEnum.APPROVING.Id)
+            if (RequestWorkflowDefinitionMapping.RequestStateId == RequestStateEnum.PENDING.Id)
                 return true;
             if (RequestWorkflowDefinitionMapping.RequestStateId == RequestStateEnum.NEW.Id || RequestWorkflowDefinitionMapping.RequestStateId == RequestStateEnum.REJECTED.Id)
                 return false;
@@ -179,7 +179,7 @@ namespace DMS.Services.MWorkflow
 
             // Update các parameter chính từ request vào workflow để chạy điều kiện theo giá trị của request
             await UpdateParameters(RequestId, WorkflowDefinition, Parameters);
-            return RequestStateEnum.APPROVING;
+            return RequestStateEnum.PENDING;
         }
 
         private async Task<bool> StartStep(Guid RequestId, Dictionary<string, string> Parameters)
@@ -187,7 +187,7 @@ namespace DMS.Services.MWorkflow
             RequestWorkflowDefinitionMapping RequestWorkflowDefinitionMapping = await UOW.RequestWorkflowDefinitionMappingRepository.Get(RequestId);
             WorkflowDefinition WorkflowDefinition = await UOW.WorkflowDefinitionRepository.Get(RequestWorkflowDefinitionMapping.WorkflowDefinitionId);
 
-            if (WorkflowDefinition == null || RequestWorkflowDefinitionMapping.RequestStateId == RequestStateEnum.APPROVING.Id)
+            if (WorkflowDefinition == null || RequestWorkflowDefinitionMapping.RequestStateId == RequestStateEnum.PENDING.Id)
             {
                 return false;
             }
@@ -198,7 +198,7 @@ namespace DMS.Services.MWorkflow
                 {
                     RequestId = RequestId,
                     WorkflowDefinitionId = WorkflowDefinition.Id,
-                    RequestStateId = RequestStateEnum.APPROVING.Id,
+                    RequestStateId = RequestStateEnum.PENDING.Id,
                     CreatorId = CurrentContext.UserId,
                 };
                 await UOW.RequestWorkflowDefinitionMappingRepository.Update(RequestWorkflowDefinitionMapping);
@@ -398,7 +398,7 @@ namespace DMS.Services.MWorkflow
                 return null;
             List<RequestWorkflowStepMapping> RequestWorkflowStepMapping = await UOW.RequestWorkflowStepMappingRepository.List(RequestId);
 
-            GenericEnum RequestState = RequestStateEnum.APPROVING;
+            GenericEnum RequestState = RequestStateEnum.PENDING;
             if (RequestWorkflowStepMapping != null)
             {
                 if (RequestWorkflowStepMapping.Any(x => x.WorkflowStateId == WorkflowStateEnum.REJECTED.Id))

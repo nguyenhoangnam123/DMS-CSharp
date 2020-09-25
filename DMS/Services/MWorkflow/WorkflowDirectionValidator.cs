@@ -33,7 +33,8 @@ namespace DMS.Services.MWorkflow
             SubjectMailForNextStepOverLength,
             WorkflowDefinitionEmpty,
             WorkflowDefinitionNotExisted,
-            WorkflowDirectionExisted
+            WorkflowDirectionExisted,
+            DirectionDuplicate
         }
 
         private IUOW UOW;
@@ -66,11 +67,11 @@ namespace DMS.Services.MWorkflow
             return WorkflowDirection.IsValidated;
         }
 
-        private async Task<bool> ValidateWorkflowDirection(WorkflowDirection WorkflowDirection)
+        private async Task<bool> ValidateWorkflowDefinition(WorkflowDirection WorkflowDirection)
         {
-            if(WorkflowDirection.WorkflowDefinitionId == 0)
+            if (WorkflowDirection.WorkflowDefinitionId == 0)
                 WorkflowDirection.AddError(nameof(WorkflowDirectionValidator), nameof(WorkflowDirection.WorkflowDefinition), ErrorCode.WorkflowDefinitionEmpty);
-            else 
+            else
             {
                 WorkflowDefinitionFilter WorkflowDefinitionFilter = new WorkflowDefinitionFilter
                 {
@@ -78,7 +79,7 @@ namespace DMS.Services.MWorkflow
                 };
 
                 int count = await UOW.WorkflowDefinitionRepository.Count(WorkflowDefinitionFilter);
-                if(count == 0)
+                if (count == 0)
                     WorkflowDirection.AddError(nameof(WorkflowDirectionValidator), nameof(WorkflowDirection.WorkflowDefinition), ErrorCode.WorkflowDefinitionNotExisted);
             }
             return WorkflowDirection.IsValidated;
@@ -117,20 +118,20 @@ namespace DMS.Services.MWorkflow
                 int count = await UOW.WorkflowStepRepository.Count(WorkflowStepFilter);
                 if (count == 0)
                     WorkflowDirection.AddError(nameof(WorkflowDirectionValidator), nameof(WorkflowDirection.ToStep), ErrorCode.ToStepNotExisted);
-                if(WorkflowDirection.ToStepId == WorkflowDirection.FromStepId)
+                if (WorkflowDirection.ToStepId == WorkflowDirection.FromStepId)
                 {
                     WorkflowDirection.AddError(nameof(WorkflowDirectionValidator), nameof(WorkflowDirection.ToStep), ErrorCode.ToStepNotSameFromStep);
                 }
                 else
                 {
                     var WFoldData = await UOW.WorkflowDefinitionRepository.Get(WorkflowDirection.WorkflowDefinitionId);
-                    if(WFoldData != null)
+                    if (WFoldData != null)
                     {
                         var countDirection = WFoldData.WorkflowDirections
                             .Where(x => x.FromStepId == WorkflowDirection.FromStepId && x.ToStepId == WorkflowDirection.ToStepId &&
                             x.StatusId == StatusEnum.ACTIVE.Id)
                             .Count();
-                        if(countDirection != 0)
+                        if (countDirection != 0)
                         {
                             WorkflowDirection.AddError(nameof(WorkflowDirectionValidator), nameof(WorkflowDirection.Id), ErrorCode.WorkflowDirectionExisted);
                         }
@@ -151,11 +152,33 @@ namespace DMS.Services.MWorkflow
             return WorkflowDirection.IsValidated;
         }
 
+        private async Task<bool> ValidateDuplicateDirection(WorkflowDirection WorkflowDirection)
+        {
+            if (WorkflowDirection.WorkflowDefinitionId != 0)
+            {
+                WorkflowDirectionFilter WorkflowDirectionFilter = new WorkflowDirectionFilter()
+                {
+                    WorkflowDefinitionId = new IdFilter { Equal = WorkflowDirection.WorkflowDefinitionId },
+                    FromStepId = new IdFilter { Equal = WorkflowDirection.FromStepId },
+                    ToStepId = new IdFilter { Equal = WorkflowDirection.ToStepId },
+                    StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id }
+                };
+
+                int count = await UOW.WorkflowDirectionRepository.Count(WorkflowDirectionFilter);
+                if(count > 0)
+                {
+                    WorkflowDirection.AddError(nameof(WorkflowDirectionValidator), nameof(WorkflowDirection.ToStep), ErrorCode.DirectionDuplicate);
+                }
+            }
+            return WorkflowDirection.IsValidated;
+        }
+
         public async Task<bool> Create(WorkflowDirection WorkflowDirection)
         {
-            await ValidateWorkflowDirection(WorkflowDirection);
+            await ValidateWorkflowDefinition(WorkflowDirection);
             await ValidateStep(WorkflowDirection);
             await ValidateSubjectMail(WorkflowDirection);
+            await ValidateDuplicateDirection(WorkflowDirection);
             return WorkflowDirection.IsValidated;
         }
 
@@ -163,9 +186,10 @@ namespace DMS.Services.MWorkflow
         {
             if (await ValidateId(WorkflowDirection))
             {
-                await ValidateWorkflowDirection(WorkflowDirection);
+                await ValidateWorkflowDefinition(WorkflowDirection);
                 await ValidateStep(WorkflowDirection);
                 await ValidateSubjectMail(WorkflowDirection);
+                await ValidateDuplicateDirection(WorkflowDirection);
             }
             return WorkflowDirection.IsValidated;
         }
