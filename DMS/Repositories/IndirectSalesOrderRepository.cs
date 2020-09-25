@@ -546,7 +546,7 @@ namespace DMS.Repositories
                                          join step in DataContext.WorkflowStep on r.WorkflowDefinitionId equals step.WorkflowDefinitionId
                                          join rstep in DataContext.RequestWorkflowStepMapping on step.Id equals rstep.WorkflowStepId
                                          where 
-                                         (r.RequestStateId != RequestStateEnum.NEW.Id) &&
+                                         (q.RequestStateId != RequestStateEnum.NEW.Id) &&
                                          (rstep.WorkflowStateId == WorkflowStateEnum.APPROVED.Id || rstep.WorkflowStateId == WorkflowStateEnum.REJECTED.Id) &&
                                          rstep.AppUserId == filter.ApproverId.Equal
                                          select q;
@@ -566,7 +566,7 @@ namespace DMS.Repositories
                                          join step in DataContext.WorkflowStep on r.WorkflowDefinitionId equals step.WorkflowDefinitionId
                                          join rstep in DataContext.RequestWorkflowStepMapping on step.Id equals rstep.WorkflowStepId
                                          where
-                                         (r.RequestStateId != RequestStateEnum.NEW.Id) &&
+                                         (q.RequestStateId != RequestStateEnum.NEW.Id) &&
                                          (rstep.WorkflowStateId == WorkflowStateEnum.APPROVED.Id || rstep.WorkflowStateId == WorkflowStateEnum.REJECTED.Id) &&
                                          rstep.AppUserId == filter.ApproverId.Equal
                                          select q;
