@@ -16,7 +16,8 @@
     "ToStep": {
       "ToStepEmpty": "Chưa chọn bước kết thúc.",
       "ToStepNotExisted": "Bước kết thúc không tồn tại.",
-      "ToStepNotSameFromStep": "Bước bắt đầu và kết thúc không thể trùng nhau."
+      "ToStepNotSameFromStep": "Bước bắt đầu và kết thúc không thể trùng nhau.",
+      "DirectionDuplicate": "Đã tồn tại luồng thực hiện này."
     },
     "SubjectMailForCreator": {
       "SubjectMailForCreatorOverLength": "Tiêu đề mail dài quá 255 ký tự."
