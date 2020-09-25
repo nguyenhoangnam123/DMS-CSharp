@@ -203,6 +203,7 @@ namespace DMS.Repositories
 
         private IQueryable<IndirectSalesOrderDAO> DynamicOrder(IQueryable<IndirectSalesOrderDAO> query, IndirectSalesOrderFilter filter)
         {
+            query = query.Distinct();
             switch (filter.OrderType)
             {
                 case OrderType.ASC:
@@ -393,7 +394,7 @@ namespace DMS.Repositories
                 RowId = q.RowId,
                 CreatedAt = q.CreatedAt,
                 UpdatedAt = q.UpdatedAt,
-            }).Distinct().Skip(filter.Skip).Take(filter.Take).ToListAsync();
+            }).Skip(filter.Skip).Take(filter.Take).ToListAsync();
 
             List<Guid> RowIds = IndirectSalesOrders.Select(x => x.RowId).ToList();
             List<RequestWorkflowDefinitionMappingDAO> RequestWorkflowDefinitionMappingDAOs = await DataContext.RequestWorkflowDefinitionMapping
