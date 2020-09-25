@@ -94,6 +94,12 @@ namespace DMS.Rpc.store
                 Master, Count, List, Get,
                 FilterListAppUser, FilterListDistrict, FilterListOrganization, FilterListProvince, FilterListWard, FilterListStatus, FilterListParentStore, FilterListRequestState,
                 Detail, ExportTemplate, Import } },
+            { "Phê duyệt", new List<string> {
+                Parent,
+                Master, Count, List, Get,
+                FilterListAppUser, FilterListDistrict, FilterListOrganization, FilterListProvince, FilterListWard, FilterListStatus, FilterListParentStore, FilterListRequestState,
+                Detail, Approve, Reject,
+                SingleListAppUser, SingleListDistrict, SingleListOrganization, SingleListProvince, SingleListStatus, SingleListStoreGrouping, SingleListStoreType, SingleListWard, SingleListParentStore, SingleListRequestState} },
         };
     }
 }
