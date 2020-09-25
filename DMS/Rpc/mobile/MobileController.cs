@@ -1153,21 +1153,13 @@ namespace DMS.Rpc.mobile
             Store Store = await StoreService.Get(Mobile_StoreDTO.Id);
             if (Store == null)
                 return NotFound();
-            Store.AlbumImageMappings = Mobile_StoreDTO.AlbumImageMappings?
-                .Select(x => new AlbumImageMapping
-                {
-                    AlbumId = x.AlbumId,
-                    StoreId = x.StoreId,
-                    ImageId = x.ImageId,
-                    SaleEmployeeId = CurrentContext.UserId,
-                    Image = x.Image == null ? null : new Image
-                    {
-                        Id = x.Image.Id,
-                        Name = x.Image.Name,
-                        Url = x.Image.Url,
-                        ThumbnailUrl = x.Image.ThumbnailUrl,
-                    }
-                }).ToList();
+            Store.OwnerPhone = Mobile_StoreDTO.OwnerPhone;
+            Store.ProvinceId = Mobile_StoreDTO.ProvinceId;
+            Store.DistrictId = Mobile_StoreDTO.DistrictId;
+            Store.WardId = Mobile_StoreDTO.WardId;
+            Store.Address = Mobile_StoreDTO.Address;
+            Store.Latitude = Mobile_StoreDTO.Latitude;
+            Store.Longitude = Mobile_StoreDTO.Longitude;
             Store.BaseLanguage = CurrentContext.Language;
             Store = await StoreService.Update(Store);
             Mobile_StoreDTO = new Mobile_StoreDTO(Store);
