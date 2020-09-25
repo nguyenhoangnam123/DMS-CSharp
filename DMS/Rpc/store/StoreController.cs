@@ -1046,6 +1046,7 @@ namespace DMS.Rpc.store
             Store.StatusId = Store_StoreDTO.StatusId;
             Store.StoreScoutingId = Store_StoreDTO.StoreScoutingId;
             Store.RequestStateId = Store_StoreDTO.RequestStateId;
+            Store.AppUserId = Store_StoreDTO.AppUserId;
             Store.District = Store_StoreDTO.District == null ? null : new District
             {
                 Id = Store_StoreDTO.District.Id,
