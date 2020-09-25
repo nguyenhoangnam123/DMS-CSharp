@@ -70,7 +70,7 @@ namespace DMS.Repositories
                 Used = true
             });
 
-            for (long i = Counter + 1; i <= countElement; i++)
+            for (long i = Counter + 1; i <= Counter + countElement; i++)
             {
                 Counters.Add(i);
             }
