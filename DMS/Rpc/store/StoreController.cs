@@ -371,10 +371,10 @@ namespace DMS.Rpc.store
 
                     string AddressValue = worksheet.Cells[i + StartRow, AddressColumn].Value?.ToString();
                     string LongitudeValue = worksheet.Cells[i + StartRow, LongitudeColumn].Value?.ToString();
-                    if (LongitudeValue.Contains(","))
+                    if (!string.IsNullOrWhiteSpace(LongitudeValue) && LongitudeValue.Contains(","))
                         LongitudeValue = LongitudeValue.Replace(",", ".");
                     string LatitudeValue = worksheet.Cells[i + StartRow, LatitudeColumn].Value?.ToString();
-                    if (LatitudeValue.Contains(","))
+                    if (!string.IsNullOrWhiteSpace(LatitudeValue) && LatitudeValue.Contains(","))
                         LatitudeValue = LatitudeValue.Replace(",", ".");
 
                     string DeliveryAddressValue = worksheet.Cells[i + StartRow, DeliveryAddressColumn].Value?.ToString();

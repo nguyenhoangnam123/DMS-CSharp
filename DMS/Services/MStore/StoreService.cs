@@ -166,7 +166,7 @@ namespace DMS.Services.MStore
                 Store.UnsignAddress = Store.Address.ChangeToEnglishChar();
                 Store.RequestStateId = RequestStateEnum.NEW.Id;
                 var Counter = await UOW.IdGenerateRepository.GetCounter();
-                await StoreCodeGenerate(Store, Counter);
+                StoreCodeGenerate(Store, Counter);
                 await UOW.Begin();
                 await UOW.StoreRepository.Create(Store);
                 List<UserNotification> UserNotifications = new List<UserNotification>();
@@ -257,7 +257,7 @@ namespace DMS.Services.MStore
 
                 Store.UnsignName = Store.Name.ChangeToEnglishChar();
                 Store.UnsignAddress = Store.Address.ChangeToEnglishChar();
-                await StoreCodeGenerate(Store);
+                StoreCodeGenerate(Store);
                 await UOW.Begin();
                 await UOW.StoreRepository.Update(Store);
                 await UOW.Commit();
@@ -423,26 +423,26 @@ namespace DMS.Services.MStore
                 List<Store> dbStores = await UOW.StoreRepository.List(StoreFilter);
                 var createCounter = Stores.Where(x => x.Id == 0).Count();
                 var ListCounter = await UOW.IdGenerateRepository.ListCounter(createCounter);
-                foreach (var item in Stores)
+                for (int i = 0; i < ListCounter.Count; i++)
                 {
-                    Store Store = dbStores.Where(x => x.Id == item.Id)
+                    Store Store = dbStores.Where(x => x.Id == Stores[i].Id)
                                 .FirstOrDefault();
 
-                    item.UnsignName = item.Name.ChangeToEnglishChar();
-                    item.UnsignAddress = item.Address.ChangeToEnglishChar();
+                    Stores[i].UnsignName = Stores[i].Name.ChangeToEnglishChar();
+                    Stores[i].UnsignAddress = Stores[i].Address.ChangeToEnglishChar();
 
                     if (Store != null)
                     {
-                        item.Id = Store.Id;
-                        item.RowId = Store.RowId;
-                        await StoreCodeGenerate(item);
+                        Stores[i].Id = Store.Id;
+                        Stores[i].RowId = Store.RowId;
+                        StoreCodeGenerate(Stores[i]);
                     }
                     else
                     {
-                        item.Id = 0;
-                        item.RowId = Guid.NewGuid();
-                        var counter = ListCounter[Stores.IndexOf(item)];
-                        await StoreCodeGenerate(item, counter);
+                        Stores[i].Id = 0;
+                        Stores[i].RowId = Guid.NewGuid();
+                        var counter = ListCounter[i];
+                        StoreCodeGenerate(Stores[i], counter);
                     }
                 }
                 await UOW.StoreRepository.BulkMerge(Stores);
@@ -612,21 +612,16 @@ namespace DMS.Services.MStore
             }
         }
 
-        private async Task StoreCodeGenerate(Store Store, long? Counter = null)
+        private void StoreCodeGenerate(Store Store, long? Counter = null)
         {
-            Organization Organization = await UOW.OrganizationRepository.Get(Store.OrganizationId);
-            StoreType StoreType = await UOW.StoreTypeRepository.Get(Store.StoreTypeId);
-            if (Organization != null)
+            if (Counter == null)
             {
-                if (Counter == null)
-                {
-                    var Codes = Store.Code.Split('.');
-                    Store.Code = $"{Organization.Code}.{StoreType.Code}.{Codes[2]}";
-                }
-                else
-                {
-                    Store.Code = $"{Organization.Code}.{StoreType.Code}.{(10000000 + Counter).ToString().Substring(1)}";
-                }
+                var Codes = Store.Code.Split('.');
+                Store.Code = $"{Store.Organization.Code}.{Store.StoreType.Code}.{Codes[2]}";
+            }
+            else
+            {
+                Store.Code = $"{Store.Organization.Code}.{Store.StoreType.Code}.{(10000000 + Counter).ToString().Substring(1)}";
             }
         }
     }
