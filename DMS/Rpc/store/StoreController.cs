@@ -1043,6 +1043,7 @@ namespace DMS.Rpc.store
             Store.LegalEntity = Store_StoreDTO.LegalEntity;
             Store.StatusId = Store_StoreDTO.StatusId;
             Store.StoreScoutingId = Store_StoreDTO.StoreScoutingId;
+            Store.RequestStateId = Store_StoreDTO.RequestStateId;
             Store.District = Store_StoreDTO.District == null ? null : new District
             {
                 Id = Store_StoreDTO.District.Id,
