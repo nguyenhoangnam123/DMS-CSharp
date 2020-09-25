@@ -40,7 +40,8 @@ namespace DMS.Services.MDirectSalesOrder
             SellerStoreEqualBuyerStore,
             ContentEmpty,
             DeliveryDateInvalid,
-            BuyerStoreNotInERouteScope
+            BuyerStoreNotInERouteScope,
+            SaleEmployeeNotInOrg
         }
 
         private IUOW UOW;
@@ -106,9 +107,17 @@ namespace DMS.Services.MDirectSalesOrder
                     Selects = AppUserSelect.Id
                 };
 
-                int count = await UOW.AppUserRepository.Count(AppUserFilter);
-                if (count == 0)
+                var AppUser = (await UOW.AppUserRepository.List(AppUserFilter)).FirstOrDefault();
+                if (AppUser == null)
                     DirectSalesOrder.AddError(nameof(DirectSalesOrderValidator), nameof(DirectSalesOrder.SaleEmployee), ErrorCode.SaleEmployeeNotExisted);
+                else
+                {
+                    var CurrentUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
+                    if (!AppUser.Organization.Path.StartsWith(CurrentUser.Organization.Path))
+                    {
+                        DirectSalesOrder.AddError(nameof(DirectSalesOrderValidator), nameof(DirectSalesOrder.SaleEmployee), ErrorCode.SaleEmployeeNotInOrg);
+                    }
+                }
             }
 
             return DirectSalesOrder.IsValidated;

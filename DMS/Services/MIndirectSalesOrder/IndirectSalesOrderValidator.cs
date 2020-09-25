@@ -40,7 +40,8 @@ namespace DMS.Services.MIndirectSalesOrder
             SellerStoreEqualBuyerStore,
             ContentEmpty,
             DeliveryDateInvalid,
-            BuyerStoreNotInERouteScope
+            BuyerStoreNotInERouteScope,
+            SaleEmployeeNotInOrg
         }
 
         private IUOW UOW;
@@ -123,12 +124,20 @@ namespace DMS.Services.MIndirectSalesOrder
                     Take = 10,
                     Id = new IdFilter { Equal = IndirectSalesOrder.SaleEmployeeId },
                     StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id },
-                    Selects = AppUserSelect.Id
+                    Selects = AppUserSelect.Id | AppUserSelect.Organization
                 };
 
-                int count = await UOW.AppUserRepository.Count(AppUserFilter);
-                if (count == 0)
+                var AppUser = (await UOW.AppUserRepository.List(AppUserFilter)).FirstOrDefault();
+                if (AppUser == null)
                     IndirectSalesOrder.AddError(nameof(IndirectSalesOrderValidator), nameof(IndirectSalesOrder.SaleEmployee), ErrorCode.SaleEmployeeNotExisted);
+                else
+                {
+                    var CurrentUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
+                    if (!AppUser.Organization.Path.StartsWith(CurrentUser.Organization.Path)) 
+                    {
+                        IndirectSalesOrder.AddError(nameof(IndirectSalesOrderValidator), nameof(IndirectSalesOrder.SaleEmployee), ErrorCode.SaleEmployeeNotInOrg);
+                    }
+                }
             }
 
             return IndirectSalesOrder.IsValidated;
