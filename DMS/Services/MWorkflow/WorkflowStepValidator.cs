@@ -21,7 +21,7 @@ namespace DMS.Services.MWorkflow
         public enum ErrorCode
         {
             IdNotExisted,
-            WorkflowDefinitionIdNotExisted,
+            WorkflowDefinitionNotExisted,
             WorkflowDefinitionInUsed,
             WorkflowStepInUsed,
             CodeEmpty,
@@ -31,6 +31,7 @@ namespace DMS.Services.MWorkflow
             NameEmpty,
             NameOverLength,
             RoleNotExisted,
+            RoleEmpty,
             SubjectMailForRejectOverLength
         }
 
@@ -64,7 +65,7 @@ namespace DMS.Services.MWorkflow
             WorkflowDefinition WorkflowDefinition = await UOW.WorkflowDefinitionRepository.Get(WorkflowStep.WorkflowDefinitionId);
 
             if (WorkflowDefinition == null)
-                WorkflowStep.AddError(nameof(WorkflowStepValidator), nameof(WorkflowStep.WorkflowDefinition), ErrorCode.WorkflowDefinitionIdNotExisted);
+                WorkflowStep.AddError(nameof(WorkflowStepValidator), nameof(WorkflowStep.WorkflowDefinition), ErrorCode.WorkflowDefinitionNotExisted);
             else if (WorkflowDefinition.Used)
                 WorkflowStep.AddError(nameof(WorkflowStepValidator), nameof(WorkflowStep.WorkflowDefinition), ErrorCode.WorkflowDefinitionInUsed);
             return WorkflowStep.IsValidated;
@@ -121,14 +122,22 @@ namespace DMS.Services.MWorkflow
 
         private async Task<bool> ValidateRole(WorkflowStep WorkflowStep)
         {
-            RoleFilter RoleFilter = new RoleFilter
+            if(WorkflowStep.RoleId == 0)
             {
-                Id = new IdFilter { Equal = WorkflowStep.RoleId }
-            };
+                WorkflowStep.AddError(nameof(WorkflowStepValidator), nameof(WorkflowStep.Role), ErrorCode.RoleEmpty);
+            }
+            else
+            {
+                RoleFilter RoleFilter = new RoleFilter
+                {
+                    Id = new IdFilter { Equal = WorkflowStep.RoleId }
+                };
 
-            var count = await UOW.RoleRepository.Count(RoleFilter);
-            if (count == 0)
-                WorkflowStep.AddError(nameof(WorkflowStepValidator), nameof(WorkflowStep.Role), ErrorCode.RoleNotExisted);
+                var count = await UOW.RoleRepository.Count(RoleFilter);
+                if (count == 0)
+                    WorkflowStep.AddError(nameof(WorkflowStepValidator), nameof(WorkflowStep.Role), ErrorCode.RoleNotExisted);
+            }
+            
             return WorkflowStep.IsValidated;
         }
 

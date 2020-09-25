@@ -4,8 +4,8 @@
       "IdNotExisted": "Id không tồn tại",
       "WorkflowStepInUsed": "Bước hiện tại đang được sử dụng."
     },
-    "WorkflowDefinitionId": {
-      "WorkflowDefinitionIdNotExisted": "Workflow không tồn tại.",
+    "WorkflowDefinition": {
+      "WorkflowDefinitionNotExisted": "Workflow không tồn tại.",
       "WorkflowDefinitionInUsed": "Workflow đã được sử dụng."
     },
     "Code": {
@@ -19,7 +19,8 @@
       "NameOverLength": "Tên dài hơn 255 ký tự."
     },
     "Role": {
-      "RoleNotExisted": "Vai trò không tồn tại"
+      "RoleNotExisted": "Vai trò không tồn tại",
+      "RoleEmpty":  "Chưa chọn vai trò"
     },
     "SubjectMailForReject": {
       "SubjectMailForRejectOverLength": "Tiêu đề mail dài hơn 255 ký tự."
