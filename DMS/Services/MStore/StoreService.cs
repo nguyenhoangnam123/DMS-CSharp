@@ -125,16 +125,16 @@ namespace DMS.Services.MStore
             };
             int count = await UOW.StoreCheckingRepository.Count(StoreCheckingFilter);
             Store.HasChecking = count != 0 ? true : false;
-            Store.RequestState = await WorkflowService.GetRequestState(Store.RowId);
-            if (Store.RequestState == null)
-            {
-                Store.RequestWorkflowStepMappings = new List<RequestWorkflowStepMapping>();
-            }
-            else
-            {
-                Store.RequestStateId = Store.RequestState.Id;
-                Store.RequestWorkflowStepMappings = await WorkflowService.ListRequestWorkflowStepMapping(Store.RowId);
-            }
+            //Store.RequestState = await WorkflowService.GetRequestState(Store.RowId);
+            //if (Store.RequestState == null)
+            //{
+            //    Store.RequestWorkflowStepMappings = new List<RequestWorkflowStepMapping>();
+            //}
+            //else
+            //{
+            //    Store.RequestStateId = Store.RequestState.Id;
+            //    Store.RequestWorkflowStepMappings = await WorkflowService.ListRequestWorkflowStepMapping(Store.RowId);
+            //}
             return Store;
         }
 
