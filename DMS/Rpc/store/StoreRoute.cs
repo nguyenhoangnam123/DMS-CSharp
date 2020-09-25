@@ -34,6 +34,7 @@ namespace DMS.Rpc.store
         public const string FilterListProvince = Default + "/filter-list-province";
         public const string FilterListWard = Default + "/filter-list-ward";
         public const string FilterListStatus = Default + "/filter-list-status";
+        public const string FilterListRequestState = Default + "/filter-list-request-state";
 
         public const string SingleListAppUser = Default + "/single-list-app-user";
         public const string SingleListOrganization = Default + "/single-list-organization";
@@ -44,7 +45,7 @@ namespace DMS.Rpc.store
         public const string SingleListStatus = Default + "/single-list-status";
         public const string SingleListStoreGrouping = Default + "/single-list-store-grouping";
         public const string SingleListStoreType = Default + "/single-list-store-type";
-        
+        public const string SingleListRequestState = Default + "/single-list-request-state";
 
         public const string ListReseller = Default + "/list-reseller";
         public const string CountReseller = Default + "/count-reseller";

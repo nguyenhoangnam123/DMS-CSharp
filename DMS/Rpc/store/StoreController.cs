@@ -12,6 +12,7 @@ using DMS.Services.MStoreGrouping;
 using DMS.Services.MStoreScouting;
 using DMS.Services.MStoreType;
 using DMS.Services.MWard;
+using DMS.Services.MWorkflow;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using OfficeOpenXml;
@@ -32,6 +33,7 @@ namespace DMS.Rpc.store
         private IOrganizationService OrganizationService;
         private IProvinceService ProvinceService;
         private IResellerService ResellerService;
+        private IRequestStateService RequestStateService;
         private IStatusService StatusService;
         private IStoreScoutingService StoreScoutingService;
         private IStoreGroupingService StoreGroupingService;
@@ -45,6 +47,7 @@ namespace DMS.Rpc.store
             IOrganizationService OrganizationService,
             IProvinceService ProvinceService,
             IResellerService ResellerService,
+            IRequestStateService RequestStateService,
             IStatusService StatusService,
             IStoreScoutingService StoreScoutingService,
             IStoreGroupingService StoreGroupingService,
@@ -59,6 +62,7 @@ namespace DMS.Rpc.store
             this.OrganizationService = OrganizationService;
             this.ProvinceService = ProvinceService;
             this.ResellerService = ResellerService;
+            this.RequestStateService = RequestStateService;
             this.StatusService = StatusService;
             this.StoreScoutingService = StoreScoutingService;
             this.StoreGroupingService = StoreGroupingService;
@@ -1327,6 +1331,28 @@ namespace DMS.Rpc.store
             return Store_StoreDTOs;
         }
 
+        [Route(StoreRoute.FilterListRequestState), HttpPost]
+        public async Task<List<Store_RequestStateDTO>> FilterListRequestState([FromBody] Store_RequestStateFilterDTO Store_RequestStateFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            RequestStateFilter RequestStateFilter = new RequestStateFilter();
+            RequestStateFilter.Skip = 0;
+            RequestStateFilter.Take = 20;
+            RequestStateFilter.OrderBy = RequestStateOrder.Id;
+            RequestStateFilter.OrderType = OrderType.ASC;
+            RequestStateFilter.Selects = RequestStateSelect.ALL;
+            RequestStateFilter.Id = Store_RequestStateFilterDTO.Id;
+            RequestStateFilter.Code = Store_RequestStateFilterDTO.Code;
+            RequestStateFilter.Name = Store_RequestStateFilterDTO.Name;
+
+            List<RequestState> RequestStatees = await RequestStateService.List(RequestStateFilter);
+            List<Store_RequestStateDTO> Store_RequestStateDTOs = RequestStatees
+                .Select(x => new Store_RequestStateDTO(x)).ToList();
+            return Store_RequestStateDTOs;
+        }
+
         [Route(StoreRoute.FilterListWard), HttpPost]
         public async Task<List<Store_WardDTO>> FilterListWard([FromBody] Store_WardFilterDTO Store_WardFilterDTO)
         {
@@ -1480,6 +1506,29 @@ namespace DMS.Rpc.store
                 .Select(x => new Store_DistrictDTO(x)).ToList();
             return Store_DistrictDTOs;
         }
+
+        [Route(StoreRoute.SingleListRequestState), HttpPost]
+        public async Task<List<Store_RequestStateDTO>> SingleListRequestState([FromBody] Store_RequestStateFilterDTO Store_RequestStateFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            RequestStateFilter RequestStateFilter = new RequestStateFilter();
+            RequestStateFilter.Skip = 0;
+            RequestStateFilter.Take = 20;
+            RequestStateFilter.OrderBy = RequestStateOrder.Id;
+            RequestStateFilter.OrderType = OrderType.ASC;
+            RequestStateFilter.Selects = RequestStateSelect.ALL;
+            RequestStateFilter.Id = Store_RequestStateFilterDTO.Id;
+            RequestStateFilter.Code = Store_RequestStateFilterDTO.Code;
+            RequestStateFilter.Name = Store_RequestStateFilterDTO.Name;
+
+            List<RequestState> RequestStatees = await RequestStateService.List(RequestStateFilter);
+            List<Store_RequestStateDTO> Store_RequestStateDTOs = RequestStatees
+                .Select(x => new Store_RequestStateDTO(x)).ToList();
+            return Store_RequestStateDTOs;
+        }
+
         [Route(StoreRoute.SingleListWard), HttpPost]
         public async Task<List<Store_WardDTO>> SingleListWard([FromBody] Store_WardFilterDTO Store_WardFilterDTO)
         {
