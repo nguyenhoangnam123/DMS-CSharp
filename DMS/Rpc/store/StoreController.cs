@@ -310,7 +310,7 @@ namespace DMS.Rpc.store
             {
                 Skip = 0,
                 Take = int.MaxValue,
-                Selects = StoreSelect.ALL
+                Selects = StoreSelect.Id | StoreSelect.Code | StoreSelect.Name
             });
             #endregion
             List<Store_ImportDTO> Store_ImportDTOs = new List<Store_ImportDTO>();
@@ -356,11 +356,11 @@ namespace DMS.Rpc.store
                     string stt = worksheet.Cells[i + StartRow, SttColumnn].Value?.ToString();
                     if (stt != null && stt.ToLower() == "END".ToLower())
                         break;
-                    Store_ImportDTO Store_ImportDTO = new Store_ImportDTO();
-                    Store_ImportDTOs.Add(Store_ImportDTO);
                     bool convert = long.TryParse(stt, out long Stt);
                     if (convert == false)
                         continue;
+                    Store_ImportDTO Store_ImportDTO = new Store_ImportDTO();
+                    Store_ImportDTOs.Add(Store_ImportDTO);
                     Store_ImportDTO.Stt = Stt;
                     Store_ImportDTO.CodeValue = worksheet.Cells[i + StartRow, CodeColumn].Value?.ToString();
 
@@ -502,6 +502,8 @@ namespace DMS.Rpc.store
             List<Store> Stores = DictionaryStores.Select(x => x.Value).ToList();
             errorContent = new StringBuilder(error);
             Stores = await StoreService.Import(Stores);
+            if (Stores == null)
+                return Ok();
             List<Store_StoreDTO> Store_StoreDTOs = Stores
                 .Select(c => new Store_StoreDTO(c)).ToList();
             for (int i = 0; i < Stores.Count; i++)

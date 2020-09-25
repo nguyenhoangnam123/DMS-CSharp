@@ -403,7 +403,7 @@ namespace DMS.Services.MStore
                 {
                     Skip = 0,
                     Take = int.MaxValue,
-                    Selects = StoreSelect.ALL,
+                    Selects = StoreSelect.Id | StoreSelect.Code | StoreSelect.Name | StoreSelect.ParentStore ,
                 };
                 List<Store> dbStores = await UOW.StoreRepository.List(StoreFilter);
                 var createCounter = Stores.Where(x => x.Id == 0).Count();
@@ -455,7 +455,7 @@ namespace DMS.Services.MStore
                 {
                     Skip = 0,
                     Take = int.MaxValue,
-                    Selects = StoreSelect.ALL,
+                    Selects = StoreSelect.Id | StoreSelect.Code | StoreSelect.Name | StoreSelect.ParentStore,
                     OrderBy = StoreOrder.Id,
                     OrderType = OrderType.ASC,
                 });
@@ -467,7 +467,7 @@ namespace DMS.Services.MStore
                     eventMessages.Add(new EventMessage<Store>(Store, Store.RowId));
                 }
                 RabbitManager.PublishList(eventMessages, RoutingKeyEnum.StoreSync);
-                return Stores;
+                return null;
             }
             catch (Exception ex)
             {
