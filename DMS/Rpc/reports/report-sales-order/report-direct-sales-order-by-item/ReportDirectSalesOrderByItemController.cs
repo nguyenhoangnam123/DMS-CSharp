@@ -368,7 +368,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_by_item
                     }
                     if (Transaction.TypeId == DirectSalesOrderTransactionTypeEnum.PROMOTION.Id)
                     {
-                        ItemDetail.SaleStock += Transaction.Quantity;
+                        ItemDetail.PromotionStock += Transaction.Quantity;
                     }
                     ItemDetail.Discount += Transaction.Discount ?? 0;
                     ItemDetail.Revenue += Transaction.Revenue ?? 0;
