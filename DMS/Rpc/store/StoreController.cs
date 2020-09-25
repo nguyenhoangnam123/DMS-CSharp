@@ -313,8 +313,8 @@ namespace DMS.Rpc.store
                 Selects = StoreSelect.ALL
             });
             #endregion
+            List<Store_ImportDTO> Store_ImportDTOs = new List<Store_ImportDTO>();
 
-            List<Store> Stores = new List<Store>();
             StringBuilder errorContent = new StringBuilder();
             using (ExcelPackage excelPackage = new ExcelPackage(DataFile.Content))
             {
@@ -356,155 +356,151 @@ namespace DMS.Rpc.store
                     string stt = worksheet.Cells[i + StartRow, SttColumnn].Value?.ToString();
                     if (stt != null && stt.ToLower() == "END".ToLower())
                         break;
+                    Store_ImportDTO Store_ImportDTO = new Store_ImportDTO();
+                    Store_ImportDTOs.Add(Store_ImportDTO);
+                    bool convert = long.TryParse(stt, out long Stt);
+                    if (convert == false)
+                        continue;
+                    Store_ImportDTO.Stt = Stt;
+                    Store_ImportDTO.CodeValue = worksheet.Cells[i + StartRow, CodeColumn].Value?.ToString();
 
-                    string CodeValue = worksheet.Cells[i + StartRow, CodeColumn].Value?.ToString();
-                    
-                    string NameValue = worksheet.Cells[i + StartRow, NameColumn].Value?.ToString();
-                    string OrganizationCodeValue = worksheet.Cells[i + StartRow, OrganizationCodeColumn].Value?.ToString();
-                    string ParentStoreCodeValue = worksheet.Cells[i + StartRow, ParentStoreCodeColumn].Value?.ToString();
-                    string StoreTypeCodeValue = worksheet.Cells[i + StartRow, StoreTypeCodeColumn].Value?.ToString();
-                    string StoreGroupingCodeValue = worksheet.Cells[i + StartRow, StoreGroupingCodeColumn].Value?.ToString();
-                    string LegalEntityValue = worksheet.Cells[i + StartRow, LegalEntityColumn].Value?.ToString();
-                    string TaxCodeValue = worksheet.Cells[i + StartRow, TaxCodeColumn].Value?.ToString();
+                    Store_ImportDTO.NameValue = worksheet.Cells[i + StartRow, NameColumn].Value?.ToString();
+                    Store_ImportDTO.OrganizationCodeValue = worksheet.Cells[i + StartRow, OrganizationCodeColumn].Value?.ToString();
+                    Store_ImportDTO.ParentStoreCodeValue = worksheet.Cells[i + StartRow, ParentStoreCodeColumn].Value?.ToString();
+                    Store_ImportDTO.StoreTypeCodeValue = worksheet.Cells[i + StartRow, StoreTypeCodeColumn].Value?.ToString();
+                    Store_ImportDTO.StoreGroupingCodeValue = worksheet.Cells[i + StartRow, StoreGroupingCodeColumn].Value?.ToString();
+                    Store_ImportDTO.LegalEntityValue = worksheet.Cells[i + StartRow, LegalEntityColumn].Value?.ToString();
+                    Store_ImportDTO.TaxCodeValue = worksheet.Cells[i + StartRow, TaxCodeColumn].Value?.ToString();
 
-                    string ProvinceCodeValue = worksheet.Cells[i + StartRow, ProvinceCodeColumn].Value?.ToString();
-                    string DistrictCodeValue = worksheet.Cells[i + StartRow, DistrictCodeColumn].Value?.ToString();
-                    string WardCodeValue = worksheet.Cells[i + StartRow, WardCodeColumn].Value?.ToString();
+                    Store_ImportDTO.ProvinceCodeValue = worksheet.Cells[i + StartRow, ProvinceCodeColumn].Value?.ToString();
+                    Store_ImportDTO.DistrictCodeValue = worksheet.Cells[i + StartRow, DistrictCodeColumn].Value?.ToString();
+                    Store_ImportDTO.WardCodeValue = worksheet.Cells[i + StartRow, WardCodeColumn].Value?.ToString();
 
-                    string AddressValue = worksheet.Cells[i + StartRow, AddressColumn].Value?.ToString();
-                    string LongitudeValue = worksheet.Cells[i + StartRow, LongitudeColumn].Value?.ToString();
-                    if (!string.IsNullOrWhiteSpace(LongitudeValue) && LongitudeValue.Contains(","))
-                        LongitudeValue = LongitudeValue.Replace(",", ".");
-                    string LatitudeValue = worksheet.Cells[i + StartRow, LatitudeColumn].Value?.ToString();
-                    if (!string.IsNullOrWhiteSpace(LatitudeValue) && LatitudeValue.Contains(","))
-                        LatitudeValue = LatitudeValue.Replace(",", ".");
+                    Store_ImportDTO.AddressValue = worksheet.Cells[i + StartRow, AddressColumn].Value?.ToString();
+                    Store_ImportDTO.LongitudeValue = worksheet.Cells[i + StartRow, LongitudeColumn].Value?.ToString();
+                    if (!string.IsNullOrWhiteSpace(Store_ImportDTO.LongitudeValue) && Store_ImportDTO.LongitudeValue.Contains(","))
+                        Store_ImportDTO.LongitudeValue = Store_ImportDTO.LongitudeValue.Replace(",", ".");
+                    Store_ImportDTO.LatitudeValue = worksheet.Cells[i + StartRow, LatitudeColumn].Value?.ToString();
+                    if (!string.IsNullOrWhiteSpace(Store_ImportDTO.LatitudeValue) && Store_ImportDTO.LatitudeValue.Contains(","))
+                        Store_ImportDTO.LatitudeValue = Store_ImportDTO.LatitudeValue.Replace(",", ".");
 
-                    string DeliveryAddressValue = worksheet.Cells[i + StartRow, DeliveryAddressColumn].Value?.ToString();
-                    string DeliveryLongitudeValue = worksheet.Cells[i + StartRow, DeliveryLongitudeColumn].Value?.ToString();
-                    string DeliveryLatitudeValue = worksheet.Cells[i + StartRow, DeliveryLatitudeColumn].Value?.ToString();
+                    Store_ImportDTO.DeliveryAddressValue = worksheet.Cells[i + StartRow, DeliveryAddressColumn].Value?.ToString();
+                    Store_ImportDTO.DeliveryLongitudeValue = worksheet.Cells[i + StartRow, DeliveryLongitudeColumn].Value?.ToString();
+                    Store_ImportDTO.DeliveryLatitudeValue = worksheet.Cells[i + StartRow, DeliveryLatitudeColumn].Value?.ToString();
 
-                    string TelephoneValue = worksheet.Cells[i + StartRow, TelephoneColumn].Value?.ToString();
-                    string OwnerNameValue = worksheet.Cells[i + StartRow, OwnerNameColumn].Value?.ToString();
-                    string OwnerPhoneValue = worksheet.Cells[i + StartRow, OwnerPhoneColumn].Value?.ToString();
-                    string OwnerEmailValue = worksheet.Cells[i + StartRow, OwnerEmailColumn].Value?.ToString();
-                    string StatusNameValue = worksheet.Cells[i + StartRow, StatusColumn].Value?.ToString();
+                    Store_ImportDTO.TelephoneValue = worksheet.Cells[i + StartRow, TelephoneColumn].Value?.ToString();
+                    Store_ImportDTO.OwnerNameValue = worksheet.Cells[i + StartRow, OwnerNameColumn].Value?.ToString();
+                    Store_ImportDTO.OwnerPhoneValue = worksheet.Cells[i + StartRow, OwnerPhoneColumn].Value?.ToString();
+                    Store_ImportDTO.OwnerEmailValue = worksheet.Cells[i + StartRow, OwnerEmailColumn].Value?.ToString();
+                    Store_ImportDTO.StatusNameValue = worksheet.Cells[i + StartRow, StatusColumn].Value?.ToString();
                     #endregion
-
-                    Store Store;
-                    if (!string.IsNullOrWhiteSpace(CodeValue))
-                    {
-                        Store = All.Where(x => x.Code == CodeValue).FirstOrDefault();
-                        if(Store == null)
-                        {
-                            errorContent.AppendLine($"Lỗi dòng thứ {i + 1}: Mã đại lý không tồn tại");
-                            continue;
-                        }
-                        else
-                        {
-                            if (!Stores.Any(s => s.Code == Store.Code))
-                                Stores.Add(Store);
-                        }
-                    }
-                    else
-                    {
-                        Store = new Store();
-                        Stores.Add(Store);
-                    }
-
-                    Store.Name = NameValue;
-                    Store.LegalEntity = LegalEntityValue;
-                    Store.TaxCode = TaxCodeValue;
-                    Store.Telephone = TelephoneValue;
-                    Store.Address = AddressValue;
-                    Store.DeliveryAddress = DeliveryAddressValue;
-                    //set mặc định vĩ độ kinh độ tại HN
-                    Store.Longitude = decimal.TryParse(LongitudeValue, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal Longitude) ? Longitude : 106;
-                    Store.Latitude = decimal.TryParse(LatitudeValue, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal Latitude) ? Latitude : 21;
-                    Store.DeliveryLongitude = decimal.TryParse(DeliveryLongitudeValue, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal DeliveryLongitude) ? DeliveryLongitude : 106;
-                    Store.DeliveryLatitude = decimal.TryParse(DeliveryLatitudeValue, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal DeliveryLatitude) ? DeliveryLatitude : 21;
-                    Store.OwnerName = OwnerNameValue;
-                    Store.OwnerPhone = OwnerPhoneValue;
-                    Store.OwnerEmail = OwnerEmailValue;
-
-                    Store.Organization = new Organization()
-                    {
-                        Code = OrganizationCodeValue
-                    };
-                    Store.OrganizationId = Organizations.Where(x => x.Code.Equals(OrganizationCodeValue)).Select(x => x.Id).FirstOrDefault();
-
-                    if (!string.IsNullOrWhiteSpace(ParentStoreCodeValue))
-                    {
-                        Store.ParentStore = new Store
-                        {
-                            Code = ParentStoreCodeValue
-                        };
-                    }
-
-                    Store.StoreType = new StoreType
-                    {
-                        Code = StoreTypeCodeValue
-                    };
-                    Store.StoreTypeId = StoreTypes.Where(x => x.Code.Equals(StoreTypeCodeValue)).Select(x => x.Id).FirstOrDefault();
-
-                    if (!string.IsNullOrWhiteSpace(StoreGroupingCodeValue))
-                    {
-                        Store.StoreGrouping = new StoreGrouping
-                        {
-                            Code = StoreGroupingCodeValue
-                        };
-                        Store.StoreGroupingId = StoreGroupings.Where(x => x.Code.Equals(StoreGroupingCodeValue)).Select(x => x.Id).FirstOrDefault();
-                    }
-
-                    if (!string.IsNullOrWhiteSpace(ProvinceCodeValue))
-                    {
-                        Store.Province = new Province
-                        {
-                            Code = ProvinceCodeValue
-                        };
-                        Store.ProvinceId = Provinces.Where(x => x.Code.Equals(ProvinceCodeValue)).Select(x => (long?)x.Id).FirstOrDefault();
-                    }
-
-                    if (!string.IsNullOrWhiteSpace(DistrictCodeValue))
-                    {
-                        Store.District = new District
-                        {
-                            Code = DistrictCodeValue
-                        };
-                        Store.DistrictId = Districts.Where(x => x.Code.Equals(DistrictCodeValue)).Select(x => (long?)x.Id).FirstOrDefault();
-                    }
-
-                    if (!string.IsNullOrWhiteSpace(WardCodeValue))
-                    {
-                        Store.Ward = new Ward
-                        {
-                            Code = WardCodeValue
-                        };
-                        Store.WardId = Wards.Where(x => x.Code.Equals(WardCodeValue)).Select(x => (long?)x.Id).FirstOrDefault();
-                    }
-
-                    if (string.IsNullOrEmpty(StatusNameValue))
-                    {
-                        Store.StatusId = -1;
-                    }
-                    else
-                    {
-                        Store.StatusId = Statuses.Where(x => x.Name.ToLower().Equals(StatusNameValue == null ? string.Empty : StatusNameValue.Trim().ToLower())).Select(x => x.Id).FirstOrDefault();
-                    }
                 }
-                var listCode = Stores.Select(x => x.Code).ToList();
-                var listCodeInDB = All.Select(x => x.Code).ToList();
-                for (int i = 0; i < Stores.Count; i++)
-                {
-                    if (Stores[i].ParentStore != null)
-                    {
-                        if (!listCode.Contains(Stores[i].ParentStore.Code) && !listCodeInDB.Contains(Stores[i].ParentStore.Code))
-                            errorContent.AppendLine($"Lỗi dòng thứ {i + 2}: Đại lý cấp cha không tồn tại");
-                    }
-                }
-                if (errorContent.Length > 0)
-                    return BadRequest(errorContent.ToString());
             }
+            Dictionary<long, StringBuilder> Errors = new Dictionary<long, StringBuilder>();
+            HashSet<string> StoreCodes = new HashSet<string>(All.Select(x => x.Code).Distinct().ToList());
+            foreach (Store_ImportDTO Store_ImportDTO in Store_ImportDTOs)
+            {
+                Errors.Add(Store_ImportDTO.Stt, new StringBuilder(""));
+                Store_ImportDTO.IsNew = false;
+            }
+            Parallel.ForEach(Store_ImportDTOs, Store_ImportDTO =>
+            {
+                if (!string.IsNullOrWhiteSpace(Store_ImportDTO.CodeValue))
+                {
+                    if (StoreCodes.Contains(Store_ImportDTO.CodeValue))
+                    {
+                        Errors[Store_ImportDTO.Stt].AppendLine($"Lỗi dòng thứ {Store_ImportDTO.Stt}: Mã đại lý không tồn tại");
+                        return;
+                    }
+                    else
+                    {
+                        Store_ImportDTO.IsNew = true;
+                    }
+                }
+                else
+                {
+                    Store_ImportDTO.IsNew = true;
+                }
+                Store_ImportDTO.OrganizationId = Organizations.Where(x => x.Code.Equals(Store_ImportDTO.OrganizationCodeValue)).Select(x => x.Id).FirstOrDefault();
+                Store_ImportDTO.Longitude = decimal.TryParse(Store_ImportDTO.LongitudeValue, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal Longitude) ? Longitude : 106;
+                Store_ImportDTO.Latitude = decimal.TryParse(Store_ImportDTO.LatitudeValue, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal Latitude) ? Latitude : 21;
+                Store_ImportDTO.DeliveryLongitude = decimal.TryParse(Store_ImportDTO.DeliveryLongitudeValue, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal DeliveryLongitude) ? DeliveryLongitude : 106;
+                Store_ImportDTO.DeliveryLatitude = decimal.TryParse(Store_ImportDTO.DeliveryLatitudeValue, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal DeliveryLatitude) ? DeliveryLatitude : 21;
+                if (!string.IsNullOrWhiteSpace(Store_ImportDTO.StoreTypeCodeValue))
+                    Store_ImportDTO.StoreTypeId = StoreTypes.Where(x => x.Code.Equals(Store_ImportDTO.StoreTypeCodeValue)).Select(x => x.Id).FirstOrDefault();
+                if (!string.IsNullOrWhiteSpace(Store_ImportDTO.StoreGroupingCodeValue))
+                    Store_ImportDTO.StoreGroupingId = StoreGroupings.Where(x => x.Code.Equals(Store_ImportDTO.StoreGroupingCodeValue)).Select(x => x.Id).FirstOrDefault();
+                if (!string.IsNullOrWhiteSpace(Store_ImportDTO.ProvinceCodeValue))
+                    Store_ImportDTO.ProvinceId = Provinces.Where(x => x.Code.Equals(Store_ImportDTO.ProvinceCodeValue)).Select(x => (long?)x.Id).FirstOrDefault();
+                if (!string.IsNullOrWhiteSpace(Store_ImportDTO.DistrictCodeValue))
+                    Store_ImportDTO.DistrictId = Districts.Where(x => x.Code.Equals(Store_ImportDTO.DistrictCodeValue)).Select(x => (long?)x.Id).FirstOrDefault();
+                if (!string.IsNullOrWhiteSpace(Store_ImportDTO.WardCodeValue))
+                    Store_ImportDTO.WardId = Wards.Where(x => x.Code.Equals(Store_ImportDTO.WardCodeValue)).Select(x => (long?)x.Id).FirstOrDefault();
+                if (string.IsNullOrEmpty(Store_ImportDTO.StatusNameValue))
+                {
+                    Store_ImportDTO.StatusId = -1;
+                }
+                else
+                {
+                    string StatusNameValue = Store_ImportDTO.StatusNameValue;
+                    Store_ImportDTO.StatusId = Statuses.Where(x => x.Name.ToLower().Equals(StatusNameValue == null ? string.Empty : StatusNameValue.Trim().ToLower())).Select(x => x.Id).FirstOrDefault();
+                }
+            });
 
+            Parallel.ForEach(Store_ImportDTOs, Store_ImportDTO =>
+            {
+                var listCode = Store_ImportDTOs.Select(x => x.CodeValue).ToList();
+                var listCodeInDB = All.Select(x => x.Code).ToList();
+                for (int i = 0; i < Store_ImportDTOs.Count; i++)
+                {
+                    if (Store_ImportDTO.ParentStoreCodeValue != null)
+                    {
+                        if (!listCode.Contains(Store_ImportDTO.ParentStoreCodeValue) && !listCodeInDB.Contains(Store_ImportDTO.ParentStoreCodeValue))
+                            Errors[Store_ImportDTO.Stt].AppendLine($"Lỗi dòng thứ {Store_ImportDTO.Stt}: Đại lý cấp cha không tồn tại");
+                    }
+                }
+            });
+            string error = string.Join("\n", Errors.Select(x => x.Value.ToString()).ToList());
+            if (!string.IsNullOrWhiteSpace(error))
+                return BadRequest(error);
+
+            Dictionary<long, Store> DictionaryStores = Store_ImportDTOs.ToDictionary(x => x.Stt, y => new Store());
+            Parallel.ForEach(Store_ImportDTOs, Store_ImportDTO =>
+            {
+                Store Store = DictionaryStores[Store_ImportDTO.Stt];
+                if (Store_ImportDTO.IsNew == false)
+                {
+                    Store Old = All.Where(x => x.Code == Store_ImportDTO.CodeValue).FirstOrDefault();
+                    Store.Id = Old.Id;
+                    Store.ParentStoreId = Old.ParentStoreId;
+                }
+                Store.Code = Store_ImportDTO.CodeValue;
+                Store.Name = Store_ImportDTO.NameValue;
+                Store.OrganizationId = Store_ImportDTO.OrganizationId;
+                Store.ParentStore = new Store { Code = Store_ImportDTO.ParentStoreCodeValue };
+                Store.StoreTypeId = Store_ImportDTO.StoreTypeId;
+                Store.StoreGroupingId = Store_ImportDTO.StoreGroupingId;
+                Store.LegalEntity = Store_ImportDTO.LegalEntityValue;
+                Store.TaxCode = Store_ImportDTO.TaxCodeValue;
+                Store.ProvinceId = Store_ImportDTO.ProvinceId;
+                Store.DistrictId = Store_ImportDTO.DistrictId;
+                Store.WardId = Store_ImportDTO.WardId;
+                Store.Address = Store_ImportDTO.AddressValue;
+                Store.Longitude = Store_ImportDTO.Longitude;
+                Store.Latitude = Store_ImportDTO.Latitude;
+
+                Store.DeliveryAddress = Store_ImportDTO.DeliveryAddressValue;
+                Store.DeliveryLongitude = Store_ImportDTO.DeliveryLongitude;
+                Store.DeliveryLatitude = Store_ImportDTO.DeliveryLatitude;
+
+                Store.Telephone = Store_ImportDTO.TelephoneValue;
+                Store.OwnerName = Store_ImportDTO.OwnerNameValue;
+                Store.OwnerPhone = Store_ImportDTO.OwnerPhoneValue;
+                Store.OwnerEmail = Store_ImportDTO.OwnerEmailValue;
+                Store.StatusId = Store_ImportDTO.StatusId;
+            });
+            List<Store> Stores = DictionaryStores.Select(x => x.Value).ToList();
+            errorContent = new StringBuilder(error);
             Stores = await StoreService.Import(Stores);
             List<Store_StoreDTO> Store_StoreDTOs = Stores
                 .Select(c => new Store_StoreDTO(c)).ToList();

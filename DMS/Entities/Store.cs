@@ -8,6 +8,7 @@ namespace DMS.Entities
 {
     public class Store : DataEntity, IEquatable<Store>
     {
+        public long Stt { get; set; }
         public long Id { get; set; }
         public string Code { get; set; }
         public string Name { get; set; }
