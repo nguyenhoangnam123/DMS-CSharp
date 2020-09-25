@@ -245,7 +245,6 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
                         join tt in tempTableQuery.Query on s.Id equals tt.Column1
                         where sc.CheckOutAt.HasValue && sc.CheckOutAt >= Start && sc.CheckOutAt <= End &&
                         (SaleEmployeeId.HasValue == false || sc.SaleEmployeeId == SaleEmployeeId.Value) &&
-                        StoreIds.Contains(s.Id) &&
                         StoreTypeIds.Contains(s.StoreTypeId) &&
                         (
                             (
@@ -325,7 +324,6 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
                         join tt in tempTableQuery.Query on s.Id equals tt.Column1
                         where sc.CheckOutAt.HasValue && sc.CheckOutAt >= Start && sc.CheckOutAt <= End &&
                         (SaleEmployeeId.HasValue == false || sc.SaleEmployeeId == SaleEmployeeId.Value) &&
-                        StoreIds.Contains(s.Id) &&
                         StoreTypeIds.Contains(s.StoreTypeId) &&
                         (
                             (
@@ -342,27 +340,12 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
 
             var AppUserIds = await query.Select(x => x.Id).Distinct().ToListAsync();
 
-            List<AppUserDAO> AppUserDAOs = await DataContext.AppUser.Where(au => AppUserIds.Contains(au.Id) && OrganizationIds.Contains(au.OrganizationId))
+            List<AppUserDAO> AppUserDAOs = await DataContext.AppUser
+                .Where(au => AppUserIds.Contains(au.Id) && OrganizationIds.Contains(au.OrganizationId))
                 .Include(au => au.Organization)
                 .OrderBy(su => su.OrganizationId)
                 .Skip(ReportStoreChecker_ReportStoreCheckedFilterDTO.Skip)
                 .Take(ReportStoreChecker_ReportStoreCheckedFilterDTO.Take)
-                .ToListAsync();
-
-            List<StoreDAO> StoreDAOs = await DataContext.Store.Where(x => OrganizationIds.Contains(x.OrganizationId) &&
-                        StoreIds.Contains(x.Id) &&
-                        StoreTypeIds.Contains(x.StoreTypeId) &&
-                        (
-                            (
-                                StoreGroupingId.HasValue == false &&
-                                (x.StoreGroupingId.HasValue == false || StoreGroupingIds.Contains(x.StoreGroupingId.Value))
-                            ) ||
-                            (
-                                StoreGroupingId.HasValue &&
-                                StoreGroupingId.Value == x.StoreGroupingId.Value
-                            )
-                        )
-                )
                 .ToListAsync();
 
             List<ReportStoreChecked_SaleEmployeeDTO> ReportStoreChecked_SaleEmployeeDTOs = AppUserDAOs.Select(au => new ReportStoreChecked_SaleEmployeeDTO
@@ -480,7 +463,7 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
             List<ReportStoreChecked_ReportStoreCheckedDTO> ReportStoreChecked_ReportStoreCheckedDTOs = (await List(ReportStoreChecked_ReportStoreCheckedFilterDTO)).Value;
 
             List<ReportStoreChecked_ExportDTO> ReportStoreChecked_ExportDTOs = new List<ReportStoreChecked_ExportDTO>();
-            
+
             foreach (ReportStoreChecked_ReportStoreCheckedDTO ReportStoreChecked_ReportStoreCheckedDTO in ReportStoreChecked_ReportStoreCheckedDTOs)
             {
                 ReportStoreChecked_ExportDTO ReportStoreChecked_ExportDTO = new ReportStoreChecked_ExportDTO(ReportStoreChecked_ReportStoreCheckedDTO);
@@ -496,7 +479,7 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
                     {
                         ReportStoreChecked_ExportGroupByDateDTO.Date = ReportStoreChecked_ExportGroupByDateDTO.Date.AddHours(CurrentContext.TimeZone);
                         ReportStoreChecked_ExportGroupByDateDTO.DateString = ReportStoreChecked_ExportGroupByDateDTO.Date.ToString("dd-MM-yyyy");
-                        foreach(var Content in ReportStoreChecked_ExportGroupByDateDTO.Contents)
+                        foreach (var Content in ReportStoreChecked_ExportGroupByDateDTO.Contents)
                         {
                             Content.STT = STT;
                             STT++;
@@ -504,7 +487,7 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
                             Content.DisplayName = SaleEmployee.DisplayName;
                             Content.DateString = ReportStoreChecked_ExportGroupByDateDTO.DateString;
                             Content.DayOfWeek = ReportStoreChecked_ExportGroupByDateDTO.DayOfWeek;
-                        }    
+                        }
                     }
 
                 }

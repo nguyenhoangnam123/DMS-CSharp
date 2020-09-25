@@ -6,6 +6,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Thinktecture;
+using Thinktecture.EntityFrameworkCore.TempTables;
 
 namespace DMS.Repositories
 {
@@ -25,14 +27,29 @@ namespace DMS.Repositories
             this.DataContext = DataContext;
         }
 
-        private IQueryable<StoreCheckingDAO> DynamicFilter(IQueryable<StoreCheckingDAO> query, StoreCheckingFilter filter)
+        private async Task< IQueryable<StoreCheckingDAO>> DynamicFilter(IQueryable<StoreCheckingDAO> query, StoreCheckingFilter filter)
         {
             if (filter == null)
                 return query.Where(q => false);
             if (filter.Id != null)
                 query = query.Where(q => q.Id, filter.Id);
             if (filter.StoreId != null)
-                query = query.Where(q => q.StoreId, filter.StoreId);
+            {
+                if (filter.StoreId.In != null)
+                {
+                    ITempTableQuery<TempTable<long>> tempTableQuery = await DataContext
+                       .BulkInsertValuesIntoTempTableAsync<long>(filter.StoreId.In.Distinct().ToList());
+                    query = query.Join(tempTableQuery.Query,
+                                       c => c.Id,
+                                       t => t.Column1,
+                                       (c, t) => c);
+                }
+                else
+                {
+                    query = query.Where(q => q.StoreId, filter.StoreId);
+                }
+            }
+
             if (filter.SaleEmployeeId != null)
                 query = query.Where(q => q.SaleEmployeeId, filter.SaleEmployeeId);
             if (filter.Longitude != null)
@@ -227,7 +244,7 @@ namespace DMS.Repositories
         public async Task<int> Count(StoreCheckingFilter filter)
         {
             IQueryable<StoreCheckingDAO> StoreCheckings = DataContext.StoreChecking.AsNoTracking();
-            StoreCheckings = DynamicFilter(StoreCheckings, filter);
+            StoreCheckings = await DynamicFilter(StoreCheckings, filter);
             return await StoreCheckings.CountAsync();
         }
 
@@ -235,7 +252,7 @@ namespace DMS.Repositories
         {
             if (filter == null) return new List<StoreChecking>();
             IQueryable<StoreCheckingDAO> StoreCheckingDAOs = DataContext.StoreChecking.AsNoTracking();
-            StoreCheckingDAOs = DynamicFilter(StoreCheckingDAOs, filter);
+            StoreCheckingDAOs = await DynamicFilter(StoreCheckingDAOs, filter);
             StoreCheckingDAOs = DynamicOrder(StoreCheckingDAOs, filter);
             List<StoreChecking> StoreCheckings = await DynamicSelect(StoreCheckingDAOs, filter);
             return StoreCheckings;
