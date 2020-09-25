@@ -681,7 +681,7 @@ namespace DMS.Services.MDirectSalesOrder
                 Take = int.MaxValue,
                 Selects = PriceListItemMappingSelect.ALL,
                 PriceListTypeId = new IdFilter { Equal = PriceListTypeEnum.ALLSTORE.Id },
-                SalesOrderTypeId = new IdFilter { Equal = SalesOrderTypeEnum.DIRECT.Id },
+                SalesOrderTypeId = new IdFilter { In = new List<long>{ SalesOrderTypeEnum.DIRECT.Id, SalesOrderTypeEnum.ALL.Id } },
                 OrganizationId = new IdFilter { In = OrganizationIds },
                 StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id }
             };
@@ -700,7 +700,7 @@ namespace DMS.Services.MDirectSalesOrder
                     Take = int.MaxValue,
                     Selects = PriceListItemMappingSelect.ALL,
                     PriceListTypeId = new IdFilter { Equal = PriceListTypeEnum.STOREGROUPING.Id },
-                    SalesOrderTypeId = new IdFilter { Equal = SalesOrderTypeEnum.DIRECT.Id },
+                    SalesOrderTypeId = new IdFilter { In = new List<long> { SalesOrderTypeEnum.DIRECT.Id, SalesOrderTypeEnum.ALL.Id } },
                     StoreGroupingId = new IdFilter { Equal = Store.StoreGroupingId },
                     OrganizationId = new IdFilter { In = OrganizationIds },
                     StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id }
@@ -714,7 +714,7 @@ namespace DMS.Services.MDirectSalesOrder
                     Take = int.MaxValue,
                     Selects = PriceListItemMappingSelect.ALL,
                     PriceListTypeId = new IdFilter { Equal = PriceListTypeEnum.STORETYPE.Id },
-                    SalesOrderTypeId = new IdFilter { Equal = SalesOrderTypeEnum.DIRECT.Id },
+                    SalesOrderTypeId = new IdFilter { In = new List<long> { SalesOrderTypeEnum.DIRECT.Id, SalesOrderTypeEnum.ALL.Id } },
                     StoreTypeId = new IdFilter { Equal = Store.StoreTypeId },
                     OrganizationId = new IdFilter { In = OrganizationIds },
                     StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id }
@@ -728,7 +728,7 @@ namespace DMS.Services.MDirectSalesOrder
                     Take = int.MaxValue,
                     Selects = PriceListItemMappingSelect.ALL,
                     PriceListTypeId = new IdFilter { Equal = PriceListTypeEnum.DETAILS.Id },
-                    SalesOrderTypeId = new IdFilter { Equal = SalesOrderTypeEnum.DIRECT.Id },
+                    SalesOrderTypeId = new IdFilter { In = new List<long> { SalesOrderTypeEnum.DIRECT.Id, SalesOrderTypeEnum.ALL.Id } },
                     StoreId = new IdFilter { Equal = StoreId },
                     OrganizationId = new IdFilter { In = OrganizationIds },
                     StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id }
@@ -739,15 +739,14 @@ namespace DMS.Services.MDirectSalesOrder
                 PriceListItemMappings.AddRange(PriceListItemMappingStoreDetail);
             }
 
-            foreach (var ItemId in ItemIds)
-            {
-                result.Add(ItemId, decimal.MaxValue);
-            }
-
             //Áp giá theo cấu hình
             //Ưu tiên lấy giá thấp hơn
             if (SystemConfiguration.PRIORITY_USE_PRICE_LIST == 0)
             {
+                foreach (var ItemId in ItemIds)
+                {
+                    result.Add(ItemId, decimal.MaxValue);
+                }
                 foreach (var ItemId in ItemIds)
                 {
                     foreach (var OrganizationId in OrganizationIds)
@@ -776,6 +775,10 @@ namespace DMS.Services.MDirectSalesOrder
             //Ưu tiên lấy giá cao hơn
             else if (SystemConfiguration.PRIORITY_USE_PRICE_LIST == 1)
             {
+                foreach (var ItemId in ItemIds)
+                {
+                    result.Add(ItemId, decimal.MinValue);
+                }
                 foreach (var ItemId in ItemIds)
                 {
                     foreach (var OrganizationId in OrganizationIds)

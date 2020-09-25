@@ -51,6 +51,10 @@ namespace DMS.Repositories
             {
                 query = query.Where(q => q.PriceList.PriceListTypeId, filter.PriceListTypeId);
             }
+            if (filter.SalesOrderTypeId != null)
+            {
+                query = query.Where(q => q.PriceList.SalesOrderTypeId, filter.SalesOrderTypeId);
+            }
             if (filter.StoreGroupingId != null)
             {
                 if (filter.StoreGroupingId.Equal.HasValue)

@@ -64,13 +64,13 @@ namespace DMS.Repositories
 
             await DataContext.IdGenerate
             .Where(x => x.IdGenerateTypeId == IdGenerateTypeEnum.STORE.Id)
-            .Where(x => Counter + 1 <= x.Counter && x.Counter <= countElement)
+            .Where(x => Counter + 1 <= x.Counter && x.Counter <= Counter + countElement)
             .UpdateFromQueryAsync(x => new IdGenerateDAO
             {
                 Used = true
             });
 
-            for (long i = Counter + 1; i <= countElement; i++)
+            for (long i = Counter + 1; i <= Counter + countElement; i++)
             {
                 Counters.Add(i);
             }
