@@ -149,7 +149,7 @@ namespace DMS.Services.MStore
 
                 Store.UnsignName = Store.Name.ChangeToEnglishChar();
                 Store.UnsignAddress = Store.Address.ChangeToEnglishChar();
-                Store.RequestStateId = RequestStateEnum.NEW.Id;
+                Store.RequestStateId = RequestStateEnum.PENDING.Id;
                 var Counter = await UOW.IdGenerateRepository.GetCounter();
                 StoreCodeGenerate(Store, Counter);
                 await UOW.Begin();
