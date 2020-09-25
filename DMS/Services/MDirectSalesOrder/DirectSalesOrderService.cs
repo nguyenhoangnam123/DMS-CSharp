@@ -739,15 +739,14 @@ namespace DMS.Services.MDirectSalesOrder
                 PriceListItemMappings.AddRange(PriceListItemMappingStoreDetail);
             }
 
-            foreach (var ItemId in ItemIds)
-            {
-                result.Add(ItemId, decimal.MaxValue);
-            }
-
             //Áp giá theo cấu hình
             //Ưu tiên lấy giá thấp hơn
             if (SystemConfiguration.PRIORITY_USE_PRICE_LIST == 0)
             {
+                foreach (var ItemId in ItemIds)
+                {
+                    result.Add(ItemId, decimal.MaxValue);
+                }
                 foreach (var ItemId in ItemIds)
                 {
                     foreach (var OrganizationId in OrganizationIds)
@@ -776,6 +775,10 @@ namespace DMS.Services.MDirectSalesOrder
             //Ưu tiên lấy giá cao hơn
             else if (SystemConfiguration.PRIORITY_USE_PRICE_LIST == 1)
             {
+                foreach (var ItemId in ItemIds)
+                {
+                    result.Add(ItemId, decimal.MinValue);
+                }
                 foreach (var ItemId in ItemIds)
                 {
                     foreach (var OrganizationId in OrganizationIds)
