@@ -619,6 +619,9 @@ namespace DMS.Rpc
             InitWorkflowEnum();
             InitColorEnum();
             InitIdGenerate();
+            InitPromotionTypeEnum();
+            InitPromotionPolicyEnum();
+            InitPromotionDiscountTypeEnum();
             return Ok();
         }
 
