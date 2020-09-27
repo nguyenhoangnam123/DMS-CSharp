@@ -589,6 +589,7 @@ namespace DMS.Repositories
                     Name = q.RequestState.Name,
                 } : null,
                 Used = q.Used,
+                CreatedAt = q.CreatedAt,
             }).ToListAsync();
 
             if (filter.Selects.Contains(StoreSelect.StoreImageMappings))
