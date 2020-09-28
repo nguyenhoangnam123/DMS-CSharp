@@ -2,6 +2,7 @@ using Common;
 using DMS.Entities;
 using DMS.Enums;
 using DMS.Models;
+using Helpers;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -305,6 +306,9 @@ namespace DMS.Repositories
                             query = query.OrderByDescending(q => q.Total);
                             break;
                     }
+                    break;
+                default:
+                    query = query.OrderByDescending(q => q.UpdatedAt);
                     break;
             }
             query = query.Skip(filter.Skip).Take(filter.Take);
@@ -696,6 +700,8 @@ namespace DMS.Repositories
             DirectSalesOrderDAO.Total = DirectSalesOrder.Total;
             DirectSalesOrderDAO.RowId = Guid.NewGuid();
             DirectSalesOrderDAO.StoreCheckingId = DirectSalesOrder.StoreCheckingId;
+            DirectSalesOrderDAO.CreatedAt = StaticParams.DateTimeNow;
+            DirectSalesOrderDAO.UpdatedAt = StaticParams.DateTimeNow;
             DataContext.DirectSalesOrder.Add(DirectSalesOrderDAO);
             await DataContext.SaveChangesAsync();
             DirectSalesOrder.Id = DirectSalesOrderDAO.Id;
@@ -711,7 +717,6 @@ namespace DMS.Repositories
                 return false;
             DirectSalesOrderDAO.Id = DirectSalesOrder.Id;
             DirectSalesOrderDAO.Code = DirectSalesOrder.Code;
-            //DirectSalesOrderDAO.OrganizationId = DirectSalesOrder.OrganizationId;
             DirectSalesOrderDAO.BuyerStoreId = DirectSalesOrder.BuyerStoreId;
             DirectSalesOrderDAO.PhoneNumber = DirectSalesOrder.PhoneNumber;
             DirectSalesOrderDAO.StoreAddress = DirectSalesOrder.StoreAddress;
@@ -728,6 +733,7 @@ namespace DMS.Repositories
             DirectSalesOrderDAO.TotalTaxAmount = DirectSalesOrder.TotalTaxAmount;
             DirectSalesOrderDAO.Total = DirectSalesOrder.Total;
             DirectSalesOrderDAO.StoreCheckingId = DirectSalesOrder.StoreCheckingId;
+            DirectSalesOrderDAO.UpdatedAt = StaticParams.DateTimeNow;
             await DataContext.SaveChangesAsync();
             await SaveReference(DirectSalesOrder);
             return true;

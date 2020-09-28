@@ -331,7 +331,7 @@ namespace DMS.Repositories
                     }
                     break;
                 default:
-                    query = query.OrderBy(q => q.UpdatedAt);
+                    query = query.OrderByDescending(q => q.UpdatedAt);
                     break;
             }
 

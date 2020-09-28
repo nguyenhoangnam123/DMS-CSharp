@@ -80,6 +80,9 @@ namespace DMS.Models
         /// </summary>
         public Guid RowId { get; set; }
         public long? StoreCheckingId { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; }
+        public DateTime? DeletedAt { get; set; }
 
         public virtual StoreDAO BuyerStore { get; set; }
         public virtual EditedPriceStatusDAO EditedPriceStatus { get; set; }
