@@ -527,9 +527,10 @@ namespace DMS.Repositories
                                          join r in DataContext.RequestWorkflowDefinitionMapping on q.RowId equals r.RequestId
                                          join step in DataContext.WorkflowStep on r.WorkflowDefinitionId equals step.WorkflowDefinitionId
                                          join rstep in DataContext.RequestWorkflowStepMapping on step.Id equals rstep.WorkflowStepId
+                                         join ra in DataContext.AppUserRoleMapping on step.RoleId equals ra.RoleId
                                          where r.RequestStateId == RequestStateEnum.PENDING.Id &&
                                          rstep.WorkflowStateId == WorkflowStateEnum.PENDING.Id &&
-                                         rstep.AppUserId == filter.ApproverId.Equal
+                                         ra.AppUserId == filter.ApproverId.Equal
                                          select q;
             }
             return await IndirectSalesOrderDAOs.Distinct().CountAsync();
