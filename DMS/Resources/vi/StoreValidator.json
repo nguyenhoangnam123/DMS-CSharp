@@ -9,6 +9,10 @@
       "CodeHasSpecialCharacter": "Mã đại lý không thể chứa khoảng trắng hoặc kí tự Tiếng Việt",
       "CodeExisted": "Mã đại lý đã tồn tại"
     },
+    "CodeDraft": {
+      "CodeDraftHasSpecialCharacter": "Mã đại lý không thể chứa khoảng trắng hoặc kí tự Tiếng Việt",
+      "CodeDraftExisted": "Mã đại lý đã tồn tại"
+    },
     "Name": {
       "NameEmpty": "Chưa nhập tên đại lý",
       "NameOverLength": "Tên đại lý quá dài"

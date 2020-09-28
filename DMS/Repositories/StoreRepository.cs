@@ -66,6 +66,8 @@ namespace DMS.Repositories
             }
             if (filter.Code != null)
                 query = query.Where(q => q.Code, filter.Code);
+            if (filter.CodeDraft != null)
+                query = query.Where(q => q.CodeDraft, filter.CodeDraft);
             if (filter.Name != null && filter.Name.HasValue)
                 query = query.Where(q => q.Name, filter.Name).Union(query.Where(q => q.UnsignName, filter.Name));
             if (filter.ParentStoreId != null && filter.ParentStoreId.HasValue)
@@ -176,6 +178,8 @@ namespace DMS.Repositories
                     queryable = queryable.Where(q => q.Id, StoreFilter.Id);
                 if (StoreFilter.Code != null)
                     queryable = queryable.Where(q => q.Code, StoreFilter.Code);
+                if (StoreFilter.CodeDraft != null)
+                    queryable = queryable.Where(q => q.CodeDraft, StoreFilter.CodeDraft);
                 if (StoreFilter.Name != null)
                     queryable = queryable.Where(q => q.Name, StoreFilter.Name);
                 if (StoreFilter.ParentStoreId != null)
@@ -269,6 +273,9 @@ namespace DMS.Repositories
                         case StoreOrder.Code:
                             query = query.OrderBy(q => q.Code);
                             break;
+                        case StoreOrder.CodeDraft:
+                            query = query.OrderBy(q => q.CodeDraft);
+                            break;
                         case StoreOrder.Name:
                             query = query.OrderBy(q => q.Name);
                             break;
@@ -345,6 +352,9 @@ namespace DMS.Repositories
                             break;
                         case StoreOrder.Code:
                             query = query.OrderByDescending(q => q.Code);
+                            break;
+                        case StoreOrder.CodeDraft:
+                            query = query.OrderByDescending(q => q.CodeDraft);
                             break;
                         case StoreOrder.Name:
                             query = query.OrderByDescending(q => q.Name);
@@ -425,6 +435,7 @@ namespace DMS.Repositories
             {
                 Id = filter.Selects.Contains(StoreSelect.Id) ? q.Id : default(long),
                 Code = filter.Selects.Contains(StoreSelect.Code) ? q.Code : default(string),
+                CodeDraft = filter.Selects.Contains(StoreSelect.CodeDraft) ? q.CodeDraft : default(string),
                 Name = filter.Selects.Contains(StoreSelect.Name) ? q.Name : default(string),
                 UnsignName = filter.Selects.Contains(StoreSelect.UnsignName) ? q.UnsignName : default(string),
                 ParentStoreId = filter.Selects.Contains(StoreSelect.ParentStore) ? q.ParentStoreId : default(long?),
@@ -701,6 +712,7 @@ namespace DMS.Repositories
                 {
                     Id = x.Id,
                     Code = x.Code,
+                    CodeDraft = x.CodeDraft,
                     Name = x.Name,
                     UnsignName = x.UnsignName,
                     ParentStoreId = x.ParentStoreId,
@@ -909,6 +921,7 @@ namespace DMS.Repositories
             StoreDAO StoreDAO = new StoreDAO();
             StoreDAO.Id = Store.Id;
             StoreDAO.Code = Store.Code;
+            StoreDAO.CodeDraft = Store.CodeDraft;
             StoreDAO.Name = Store.Name;
             StoreDAO.UnsignName = Store.UnsignName;
             StoreDAO.ParentStoreId = Store.ParentStoreId;
@@ -955,6 +968,7 @@ namespace DMS.Repositories
                 return false;
             StoreDAO.Id = Store.Id;
             StoreDAO.Code = Store.Code;
+            StoreDAO.CodeDraft = Store.CodeDraft;
             StoreDAO.Name = Store.Name;
             StoreDAO.UnsignName = Store.UnsignName;
             StoreDAO.ParentStoreId = Store.ParentStoreId;
@@ -1003,6 +1017,7 @@ namespace DMS.Repositories
                 StoreDAO StoreDAO = new StoreDAO();
                 StoreDAO.Id = Store.Id;
                 StoreDAO.Code = Store.Code;
+                StoreDAO.CodeDraft = Store.CodeDraft;
                 StoreDAO.Name = Store.Name;
                 StoreDAO.UnsignName = Store.UnsignName;
                 StoreDAO.ParentStoreId = Store.ParentStoreId;

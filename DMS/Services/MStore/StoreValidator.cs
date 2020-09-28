@@ -25,6 +25,8 @@ namespace DMS.Services.MStore
             CodeExisted,
             CodeEmpty,
             CodeHasSpecialCharacter,
+            CodeDraftHasSpecialCharacter,
+            CodeDraftExisted,
             NameEmpty,
             NameOverLength,
             OrganizationNotExisted,
@@ -110,6 +112,31 @@ namespace DMS.Services.MStore
                     Store.AddError(nameof(StoreValidator), nameof(Store.Code), ErrorCode.CodeExisted);
             }
 
+            return Store.IsValidated;
+        }
+
+        private async Task<bool> ValidateCodeDraft(Store Store)
+        {
+            var CodeDraft = Store.CodeDraft;
+            if (Store.CodeDraft.Contains(" ") || !FilterExtension.ChangeToEnglishChar(CodeDraft).Equals(Store.CodeDraft))
+            {
+                Store.AddError(nameof(StoreValidator), nameof(Store.CodeDraft), ErrorCode.CodeDraftHasSpecialCharacter);
+            }
+            else
+            {
+                StoreFilter StoreFilter = new StoreFilter
+                {
+                    Skip = 0,
+                    Take = 10,
+                    Id = new IdFilter { NotEqual = Store.Id },
+                    CodeDraft = new StringFilter { Equal = Store.CodeDraft },
+                    Selects = StoreSelect.CodeDraft
+                };
+
+                int count = await UOW.StoreRepository.Count(StoreFilter);
+                if (count != 0)
+                    Store.AddError(nameof(StoreValidator), nameof(Store.CodeDraft), ErrorCode.CodeDraftExisted);
+            }
             return Store.IsValidated;
         }
         #endregion

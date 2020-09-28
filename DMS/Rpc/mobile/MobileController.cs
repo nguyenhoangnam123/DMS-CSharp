@@ -1098,6 +1098,7 @@ namespace DMS.Rpc.mobile
 
             Store Store = new Store()
             {
+                CodeDraft = Mobile_StoreDTO.CodeDraft,
                 Name = Mobile_StoreDTO.Name,
                 OwnerName = Mobile_StoreDTO.OwnerName,
                 OwnerPhone = Mobile_StoreDTO.OwnerPhone,
@@ -1154,6 +1155,7 @@ namespace DMS.Rpc.mobile
             Store Store = await StoreService.Get(Mobile_StoreDTO.Id);
             if (Store == null)
                 return NotFound();
+            Store.CodeDraft = Mobile_StoreDTO.CodeDraft;
             Store.OwnerPhone = Mobile_StoreDTO.OwnerPhone;
             Store.ProvinceId = Mobile_StoreDTO.ProvinceId;
             Store.DistrictId = Mobile_StoreDTO.DistrictId;
@@ -1258,6 +1260,7 @@ namespace DMS.Rpc.mobile
                     Store = x.Store == null ? null : new Store
                     {
                         Id = x.Store.Id,
+                        CodeDraft = x.Store.CodeDraft,
                         Code = x.Store.Code,
                         Name = x.Store.Name,
                         ParentStoreId = x.Store.ParentStoreId,
