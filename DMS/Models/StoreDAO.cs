@@ -27,6 +27,7 @@ namespace DMS.Models
 
         public long Id { get; set; }
         public string Code { get; set; }
+        public string CodeDraft { get; set; }
         public string Name { get; set; }
         public string UnsignName { get; set; }
         public long? ParentStoreId { get; set; }

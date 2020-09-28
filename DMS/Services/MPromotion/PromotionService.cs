@@ -109,6 +109,7 @@ namespace DMS.Services.MPromotion
         {
             Promotion Promotion = new Promotion();
             Promotion.StatusId = StatusEnum.INACTIVE.Id;
+            Promotion.PromotionPromotionPolicyMappings = new List<PromotionPromotionPolicyMapping>();
             foreach (var PromotionPolicy in PromotionPolicyEnum.PromotionPolicyEnumList)
             {
                 PromotionPromotionPolicyMapping PromotionPromotionPolicyMapping = new PromotionPromotionPolicyMapping();

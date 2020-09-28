@@ -3462,6 +3462,8 @@ namespace DMS.Models
 
                 entity.Property(e => e.Code).HasMaxLength(500);
 
+                entity.Property(e => e.CodeDraft).HasMaxLength(500);
+
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.DeletedAt).HasColumnType("datetime");
@@ -4060,6 +4062,12 @@ namespace DMS.Models
                     .HasForeignKey(d => d.AppUserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_SurveyResult_AppUser");
+
+                entity.HasOne(d => d.Organization)
+                    .WithMany(p => p.SurveyResults)
+                    .HasForeignKey(d => d.OrganizationId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_SurveyResult_Organization");
 
                 entity.HasOne(d => d.Store)
                     .WithMany(p => p.SurveyResults)

@@ -47,14 +47,45 @@ namespace DMS.Repositories
                 query = query.Where(q => q.ItemId, filter.ItemId);
             if (filter.Price != null)
                 query = query.Where(q => q.Price, filter.Price);
+            if (filter.OrganizationId != null)
+            {
+                if (filter.OrganizationId.Equal != null)
+                {
+                    OrganizationDAO OrganizationDAO = DataContext.Organization
+                        .Where(o => o.Id == filter.OrganizationId.Equal.Value).FirstOrDefault();
+                    query = query.Where(q => q.PriceList.Organization.Path.StartsWith(OrganizationDAO.Path));
+                }
+                if (filter.OrganizationId.NotEqual != null)
+                {
+                    OrganizationDAO OrganizationDAO = DataContext.Organization
+                        .Where(o => o.Id == filter.OrganizationId.NotEqual.Value).FirstOrDefault();
+                    query = query.Where(q => !q.PriceList.Organization.Path.StartsWith(OrganizationDAO.Path));
+                }
+                if (filter.OrganizationId.In != null)
+                {
+                    List<OrganizationDAO> OrganizationDAOs = DataContext.Organization
+                        .Where(o => o.DeletedAt == null && o.StatusId == 1).ToList();
+                    List<OrganizationDAO> Parents = OrganizationDAOs.Where(o => filter.OrganizationId.In.Contains(o.Id)).ToList();
+                    List<OrganizationDAO> Branches = OrganizationDAOs.Where(o => Parents.Any(p => o.Path.StartsWith(p.Path))).ToList();
+                    List<long> Ids = Branches.Select(o => o.Id).ToList();
+                    query = query.Where(q => Ids.Contains(q.PriceList.OrganizationId));
+                }
+                if (filter.OrganizationId.NotIn != null)
+                {
+                    List<OrganizationDAO> OrganizationDAOs = DataContext.Organization
+                        .Where(o => o.DeletedAt == null && o.StatusId == 1).ToList();
+                    List<OrganizationDAO> Parents = OrganizationDAOs.Where(o => filter.OrganizationId.NotIn.Contains(o.Id)).ToList();
+                    List<OrganizationDAO> Branches = OrganizationDAOs.Where(o => Parents.Any(p => o.Path.StartsWith(p.Path))).ToList();
+                    List<long> Ids = Branches.Select(o => o.Id).ToList();
+                    query = query.Where(q => !Ids.Contains(q.PriceList.OrganizationId));
+                }
+            }    
+            if (filter.StatusId != null)
+                query = query.Where(q => q.PriceList.StatusId, filter.StatusId);
             if (filter.PriceListTypeId != null)
-            {
                 query = query.Where(q => q.PriceList.PriceListTypeId, filter.PriceListTypeId);
-            }
             if (filter.SalesOrderTypeId != null)
-            {
                 query = query.Where(q => q.PriceList.SalesOrderTypeId, filter.SalesOrderTypeId);
-            }
             if (filter.StoreGroupingId != null)
             {
                 if (filter.StoreGroupingId.Equal.HasValue)
@@ -79,7 +110,6 @@ namespace DMS.Repositories
                                 select q;
                 }
             }
-
             if (filter.StoreId != null)
             {
                 if (filter.StoreId.Equal.HasValue)
@@ -92,20 +122,6 @@ namespace DMS.Repositories
                                 select q;
                 }
             }
-
-            if (filter.OrganizationId != null)
-            {
-                query = query.Where(q => q.PriceList.OrganizationId, filter.OrganizationId);
-            }
-
-            if (filter.StatusId != null)
-                query = query.Where(q => q.PriceList.StatusId, filter.StatusId);
-
-            query = query.Where(q => q.PriceList.StartDate.HasValue == false || 
-                (q.PriceList.StartDate.HasValue == true && q.PriceList.StartDate.Value <= StaticParams.DateTimeNow));
-            query = query.Where(q => q.PriceList.EndDate.HasValue == false || 
-                (q.PriceList.EndDate.HasValue && q.PriceList.EndDate.Value >= StaticParams.DateTimeNow));
-
             return query;
         }
 

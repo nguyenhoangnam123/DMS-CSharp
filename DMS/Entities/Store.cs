@@ -11,6 +11,7 @@ namespace DMS.Entities
         public long Stt { get; set; }
         public long Id { get; set; }
         public string Code { get; set; }
+        public string CodeDraft { get; set; }
         public string Name { get; set; }
         public string UnsignName { get; set; }
         public long? ParentStoreId { get; set; }
@@ -76,6 +77,7 @@ namespace DMS.Entities
         public string Search { get; set; }
         public IdFilter Id { get; set; }
         public StringFilter Code { get; set; }
+        public StringFilter CodeDraft { get; set; }
         public StringFilter Name { get; set; }
         public StringFilter UnsignName { get; set; }
         public IdFilter ParentStoreId { get; set; }
@@ -138,6 +140,7 @@ namespace DMS.Entities
         UnsignAddress = 24,
         AppUser = 25,
         RequestState = 26,
+        CodeDraft = 27,
     }
 
     [Flags]
@@ -175,5 +178,6 @@ namespace DMS.Entities
         AppUser = E._25,
         RequestState = E._26,
         HasChecking = E._27,
+        CodeDraft = E._28,
     }
 }

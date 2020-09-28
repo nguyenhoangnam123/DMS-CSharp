@@ -1020,6 +1020,7 @@ namespace DMS.Rpc.store
             Store Store = new Store();
             Store.Id = Store_StoreDTO.Id;
             Store.Code = Store_StoreDTO.Code;
+            Store.CodeDraft = Store_StoreDTO.CodeDraft;
             Store.Name = Store_StoreDTO.Name;
             Store.ParentStoreId = Store_StoreDTO.ParentStoreId;
             Store.OrganizationId = Store_StoreDTO.OrganizationId;
@@ -1186,6 +1187,7 @@ namespace DMS.Rpc.store
 
             StoreFilter.Id = Store_StoreFilterDTO.Id;
             StoreFilter.Code = Store_StoreFilterDTO.Code;
+            StoreFilter.CodeDraft = Store_StoreFilterDTO.CodeDraft;
             StoreFilter.Name = Store_StoreFilterDTO.Name;
             StoreFilter.ParentStoreId = Store_StoreFilterDTO.ParentStoreId;
             StoreFilter.OrganizationId = Store_StoreFilterDTO.OrganizationId;

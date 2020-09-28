@@ -1,6 +1,7 @@
 ﻿using Common;
 using DMS.Entities;
 using DMS.Enums;
+using DMS.Helpers;
 using DMS.Models;
 using DMS.Services.MAlbum;
 using DMS.Services.MAppUser;
@@ -521,15 +522,30 @@ namespace DMS.Rpc.monitor.monitor_store_images
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
 
-            var StoreCheckingImageMappingDAO = await DataContext
+            var AlbumImageMappingDAO = await DataContext
+                .AlbumImageMapping.Where(x => x.ImageId == MonitorStoreImage_StoreCheckingImageMappingDTO.ImageId)
+                .FirstOrDefaultAsync();
+            if(AlbumImageMappingDAO != null)
+            {
+                var newObj = Utils.Clone(AlbumImageMappingDAO);
+                await DataContext.AlbumImageMapping.Where(x => x.ImageId == MonitorStoreImage_StoreCheckingImageMappingDTO.ImageId).DeleteFromQueryAsync();
+                newObj.AlbumId = MonitorStoreImage_StoreCheckingImageMappingDTO.AlbumId;
+                await DataContext.AlbumImageMapping.AddAsync(newObj);
+                await DataContext.SaveChangesAsync();
+            }
+            else
+            {
+                var StoreCheckingImageMappingDAO = await DataContext
                 .StoreCheckingImageMapping.Where(x => x.ImageId == MonitorStoreImage_StoreCheckingImageMappingDTO.ImageId &&
                 x.StoreCheckingId == MonitorStoreImage_StoreCheckingImageMappingDTO.StoreCheckingId)
                 .FirstOrDefaultAsync();
-            if (StoreCheckingImageMappingDAO != null)
-            {
-                StoreCheckingImageMappingDAO.AlbumId = MonitorStoreImage_StoreCheckingImageMappingDTO.AlbumId;
-                await DataContext.SaveChangesAsync();
+                if (StoreCheckingImageMappingDAO != null)
+                {
+                    StoreCheckingImageMappingDAO.AlbumId = MonitorStoreImage_StoreCheckingImageMappingDTO.AlbumId;
+                    await DataContext.SaveChangesAsync();
+                }
             }
+            
             return MonitorStoreImage_StoreCheckingImageMappingDTO;
         }
 
