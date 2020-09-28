@@ -29,7 +29,7 @@ namespace DMS.Rpc.promotion
             this.Id = PromotionPolicy.Id;
             this.Code = PromotionPolicy.Code;
             this.Name = PromotionPolicy.Name;
-            this.PromotionPromotionPolicyMappings = PromotionPolicy.PromotionPromotionPolicyMappings.Select(x => new Promotion_PromotionPromotionPolicyMappingDTO(x)).ToList();
+            this.PromotionPromotionPolicyMappings = PromotionPolicy.PromotionPromotionPolicyMappings?.Select(x => new Promotion_PromotionPromotionPolicyMappingDTO(x)).ToList();
             this.PromotionDirectSalesOrders = PromotionPolicy.PromotionDirectSalesOrders?.Select(x => new Promotion_PromotionDirectSalesOrderDTO(x)).ToList();
             this.PromotionStores = PromotionPolicy.PromotionStores?.Select(x => new Promotion_PromotionStoreDTO(x)).ToList();
             this.PromotionStoreGroupings = PromotionPolicy.PromotionStoreGroupings?.Select(x => new Promotion_PromotionStoreGroupingDTO(x)).ToList();
