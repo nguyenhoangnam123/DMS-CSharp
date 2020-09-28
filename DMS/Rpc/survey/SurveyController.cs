@@ -187,6 +187,8 @@ namespace DMS.Rpc.survey
             if (!await HasPermission(Survey_SurveyDTO.Id))
                 return Forbid();
 
+            var CurrentUser = await AppUserService.Get(CurrentContext.UserId);
+
             List<SurveyResult> SurveyResults = await SurveyResultService.List(new SurveyResultFilter
             {
                 Selects = SurveyResultSelect.Id | SurveyResultSelect.Store | SurveyResultSelect.AppUser | SurveyResultSelect.StoreScouting
@@ -196,7 +198,8 @@ namespace DMS.Rpc.survey
                 Take = int.MaxValue,
                 OrderBy = SurveyResultOrder.Time,
                 OrderType = OrderType.ASC,
-                SurveyId = new IdFilter { Equal = Survey_SurveyDTO .Id }
+                SurveyId = new IdFilter { Equal = Survey_SurveyDTO.Id },
+                OrganizationId = new IdFilter { Equal = CurrentUser.OrganizationId }
             });
 
             Survey_AnswerStatisticsDTO Survey_AnswerStatisticsDTO = new Survey_AnswerStatisticsDTO();

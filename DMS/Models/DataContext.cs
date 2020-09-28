@@ -4061,6 +4061,12 @@ namespace DMS.Models
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_SurveyResult_AppUser");
 
+                entity.HasOne(d => d.Organization)
+                    .WithMany(p => p.SurveyResults)
+                    .HasForeignKey(d => d.OrganizationId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_SurveyResult_Organization");
+
                 entity.HasOne(d => d.Store)
                     .WithMany(p => p.SurveyResults)
                     .HasForeignKey(d => d.StoreId)

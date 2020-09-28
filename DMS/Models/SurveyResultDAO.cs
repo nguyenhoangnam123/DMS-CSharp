@@ -27,6 +27,7 @@ namespace DMS.Models
         public string RespondentAddress { get; set; }
 
         public virtual AppUserDAO AppUser { get; set; }
+        public virtual OrganizationDAO Organization { get; set; }
         public virtual StoreDAO Store { get; set; }
         public virtual StoreScoutingDAO StoreScouting { get; set; }
         public virtual SurveyDAO Survey { get; set; }
