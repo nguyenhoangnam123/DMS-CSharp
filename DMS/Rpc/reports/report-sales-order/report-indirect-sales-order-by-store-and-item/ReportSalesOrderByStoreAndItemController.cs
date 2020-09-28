@@ -203,10 +203,13 @@ namespace DMS.Rpc.reports.report_sales_order.report_indirect_sales_order_by_stor
                 StoreGroupingIds = StoreGroupingIds.Intersect(listId).ToList();
             }
 
+            ITempTableQuery<TempTable<long>> tempTableQuery = await DataContext
+                       .BulkInsertValuesIntoTempTableAsync<long>(StoreIds);
+
             var query = from i in DataContext.IndirectSalesOrder
                         join s in DataContext.Store on i.BuyerStoreId equals s.Id
+                        join tt in tempTableQuery.Query on i.BuyerStoreId equals tt.Column1
                         where i.OrderDate >= Start && i.OrderDate <= End &&
-                        (StoreIds.Contains(i.BuyerStoreId)) &&
                         (StoreTypeIds.Contains(s.StoreTypeId)) &&
                         (
                             (

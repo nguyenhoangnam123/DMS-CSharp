@@ -265,7 +265,7 @@ namespace DMS.Services.MStoreChecking
             StoreFilter.Take = int.MaxValue;
             StoreFilter.Selects = StoreSelect.Id | StoreSelect.Code | StoreSelect.Name |
                 StoreSelect.Address | StoreSelect.Telephone | StoreSelect.Latitude |
-                StoreSelect.Longitude | StoreSelect.HasChecking;
+                StoreSelect.Longitude | StoreSelect.HasChecking | StoreSelect.OwnerPhone;
             var AppUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
             StoreFilter.OrganizationId = new IdFilter { Equal = AppUser.OrganizationId };
             Stores = await UOW.StoreRepository.List(StoreFilter);
@@ -273,7 +273,7 @@ namespace DMS.Services.MStoreChecking
             {
                 Stores = await ListRecentStore(Stores, CurrentContext.Latitude.Value, CurrentContext.Longitude.Value);
             }
-            Stores = Stores.OrderBy(x => x.Distance).Skip(skip).Take(take).ToList();
+            Stores = Stores.OrderByDescending(x => x.CreatedAt).ThenBy(x => x.Distance).Skip(skip).Take(take).ToList();
             Stores = await CheckStoreChecking(Stores);
             return Stores;
         }
@@ -332,7 +332,7 @@ namespace DMS.Services.MStoreChecking
                 StoreFilter.Take = int.MaxValue;
                 StoreFilter.Selects = StoreSelect.Id | StoreSelect.Code | StoreSelect.Name |
                 StoreSelect.Address | StoreSelect.Telephone | StoreSelect.Latitude |
-                StoreSelect.Longitude | StoreSelect.HasChecking;
+                StoreSelect.Longitude | StoreSelect.HasChecking | StoreSelect.OwnerPhone;
                 Stores = await UOW.StoreRepository.List(StoreFilter);
                 if (CurrentContext.Latitude.HasValue && CurrentContext.Longitude.HasValue)
                 {
@@ -501,7 +501,7 @@ namespace DMS.Services.MStoreChecking
                 StoreFilter.Take = int.MaxValue;
                 StoreFilter.Selects = StoreSelect.Id | StoreSelect.Code | StoreSelect.Name |
                 StoreSelect.Address | StoreSelect.Telephone | StoreSelect.Latitude |
-                StoreSelect.Longitude | StoreSelect.HasChecking;
+                StoreSelect.Longitude | StoreSelect.HasChecking | StoreSelect.OwnerPhone;
                 if (AppUser.AppUserStoreMappings != null && AppUser.AppUserStoreMappings.Count > 0)
                 {
                     StoreFilter.OrganizationId = new IdFilter { Equal = AppUser.OrganizationId };

@@ -42,6 +42,7 @@ namespace DMS.Entities
         public bool HasChecking { get; set; }
         public bool Used { get; set; }
         public long? StoreScoutingId { get; set; }
+        public DateTime CreatedAt { get; set; }
         public AppUser AppUser { get; set; }
         public District District { get; set; }
         public Organization Organization { get; set; }

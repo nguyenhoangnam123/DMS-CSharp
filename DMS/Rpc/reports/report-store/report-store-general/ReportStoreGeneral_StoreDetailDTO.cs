@@ -30,7 +30,7 @@ namespace DMS.Rpc.reports.report_store.report_store_general
         public string LastOrderDisplay => LastOrder == DateTime.MinValue || LastOrder == null ? "" : LastOrder.Value.ToString("dd-MM-yyyy");
         internal HashSet<long> StoreCheckingPlannedIds { get; set; }
         internal HashSet<long> StoreCheckingUnPlannedIds { get; set; }
-        internal HashSet<long> SKUItemIds { get; set; }
+        internal List<long> SKUItemIds { get; set; }
         internal HashSet<long> IndirectSalesOrderIds { get; set; }
     }
 }

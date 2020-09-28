@@ -589,23 +589,34 @@ namespace DMS.Repositories
                     Name = q.RequestState.Name,
                 } : null,
                 Used = q.Used,
+                CreatedAt = q.CreatedAt,
             }).ToListAsync();
 
             if (filter.Selects.Contains(StoreSelect.StoreImageMappings))
             {
                 var StoreIds = Stores.Select(x => x.Id).ToList();
-                var StoreImageMappings = await DataContext.StoreImageMapping.Where(x => StoreIds.Contains(x.StoreId)).Select(x => new StoreImageMapping
-                {
-                    StoreId = x.StoreId,
-                    ImageId = x.ImageId,
-                    Image = x.Image == null ? null : new Image
-                    {
-                        Id = x.Image.Id,
-                        Name = x.Image.Name,
-                        Url = x.Image.Url,
-                        ThumbnailUrl = x.Image.ThumbnailUrl,
-                    }
-                }).ToListAsync();
+                ITempTableQuery<TempTable<long>> tempTableQuery = await DataContext
+                        .BulkInsertValuesIntoTempTableAsync<long>(StoreIds);
+                query = query.Join(tempTableQuery.Query,
+                                   c => c.Id,
+                                   t => t.Column1,
+                                   (c, t) => c);
+                var StoreImageMappings = await DataContext.StoreImageMapping
+                    .Join(tempTableQuery.Query,
+                            c => c.StoreId,
+                            t => t.Column1,
+                            (c, t) => c).Select(x => new StoreImageMapping
+                            {
+                                StoreId = x.StoreId,
+                                ImageId = x.ImageId,
+                                Image = x.Image == null ? null : new Image
+                                {
+                                    Id = x.Image.Id,
+                                    Name = x.Image.Name,
+                                    Url = x.Image.Url,
+                                    ThumbnailUrl = x.Image.ThumbnailUrl,
+                                }
+                            }).ToListAsync();
                 foreach (var Store in Stores)
                 {
                     Store.StoreImageMappings = StoreImageMappings.Where(x => x.StoreId == Store.Id).Skip(0).Take(1).ToList();

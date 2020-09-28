@@ -29,7 +29,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
 
         //SKU gián tiếp
         public decimal? SkuIndirectOrderPlanned { get; set; }
-        internal HashSet<long> SKUIndirectItems { get; set; }
+        internal List<long> SKUIndirectItems { get; set; }
         public decimal? SkuIndirectOrder { get; set; }
         public decimal? SkuIndirectOrderRatio { get; set; }
 
@@ -50,7 +50,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
 
         //SKU trực tiếp
         public decimal? SkuDirectOrderPlanned { get; set; }
-        internal HashSet<long> SKUDirectItems { get; set; }
+        internal List<long> SKUDirectItems { get; set; }
         public decimal? SkuDirectOrder { get; set; }
         public decimal? SkuDirectOrderRatio { get; set; }
 
