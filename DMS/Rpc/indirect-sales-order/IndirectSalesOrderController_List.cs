@@ -775,10 +775,21 @@ namespace DMS.Rpc.indirect_sales_order
             ItemFilter.SupplierId = IndirectSalesOrder_ItemFilterDTO.SupplierId;
             ItemFilter = ItemService.ToFilter(ItemFilter);
 
-            List<Item> Items = await IndirectSalesOrderService.ListItem(ItemFilter, IndirectSalesOrder_ItemFilterDTO.StoreId.Equal);
-            List<IndirectSalesOrder_ItemDTO> IndirectSalesOrder_ItemDTOs = Items
-                .Select(x => new IndirectSalesOrder_ItemDTO(x)).ToList();
-            return IndirectSalesOrder_ItemDTOs;
+            if (IndirectSalesOrder_ItemFilterDTO.SalesEmployeeId == null && IndirectSalesOrder_ItemFilterDTO.SalesEmployeeId.HasValue == false)
+            {
+                return new List<IndirectSalesOrder_ItemDTO>();
+            }
+            else if (IndirectSalesOrder_ItemFilterDTO.StoreId == null && IndirectSalesOrder_ItemFilterDTO.StoreId.HasValue == false)
+            {
+                return new List<IndirectSalesOrder_ItemDTO>();
+            }
+            else
+            {
+                List<Item> Items = await IndirectSalesOrderService.ListItem(ItemFilter, IndirectSalesOrder_ItemFilterDTO.SalesEmployeeId.Equal, IndirectSalesOrder_ItemFilterDTO.StoreId.Equal);
+                List<IndirectSalesOrder_ItemDTO> IndirectSalesOrder_ItemDTOs = Items
+                    .Select(x => new IndirectSalesOrder_ItemDTO(x)).ToList();
+                return IndirectSalesOrder_ItemDTOs;
+            }
         }
     }
 }

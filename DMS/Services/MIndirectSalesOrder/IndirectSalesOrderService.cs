@@ -29,7 +29,7 @@ namespace DMS.Services.MIndirectSalesOrder
         Task<int> CountCompleted(IndirectSalesOrderFilter IndirectSalesOrderFilter);
         Task<List<IndirectSalesOrder>> ListCompleted(IndirectSalesOrderFilter IndirectSalesOrderFilter);
         Task<IndirectSalesOrder> Get(long Id);
-        Task<List<Item>> ListItem(ItemFilter ItemFilter, long? StoreId);
+        Task<List<Item>> ListItem(ItemFilter ItemFilter, long? SalesEmployeeId, long? StoreId);
         Task<IndirectSalesOrder> Create(IndirectSalesOrder IndirectSalesOrder);
         Task<IndirectSalesOrder> Update(IndirectSalesOrder IndirectSalesOrder);
         Task<IndirectSalesOrder> Delete(IndirectSalesOrder IndirectSalesOrder);
@@ -301,12 +301,12 @@ namespace DMS.Services.MIndirectSalesOrder
                 }
             }
         }
-        public async Task<List<Item>> ListItem(ItemFilter ItemFilter, long? StoreId)
+        public async Task<List<Item>> ListItem(ItemFilter ItemFilter, long? SalesEmployeeId, long? StoreId)
         {
             try
             {
                 List<Item> Items = await ItemService.List(ItemFilter);
-                await ApplyPrice(Items, StoreId);
+                await ApplyPrice(Items, SalesEmployeeId, StoreId);
                 return Items;
             }
             catch (Exception ex)
@@ -820,9 +820,9 @@ namespace DMS.Services.MIndirectSalesOrder
             return IndirectSalesOrder;
         }
 
-        private async Task<List<Item>> ApplyPrice(List<Item> Items, long? StoreId)
+        private async Task<List<Item>> ApplyPrice(List<Item> Items,long? SalesEmployeeId, long? StoreId)
         {
-            var CurrrentUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
+            var SalesEmployee = await UOW.AppUserRepository.Get(SalesEmployeeId.Value);
             SystemConfiguration SystemConfiguration = await UOW.SystemConfigurationRepository.Get();
             OrganizationFilter OrganizationFilter = new OrganizationFilter
             {
@@ -831,10 +831,10 @@ namespace DMS.Services.MIndirectSalesOrder
                 Selects = OrganizationSelect.ALL,
                 StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id }
             };
-
+            
             var Organizations = await UOW.OrganizationRepository.List(OrganizationFilter);
             var OrganizationIds = Organizations
-                .Where(x => x.Path.StartsWith(CurrrentUser.Organization.Path) || CurrrentUser.Organization.Path.StartsWith(x.Path))
+                .Where(x => x.Path.StartsWith(SalesEmployee.Organization.Path) || SalesEmployee.Organization.Path.StartsWith(x.Path))
                 .Select(x => x.Id)
                 .ToList();
 

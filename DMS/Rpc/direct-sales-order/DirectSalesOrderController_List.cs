@@ -776,10 +776,21 @@ namespace DMS.Rpc.direct_sales_order
             ItemFilter.SupplierId = DirectSalesOrder_ItemFilterDTO.SupplierId;
             ItemFilter = ItemService.ToFilter(ItemFilter);
 
-            List<Item> Items = await DirectSalesOrderService.ListItem(ItemFilter, DirectSalesOrder_ItemFilterDTO.StoreId.Equal);
-            List<DirectSalesOrder_ItemDTO> DirectSalesOrder_ItemDTOs = Items
-                .Select(x => new DirectSalesOrder_ItemDTO(x)).ToList();
-            return DirectSalesOrder_ItemDTOs;
+            if (DirectSalesOrder_ItemFilterDTO.SalesEmployeeId == null && DirectSalesOrder_ItemFilterDTO.SalesEmployeeId.HasValue == false)
+            {
+                return new List<DirectSalesOrder_ItemDTO>();
+            }
+            else if (DirectSalesOrder_ItemFilterDTO.StoreId == null && DirectSalesOrder_ItemFilterDTO.StoreId.HasValue == false)
+            {
+                return new List<DirectSalesOrder_ItemDTO>();
+            }
+            else
+            {
+                List<Item> Items = await DirectSalesOrderService.ListItem(ItemFilter, DirectSalesOrder_ItemFilterDTO.SalesEmployeeId.Equal, DirectSalesOrder_ItemFilterDTO.StoreId.Equal);
+                List<DirectSalesOrder_ItemDTO> DirectSalesOrder_ItemDTOs = Items
+                    .Select(x => new DirectSalesOrder_ItemDTO(x)).ToList();
+                return DirectSalesOrder_ItemDTOs;
+            }
         }
     }
 }

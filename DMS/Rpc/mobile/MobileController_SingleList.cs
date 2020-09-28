@@ -996,7 +996,7 @@ namespace DMS.Rpc.mobile
 
             if (Mobile_ItemFilterDTO.StoreId == null)
                 Mobile_ItemFilterDTO.StoreId = new IdFilter();
-            List<Item> Items = await IndirectSalesOrderService.ListItem(ItemFilter, Mobile_ItemFilterDTO.StoreId.Equal);
+            List<Item> Items = await IndirectSalesOrderService.ListItem(ItemFilter, CurrentContext.UserId, Mobile_ItemFilterDTO.StoreId.Equal);
             List<Mobile_ItemDTO> Mobile_ItemDTOs = Items
                 .Select(x => new Mobile_ItemDTO(x)).ToList();
             return Mobile_ItemDTOs;

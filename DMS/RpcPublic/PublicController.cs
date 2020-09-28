@@ -119,20 +119,10 @@ namespace DMS.RpcPublic
             ItemFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
             ItemFilter.SupplierId = Public_ItemFilterDTO.SupplierId;
 
-            if (Public_ItemFilterDTO.StoreId != null && Public_ItemFilterDTO.StoreId.Equal.HasValue)
-            {
-                List<Item> Items = await IndirectSalesOrderService.ListItem(ItemFilter, Public_ItemFilterDTO.StoreId.Equal.Value);
-                List<Public_ItemDTO> Public_ItemDTOs = Items
-                    .Select(x => new Public_ItemDTO(x)).ToList();
-                return Public_ItemDTOs;
-            }
-            else
-            {
-                List<Item> Items = await ItemService.List(ItemFilter);
-                List<Public_ItemDTO> Public_ItemDTOs = Items
-                    .Select(x => new Public_ItemDTO(x)).ToList();
-                return Public_ItemDTOs;
-            }
+            List<Item> Items = await ItemService.List(ItemFilter);
+            List<Public_ItemDTO> Public_ItemDTOs = Items
+                .Select(x => new Public_ItemDTO(x)).ToList();
+            return Public_ItemDTOs;
         }
 
         [Route(PublicRoute.GetItem), HttpPost]
