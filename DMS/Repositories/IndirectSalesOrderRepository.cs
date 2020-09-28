@@ -524,13 +524,11 @@ namespace DMS.Repositories
             if (filter.ApproverId.Equal.HasValue)
             {
                 IndirectSalesOrderDAOs = from q in IndirectSalesOrderDAOs
-                                         join r in DataContext.RequestWorkflowDefinitionMapping on q.RowId equals r.RequestId
+                                         join r in DataContext.RequestWorkflowDefinitionMapping.Where(x => x.RequestStateId == RequestStateEnum.PENDING.Id) on q.RowId equals r.RequestId
                                          join step in DataContext.WorkflowStep on r.WorkflowDefinitionId equals step.WorkflowDefinitionId
-                                         join rstep in DataContext.RequestWorkflowStepMapping on step.Id equals rstep.WorkflowStepId
+                                         join rstep in DataContext.RequestWorkflowStepMapping.Where(x => x.WorkflowStateId == WorkflowStateEnum.PENDING.Id) on step.Id equals rstep.WorkflowStepId
                                          join ra in DataContext.AppUserRoleMapping on step.RoleId equals ra.RoleId
-                                         where r.RequestStateId == RequestStateEnum.PENDING.Id &&
-                                         rstep.WorkflowStateId == WorkflowStateEnum.PENDING.Id &&
-                                         ra.AppUserId == filter.ApproverId.Equal
+                                         where ra.AppUserId == filter.ApproverId.Equal && q.RowId == rstep.RequestId
                                          select q;
             }
             return await IndirectSalesOrderDAOs.Distinct().CountAsync();
@@ -544,13 +542,11 @@ namespace DMS.Repositories
             if (filter.ApproverId.Equal.HasValue)
             {
                 IndirectSalesOrderDAOs = from q in IndirectSalesOrderDAOs
-                                         join r in DataContext.RequestWorkflowDefinitionMapping on q.RowId equals r.RequestId
+                                         join r in DataContext.RequestWorkflowDefinitionMapping.Where(x => x.RequestStateId == RequestStateEnum.PENDING.Id) on q.RowId equals r.RequestId
                                          join step in DataContext.WorkflowStep on r.WorkflowDefinitionId equals step.WorkflowDefinitionId
-                                         join rstep in DataContext.RequestWorkflowStepMapping on step.Id equals rstep.WorkflowStepId
+                                         join rstep in DataContext.RequestWorkflowStepMapping.Where(x => x.WorkflowStateId == WorkflowStateEnum.PENDING.Id) on step.Id equals rstep.WorkflowStepId
                                          join ra in DataContext.AppUserRoleMapping on step.RoleId equals ra.RoleId
-                                         where r.RequestStateId == RequestStateEnum.PENDING.Id &&
-                                         rstep.WorkflowStateId == WorkflowStateEnum.PENDING.Id &&
-                                         ra.AppUserId == filter.ApproverId.Equal
+                                         where ra.AppUserId == filter.ApproverId.Equal && q.RowId == rstep.RequestId
                                          select q;
             }
             IndirectSalesOrderDAOs = DynamicOrder(IndirectSalesOrderDAOs, filter);
