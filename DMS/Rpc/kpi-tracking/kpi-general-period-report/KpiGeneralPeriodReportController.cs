@@ -173,9 +173,9 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            if (KpiGeneralPeriodReport_KpiGeneralPeriodReportFilterDTO.KpiPeriodId == null) 
+            if (KpiGeneralPeriodReport_KpiGeneralPeriodReportFilterDTO.KpiPeriodId == null)
                 return BadRequest(new { message = "Chưa chọn kì KPI" });
-            if (KpiGeneralPeriodReport_KpiGeneralPeriodReportFilterDTO.KpiYearId == null) 
+            if (KpiGeneralPeriodReport_KpiGeneralPeriodReportFilterDTO.KpiYearId == null)
                 return BadRequest(new { message = "Chưa chọn năm KPI" });
 
             DateTime StartDate, EndDate;
@@ -399,23 +399,13 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
                         x.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.SKU_INDIRECT_SALES_ORDER.Id)
                         .Select(x => x.Value).FirstOrDefault();
                 //thực hiện
-                var IndirectSalesOrderContents = IndirectSalesOrders
-                    .SelectMany(x => x.IndirectSalesOrderContents)
-                    .ToList();
-                var IndirectSalesOrderPromotions = IndirectSalesOrders
-                    .SelectMany(x => x.IndirectSalesOrderPromotions)
-                    .ToList();
-                SaleEmployeeDTO.SKUIndirectItems = null;
-                foreach (var content in IndirectSalesOrderContents)
+                SaleEmployeeDTO.SKUIndirectItems = new List<long>();
+                foreach (var IndirectSalesOrder in IndirectSalesOrders)
                 {
-                    if (SaleEmployeeDTO.SKUIndirectItems == null) SaleEmployeeDTO.SKUIndirectItems = new HashSet<long>();
-                    SaleEmployeeDTO.SKUIndirectItems.Add(content.ItemId);
+                    var itemIds = IndirectSalesOrder.IndirectSalesOrderContents.Select(x => x.ItemId).Distinct().ToList();
+                    SaleEmployeeDTO.SKUIndirectItems.AddRange(itemIds);
                 }
-                foreach (var content in IndirectSalesOrderPromotions)
-                {
-                    if (SaleEmployeeDTO.SKUIndirectItems == null) SaleEmployeeDTO.SKUIndirectItems = new HashSet<long>();
-                    SaleEmployeeDTO.SKUIndirectItems.Add(content.ItemId);
-                }
+
                 SaleEmployeeDTO.SkuIndirectOrder = SaleEmployeeDTO.TotalIndirectOrders == null || SaleEmployeeDTO.TotalIndirectOrders.Value == 0
                     ? null
                     : (decimal?)Math.Round(SaleEmployeeDTO.SKUIndirectItems.Count() / SaleEmployeeDTO.TotalIndirectOrders.Value, 2);
@@ -479,23 +469,13 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
                         x.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.SKU_DIRECT_SALES_ORDER.Id)
                         .Select(x => x.Value).FirstOrDefault();
                 //thực hiện
-                var DirectSalesOrderContents = DirectSalesOrders
-                    .SelectMany(x => x.DirectSalesOrderContents)
-                    .ToList();
-                var DirectSalesOrderPromotions = DirectSalesOrders
-                    .SelectMany(x => x.DirectSalesOrderPromotions)
-                    .ToList();
-                SaleEmployeeDTO.SKUDirectItems = null;
-                foreach (var content in DirectSalesOrderContents)
+                SaleEmployeeDTO.SKUDirectItems = new List<long>();
+                foreach (var DirectSalesOrder in DirectSalesOrders)
                 {
-                    if (SaleEmployeeDTO.SKUDirectItems == null) SaleEmployeeDTO.SKUDirectItems = new HashSet<long>();
-                    SaleEmployeeDTO.SKUDirectItems.Add(content.ItemId);
+                    var itemIds = DirectSalesOrder.DirectSalesOrderContents.Select(x => x.ItemId).Distinct().ToList();
+                    SaleEmployeeDTO.SKUDirectItems.AddRange(itemIds);
                 }
-                foreach (var content in DirectSalesOrderPromotions)
-                {
-                    if (SaleEmployeeDTO.SKUDirectItems == null) SaleEmployeeDTO.SKUDirectItems = new HashSet<long>();
-                    SaleEmployeeDTO.SKUDirectItems.Add(content.ItemId);
-                }
+
                 SaleEmployeeDTO.SkuDirectOrder = SaleEmployeeDTO.TotalDirectOrders == null || SaleEmployeeDTO.TotalDirectOrders.Value == 0
                     ? null
                     : (decimal?)Math.Round(SaleEmployeeDTO.SKUDirectItems.Count() / SaleEmployeeDTO.TotalDirectOrders.Value, 2);
@@ -550,7 +530,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
                     .Select(z => z.StoreScoutingId.Value)
                     .Count();
                 //tỉ lệ
-                SaleEmployeeDTO.NewStoreCreatedRatio = SaleEmployeeDTO.NewStoreCreatedPlanned == null || SaleEmployeeDTO.NewStoreCreatedPlanned.Value == 0 
+                SaleEmployeeDTO.NewStoreCreatedRatio = SaleEmployeeDTO.NewStoreCreatedPlanned == null || SaleEmployeeDTO.NewStoreCreatedPlanned.Value == 0
                     ? null
                     : (decimal?)Math.Round(SaleEmployeeDTO.NewStoreCreated.Value / SaleEmployeeDTO.NewStoreCreatedPlanned.Value * 100, 2);
                 #endregion
@@ -564,13 +544,13 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
                 //thực hiện
                 SaleEmployeeDTO.NumberOfStoreVisits = SaleEmployeeDTO.NumberOfStoreVisitsPlanned == null || SaleEmployeeDTO.NumberOfStoreVisitsPlanned.Value == 0
                     ? null
-                    : (decimal?) StoreCheckingDAOs
+                    : (decimal?)StoreCheckingDAOs
                     .Where(sc => sc.SaleEmployeeId == SaleEmployeeDTO.SaleEmployeeId)
                     .Count();
                 //tỉ lệ
-                SaleEmployeeDTO.NumberOfStoreVisitsRatio = SaleEmployeeDTO.NumberOfStoreVisitsPlanned == null || SaleEmployeeDTO.NumberOfStoreVisitsPlanned.Value == 0 
+                SaleEmployeeDTO.NumberOfStoreVisitsRatio = SaleEmployeeDTO.NumberOfStoreVisitsPlanned == null || SaleEmployeeDTO.NumberOfStoreVisitsPlanned.Value == 0
                     ? null
-                    : (decimal?) Math.Round(SaleEmployeeDTO.NumberOfStoreVisits.Value / SaleEmployeeDTO.NumberOfStoreVisitsPlanned.Value * 100, 2);
+                    : (decimal?)Math.Round(SaleEmployeeDTO.NumberOfStoreVisits.Value / SaleEmployeeDTO.NumberOfStoreVisitsPlanned.Value * 100, 2);
                 #endregion
             };
 
@@ -588,9 +568,9 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            if (KpiGeneralPeriodReport_KpiGeneralPeriodReportFilterDTO.KpiPeriodId == null) 
+            if (KpiGeneralPeriodReport_KpiGeneralPeriodReportFilterDTO.KpiPeriodId == null)
                 return BadRequest(new { message = "Chưa chọn kì KPI" });
-            if (KpiGeneralPeriodReport_KpiGeneralPeriodReportFilterDTO.KpiYearId == null) 
+            if (KpiGeneralPeriodReport_KpiGeneralPeriodReportFilterDTO.KpiYearId == null)
                 return BadRequest(new { message = "Chưa chọn năm KPI" });
 
             var KpiPeriod = KpiPeriodEnum.KpiPeriodEnumList.Where(x => x.Id == KpiGeneralPeriodReport_KpiGeneralPeriodReportFilterDTO.KpiPeriodId.Equal.Value).FirstOrDefault();

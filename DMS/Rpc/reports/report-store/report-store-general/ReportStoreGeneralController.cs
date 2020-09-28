@@ -443,14 +443,11 @@ namespace DMS.Rpc.reports.report_store.report_store_general
                         if (Store.IndirectSalesOrderIds == null)
                             Store.IndirectSalesOrderIds = new HashSet<long>();
                         Store.IndirectSalesOrderIds.Add(Id);
-                    }
 
-                    var IndirectSalesOrderContents = IndirectSalesOrderContentDAOs.Where(x => x.IndirectSalesOrder.BuyerStoreId == Store.Id).ToList();
-                    foreach (var IndirectSalesOrderContent in IndirectSalesOrderContents)
-                    {
+                        var itemIds = IndirectSalesOrderContentDAOs.Where(x => x.IndirectSalesOrderId == Id).Select(x => x.ItemId).Distinct().ToList();
                         if (Store.SKUItemIds == null)
-                            Store.SKUItemIds = new HashSet<long>();
-                        Store.SKUItemIds.Add(IndirectSalesOrderContent.ItemId);
+                            Store.SKUItemIds = new List<long>();
+                        Store.SKUItemIds.AddRange(itemIds);
                     }
                 }
             }
