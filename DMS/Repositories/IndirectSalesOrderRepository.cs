@@ -454,13 +454,17 @@ namespace DMS.Repositories
         {
             IQueryable<IndirectSalesOrderDAO> IndirectSalesOrderDAOs = DataContext.IndirectSalesOrder.AsNoTracking();
             IndirectSalesOrderDAOs = DynamicFilter(IndirectSalesOrderDAOs, filter);
-            IndirectSalesOrderDAOs = from q in IndirectSalesOrderDAOs
-                                     join r in DataContext.RequestWorkflowDefinitionMapping on q.RowId equals r.RequestId
-                                     join step in DataContext.WorkflowStep on r.WorkflowDefinitionId equals step.WorkflowDefinitionId
-                                     join rstep in DataContext.RequestWorkflowStepMapping on step.Id equals rstep.WorkflowStepId
-                                     where q.SaleEmployeeId == filter.ApproverId.Equal ||
-                                     rstep.AppUserId == filter.ApproverId.Equal
-                                     select q;
+            var query1 = from q in IndirectSalesOrderDAOs
+                         where q.RequestStateId == RequestStateEnum.NEW.Id &&
+                         q.SaleEmployeeId == filter.ApproverId.Equal
+                         select q;
+            var query2 = from q in IndirectSalesOrderDAOs
+                         join r in DataContext.RequestWorkflowDefinitionMapping on q.RowId equals r.RequestId
+                         join step in DataContext.WorkflowStep on r.WorkflowDefinitionId equals step.WorkflowDefinitionId
+                         join rstep in DataContext.RequestWorkflowStepMapping on step.Id equals rstep.WorkflowStepId
+                         where rstep.AppUserId == filter.ApproverId.Equal
+                         select q;
+            IndirectSalesOrderDAOs = query1.Union(query2);
             int count = await IndirectSalesOrderDAOs.Distinct().CountAsync();
             return count;
         }
@@ -470,14 +474,17 @@ namespace DMS.Repositories
             if (filter == null) return new List<IndirectSalesOrder>();
             IQueryable<IndirectSalesOrderDAO> IndirectSalesOrderDAOs = DataContext.IndirectSalesOrder.AsNoTracking();
             IndirectSalesOrderDAOs = DynamicFilter(IndirectSalesOrderDAOs, filter);
-            IndirectSalesOrderDAOs = from q in IndirectSalesOrderDAOs
-                                     join r in DataContext.RequestWorkflowDefinitionMapping on q.RowId equals r.RequestId
-                                     join step in DataContext.WorkflowStep on r.WorkflowDefinitionId equals step.WorkflowDefinitionId
-                                     join rstep in DataContext.RequestWorkflowStepMapping on step.Id equals rstep.WorkflowStepId
-                                     where q.SaleEmployeeId == filter.ApproverId.Equal ||
-                                     rstep.AppUserId == filter.ApproverId.Equal
-                                     select q;
-
+            var query1 = from q in IndirectSalesOrderDAOs
+                         where q.RequestStateId == RequestStateEnum.NEW.Id &&
+                         q.SaleEmployeeId == filter.ApproverId.Equal
+                         select q;
+            var query2 = from q in IndirectSalesOrderDAOs
+                         join r in DataContext.RequestWorkflowDefinitionMapping on q.RowId equals r.RequestId
+                         join step in DataContext.WorkflowStep on r.WorkflowDefinitionId equals step.WorkflowDefinitionId
+                         join rstep in DataContext.RequestWorkflowStepMapping on step.Id equals rstep.WorkflowStepId
+                         where rstep.AppUserId == filter.ApproverId.Equal
+                         select q;
+            IndirectSalesOrderDAOs = query1.Union(query2);
             IndirectSalesOrderDAOs = DynamicOrder(IndirectSalesOrderDAOs, filter);
             List<IndirectSalesOrder> IndirectSalesOrders = await DynamicSelect(IndirectSalesOrderDAOs, filter);
             return IndirectSalesOrders;
