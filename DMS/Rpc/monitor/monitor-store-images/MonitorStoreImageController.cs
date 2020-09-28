@@ -1,6 +1,7 @@
 ﻿using Common;
 using DMS.Entities;
 using DMS.Enums;
+using DMS.Helpers;
 using DMS.Models;
 using DMS.Services.MAlbum;
 using DMS.Services.MAppUser;
@@ -526,7 +527,10 @@ namespace DMS.Rpc.monitor.monitor_store_images
                 .FirstOrDefaultAsync();
             if(AlbumImageMappingDAO != null)
             {
-                AlbumImageMappingDAO.AlbumId = MonitorStoreImage_StoreCheckingImageMappingDTO.AlbumId;
+                var newObj = Utils.Clone(AlbumImageMappingDAO);
+                await DataContext.AlbumImageMapping.Where(x => x.ImageId == MonitorStoreImage_StoreCheckingImageMappingDTO.ImageId).DeleteFromQueryAsync();
+                newObj.AlbumId = MonitorStoreImage_StoreCheckingImageMappingDTO.AlbumId;
+                await DataContext.AlbumImageMapping.AddAsync(newObj);
                 await DataContext.SaveChangesAsync();
             }
             else
