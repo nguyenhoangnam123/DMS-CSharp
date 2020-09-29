@@ -16,6 +16,7 @@ namespace DMS.Services.MPromotion
         Task<bool> Create(Promotion Promotion);
         Task<bool> Update(Promotion Promotion);
         Task<bool> UpdateDirectSalesOrder(PromotionPromotionPolicyMapping PromotionPromotionPolicyMapping);
+        Task<bool> UpdateSamePrice(PromotionPromotionPolicyMapping PromotionPromotionPolicyMapping);
         Task<bool> Delete(Promotion Promotion);
         Task<bool> BulkDelete(List<Promotion> Promotions);
         Task<bool> Import(List<Promotion> Promotions);
@@ -289,6 +290,15 @@ namespace DMS.Services.MPromotion
         }
 
         public async Task<bool> UpdateDirectSalesOrder(PromotionPromotionPolicyMapping PromotionPromotionPolicyMapping)
+        {
+            //if (await ValidateId(Promotion))
+            //{
+
+            //}
+            return PromotionPromotionPolicyMapping.IsValidated;
+        }
+
+        public async Task<bool> UpdateSamePrice(PromotionPromotionPolicyMapping PromotionPromotionPolicyMapping)
         {
             //if (await ValidateId(Promotion))
             //{

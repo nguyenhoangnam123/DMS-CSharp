@@ -37,7 +37,14 @@ namespace DMS.Rpc.promotion
     public class PromotionRoute : Root
     {
         public const string Master = Module + "/price-list-and-promotion/promotion/promotion-master";
-        public const string Detail = Module + "/price-list-and-promotion/promotion/promotion-detail";
+        public const string Detail = Module + "/price-list-and-promotion/promotion/promotion-detail/*";
+        public const string SalesOrderPromotion = Module + "/price-list-and-promotion/promotion/promotion-detail/sales-order-promotion/*";
+        public const string StorePromotion = Module + "/price-list-and-promotion/promotion/promotion-detail/store-promotion/*";
+        public const string ProductPromotion = Module + "/price-list-and-promotion/promotion/promotion-detail/product-promotion/*";
+        public const string ProductGroupingPromotion = Module + "/price-list-and-promotion/promotion/promotion-detail/product-grouping-promotion/*";
+        public const string ProductTypePromotion = Module + "/price-list-and-promotion/promotion/promotion-detail/product-type-promotion/*";
+        public const string ComboPromotion = Module + "/price-list-and-promotion/promotion/promotion-detail/combo-promotion/*";
+        public const string SamePricePromotion = Module + "/price-list-and-promotion/promotion/promotion-detail/same-price-promotion/*";
         private const string Default = Rpc + Module + "/promotion";
         public const string Count = Default + "/count";
         public const string List = Default + "/list";

@@ -5,11 +5,6 @@ namespace DMS.Models
 {
     public partial class PromotionSamePriceDAO
     {
-        public PromotionSamePriceDAO()
-        {
-            PromotionSamePriceItemMappings = new HashSet<PromotionSamePriceItemMappingDAO>();
-        }
-
         public long Id { get; set; }
         public string Note { get; set; }
         public long PromotionPolicyId { get; set; }
@@ -19,6 +14,5 @@ namespace DMS.Models
 
         public virtual PromotionDAO Promotion { get; set; }
         public virtual PromotionPolicyDAO PromotionPolicy { get; set; }
-        public virtual ICollection<PromotionSamePriceItemMappingDAO> PromotionSamePriceItemMappings { get; set; }
     }
 }

@@ -107,7 +107,6 @@ namespace DMS.Models
         public virtual DbSet<PromotionProductTypeItemMappingDAO> PromotionProductTypeItemMapping { get; set; }
         public virtual DbSet<PromotionPromotionPolicyMappingDAO> PromotionPromotionPolicyMapping { get; set; }
         public virtual DbSet<PromotionSamePriceDAO> PromotionSamePrice { get; set; }
-        public virtual DbSet<PromotionSamePriceItemMappingDAO> PromotionSamePriceItemMapping { get; set; }
         public virtual DbSet<PromotionStoreDAO> PromotionStore { get; set; }
         public virtual DbSet<PromotionStoreGroupingDAO> PromotionStoreGrouping { get; set; }
         public virtual DbSet<PromotionStoreGroupingItemMappingDAO> PromotionStoreGroupingItemMapping { get; set; }
@@ -2861,30 +2860,6 @@ namespace DMS.Models
                     .HasForeignKey(d => d.PromotionPolicyId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_PromotionSamePrice_PromotionPolicy");
-            });
-
-            modelBuilder.Entity<PromotionSamePriceItemMappingDAO>(entity =>
-            {
-                entity.HasKey(e => new { e.PromotionSamePriceId, e.ItemId });
-
-                entity.ToTable("PromotionSamePriceItemMapping", "PRO");
-
-                entity.Property(e => e.Quantity)
-                    .IsRequired()
-                    .HasMaxLength(10)
-                    .IsFixedLength();
-
-                entity.HasOne(d => d.Item)
-                    .WithMany(p => p.PromotionSamePriceItemMappings)
-                    .HasForeignKey(d => d.ItemId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_PromotionSamePriceItemMapping_Item");
-
-                entity.HasOne(d => d.PromotionSamePrice)
-                    .WithMany(p => p.PromotionSamePriceItemMappings)
-                    .HasForeignKey(d => d.PromotionSamePriceId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_PromotionSamePriceItemMapping_PromotionSamePrice");
             });
 
             modelBuilder.Entity<PromotionStoreDAO>(entity =>
