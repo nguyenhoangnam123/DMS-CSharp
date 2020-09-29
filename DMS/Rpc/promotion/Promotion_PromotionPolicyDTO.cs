@@ -12,7 +12,6 @@ namespace DMS.Rpc.promotion
         public string Code { get; set; }
         public string Name { get; set; }
         public List<Promotion_PromotionPromotionPolicyMappingDTO> PromotionPromotionPolicyMappings { get; set; }
-
         public List<Promotion_PromotionDirectSalesOrderDTO> PromotionDirectSalesOrders { get; set; }
         public List<Promotion_PromotionStoreDTO> PromotionStores { get; set; }
         public List<Promotion_PromotionStoreGroupingDTO> PromotionStoreGroupings { get; set; }

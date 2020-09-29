@@ -241,6 +241,7 @@ namespace DMS.Rpc.promotion
                     FromValue = x.FromValue,
                     ToValue = x.ToValue,
                     PromotionDiscountTypeId = x.PromotionDiscountTypeId,
+                    PromotionId = x.PromotionId,
                     DiscountPercentage = x.DiscountPercentage,
                     DiscountValue = x.DiscountValue,
                     PromotionDiscountType = x.PromotionDiscountType == null ? null : new PromotionDiscountType
@@ -249,6 +250,69 @@ namespace DMS.Rpc.promotion
                         Code = x.PromotionDiscountType.Code,
                         Name = x.PromotionDiscountType.Name,
                     },
+                    PromotionPolicy = x.PromotionPolicy == null ? null : new PromotionPolicy
+                    {
+                        Id = x.PromotionPolicy.Id,
+                        Code = x.PromotionPolicy.Code,
+                        Name = x.PromotionPolicy.Name,
+                    },
+                    PromotionDirectSalesOrderItemMappings = x.PromotionDirectSalesOrderItemMappings?.Select(x => new PromotionDirectSalesOrderItemMapping
+                    {
+                        PromotionDirectSalesOrderId = x.PromotionDirectSalesOrderId,
+                        ItemId = x.ItemId,
+                        Quantity = x.Quantity,
+                        Item = x.Item == null ? null : new Item
+                        {
+                            Id = x.Item.Id,
+                            Code = x.Item.Code,
+                            Name = x.Item.Name,
+                            ItemImageMappings = x.Item.ItemImageMappings.Select(i => new ItemImageMapping
+                            {
+                                ItemId = i.ItemId,
+                                ImageId = i.ImageId,
+                                Image = i.Image == null ? null : new Image
+                                {
+                                    Id = i.Image.Id,
+                                    Url = i.Image.Url,
+                                    ThumbnailUrl = i.Image.ThumbnailUrl,
+                                }
+                            }).ToList()
+                        }
+                    }).ToList()
+                }).ToList();
+            PromotionPromotionPolicyMapping = await PromotionService.UpdateDirectSalesOrder(PromotionPromotionPolicyMapping);
+            Promotion_PromotionPromotionPolicyMappingDTO = new Promotion_PromotionPromotionPolicyMappingDTO(PromotionPromotionPolicyMapping);
+            if (PromotionPromotionPolicyMapping.IsValidated)
+                return Promotion_PromotionPromotionPolicyMappingDTO;
+            else
+                return BadRequest(Promotion_PromotionPromotionPolicyMappingDTO);
+        }
+
+        [Route(PromotionRoute.UpdateSamePrice), HttpPost]
+        public async Task<ActionResult<Promotion_PromotionPromotionPolicyMappingDTO>> UpdateSamePrice([FromBody] Promotion_PromotionPromotionPolicyMappingDTO Promotion_PromotionPromotionPolicyMappingDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            if (!await HasPermission(Promotion_PromotionPromotionPolicyMappingDTO.PromotionId))
+                return Forbid();
+
+            PromotionPromotionPolicyMapping PromotionPromotionPolicyMapping = new PromotionPromotionPolicyMapping();
+            PromotionPromotionPolicyMapping.Note = Promotion_PromotionPromotionPolicyMappingDTO.Note;
+            PromotionPromotionPolicyMapping.PromotionPolicy = Promotion_PromotionPromotionPolicyMappingDTO.PromotionPolicy == null ? null : new PromotionPolicy
+            {
+                Id = Promotion_PromotionPromotionPolicyMappingDTO.PromotionPolicy.Id,
+                Code = Promotion_PromotionPromotionPolicyMappingDTO.PromotionPolicy.Code,
+                Name = Promotion_PromotionPromotionPolicyMappingDTO.PromotionPolicy.Name,
+            };
+            PromotionPromotionPolicyMapping.PromotionPolicy.PromotionSamePrices = Promotion_PromotionPromotionPolicyMappingDTO.PromotionPolicy.PromotionSamePrices?
+                .Select(x => new PromotionSamePrice
+                {
+                    Id = x.Id,
+                    PromotionPolicyId = x.PromotionPolicyId,
+                    Note = x.Note,
+                    Price = x.Price,
+                    PromotionId = x.PromotionId,
                     PromotionPolicy = x.PromotionPolicy == null ? null : new PromotionPolicy
                     {
                         Id = x.PromotionPolicy.Id,

@@ -25,7 +25,7 @@ namespace DMS.Repositories
         //Task<bool> UpdateProductGrouping(PromotionPromotionPolicyMapping PromotionPromotionPolicyMapping);
         //Task<bool> UpdateProductType(PromotionPromotionPolicyMapping PromotionPromotionPolicyMapping);
         //Task<bool> UpdateCombo(PromotionPromotionPolicyMapping PromotionPromotionPolicyMapping);
-        //Task<bool> UpdateSamePrice(PromotionPromotionPolicyMapping PromotionPromotionPolicyMapping);
+        Task<bool> UpdateSamePrice(PromotionPromotionPolicyMapping PromotionPromotionPolicyMapping);
         Task<bool> Delete(Promotion Promotion);
         Task<bool> BulkMerge(List<Promotion> Promotions);
         Task<bool> BulkDelete(List<Promotion> Promotions);
@@ -995,36 +995,39 @@ namespace DMS.Repositories
         //    return true;
         //}
 
-        //public async Task<bool> UpdateSamePrice(Promotion Promotion)
-        //{
-        //    PromotionDAO PromotionDAO = DataContext.Promotion.Where(x => x.Id == Promotion.Id).FirstOrDefault();
-        //    if (PromotionDAO == null)
-        //        return false;
-        //    PromotionDAO.UpdatedAt = StaticParams.DateTimeNow;
+        public async Task<bool> UpdateSamePrice(PromotionPromotionPolicyMapping PromotionPromotionPolicyMapping)
+        {
+            PromotionPromotionPolicyMappingDAO PromotionPromotionPolicyMappingDAO = DataContext.PromotionPromotionPolicyMapping
+                .Where(x => x.PromotionId == PromotionPromotionPolicyMapping.PromotionId &&
+                x.PromotionPolicyId == PromotionPromotionPolicyMapping.PromotionPolicyId)
+                .FirstOrDefault();
+            if (PromotionPromotionPolicyMappingDAO == null)
+                return false;
+            PromotionPromotionPolicyMappingDAO.Note = PromotionPromotionPolicyMapping.Note;
 
-        //    await DataContext.PromotionSamePrice
-        //        .Where(x => x.PromotionId == Promotion.Id)
-        //        .DeleteFromQueryAsync();
-        //    List<PromotionSamePriceDAO> PromotionSamePriceDAOs = new List<PromotionSamePriceDAO>();
-        //    if (Promotion.PromotionSamePrices != null)
-        //    {
-        //        foreach (PromotionSamePrice PromotionSamePrice in Promotion.PromotionSamePrices)
-        //        {
-        //            PromotionSamePriceDAO PromotionSamePriceDAO = new PromotionSamePriceDAO();
-        //            PromotionSamePriceDAO.Id = PromotionSamePrice.Id;
-        //            PromotionSamePriceDAO.Note = PromotionSamePrice.Note;
-        //            PromotionSamePriceDAO.PromotionPolicyId = PromotionSamePrice.PromotionPolicyId;
-        //            PromotionSamePriceDAO.PromotionId = Promotion.Id;
-        //            PromotionSamePriceDAO.Price = PromotionSamePrice.Price;
-        //            PromotionSamePriceDAO.RowId = Guid.NewGuid();
-        //            PromotionSamePriceDAOs.Add(PromotionSamePriceDAO);
-        //            PromotionSamePrice.RowId = PromotionSamePriceDAO.RowId;
-        //        }
-        //        await DataContext.PromotionSamePrice.BulkMergeAsync(PromotionSamePriceDAOs);
-        //    }
-        //    await DataContext.SaveChangesAsync();
-        //    return true;
-        //}
+            await DataContext.PromotionSamePrice
+                .Where(x => x.PromotionId == PromotionPromotionPolicyMapping.PromotionId)
+                .DeleteFromQueryAsync();
+            List<PromotionSamePriceDAO> PromotionSamePriceDAOs = new List<PromotionSamePriceDAO>();
+            if (PromotionPromotionPolicyMapping.PromotionPolicy.PromotionSamePrices != null)
+            {
+                foreach (PromotionSamePrice PromotionSamePrice in PromotionPromotionPolicyMapping.PromotionPolicy.PromotionSamePrices)
+                {
+                    PromotionSamePriceDAO PromotionSamePriceDAO = new PromotionSamePriceDAO();
+                    PromotionSamePriceDAO.Id = PromotionSamePrice.Id;
+                    PromotionSamePriceDAO.PromotionPolicyId = PromotionSamePrice.PromotionPolicyId;
+                    PromotionSamePriceDAO.PromotionId = PromotionPromotionPolicyMapping.PromotionId;
+                    PromotionSamePriceDAO.Note = PromotionSamePrice.Note;
+                    PromotionSamePriceDAO.Price = PromotionSamePrice.Price;
+                    PromotionSamePriceDAO.RowId = Guid.NewGuid();
+                    PromotionSamePriceDAOs.Add(PromotionSamePriceDAO);
+                    PromotionSamePrice.RowId = PromotionSamePriceDAO.RowId;
+                }
+                await DataContext.PromotionSamePrice.BulkMergeAsync(PromotionSamePriceDAOs);
+            }
+            await DataContext.SaveChangesAsync();
+            return true;
+        }
 
         public async Task<bool> Delete(Promotion Promotion)
         {

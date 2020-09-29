@@ -20,6 +20,7 @@ namespace DMS.Rpc.promotion
         public Promotion_PromotionDiscountTypeDTO PromotionDiscountType { get; set; }   
         public Promotion_PromotionPolicyDTO PromotionPolicy { get; set; }   
         
+        public List<Promotion_PromotionDirectSalesOrderItemMappingDTO> PromotionDirectSalesOrderItemMappings { get; set; }
         public Promotion_PromotionDirectSalesOrderDTO() {}
         public Promotion_PromotionDirectSalesOrderDTO(PromotionDirectSalesOrder PromotionDirectSalesOrder)
         {

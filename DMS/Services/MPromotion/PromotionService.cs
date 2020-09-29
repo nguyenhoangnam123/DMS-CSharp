@@ -28,7 +28,7 @@ namespace DMS.Services.MPromotion
         //Task<PromotionPromotionPolicyMapping> UpdateProductGrouping(PromotionPromotionPolicyMapping PromotionPromotionPolicyMapping);
         //Task<PromotionPromotionPolicyMapping> UpdateProductType(PromotionPromotionPolicyMapping PromotionPromotionPolicyMapping);
         //Task<PromotionPromotionPolicyMapping> UpdateCombo(PromotionPromotionPolicyMapping PromotionPromotionPolicyMapping);
-        //Task<PromotionPromotionPolicyMapping> UpdateSamePrice(PromotionPromotionPolicyMapping PromotionPromotionPolicyMapping);
+        Task<PromotionPromotionPolicyMapping> UpdateSamePrice(PromotionPromotionPolicyMapping PromotionPromotionPolicyMapping);
         Task<Promotion> Delete(Promotion Promotion);
         Task<List<Promotion>> BulkDelete(List<Promotion> Promotions);
         Task<List<Promotion>> Import(List<Promotion> Promotions);
@@ -444,37 +444,37 @@ namespace DMS.Services.MPromotion
         //    }
         //}
 
-        //public async Task<PromotionPromotionPolicyMapping> UpdateSamePrice(PromotionPromotionPolicyMapping PromotionPromotionPolicyMapping)
-        //{
-        //    if (!await PromotionValidator.Update(Promotion))
-        //        return Promotion;
-        //    try
-        //    {
-        //        var oldData = await UOW.PromotionRepository.Get(Promotion.Id);
+        public async Task<PromotionPromotionPolicyMapping> UpdateSamePrice(PromotionPromotionPolicyMapping PromotionPromotionPolicyMapping)
+        {
+            if (!await PromotionValidator.UpdateSamePrice(PromotionPromotionPolicyMapping))
+                return PromotionPromotionPolicyMapping;
+            try
+            {
+                var oldData = await UOW.PromotionPolicyRepository.GetMapping(PromotionPromotionPolicyMapping.PromotionPolicyId, PromotionPromotionPolicyMapping.PromotionId);
 
-        //        await UOW.Begin();
-        //        await UOW.PromotionRepository.Update(Promotion);
-        //        await UOW.Commit();
+                await UOW.Begin();
+                await UOW.PromotionRepository.UpdateSamePrice(PromotionPromotionPolicyMapping);
+                await UOW.Commit();
 
-        //        Promotion = await UOW.PromotionRepository.Get(Promotion.Id);
-        //        await Logging.CreateAuditLog(Promotion, oldData, nameof(PromotionService));
-        //        return Promotion;
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        await UOW.Rollback();
-        //        if (ex.InnerException == null)
-        //        {
-        //            await Logging.CreateSystemLog(ex, nameof(PromotionService));
-        //            throw new MessageException(ex);
-        //        }
-        //        else
-        //        {
-        //            await Logging.CreateSystemLog(ex.InnerException, nameof(PromotionService));
-        //            throw new MessageException(ex.InnerException);
-        //        }
-        //    }
-        //}
+                PromotionPromotionPolicyMapping = await UOW.PromotionPolicyRepository.GetMapping(PromotionPromotionPolicyMapping.PromotionPolicyId, PromotionPromotionPolicyMapping.PromotionId);
+                await Logging.CreateAuditLog(PromotionPromotionPolicyMapping, oldData, nameof(PromotionService));
+                return PromotionPromotionPolicyMapping;
+            }
+            catch (Exception ex)
+            {
+                await UOW.Rollback();
+                if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(PromotionService));
+                    throw new MessageException(ex);
+                }
+                else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(PromotionService));
+                    throw new MessageException(ex.InnerException);
+                }
+            }
+        }
 
         public async Task<Promotion> Delete(Promotion Promotion)
         {
