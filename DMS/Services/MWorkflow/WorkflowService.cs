@@ -379,7 +379,7 @@ namespace DMS.Services.MWorkflow
                             Recipients = recipients,
                             Subject = CreateMailContent(WorkflowStep.SubjectMailForReject, Parameters),
                             Body = CreateMailContent(WorkflowStep.BodyMailForReject, Parameters),
-                            RowId = Guid.NewGuid()
+                            RowId = Guid.NewGuid(),
                         };
                         Mails.Add(MailForReject);
                         return true;

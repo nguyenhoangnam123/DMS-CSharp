@@ -119,6 +119,7 @@ namespace DMS.Models
         public virtual DbSet<ProvinceDAO> Province { get; set; }
         public virtual DbSet<RequestStateDAO> RequestState { get; set; }
         public virtual DbSet<RequestWorkflowDefinitionMappingDAO> RequestWorkflowDefinitionMapping { get; set; }
+        public virtual DbSet<RequestWorkflowHistoryDAO> RequestWorkflowHistory { get; set; }
         public virtual DbSet<RequestWorkflowParameterMappingDAO> RequestWorkflowParameterMapping { get; set; }
         public virtual DbSet<RequestWorkflowStepMappingDAO> RequestWorkflowStepMapping { get; set; }
         public virtual DbSet<ResellerDAO> Reseller { get; set; }
@@ -3161,6 +3162,40 @@ namespace DMS.Models
                     .HasForeignKey(d => d.WorkflowDefinitionId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_RequestWorkflowDefinitionMapping_WorkflowDefinition");
+            });
+
+            modelBuilder.Entity<RequestWorkflowHistoryDAO>(entity =>
+            {
+                entity.ToTable("RequestWorkflowHistory", "WF");
+
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.HasOne(d => d.AppUser)
+                    .WithMany(p => p.RequestWorkflowHistories)
+                    .HasForeignKey(d => d.AppUserId)
+                    .HasConstraintName("FK_RequestWorkflowHistory_AppUser");
+
+                entity.HasOne(d => d.Status)
+                    .WithMany(p => p.RequestWorkflowHistories)
+                    .HasForeignKey(d => d.StatusId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_RequestWorkflowHistory_Status");
+
+                entity.HasOne(d => d.WorkflowState)
+                    .WithMany(p => p.RequestWorkflowHistories)
+                    .HasForeignKey(d => d.WorkflowStateId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_RequestWorkflowHistory_WorkflowState");
+
+                entity.HasOne(d => d.WorkflowStep)
+                    .WithMany(p => p.RequestWorkflowHistories)
+                    .HasForeignKey(d => d.WorkflowStepId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_RequestWorkflowHistory_WorkflowStep");
             });
 
             modelBuilder.Entity<RequestWorkflowParameterMappingDAO>(entity =>

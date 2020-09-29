@@ -360,6 +360,7 @@ namespace DMS.Repositories
                 GeneralDiscountAmount = filter.Selects.Contains(IndirectSalesOrderSelect.GeneralDiscountAmount) ? q.GeneralDiscountAmount : default(long?),
                 TotalTaxAmount = filter.Selects.Contains(IndirectSalesOrderSelect.TotalTaxAmount) ? q.TotalTaxAmount : default(long),
                 Total = filter.Selects.Contains(IndirectSalesOrderSelect.Total) ? q.Total : default(long),
+                RequestStateId = filter.Selects.Contains(IndirectSalesOrderSelect.RequestState) ? q.RequestStateId : default(long),
                 BuyerStore = filter.Selects.Contains(IndirectSalesOrderSelect.BuyerStore) && q.BuyerStore != null ? new Store
                 {
                     Id = q.BuyerStore.Id,
@@ -391,45 +392,16 @@ namespace DMS.Repositories
                     Code = q.SellerStore.Code,
                     Name = q.SellerStore.Name,
                 } : null,
+                RequestState = filter.Selects.Contains(IndirectSalesOrderSelect.RequestState) && q.RequestState != null ? new RequestState
+                {
+                    Id = q.RequestState.Id,
+                    Code = q.RequestState.Code,
+                    Name = q.RequestState.Name,
+                } : null,
                 RowId = q.RowId,
                 CreatedAt = q.CreatedAt,
                 UpdatedAt = q.UpdatedAt,
             }).Skip(filter.Skip).Take(filter.Take).ToListAsync();
-
-            List<Guid> RowIds = IndirectSalesOrders.Select(x => x.RowId).ToList();
-            List<RequestWorkflowDefinitionMappingDAO> RequestWorkflowDefinitionMappingDAOs = await DataContext.RequestWorkflowDefinitionMapping
-                .Where(x => RowIds.Contains(x.RequestId))
-                .Include(x => x.RequestState)
-                .ToListAsync();
-
-
-            foreach (IndirectSalesOrder IndirectSalesOrder in IndirectSalesOrders)
-            {
-                RequestWorkflowDefinitionMappingDAO RequestWorkflowDefinitionMappingDAO = RequestWorkflowDefinitionMappingDAOs
-                    .Where(x => x.RequestId == IndirectSalesOrder.RowId)
-                    .FirstOrDefault();
-                if (RequestWorkflowDefinitionMappingDAO == null)
-                {
-                    IndirectSalesOrder.RequestStateId = RequestStateEnum.NEW.Id;
-                    IndirectSalesOrder.RequestState = new RequestState
-                    {
-                        Id = RequestStateEnum.NEW.Id,
-                        Code = RequestStateEnum.NEW.Code,
-                        Name = RequestStateEnum.NEW.Name,
-                    };
-                }
-                else
-                {
-                    IndirectSalesOrder.RequestStateId = RequestWorkflowDefinitionMappingDAO.RequestStateId;
-                    IndirectSalesOrder.RequestState = new RequestState
-                    {
-                        Id = RequestWorkflowDefinitionMappingDAO.RequestState.Id,
-                        Code = RequestWorkflowDefinitionMappingDAO.RequestState.Code,
-                        Name = RequestWorkflowDefinitionMappingDAO.RequestState.Name,
-                    };
-                }
-            }
-
             return IndirectSalesOrders;
         }
 
