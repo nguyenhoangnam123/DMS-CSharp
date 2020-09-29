@@ -1002,9 +1002,7 @@ namespace DMS.Services.MIndirectSalesOrder
             if (IndirectSalesOrder.IsValidated == false)
                 return IndirectSalesOrder;
             Dictionary<string, string> Parameters = await MapParameters(IndirectSalesOrder);
-            GenericEnum Action = await WorkflowService.Approve(IndirectSalesOrder.RowId, WorkflowTypeEnum.INDIRECT_SALES_ORDER.Id, Parameters);
-            if (Action != WorkflowActionEnum.OK)
-                return null;
+            await WorkflowService.Approve(IndirectSalesOrder.RowId, WorkflowTypeEnum.INDIRECT_SALES_ORDER.Id, Parameters);
             RequestState RequestState = await WorkflowService.GetRequestState(IndirectSalesOrder.RowId);
             IndirectSalesOrder.RequestStateId = RequestState.Id;
             await UOW.IndirectSalesOrderRepository.UpdateState(IndirectSalesOrder);
@@ -1016,8 +1014,6 @@ namespace DMS.Services.MIndirectSalesOrder
             IndirectSalesOrder = await UOW.IndirectSalesOrderRepository.Get(IndirectSalesOrder.Id);
             Dictionary<string, string> Parameters = await MapParameters(IndirectSalesOrder);
             GenericEnum Action = await WorkflowService.Reject(IndirectSalesOrder.RowId, WorkflowTypeEnum.INDIRECT_SALES_ORDER.Id, Parameters);
-            if (Action != WorkflowActionEnum.OK)
-                return null;
             RequestState RequestState = await WorkflowService.GetRequestState(IndirectSalesOrder.RowId);
             IndirectSalesOrder.RequestStateId = RequestState.Id;
             await UOW.IndirectSalesOrderRepository.UpdateState(IndirectSalesOrder);
