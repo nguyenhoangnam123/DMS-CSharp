@@ -291,10 +291,37 @@ namespace DMS.Services.MPromotion
 
         public async Task<bool> UpdateDirectSalesOrder(PromotionPromotionPolicyMapping PromotionPromotionPolicyMapping)
         {
-            //if (await ValidateId(Promotion))
-            //{
-
-            //}
+            if(PromotionPromotionPolicyMapping.PromotionPolicy != null && PromotionPromotionPolicyMapping.PromotionPolicy.PromotionDirectSalesOrders != null)
+            {
+                foreach (var PromotionDirectSalesOrder in PromotionPromotionPolicyMapping.PromotionPolicy.PromotionDirectSalesOrders)
+                {
+                    //if(PromotionDirectSalesOrder.PromotionDiscountTypeId == 0)
+                    //{
+                    //    PromotionDirectSalesOrder.AddError(nameof(PromotionValidator), nameof(PromotionDirectSalesOrder.PromotionDiscountType), ErrorCode.PromotionDiscountTypeEmpty);
+                    //}
+                    //else if(PromotionDirectSalesOrder.PromotionDiscountTypeId == PromotionDiscountTypeEnum.AMOUNT.Id)
+                    //{
+                    //    if(PromotionDirectSalesOrder.DiscountValue.HasValue == false)
+                    //    {
+                    //        PromotionDirectSalesOrder.AddError(nameof(PromotionValidator), nameof(PromotionDirectSalesOrder.DiscountValue), ErrorCode.DiscountValueEmpty);
+                    //    }
+                    //}
+                    //else if (PromotionDirectSalesOrder.PromotionDiscountTypeId == PromotionDiscountTypeEnum.PERCENTAGE.Id)
+                    //{
+                    //    if (PromotionDirectSalesOrder.DiscountPercentage.HasValue == false)
+                    //    {
+                    //        PromotionDirectSalesOrder.AddError(nameof(PromotionValidator), nameof(PromotionDirectSalesOrder.DiscountPercentage), ErrorCode.DiscountPercentageEmpty);
+                    //    }
+                    //}
+                    //else if (PromotionDirectSalesOrder.PromotionDiscountTypeId == PromotionDiscountTypeEnum.PRICE_FIXED.Id)
+                    //{
+                    //    if (PromotionDirectSalesOrder.DiscountPercentage.HasValue == false)
+                    //    {
+                    //        PromotionDirectSalesOrder.AddError(nameof(PromotionValidator), nameof(PromotionDirectSalesOrder.DiscountPercentage), ErrorCode.DiscountPercentageEmpty);
+                    //    }
+                    //}
+                }
+            }
             return PromotionPromotionPolicyMapping.IsValidated;
         }
 

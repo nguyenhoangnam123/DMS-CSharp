@@ -7,7 +7,7 @@ namespace DMS.Models
     {
         public PromotionDiscountTypeDAO()
         {
-            Combos = new HashSet<ComboDAO>();
+            PromotionCombos = new HashSet<PromotionComboDAO>();
             PromotionDirectSalesOrders = new HashSet<PromotionDirectSalesOrderDAO>();
             PromotionProductGroupings = new HashSet<PromotionProductGroupingDAO>();
             PromotionProductTypes = new HashSet<PromotionProductTypeDAO>();
@@ -21,7 +21,7 @@ namespace DMS.Models
         public string Code { get; set; }
         public string Name { get; set; }
 
-        public virtual ICollection<ComboDAO> Combos { get; set; }
+        public virtual ICollection<PromotionComboDAO> PromotionCombos { get; set; }
         public virtual ICollection<PromotionDirectSalesOrderDAO> PromotionDirectSalesOrders { get; set; }
         public virtual ICollection<PromotionProductGroupingDAO> PromotionProductGroupings { get; set; }
         public virtual ICollection<PromotionProductTypeDAO> PromotionProductTypes { get; set; }

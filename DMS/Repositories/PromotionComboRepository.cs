@@ -35,12 +35,22 @@ namespace DMS.Repositories
                 return query.Where(q => false);
             if (filter.Id != null)
                 query = query.Where(q => q.Id, filter.Id);
-            if (filter.Note != null)
-                query = query.Where(q => q.Note, filter.Note);
+            if (filter.Name != null)
+                query = query.Where(q => q.Name, filter.Name);
             if (filter.PromotionPolicyId != null)
                 query = query.Where(q => q.PromotionPolicyId, filter.PromotionPolicyId);
             if (filter.PromotionId != null)
                 query = query.Where(q => q.PromotionId, filter.PromotionId);
+            if (filter.Note != null)
+                query = query.Where(q => q.Note, filter.Note);
+            if (filter.PromotionDiscountTypeId != null)
+                query = query.Where(q => q.PromotionDiscountTypeId, filter.PromotionDiscountTypeId);
+            if (filter.DiscountPercentage != null)
+                query = query.Where(q => q.DiscountPercentage.HasValue).Where(q => q.DiscountPercentage, filter.DiscountPercentage);
+            if (filter.DiscountValue != null)
+                query = query.Where(q => q.DiscountValue.HasValue).Where(q => q.DiscountValue, filter.DiscountValue);
+            if (filter.Price != null)
+                query = query.Where(q => q.Price.HasValue).Where(q => q.Price, filter.Price);
             query = OrFilter(query, filter);
             return query;
         }
@@ -55,12 +65,22 @@ namespace DMS.Repositories
                 IQueryable<PromotionComboDAO> queryable = query;
                 if (PromotionComboFilter.Id != null)
                     queryable = queryable.Where(q => q.Id, PromotionComboFilter.Id);
-                if (PromotionComboFilter.Note != null)
-                    queryable = queryable.Where(q => q.Note, PromotionComboFilter.Note);
+                if (PromotionComboFilter.Name != null)
+                    queryable = queryable.Where(q => q.Name, PromotionComboFilter.Name);
                 if (PromotionComboFilter.PromotionPolicyId != null)
                     queryable = queryable.Where(q => q.PromotionPolicyId, PromotionComboFilter.PromotionPolicyId);
                 if (PromotionComboFilter.PromotionId != null)
                     queryable = queryable.Where(q => q.PromotionId, PromotionComboFilter.PromotionId);
+                if (PromotionComboFilter.Note != null)
+                    queryable = queryable.Where(q => q.Note, PromotionComboFilter.Note);
+                if (PromotionComboFilter.PromotionDiscountTypeId != null)
+                    queryable = queryable.Where(q => q.PromotionDiscountTypeId, PromotionComboFilter.PromotionDiscountTypeId);
+                if (PromotionComboFilter.DiscountPercentage != null)
+                    queryable = queryable.Where(q => q.DiscountPercentage.HasValue).Where(q => q.DiscountPercentage, PromotionComboFilter.DiscountPercentage);
+                if (PromotionComboFilter.DiscountValue != null)
+                    queryable = queryable.Where(q => q.DiscountValue.HasValue).Where(q => q.DiscountValue, PromotionComboFilter.DiscountValue);
+                if (PromotionComboFilter.Price != null)
+                    queryable = queryable.Where(q => q.Price.HasValue).Where(q => q.Price, PromotionComboFilter.Price);
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;
@@ -76,14 +96,29 @@ namespace DMS.Repositories
                         case PromotionComboOrder.Id:
                             query = query.OrderBy(q => q.Id);
                             break;
-                        case PromotionComboOrder.Note:
-                            query = query.OrderBy(q => q.Note);
+                        case PromotionComboOrder.Name:
+                            query = query.OrderBy(q => q.Name);
                             break;
                         case PromotionComboOrder.PromotionPolicy:
                             query = query.OrderBy(q => q.PromotionPolicyId);
                             break;
                         case PromotionComboOrder.Promotion:
                             query = query.OrderBy(q => q.PromotionId);
+                            break;
+                        case PromotionComboOrder.Note:
+                            query = query.OrderBy(q => q.Note);
+                            break;
+                        case PromotionComboOrder.PromotionDiscountType:
+                            query = query.OrderBy(q => q.PromotionDiscountTypeId);
+                            break;
+                        case PromotionComboOrder.DiscountPercentage:
+                            query = query.OrderBy(q => q.DiscountPercentage);
+                            break;
+                        case PromotionComboOrder.DiscountValue:
+                            query = query.OrderBy(q => q.DiscountValue);
+                            break;
+                        case PromotionComboOrder.Price:
+                            query = query.OrderBy(q => q.Price);
                             break;
                     }
                     break;
@@ -93,14 +128,29 @@ namespace DMS.Repositories
                         case PromotionComboOrder.Id:
                             query = query.OrderByDescending(q => q.Id);
                             break;
-                        case PromotionComboOrder.Note:
-                            query = query.OrderByDescending(q => q.Note);
+                        case PromotionComboOrder.Name:
+                            query = query.OrderByDescending(q => q.Name);
                             break;
                         case PromotionComboOrder.PromotionPolicy:
                             query = query.OrderByDescending(q => q.PromotionPolicyId);
                             break;
                         case PromotionComboOrder.Promotion:
                             query = query.OrderByDescending(q => q.PromotionId);
+                            break;
+                        case PromotionComboOrder.Note:
+                            query = query.OrderByDescending(q => q.Note);
+                            break;
+                        case PromotionComboOrder.PromotionDiscountType:
+                            query = query.OrderByDescending(q => q.PromotionDiscountTypeId);
+                            break;
+                        case PromotionComboOrder.DiscountPercentage:
+                            query = query.OrderByDescending(q => q.DiscountPercentage);
+                            break;
+                        case PromotionComboOrder.DiscountValue:
+                            query = query.OrderByDescending(q => q.DiscountValue);
+                            break;
+                        case PromotionComboOrder.Price:
+                            query = query.OrderByDescending(q => q.Price);
                             break;
                     }
                     break;
@@ -114,9 +164,14 @@ namespace DMS.Repositories
             List<PromotionCombo> PromotionCombos = await query.Select(q => new PromotionCombo()
             {
                 Id = filter.Selects.Contains(PromotionComboSelect.Id) ? q.Id : default(long),
-                Note = filter.Selects.Contains(PromotionComboSelect.Note) ? q.Note : default(string),
+                Name = filter.Selects.Contains(PromotionComboSelect.Name) ? q.Name : default(string),
                 PromotionPolicyId = filter.Selects.Contains(PromotionComboSelect.PromotionPolicy) ? q.PromotionPolicyId : default(long),
                 PromotionId = filter.Selects.Contains(PromotionComboSelect.Promotion) ? q.PromotionId : default(long),
+                Note = filter.Selects.Contains(PromotionComboSelect.Note) ? q.Note : default(string),
+                PromotionDiscountTypeId = filter.Selects.Contains(PromotionComboSelect.PromotionDiscountType) ? q.PromotionDiscountTypeId : default(long),
+                DiscountPercentage = filter.Selects.Contains(PromotionComboSelect.DiscountPercentage) ? q.DiscountPercentage : default(decimal?),
+                DiscountValue = filter.Selects.Contains(PromotionComboSelect.DiscountValue) ? q.DiscountValue : default(decimal?),
+                Price = filter.Selects.Contains(PromotionComboSelect.Price) ? q.Price : default(decimal?),
                 Promotion = filter.Selects.Contains(PromotionComboSelect.Promotion) && q.Promotion != null ? new Promotion
                 {
                     Id = q.Promotion.Id,
@@ -129,6 +184,12 @@ namespace DMS.Repositories
                     Note = q.Promotion.Note,
                     Priority = q.Promotion.Priority,
                     StatusId = q.Promotion.StatusId,
+                } : null,
+                PromotionDiscountType = filter.Selects.Contains(PromotionComboSelect.PromotionDiscountType) && q.PromotionDiscountType != null ? new PromotionDiscountType
+                {
+                    Id = q.PromotionDiscountType.Id,
+                    Code = q.PromotionDiscountType.Code,
+                    Name = q.PromotionDiscountType.Name,
                 } : null,
                 PromotionPolicy = filter.Selects.Contains(PromotionComboSelect.PromotionPolicy) && q.PromotionPolicy != null ? new PromotionPolicy
                 {
@@ -163,9 +224,14 @@ namespace DMS.Repositories
             .Where(x => x.Id == Id).Select(x => new PromotionCombo()
             {
                 Id = x.Id,
-                Note = x.Note,
+                Name = x.Name,
                 PromotionPolicyId = x.PromotionPolicyId,
                 PromotionId = x.PromotionId,
+                Note = x.Note,
+                PromotionDiscountTypeId = x.PromotionDiscountTypeId,
+                DiscountPercentage = x.DiscountPercentage,
+                DiscountValue = x.DiscountValue,
+                Price = x.Price,
                 Promotion = x.Promotion == null ? null : new Promotion
                 {
                     Id = x.Promotion.Id,
@@ -179,6 +245,12 @@ namespace DMS.Repositories
                     Priority = x.Promotion.Priority,
                     StatusId = x.Promotion.StatusId,
                 },
+                PromotionDiscountType = x.PromotionDiscountType == null ? null : new PromotionDiscountType
+                {
+                    Id = x.PromotionDiscountType.Id,
+                    Code = x.PromotionDiscountType.Code,
+                    Name = x.PromotionDiscountType.Name,
+                },
                 PromotionPolicy = x.PromotionPolicy == null ? null : new PromotionPolicy
                 {
                     Id = x.PromotionPolicy.Id,
@@ -189,24 +261,6 @@ namespace DMS.Repositories
 
             if (PromotionCombo == null)
                 return null;
-            PromotionCombo.Combos = await DataContext.Combo.AsNoTracking()
-                .Where(x => x.PromotionComboId == PromotionCombo.Id)
-                .Where(x => x.DeletedAt == null)
-                .Select(x => new Combo
-                {
-                    Id = x.Id,
-                    PromotionComboId = x.PromotionComboId,
-                    Name = x.Name,
-                    PromotionDiscountTypeId = x.PromotionDiscountTypeId,
-                    DiscountPercentage = x.DiscountPercentage,
-                    DiscountValue = x.DiscountValue,
-                    PromotionDiscountType = new PromotionDiscountType
-                    {
-                        Id = x.PromotionDiscountType.Id,
-                        Code = x.PromotionDiscountType.Code,
-                        Name = x.PromotionDiscountType.Name,
-                    },
-                }).ToListAsync();
 
             return PromotionCombo;
         }
@@ -214,9 +268,14 @@ namespace DMS.Repositories
         {
             PromotionComboDAO PromotionComboDAO = new PromotionComboDAO();
             PromotionComboDAO.Id = PromotionCombo.Id;
-            PromotionComboDAO.Note = PromotionCombo.Note;
+            PromotionComboDAO.Name = PromotionCombo.Name;
             PromotionComboDAO.PromotionPolicyId = PromotionCombo.PromotionPolicyId;
             PromotionComboDAO.PromotionId = PromotionCombo.PromotionId;
+            PromotionComboDAO.Note = PromotionCombo.Note;
+            PromotionComboDAO.PromotionDiscountTypeId = PromotionCombo.PromotionDiscountTypeId;
+            PromotionComboDAO.DiscountPercentage = PromotionCombo.DiscountPercentage;
+            PromotionComboDAO.DiscountValue = PromotionCombo.DiscountValue;
+            PromotionComboDAO.Price = PromotionCombo.Price;
             DataContext.PromotionCombo.Add(PromotionComboDAO);
             await DataContext.SaveChangesAsync();
             PromotionCombo.Id = PromotionComboDAO.Id;
@@ -230,9 +289,14 @@ namespace DMS.Repositories
             if (PromotionComboDAO == null)
                 return false;
             PromotionComboDAO.Id = PromotionCombo.Id;
-            PromotionComboDAO.Note = PromotionCombo.Note;
+            PromotionComboDAO.Name = PromotionCombo.Name;
             PromotionComboDAO.PromotionPolicyId = PromotionCombo.PromotionPolicyId;
             PromotionComboDAO.PromotionId = PromotionCombo.PromotionId;
+            PromotionComboDAO.Note = PromotionCombo.Note;
+            PromotionComboDAO.PromotionDiscountTypeId = PromotionCombo.PromotionDiscountTypeId;
+            PromotionComboDAO.DiscountPercentage = PromotionCombo.DiscountPercentage;
+            PromotionComboDAO.DiscountValue = PromotionCombo.DiscountValue;
+            PromotionComboDAO.Price = PromotionCombo.Price;
             await DataContext.SaveChangesAsync();
             await SaveReference(PromotionCombo);
             return true;
@@ -251,9 +315,14 @@ namespace DMS.Repositories
             {
                 PromotionComboDAO PromotionComboDAO = new PromotionComboDAO();
                 PromotionComboDAO.Id = PromotionCombo.Id;
-                PromotionComboDAO.Note = PromotionCombo.Note;
+                PromotionComboDAO.Name = PromotionCombo.Name;
                 PromotionComboDAO.PromotionPolicyId = PromotionCombo.PromotionPolicyId;
                 PromotionComboDAO.PromotionId = PromotionCombo.PromotionId;
+                PromotionComboDAO.Note = PromotionCombo.Note;
+                PromotionComboDAO.PromotionDiscountTypeId = PromotionCombo.PromotionDiscountTypeId;
+                PromotionComboDAO.DiscountPercentage = PromotionCombo.DiscountPercentage;
+                PromotionComboDAO.DiscountValue = PromotionCombo.DiscountValue;
+                PromotionComboDAO.Price = PromotionCombo.Price;
                 PromotionComboDAOs.Add(PromotionComboDAO);
             }
             await DataContext.BulkMergeAsync(PromotionComboDAOs);
@@ -270,43 +339,6 @@ namespace DMS.Repositories
 
         private async Task SaveReference(PromotionCombo PromotionCombo)
         {
-            List<ComboDAO> ComboDAOs = await DataContext.Combo
-                .Where(x => x.PromotionComboId == PromotionCombo.Id).ToListAsync();
-            ComboDAOs.ForEach(x => x.DeletedAt = StaticParams.DateTimeNow);
-            if (PromotionCombo.Combos != null)
-            {
-                foreach (Combo Combo in PromotionCombo.Combos)
-                {
-                    ComboDAO ComboDAO = ComboDAOs
-                        .Where(x => x.Id == Combo.Id && x.Id != 0).FirstOrDefault();
-                    if (ComboDAO == null)
-                    {
-                        ComboDAO = new ComboDAO();
-                        ComboDAO.Id = Combo.Id;
-                        ComboDAO.PromotionComboId = PromotionCombo.Id;
-                        ComboDAO.Name = Combo.Name;
-                        ComboDAO.PromotionDiscountTypeId = Combo.PromotionDiscountTypeId;
-                        ComboDAO.DiscountPercentage = Combo.DiscountPercentage;
-                        ComboDAO.DiscountValue = Combo.DiscountValue;
-                        ComboDAOs.Add(ComboDAO);
-                        ComboDAO.CreatedAt = StaticParams.DateTimeNow;
-                        ComboDAO.UpdatedAt = StaticParams.DateTimeNow;
-                        ComboDAO.DeletedAt = null;
-                    }
-                    else
-                    {
-                        ComboDAO.Id = Combo.Id;
-                        ComboDAO.PromotionComboId = PromotionCombo.Id;
-                        ComboDAO.Name = Combo.Name;
-                        ComboDAO.PromotionDiscountTypeId = Combo.PromotionDiscountTypeId;
-                        ComboDAO.DiscountPercentage = Combo.DiscountPercentage;
-                        ComboDAO.DiscountValue = Combo.DiscountValue;
-                        ComboDAO.UpdatedAt = StaticParams.DateTimeNow;
-                        ComboDAO.DeletedAt = null;
-                    }
-                }
-                await DataContext.Combo.BulkMergeAsync(ComboDAOs);
-            }
         }
         
     }

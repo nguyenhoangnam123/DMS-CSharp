@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace DMS.Models
 {
-    public partial class ComboOutItemMappingDAO
+    public partial class PromotionComboOutItemMappingDAO
     {
         public long PromotionComboId { get; set; }
         public long ItemId { get; set; }

@@ -19,6 +19,7 @@ namespace DMS.Models
         public long PromotionDiscountTypeId { get; set; }
         public decimal? DiscountPercentage { get; set; }
         public decimal? DiscountValue { get; set; }
+        public decimal? Price { get; set; }
         public Guid RowId { get; set; }
 
         public virtual PromotionDAO Promotion { get; set; }

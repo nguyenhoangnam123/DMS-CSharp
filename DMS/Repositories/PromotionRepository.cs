@@ -723,6 +723,7 @@ namespace DMS.Repositories
                     PromotionDirectSalesOrderDAO.PromotionDiscountTypeId = PromotionDirectSalesOrder.PromotionDiscountTypeId;
                     PromotionDirectSalesOrderDAO.DiscountPercentage = PromotionDirectSalesOrder.DiscountPercentage;
                     PromotionDirectSalesOrderDAO.DiscountValue = PromotionDirectSalesOrder.DiscountValue;
+                    PromotionDirectSalesOrderDAO.Price = PromotionDirectSalesOrder.Price;
                     PromotionDirectSalesOrderDAO.RowId = Guid.NewGuid();
                     PromotionDirectSalesOrderDAOs.Add(PromotionDirectSalesOrderDAO);
                     PromotionDirectSalesOrder.RowId = PromotionDirectSalesOrderDAO.RowId;

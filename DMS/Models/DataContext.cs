@@ -1,7 +1,6 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Thinktecture;
 
 namespace DMS.Models
 {
@@ -19,9 +18,6 @@ namespace DMS.Models
         public virtual DbSet<BannerDAO> Banner { get; set; }
         public virtual DbSet<BrandDAO> Brand { get; set; }
         public virtual DbSet<ColorDAO> Color { get; set; }
-        public virtual DbSet<ComboDAO> Combo { get; set; }
-        public virtual DbSet<ComboInItemMappingDAO> ComboInItemMapping { get; set; }
-        public virtual DbSet<ComboOutItemMappingDAO> ComboOutItemMapping { get; set; }
         public virtual DbSet<CounterDAO> Counter { get; set; }
         public virtual DbSet<DirectSalesOrderDAO> DirectSalesOrder { get; set; }
         public virtual DbSet<DirectSalesOrderContentDAO> DirectSalesOrderContent { get; set; }
@@ -95,6 +91,8 @@ namespace DMS.Models
         public virtual DbSet<ProductTypeDAO> ProductType { get; set; }
         public virtual DbSet<PromotionDAO> Promotion { get; set; }
         public virtual DbSet<PromotionComboDAO> PromotionCombo { get; set; }
+        public virtual DbSet<PromotionComboInItemMappingDAO> PromotionComboInItemMapping { get; set; }
+        public virtual DbSet<PromotionComboOutItemMappingDAO> PromotionComboOutItemMapping { get; set; }
         public virtual DbSet<PromotionDirectSalesOrderDAO> PromotionDirectSalesOrder { get; set; }
         public virtual DbSet<PromotionDirectSalesOrderItemMappingDAO> PromotionDirectSalesOrderItemMapping { get; set; }
         public virtual DbSet<PromotionDiscountTypeDAO> PromotionDiscountType { get; set; }
@@ -191,7 +189,6 @@ namespace DMS.Models
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.ConfigureTempTable<long>();
             modelBuilder.Entity<ActionDAO>(entity =>
             {
                 entity.ToTable("Action", "PER");
@@ -527,75 +524,6 @@ namespace DMS.Models
                 entity.Property(e => e.Name)
                     .IsRequired()
                     .HasMaxLength(50);
-            });
-
-            modelBuilder.Entity<ComboDAO>(entity =>
-            {
-                entity.ToTable("Combo", "PRO");
-
-                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
-
-                entity.Property(e => e.DeletedAt).HasColumnType("datetime");
-
-                entity.Property(e => e.DiscountPercentage).HasColumnType("decimal(8, 2)");
-
-                entity.Property(e => e.DiscountValue).HasColumnType("decimal(18, 4)");
-
-                entity.Property(e => e.Name)
-                    .IsRequired()
-                    .HasMaxLength(500);
-
-                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
-
-                entity.HasOne(d => d.PromotionCombo)
-                    .WithMany(p => p.Combos)
-                    .HasForeignKey(d => d.PromotionComboId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Combo_PromotionCombo");
-
-                entity.HasOne(d => d.PromotionDiscountType)
-                    .WithMany(p => p.Combos)
-                    .HasForeignKey(d => d.PromotionDiscountTypeId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Combo_PromotionDiscountType");
-            });
-
-            modelBuilder.Entity<ComboInItemMappingDAO>(entity =>
-            {
-                entity.HasKey(e => new { e.ComboId, e.ItemId });
-
-                entity.ToTable("ComboInItemMapping", "PRO");
-
-                entity.HasOne(d => d.Combo)
-                    .WithMany(p => p.ComboInItemMappings)
-                    .HasForeignKey(d => d.ComboId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_ComboInItemMapping_Combo");
-
-                entity.HasOne(d => d.Item)
-                    .WithMany(p => p.ComboInItemMappings)
-                    .HasForeignKey(d => d.ItemId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_ComboInItemMapping_Item");
-            });
-
-            modelBuilder.Entity<ComboOutItemMappingDAO>(entity =>
-            {
-                entity.HasKey(e => new { e.ComboId, e.ItemId });
-
-                entity.ToTable("ComboOutItemMapping", "PRO");
-
-                entity.HasOne(d => d.Combo)
-                    .WithMany(p => p.ComboOutItemMappings)
-                    .HasForeignKey(d => d.ComboId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_ComboOutItemMapping_Combo");
-
-                entity.HasOne(d => d.Item)
-                    .WithMany(p => p.ComboOutItemMappings)
-                    .HasForeignKey(d => d.ItemId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_ComboOutItemMapping_Item");
             });
 
             modelBuilder.Entity<CounterDAO>(entity =>
@@ -1218,6 +1146,12 @@ namespace DMS.Models
                     .HasForeignKey(d => d.OrganizationId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_IndirectSalesOrder_Organization");
+
+                entity.HasOne(d => d.RequestState)
+                    .WithMany(p => p.IndirectSalesOrders)
+                    .HasForeignKey(d => d.RequestStateId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_IndirectSalesOrder_RequestState");
 
                 entity.HasOne(d => d.SaleEmployee)
                     .WithMany(p => p.IndirectSalesOrders)
@@ -2543,7 +2477,23 @@ namespace DMS.Models
             {
                 entity.ToTable("PromotionCombo", "PRO");
 
+                entity.Property(e => e.DiscountPercentage).HasColumnType("decimal(8, 2)");
+
+                entity.Property(e => e.DiscountValue).HasColumnType("decimal(18, 4)");
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
                 entity.Property(e => e.Note).HasMaxLength(2000);
+
+                entity.Property(e => e.Price).HasColumnType("decimal(18, 4)");
+
+                entity.HasOne(d => d.PromotionDiscountType)
+                    .WithMany(p => p.PromotionCombos)
+                    .HasForeignKey(d => d.PromotionDiscountTypeId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PromotionCombo_PromotionDiscountType");
 
                 entity.HasOne(d => d.Promotion)
                     .WithMany(p => p.PromotionCombos)
@@ -2558,6 +2508,46 @@ namespace DMS.Models
                     .HasConstraintName("FK_PromotionCombo_PromotionPolicy");
             });
 
+            modelBuilder.Entity<PromotionComboInItemMappingDAO>(entity =>
+            {
+                entity.HasKey(e => new { e.PromotionComboId, e.ItemId })
+                    .HasName("PK_ComboInItemMapping");
+
+                entity.ToTable("PromotionComboInItemMapping", "PRO");
+
+                entity.HasOne(d => d.Item)
+                    .WithMany(p => p.PromotionComboInItemMappings)
+                    .HasForeignKey(d => d.ItemId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PromotionComboInItemMapping_Item");
+
+                entity.HasOne(d => d.PromotionCombo)
+                    .WithMany(p => p.PromotionComboInItemMappings)
+                    .HasForeignKey(d => d.PromotionComboId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PromotionComboInItemMapping_PromotionCombo");
+            });
+
+            modelBuilder.Entity<PromotionComboOutItemMappingDAO>(entity =>
+            {
+                entity.HasKey(e => new { e.PromotionComboId, e.ItemId })
+                    .HasName("PK_ComboOutItemMapping");
+
+                entity.ToTable("PromotionComboOutItemMapping", "PRO");
+
+                entity.HasOne(d => d.Item)
+                    .WithMany(p => p.PromotionComboOutItemMappings)
+                    .HasForeignKey(d => d.ItemId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PromotionComboOutItemMapping_Item");
+
+                entity.HasOne(d => d.PromotionCombo)
+                    .WithMany(p => p.PromotionComboOutItemMappings)
+                    .HasForeignKey(d => d.PromotionComboId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PromotionComboOutItemMapping_PromotionCombo");
+            });
+
             modelBuilder.Entity<PromotionDirectSalesOrderDAO>(entity =>
             {
                 entity.ToTable("PromotionDirectSalesOrder", "PRO");
@@ -2569,6 +2559,8 @@ namespace DMS.Models
                 entity.Property(e => e.FromValue).HasColumnType("decimal(18, 4)");
 
                 entity.Property(e => e.Note).HasMaxLength(2000);
+
+                entity.Property(e => e.Price).HasColumnType("decimal(18, 4)");
 
                 entity.Property(e => e.ToValue).HasColumnType("decimal(18, 4)");
 
@@ -2652,6 +2644,8 @@ namespace DMS.Models
 
                 entity.Property(e => e.Note).HasMaxLength(2000);
 
+                entity.Property(e => e.Price).HasColumnType("decimal(18, 4)");
+
                 entity.Property(e => e.ToValue).HasColumnType("decimal(18, 4)");
 
                 entity.HasOne(d => d.Product)
@@ -2690,6 +2684,8 @@ namespace DMS.Models
                 entity.Property(e => e.FromValue).HasColumnType("decimal(18, 4)");
 
                 entity.Property(e => e.Note).HasMaxLength(2000);
+
+                entity.Property(e => e.Price).HasColumnType("decimal(18, 4)");
 
                 entity.Property(e => e.ToValue).HasColumnType("decimal(18, 4)");
 
@@ -2767,6 +2763,8 @@ namespace DMS.Models
                 entity.Property(e => e.FromValue).HasColumnType("decimal(18, 4)");
 
                 entity.Property(e => e.Note).HasMaxLength(2000);
+
+                entity.Property(e => e.Price).HasColumnType("decimal(18, 4)");
 
                 entity.Property(e => e.ToValue).HasColumnType("decimal(18, 4)");
 
@@ -2874,6 +2872,8 @@ namespace DMS.Models
 
                 entity.Property(e => e.Note).HasMaxLength(2000);
 
+                entity.Property(e => e.Price).HasColumnType("decimal(18, 4)");
+
                 entity.Property(e => e.ToValue).HasColumnType("decimal(18, 4)");
 
                 entity.HasOne(d => d.PromotionDiscountType)
@@ -2906,6 +2906,8 @@ namespace DMS.Models
                 entity.Property(e => e.FromValue).HasColumnType("decimal(18, 4)");
 
                 entity.Property(e => e.Note).HasMaxLength(2000);
+
+                entity.Property(e => e.Price).HasColumnType("decimal(18, 4)");
 
                 entity.Property(e => e.ToValue).HasColumnType("decimal(18, 4)");
 
@@ -3019,6 +3021,8 @@ namespace DMS.Models
                 entity.Property(e => e.FromValue).HasColumnType("decimal(18, 4)");
 
                 entity.Property(e => e.Note).HasMaxLength(2000);
+
+                entity.Property(e => e.Price).HasColumnType("decimal(18, 4)");
 
                 entity.Property(e => e.ToValue).HasColumnType("decimal(18, 4)");
 

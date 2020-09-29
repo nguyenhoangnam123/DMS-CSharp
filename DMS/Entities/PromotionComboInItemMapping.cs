@@ -6,16 +6,16 @@ using Newtonsoft.Json.Converters;
 
 namespace DMS.Entities
 {
-    public class ComboInItemMapping : DataEntity,  IEquatable<ComboInItemMapping>
+    public class PromotionComboInItemMapping : DataEntity,  IEquatable<PromotionComboInItemMapping>
     {
-        public long ComboId { get; set; }
+        public long PromotionComboId { get; set; }
         public long ItemId { get; set; }
         public long From { get; set; }
         public long? To { get; set; }
-        public Combo Combo { get; set; }
         public Item Item { get; set; }
+        public PromotionCombo PromotionCombo { get; set; }
 
-        public bool Equals(ComboInItemMapping other)
+        public bool Equals(PromotionComboInItemMapping other)
         {
             return true;
         }
@@ -25,31 +25,31 @@ namespace DMS.Entities
         }
     }
 
-    public class ComboInItemMappingFilter : FilterEntity
+    public class PromotionComboInItemMappingFilter : FilterEntity
     {
-        public IdFilter ComboId { get; set; }
+        public IdFilter PromotionComboId { get; set; }
         public IdFilter ItemId { get; set; }
         public LongFilter From { get; set; }
         public LongFilter To { get; set; }
-        public List<ComboInItemMappingFilter> OrFilter { get; set; }
-        public ComboInItemMappingOrder OrderBy {get; set;}
-        public ComboInItemMappingSelect Selects {get; set;}
+        public List<PromotionComboInItemMappingFilter> OrFilter { get; set; }
+        public PromotionComboInItemMappingOrder OrderBy {get; set;}
+        public PromotionComboInItemMappingSelect Selects {get; set;}
     }
 
     [JsonConverter(typeof(StringEnumConverter))]
-    public enum ComboInItemMappingOrder
+    public enum PromotionComboInItemMappingOrder
     {
-        Combo = 0,
+        PromotionCombo = 0,
         Item = 1,
         From = 2,
         To = 3,
     }
 
     [Flags]
-    public enum ComboInItemMappingSelect:long
+    public enum PromotionComboInItemMappingSelect:long
     {
         ALL = E.ALL,
-        Combo = E._0,
+        PromotionCombo = E._0,
         Item = E._1,
         From = E._2,
         To = E._3,

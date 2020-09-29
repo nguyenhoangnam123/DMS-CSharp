@@ -244,6 +244,7 @@ namespace DMS.Rpc.promotion
                     PromotionId = x.PromotionId,
                     DiscountPercentage = x.DiscountPercentage,
                     DiscountValue = x.DiscountValue,
+                    Price = x.Price,
                     PromotionDiscountType = x.PromotionDiscountType == null ? null : new PromotionDiscountType
                     {
                         Id = x.PromotionDiscountType.Id,
@@ -320,7 +321,7 @@ namespace DMS.Rpc.promotion
                         Name = x.PromotionPolicy.Name,
                     },
                 }).ToList();
-            PromotionPromotionPolicyMapping = await PromotionService.UpdateDirectSalesOrder(PromotionPromotionPolicyMapping);
+            PromotionPromotionPolicyMapping = await PromotionService.UpdateSamePrice(PromotionPromotionPolicyMapping);
             Promotion_PromotionPromotionPolicyMappingDTO = new Promotion_PromotionPromotionPolicyMappingDTO(PromotionPromotionPolicyMapping);
             if (PromotionPromotionPolicyMapping.IsValidated)
                 return Promotion_PromotionPromotionPolicyMappingDTO;

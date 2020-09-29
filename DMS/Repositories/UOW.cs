@@ -15,7 +15,6 @@ namespace DMS.Repositories
         IBannerRepository BannerRepository { get; }
         IBrandRepository BrandRepository { get; }
         IColorRepository ColorRepository { get; }
-        IComboRepository ComboRepository { get; }
         IDirectSalesOrderContentRepository DirectSalesOrderContentRepository { get; }
         IDirectSalesOrderRepository DirectSalesOrderRepository { get; }
         IDirectSalesOrderPromotionRepository DirectSalesOrderPromotionRepository { get; }
@@ -131,7 +130,6 @@ namespace DMS.Repositories
         public IBannerRepository BannerRepository { get; private set; }
         public IBrandRepository BrandRepository { get; private set; }
         public IColorRepository ColorRepository { get; private set; }
-        public IComboRepository ComboRepository { get; private set; }
         public IDirectSalesOrderContentRepository DirectSalesOrderContentRepository { get; private set; }
         public IDirectSalesOrderRepository DirectSalesOrderRepository { get; private set; }
         public IDirectSalesOrderPromotionRepository DirectSalesOrderPromotionRepository { get; private set; }
@@ -246,7 +244,6 @@ namespace DMS.Repositories
             BrandRepository = new BrandRepository(DataContext);
             BannerRepository = new BannerRepository(DataContext);
             ColorRepository = new ColorRepository(DataContext);
-            ComboRepository = new ComboRepository(DataContext);
             DirectSalesOrderContentRepository = new DirectSalesOrderContentRepository(DataContext);
             DirectSalesOrderRepository = new DirectSalesOrderRepository(DataContext);
             DirectSalesOrderPromotionRepository = new DirectSalesOrderPromotionRepository(DataContext);
