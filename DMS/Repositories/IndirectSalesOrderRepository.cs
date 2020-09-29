@@ -544,7 +544,7 @@ namespace DMS.Repositories
                 var query2 = from q in IndirectSalesOrderDAOs
                              join r in DataContext.RequestWorkflowDefinitionMapping on q.RowId equals r.RequestId into result
                              from r in result.DefaultIfEmpty()
-                             where r == null && q.RequestStateId != RequestStateEnum.NEW.Id
+                             where r == null && q.RequestStateId != RequestStateEnum.NEW.Id && q.SaleEmployeeId == filter.ApproverId.Equal
                              select q;
                 IndirectSalesOrderDAOs = query1.Union(query2);
             }
@@ -570,7 +570,7 @@ namespace DMS.Repositories
                 var query2 = from q in IndirectSalesOrderDAOs
                              join r in DataContext.RequestWorkflowDefinitionMapping on q.RowId equals r.RequestId into result
                              from r in result.DefaultIfEmpty()
-                             where r == null && q.RequestStateId != RequestStateEnum.NEW.Id
+                             where r == null && q.RequestStateId != RequestStateEnum.NEW.Id && q.SaleEmployeeId == filter.ApproverId.Equal
                              select q;
                 IndirectSalesOrderDAOs = query1.Union(query2);
             }
