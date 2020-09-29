@@ -45,7 +45,34 @@ namespace DMS.Services.MWorkflow
 
         public async Task<List<RequestWorkflowStepMapping>> ListRequestWorkflowStepMapping(Guid RequestId)
         {
-            List<RequestWorkflowStepMapping> RequestWorkflowStepMappings = await UOW.RequestWorkflowStepMappingRepository.List(RequestId);
+            List<RequestWorkflowHistory> RequestWorkflowHistories = await UOW.RequestWorkflowHistoryRepository.List(RequestId);
+            List<RequestWorkflowStepMapping> RequestWorkflowStepMappings = RequestWorkflowHistories.Select(x => new RequestWorkflowStepMapping
+            {
+                AppUserId = x.AppUserId,
+                CreatedAt = x.CreatedAt,
+                RequestId = x.RequestId,
+                UpdatedAt = x.UpdatedAt,
+                WorkflowStateId = x.WorkflowStateId,
+                WorkflowStepId = x.WorkflowStepId,
+                AppUser = x.AppUser == null ? null : new AppUser
+                {
+                    Id = x.AppUser.Id,
+                    Username = x.AppUser.Username,
+                    DisplayName = x.AppUser.DisplayName,
+                },
+                WorkflowState = x.WorkflowState == null ? null : new WorkflowState
+                {
+                    Id = x.WorkflowState.Id,
+                    Code = x.WorkflowState.Code,
+                    Name = x.WorkflowState.Name,
+                },
+                WorkflowStep = x.WorkflowStep == null ? null : new WorkflowStep
+                {
+                    Id = x.WorkflowStep.Id,
+                    Code = x.WorkflowStep.Code,
+                    Name = x.WorkflowStep.Name,
+                },
+            }).ToList();
             foreach (RequestWorkflowStepMapping RequestWorkflowStepMapping in RequestWorkflowStepMappings)
             {
                 if (RequestWorkflowStepMapping.WorkflowStateId == WorkflowStateEnum.PENDING.Id)

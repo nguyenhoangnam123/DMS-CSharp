@@ -95,7 +95,7 @@ namespace DMS.Rpc.indirect_sales_order
 
             IndirectSalesOrderFilter IndirectSalesOrderFilter = ConvertFilterDTOToFilterEntity(IndirectSalesOrder_IndirectSalesOrderFilterDTO);
             IndirectSalesOrderFilter = await IndirectSalesOrderService.ToFilter(IndirectSalesOrderFilter);
-            int count = await IndirectSalesOrderService.CountAll(IndirectSalesOrderFilter);
+            int count = await IndirectSalesOrderService.Count(IndirectSalesOrderFilter);
             return count;
         }
 
@@ -107,7 +107,7 @@ namespace DMS.Rpc.indirect_sales_order
 
             IndirectSalesOrderFilter IndirectSalesOrderFilter = ConvertFilterDTOToFilterEntity(IndirectSalesOrder_IndirectSalesOrderFilterDTO);
             IndirectSalesOrderFilter = await IndirectSalesOrderService.ToFilter(IndirectSalesOrderFilter);
-            List<IndirectSalesOrder> IndirectSalesOrders = await IndirectSalesOrderService.ListAll(IndirectSalesOrderFilter);
+            List<IndirectSalesOrder> IndirectSalesOrders = await IndirectSalesOrderService.List(IndirectSalesOrderFilter);
             List<IndirectSalesOrder_IndirectSalesOrderDTO> IndirectSalesOrder_IndirectSalesOrderDTOs = IndirectSalesOrders
                 .Select(c => new IndirectSalesOrder_IndirectSalesOrderDTO(c)).ToList();
             return IndirectSalesOrder_IndirectSalesOrderDTOs;
@@ -204,18 +204,19 @@ namespace DMS.Rpc.indirect_sales_order
                 return Forbid();
 
             IndirectSalesOrder IndirectSalesOrder = await IndirectSalesOrderService.Get(IndirectSalesOrder_IndirectSalesOrderDTO.Id);
-            List<TaxType> TaxTypes = await TaxTypeService.List(new TaxTypeFilter
-            {
-                Skip = 0,
-                Take = int.MaxValue,
-                Selects = TaxTypeSelect.ALL
-            });
             IndirectSalesOrder_IndirectSalesOrderDTO = new IndirectSalesOrder_IndirectSalesOrderDTO(IndirectSalesOrder);
-            foreach (var IndirectSalesOrderContent in IndirectSalesOrder_IndirectSalesOrderDTO.IndirectSalesOrderContents)
-            {
-                TaxType TaxType = TaxTypes.Where(x => x.Percentage == IndirectSalesOrderContent.TaxPercentage).FirstOrDefault();
-                IndirectSalesOrderContent.TaxType = new IndirectSalesOrder_TaxTypeDTO(TaxType);
-            }
+            
+            return IndirectSalesOrder_IndirectSalesOrderDTO;
+        }
+
+        [Route(IndirectSalesOrderRoute.GetDetail), HttpPost]
+        public async Task<ActionResult<IndirectSalesOrder_IndirectSalesOrderDTO>> GetDetail([FromBody] IndirectSalesOrder_IndirectSalesOrderDTO IndirectSalesOrder_IndirectSalesOrderDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            IndirectSalesOrder IndirectSalesOrder = await IndirectSalesOrderService.GetDetail(IndirectSalesOrder_IndirectSalesOrderDTO.Id);
+            IndirectSalesOrder_IndirectSalesOrderDTO = new IndirectSalesOrder_IndirectSalesOrderDTO(IndirectSalesOrder);
             return IndirectSalesOrder_IndirectSalesOrderDTO;
         }
 

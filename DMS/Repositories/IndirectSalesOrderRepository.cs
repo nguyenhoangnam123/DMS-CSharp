@@ -16,9 +16,6 @@ namespace DMS.Repositories
         Task<int> Count(IndirectSalesOrderFilter IndirectSalesOrderFilter);
         Task<List<IndirectSalesOrder>> List(IndirectSalesOrderFilter IndirectSalesOrderFilter);
 
-        Task<int> CountAll(IndirectSalesOrderFilter IndirectSalesOrderFilter);
-        Task<List<IndirectSalesOrder>> ListAll(IndirectSalesOrderFilter IndirectSalesOrderFilter);
-
         Task<int> CountNew(IndirectSalesOrderFilter IndirectSalesOrderFilter);
         Task<List<IndirectSalesOrder>> ListNew(IndirectSalesOrderFilter IndirectSalesOrderFilter);
 
@@ -117,7 +114,7 @@ namespace DMS.Repositories
                 query = query.Where(q => q.TotalTaxAmount, filter.TotalTaxAmount);
             if (filter.Total != null)
                 query = query.Where(q => q.Total, filter.Total);
-            query = OrFilter(query, filter);
+            
             return query;
         }
 
@@ -409,6 +406,7 @@ namespace DMS.Repositories
         {
             IQueryable<IndirectSalesOrderDAO> IndirectSalesOrderDAOs = DataContext.IndirectSalesOrder.AsNoTracking();
             IndirectSalesOrderDAOs = DynamicFilter(IndirectSalesOrderDAOs, filter);
+            IndirectSalesOrderDAOs = OrFilter(IndirectSalesOrderDAOs, filter);
             return await IndirectSalesOrderDAOs.Distinct().CountAsync();
         }
 
@@ -417,6 +415,7 @@ namespace DMS.Repositories
             if (filter == null) return new List<IndirectSalesOrder>();
             IQueryable<IndirectSalesOrderDAO> IndirectSalesOrderDAOs = DataContext.IndirectSalesOrder.AsNoTracking();
             IndirectSalesOrderDAOs = DynamicFilter(IndirectSalesOrderDAOs, filter);
+            IndirectSalesOrderDAOs = OrFilter(IndirectSalesOrderDAOs, filter);
             IndirectSalesOrderDAOs = DynamicOrder(IndirectSalesOrderDAOs, filter);
             List<IndirectSalesOrder> IndirectSalesOrders = await DynamicSelect(IndirectSalesOrderDAOs, filter);
             return IndirectSalesOrders;
@@ -891,6 +890,24 @@ namespace DMS.Repositories
                     },
                 }).ToListAsync();
 
+            if (IndirectSalesOrder.IndirectSalesOrderContents != null)
+            {
+                List<TaxType> TaxTypes = await DataContext.TaxType.Where(x => x.StatusId == StatusEnum.ACTIVE.Id)
+                    .Select(x => new TaxType
+                    {
+                        Id = x.Id,
+                        Code = x.Code,
+                        Name = x.Name,
+                        Percentage = x.Percentage,
+                        StatusId = x.StatusId,
+                    }).ToListAsync();
+
+                foreach (var IndirectSalesOrderContent in IndirectSalesOrder.IndirectSalesOrderContents)
+                {
+                    TaxType TaxType = TaxTypes.Where(x => x.Percentage == IndirectSalesOrderContent.TaxPercentage).FirstOrDefault();
+                    IndirectSalesOrderContent.TaxType = TaxType;
+                }
+            }
             return IndirectSalesOrder;
         }
         public async Task<bool> Create(IndirectSalesOrder IndirectSalesOrder)
