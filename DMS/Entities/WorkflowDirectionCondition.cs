@@ -12,6 +12,7 @@ namespace DMS.Entities
         public long WorkflowOperatorId { get; set; }
         public string Value { get; set; }
         public string ValueString { get; set; }
+        public bool Used { get; set; }
         public WorkflowDirection WorkflowDirection { get; set; }
         public WorkflowOperator WorkflowOperator { get; set; }
         public WorkflowParameter WorkflowParameter { get; set; }

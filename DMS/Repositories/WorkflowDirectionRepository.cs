@@ -175,6 +175,7 @@ namespace DMS.Repositories
                     EndDate = q.WorkflowDefinition.EndDate,
                     StatusId = q.WorkflowDefinition.StatusId,
                 } : null,
+                Used = q.WorkflowDefinition.Used,
             }).ToListAsync();
             return WorkflowDirections;
         }
@@ -277,6 +278,7 @@ namespace DMS.Repositories
                     WorkflowDirectionId = x.WorkflowDirectionId,
                     WorkflowOperatorId = x.WorkflowOperatorId,
                     WorkflowParameterId = x.WorkflowParameterId,
+                    Used = x.WorkflowDirection.WorkflowDefinition.Used,
                     WorkflowOperator = new WorkflowOperator
                     {
                         Id = x.WorkflowOperator.Id,
