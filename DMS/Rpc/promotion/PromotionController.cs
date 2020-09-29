@@ -289,6 +289,346 @@ namespace DMS.Rpc.promotion
                 return BadRequest(Promotion_PromotionPromotionPolicyMappingDTO);
         }
 
+        [Route(PromotionRoute.UpdateProduct), HttpPost]
+        public async Task<ActionResult<Promotion_PromotionPromotionPolicyMappingDTO>> UpdateProduct([FromBody] Promotion_PromotionPromotionPolicyMappingDTO Promotion_PromotionPromotionPolicyMappingDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            if (!await HasPermission(Promotion_PromotionPromotionPolicyMappingDTO.PromotionId))
+                return Forbid();
+
+            PromotionPromotionPolicyMapping PromotionPromotionPolicyMapping = new PromotionPromotionPolicyMapping();
+            PromotionPromotionPolicyMapping.Note = Promotion_PromotionPromotionPolicyMappingDTO.Note;
+            PromotionPromotionPolicyMapping.PromotionPolicy = Promotion_PromotionPromotionPolicyMappingDTO.PromotionPolicy == null ? null : new PromotionPolicy
+            {
+                Id = Promotion_PromotionPromotionPolicyMappingDTO.PromotionPolicy.Id,
+                Code = Promotion_PromotionPromotionPolicyMappingDTO.PromotionPolicy.Code,
+                Name = Promotion_PromotionPromotionPolicyMappingDTO.PromotionPolicy.Name,
+            };
+            PromotionPromotionPolicyMapping.PromotionPolicy.PromotionProducts = Promotion_PromotionPromotionPolicyMappingDTO.PromotionPolicy.PromotionProducts?
+                .Select(x => new PromotionProduct
+                {
+                    Id = x.Id,
+                    PromotionPolicyId = x.PromotionPolicyId,
+                    ProductId = x.ProductId,
+                    Note = x.Note,
+                    FromValue = x.FromValue,
+                    ToValue = x.ToValue,
+                    PromotionDiscountTypeId = x.PromotionDiscountTypeId,
+                    PromotionId = x.PromotionId,
+                    DiscountPercentage = x.DiscountPercentage,
+                    DiscountValue = x.DiscountValue,
+                    Price = x.Price,
+                    Product = x.Product == null ? null : new Product
+                    {
+                        Id = x.Product.Id,
+                        Code = x.Product.Code,
+                        Name = x.Product.Name,
+                    },
+                    PromotionDiscountType = x.PromotionDiscountType == null ? null : new PromotionDiscountType
+                    {
+                        Id = x.PromotionDiscountType.Id,
+                        Code = x.PromotionDiscountType.Code,
+                        Name = x.PromotionDiscountType.Name,
+                    },
+                    PromotionPolicy = x.PromotionPolicy == null ? null : new PromotionPolicy
+                    {
+                        Id = x.PromotionPolicy.Id,
+                        Code = x.PromotionPolicy.Code,
+                        Name = x.PromotionPolicy.Name,
+                    },
+                    PromotionProductItemMappings = x.PromotionProductItemMappings?.Select(x => new PromotionProductItemMapping
+                    {
+                        PromotionProductId = x.PromotionProductId,
+                        ItemId = x.ItemId,
+                        Quantity = x.Quantity,
+                        Item = x.Item == null ? null : new Item
+                        {
+                            Id = x.Item.Id,
+                            Code = x.Item.Code,
+                            Name = x.Item.Name,
+                            ItemImageMappings = x.Item.ItemImageMappings.Select(i => new ItemImageMapping
+                            {
+                                ItemId = i.ItemId,
+                                ImageId = i.ImageId,
+                                Image = i.Image == null ? null : new Image
+                                {
+                                    Id = i.Image.Id,
+                                    Url = i.Image.Url,
+                                    ThumbnailUrl = i.Image.ThumbnailUrl,
+                                }
+                            }).ToList()
+                        }
+                    }).ToList()
+                }).ToList();
+            PromotionPromotionPolicyMapping = await PromotionService.UpdateProduct(PromotionPromotionPolicyMapping);
+            Promotion_PromotionPromotionPolicyMappingDTO = new Promotion_PromotionPromotionPolicyMappingDTO(PromotionPromotionPolicyMapping);
+            if (PromotionPromotionPolicyMapping.IsValidated)
+                return Promotion_PromotionPromotionPolicyMappingDTO;
+            else
+                return BadRequest(Promotion_PromotionPromotionPolicyMappingDTO);
+        }
+
+        [Route(PromotionRoute.UpdateProductGrouping), HttpPost]
+        public async Task<ActionResult<Promotion_PromotionPromotionPolicyMappingDTO>> UpdateProductGrouping([FromBody] Promotion_PromotionPromotionPolicyMappingDTO Promotion_PromotionPromotionPolicyMappingDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            if (!await HasPermission(Promotion_PromotionPromotionPolicyMappingDTO.PromotionId))
+                return Forbid();
+
+            PromotionPromotionPolicyMapping PromotionPromotionPolicyMapping = new PromotionPromotionPolicyMapping();
+            PromotionPromotionPolicyMapping.Note = Promotion_PromotionPromotionPolicyMappingDTO.Note;
+            PromotionPromotionPolicyMapping.PromotionPolicy = Promotion_PromotionPromotionPolicyMappingDTO.PromotionPolicy == null ? null : new PromotionPolicy
+            {
+                Id = Promotion_PromotionPromotionPolicyMappingDTO.PromotionPolicy.Id,
+                Code = Promotion_PromotionPromotionPolicyMappingDTO.PromotionPolicy.Code,
+                Name = Promotion_PromotionPromotionPolicyMappingDTO.PromotionPolicy.Name,
+            };
+            PromotionPromotionPolicyMapping.PromotionPolicy.PromotionProductGroupings = Promotion_PromotionPromotionPolicyMappingDTO.PromotionPolicy.PromotionProductGroupings?
+                .Select(x => new PromotionProductGrouping
+                {
+                    Id = x.Id,
+                    PromotionPolicyId = x.PromotionPolicyId,
+                    ProductGroupingId = x.ProductGroupingId,
+                    Note = x.Note,
+                    FromValue = x.FromValue,
+                    ToValue = x.ToValue,
+                    PromotionDiscountTypeId = x.PromotionDiscountTypeId,
+                    PromotionId = x.PromotionId,
+                    DiscountPercentage = x.DiscountPercentage,
+                    DiscountValue = x.DiscountValue,
+                    Price = x.Price,
+                    ProductGrouping = x.ProductGrouping == null ? null : new ProductGrouping
+                    {
+                        Id = x.ProductGrouping.Id,
+                        Code = x.ProductGrouping.Code,
+                        Name = x.ProductGrouping.Name,
+                    },
+                    PromotionDiscountType = x.PromotionDiscountType == null ? null : new PromotionDiscountType
+                    {
+                        Id = x.PromotionDiscountType.Id,
+                        Code = x.PromotionDiscountType.Code,
+                        Name = x.PromotionDiscountType.Name,
+                    },
+                    PromotionPolicy = x.PromotionPolicy == null ? null : new PromotionPolicy
+                    {
+                        Id = x.PromotionPolicy.Id,
+                        Code = x.PromotionPolicy.Code,
+                        Name = x.PromotionPolicy.Name,
+                    },
+                    PromotionProductGroupingItemMappings = x.PromotionProductGroupingItemMappings?.Select(x => new PromotionProductGroupingItemMapping
+                    {
+                        PromotionProductGroupingId = x.PromotionProductGroupingId,
+                        ItemId = x.ItemId,
+                        Quantity = x.Quantity,
+                        Item = x.Item == null ? null : new Item
+                        {
+                            Id = x.Item.Id,
+                            Code = x.Item.Code,
+                            Name = x.Item.Name,
+                            ItemImageMappings = x.Item.ItemImageMappings.Select(i => new ItemImageMapping
+                            {
+                                ItemId = i.ItemId,
+                                ImageId = i.ImageId,
+                                Image = i.Image == null ? null : new Image
+                                {
+                                    Id = i.Image.Id,
+                                    Url = i.Image.Url,
+                                    ThumbnailUrl = i.Image.ThumbnailUrl,
+                                }
+                            }).ToList()
+                        }
+                    }).ToList()
+                }).ToList();
+            PromotionPromotionPolicyMapping = await PromotionService.UpdateProductGrouping(PromotionPromotionPolicyMapping);
+            Promotion_PromotionPromotionPolicyMappingDTO = new Promotion_PromotionPromotionPolicyMappingDTO(PromotionPromotionPolicyMapping);
+            if (PromotionPromotionPolicyMapping.IsValidated)
+                return Promotion_PromotionPromotionPolicyMappingDTO;
+            else
+                return BadRequest(Promotion_PromotionPromotionPolicyMappingDTO);
+        }
+
+        [Route(PromotionRoute.UpdateProductType), HttpPost]
+        public async Task<ActionResult<Promotion_PromotionPromotionPolicyMappingDTO>> UpdateProductType([FromBody] Promotion_PromotionPromotionPolicyMappingDTO Promotion_PromotionPromotionPolicyMappingDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            if (!await HasPermission(Promotion_PromotionPromotionPolicyMappingDTO.PromotionId))
+                return Forbid();
+
+            PromotionPromotionPolicyMapping PromotionPromotionPolicyMapping = new PromotionPromotionPolicyMapping();
+            PromotionPromotionPolicyMapping.Note = Promotion_PromotionPromotionPolicyMappingDTO.Note;
+            PromotionPromotionPolicyMapping.PromotionPolicy = Promotion_PromotionPromotionPolicyMappingDTO.PromotionPolicy == null ? null : new PromotionPolicy
+            {
+                Id = Promotion_PromotionPromotionPolicyMappingDTO.PromotionPolicy.Id,
+                Code = Promotion_PromotionPromotionPolicyMappingDTO.PromotionPolicy.Code,
+                Name = Promotion_PromotionPromotionPolicyMappingDTO.PromotionPolicy.Name,
+            };
+            PromotionPromotionPolicyMapping.PromotionPolicy.PromotionProductTypes = Promotion_PromotionPromotionPolicyMappingDTO.PromotionPolicy.PromotionProductTypes?
+                .Select(x => new PromotionProductType
+                {
+                    Id = x.Id,
+                    PromotionPolicyId = x.PromotionPolicyId,
+                    ProductTypeId = x.ProductTypeId,
+                    Note = x.Note,
+                    FromValue = x.FromValue,
+                    ToValue = x.ToValue,
+                    PromotionDiscountTypeId = x.PromotionDiscountTypeId,
+                    PromotionId = x.PromotionId,
+                    DiscountPercentage = x.DiscountPercentage,
+                    DiscountValue = x.DiscountValue,
+                    Price = x.Price,
+                    ProductType = x.ProductType == null ? null : new ProductType
+                    {
+                        Id = x.ProductType.Id,
+                        Code = x.ProductType.Code,
+                        Name = x.ProductType.Name,
+                    },
+                    PromotionDiscountType = x.PromotionDiscountType == null ? null : new PromotionDiscountType
+                    {
+                        Id = x.PromotionDiscountType.Id,
+                        Code = x.PromotionDiscountType.Code,
+                        Name = x.PromotionDiscountType.Name,
+                    },
+                    PromotionPolicy = x.PromotionPolicy == null ? null : new PromotionPolicy
+                    {
+                        Id = x.PromotionPolicy.Id,
+                        Code = x.PromotionPolicy.Code,
+                        Name = x.PromotionPolicy.Name,
+                    },
+                    PromotionProductTypeItemMappings = x.PromotionProductTypeItemMappings?.Select(x => new PromotionProductTypeItemMapping
+                    {
+                        PromotionProductTypeId = x.PromotionProductTypeId,
+                        ItemId = x.ItemId,
+                        Quantity = x.Quantity,
+                        Item = x.Item == null ? null : new Item
+                        {
+                            Id = x.Item.Id,
+                            Code = x.Item.Code,
+                            Name = x.Item.Name,
+                            ItemImageMappings = x.Item.ItemImageMappings.Select(i => new ItemImageMapping
+                            {
+                                ItemId = i.ItemId,
+                                ImageId = i.ImageId,
+                                Image = i.Image == null ? null : new Image
+                                {
+                                    Id = i.Image.Id,
+                                    Url = i.Image.Url,
+                                    ThumbnailUrl = i.Image.ThumbnailUrl,
+                                }
+                            }).ToList()
+                        }
+                    }).ToList()
+                }).ToList();
+            PromotionPromotionPolicyMapping = await PromotionService.UpdateProductType(PromotionPromotionPolicyMapping);
+            Promotion_PromotionPromotionPolicyMappingDTO = new Promotion_PromotionPromotionPolicyMappingDTO(PromotionPromotionPolicyMapping);
+            if (PromotionPromotionPolicyMapping.IsValidated)
+                return Promotion_PromotionPromotionPolicyMappingDTO;
+            else
+                return BadRequest(Promotion_PromotionPromotionPolicyMappingDTO);
+        }
+
+        [Route(PromotionRoute.UpdateCombo), HttpPost]
+        public async Task<ActionResult<Promotion_PromotionPromotionPolicyMappingDTO>> UpdateCombo([FromBody] Promotion_PromotionPromotionPolicyMappingDTO Promotion_PromotionPromotionPolicyMappingDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            if (!await HasPermission(Promotion_PromotionPromotionPolicyMappingDTO.PromotionId))
+                return Forbid();
+
+            PromotionPromotionPolicyMapping PromotionPromotionPolicyMapping = new PromotionPromotionPolicyMapping();
+            PromotionPromotionPolicyMapping.Note = Promotion_PromotionPromotionPolicyMappingDTO.Note;
+            PromotionPromotionPolicyMapping.PromotionPolicy = Promotion_PromotionPromotionPolicyMappingDTO.PromotionPolicy == null ? null : new PromotionPolicy
+            {
+                Id = Promotion_PromotionPromotionPolicyMappingDTO.PromotionPolicy.Id,
+                Code = Promotion_PromotionPromotionPolicyMappingDTO.PromotionPolicy.Code,
+                Name = Promotion_PromotionPromotionPolicyMappingDTO.PromotionPolicy.Name,
+            };
+            PromotionPromotionPolicyMapping.PromotionPolicy.PromotionCombos = Promotion_PromotionPromotionPolicyMappingDTO.PromotionPolicy.PromotionCombos?
+                .Select(x => new PromotionCombo
+                {
+                    Id = x.Id,
+                    PromotionPolicyId = x.PromotionPolicyId,
+                    Name = x.Name,
+                    Note = x.Note,
+                    PromotionDiscountTypeId = x.PromotionDiscountTypeId,
+                    PromotionId = x.PromotionId,
+                    DiscountPercentage = x.DiscountPercentage,
+                    DiscountValue = x.DiscountValue,
+                    Price = x.Price,
+                    PromotionDiscountType = x.PromotionDiscountType == null ? null : new PromotionDiscountType
+                    {
+                        Id = x.PromotionDiscountType.Id,
+                        Code = x.PromotionDiscountType.Code,
+                        Name = x.PromotionDiscountType.Name,
+                    },
+                    PromotionPolicy = x.PromotionPolicy == null ? null : new PromotionPolicy
+                    {
+                        Id = x.PromotionPolicy.Id,
+                        Code = x.PromotionPolicy.Code,
+                        Name = x.PromotionPolicy.Name,
+                    },
+                    PromotionComboInItemMappings = x.PromotionComboInItemMappings?.Select(x => new PromotionComboInItemMapping
+                    {
+                        PromotionComboId = x.PromotionComboId,
+                        ItemId = x.ItemId,
+                        From = x.From,
+                        To = x.To,
+                        Item = x.Item == null ? null : new Item
+                        {
+                            Id = x.Item.Id,
+                            Code = x.Item.Code,
+                            Name = x.Item.Name,
+                            ItemImageMappings = x.Item.ItemImageMappings.Select(i => new ItemImageMapping
+                            {
+                                ItemId = i.ItemId,
+                                ImageId = i.ImageId,
+                                Image = i.Image == null ? null : new Image
+                                {
+                                    Id = i.Image.Id,
+                                    Url = i.Image.Url,
+                                    ThumbnailUrl = i.Image.ThumbnailUrl,
+                                }
+                            }).ToList()
+                        }
+                    }).ToList(),
+                    PromotionComboOutItemMappings = x.PromotionComboOutItemMappings?.Select(x => new PromotionComboOutItemMapping
+                    {
+                        PromotionComboId = x.PromotionComboId,
+                        ItemId = x.ItemId,
+                        Quantity = x.Quantity,
+                        Item = x.Item == null ? null : new Item
+                        {
+                            Id = x.Item.Id,
+                            Code = x.Item.Code,
+                            Name = x.Item.Name,
+                            ItemImageMappings = x.Item.ItemImageMappings.Select(i => new ItemImageMapping
+                            {
+                                ItemId = i.ItemId,
+                                ImageId = i.ImageId,
+                                Image = i.Image == null ? null : new Image
+                                {
+                                    Id = i.Image.Id,
+                                    Url = i.Image.Url,
+                                    ThumbnailUrl = i.Image.ThumbnailUrl,
+                                }
+                            }).ToList()
+                        }
+                    }).ToList()
+                }).ToList();
+            PromotionPromotionPolicyMapping = await PromotionService.UpdateCombo(PromotionPromotionPolicyMapping);
+            Promotion_PromotionPromotionPolicyMappingDTO = new Promotion_PromotionPromotionPolicyMappingDTO(PromotionPromotionPolicyMapping);
+            if (PromotionPromotionPolicyMapping.IsValidated)
+                return Promotion_PromotionPromotionPolicyMappingDTO;
+            else
+                return BadRequest(Promotion_PromotionPromotionPolicyMappingDTO);
+        }
+
         [Route(PromotionRoute.UpdateSamePrice), HttpPost]
         public async Task<ActionResult<Promotion_PromotionPromotionPolicyMappingDTO>> UpdateSamePrice([FromBody] Promotion_PromotionPromotionPolicyMappingDTO Promotion_PromotionPromotionPolicyMappingDTO)
         {

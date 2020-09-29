@@ -20,7 +20,9 @@ namespace DMS.Entities
         public Promotion Promotion { get; set; }
         public PromotionDiscountType PromotionDiscountType { get; set; }
         public PromotionPolicy PromotionPolicy { get; set; }
-
+        public Guid RowId { get; set; }
+        public List<PromotionComboInItemMapping> PromotionComboInItemMappings { get; set; }
+        public List<PromotionComboOutItemMapping> PromotionComboOutItemMappings { get; set; }
         public bool Equals(PromotionCombo other)
         {
             return other != null && Id == other.Id;
