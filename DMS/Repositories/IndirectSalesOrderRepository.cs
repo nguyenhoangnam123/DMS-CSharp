@@ -634,6 +634,13 @@ namespace DMS.Repositories
                 StoreCheckingId = x.StoreCheckingId,
                 CreatedAt = x.CreatedAt,
                 UpdatedAt = x.UpdatedAt,
+                RequestStateId = x.RequestStateId,
+                RequestState = x.RequestState == null ? null : new RequestState
+                {
+                    Id = x.RequestState.Id,
+                    Code = x.RequestState.Code,
+                    Name = x.RequestState.Name,
+                },
                 BuyerStore = x.BuyerStore == null ? null : new Store
                 {
                     Id = x.BuyerStore.Id,
@@ -936,6 +943,7 @@ namespace DMS.Repositories
             IndirectSalesOrderDAO.Total = IndirectSalesOrder.Total;
             IndirectSalesOrderDAO.RowId = Guid.NewGuid();
             IndirectSalesOrderDAO.StoreCheckingId = IndirectSalesOrder.StoreCheckingId;
+            IndirectSalesOrderDAO.RequestStateId = IndirectSalesOrder.RequestStateId;
             IndirectSalesOrderDAO.CreatedAt = StaticParams.DateTimeNow;
             IndirectSalesOrderDAO.UpdatedAt = StaticParams.DateTimeNow;
             DataContext.IndirectSalesOrder.Add(IndirectSalesOrderDAO);
