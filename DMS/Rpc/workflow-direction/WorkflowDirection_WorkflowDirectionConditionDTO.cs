@@ -14,6 +14,7 @@ namespace DMS.Rpc.workflow_direction
         public long WorkflowOperatorId { get; set; }
         public string Value { get; set; }
         public string ValueString { get; set; }
+        public bool Used { get; set; }
         public WorkflowDirection_WorkflowDirectionDTO WorkflowDirection { get; set; }
         public WorkflowDirection_WorkflowOperatorDTO WorkflowOperator { get; set; }
         public WorkflowDirection_WorkflowParameterDTO WorkflowParameter { get; set; }
@@ -26,6 +27,7 @@ namespace DMS.Rpc.workflow_direction
             this.WorkflowOperatorId = WorkflowDirectionCondition.WorkflowOperatorId;
             this.Value = WorkflowDirectionCondition.Value;
             this.ValueString = WorkflowDirectionCondition.ValueString;
+            this.Used = WorkflowDirectionCondition.Used;
            
             this.WorkflowDirection = WorkflowDirectionCondition.WorkflowDirection == null ? null : new WorkflowDirection_WorkflowDirectionDTO(WorkflowDirectionCondition.WorkflowDirection);
             this.WorkflowOperator = WorkflowDirectionCondition.WorkflowOperator == null ? null : new WorkflowDirection_WorkflowOperatorDTO(WorkflowDirectionCondition.WorkflowOperator);

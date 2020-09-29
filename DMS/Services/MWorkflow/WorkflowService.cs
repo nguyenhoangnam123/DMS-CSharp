@@ -701,6 +701,10 @@ namespace DMS.Services.MWorkflow
             return RequestState;
         }
 
+        /// <summary>
+        /// Khi workflow được sử dụng bởi 1 trong các loại request thì nó được đánh dấu là đã sử dụng
+        /// </summary>
+        /// <param name="WorkflowDefinition"></param>
         private void NotifyUsed(WorkflowDefinition WorkflowDefinition)
         {
             {
