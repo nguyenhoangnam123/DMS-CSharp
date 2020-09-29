@@ -17,6 +17,7 @@ namespace DMS.Rpc.promotion
         public long PromotionDiscountTypeId { get; set; }
         public decimal? DiscountPercentage { get; set; }
         public decimal? DiscountValue { get; set; }
+        public decimal? Price { get; set; }
         public Promotion_PromotionDiscountTypeDTO PromotionDiscountType { get; set; }   
         public Promotion_PromotionPolicyDTO PromotionPolicy { get; set; }   
         
@@ -32,6 +33,7 @@ namespace DMS.Rpc.promotion
             this.PromotionDiscountTypeId = PromotionStoreGrouping.PromotionDiscountTypeId;
             this.DiscountPercentage = PromotionStoreGrouping.DiscountPercentage;
             this.DiscountValue = PromotionStoreGrouping.DiscountValue;
+            this.Price = PromotionStoreGrouping.Price;
             this.PromotionDiscountType = PromotionStoreGrouping.PromotionDiscountType == null ? null : new Promotion_PromotionDiscountTypeDTO(PromotionStoreGrouping.PromotionDiscountType);
             this.PromotionPolicy = PromotionStoreGrouping.PromotionPolicy == null ? null : new Promotion_PromotionPolicyDTO(PromotionStoreGrouping.PromotionPolicy);
             this.Errors = PromotionStoreGrouping.Errors;
@@ -58,6 +60,7 @@ namespace DMS.Rpc.promotion
         public DecimalFilter DiscountPercentage { get; set; }
         
         public DecimalFilter DiscountValue { get; set; }
+        public DecimalFilter Price { get; set; }
         
         public PromotionStoreGroupingOrder OrderBy { get; set; }
     }

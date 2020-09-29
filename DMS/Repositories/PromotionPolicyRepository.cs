@@ -177,6 +177,7 @@ namespace DMS.Repositories
                             PromotionDiscountTypeId = x.PromotionDiscountTypeId,
                             DiscountPercentage = x.DiscountPercentage,
                             DiscountValue = x.DiscountValue,
+                            Price = x.Price,
                             PromotionDiscountType = new PromotionDiscountType
                             {
                                 Id = x.PromotionDiscountType.Id,
@@ -190,6 +191,30 @@ namespace DMS.Repositories
                                 Name = x.PromotionPolicy.Name,
                             },
                         }).ToListAsync();
+
+                    var PromotionDirectSalesOrderIds = PromotionPromotionPolicyMapping.PromotionPolicy.PromotionDirectSalesOrders.Select(x => x.Id).ToList();
+                    var PromotionDirectSalesOrderItemMappings = await DataContext.PromotionDirectSalesOrderItemMapping
+                        .Where(x => PromotionDirectSalesOrderIds
+                        .Contains(x.PromotionDirectSalesOrderId))
+                        .ToListAsync();
+
+                    foreach (var PromotionDirectSalesOrder in PromotionPromotionPolicyMapping.PromotionPolicy.PromotionDirectSalesOrders)
+                    {
+                        PromotionDirectSalesOrder.PromotionDirectSalesOrderItemMappings = PromotionDirectSalesOrderItemMappings
+                            .Where(x => x.PromotionDirectSalesOrderId == PromotionDirectSalesOrder.Id)
+                            .Select(x => new PromotionDirectSalesOrderItemMapping
+                            {
+                                ItemId = x.ItemId,
+                                PromotionDirectSalesOrderId = x.PromotionDirectSalesOrderId,
+                                Quantity = x.Quantity,
+                                Item = x.Item == null ? null : new Item
+                                {
+                                    Id = x.Item.Id,
+                                    Code = x.Item.Code,
+                                    Name = x.Item.Name,
+                                }
+                            }).ToList();
+                    }
                 }
                 else if (Id == PromotionPolicyEnum.STORE.Id)
                 {
@@ -206,6 +231,7 @@ namespace DMS.Repositories
                         PromotionDiscountTypeId = x.PromotionDiscountTypeId,
                         DiscountPercentage = x.DiscountPercentage,
                         DiscountValue = x.DiscountValue,
+                        Price = x.Price,
                         PromotionDiscountType = new PromotionDiscountType
                         {
                             Id = x.PromotionDiscountType.Id,
@@ -235,6 +261,7 @@ namespace DMS.Repositories
                         PromotionDiscountTypeId = x.PromotionDiscountTypeId,
                         DiscountPercentage = x.DiscountPercentage,
                         DiscountValue = x.DiscountValue,
+                        Price = x.Price,
                         PromotionDiscountType = new PromotionDiscountType
                         {
                             Id = x.PromotionDiscountType.Id,
@@ -264,6 +291,7 @@ namespace DMS.Repositories
                         PromotionDiscountTypeId = x.PromotionDiscountTypeId,
                         DiscountPercentage = x.DiscountPercentage,
                         DiscountValue = x.DiscountValue,
+                        Price = x.Price,
                         PromotionDiscountType = new PromotionDiscountType
                         {
                             Id = x.PromotionDiscountType.Id,
@@ -294,6 +322,7 @@ namespace DMS.Repositories
                         PromotionDiscountTypeId = x.PromotionDiscountTypeId,
                         DiscountPercentage = x.DiscountPercentage,
                         DiscountValue = x.DiscountValue,
+                        Price = x.Price,
                         Product = new Product
                         {
                             Id = x.Product.Id,
@@ -349,6 +378,7 @@ namespace DMS.Repositories
                         PromotionDiscountTypeId = x.PromotionDiscountTypeId,
                         DiscountPercentage = x.DiscountPercentage,
                         DiscountValue = x.DiscountValue,
+                        Price = x.Price,
                         ProductGrouping = new ProductGrouping
                         {
                             Id = x.ProductGrouping.Id,
@@ -389,6 +419,7 @@ namespace DMS.Repositories
                         PromotionDiscountTypeId = x.PromotionDiscountTypeId,
                         DiscountPercentage = x.DiscountPercentage,
                         DiscountValue = x.DiscountValue,
+                        Price = x.Price,
                         ProductType = new ProductType
                         {
                             Id = x.ProductType.Id,
@@ -419,15 +450,27 @@ namespace DMS.Repositories
                     .Select(x => new PromotionCombo
                     {
                         Id = x.Id,
-                        Note = x.Note,
                         PromotionPolicyId = x.PromotionPolicyId,
                         PromotionId = x.PromotionId,
+                        Note = x.Note,
+                        Name = x.Name,
+                        PromotionDiscountTypeId = x.PromotionDiscountTypeId,
+                        DiscountPercentage = x.DiscountPercentage,
+                        DiscountValue = x.DiscountValue,
+                        Price = x.Price,
+                        PromotionDiscountType = new PromotionDiscountType
+                        {
+                            Id = x.PromotionDiscountType.Id,
+                            Code = x.PromotionDiscountType.Code,
+                            Name = x.PromotionDiscountType.Name,
+                        },
                         PromotionPolicy = new PromotionPolicy
                         {
                             Id = x.PromotionPolicy.Id,
                             Code = x.PromotionPolicy.Code,
                             Name = x.PromotionPolicy.Name,
                         },
+                        
                     }).ToListAsync();
                 }
                 else if (Id == PromotionPolicyEnum.SAME_PRICE.Id)

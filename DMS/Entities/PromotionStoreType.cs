@@ -17,6 +17,7 @@ namespace DMS.Entities
         public long PromotionDiscountTypeId { get; set; }
         public decimal? DiscountPercentage { get; set; }
         public decimal? DiscountValue { get; set; }
+        public decimal? Price { get; set; }
         public Guid RowId { get; set; }
         public Promotion Promotion { get; set; }
         public PromotionDiscountType PromotionDiscountType { get; set; }
@@ -44,6 +45,7 @@ namespace DMS.Entities
         public IdFilter PromotionDiscountTypeId { get; set; }
         public DecimalFilter DiscountPercentage { get; set; }
         public DecimalFilter DiscountValue { get; set; }
+        public DecimalFilter Price { get; set; }
         public List<PromotionStoreTypeFilter> OrFilter { get; set; }
         public PromotionStoreTypeOrder OrderBy {get; set;}
         public PromotionStoreTypeSelect Selects {get; set;}
@@ -61,6 +63,7 @@ namespace DMS.Entities
         PromotionDiscountType = 6,
         DiscountPercentage = 7,
         DiscountValue = 8,
+        Price = 9,
     }
 
     [Flags]
@@ -76,5 +79,6 @@ namespace DMS.Entities
         PromotionDiscountType = E._6,
         DiscountPercentage = E._7,
         DiscountValue = E._8,
+        Price = E._9,
     }
 }
