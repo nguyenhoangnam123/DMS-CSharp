@@ -240,7 +240,7 @@ namespace DMS.Rpc.kpi_item
         }
 
         [Route(KpiItemRoute.Import), HttpPost]
-        public async Task<ActionResult> Import(IFormFile file)
+        public async Task<ActionResult> Import([FromForm] IFormFile file)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);

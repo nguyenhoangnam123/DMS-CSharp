@@ -1,5 +1,7 @@
 ﻿using Common;
 using DMS.Entities;
+using DMS.Enums;
+using DMS.Models;
 using DMS.Services.MAppUser;
 using DMS.Services.MOrganization;
 using DMS.Services.MPosition;
@@ -9,13 +11,20 @@ using DMS.Services.MStatus;
 using DMS.Services.MStore;
 using DMS.Services.MStoreGrouping;
 using DMS.Services.MStoreType;
+using Helpers;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
+using Thinktecture;
+using Thinktecture.EntityFrameworkCore.TempTables;
 
 namespace DMS.Rpc.app_user
 {
@@ -31,6 +40,7 @@ namespace DMS.Rpc.app_user
         private IStoreGroupingService StoreGroupingService;
         private IStoreTypeService StoreTypeService;
         private ICurrentContext CurrentContext;
+        private DataContext DataContext;
         public AppUserController(
             IOrganizationService OrganizationService,
             IPositionService PositionService,
@@ -41,7 +51,8 @@ namespace DMS.Rpc.app_user
             IStoreService StoreService,
             IStoreGroupingService StoreGroupingService,
             IStoreTypeService StoreTypeService,
-            ICurrentContext CurrentContext
+            ICurrentContext CurrentContext,
+            DataContext DataContext
         )
         {
             this.OrganizationService = OrganizationService;
@@ -54,6 +65,7 @@ namespace DMS.Rpc.app_user
             this.StoreGroupingService = StoreGroupingService;
             this.StoreTypeService = StoreTypeService;
             this.CurrentContext = CurrentContext;
+            this.DataContext = DataContext;
         }
 
         [Route(AppUserRoute.Count), HttpPost]
@@ -129,6 +141,219 @@ namespace DMS.Rpc.app_user
                 return AppUser_AppUserDTO;
             else
                 return BadRequest(AppUser_AppUserDTO);
+        }
+
+        [Route(AppUserRoute.ImportStore), HttpPost]
+        public async Task<ActionResult<bool>> ImportStore([FromForm] IFormFile file)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+            FileInfo FileInfo = new FileInfo(file.FileName);
+            if (!FileInfo.Extension.Equals(".xlsx"))
+                return BadRequest(new { message = "Định dạng file không hợp lệ" });
+
+            var AppUser = await AppUserService.Get(CurrentContext.UserId);
+
+            AppUserFilter EmployeeFilter = new AppUserFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = AppUserSelect.Id | AppUserSelect.Username | AppUserSelect.DisplayName,
+                OrganizationId = new IdFilter { Equal = AppUser.OrganizationId }
+            };
+            List<AppUser> Employees = await AppUserService.List(EmployeeFilter);
+
+            List<Store> Stores = await StoreService.List(new StoreFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = StoreSelect.Id | StoreSelect.Code | StoreSelect.CodeDraft | StoreSelect.Name,
+                OrderBy = StoreOrder.Id,
+                OrderType = OrderType.ASC
+            });
+
+            List<AppUser> AppUsers = new List<AppUser>();
+            StringBuilder errorContent = new StringBuilder();
+            using (ExcelPackage excelPackage = new ExcelPackage(file.OpenReadStream()))
+            {
+                ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets["AppUserStore"];
+                if (worksheet == null)
+                    return BadRequest(new { message = "File không đúng biểu mẫu import" });
+
+                int StartColumn = 1;
+                int StartRow = 1;
+                int SttColumn = 0 + StartColumn;
+                int UsernameColumn = 1 + StartColumn;
+                int StoreCodeColumn = 3 + StartColumn;
+
+                for (int i = StartRow; i <= worksheet.Dimension.End.Row; i++)
+                {
+                    string stt = worksheet.Cells[i + StartRow, SttColumn].Value?.ToString();
+                    if (stt != null && stt.ToLower() == "END".ToLower())
+                        break;
+                    string UsernameValue = worksheet.Cells[i + StartRow, UsernameColumn].Value?.ToString();
+                    if (string.IsNullOrWhiteSpace(UsernameValue) && i != worksheet.Dimension.End.Row)
+                    {
+                        errorContent.AppendLine($"Lỗi dòng thứ {i + 1}: Chưa nhập mã nhân viên");
+                    }
+                    else if (string.IsNullOrWhiteSpace(UsernameValue) && i == worksheet.Dimension.End.Row)
+                        break;
+
+                    string StoreCodeValue = worksheet.Cells[i + StartRow, StoreCodeColumn].Value?.ToString();
+                    if (string.IsNullOrWhiteSpace(StoreCodeValue) && i != worksheet.Dimension.End.Row)
+                    {
+                        errorContent.AppendLine($"Lỗi dòng thứ {i + 1}: Chưa nhập mã đại lý");
+                        continue;
+                    }
+                    AppUser appUser;
+                    appUser = Employees.Where(x => x.Username == UsernameValue.Trim()).FirstOrDefault();
+                    if (appUser == null)
+                    {
+                        errorContent.AppendLine($"Lỗi dòng thứ {i + 1}: Nhân viên không tồn tại");
+                        continue;
+                    }
+
+                    Store Store = Stores.Where(x => x.CodeDraft == StoreCodeValue.Trim()).FirstOrDefault();
+                    if(Store == null)
+                    {
+                        errorContent.AppendLine($"Lỗi dòng thứ {i + 1}: Đại lý không tồn tại");
+                        continue;
+                    }
+                    var Employee = AppUsers.Where(x => x.Username == appUser.Username).FirstOrDefault();
+                    if(Employee == null)
+                    {
+                        Employee = new AppUser();
+                        Employee.Id = appUser.Id;
+                        Employee.Username = appUser.Username;
+                        Employee.AppUserStoreMappings = new List<AppUserStoreMapping>();
+                        Employee.AppUserStoreMappings.Add(new AppUserStoreMapping 
+                        {
+                            AppUserId = appUser.Id,
+                            StoreId = Store.Id
+                        });
+                    }
+                    else
+                    {
+                        Employee.AppUserStoreMappings.Add(new AppUserStoreMapping
+                        {
+                            AppUserId = appUser.Id,
+                            StoreId = Store.Id
+                        });
+                    }
+                }
+                if (errorContent.Length > 0)
+                    return BadRequest(errorContent.ToString());
+            }
+
+            return await AppUserService.ImportERouteScope(AppUsers);
+        }
+
+        [Route(AppUserRoute.ExportStore), HttpPost]
+        public async Task<ActionResult> ExportStore([FromBody] AppUser_AppUserFilterDTO AppUser_AppUserFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            AppUserFilter AppUserFilter = new AppUserFilter();
+            AppUserFilter.Skip = 0;
+            AppUserFilter.Take = int.MaxValue;
+            AppUserFilter.OrderBy = AppUserOrder.Username;
+            AppUserFilter.OrderType = OrderType.ASC;
+            AppUserFilter.Selects = AppUserSelect.Id | AppUserSelect.Username | AppUserSelect.DisplayName;
+            AppUserFilter.Username = AppUser_AppUserFilterDTO.Username;
+            AppUserFilter.StatusId = AppUser_AppUserFilterDTO.StatusId;
+            AppUserFilter.DisplayName = AppUser_AppUserFilterDTO.DisplayName;
+            AppUserFilter.Phone = AppUser_AppUserFilterDTO.Phone;
+            AppUserFilter.Email = AppUser_AppUserFilterDTO.Email;
+            AppUserFilter.OrganizationId = AppUser_AppUserFilterDTO.OrganizationId;
+
+            if (AppUserFilter.Id == null) AppUserFilter.Id = new IdFilter();
+            AppUserFilter.Id.In = await FilterAppUser(AppUserService, OrganizationService, CurrentContext);
+
+            List<AppUser> AppUsers = await AppUserService.List(AppUserFilter);
+            var AppUserIds = AppUsers.Select(x => x.Id).ToList();
+
+            ITempTableQuery<TempTable<long>> tempTableQuery = await DataContext
+                       .BulkInsertValuesIntoTempTableAsync<long>(AppUserIds);
+
+            var query = from asm in DataContext.AppUserStoreMapping
+                        join tt in tempTableQuery.Query on asm.AppUserId equals tt.Column1
+                        select asm;
+
+            var AppUserStoreMappings = await query.ToListAsync();
+
+            List<AppUser_AppUserDTO> AppUser_AppUserDTOs = new List<AppUser_AppUserDTO>();
+            long STT = 1;
+            foreach (var AppUser in AppUsers)
+            {
+                AppUser_AppUserDTO AppUser_AppUserDTO = new AppUser_AppUserDTO(AppUser);
+                AppUser_AppUserDTO.STT = STT++;
+                AppUser_AppUserDTO.AppUserStoreMappings = AppUserStoreMappings.Where(x => x.AppUserId == AppUser.Id).Select(x => new AppUser_AppUserStoreMappingDTO
+                {
+                    AppUserId = x.AppUserId,
+                    StoreId = x.StoreId,
+                    Store = x.Store == null ? null : new AppUser_StoreDTO
+                    {
+                        Id = x.Store.Id,
+                        CodeDraft = x.Store.CodeDraft,
+                        Code = x.Store.Code,
+                        Name = x.Store.Name,
+                        Address = x.Store.Address,
+                    },
+                }).ToList();
+                AppUser_AppUserDTOs.Add(AppUser_AppUserDTO);
+            }
+
+            string path = "Templates/Template_AppUser_Store.xlsx";
+            byte[] arr = System.IO.File.ReadAllBytes(path);
+            MemoryStream input = new MemoryStream(arr);
+            MemoryStream output = new MemoryStream();
+            dynamic Data = new ExpandoObject();
+            Data.AppUsers = AppUser_AppUserDTOs;
+            using (var document = StaticParams.DocumentFactory.Open(input, output, "xlsx"))
+            {
+                document.Process(Data);
+            };
+            return File(output.ToArray(), "application/octet-stream", $"AppUser_PhamViDiTuyen.xlsx");
+        }
+
+        [Route(AppUserRoute.ExportTemplateStore), HttpPost]
+        public async Task<ActionResult> ExportTemplateStore()
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            AppUserFilter AppUserFilter = new AppUserFilter();
+            AppUserFilter.Skip = 0;
+            AppUserFilter.Take = int.MaxValue;
+            AppUserFilter.OrderBy = AppUserOrder.Username;
+            AppUserFilter.OrderType = OrderType.ASC;
+            AppUserFilter.Selects = AppUserSelect.Id | AppUserSelect.Username | AppUserSelect.DisplayName;
+
+            if (AppUserFilter.Id == null) AppUserFilter.Id = new IdFilter();
+            AppUserFilter.Id.In = await FilterAppUser(AppUserService, OrganizationService, CurrentContext);
+
+            List<AppUser> AppUsers = await AppUserService.List(AppUserFilter);
+            List<AppUser_AppUserDTO> AppUser_AppUserDTOs = new List<AppUser_AppUserDTO>();
+            long STT = 1;
+            foreach (var AppUser in AppUsers)
+            {
+                AppUser_AppUserDTO AppUser_AppUserDTO = new AppUser_AppUserDTO(AppUser);
+                AppUser_AppUserDTO.STT = STT++;
+                AppUser_AppUserDTOs.Add(AppUser_AppUserDTO);
+            }
+
+            string path = "Templates/AppUser_Store.xlsx";
+            byte[] arr = System.IO.File.ReadAllBytes(path);
+            MemoryStream input = new MemoryStream(arr);
+            MemoryStream output = new MemoryStream();
+            dynamic Data = new ExpandoObject();
+            Data.AppUsers = AppUser_AppUserDTOs;
+            using (var document = StaticParams.DocumentFactory.Open(input, output, "xlsx"))
+            {
+                document.Process(Data);
+            };
+            return File(output.ToArray(), "application/octet-stream", "Template_AppUser_Store.xlsx");
         }
 
         [Route(AppUserRoute.Export), HttpPost]

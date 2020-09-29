@@ -7,6 +7,7 @@ using DMS.Services.MSex;
 using Helpers;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace DMS.Services.MAppUser
@@ -19,6 +20,7 @@ namespace DMS.Services.MAppUser
         Task<AppUser> Update(AppUser AppUser);
         Task<AppUser> UpdateRole(AppUser AppUser);
         Task<AppUser> UpdateGPS(AppUser AppUser);
+        Task<bool> ImportERouteScope(List<AppUser> AppUsers);
         AppUserFilter ToFilter(AppUserFilter AppUserFilter);
     }
 
@@ -167,6 +169,34 @@ namespace DMS.Services.MAppUser
                 await UOW.AppUserRepository.SimpleUpdate(AppUser);
                 AppUser = await UOW.AppUserRepository.Get(AppUser.Id);
                 return AppUser;
+            }
+            catch (Exception ex)
+            {
+                await UOW.Rollback();
+                if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(AppUserService));
+                    throw new MessageException(ex);
+                }
+                else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(AppUserService));
+                    throw new MessageException(ex.InnerException);
+                }
+            }
+        }
+
+        public async Task<bool> ImportERouteScope(List<AppUser> AppUsers)
+        {
+            try
+            {
+                List<AppUserStoreMapping> AppUserStoreMappings = new List<AppUserStoreMapping>();
+                foreach (var AppUser in AppUsers)
+                {
+                    AppUserStoreMappings.AddRange(AppUser.AppUserStoreMappings);
+                }
+                var appUserIds = AppUsers.Select(x => x.Id).ToList();
+                return await UOW.AppUserRepository.BulkMergeERouteScope(AppUserStoreMappings, appUserIds);
             }
             catch (Exception ex)
             {

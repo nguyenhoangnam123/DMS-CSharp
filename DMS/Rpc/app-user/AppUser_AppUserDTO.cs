@@ -8,6 +8,7 @@ namespace DMS.Rpc.app_user
 {
     public class AppUser_AppUserDTO : DataDTO
     {
+        public long STT { get; set; }
         public long Id { get; set; }
         public string Username { get; set; }
         public string Password { get; set; }
