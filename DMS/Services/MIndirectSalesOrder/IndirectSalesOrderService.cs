@@ -85,7 +85,7 @@ namespace DMS.Services.MIndirectSalesOrder
             }
             catch (Exception ex)
             {
-                if (ex.InnerException == null) 
+                if (ex.InnerException == null)
                 {
                     await Logging.CreateSystemLog(ex, nameof(IndirectSalesOrderService));
                     throw new MessageException(ex);
@@ -820,7 +820,7 @@ namespace DMS.Services.MIndirectSalesOrder
             return IndirectSalesOrder;
         }
 
-        private async Task<List<Item>> ApplyPrice(List<Item> Items,long? SalesEmployeeId, long? StoreId)
+        private async Task<List<Item>> ApplyPrice(List<Item> Items, long? SalesEmployeeId, long? StoreId)
         {
             var SalesEmployee = await UOW.AppUserRepository.Get(SalesEmployeeId.Value);
             SystemConfiguration SystemConfiguration = await UOW.SystemConfigurationRepository.Get();
@@ -831,7 +831,7 @@ namespace DMS.Services.MIndirectSalesOrder
                 Selects = OrganizationSelect.ALL,
                 StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id }
             };
-            
+
             var Organizations = await UOW.OrganizationRepository.List(OrganizationFilter);
             var OrganizationIds = Organizations
                 .Where(x => x.Path.StartsWith(SalesEmployee.Organization.Path) || SalesEmployee.Organization.Path.StartsWith(x.Path))
@@ -988,8 +988,7 @@ namespace DMS.Services.MIndirectSalesOrder
             if (IndirectSalesOrder.IsValidated == false)
                 return IndirectSalesOrder;
             Dictionary<string, string> Parameters = await MapParameters(IndirectSalesOrder);
-            await WorkflowService.Send(IndirectSalesOrder.RowId, WorkflowTypeEnum.INDIRECT_SALES_ORDER.Id, IndirectSalesOrder.OrganizationId, Parameters);
-            RequestState RequestState = await WorkflowService.GetRequestState(IndirectSalesOrder.RowId);
+            GenericEnum RequestState = await WorkflowService.Send(IndirectSalesOrder.RowId, WorkflowTypeEnum.INDIRECT_SALES_ORDER.Id, IndirectSalesOrder.OrganizationId, Parameters);
             IndirectSalesOrder.RequestStateId = RequestState.Id;
             await UOW.IndirectSalesOrderRepository.UpdateState(IndirectSalesOrder);
             return await Get(IndirectSalesOrder.Id);
