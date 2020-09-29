@@ -16,6 +16,10 @@ namespace DMS.Services.MPromotion
         Task<bool> Create(Promotion Promotion);
         Task<bool> Update(Promotion Promotion);
         Task<bool> UpdateDirectSalesOrder(PromotionPromotionPolicyMapping PromotionPromotionPolicyMapping);
+        Task<bool> UpdateProduct(PromotionPromotionPolicyMapping PromotionPromotionPolicyMapping);
+        Task<bool> UpdateProductGrouping(PromotionPromotionPolicyMapping PromotionPromotionPolicyMapping);
+        Task<bool> UpdateProductType(PromotionPromotionPolicyMapping PromotionPromotionPolicyMapping);
+        Task<bool> UpdateCombo(PromotionPromotionPolicyMapping PromotionPromotionPolicyMapping);
         Task<bool> UpdateSamePrice(PromotionPromotionPolicyMapping PromotionPromotionPolicyMapping);
         Task<bool> Delete(Promotion Promotion);
         Task<bool> BulkDelete(List<Promotion> Promotions);
@@ -326,6 +330,42 @@ namespace DMS.Services.MPromotion
         }
 
         public async Task<bool> UpdateSamePrice(PromotionPromotionPolicyMapping PromotionPromotionPolicyMapping)
+        {
+            //if (await ValidateId(Promotion))
+            //{
+
+            //}
+            return PromotionPromotionPolicyMapping.IsValidated;
+        }
+
+        public async Task<bool> UpdateProduct(PromotionPromotionPolicyMapping PromotionPromotionPolicyMapping)
+        {
+            //if (await ValidateId(Promotion))
+            //{
+
+            //}
+            return PromotionPromotionPolicyMapping.IsValidated;
+        }
+
+        public async Task<bool> UpdateProductGrouping(PromotionPromotionPolicyMapping PromotionPromotionPolicyMapping)
+        {
+            //if (await ValidateId(Promotion))
+            //{
+
+            //}
+            return PromotionPromotionPolicyMapping.IsValidated;
+        }
+
+        public async Task<bool> UpdateProductType(PromotionPromotionPolicyMapping PromotionPromotionPolicyMapping)
+        {
+            //if (await ValidateId(Promotion))
+            //{
+
+            //}
+            return PromotionPromotionPolicyMapping.IsValidated;
+        }
+
+        public async Task<bool> UpdateCombo(PromotionPromotionPolicyMapping PromotionPromotionPolicyMapping)
         {
             //if (await ValidateId(Promotion))
             //{

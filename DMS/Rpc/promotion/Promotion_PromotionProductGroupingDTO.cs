@@ -22,7 +22,7 @@ namespace DMS.Rpc.promotion
         public Promotion_ProductGroupingDTO ProductGrouping { get; set; }   
         public Promotion_PromotionDiscountTypeDTO PromotionDiscountType { get; set; }   
         public Promotion_PromotionPolicyDTO PromotionPolicy { get; set; }   
-        
+        public List<Promotion_PromotionProductGroupingItemMappingDTO> PromotionProductGroupingItemMappings { get; set; }
         public Promotion_PromotionProductGroupingDTO() {}
         public Promotion_PromotionProductGroupingDTO(PromotionProductGrouping PromotionProductGrouping)
         {
@@ -40,6 +40,7 @@ namespace DMS.Rpc.promotion
             this.ProductGrouping = PromotionProductGrouping.ProductGrouping == null ? null : new Promotion_ProductGroupingDTO(PromotionProductGrouping.ProductGrouping);
             this.PromotionDiscountType = PromotionProductGrouping.PromotionDiscountType == null ? null : new Promotion_PromotionDiscountTypeDTO(PromotionProductGrouping.PromotionDiscountType);
             this.PromotionPolicy = PromotionProductGrouping.PromotionPolicy == null ? null : new Promotion_PromotionPolicyDTO(PromotionProductGrouping.PromotionPolicy);
+            this.PromotionProductGroupingItemMappings = PromotionProductGrouping.PromotionProductGroupingItemMappings?.Select(x => new Promotion_PromotionProductGroupingItemMappingDTO(x)).ToList();
             this.Errors = PromotionProductGrouping.Errors;
         }
     }

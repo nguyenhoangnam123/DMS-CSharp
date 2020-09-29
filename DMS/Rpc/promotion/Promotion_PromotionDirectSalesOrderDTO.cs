@@ -37,6 +37,7 @@ namespace DMS.Rpc.promotion
             this.Price = PromotionDirectSalesOrder.Price;
             this.PromotionDiscountType = PromotionDirectSalesOrder.PromotionDiscountType == null ? null : new Promotion_PromotionDiscountTypeDTO(PromotionDirectSalesOrder.PromotionDiscountType);
             this.PromotionPolicy = PromotionDirectSalesOrder.PromotionPolicy == null ? null : new Promotion_PromotionPolicyDTO(PromotionDirectSalesOrder.PromotionPolicy);
+            this.PromotionDirectSalesOrderItemMappings = PromotionDirectSalesOrder.PromotionDirectSalesOrderItemMappings?.Select(x => new Promotion_PromotionDirectSalesOrderItemMappingDTO(x)).ToList();
             this.Errors = PromotionDirectSalesOrder.Errors;
         }
     }

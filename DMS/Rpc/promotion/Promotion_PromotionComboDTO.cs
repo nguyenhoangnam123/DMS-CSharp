@@ -19,7 +19,8 @@ namespace DMS.Rpc.promotion
         public decimal? Price { get; set; }
         public Promotion_PromotionDiscountTypeDTO PromotionDiscountType { get; set; }
         public Promotion_PromotionPolicyDTO PromotionPolicy { get; set; }
-
+        public List<Promotion_PromotionComboInItemMappingDTO> PromotionComboInItemMappings { get; set; }
+        public List<Promotion_PromotionComboOutItemMappingDTO> PromotionComboOutItemMappings { get; set; }
         public Promotion_PromotionComboDTO() { }
         public Promotion_PromotionComboDTO(PromotionCombo PromotionCombo)
         {
@@ -34,6 +35,8 @@ namespace DMS.Rpc.promotion
             this.Price = PromotionCombo.Price;
             this.PromotionDiscountType = PromotionCombo.PromotionDiscountType == null ? null : new Promotion_PromotionDiscountTypeDTO(PromotionCombo.PromotionDiscountType);
             this.PromotionPolicy = PromotionCombo.PromotionPolicy == null ? null : new Promotion_PromotionPolicyDTO(PromotionCombo.PromotionPolicy);
+            this.PromotionComboInItemMappings = PromotionCombo.PromotionComboInItemMappings?.Select(x => new Promotion_PromotionComboInItemMappingDTO(x)).ToList();
+            this.PromotionComboOutItemMappings = PromotionCombo.PromotionComboOutItemMappings?.Select(x => new Promotion_PromotionComboOutItemMappingDTO(x)).ToList();
             this.Errors = PromotionCombo.Errors;
         }
     }
