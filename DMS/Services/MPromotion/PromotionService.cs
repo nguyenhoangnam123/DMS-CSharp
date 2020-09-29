@@ -108,6 +108,7 @@ namespace DMS.Services.MPromotion
         public async Task<Promotion> CreateDraft()
         {
             Promotion Promotion = new Promotion();
+            Promotion.StartDate = StaticParams.DateTimeNow.AddHours(CurrentContext.TimeZone);
             Promotion.StatusId = StatusEnum.INACTIVE.Id;
             Promotion.PromotionPromotionPolicyMappings = new List<PromotionPromotionPolicyMapping>();
             foreach (var PromotionPolicy in PromotionPolicyEnum.PromotionPolicyEnumList)
