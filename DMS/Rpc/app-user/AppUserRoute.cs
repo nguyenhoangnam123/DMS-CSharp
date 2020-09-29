@@ -17,6 +17,9 @@ namespace DMS.Rpc.app_user
         public const string Update = Default + "/update";
         public const string UpdateRole = Default + "/update-role";
         public const string Export = Default + "/export";
+        public const string ImportStore = Default + "/import-store";
+        public const string ExportStore = Default + "/export-store";
+        public const string ExportTemplateStore = Default + "/export-template-store";
 
         public const string FilterListOrganization = Default + "/filter-list-organization";
         public const string FilterListPosition = Default + "/filter-list-position";
@@ -44,7 +47,7 @@ namespace DMS.Rpc.app_user
         {
             { "Tìm kiếm", new List<string> {
                 Parent, 
-                Master, Count, List, Get,
+                Master, Count, List, Get, ExportTemplateStore,
                 FilterListPosition, FilterListOrganization, FilterListStatus,
                 SingleListOrganization, SingleListPosition, SingleListSex, SingleListStatus, SingleListRole, SingleListStore, SingleListStoreGrouping, SingleListStoreType,
                 }},
@@ -52,7 +55,7 @@ namespace DMS.Rpc.app_user
                 Parent,
                 Master, Count, List, Get,
                 FilterListPosition,
-                Detail, Get, Update,
+                Detail, Get, Update, ImportStore, ExportStore,
                 SingleListOrganization, SingleListPosition, SingleListSex, SingleListStatus, SingleListRole, SingleListStore, SingleListStoreGrouping, SingleListStoreType,
                 CountStore, ListStore }},
             { "Thiết lập vai trò", new List<string> {

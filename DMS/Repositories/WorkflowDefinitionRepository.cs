@@ -491,7 +491,10 @@ namespace DMS.Repositories
 
         public async Task<bool> Delete(WorkflowDefinition WorkflowDefinition)
         {
-            await DataContext.WorkflowDefinition.Where(x => x.Id == WorkflowDefinition.Id).UpdateFromQueryAsync(x => new WorkflowDefinitionDAO { DeletedAt = StaticParams.DateTimeNow });
+            await DataContext.WorkflowDirectionCondition.Where(x => x.WorkflowDirection.WorkflowDefinitionId == WorkflowDefinition.Id).DeleteFromQueryAsync();
+            await DataContext.WorkflowDirection.Where(x => x.WorkflowDefinitionId == WorkflowDefinition.Id).DeleteFromQueryAsync();
+            await DataContext.WorkflowStep.Where(x => x.WorkflowDefinitionId == WorkflowDefinition.Id).DeleteFromQueryAsync();
+            await DataContext.WorkflowDefinition.Where(x => x.Id == WorkflowDefinition.Id).DeleteFromQueryAsync();
             return true;
         }
 

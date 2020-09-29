@@ -9,6 +9,7 @@ namespace DMS.Rpc.app_user
         public long Id { get; set; }
 
         public string Code { get; set; }
+        public string CodeDraft { get; set; }
 
         public string Name { get; set; }
 
@@ -66,6 +67,7 @@ namespace DMS.Rpc.app_user
             this.Id = Store.Id;
 
             this.Code = Store.Code;
+            this.CodeDraft = Store.CodeDraft;
 
             this.Name = Store.Name;
 

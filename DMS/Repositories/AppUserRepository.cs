@@ -7,6 +7,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Thinktecture;
+using Thinktecture.EntityFrameworkCore.TempTables;
 
 namespace DMS.Repositories
 {
@@ -17,6 +19,7 @@ namespace DMS.Repositories
         Task<AppUser> Get(long Id);
         Task<bool> Update(AppUser AppUser);
         Task<bool> SimpleUpdate(AppUser AppUser);
+        Task<bool> BulkMergeERouteScope(List<AppUserStoreMapping> AppUserStoreMappings, List<long> AppUserIds);
     }
     public class AppUserRepository : IAppUserRepository
     {
@@ -521,5 +524,17 @@ namespace DMS.Repositories
             return true;
         }
 
+        public async Task<bool> BulkMergeERouteScope(List<AppUserStoreMapping> AppUserStoreMappings, List<long> AppUserIds)
+        {
+            await DataContext.AppUserStoreMapping.Where(x => AppUserIds.Contains(x.AppUserId)).DeleteFromQueryAsync();
+            List<AppUserStoreMappingDAO> AppUserStoreMappingDAOs = AppUserStoreMappings.Select(x => new AppUserStoreMappingDAO
+            {
+                AppUserId = x.AppUserId,
+                StoreId = x.StoreId
+            }).ToList();
+
+            await DataContext.AppUserStoreMapping.BulkMergeAsync(AppUserStoreMappingDAOs);
+            return true;
+        }
     }
 }
