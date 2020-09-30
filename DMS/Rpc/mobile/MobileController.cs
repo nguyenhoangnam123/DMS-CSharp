@@ -217,300 +217,7 @@ namespace DMS.Rpc.mobile
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
 
-            IndirectSalesOrder IndirectSalesOrder = new IndirectSalesOrder();
-            IndirectSalesOrder.Id = Mobile_IndirectSalesOrderDTO.Id;
-            IndirectSalesOrder.Code = Mobile_IndirectSalesOrderDTO.Code;
-            IndirectSalesOrder.BuyerStoreId = Mobile_IndirectSalesOrderDTO.BuyerStoreId;
-            IndirectSalesOrder.PhoneNumber = Mobile_IndirectSalesOrderDTO.PhoneNumber;
-            IndirectSalesOrder.StoreAddress = Mobile_IndirectSalesOrderDTO.StoreAddress;
-            IndirectSalesOrder.DeliveryAddress = Mobile_IndirectSalesOrderDTO.DeliveryAddress;
-            IndirectSalesOrder.SellerStoreId = Mobile_IndirectSalesOrderDTO.SellerStoreId;
-            IndirectSalesOrder.SaleEmployeeId = Mobile_IndirectSalesOrderDTO.SaleEmployeeId;
-            IndirectSalesOrder.OrganizationId = Mobile_IndirectSalesOrderDTO.OrganizationId;
-            IndirectSalesOrder.OrderDate = Mobile_IndirectSalesOrderDTO.OrderDate;
-            IndirectSalesOrder.DeliveryDate = Mobile_IndirectSalesOrderDTO.DeliveryDate;
-            IndirectSalesOrder.RequestStateId = Mobile_IndirectSalesOrderDTO.RequestStateId;
-            IndirectSalesOrder.EditedPriceStatusId = Mobile_IndirectSalesOrderDTO.EditedPriceStatusId;
-            IndirectSalesOrder.Note = Mobile_IndirectSalesOrderDTO.Note;
-            IndirectSalesOrder.SubTotal = Mobile_IndirectSalesOrderDTO.SubTotal;
-            IndirectSalesOrder.GeneralDiscountPercentage = Mobile_IndirectSalesOrderDTO.GeneralDiscountPercentage;
-            IndirectSalesOrder.GeneralDiscountAmount = Mobile_IndirectSalesOrderDTO.GeneralDiscountAmount;
-            IndirectSalesOrder.TotalTaxAmount = Mobile_IndirectSalesOrderDTO.TotalTaxAmount;
-            IndirectSalesOrder.Total = Mobile_IndirectSalesOrderDTO.Total;
-            IndirectSalesOrder.BuyerStore = Mobile_IndirectSalesOrderDTO.BuyerStore == null ? null : new Store
-            {
-                Id = Mobile_IndirectSalesOrderDTO.BuyerStore.Id,
-                Code = Mobile_IndirectSalesOrderDTO.BuyerStore.Code,
-                Name = Mobile_IndirectSalesOrderDTO.BuyerStore.Name,
-                ParentStoreId = Mobile_IndirectSalesOrderDTO.BuyerStore.ParentStoreId,
-                OrganizationId = Mobile_IndirectSalesOrderDTO.BuyerStore.OrganizationId,
-                StoreTypeId = Mobile_IndirectSalesOrderDTO.BuyerStore.StoreTypeId,
-                StoreGroupingId = Mobile_IndirectSalesOrderDTO.BuyerStore.StoreGroupingId,
-                ResellerId = Mobile_IndirectSalesOrderDTO.BuyerStore.ResellerId,
-                Telephone = Mobile_IndirectSalesOrderDTO.BuyerStore.Telephone,
-                ProvinceId = Mobile_IndirectSalesOrderDTO.BuyerStore.ProvinceId,
-                DistrictId = Mobile_IndirectSalesOrderDTO.BuyerStore.DistrictId,
-                WardId = Mobile_IndirectSalesOrderDTO.BuyerStore.WardId,
-                Address = Mobile_IndirectSalesOrderDTO.BuyerStore.Address,
-                DeliveryAddress = Mobile_IndirectSalesOrderDTO.BuyerStore.DeliveryAddress,
-                Latitude = Mobile_IndirectSalesOrderDTO.BuyerStore.Latitude,
-                Longitude = Mobile_IndirectSalesOrderDTO.BuyerStore.Longitude,
-                DeliveryLatitude = Mobile_IndirectSalesOrderDTO.BuyerStore.DeliveryLatitude,
-                DeliveryLongitude = Mobile_IndirectSalesOrderDTO.BuyerStore.DeliveryLongitude,
-                OwnerName = Mobile_IndirectSalesOrderDTO.BuyerStore.OwnerName,
-                OwnerPhone = Mobile_IndirectSalesOrderDTO.BuyerStore.OwnerPhone,
-                OwnerEmail = Mobile_IndirectSalesOrderDTO.BuyerStore.OwnerEmail,
-                TaxCode = Mobile_IndirectSalesOrderDTO.BuyerStore.TaxCode,
-                LegalEntity = Mobile_IndirectSalesOrderDTO.BuyerStore.LegalEntity,
-                StatusId = Mobile_IndirectSalesOrderDTO.BuyerStore.StatusId,
-            };
-            IndirectSalesOrder.EditedPriceStatus = Mobile_IndirectSalesOrderDTO.EditedPriceStatus == null ? null : new EditedPriceStatus
-            {
-                Id = Mobile_IndirectSalesOrderDTO.EditedPriceStatus.Id,
-                Code = Mobile_IndirectSalesOrderDTO.EditedPriceStatus.Code,
-                Name = Mobile_IndirectSalesOrderDTO.EditedPriceStatus.Name,
-            };
-            IndirectSalesOrder.Organization = Mobile_IndirectSalesOrderDTO.Organization == null ? null : new Organization
-            {
-                Id = Mobile_IndirectSalesOrderDTO.Organization.Id,
-                Code = Mobile_IndirectSalesOrderDTO.Organization.Code,
-                Name = Mobile_IndirectSalesOrderDTO.Organization.Name,
-                ParentId = Mobile_IndirectSalesOrderDTO.Organization.ParentId,
-                Path = Mobile_IndirectSalesOrderDTO.Organization.Path,
-                Level = Mobile_IndirectSalesOrderDTO.Organization.Level,
-                StatusId = Mobile_IndirectSalesOrderDTO.Organization.StatusId,
-                Phone = Mobile_IndirectSalesOrderDTO.Organization.Phone,
-                Address = Mobile_IndirectSalesOrderDTO.Organization.Address,
-                Email = Mobile_IndirectSalesOrderDTO.Organization.Email,
-            };
-            IndirectSalesOrder.SaleEmployee = Mobile_IndirectSalesOrderDTO.SaleEmployee == null ? null : new AppUser
-            {
-                Id = Mobile_IndirectSalesOrderDTO.SaleEmployee.Id,
-                Username = Mobile_IndirectSalesOrderDTO.SaleEmployee.Username,
-                DisplayName = Mobile_IndirectSalesOrderDTO.SaleEmployee.DisplayName,
-                Address = Mobile_IndirectSalesOrderDTO.SaleEmployee.Address,
-                Email = Mobile_IndirectSalesOrderDTO.SaleEmployee.Email,
-                Phone = Mobile_IndirectSalesOrderDTO.SaleEmployee.Phone,
-                PositionId = Mobile_IndirectSalesOrderDTO.SaleEmployee.PositionId,
-                Department = Mobile_IndirectSalesOrderDTO.SaleEmployee.Department,
-                OrganizationId = Mobile_IndirectSalesOrderDTO.SaleEmployee.OrganizationId,
-                SexId = Mobile_IndirectSalesOrderDTO.SaleEmployee.SexId,
-                StatusId = Mobile_IndirectSalesOrderDTO.SaleEmployee.StatusId,
-                Avatar = Mobile_IndirectSalesOrderDTO.SaleEmployee.Avatar,
-                Birthday = Mobile_IndirectSalesOrderDTO.SaleEmployee.Birthday,
-                ProvinceId = Mobile_IndirectSalesOrderDTO.SaleEmployee.ProvinceId,
-            };
-            IndirectSalesOrder.SellerStore = Mobile_IndirectSalesOrderDTO.SellerStore == null ? null : new Store
-            {
-                Id = Mobile_IndirectSalesOrderDTO.SellerStore.Id,
-                Code = Mobile_IndirectSalesOrderDTO.SellerStore.Code,
-                Name = Mobile_IndirectSalesOrderDTO.SellerStore.Name,
-                ParentStoreId = Mobile_IndirectSalesOrderDTO.SellerStore.ParentStoreId,
-                OrganizationId = Mobile_IndirectSalesOrderDTO.SellerStore.OrganizationId,
-                StoreTypeId = Mobile_IndirectSalesOrderDTO.SellerStore.StoreTypeId,
-                StoreGroupingId = Mobile_IndirectSalesOrderDTO.SellerStore.StoreGroupingId,
-                ResellerId = Mobile_IndirectSalesOrderDTO.SellerStore.ResellerId,
-                Telephone = Mobile_IndirectSalesOrderDTO.SellerStore.Telephone,
-                ProvinceId = Mobile_IndirectSalesOrderDTO.SellerStore.ProvinceId,
-                DistrictId = Mobile_IndirectSalesOrderDTO.SellerStore.DistrictId,
-                WardId = Mobile_IndirectSalesOrderDTO.SellerStore.WardId,
-                Address = Mobile_IndirectSalesOrderDTO.SellerStore.Address,
-                DeliveryAddress = Mobile_IndirectSalesOrderDTO.SellerStore.DeliveryAddress,
-                Latitude = Mobile_IndirectSalesOrderDTO.SellerStore.Latitude,
-                Longitude = Mobile_IndirectSalesOrderDTO.SellerStore.Longitude,
-                DeliveryLatitude = Mobile_IndirectSalesOrderDTO.SellerStore.DeliveryLatitude,
-                DeliveryLongitude = Mobile_IndirectSalesOrderDTO.SellerStore.DeliveryLongitude,
-                OwnerName = Mobile_IndirectSalesOrderDTO.SellerStore.OwnerName,
-                OwnerPhone = Mobile_IndirectSalesOrderDTO.SellerStore.OwnerPhone,
-                OwnerEmail = Mobile_IndirectSalesOrderDTO.SellerStore.OwnerEmail,
-                TaxCode = Mobile_IndirectSalesOrderDTO.SellerStore.TaxCode,
-                LegalEntity = Mobile_IndirectSalesOrderDTO.SellerStore.LegalEntity,
-                StatusId = Mobile_IndirectSalesOrderDTO.SellerStore.StatusId,
-            };
-            IndirectSalesOrder.IndirectSalesOrderContents = Mobile_IndirectSalesOrderDTO.IndirectSalesOrderContents?
-                .Select(x => new IndirectSalesOrderContent
-                {
-                    Id = x.Id,
-                    ItemId = x.ItemId,
-                    UnitOfMeasureId = x.UnitOfMeasureId,
-                    Quantity = x.Quantity,
-                    PrimaryUnitOfMeasureId = x.PrimaryUnitOfMeasureId,
-                    RequestedQuantity = x.RequestedQuantity,
-                    PrimaryPrice = x.PrimaryPrice,
-                    SalePrice = x.SalePrice,
-                    DiscountPercentage = x.DiscountPercentage,
-                    DiscountAmount = x.DiscountAmount,
-                    GeneralDiscountPercentage = x.GeneralDiscountPercentage,
-                    GeneralDiscountAmount = x.GeneralDiscountAmount,
-                    Amount = x.Amount,
-                    TaxPercentage = x.TaxPercentage,
-                    TaxAmount = x.TaxAmount,
-                    Factor = x.Factor,
-                    Item = x.Item == null ? null : new Item
-                    {
-                        Id = x.Item.Id,
-                        ProductId = x.Item.ProductId,
-                        Code = x.Item.Code,
-                        Name = x.Item.Name,
-                        ScanCode = x.Item.ScanCode,
-                        SalePrice = x.Item.SalePrice,
-                        RetailPrice = x.Item.RetailPrice,
-                        StatusId = x.Item.StatusId,
-                        Product = x.Item.Product == null ? null : new Product
-                        {
-                            Id = x.Item.Product.Id,
-                            Code = x.Item.Product.Code,
-                            SupplierCode = x.Item.Product.SupplierCode,
-                            Name = x.Item.Product.Name,
-                            Description = x.Item.Product.Description,
-                            ScanCode = x.Item.Product.ScanCode,
-                            ProductTypeId = x.Item.Product.ProductTypeId,
-                            SupplierId = x.Item.Product.SupplierId,
-                            BrandId = x.Item.Product.BrandId,
-                            UnitOfMeasureId = x.Item.Product.UnitOfMeasureId,
-                            UnitOfMeasureGroupingId = x.Item.Product.UnitOfMeasureGroupingId,
-                            RetailPrice = x.Item.Product.RetailPrice,
-                            TaxTypeId = x.Item.Product.TaxTypeId,
-                            StatusId = x.Item.Product.StatusId,
-                            ProductType = x.Item.Product.ProductType == null ? null : new ProductType
-                            {
-                                Id = x.Item.Product.ProductType.Id,
-                                Code = x.Item.Product.ProductType.Code,
-                                Name = x.Item.Product.ProductType.Name,
-                                Description = x.Item.Product.ProductType.Description,
-                                StatusId = x.Item.Product.ProductType.StatusId,
-                            },
-                            TaxType = x.Item.Product.TaxType == null ? null : new TaxType
-                            {
-                                Id = x.Item.Product.TaxType.Id,
-                                Code = x.Item.Product.TaxType.Code,
-                                StatusId = x.Item.Product.TaxType.StatusId,
-                                Name = x.Item.Product.TaxType.Name,
-                                Percentage = x.Item.Product.TaxType.Percentage,
-                            },
-                            UnitOfMeasure = x.Item.Product.UnitOfMeasure == null ? null : new UnitOfMeasure
-                            {
-                                Id = x.Item.Product.UnitOfMeasure.Id,
-                                Code = x.Item.Product.UnitOfMeasure.Code,
-                                Name = x.Item.Product.UnitOfMeasure.Name,
-                                Description = x.Item.Product.UnitOfMeasure.Description,
-                                StatusId = x.Item.Product.UnitOfMeasure.StatusId,
-                            },
-                            UnitOfMeasureGrouping = x.Item.Product.UnitOfMeasureGrouping == null ? null : new UnitOfMeasureGrouping
-                            {
-                                Id = x.Item.Product.UnitOfMeasureGrouping.Id,
-                                Code = x.Item.Product.UnitOfMeasureGrouping.Code,
-                                Name = x.Item.Product.UnitOfMeasureGrouping.Name,
-                                Description = x.Item.Product.UnitOfMeasureGrouping.Description,
-                                UnitOfMeasureId = x.Item.Product.UnitOfMeasureGrouping.UnitOfMeasureId,
-                            },
-                        }
-                    },
-                    PrimaryUnitOfMeasure = x.PrimaryUnitOfMeasure == null ? null : new UnitOfMeasure
-                    {
-                        Id = x.PrimaryUnitOfMeasure.Id,
-                        Code = x.PrimaryUnitOfMeasure.Code,
-                        Name = x.PrimaryUnitOfMeasure.Name,
-                        Description = x.PrimaryUnitOfMeasure.Description,
-                        StatusId = x.PrimaryUnitOfMeasure.StatusId,
-                    },
-                    UnitOfMeasure = x.UnitOfMeasure == null ? null : new UnitOfMeasure
-                    {
-                        Id = x.UnitOfMeasure.Id,
-                        Code = x.UnitOfMeasure.Code,
-                        Name = x.UnitOfMeasure.Name,
-                        Description = x.UnitOfMeasure.Description,
-                        StatusId = x.UnitOfMeasure.StatusId,
-                    },
-                }).ToList();
-            IndirectSalesOrder.IndirectSalesOrderPromotions = Mobile_IndirectSalesOrderDTO.IndirectSalesOrderPromotions?
-                .Select(x => new IndirectSalesOrderPromotion
-                {
-                    Id = x.Id,
-                    ItemId = x.ItemId,
-                    UnitOfMeasureId = x.UnitOfMeasureId,
-                    Quantity = x.Quantity,
-                    PrimaryUnitOfMeasureId = x.PrimaryUnitOfMeasureId,
-                    RequestedQuantity = x.RequestedQuantity,
-                    Note = x.Note,
-                    Factor = x.Factor,
-                    Item = x.Item == null ? null : new Item
-                    {
-                        Id = x.Item.Id,
-                        ProductId = x.Item.ProductId,
-                        Code = x.Item.Code,
-                        Name = x.Item.Name,
-                        ScanCode = x.Item.ScanCode,
-                        SalePrice = x.Item.SalePrice,
-                        RetailPrice = x.Item.RetailPrice,
-                        StatusId = x.Item.StatusId,
-                        Product = x.Item.Product == null ? null : new Product
-                        {
-                            Id = x.Item.Product.Id,
-                            Code = x.Item.Product.Code,
-                            SupplierCode = x.Item.Product.SupplierCode,
-                            Name = x.Item.Product.Name,
-                            Description = x.Item.Product.Description,
-                            ScanCode = x.Item.Product.ScanCode,
-                            ProductTypeId = x.Item.Product.ProductTypeId,
-                            SupplierId = x.Item.Product.SupplierId,
-                            BrandId = x.Item.Product.BrandId,
-                            UnitOfMeasureId = x.Item.Product.UnitOfMeasureId,
-                            UnitOfMeasureGroupingId = x.Item.Product.UnitOfMeasureGroupingId,
-                            RetailPrice = x.Item.Product.RetailPrice,
-                            TaxTypeId = x.Item.Product.TaxTypeId,
-                            StatusId = x.Item.Product.StatusId,
-                            ProductType = x.Item.Product.ProductType == null ? null : new ProductType
-                            {
-                                Id = x.Item.Product.ProductType.Id,
-                                Code = x.Item.Product.ProductType.Code,
-                                Name = x.Item.Product.ProductType.Name,
-                                Description = x.Item.Product.ProductType.Description,
-                                StatusId = x.Item.Product.ProductType.StatusId,
-                            },
-                            TaxType = x.Item.Product.TaxType == null ? null : new TaxType
-                            {
-                                Id = x.Item.Product.TaxType.Id,
-                                Code = x.Item.Product.TaxType.Code,
-                                StatusId = x.Item.Product.TaxType.StatusId,
-                                Name = x.Item.Product.TaxType.Name,
-                                Percentage = x.Item.Product.TaxType.Percentage,
-                            },
-                            UnitOfMeasure = x.Item.Product.UnitOfMeasure == null ? null : new UnitOfMeasure
-                            {
-                                Id = x.Item.Product.UnitOfMeasure.Id,
-                                Code = x.Item.Product.UnitOfMeasure.Code,
-                                Name = x.Item.Product.UnitOfMeasure.Name,
-                                Description = x.Item.Product.UnitOfMeasure.Description,
-                                StatusId = x.Item.Product.UnitOfMeasure.StatusId,
-                            },
-                            UnitOfMeasureGrouping = x.Item.Product.UnitOfMeasureGrouping == null ? null : new UnitOfMeasureGrouping
-                            {
-                                Id = x.Item.Product.UnitOfMeasureGrouping.Id,
-                                Code = x.Item.Product.UnitOfMeasureGrouping.Code,
-                                Name = x.Item.Product.UnitOfMeasureGrouping.Name,
-                                Description = x.Item.Product.UnitOfMeasureGrouping.Description,
-                                UnitOfMeasureId = x.Item.Product.UnitOfMeasureGrouping.UnitOfMeasureId,
-                            },
-                        }
-                    },
-                    PrimaryUnitOfMeasure = x.PrimaryUnitOfMeasure == null ? null : new UnitOfMeasure
-                    {
-                        Id = x.PrimaryUnitOfMeasure.Id,
-                        Code = x.PrimaryUnitOfMeasure.Code,
-                        Name = x.PrimaryUnitOfMeasure.Name,
-                        Description = x.PrimaryUnitOfMeasure.Description,
-                        StatusId = x.PrimaryUnitOfMeasure.StatusId,
-                    },
-                    UnitOfMeasure = x.UnitOfMeasure == null ? null : new UnitOfMeasure
-                    {
-                        Id = x.UnitOfMeasure.Id,
-                        Code = x.UnitOfMeasure.Code,
-                        Name = x.UnitOfMeasure.Name,
-                        Description = x.UnitOfMeasure.Description,
-                        StatusId = x.UnitOfMeasure.StatusId,
-                    },
-                }).ToList();
+            IndirectSalesOrder IndirectSalesOrder = ConvertIndirectSalesOrderDTOToEntity(Mobile_IndirectSalesOrderDTO);
             IndirectSalesOrder.BaseLanguage = CurrentContext.Language;
             IndirectSalesOrder.StoreCheckingId = Mobile_IndirectSalesOrderDTO.StoreCheckingId;
             IndirectSalesOrder = await IndirectSalesOrderService.Create(IndirectSalesOrder);
@@ -527,300 +234,7 @@ namespace DMS.Rpc.mobile
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
 
-            IndirectSalesOrder IndirectSalesOrder = new IndirectSalesOrder();
-            IndirectSalesOrder.Id = Mobile_IndirectSalesOrderDTO.Id;
-            IndirectSalesOrder.Code = Mobile_IndirectSalesOrderDTO.Code;
-            IndirectSalesOrder.BuyerStoreId = Mobile_IndirectSalesOrderDTO.BuyerStoreId;
-            IndirectSalesOrder.PhoneNumber = Mobile_IndirectSalesOrderDTO.PhoneNumber;
-            IndirectSalesOrder.StoreAddress = Mobile_IndirectSalesOrderDTO.StoreAddress;
-            IndirectSalesOrder.DeliveryAddress = Mobile_IndirectSalesOrderDTO.DeliveryAddress;
-            IndirectSalesOrder.SellerStoreId = Mobile_IndirectSalesOrderDTO.SellerStoreId;
-            IndirectSalesOrder.SaleEmployeeId = Mobile_IndirectSalesOrderDTO.SaleEmployeeId;
-            IndirectSalesOrder.OrganizationId = Mobile_IndirectSalesOrderDTO.OrganizationId;
-            IndirectSalesOrder.OrderDate = Mobile_IndirectSalesOrderDTO.OrderDate;
-            IndirectSalesOrder.DeliveryDate = Mobile_IndirectSalesOrderDTO.DeliveryDate;
-            IndirectSalesOrder.RequestStateId = Mobile_IndirectSalesOrderDTO.RequestStateId;
-            IndirectSalesOrder.EditedPriceStatusId = Mobile_IndirectSalesOrderDTO.EditedPriceStatusId;
-            IndirectSalesOrder.Note = Mobile_IndirectSalesOrderDTO.Note;
-            IndirectSalesOrder.SubTotal = Mobile_IndirectSalesOrderDTO.SubTotal;
-            IndirectSalesOrder.GeneralDiscountPercentage = Mobile_IndirectSalesOrderDTO.GeneralDiscountPercentage;
-            IndirectSalesOrder.GeneralDiscountAmount = Mobile_IndirectSalesOrderDTO.GeneralDiscountAmount;
-            IndirectSalesOrder.TotalTaxAmount = Mobile_IndirectSalesOrderDTO.TotalTaxAmount;
-            IndirectSalesOrder.Total = Mobile_IndirectSalesOrderDTO.Total;
-            IndirectSalesOrder.BuyerStore = Mobile_IndirectSalesOrderDTO.BuyerStore == null ? null : new Store
-            {
-                Id = Mobile_IndirectSalesOrderDTO.BuyerStore.Id,
-                Code = Mobile_IndirectSalesOrderDTO.BuyerStore.Code,
-                Name = Mobile_IndirectSalesOrderDTO.BuyerStore.Name,
-                ParentStoreId = Mobile_IndirectSalesOrderDTO.BuyerStore.ParentStoreId,
-                OrganizationId = Mobile_IndirectSalesOrderDTO.BuyerStore.OrganizationId,
-                StoreTypeId = Mobile_IndirectSalesOrderDTO.BuyerStore.StoreTypeId,
-                StoreGroupingId = Mobile_IndirectSalesOrderDTO.BuyerStore.StoreGroupingId,
-                ResellerId = Mobile_IndirectSalesOrderDTO.BuyerStore.ResellerId,
-                Telephone = Mobile_IndirectSalesOrderDTO.BuyerStore.Telephone,
-                ProvinceId = Mobile_IndirectSalesOrderDTO.BuyerStore.ProvinceId,
-                DistrictId = Mobile_IndirectSalesOrderDTO.BuyerStore.DistrictId,
-                WardId = Mobile_IndirectSalesOrderDTO.BuyerStore.WardId,
-                Address = Mobile_IndirectSalesOrderDTO.BuyerStore.Address,
-                DeliveryAddress = Mobile_IndirectSalesOrderDTO.BuyerStore.DeliveryAddress,
-                Latitude = Mobile_IndirectSalesOrderDTO.BuyerStore.Latitude,
-                Longitude = Mobile_IndirectSalesOrderDTO.BuyerStore.Longitude,
-                DeliveryLatitude = Mobile_IndirectSalesOrderDTO.BuyerStore.DeliveryLatitude,
-                DeliveryLongitude = Mobile_IndirectSalesOrderDTO.BuyerStore.DeliveryLongitude,
-                OwnerName = Mobile_IndirectSalesOrderDTO.BuyerStore.OwnerName,
-                OwnerPhone = Mobile_IndirectSalesOrderDTO.BuyerStore.OwnerPhone,
-                OwnerEmail = Mobile_IndirectSalesOrderDTO.BuyerStore.OwnerEmail,
-                TaxCode = Mobile_IndirectSalesOrderDTO.BuyerStore.TaxCode,
-                LegalEntity = Mobile_IndirectSalesOrderDTO.BuyerStore.LegalEntity,
-                StatusId = Mobile_IndirectSalesOrderDTO.BuyerStore.StatusId,
-            };
-            IndirectSalesOrder.Organization = Mobile_IndirectSalesOrderDTO.Organization == null ? null : new Organization
-            {
-                Id = Mobile_IndirectSalesOrderDTO.Organization.Id,
-                Code = Mobile_IndirectSalesOrderDTO.Organization.Code,
-                Name = Mobile_IndirectSalesOrderDTO.Organization.Name,
-                ParentId = Mobile_IndirectSalesOrderDTO.Organization.ParentId,
-                Path = Mobile_IndirectSalesOrderDTO.Organization.Path,
-                Level = Mobile_IndirectSalesOrderDTO.Organization.Level,
-                StatusId = Mobile_IndirectSalesOrderDTO.Organization.StatusId,
-                Phone = Mobile_IndirectSalesOrderDTO.Organization.Phone,
-                Address = Mobile_IndirectSalesOrderDTO.Organization.Address,
-                Email = Mobile_IndirectSalesOrderDTO.Organization.Email,
-            };
-            IndirectSalesOrder.EditedPriceStatus = Mobile_IndirectSalesOrderDTO.EditedPriceStatus == null ? null : new EditedPriceStatus
-            {
-                Id = Mobile_IndirectSalesOrderDTO.EditedPriceStatus.Id,
-                Code = Mobile_IndirectSalesOrderDTO.EditedPriceStatus.Code,
-                Name = Mobile_IndirectSalesOrderDTO.EditedPriceStatus.Name,
-            };
-            IndirectSalesOrder.SaleEmployee = Mobile_IndirectSalesOrderDTO.SaleEmployee == null ? null : new AppUser
-            {
-                Id = Mobile_IndirectSalesOrderDTO.SaleEmployee.Id,
-                Username = Mobile_IndirectSalesOrderDTO.SaleEmployee.Username,
-                DisplayName = Mobile_IndirectSalesOrderDTO.SaleEmployee.DisplayName,
-                Address = Mobile_IndirectSalesOrderDTO.SaleEmployee.Address,
-                Email = Mobile_IndirectSalesOrderDTO.SaleEmployee.Email,
-                Phone = Mobile_IndirectSalesOrderDTO.SaleEmployee.Phone,
-                PositionId = Mobile_IndirectSalesOrderDTO.SaleEmployee.PositionId,
-                Department = Mobile_IndirectSalesOrderDTO.SaleEmployee.Department,
-                OrganizationId = Mobile_IndirectSalesOrderDTO.SaleEmployee.OrganizationId,
-                SexId = Mobile_IndirectSalesOrderDTO.SaleEmployee.SexId,
-                StatusId = Mobile_IndirectSalesOrderDTO.SaleEmployee.StatusId,
-                Avatar = Mobile_IndirectSalesOrderDTO.SaleEmployee.Avatar,
-                Birthday = Mobile_IndirectSalesOrderDTO.SaleEmployee.Birthday,
-                ProvinceId = Mobile_IndirectSalesOrderDTO.SaleEmployee.ProvinceId,
-            };
-            IndirectSalesOrder.SellerStore = Mobile_IndirectSalesOrderDTO.SellerStore == null ? null : new Store
-            {
-                Id = Mobile_IndirectSalesOrderDTO.SellerStore.Id,
-                Code = Mobile_IndirectSalesOrderDTO.SellerStore.Code,
-                Name = Mobile_IndirectSalesOrderDTO.SellerStore.Name,
-                ParentStoreId = Mobile_IndirectSalesOrderDTO.SellerStore.ParentStoreId,
-                OrganizationId = Mobile_IndirectSalesOrderDTO.SellerStore.OrganizationId,
-                StoreTypeId = Mobile_IndirectSalesOrderDTO.SellerStore.StoreTypeId,
-                StoreGroupingId = Mobile_IndirectSalesOrderDTO.SellerStore.StoreGroupingId,
-                ResellerId = Mobile_IndirectSalesOrderDTO.SellerStore.ResellerId,
-                Telephone = Mobile_IndirectSalesOrderDTO.SellerStore.Telephone,
-                ProvinceId = Mobile_IndirectSalesOrderDTO.SellerStore.ProvinceId,
-                DistrictId = Mobile_IndirectSalesOrderDTO.SellerStore.DistrictId,
-                WardId = Mobile_IndirectSalesOrderDTO.SellerStore.WardId,
-                Address = Mobile_IndirectSalesOrderDTO.SellerStore.Address,
-                DeliveryAddress = Mobile_IndirectSalesOrderDTO.SellerStore.DeliveryAddress,
-                Latitude = Mobile_IndirectSalesOrderDTO.SellerStore.Latitude,
-                Longitude = Mobile_IndirectSalesOrderDTO.SellerStore.Longitude,
-                DeliveryLatitude = Mobile_IndirectSalesOrderDTO.SellerStore.DeliveryLatitude,
-                DeliveryLongitude = Mobile_IndirectSalesOrderDTO.SellerStore.DeliveryLongitude,
-                OwnerName = Mobile_IndirectSalesOrderDTO.SellerStore.OwnerName,
-                OwnerPhone = Mobile_IndirectSalesOrderDTO.SellerStore.OwnerPhone,
-                OwnerEmail = Mobile_IndirectSalesOrderDTO.SellerStore.OwnerEmail,
-                TaxCode = Mobile_IndirectSalesOrderDTO.SellerStore.TaxCode,
-                LegalEntity = Mobile_IndirectSalesOrderDTO.SellerStore.LegalEntity,
-                StatusId = Mobile_IndirectSalesOrderDTO.SellerStore.StatusId,
-            };
-            IndirectSalesOrder.IndirectSalesOrderContents = Mobile_IndirectSalesOrderDTO.IndirectSalesOrderContents?
-                .Select(x => new IndirectSalesOrderContent
-                {
-                    Id = x.Id,
-                    ItemId = x.ItemId,
-                    UnitOfMeasureId = x.UnitOfMeasureId,
-                    Quantity = x.Quantity,
-                    PrimaryUnitOfMeasureId = x.PrimaryUnitOfMeasureId,
-                    RequestedQuantity = x.RequestedQuantity,
-                    PrimaryPrice = x.PrimaryPrice,
-                    SalePrice = x.SalePrice,
-                    DiscountPercentage = x.DiscountPercentage,
-                    DiscountAmount = x.DiscountAmount,
-                    GeneralDiscountPercentage = x.GeneralDiscountPercentage,
-                    GeneralDiscountAmount = x.GeneralDiscountAmount,
-                    Amount = x.Amount,
-                    TaxPercentage = x.TaxPercentage,
-                    TaxAmount = x.TaxAmount,
-                    Factor = x.Factor,
-                    Item = x.Item == null ? null : new Item
-                    {
-                        Id = x.Item.Id,
-                        ProductId = x.Item.ProductId,
-                        Code = x.Item.Code,
-                        Name = x.Item.Name,
-                        ScanCode = x.Item.ScanCode,
-                        SalePrice = x.Item.SalePrice,
-                        RetailPrice = x.Item.RetailPrice,
-                        StatusId = x.Item.StatusId,
-                        Product = x.Item.Product == null ? null : new Product
-                        {
-                            Id = x.Item.Product.Id,
-                            Code = x.Item.Product.Code,
-                            SupplierCode = x.Item.Product.SupplierCode,
-                            Name = x.Item.Product.Name,
-                            Description = x.Item.Product.Description,
-                            ScanCode = x.Item.Product.ScanCode,
-                            ProductTypeId = x.Item.Product.ProductTypeId,
-                            SupplierId = x.Item.Product.SupplierId,
-                            BrandId = x.Item.Product.BrandId,
-                            UnitOfMeasureId = x.Item.Product.UnitOfMeasureId,
-                            UnitOfMeasureGroupingId = x.Item.Product.UnitOfMeasureGroupingId,
-                            RetailPrice = x.Item.Product.RetailPrice,
-                            TaxTypeId = x.Item.Product.TaxTypeId,
-                            StatusId = x.Item.Product.StatusId,
-                            ProductType = x.Item.Product.ProductType == null ? null : new ProductType
-                            {
-                                Id = x.Item.Product.ProductType.Id,
-                                Code = x.Item.Product.ProductType.Code,
-                                Name = x.Item.Product.ProductType.Name,
-                                Description = x.Item.Product.ProductType.Description,
-                                StatusId = x.Item.Product.ProductType.StatusId,
-                            },
-                            TaxType = x.Item.Product.TaxType == null ? null : new TaxType
-                            {
-                                Id = x.Item.Product.TaxType.Id,
-                                Code = x.Item.Product.TaxType.Code,
-                                StatusId = x.Item.Product.TaxType.StatusId,
-                                Name = x.Item.Product.TaxType.Name,
-                                Percentage = x.Item.Product.TaxType.Percentage,
-                            },
-                            UnitOfMeasure = x.Item.Product.UnitOfMeasure == null ? null : new UnitOfMeasure
-                            {
-                                Id = x.Item.Product.UnitOfMeasure.Id,
-                                Code = x.Item.Product.UnitOfMeasure.Code,
-                                Name = x.Item.Product.UnitOfMeasure.Name,
-                                Description = x.Item.Product.UnitOfMeasure.Description,
-                                StatusId = x.Item.Product.UnitOfMeasure.StatusId,
-                            },
-                            UnitOfMeasureGrouping = x.Item.Product.UnitOfMeasureGrouping == null ? null : new UnitOfMeasureGrouping
-                            {
-                                Id = x.Item.Product.UnitOfMeasureGrouping.Id,
-                                Code = x.Item.Product.UnitOfMeasureGrouping.Code,
-                                Name = x.Item.Product.UnitOfMeasureGrouping.Name,
-                                Description = x.Item.Product.UnitOfMeasureGrouping.Description,
-                                UnitOfMeasureId = x.Item.Product.UnitOfMeasureGrouping.UnitOfMeasureId,
-                            },
-                        }
-                    },
-                    PrimaryUnitOfMeasure = x.PrimaryUnitOfMeasure == null ? null : new UnitOfMeasure
-                    {
-                        Id = x.PrimaryUnitOfMeasure.Id,
-                        Code = x.PrimaryUnitOfMeasure.Code,
-                        Name = x.PrimaryUnitOfMeasure.Name,
-                        Description = x.PrimaryUnitOfMeasure.Description,
-                        StatusId = x.PrimaryUnitOfMeasure.StatusId,
-                    },
-                    UnitOfMeasure = x.UnitOfMeasure == null ? null : new UnitOfMeasure
-                    {
-                        Id = x.UnitOfMeasure.Id,
-                        Code = x.UnitOfMeasure.Code,
-                        Name = x.UnitOfMeasure.Name,
-                        Description = x.UnitOfMeasure.Description,
-                        StatusId = x.UnitOfMeasure.StatusId,
-                    },
-                }).ToList();
-            IndirectSalesOrder.IndirectSalesOrderPromotions = Mobile_IndirectSalesOrderDTO.IndirectSalesOrderPromotions?
-                .Select(x => new IndirectSalesOrderPromotion
-                {
-                    Id = x.Id,
-                    ItemId = x.ItemId,
-                    UnitOfMeasureId = x.UnitOfMeasureId,
-                    Quantity = x.Quantity,
-                    PrimaryUnitOfMeasureId = x.PrimaryUnitOfMeasureId,
-                    RequestedQuantity = x.RequestedQuantity,
-                    Note = x.Note,
-                    Factor = x.Factor,
-                    Item = x.Item == null ? null : new Item
-                    {
-                        Id = x.Item.Id,
-                        ProductId = x.Item.ProductId,
-                        Code = x.Item.Code,
-                        Name = x.Item.Name,
-                        ScanCode = x.Item.ScanCode,
-                        SalePrice = x.Item.SalePrice,
-                        RetailPrice = x.Item.RetailPrice,
-                        StatusId = x.Item.StatusId,
-                        Product = x.Item.Product == null ? null : new Product
-                        {
-                            Id = x.Item.Product.Id,
-                            Code = x.Item.Product.Code,
-                            SupplierCode = x.Item.Product.SupplierCode,
-                            Name = x.Item.Product.Name,
-                            Description = x.Item.Product.Description,
-                            ScanCode = x.Item.Product.ScanCode,
-                            ProductTypeId = x.Item.Product.ProductTypeId,
-                            SupplierId = x.Item.Product.SupplierId,
-                            BrandId = x.Item.Product.BrandId,
-                            UnitOfMeasureId = x.Item.Product.UnitOfMeasureId,
-                            UnitOfMeasureGroupingId = x.Item.Product.UnitOfMeasureGroupingId,
-                            RetailPrice = x.Item.Product.RetailPrice,
-                            TaxTypeId = x.Item.Product.TaxTypeId,
-                            StatusId = x.Item.Product.StatusId,
-                            ProductType = x.Item.Product.ProductType == null ? null : new ProductType
-                            {
-                                Id = x.Item.Product.ProductType.Id,
-                                Code = x.Item.Product.ProductType.Code,
-                                Name = x.Item.Product.ProductType.Name,
-                                Description = x.Item.Product.ProductType.Description,
-                                StatusId = x.Item.Product.ProductType.StatusId,
-                            },
-                            TaxType = x.Item.Product.TaxType == null ? null : new TaxType
-                            {
-                                Id = x.Item.Product.TaxType.Id,
-                                Code = x.Item.Product.TaxType.Code,
-                                StatusId = x.Item.Product.TaxType.StatusId,
-                                Name = x.Item.Product.TaxType.Name,
-                                Percentage = x.Item.Product.TaxType.Percentage,
-                            },
-                            UnitOfMeasure = x.Item.Product.UnitOfMeasure == null ? null : new UnitOfMeasure
-                            {
-                                Id = x.Item.Product.UnitOfMeasure.Id,
-                                Code = x.Item.Product.UnitOfMeasure.Code,
-                                Name = x.Item.Product.UnitOfMeasure.Name,
-                                Description = x.Item.Product.UnitOfMeasure.Description,
-                                StatusId = x.Item.Product.UnitOfMeasure.StatusId,
-                            },
-                            UnitOfMeasureGrouping = x.Item.Product.UnitOfMeasureGrouping == null ? null : new UnitOfMeasureGrouping
-                            {
-                                Id = x.Item.Product.UnitOfMeasureGrouping.Id,
-                                Code = x.Item.Product.UnitOfMeasureGrouping.Code,
-                                Name = x.Item.Product.UnitOfMeasureGrouping.Name,
-                                Description = x.Item.Product.UnitOfMeasureGrouping.Description,
-                                UnitOfMeasureId = x.Item.Product.UnitOfMeasureGrouping.UnitOfMeasureId,
-                            },
-                        }
-                    },
-                    PrimaryUnitOfMeasure = x.PrimaryUnitOfMeasure == null ? null : new UnitOfMeasure
-                    {
-                        Id = x.PrimaryUnitOfMeasure.Id,
-                        Code = x.PrimaryUnitOfMeasure.Code,
-                        Name = x.PrimaryUnitOfMeasure.Name,
-                        Description = x.PrimaryUnitOfMeasure.Description,
-                        StatusId = x.PrimaryUnitOfMeasure.StatusId,
-                    },
-                    UnitOfMeasure = x.UnitOfMeasure == null ? null : new UnitOfMeasure
-                    {
-                        Id = x.UnitOfMeasure.Id,
-                        Code = x.UnitOfMeasure.Code,
-                        Name = x.UnitOfMeasure.Name,
-                        Description = x.UnitOfMeasure.Description,
-                        StatusId = x.UnitOfMeasure.StatusId,
-                    },
-                }).ToList();
+            IndirectSalesOrder IndirectSalesOrder = ConvertIndirectSalesOrderDTOToEntity(Mobile_IndirectSalesOrderDTO);
             IndirectSalesOrder.BaseLanguage = CurrentContext.Language;
             IndirectSalesOrder.StoreCheckingId = Mobile_IndirectSalesOrderDTO.StoreCheckingId;
             IndirectSalesOrder = await IndirectSalesOrderService.Update(IndirectSalesOrder);
@@ -830,6 +244,24 @@ namespace DMS.Rpc.mobile
             else
                 return BadRequest(Mobile_IndirectSalesOrderDTO);
         }
+
+        [Route(MobileRoute.SendIndirectSalesOrder), HttpPost]
+        public async Task<ActionResult<Mobile_IndirectSalesOrderDTO>> SendIndirectSalesOrder([FromBody] Mobile_IndirectSalesOrderDTO Mobile_IndirectSalesOrderDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            IndirectSalesOrder IndirectSalesOrder = ConvertIndirectSalesOrderDTOToEntity(Mobile_IndirectSalesOrderDTO);
+            IndirectSalesOrder.BaseLanguage = CurrentContext.Language;
+            IndirectSalesOrder.StoreCheckingId = Mobile_IndirectSalesOrderDTO.StoreCheckingId;
+            IndirectSalesOrder = await IndirectSalesOrderService.Send(IndirectSalesOrder);
+            Mobile_IndirectSalesOrderDTO = new Mobile_IndirectSalesOrderDTO(IndirectSalesOrder);
+            if (IndirectSalesOrder.IsValidated)
+                return Mobile_IndirectSalesOrderDTO;
+            else
+                return BadRequest(Mobile_IndirectSalesOrderDTO);
+        }
+
 
         [Route(MobileRoute.CreateProblem), HttpPost]
         public async Task<ActionResult<Mobile_ProblemDTO>> CreateProblem([FromBody] Mobile_ProblemDTO Mobile_ProblemDTO)
@@ -1407,6 +839,305 @@ namespace DMS.Rpc.mobile
             StoreCheckingFilter.CountIndirectSalesOrder = Mobile_StoreCheckingFilterDTO.CountIndirectSalesOrder;
             StoreCheckingFilter.CountImage = Mobile_StoreCheckingFilterDTO.CountImage;
             return StoreCheckingFilter;
+        }
+
+        private IndirectSalesOrder ConvertIndirectSalesOrderDTOToEntity(Mobile_IndirectSalesOrderDTO Mobile_IndirectSalesOrderDTO)
+        {
+            IndirectSalesOrder IndirectSalesOrder = new IndirectSalesOrder();
+            IndirectSalesOrder.Id = Mobile_IndirectSalesOrderDTO.Id;
+            IndirectSalesOrder.Code = Mobile_IndirectSalesOrderDTO.Code;
+            IndirectSalesOrder.BuyerStoreId = Mobile_IndirectSalesOrderDTO.BuyerStoreId;
+            IndirectSalesOrder.PhoneNumber = Mobile_IndirectSalesOrderDTO.PhoneNumber;
+            IndirectSalesOrder.StoreAddress = Mobile_IndirectSalesOrderDTO.StoreAddress;
+            IndirectSalesOrder.DeliveryAddress = Mobile_IndirectSalesOrderDTO.DeliveryAddress;
+            IndirectSalesOrder.SellerStoreId = Mobile_IndirectSalesOrderDTO.SellerStoreId;
+            IndirectSalesOrder.SaleEmployeeId = Mobile_IndirectSalesOrderDTO.SaleEmployeeId;
+            IndirectSalesOrder.OrganizationId = Mobile_IndirectSalesOrderDTO.OrganizationId;
+            IndirectSalesOrder.OrderDate = Mobile_IndirectSalesOrderDTO.OrderDate;
+            IndirectSalesOrder.DeliveryDate = Mobile_IndirectSalesOrderDTO.DeliveryDate;
+            IndirectSalesOrder.RequestStateId = Mobile_IndirectSalesOrderDTO.RequestStateId;
+            IndirectSalesOrder.EditedPriceStatusId = Mobile_IndirectSalesOrderDTO.EditedPriceStatusId;
+            IndirectSalesOrder.Note = Mobile_IndirectSalesOrderDTO.Note;
+            IndirectSalesOrder.SubTotal = Mobile_IndirectSalesOrderDTO.SubTotal;
+            IndirectSalesOrder.GeneralDiscountPercentage = Mobile_IndirectSalesOrderDTO.GeneralDiscountPercentage;
+            IndirectSalesOrder.GeneralDiscountAmount = Mobile_IndirectSalesOrderDTO.GeneralDiscountAmount;
+            IndirectSalesOrder.TotalTaxAmount = Mobile_IndirectSalesOrderDTO.TotalTaxAmount;
+            IndirectSalesOrder.Total = Mobile_IndirectSalesOrderDTO.Total;
+            IndirectSalesOrder.BuyerStore = Mobile_IndirectSalesOrderDTO.BuyerStore == null ? null : new Store
+            {
+                Id = Mobile_IndirectSalesOrderDTO.BuyerStore.Id,
+                Code = Mobile_IndirectSalesOrderDTO.BuyerStore.Code,
+                Name = Mobile_IndirectSalesOrderDTO.BuyerStore.Name,
+                ParentStoreId = Mobile_IndirectSalesOrderDTO.BuyerStore.ParentStoreId,
+                OrganizationId = Mobile_IndirectSalesOrderDTO.BuyerStore.OrganizationId,
+                StoreTypeId = Mobile_IndirectSalesOrderDTO.BuyerStore.StoreTypeId,
+                StoreGroupingId = Mobile_IndirectSalesOrderDTO.BuyerStore.StoreGroupingId,
+                ResellerId = Mobile_IndirectSalesOrderDTO.BuyerStore.ResellerId,
+                Telephone = Mobile_IndirectSalesOrderDTO.BuyerStore.Telephone,
+                ProvinceId = Mobile_IndirectSalesOrderDTO.BuyerStore.ProvinceId,
+                DistrictId = Mobile_IndirectSalesOrderDTO.BuyerStore.DistrictId,
+                WardId = Mobile_IndirectSalesOrderDTO.BuyerStore.WardId,
+                Address = Mobile_IndirectSalesOrderDTO.BuyerStore.Address,
+                DeliveryAddress = Mobile_IndirectSalesOrderDTO.BuyerStore.DeliveryAddress,
+                Latitude = Mobile_IndirectSalesOrderDTO.BuyerStore.Latitude,
+                Longitude = Mobile_IndirectSalesOrderDTO.BuyerStore.Longitude,
+                DeliveryLatitude = Mobile_IndirectSalesOrderDTO.BuyerStore.DeliveryLatitude,
+                DeliveryLongitude = Mobile_IndirectSalesOrderDTO.BuyerStore.DeliveryLongitude,
+                OwnerName = Mobile_IndirectSalesOrderDTO.BuyerStore.OwnerName,
+                OwnerPhone = Mobile_IndirectSalesOrderDTO.BuyerStore.OwnerPhone,
+                OwnerEmail = Mobile_IndirectSalesOrderDTO.BuyerStore.OwnerEmail,
+                TaxCode = Mobile_IndirectSalesOrderDTO.BuyerStore.TaxCode,
+                LegalEntity = Mobile_IndirectSalesOrderDTO.BuyerStore.LegalEntity,
+                StatusId = Mobile_IndirectSalesOrderDTO.BuyerStore.StatusId,
+            };
+            IndirectSalesOrder.EditedPriceStatus = Mobile_IndirectSalesOrderDTO.EditedPriceStatus == null ? null : new EditedPriceStatus
+            {
+                Id = Mobile_IndirectSalesOrderDTO.EditedPriceStatus.Id,
+                Code = Mobile_IndirectSalesOrderDTO.EditedPriceStatus.Code,
+                Name = Mobile_IndirectSalesOrderDTO.EditedPriceStatus.Name,
+            };
+            IndirectSalesOrder.Organization = Mobile_IndirectSalesOrderDTO.Organization == null ? null : new Organization
+            {
+                Id = Mobile_IndirectSalesOrderDTO.Organization.Id,
+                Code = Mobile_IndirectSalesOrderDTO.Organization.Code,
+                Name = Mobile_IndirectSalesOrderDTO.Organization.Name,
+                ParentId = Mobile_IndirectSalesOrderDTO.Organization.ParentId,
+                Path = Mobile_IndirectSalesOrderDTO.Organization.Path,
+                Level = Mobile_IndirectSalesOrderDTO.Organization.Level,
+                StatusId = Mobile_IndirectSalesOrderDTO.Organization.StatusId,
+                Phone = Mobile_IndirectSalesOrderDTO.Organization.Phone,
+                Address = Mobile_IndirectSalesOrderDTO.Organization.Address,
+                Email = Mobile_IndirectSalesOrderDTO.Organization.Email,
+            };
+            IndirectSalesOrder.SaleEmployee = Mobile_IndirectSalesOrderDTO.SaleEmployee == null ? null : new AppUser
+            {
+                Id = Mobile_IndirectSalesOrderDTO.SaleEmployee.Id,
+                Username = Mobile_IndirectSalesOrderDTO.SaleEmployee.Username,
+                DisplayName = Mobile_IndirectSalesOrderDTO.SaleEmployee.DisplayName,
+                Address = Mobile_IndirectSalesOrderDTO.SaleEmployee.Address,
+                Email = Mobile_IndirectSalesOrderDTO.SaleEmployee.Email,
+                Phone = Mobile_IndirectSalesOrderDTO.SaleEmployee.Phone,
+                PositionId = Mobile_IndirectSalesOrderDTO.SaleEmployee.PositionId,
+                Department = Mobile_IndirectSalesOrderDTO.SaleEmployee.Department,
+                OrganizationId = Mobile_IndirectSalesOrderDTO.SaleEmployee.OrganizationId,
+                SexId = Mobile_IndirectSalesOrderDTO.SaleEmployee.SexId,
+                StatusId = Mobile_IndirectSalesOrderDTO.SaleEmployee.StatusId,
+                Avatar = Mobile_IndirectSalesOrderDTO.SaleEmployee.Avatar,
+                Birthday = Mobile_IndirectSalesOrderDTO.SaleEmployee.Birthday,
+                ProvinceId = Mobile_IndirectSalesOrderDTO.SaleEmployee.ProvinceId,
+            };
+            IndirectSalesOrder.SellerStore = Mobile_IndirectSalesOrderDTO.SellerStore == null ? null : new Store
+            {
+                Id = Mobile_IndirectSalesOrderDTO.SellerStore.Id,
+                Code = Mobile_IndirectSalesOrderDTO.SellerStore.Code,
+                Name = Mobile_IndirectSalesOrderDTO.SellerStore.Name,
+                ParentStoreId = Mobile_IndirectSalesOrderDTO.SellerStore.ParentStoreId,
+                OrganizationId = Mobile_IndirectSalesOrderDTO.SellerStore.OrganizationId,
+                StoreTypeId = Mobile_IndirectSalesOrderDTO.SellerStore.StoreTypeId,
+                StoreGroupingId = Mobile_IndirectSalesOrderDTO.SellerStore.StoreGroupingId,
+                ResellerId = Mobile_IndirectSalesOrderDTO.SellerStore.ResellerId,
+                Telephone = Mobile_IndirectSalesOrderDTO.SellerStore.Telephone,
+                ProvinceId = Mobile_IndirectSalesOrderDTO.SellerStore.ProvinceId,
+                DistrictId = Mobile_IndirectSalesOrderDTO.SellerStore.DistrictId,
+                WardId = Mobile_IndirectSalesOrderDTO.SellerStore.WardId,
+                Address = Mobile_IndirectSalesOrderDTO.SellerStore.Address,
+                DeliveryAddress = Mobile_IndirectSalesOrderDTO.SellerStore.DeliveryAddress,
+                Latitude = Mobile_IndirectSalesOrderDTO.SellerStore.Latitude,
+                Longitude = Mobile_IndirectSalesOrderDTO.SellerStore.Longitude,
+                DeliveryLatitude = Mobile_IndirectSalesOrderDTO.SellerStore.DeliveryLatitude,
+                DeliveryLongitude = Mobile_IndirectSalesOrderDTO.SellerStore.DeliveryLongitude,
+                OwnerName = Mobile_IndirectSalesOrderDTO.SellerStore.OwnerName,
+                OwnerPhone = Mobile_IndirectSalesOrderDTO.SellerStore.OwnerPhone,
+                OwnerEmail = Mobile_IndirectSalesOrderDTO.SellerStore.OwnerEmail,
+                TaxCode = Mobile_IndirectSalesOrderDTO.SellerStore.TaxCode,
+                LegalEntity = Mobile_IndirectSalesOrderDTO.SellerStore.LegalEntity,
+                StatusId = Mobile_IndirectSalesOrderDTO.SellerStore.StatusId,
+            };
+            IndirectSalesOrder.IndirectSalesOrderContents = Mobile_IndirectSalesOrderDTO.IndirectSalesOrderContents?
+                .Select(x => new IndirectSalesOrderContent
+                {
+                    Id = x.Id,
+                    ItemId = x.ItemId,
+                    UnitOfMeasureId = x.UnitOfMeasureId,
+                    Quantity = x.Quantity,
+                    PrimaryUnitOfMeasureId = x.PrimaryUnitOfMeasureId,
+                    RequestedQuantity = x.RequestedQuantity,
+                    PrimaryPrice = x.PrimaryPrice,
+                    SalePrice = x.SalePrice,
+                    DiscountPercentage = x.DiscountPercentage,
+                    DiscountAmount = x.DiscountAmount,
+                    GeneralDiscountPercentage = x.GeneralDiscountPercentage,
+                    GeneralDiscountAmount = x.GeneralDiscountAmount,
+                    Amount = x.Amount,
+                    TaxPercentage = x.TaxPercentage,
+                    TaxAmount = x.TaxAmount,
+                    Factor = x.Factor,
+                    Item = x.Item == null ? null : new Item
+                    {
+                        Id = x.Item.Id,
+                        ProductId = x.Item.ProductId,
+                        Code = x.Item.Code,
+                        Name = x.Item.Name,
+                        ScanCode = x.Item.ScanCode,
+                        SalePrice = x.Item.SalePrice,
+                        RetailPrice = x.Item.RetailPrice,
+                        StatusId = x.Item.StatusId,
+                        Product = x.Item.Product == null ? null : new Product
+                        {
+                            Id = x.Item.Product.Id,
+                            Code = x.Item.Product.Code,
+                            SupplierCode = x.Item.Product.SupplierCode,
+                            Name = x.Item.Product.Name,
+                            Description = x.Item.Product.Description,
+                            ScanCode = x.Item.Product.ScanCode,
+                            ProductTypeId = x.Item.Product.ProductTypeId,
+                            SupplierId = x.Item.Product.SupplierId,
+                            BrandId = x.Item.Product.BrandId,
+                            UnitOfMeasureId = x.Item.Product.UnitOfMeasureId,
+                            UnitOfMeasureGroupingId = x.Item.Product.UnitOfMeasureGroupingId,
+                            RetailPrice = x.Item.Product.RetailPrice,
+                            TaxTypeId = x.Item.Product.TaxTypeId,
+                            StatusId = x.Item.Product.StatusId,
+                            ProductType = x.Item.Product.ProductType == null ? null : new ProductType
+                            {
+                                Id = x.Item.Product.ProductType.Id,
+                                Code = x.Item.Product.ProductType.Code,
+                                Name = x.Item.Product.ProductType.Name,
+                                Description = x.Item.Product.ProductType.Description,
+                                StatusId = x.Item.Product.ProductType.StatusId,
+                            },
+                            TaxType = x.Item.Product.TaxType == null ? null : new TaxType
+                            {
+                                Id = x.Item.Product.TaxType.Id,
+                                Code = x.Item.Product.TaxType.Code,
+                                StatusId = x.Item.Product.TaxType.StatusId,
+                                Name = x.Item.Product.TaxType.Name,
+                                Percentage = x.Item.Product.TaxType.Percentage,
+                            },
+                            UnitOfMeasure = x.Item.Product.UnitOfMeasure == null ? null : new UnitOfMeasure
+                            {
+                                Id = x.Item.Product.UnitOfMeasure.Id,
+                                Code = x.Item.Product.UnitOfMeasure.Code,
+                                Name = x.Item.Product.UnitOfMeasure.Name,
+                                Description = x.Item.Product.UnitOfMeasure.Description,
+                                StatusId = x.Item.Product.UnitOfMeasure.StatusId,
+                            },
+                            UnitOfMeasureGrouping = x.Item.Product.UnitOfMeasureGrouping == null ? null : new UnitOfMeasureGrouping
+                            {
+                                Id = x.Item.Product.UnitOfMeasureGrouping.Id,
+                                Code = x.Item.Product.UnitOfMeasureGrouping.Code,
+                                Name = x.Item.Product.UnitOfMeasureGrouping.Name,
+                                Description = x.Item.Product.UnitOfMeasureGrouping.Description,
+                                UnitOfMeasureId = x.Item.Product.UnitOfMeasureGrouping.UnitOfMeasureId,
+                            },
+                        }
+                    },
+                    PrimaryUnitOfMeasure = x.PrimaryUnitOfMeasure == null ? null : new UnitOfMeasure
+                    {
+                        Id = x.PrimaryUnitOfMeasure.Id,
+                        Code = x.PrimaryUnitOfMeasure.Code,
+                        Name = x.PrimaryUnitOfMeasure.Name,
+                        Description = x.PrimaryUnitOfMeasure.Description,
+                        StatusId = x.PrimaryUnitOfMeasure.StatusId,
+                    },
+                    UnitOfMeasure = x.UnitOfMeasure == null ? null : new UnitOfMeasure
+                    {
+                        Id = x.UnitOfMeasure.Id,
+                        Code = x.UnitOfMeasure.Code,
+                        Name = x.UnitOfMeasure.Name,
+                        Description = x.UnitOfMeasure.Description,
+                        StatusId = x.UnitOfMeasure.StatusId,
+                    },
+                }).ToList();
+            IndirectSalesOrder.IndirectSalesOrderPromotions = Mobile_IndirectSalesOrderDTO.IndirectSalesOrderPromotions?
+                .Select(x => new IndirectSalesOrderPromotion
+                {
+                    Id = x.Id,
+                    ItemId = x.ItemId,
+                    UnitOfMeasureId = x.UnitOfMeasureId,
+                    Quantity = x.Quantity,
+                    PrimaryUnitOfMeasureId = x.PrimaryUnitOfMeasureId,
+                    RequestedQuantity = x.RequestedQuantity,
+                    Note = x.Note,
+                    Factor = x.Factor,
+                    Item = x.Item == null ? null : new Item
+                    {
+                        Id = x.Item.Id,
+                        ProductId = x.Item.ProductId,
+                        Code = x.Item.Code,
+                        Name = x.Item.Name,
+                        ScanCode = x.Item.ScanCode,
+                        SalePrice = x.Item.SalePrice,
+                        RetailPrice = x.Item.RetailPrice,
+                        StatusId = x.Item.StatusId,
+                        Product = x.Item.Product == null ? null : new Product
+                        {
+                            Id = x.Item.Product.Id,
+                            Code = x.Item.Product.Code,
+                            SupplierCode = x.Item.Product.SupplierCode,
+                            Name = x.Item.Product.Name,
+                            Description = x.Item.Product.Description,
+                            ScanCode = x.Item.Product.ScanCode,
+                            ProductTypeId = x.Item.Product.ProductTypeId,
+                            SupplierId = x.Item.Product.SupplierId,
+                            BrandId = x.Item.Product.BrandId,
+                            UnitOfMeasureId = x.Item.Product.UnitOfMeasureId,
+                            UnitOfMeasureGroupingId = x.Item.Product.UnitOfMeasureGroupingId,
+                            RetailPrice = x.Item.Product.RetailPrice,
+                            TaxTypeId = x.Item.Product.TaxTypeId,
+                            StatusId = x.Item.Product.StatusId,
+                            ProductType = x.Item.Product.ProductType == null ? null : new ProductType
+                            {
+                                Id = x.Item.Product.ProductType.Id,
+                                Code = x.Item.Product.ProductType.Code,
+                                Name = x.Item.Product.ProductType.Name,
+                                Description = x.Item.Product.ProductType.Description,
+                                StatusId = x.Item.Product.ProductType.StatusId,
+                            },
+                            TaxType = x.Item.Product.TaxType == null ? null : new TaxType
+                            {
+                                Id = x.Item.Product.TaxType.Id,
+                                Code = x.Item.Product.TaxType.Code,
+                                StatusId = x.Item.Product.TaxType.StatusId,
+                                Name = x.Item.Product.TaxType.Name,
+                                Percentage = x.Item.Product.TaxType.Percentage,
+                            },
+                            UnitOfMeasure = x.Item.Product.UnitOfMeasure == null ? null : new UnitOfMeasure
+                            {
+                                Id = x.Item.Product.UnitOfMeasure.Id,
+                                Code = x.Item.Product.UnitOfMeasure.Code,
+                                Name = x.Item.Product.UnitOfMeasure.Name,
+                                Description = x.Item.Product.UnitOfMeasure.Description,
+                                StatusId = x.Item.Product.UnitOfMeasure.StatusId,
+                            },
+                            UnitOfMeasureGrouping = x.Item.Product.UnitOfMeasureGrouping == null ? null : new UnitOfMeasureGrouping
+                            {
+                                Id = x.Item.Product.UnitOfMeasureGrouping.Id,
+                                Code = x.Item.Product.UnitOfMeasureGrouping.Code,
+                                Name = x.Item.Product.UnitOfMeasureGrouping.Name,
+                                Description = x.Item.Product.UnitOfMeasureGrouping.Description,
+                                UnitOfMeasureId = x.Item.Product.UnitOfMeasureGrouping.UnitOfMeasureId,
+                            },
+                        }
+                    },
+                    PrimaryUnitOfMeasure = x.PrimaryUnitOfMeasure == null ? null : new UnitOfMeasure
+                    {
+                        Id = x.PrimaryUnitOfMeasure.Id,
+                        Code = x.PrimaryUnitOfMeasure.Code,
+                        Name = x.PrimaryUnitOfMeasure.Name,
+                        Description = x.PrimaryUnitOfMeasure.Description,
+                        StatusId = x.PrimaryUnitOfMeasure.StatusId,
+                    },
+                    UnitOfMeasure = x.UnitOfMeasure == null ? null : new UnitOfMeasure
+                    {
+                        Id = x.UnitOfMeasure.Id,
+                        Code = x.UnitOfMeasure.Code,
+                        Name = x.UnitOfMeasure.Name,
+                        Description = x.UnitOfMeasure.Description,
+                        StatusId = x.UnitOfMeasure.StatusId,
+                    },
+                }).ToList();
+            return IndirectSalesOrder;
         }
 
     }
