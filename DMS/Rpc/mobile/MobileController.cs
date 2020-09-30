@@ -616,7 +616,7 @@ namespace DMS.Rpc.mobile
         }
 
         [Route(MobileRoute.UpdateGPS), HttpPost]
-        public async Task<ActionResult<Mobile_AppUserDTO>> UpdateGPS([FromBody] Mobile_AppUserDTO Mobile_AppUserDTO)
+        public async Task<ActionResult<bool>> UpdateGPS([FromBody] Mobile_AppUserDTO Mobile_AppUserDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
@@ -630,9 +630,9 @@ namespace DMS.Rpc.mobile
             AppUser = await AppUserService.UpdateGPS(AppUser);
             Mobile_AppUserDTO = new Mobile_AppUserDTO(AppUser);
             if (AppUser.IsValidated)
-                return Mobile_AppUserDTO;
+                return true;
             else
-                return BadRequest(Mobile_AppUserDTO);
+                return false;
         }
 
         private StoreChecking ConvertDTOToEntity(Mobile_StoreCheckingDTO Mobile_StoreCheckingDTO)
