@@ -20,6 +20,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_general
         public const string FilterListAppUser = Default + "/filter-list-app-user";
         public const string FilterListOrganization = Default + "/filter-list-organization";
         public const string FilterListStore = Default + "/filter-list-store";
+        public const string FilterListStoreStatus = Default + "/filter-list-store-status";
 
         public static Dictionary<string, long> Filters = new Dictionary<string, long>
         {
@@ -33,7 +34,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_general
             { "Tìm kiếm", new List<string> {
                 Parent,
                 Master, Count, List, Total, Export, 
-                FilterListAppUser, FilterListOrganization, FilterListStore } },
+                FilterListAppUser, FilterListOrganization, FilterListStore, FilterListStoreStatus } },
 
         };
     }

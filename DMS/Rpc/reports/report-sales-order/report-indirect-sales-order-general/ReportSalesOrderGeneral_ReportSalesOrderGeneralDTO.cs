@@ -18,11 +18,13 @@ namespace DMS.Rpc.reports.report_sales_order.report_indirect_sales_order_general
         public IdFilter AppUserId { get; set; }
         public IdFilter BuyerStoreId { get; set; }
         public IdFilter SellerStoreId { get; set; }
+        public IdFilter StoreStatusId { get; set; }
         public DateFilter OrderDate { get; set; }
         internal bool HasValue => (OrganizationId != null && OrganizationId.HasValue) ||
             (AppUserId != null && AppUserId.HasValue) ||
             (BuyerStoreId != null && BuyerStoreId.HasValue) ||
             (SellerStoreId != null && SellerStoreId.HasValue) ||
+            (StoreStatusId != null && StoreStatusId.HasValue) ||
             (OrderDate != null && OrderDate.HasValue);
     }
 }

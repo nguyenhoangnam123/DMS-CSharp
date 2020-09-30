@@ -13,6 +13,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_indirect_sales_order_by_stor
         public long Id { get; set; }
         public string Code { get; set; }
         public string Name { get; set; }
+        public string StoreStatusName { get; set; }
         public string Address { get; set; }
         public long OrganizationId { get; set; }
         public long StoreTypeId { get; set; }

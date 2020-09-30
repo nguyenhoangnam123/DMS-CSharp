@@ -12,6 +12,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_general
         public long Id { get; set; }
         public string Code { get; set; }
         public string BuyerStoreName { get; set; }
+        public string BuyerStoreStatusName { get; set; }
         public string SaleEmployeeName { get; set; }
         public DateTime OrderDate { get; set; }
         public string eOrderDate { get; set; }
