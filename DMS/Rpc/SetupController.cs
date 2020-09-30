@@ -629,13 +629,13 @@ namespace DMS.Rpc
         private void InitIdGenerate()
         {
             //Store
-            var count = DataContext.IdGenerate.Where(x => x.IdGenerateTypeId == IdGenerateTypeEnum.STORE.Id).Count();
+            var count = DataContext.IdGenerator.Where(x => x.IdGenerateTypeId == IdGenerateTypeEnum.STORE.Id).Count();
             if (count == 0)
             {
-                List<IdGenerateDAO> StoreIds = new List<IdGenerateDAO>();
+                List<IdGeneratorDAO> StoreIds = new List<IdGeneratorDAO>();
                 for (int i = 1; i < 10000000; i++)
                 {
-                    IdGenerateDAO IdGenerateDAO = new IdGenerateDAO
+                    IdGeneratorDAO IdGenerateDAO = new IdGeneratorDAO
                     {
                         IdGenerateTypeId = IdGenerateTypeEnum.STORE.Id,
                         Counter = i,
@@ -643,7 +643,7 @@ namespace DMS.Rpc
                     };
                     StoreIds.Add(IdGenerateDAO);
                 }
-                DataContext.IdGenerate.BulkSynchronize(StoreIds);
+                DataContext.IdGenerator.BulkSynchronize(StoreIds);
             }
         }
 

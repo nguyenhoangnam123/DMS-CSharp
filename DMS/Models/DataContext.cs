@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Thinktecture;
 
 namespace DMS.Models
 {
@@ -35,7 +36,7 @@ namespace DMS.Models
         public virtual DbSet<FieldDAO> Field { get; set; }
         public virtual DbSet<FieldTypeDAO> FieldType { get; set; }
         public virtual DbSet<HashDAO> Hash { get; set; }
-        public virtual DbSet<IdGenerateDAO> IdGenerate { get; set; }
+        public virtual DbSet<IdGeneratorDAO> IdGenerator { get; set; }
         public virtual DbSet<ImageDAO> Image { get; set; }
         public virtual DbSet<IndirectSalesOrderDAO> IndirectSalesOrder { get; set; }
         public virtual DbSet<IndirectSalesOrderContentDAO> IndirectSalesOrderContent { get; set; }
@@ -191,6 +192,7 @@ namespace DMS.Models
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.ConfigureTempTable<long>();
             modelBuilder.Entity<ActionDAO>(entity =>
             {
                 entity.ToTable("Action", "PER");

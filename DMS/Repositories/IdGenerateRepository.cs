@@ -23,7 +23,7 @@ namespace DMS.Repositories
 
         public async Task<long> GetCounter()
         {
-            var Counter = await DataContext.IdGenerate
+            var Counter = await DataContext.IdGenerator
                 .Where(x => x.IdGenerateTypeId == IdGenerateTypeEnum.STORE.Id)
                 .Where(x => x.Used)
                 .MaxAsync(x => (long?)x.Counter) ?? 0;
@@ -31,10 +31,10 @@ namespace DMS.Repositories
             //chưa có cái nào đc sử dụng
             if (Counter == 0)
             {
-                await DataContext.IdGenerate
+                await DataContext.IdGenerator
                 .Where(x => x.IdGenerateTypeId == IdGenerateTypeEnum.STORE.Id)
                 .Where(x => x.Counter == 1)
-                .UpdateFromQueryAsync(x => new IdGenerateDAO
+                .UpdateFromQueryAsync(x => new IdGeneratorDAO
                 {
                     Used = true
                 });
@@ -42,10 +42,10 @@ namespace DMS.Repositories
             }
             else
             {
-                await DataContext.IdGenerate
+                await DataContext.IdGenerator
                 .Where(x => x.IdGenerateTypeId == IdGenerateTypeEnum.STORE.Id)
                 .Where(x => x.Counter == Counter + 1)
-                .UpdateFromQueryAsync(x => new IdGenerateDAO
+                .UpdateFromQueryAsync(x => new IdGeneratorDAO
                 {
                     Used = true
                 });
@@ -55,17 +55,17 @@ namespace DMS.Repositories
 
         public async Task<List<long>> ListCounter(long countElement)
         {
-            var Counter = await DataContext.IdGenerate
+            var Counter = await DataContext.IdGenerator
                 .Where(x => x.IdGenerateTypeId == IdGenerateTypeEnum.STORE.Id)
                 .Where(x => x.Used)
                 .MaxAsync(x => (long?)x.Counter) ?? 0;
 
             List<long> Counters = new List<long>();
 
-            await DataContext.IdGenerate
+            await DataContext.IdGenerator
             .Where(x => x.IdGenerateTypeId == IdGenerateTypeEnum.STORE.Id)
             .Where(x => Counter + 1 <= x.Counter && x.Counter <= Counter + countElement)
-            .UpdateFromQueryAsync(x => new IdGenerateDAO
+            .UpdateFromQueryAsync(x => new IdGeneratorDAO
             {
                 Used = true
             });

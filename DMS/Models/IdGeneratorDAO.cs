@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace DMS.Models
 {
-    public partial class IdGenerateDAO
+    public partial class IdGeneratorDAO
     {
         public long Id { get; set; }
         public long IdGenerateTypeId { get; set; }
