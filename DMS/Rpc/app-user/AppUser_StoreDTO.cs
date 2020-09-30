@@ -120,6 +120,7 @@ namespace DMS.Rpc.app_user
         public IdFilter Id { get; set; }
 
         public StringFilter Code { get; set; }
+        public StringFilter CodeDraft { get; set; }
 
         public StringFilter Name { get; set; }
 

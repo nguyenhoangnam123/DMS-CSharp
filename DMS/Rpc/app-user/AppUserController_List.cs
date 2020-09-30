@@ -296,6 +296,7 @@ namespace DMS.Rpc.app_user
             StoreFilter StoreFilter = new StoreFilter();
             StoreFilter.Id = AppUser_StoreFilterDTO.Id;
             StoreFilter.Code = AppUser_StoreFilterDTO.Code;
+            StoreFilter.CodeDraft = AppUser_StoreFilterDTO.CodeDraft;
             StoreFilter.Name = AppUser_StoreFilterDTO.Name;
             StoreFilter.ParentStoreId = AppUser_StoreFilterDTO.ParentStoreId;
             StoreFilter.OrganizationId = AppUser_StoreFilterDTO.OrganizationId;
@@ -330,6 +331,7 @@ namespace DMS.Rpc.app_user
             StoreFilter.Selects = StoreSelect.ALL;
             StoreFilter.Id = AppUser_StoreFilterDTO.Id;
             StoreFilter.Code = AppUser_StoreFilterDTO.Code;
+            StoreFilter.CodeDraft = AppUser_StoreFilterDTO.CodeDraft;
             StoreFilter.Name = AppUser_StoreFilterDTO.Name;
             StoreFilter.ParentStoreId = AppUser_StoreFilterDTO.ParentStoreId;
             StoreFilter.OrganizationId = AppUser_StoreFilterDTO.OrganizationId;

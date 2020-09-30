@@ -285,6 +285,7 @@ namespace DMS.Rpc.e_route
                 {
                     Id = x.Store.Id,
                     Code = x.Store.Code,
+                    CodeDraft = x.Store.CodeDraft,
                     Name = x.Store.Name,
                     ParentStoreId = x.Store.ParentStoreId,
                     OrganizationId = x.Store.OrganizationId,
@@ -384,6 +385,7 @@ namespace DMS.Rpc.e_route
             StoreFilter.Selects = StoreSelect.ALL;
             StoreFilter.Id = ERoute_StoreFilterDTO.Id;
             StoreFilter.Code = ERoute_StoreFilterDTO.Code;
+            StoreFilter.CodeDraft = ERoute_StoreFilterDTO.CodeDraft;
             StoreFilter.Name = ERoute_StoreFilterDTO.Name;
             StoreFilter.ParentStoreId = ERoute_StoreFilterDTO.ParentStoreId;
             StoreFilter.OrganizationId = new IdFilter { Equal = CurrentUser.OrganizationId };
@@ -585,6 +587,7 @@ namespace DMS.Rpc.e_route
             StoreFilter.Selects = StoreSelect.ALL;
             StoreFilter.Id = ERoute_StoreFilterDTO.Id;
             StoreFilter.Code = ERoute_StoreFilterDTO.Code;
+            StoreFilter.CodeDraft = ERoute_StoreFilterDTO.CodeDraft;
             StoreFilter.Name = ERoute_StoreFilterDTO.Name;
             StoreFilter.ParentStoreId = ERoute_StoreFilterDTO.ParentStoreId;
             StoreFilter.OrganizationId = new IdFilter { Equal = CurrentUser.OrganizationId };
@@ -677,6 +680,7 @@ namespace DMS.Rpc.e_route
             StoreFilter StoreFilter = new StoreFilter();
             StoreFilter.Id = ERoute_StoreFilterDTO.Id;
             StoreFilter.Code = ERoute_StoreFilterDTO.Code;
+            StoreFilter.CodeDraft = ERoute_StoreFilterDTO.CodeDraft;
             StoreFilter.Name = ERoute_StoreFilterDTO.Name;
             StoreFilter.ParentStoreId = ERoute_StoreFilterDTO.ParentStoreId;
             StoreFilter.OrganizationId = ERoute_StoreFilterDTO.OrganizationId;
@@ -725,6 +729,7 @@ namespace DMS.Rpc.e_route
             StoreFilter.Selects = StoreSelect.ALL;
             StoreFilter.Id = ERoute_StoreFilterDTO.Id;
             StoreFilter.Code = ERoute_StoreFilterDTO.Code;
+            StoreFilter.CodeDraft = ERoute_StoreFilterDTO.CodeDraft;
             StoreFilter.Name = ERoute_StoreFilterDTO.Name;
             StoreFilter.ParentStoreId = ERoute_StoreFilterDTO.ParentStoreId;
             StoreFilter.OrganizationId = ERoute_StoreFilterDTO.OrganizationId;

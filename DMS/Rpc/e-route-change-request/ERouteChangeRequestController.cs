@@ -127,6 +127,7 @@ namespace DMS.Rpc.e_route_change_request
                     {
                         Id = x.Store.Id,
                         Code = x.Store.Code,
+                        CodeDraft = x.Store.CodeDraft,
                         Name = x.Store.Name,
                         ParentStoreId = x.Store.ParentStoreId,
                         OrganizationId = x.Store.OrganizationId,
@@ -309,6 +310,7 @@ namespace DMS.Rpc.e_route_change_request
                     {
                         Id = x.Store.Id,
                         Code = x.Store.Code,
+                        CodeDraft = x.Store.CodeDraft,
                         Name = x.Store.Name,
                         ParentStoreId = x.Store.ParentStoreId,
                         OrganizationId = x.Store.OrganizationId,
@@ -431,6 +433,7 @@ namespace DMS.Rpc.e_route_change_request
             StoreFilter.Selects = StoreSelect.ALL;
             StoreFilter.Id = ERouteChangeRequest_StoreFilterDTO.Id;
             StoreFilter.Code = ERouteChangeRequest_StoreFilterDTO.Code;
+            StoreFilter.CodeDraft = ERouteChangeRequest_StoreFilterDTO.CodeDraft;
             StoreFilter.Name = ERouteChangeRequest_StoreFilterDTO.Name;
             StoreFilter.ParentStoreId = ERouteChangeRequest_StoreFilterDTO.ParentStoreId;
             StoreFilter.OrganizationId = ERouteChangeRequest_StoreFilterDTO.OrganizationId;
@@ -649,6 +652,7 @@ namespace DMS.Rpc.e_route_change_request
             StoreFilter.Selects = StoreSelect.ALL;
             StoreFilter.Id = ERouteChangeRequest_StoreFilterDTO.Id;
             StoreFilter.Code = ERouteChangeRequest_StoreFilterDTO.Code;
+            StoreFilter.CodeDraft = ERouteChangeRequest_StoreFilterDTO.CodeDraft;
             StoreFilter.Name = ERouteChangeRequest_StoreFilterDTO.Name;
             StoreFilter.ParentStoreId = ERouteChangeRequest_StoreFilterDTO.ParentStoreId;
             StoreFilter.OrganizationId = ERouteChangeRequest_StoreFilterDTO.OrganizationId;
@@ -682,6 +686,7 @@ namespace DMS.Rpc.e_route_change_request
             StoreFilter StoreFilter = new StoreFilter();
             StoreFilter.Id = ERouteChangeRequest_StoreFilterDTO.Id;
             StoreFilter.Code = ERouteChangeRequest_StoreFilterDTO.Code;
+            StoreFilter.CodeDraft = ERouteChangeRequest_StoreFilterDTO.CodeDraft;
             StoreFilter.Name = ERouteChangeRequest_StoreFilterDTO.Name;
             StoreFilter.ParentStoreId = ERouteChangeRequest_StoreFilterDTO.ParentStoreId;
             StoreFilter.OrganizationId = ERouteChangeRequest_StoreFilterDTO.OrganizationId;
@@ -713,6 +718,7 @@ namespace DMS.Rpc.e_route_change_request
             StoreFilter.Selects = StoreSelect.ALL;
             StoreFilter.Id = ERouteChangeRequest_StoreFilterDTO.Id;
             StoreFilter.Code = ERouteChangeRequest_StoreFilterDTO.Code;
+            StoreFilter.CodeDraft = ERouteChangeRequest_StoreFilterDTO.CodeDraft;
             StoreFilter.Name = ERouteChangeRequest_StoreFilterDTO.Name;
             StoreFilter.ParentStoreId = ERouteChangeRequest_StoreFilterDTO.ParentStoreId;
             StoreFilter.OrganizationId = ERouteChangeRequest_StoreFilterDTO.OrganizationId;

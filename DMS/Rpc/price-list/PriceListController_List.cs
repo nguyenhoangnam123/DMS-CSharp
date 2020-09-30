@@ -111,6 +111,7 @@ namespace DMS.Rpc.price_list
             StoreFilter.Selects = StoreSelect.ALL;
             StoreFilter.Id = PriceList_StoreFilterDTO.Id;
             StoreFilter.Code = PriceList_StoreFilterDTO.Code;
+            StoreFilter.CodeDraft = PriceList_StoreFilterDTO.CodeDraft;
             StoreFilter.Name = PriceList_StoreFilterDTO.Name;
             StoreFilter.ParentStoreId = PriceList_StoreFilterDTO.ParentStoreId;
             StoreFilter.OrganizationId = PriceList_StoreFilterDTO.OrganizationId;
@@ -313,6 +314,7 @@ namespace DMS.Rpc.price_list
             StoreFilter.Selects = StoreSelect.ALL;
             StoreFilter.Id = PriceList_StoreFilterDTO.Id;
             StoreFilter.Code = PriceList_StoreFilterDTO.Code;
+            StoreFilter.CodeDraft = PriceList_StoreFilterDTO.CodeDraft;
             StoreFilter.Name = PriceList_StoreFilterDTO.Name;
             StoreFilter.ParentStoreId = PriceList_StoreFilterDTO.ParentStoreId;
             StoreFilter.OrganizationId = PriceList_StoreFilterDTO.OrganizationId;
@@ -551,6 +553,7 @@ namespace DMS.Rpc.price_list
             StoreFilter StoreFilter = new StoreFilter();
             StoreFilter.Id = PriceList_StoreFilterDTO.Id;
             StoreFilter.Code = PriceList_StoreFilterDTO.Code;
+            StoreFilter.CodeDraft = PriceList_StoreFilterDTO.CodeDraft;
             StoreFilter.Name = PriceList_StoreFilterDTO.Name;
             StoreFilter.ParentStoreId = PriceList_StoreFilterDTO.ParentStoreId;
             StoreFilter.OrganizationId = PriceList_StoreFilterDTO.OrganizationId;
@@ -593,6 +596,7 @@ namespace DMS.Rpc.price_list
             StoreFilter.Selects = StoreSelect.ALL;
             StoreFilter.Id = PriceList_StoreFilterDTO.Id;
             StoreFilter.Code = PriceList_StoreFilterDTO.Code;
+            StoreFilter.CodeDraft = PriceList_StoreFilterDTO.CodeDraft;
             StoreFilter.Name = PriceList_StoreFilterDTO.Name;
             StoreFilter.ParentStoreId = PriceList_StoreFilterDTO.ParentStoreId;
             StoreFilter.OrganizationId = PriceList_StoreFilterDTO.OrganizationId;
