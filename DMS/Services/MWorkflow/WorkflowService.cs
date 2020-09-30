@@ -162,7 +162,7 @@ namespace DMS.Services.MWorkflow
 
             // Kiểm tra trong workflow definition chọn được có workflow step nào thoả mãn việc step NGUỒN là 1 trong các role của user đang đăng nhập không
             // Nếu có step NGUỒN thì workflow có thể được khởi tạo
-            if (WorkflowDefinition.WorkflowSteps == null)
+            if (WorkflowDefinition.WorkflowSteps != null)
             {
                 bool ShouldInit = false;
                 foreach (WorkflowStep WorkflowStep in WorkflowDefinition.WorkflowSteps)

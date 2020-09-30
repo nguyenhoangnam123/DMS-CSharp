@@ -701,6 +701,7 @@ namespace DMS.Repositories
             RequestWorkflowDefinitionMappingDAO RequestWorkflowDefinitionMappingDAO = await DataContext.RequestWorkflowDefinitionMapping
                .Where(x => IndirectSalesOrder.RowId == x.RequestId)
                .Include(x => x.RequestState)
+               .AsNoTracking()
                .FirstOrDefaultAsync();
             if (RequestWorkflowDefinitionMappingDAO != null)
             {
