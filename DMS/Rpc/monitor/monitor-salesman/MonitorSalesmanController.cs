@@ -18,6 +18,8 @@ using System.Dynamic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Thinktecture;
+using Thinktecture.EntityFrameworkCore.TempTables;
 
 namespace DMS.Rpc.monitor.monitor_salesman
 {
@@ -222,7 +224,19 @@ namespace DMS.Rpc.monitor.monitor_salesman
             StoreIds.AddRange(ProblemDAOs.Select(x => x.StoreId).ToList());
             StoreIds.AddRange(IndirectSalesOrderDAOs.Select(x => x.BuyerStoreId).ToList());
             StoreIds = StoreIds.Distinct().ToList();
-            List<StoreDAO> StoreDAOs = await DataContext.Store.Where(s => StoreIds.Contains(s.Id)).ToListAsync();
+
+            ITempTableQuery<TempTable<long>> tempTableQuery = await DataContext
+                     .BulkInsertValuesIntoTempTableAsync<long>(StoreIds);
+            var query2 = from s in DataContext.Store
+                         join tt in tempTableQuery.Query on s.Id equals tt.Column1
+                         select new StoreDAO
+                         {
+                             Id = s.Id,
+                             Code = s.Code,
+                             Name = s.Name,
+                             Address = s.Address,
+                         };
+            List<StoreDAO> StoreDAOs = await query2.ToListAsync();
             // khởi tạo kế hoạch
             foreach (MonitorSalesman_SaleEmployeeDTO MonitorSalesman_SaleEmployeeDTO in MonitorSalesman_SaleEmployeeDTOs)
             {
