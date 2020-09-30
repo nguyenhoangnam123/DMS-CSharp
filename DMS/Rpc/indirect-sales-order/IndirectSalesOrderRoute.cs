@@ -79,9 +79,15 @@ namespace DMS.Rpc.indirect_sales_order
 
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
         {
-            { "Tìm kiếm", new List<string> {
+            { "Tìm kiếm tất cả", new List<string> {
                 Parent,
-                Master, Count, List, Get, Print, GetDetail, 
+                Master, Count, List, Print, GetDetail,
+                FilterListStore, FilterListEditedPriceStatus, FilterListRequestState, FilterListAppUser, FilterListItem, FilterListUnitOfMeasure, FilterListOrganization,
+                CountItem, ListItem,} },
+
+             { "Tìm kiếm của tôi", new List<string> {
+                Parent,
+                Master, Get, Print, GetDetail,
                 CountNew, ListNew, CountPending, ListPending, CountCompleted, ListCompleted,
                 FilterListStore, FilterListEditedPriceStatus, FilterListRequestState, FilterListAppUser, FilterListItem, FilterListUnitOfMeasure, FilterListOrganization,
                 CountItem, ListItem,} },
@@ -102,6 +108,16 @@ namespace DMS.Rpc.indirect_sales_order
                 CountNew, ListNew, CountPending, ListPending, CountCompleted, ListCompleted,
                 FilterListStore, FilterListEditedPriceStatus, FilterListRequestState, FilterListAppUser,  FilterListItem, FilterListUnitOfMeasure, FilterListOrganization,
                 Detail, Update, Send,
+                SingleListOrganization, SingleListStore, SingleListEditedPriceStatus, SingleListRequestState, SingleListAppUser,  SingleListItem, SingleListUnitOfMeasure, SingleListStoreType,
+                SingleListStoreGrouping, SingleListSupplier, SingleListProductGrouping, SingleListProductType, SingleListTaxType,
+                CountItem, ListItem, CountStore, ListStore, CountBuyerStore, ListBuyerStore} },
+
+            { "PHê duyệt", new List<string> {
+                Parent,
+                Master, Count, List, GetDetail, Print,
+                CountNew, ListNew, CountPending, ListPending, CountCompleted, ListCompleted,
+                FilterListStore, FilterListEditedPriceStatus, FilterListRequestState, FilterListAppUser,  FilterListItem, FilterListUnitOfMeasure, FilterListOrganization,
+                Detail, Update, Approve, Reject,
                 SingleListOrganization, SingleListStore, SingleListEditedPriceStatus, SingleListRequestState, SingleListAppUser,  SingleListItem, SingleListUnitOfMeasure, SingleListStoreType,
                 SingleListStoreGrouping, SingleListSupplier, SingleListProductGrouping, SingleListProductType, SingleListTaxType,
                 CountItem, ListItem, CountStore, ListStore, CountBuyerStore, ListBuyerStore} },

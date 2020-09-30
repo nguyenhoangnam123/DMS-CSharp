@@ -59,18 +59,18 @@ namespace DMS.Models
         public Guid RowId { get; set; }
         public bool Used { get; set; }
         public long? StoreScoutingId { get; set; }
-        public long RequestStateId { get; set; }
+        public long StoreStatusId { get; set; }
 
         public virtual AppUserDAO AppUser { get; set; }
         public virtual DistrictDAO District { get; set; }
         public virtual OrganizationDAO Organization { get; set; }
         public virtual StoreDAO ParentStore { get; set; }
         public virtual ProvinceDAO Province { get; set; }
-        public virtual RequestStateDAO RequestState { get; set; }
         public virtual ResellerDAO Reseller { get; set; }
         public virtual StatusDAO Status { get; set; }
         public virtual StoreGroupingDAO StoreGrouping { get; set; }
         public virtual StoreScoutingDAO StoreScouting { get; set; }
+        public virtual StoreStatusDAO StoreStatus { get; set; }
         public virtual StoreTypeDAO StoreType { get; set; }
         public virtual WardDAO Ward { get; set; }
         public virtual ICollection<AlbumImageMappingDAO> AlbumImageMappings { get; set; }

@@ -1,7 +1,6 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Thinktecture;
 
 namespace DMS.Models
 {
@@ -36,7 +35,7 @@ namespace DMS.Models
         public virtual DbSet<FieldDAO> Field { get; set; }
         public virtual DbSet<FieldTypeDAO> FieldType { get; set; }
         public virtual DbSet<HashDAO> Hash { get; set; }
-        public virtual DbSet<IdGenerateDAO> IdGenerate { get; set; }
+        public virtual DbSet<IdGeneratorDAO> IdGenerator { get; set; }
         public virtual DbSet<ImageDAO> Image { get; set; }
         public virtual DbSet<IndirectSalesOrderDAO> IndirectSalesOrder { get; set; }
         public virtual DbSet<IndirectSalesOrderContentDAO> IndirectSalesOrderContent { get; set; }
@@ -143,6 +142,7 @@ namespace DMS.Models
         public virtual DbSet<StoreScoutingImageMappingDAO> StoreScoutingImageMapping { get; set; }
         public virtual DbSet<StoreScoutingStatusDAO> StoreScoutingStatus { get; set; }
         public virtual DbSet<StoreScoutingTypeDAO> StoreScoutingType { get; set; }
+        public virtual DbSet<StoreStatusDAO> StoreStatus { get; set; }
         public virtual DbSet<StoreTypeDAO> StoreType { get; set; }
         public virtual DbSet<StoreUncheckingDAO> StoreUnchecking { get; set; }
         public virtual DbSet<SupplierDAO> Supplier { get; set; }
@@ -191,7 +191,6 @@ namespace DMS.Models
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.ConfigureTempTable<long>();
             modelBuilder.Entity<ActionDAO>(entity =>
             {
                 entity.ToTable("Action", "PER");
@@ -3544,12 +3543,6 @@ namespace DMS.Models
                     .HasForeignKey(d => d.ProvinceId)
                     .HasConstraintName("FK_Store_Province");
 
-                entity.HasOne(d => d.RequestState)
-                    .WithMany(p => p.Stores)
-                    .HasForeignKey(d => d.RequestStateId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Store_RequestState");
-
                 entity.HasOne(d => d.Reseller)
                     .WithMany(p => p.Stores)
                     .HasForeignKey(d => d.ResellerId)
@@ -3570,6 +3563,12 @@ namespace DMS.Models
                     .WithMany(p => p.Stores)
                     .HasForeignKey(d => d.StoreScoutingId)
                     .HasConstraintName("FK_Store_StoreScouting");
+
+                entity.HasOne(d => d.StoreStatus)
+                    .WithMany(p => p.Stores)
+                    .HasForeignKey(d => d.StoreStatusId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Store_StoreStatus");
 
                 entity.HasOne(d => d.StoreType)
                     .WithMany(p => p.Stores)
@@ -3845,6 +3844,21 @@ namespace DMS.Models
                     .HasForeignKey(d => d.StatusId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_StoreScoutingType_Status");
+            });
+
+            modelBuilder.Entity<StoreStatusDAO>(entity =>
+            {
+                entity.ToTable("StoreStatus", "ENUM");
+
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(50);
             });
 
             modelBuilder.Entity<StoreTypeDAO>(entity =>
