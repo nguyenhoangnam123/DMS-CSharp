@@ -132,7 +132,7 @@ namespace DMS.Rpc.price_list
             StoreFilter.OwnerEmail = PriceList_StoreFilterDTO.OwnerEmail;
             StoreFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
             StoreFilter.WorkflowDefinitionId = PriceList_StoreFilterDTO.WorkflowDefinitionId;
-            StoreFilter.RequestStateId = PriceList_StoreFilterDTO.RequestStateId;
+            StoreFilter.StoreStatusId = PriceList_StoreFilterDTO.StoreStatusId;
 
             if (StoreFilter.Id == null) StoreFilter.Id = new IdFilter();
             StoreFilter.Id.In = await FilterStore(StoreService, OrganizationService, CurrentContext);
@@ -334,7 +334,7 @@ namespace DMS.Rpc.price_list
             StoreFilter.OwnerEmail = PriceList_StoreFilterDTO.OwnerEmail;
             StoreFilter.StatusId = PriceList_StoreFilterDTO.StatusId;
             StoreFilter.WorkflowDefinitionId = PriceList_StoreFilterDTO.WorkflowDefinitionId;
-            StoreFilter.RequestStateId = PriceList_StoreFilterDTO.RequestStateId;
+            StoreFilter.StoreStatusId = PriceList_StoreFilterDTO.StoreStatusId;
 
             if (StoreFilter.Id == null) StoreFilter.Id = new IdFilter();
             StoreFilter.Id.In = await FilterStore(StoreService, OrganizationService, CurrentContext);
@@ -572,7 +572,7 @@ namespace DMS.Rpc.price_list
             StoreFilter.OwnerEmail = PriceList_StoreFilterDTO.OwnerEmail;
             StoreFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
             StoreFilter.WorkflowDefinitionId = PriceList_StoreFilterDTO.WorkflowDefinitionId;
-            StoreFilter.RequestStateId = PriceList_StoreFilterDTO.RequestStateId;
+            StoreFilter.StoreStatusId = PriceList_StoreFilterDTO.StoreStatusId;
 
             if (StoreFilter.Id == null) StoreFilter.Id = new IdFilter();
             StoreFilter.Id.In = await FilterStore(StoreService, OrganizationService, CurrentContext);
@@ -614,7 +614,7 @@ namespace DMS.Rpc.price_list
             StoreFilter.OwnerEmail = PriceList_StoreFilterDTO.OwnerEmail;
             StoreFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
             StoreFilter.WorkflowDefinitionId = PriceList_StoreFilterDTO.WorkflowDefinitionId;
-            StoreFilter.RequestStateId = PriceList_StoreFilterDTO.RequestStateId;
+            StoreFilter.StoreStatusId = PriceList_StoreFilterDTO.StoreStatusId;
 
             if (StoreFilter.Id == null) StoreFilter.Id = new IdFilter();
             StoreFilter.Id.In = await FilterStore(StoreService, OrganizationService, CurrentContext);

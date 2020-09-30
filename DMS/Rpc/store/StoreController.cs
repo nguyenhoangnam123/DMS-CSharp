@@ -190,26 +190,7 @@ namespace DMS.Rpc.store
                 return Forbid();
 
             Store Store = ConvertDTOToEntity(Store_StoreDTO);
-            Store.RequestStateId = RequestStateEnum.APPROVED.Id;
-            Store = await StoreService.Update(Store);
-            Store_StoreDTO = new Store_StoreDTO(Store);
-            if (Store.IsValidated)
-                return Store_StoreDTO;
-            else
-                return BadRequest(Store_StoreDTO);
-        }
-
-        [Route(StoreRoute.Reject), HttpPost]
-        public async Task<ActionResult<Store_StoreDTO>> Reject([FromBody] Store_StoreDTO Store_StoreDTO)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
-
-            if (!await HasPermission(Store_StoreDTO.Id))
-                return Forbid();
-
-            Store Store = ConvertDTOToEntity(Store_StoreDTO);
-            Store.RequestStateId = RequestStateEnum.REJECTED.Id;
+            Store.StoreStatusId = StoreStatusEnum.OFFICIAL.Id;
             Store = await StoreService.Update(Store);
             Store_StoreDTO = new Store_StoreDTO(Store);
             if (Store.IsValidated)
@@ -1044,7 +1025,7 @@ namespace DMS.Rpc.store
             Store.LegalEntity = Store_StoreDTO.LegalEntity;
             Store.StatusId = Store_StoreDTO.StatusId;
             Store.StoreScoutingId = Store_StoreDTO.StoreScoutingId;
-            Store.RequestStateId = Store_StoreDTO.RequestStateId;
+            Store.StoreStatusId = Store_StoreDTO.StoreStatusId;
             Store.AppUserId = Store_StoreDTO.AppUserId;
             Store.District = Store_StoreDTO.District == null ? null : new District
             {
@@ -1105,11 +1086,11 @@ namespace DMS.Rpc.store
                 Code = Store_StoreDTO.Status.Code,
                 Name = Store_StoreDTO.Status.Name,
             };
-            Store.RequestState = Store_StoreDTO.RequestState == null ? null : new RequestState
+            Store.StoreStatus = Store_StoreDTO.StoreStatus == null ? null : new StoreStatus
             {
-                Id = Store_StoreDTO.RequestState.Id,
-                Code = Store_StoreDTO.RequestState.Code,
-                Name = Store_StoreDTO.RequestState.Name,
+                Id = Store_StoreDTO.StoreStatus.Id,
+                Code = Store_StoreDTO.StoreStatus.Code,
+                Name = Store_StoreDTO.StoreStatus.Name,
             };
             Store.StoreScouting = Store_StoreDTO.StoreScouting == null ? null : new StoreScouting
             {
@@ -1209,7 +1190,7 @@ namespace DMS.Rpc.store
             StoreFilter.OwnerEmail = Store_StoreFilterDTO.OwnerEmail;
             StoreFilter.AppUserId = Store_StoreFilterDTO.AppUserId;
             StoreFilter.StatusId = Store_StoreFilterDTO.StatusId;
-            StoreFilter.RequestStateId = Store_StoreFilterDTO.RequestStateId;
+            StoreFilter.StoreStatusId = Store_StoreFilterDTO.StoreStatusId;
             return StoreFilter;
         }
 

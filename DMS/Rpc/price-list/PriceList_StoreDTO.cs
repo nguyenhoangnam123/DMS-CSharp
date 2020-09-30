@@ -95,7 +95,7 @@ namespace DMS.Rpc.price_list
         public StringFilter OwnerEmail { get; set; }
         public IdFilter StatusId { get; set; }
         public IdFilter WorkflowDefinitionId { get; set; }
-        public IdFilter RequestStateId { get; set; }
+        public IdFilter StoreStatusId { get; set; }
         public StoreOrder OrderBy { get; set; }
     }
 }

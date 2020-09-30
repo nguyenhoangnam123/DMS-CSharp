@@ -38,7 +38,7 @@ namespace DMS.Entities
         public long? AppUserId { get; set; }
         public long StatusId { get; set; }
         public Guid RowId { get; set; }
-        public long RequestStateId { get; set; }
+        public long StoreStatusId { get; set; }
         public bool HasEroute { get; set; }
         public bool HasChecking { get; set; }
         public bool Used { get; set; }
@@ -55,7 +55,7 @@ namespace DMS.Entities
         public StoreType StoreType { get; set; }
         public Ward Ward { get; set; }
         public StoreScouting StoreScouting { get; set; }
-        public RequestState RequestState { get; set; }
+        public StoreStatus StoreStatus { get; set; }
         public List<AlbumImageMapping> AlbumImageMappings { get; set; }
         public List<StoreImageMapping> StoreImageMappings { get; set; }
         public List<RequestWorkflowStepMapping> StoreWorkflows { get; set; }
@@ -104,7 +104,7 @@ namespace DMS.Entities
         public IdFilter AppUserId { get; set; }
         public IdFilter StatusId { get; set; }
         public IdFilter WorkflowDefinitionId { get; set; }
-        public IdFilter RequestStateId { get; set; }
+        public IdFilter StoreStatusId { get; set; }
         public List<StoreFilter> OrFilter { get; set; }
         public StoreOrder OrderBy { get; set; }
         public StoreSelect Selects { get; set; }
@@ -139,7 +139,7 @@ namespace DMS.Entities
         UnsignName = 23,
         UnsignAddress = 24,
         AppUser = 25,
-        RequestState = 26,
+        StoreStatus = 26,
         CodeDraft = 27,
     }
 
@@ -176,7 +176,7 @@ namespace DMS.Entities
         UnsignName = E._27,
         UnsignAddress = E._28,
         AppUser = E._25,
-        RequestState = E._26,
+        StoreStatus = E._26,
         HasChecking = E._27,
         CodeDraft = E._28,
     }
