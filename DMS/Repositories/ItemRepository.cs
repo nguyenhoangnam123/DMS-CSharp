@@ -36,23 +36,23 @@ namespace DMS.Repositories
             query = query.Where(q => q.DeletedAt == null && q.Product.DeletedAt == null);
             if (filter.Search != null)
                 query = query.Where(q => q.Code.ToLower().Contains(filter.Search.ToLower()) || q.Name.ToLower().Contains(filter.Search.ToLower()) || q.Product.OtherName.ToLower().Contains(filter.Search.ToLower()));
-            if (filter.Id != null)
+            if (filter.Id != null && filter.Id.HasValue)
                 query = query.Where(q => q.Id, filter.Id);
-            if (filter.ProductId != null)
+            if (filter.ProductId != null && filter.ProductId.HasValue)
                 query = query.Where(q => q.ProductId, filter.ProductId);
-            if (filter.Code != null)
+            if (filter.Code != null && filter.Code.HasValue)
                 query = query.Where(q => q.Code, filter.Code);
-            if (filter.Name != null)
+            if (filter.Name != null && filter.Name.HasValue)
                 query = query.Where(q => q.Name, filter.Name);
-            if (filter.OtherName != null)
+            if (filter.OtherName != null && filter.OtherName.HasValue)
                 query = query.Where(q => q.Product.OtherName, filter.OtherName);
-            if (filter.ScanCode != null)
+            if (filter.ScanCode != null && filter.ScanCode.HasValue)
                 query = query.Where(q => q.ScanCode, filter.ScanCode);
-            if (filter.SalePrice != null)
+            if (filter.SalePrice != null && filter.SalePrice.HasValue)
                 query = query.Where(q => q.SalePrice, filter.SalePrice);
-            if (filter.RetailPrice != null)
+            if (filter.RetailPrice != null && filter.RetailPrice.HasValue)
                 query = query.Where(q => q.RetailPrice, filter.RetailPrice);
-            if (filter.ProductGroupingId != null)
+            if (filter.ProductGroupingId != null && filter.ProductGroupingId.HasValue)
             {
                 if (filter.ProductGroupingId.Equal != null)
                 {
@@ -102,23 +102,19 @@ namespace DMS.Repositories
                 }
             }
 
-            if (filter.ProductTypeId != null)
-            {
+            if (filter.ProductTypeId != null && filter.ProductTypeId.HasValue)
                 query = query.Where(q => q.Product.ProductTypeId, filter.ProductTypeId);
-            }
 
-            if (filter.SupplierId != null)
-            {
-                query = query.Where(q => q.Product.SupplierId, filter.SupplierId);
-            }
-            if (filter.StatusId != null)
-            {
+            if (filter.SupplierId != null && filter.SupplierId.HasValue)
+                query = query.Where(q => q.Product.SupplierId.HasValue)
+                    .Where(q => q.Product.SupplierId.Value, filter.SupplierId);
+
+            if (filter.StatusId != null && filter.StatusId.HasValue)
                 query = query.Where(q => q.StatusId, filter.StatusId);
-            }
-            if (filter.IsNew != null)
-            {
+
+            if (filter.IsNew != null && filter.IsNew.HasValue)
                 query = query.Where(q => q.Product.IsNew == filter.IsNew);
-            }
+
             query = OrFilter(query, filter);
             return query;
         }
@@ -131,11 +127,11 @@ namespace DMS.Repositories
             foreach (ItemFilter ItemFilter in filter.OrFilter)
             {
                 IQueryable<ItemDAO> queryable = query;
-                if (ItemFilter.SalePrice != null)
+                if (ItemFilter.SalePrice != null && ItemFilter.SalePrice.HasValue)
                     queryable = queryable.Where(q => q.SalePrice, ItemFilter.SalePrice);
-                if (ItemFilter.ProductTypeId != null)
+                if (ItemFilter.ProductTypeId != null && ItemFilter.ProductTypeId.HasValue)
                     queryable = queryable.Where(q => q.Product.ProductTypeId, ItemFilter.ProductTypeId);
-                if (ItemFilter.ProductGroupingId != null)
+                if (ItemFilter.ProductGroupingId != null && ItemFilter.ProductGroupingId.HasValue)
                 {
                     if (ItemFilter.ProductGroupingId.Equal != null)
                     {
@@ -543,7 +539,7 @@ namespace DMS.Repositories
             if (Item.ItemImageMappings.Count == 0)
             {
                 var ProductImageMappingDAOs = await DataContext.ProductImageMapping.Include(x => x.Image).Where(x => x.ProductId == Item.ProductId).ToListAsync();
-                foreach(ProductImageMappingDAO ProductImageMappingDAO in ProductImageMappingDAOs)
+                foreach (ProductImageMappingDAO ProductImageMappingDAO in ProductImageMappingDAOs)
                 {
                     ItemImageMapping ItemImageMapping = new ItemImageMapping
                     {
