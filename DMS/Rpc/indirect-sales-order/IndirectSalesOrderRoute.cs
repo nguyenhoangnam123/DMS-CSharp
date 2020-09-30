@@ -21,6 +21,7 @@ namespace DMS.Rpc.indirect_sales_order
         public const string CountCompleted = Default + "/count-completed";
         public const string ListCompleted = Default + "/list-completed";
 
+        public const string GetDetail = Default + "/get-detail";
         public const string Get = Default + "/get";
         public const string Create = Default + "/create";
         public const string Update = Default + "/update";
@@ -80,14 +81,14 @@ namespace DMS.Rpc.indirect_sales_order
         {
             { "Tìm kiếm", new List<string> {
                 Parent,
-                Master, Count, List, Get, Print,
+                Master, Count, List, Get, Print, GetDetail, 
                 CountNew, ListNew, CountPending, ListPending, CountCompleted, ListCompleted,
                 FilterListStore, FilterListEditedPriceStatus, FilterListRequestState, FilterListAppUser, FilterListItem, FilterListUnitOfMeasure, FilterListOrganization,
                 CountItem, ListItem,} },
 
             { "Thêm", new List<string> {
                 Parent,
-                Master, Count, List, Get, Print,
+                Master, Count, List, GetDetail, Print,
                 CountNew, ListNew, CountPending, ListPending, CountCompleted, ListCompleted,
                 FilterListStore, FilterListEditedPriceStatus, FilterListRequestState, FilterListAppUser,  FilterListItem, FilterListUnitOfMeasure, FilterListOrganization,
                 Detail, Create, Send,
@@ -97,7 +98,7 @@ namespace DMS.Rpc.indirect_sales_order
 
             { "Sửa", new List<string> {
                 Parent,
-                Master, Count, List, Get, Print,
+                Master, Count, List, GetDetail, Print,
                 CountNew, ListNew, CountPending, ListPending, CountCompleted, ListCompleted,
                 FilterListStore, FilterListEditedPriceStatus, FilterListRequestState, FilterListAppUser,  FilterListItem, FilterListUnitOfMeasure, FilterListOrganization,
                 Detail, Update, Send,
@@ -107,7 +108,7 @@ namespace DMS.Rpc.indirect_sales_order
 
             { "Xoá", new List<string> {
                 Parent,
-                Master, Count, List, Get, Print,
+                Master, Count, List, GetDetail, Print,
                 CountNew, ListNew, CountPending, ListPending, CountCompleted, ListCompleted,
                 FilterListStore, FilterListEditedPriceStatus, FilterListRequestState, FilterListAppUser,  FilterListItem, FilterListUnitOfMeasure, FilterListOrganization,
                 Delete,
@@ -122,7 +123,7 @@ namespace DMS.Rpc.indirect_sales_order
             { "Phê duyệt", new List<string>
             {
                 Parent,
-                Master, Count, List, Get, Print,
+                Master, Count, List, GetDetail, Print,
                 CountNew, ListNew, CountPending, ListPending, CountCompleted, ListCompleted,
                 FilterListStore, FilterListEditedPriceStatus, FilterListRequestState, FilterListAppUser,  FilterListItem, FilterListUnitOfMeasure, FilterListOrganization,
                 Detail, Approve, Reject, Send,

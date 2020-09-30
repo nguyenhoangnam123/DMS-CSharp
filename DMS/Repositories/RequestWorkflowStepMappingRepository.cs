@@ -1,5 +1,6 @@
-using Common;
+﻿using Common;
 using DMS.Entities;
+using DMS.Enums;
 using DMS.Models;
 using Helpers;
 using Microsoft.EntityFrameworkCore;
@@ -89,22 +90,64 @@ namespace DMS.Repositories
                     RequestWorkflowStepMappingDAO.RequestId = RequestId;
                     RequestWorkflowStepMappingDAO.WorkflowStepId = RequestWorkflowStepMapping.WorkflowStepId;
                     RequestWorkflowStepMappingDAO.CreatedAt = StaticParams.DateTimeNow;
+                    RequestWorkflowStepMappingDAO.UpdatedAt = StaticParams.DateTimeNow;
+                    RequestWorkflowStepMappingDAO.DeletedAt = null;
                     DataContext.RequestWorkflowStepMapping.Add(RequestWorkflowStepMappingDAO);
                 }
-                RequestWorkflowStepMappingDAO.WorkflowStateId = RequestWorkflowStepMapping.WorkflowStateId;
-                RequestWorkflowStepMappingDAO.AppUserId = RequestWorkflowStepMapping.AppUserId;
-                RequestWorkflowStepMappingDAO.UpdatedAt = StaticParams.DateTimeNow;
-                RequestWorkflowStepMappingDAO.DeletedAt = null;
+                else if (RequestWorkflowStepMappingDAO.WorkflowStateId != RequestWorkflowStepMapping.WorkflowStateId)
+                {
+                    RequestWorkflowStepMappingDAO.WorkflowStateId = RequestWorkflowStepMapping.WorkflowStateId;
+                    RequestWorkflowStepMappingDAO.AppUserId = RequestWorkflowStepMapping.AppUserId;
+                    RequestWorkflowStepMappingDAO.UpdatedAt = StaticParams.DateTimeNow;
+                    RequestWorkflowStepMappingDAO.DeletedAt = null;
+                }
             }
             var Deleted = RequestWorkflowStepMappingDAOs.Where(r => r.DeletedAt.HasValue).ToList();
             DataContext.RequestWorkflowStepMapping.RemoveRange(Deleted);
             await DataContext.SaveChangesAsync();
+
+            // Cập nhật tất cả các trạng thái của request workflow step vào request workflow history
+            RequestWorkflowStepMappingDAOs = DataContext.RequestWorkflowStepMapping
+               .Where(r => r.RequestId == RequestId).ToList();
+            List<RequestWorkflowHistoryDAO> RequestWorkflowHistoryDAOs = DataContext.RequestWorkflowHistory
+                .Where(x => x.RequestId == RequestId && x.StatusId == StatusEnum.ACTIVE.Id).ToList();
+            foreach(RequestWorkflowStepMappingDAO RequestWorkflowStepMappingDAO in RequestWorkflowStepMappingDAOs)
+            {
+                RequestWorkflowHistoryDAO RequestWorkflowHistoryDAO = RequestWorkflowHistoryDAOs
+                    .Where(x => x.WorkflowStepId == RequestWorkflowStepMappingDAO.WorkflowStepId).FirstOrDefault();
+                if (RequestWorkflowHistoryDAO == null)
+                {
+                    RequestWorkflowHistoryDAO = new RequestWorkflowHistoryDAO
+                    {
+                        RequestId = RequestId,
+                        WorkflowStepId = RequestWorkflowStepMappingDAO.WorkflowStepId,
+                        AppUserId = RequestWorkflowStepMappingDAO.AppUserId,
+                        CreatedAt = RequestWorkflowStepMappingDAO.CreatedAt,
+                        UpdatedAt = RequestWorkflowStepMappingDAO.UpdatedAt,
+                        DeletedAt = RequestWorkflowStepMappingDAO.DeletedAt,
+                        StatusId = StatusEnum.ACTIVE.Id,
+                        WorkflowStateId = RequestWorkflowStepMappingDAO.WorkflowStateId,
+                    };
+                    RequestWorkflowHistoryDAOs.Add(RequestWorkflowHistoryDAO);
+                }
+                else
+                {
+                    RequestWorkflowHistoryDAO.UpdatedAt = RequestWorkflowStepMappingDAO.UpdatedAt;
+                    RequestWorkflowHistoryDAO.WorkflowStateId = RequestWorkflowStepMappingDAO.WorkflowStateId;
+                    RequestWorkflowHistoryDAO.AppUserId = RequestWorkflowStepMappingDAO.AppUserId;
+                }
+            }
+            await DataContext.RequestWorkflowHistory.BulkMergeAsync(RequestWorkflowHistoryDAOs);
+            long rejectedId = await DataContext.RequestWorkflowHistory
+                .Where(x => 
+                    x.RequestId == RequestId && 
+                    x.WorkflowStateId == WorkflowStateEnum.REJECTED.Id && 
+                    x.StatusId == StatusEnum.ACTIVE.Id)
+                .Select(x => x.Id).MaxAsync();
+
+            await DataContext.RequestWorkflowHistory.Where(x => x.RequestId == RequestId && x.Id <= rejectedId)
+                .UpdateFromQueryAsync(x => new RequestWorkflowHistoryDAO { StatusId = StatusEnum.INACTIVE.Id });
             return true;
         }
-
-        private async Task SaveReference(RequestWorkflowStepMapping RequestWorkflow)
-        {
-        }
-
     }
 }

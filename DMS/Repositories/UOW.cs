@@ -80,6 +80,7 @@ namespace DMS.Repositories
         IProvinceRepository ProvinceRepository { get; }
         IRequestStateRepository RequestStateRepository { get; }
         IRequestWorkflowDefinitionMappingRepository RequestWorkflowDefinitionMappingRepository { get; }
+        IRequestWorkflowHistoryRepository RequestWorkflowHistoryRepository { get; }
         IRequestWorkflowParameterMappingRepository RequestWorkflowParameterMappingRepository { get; }
         IRequestWorkflowStepMappingRepository RequestWorkflowStepMappingRepository { get; }
         IResellerRepository ResellerRepository { get; }
@@ -195,6 +196,7 @@ namespace DMS.Repositories
         public IProvinceRepository ProvinceRepository { get; private set; }
         public IRequestStateRepository RequestStateRepository { get; private set; }
         public IRequestWorkflowDefinitionMappingRepository RequestWorkflowDefinitionMappingRepository { get; private set; }
+        public IRequestWorkflowHistoryRepository RequestWorkflowHistoryRepository { get; private set; }
         public IRequestWorkflowParameterMappingRepository RequestWorkflowParameterMappingRepository { get; private set; }
         public IRequestWorkflowStepMappingRepository RequestWorkflowStepMappingRepository { get; private set; }
         public IResellerRepository ResellerRepository { get; private set; }
@@ -309,6 +311,7 @@ namespace DMS.Repositories
             ProvinceRepository = new ProvinceRepository(DataContext);
             RequestStateRepository = new RequestStateRepository(DataContext);
             RequestWorkflowDefinitionMappingRepository = new RequestWorkflowDefinitionMappingRepository(DataContext);
+            RequestWorkflowHistoryRepository = new RequestWorkflowHistoryRepository(DataContext);
             RequestWorkflowParameterMappingRepository = new RequestWorkflowParameterMappingRepository(DataContext);
             RequestWorkflowStepMappingRepository = new RequestWorkflowStepMappingRepository(DataContext);
             ResellerRepository = new ResellerRepository(DataContext);

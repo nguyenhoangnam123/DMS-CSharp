@@ -54,6 +54,7 @@ namespace DMS.Rpc.indirect_sales_order
             this.Item = IndirectSalesOrderContent.Item == null ? null : new IndirectSalesOrder_ItemDTO(IndirectSalesOrderContent.Item);
             this.PrimaryUnitOfMeasure = IndirectSalesOrderContent.PrimaryUnitOfMeasure == null ? null : new IndirectSalesOrder_UnitOfMeasureDTO(IndirectSalesOrderContent.PrimaryUnitOfMeasure);
             this.UnitOfMeasure = IndirectSalesOrderContent.UnitOfMeasure == null ? null : new IndirectSalesOrder_UnitOfMeasureDTO(IndirectSalesOrderContent.UnitOfMeasure);
+            this.TaxType = IndirectSalesOrderContent.TaxType == null ? null : new IndirectSalesOrder_TaxTypeDTO(IndirectSalesOrderContent.TaxType);
             this.Errors = IndirectSalesOrderContent.Errors;
         }
     }

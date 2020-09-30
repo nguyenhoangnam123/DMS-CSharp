@@ -20,8 +20,6 @@ namespace DMS.Services.MIndirectSalesOrder
     {
         Task<int> Count(IndirectSalesOrderFilter IndirectSalesOrderFilter);
         Task<List<IndirectSalesOrder>> List(IndirectSalesOrderFilter IndirectSalesOrderFilter);
-        Task<int> CountAll(IndirectSalesOrderFilter IndirectSalesOrderFilter);
-        Task<List<IndirectSalesOrder>> ListAll(IndirectSalesOrderFilter IndirectSalesOrderFilter);
         Task<int> CountNew(IndirectSalesOrderFilter IndirectSalesOrderFilter);
         Task<List<IndirectSalesOrder>> ListNew(IndirectSalesOrderFilter IndirectSalesOrderFilter);
         Task<int> CountPending(IndirectSalesOrderFilter IndirectSalesOrderFilter);
@@ -29,6 +27,7 @@ namespace DMS.Services.MIndirectSalesOrder
         Task<int> CountCompleted(IndirectSalesOrderFilter IndirectSalesOrderFilter);
         Task<List<IndirectSalesOrder>> ListCompleted(IndirectSalesOrderFilter IndirectSalesOrderFilter);
         Task<IndirectSalesOrder> Get(long Id);
+        Task<IndirectSalesOrder> GetDetail(long Id);
         Task<List<Item>> ListItem(ItemFilter ItemFilter, long? SalesEmployeeId, long? StoreId);
         Task<IndirectSalesOrder> Create(IndirectSalesOrder IndirectSalesOrder);
         Task<IndirectSalesOrder> Update(IndirectSalesOrder IndirectSalesOrder);
@@ -121,51 +120,6 @@ namespace DMS.Services.MIndirectSalesOrder
             }
         }
 
-        public async Task<int> CountAll(IndirectSalesOrderFilter IndirectSalesOrderFilter)
-        {
-            try
-            {
-                IndirectSalesOrderFilter.ApproverId = new IdFilter { Equal = CurrentContext.UserId };
-                int result = await UOW.IndirectSalesOrderRepository.CountAll(IndirectSalesOrderFilter);
-                return result;
-            }
-            catch (Exception ex)
-            {
-                if (ex.InnerException == null)
-                {
-                    await Logging.CreateSystemLog(ex, nameof(IndirectSalesOrderService));
-                    throw new MessageException(ex);
-                }
-                else
-                {
-                    await Logging.CreateSystemLog(ex.InnerException, nameof(IndirectSalesOrderService));
-                    throw new MessageException(ex.InnerException);
-                }
-            }
-        }
-
-        public async Task<List<IndirectSalesOrder>> ListAll(IndirectSalesOrderFilter IndirectSalesOrderFilter)
-        {
-            try
-            {
-                IndirectSalesOrderFilter.ApproverId = new IdFilter { Equal = CurrentContext.UserId };
-                List<IndirectSalesOrder> IndirectSalesOrders = await UOW.IndirectSalesOrderRepository.ListAll(IndirectSalesOrderFilter);
-                return IndirectSalesOrders;
-            }
-            catch (Exception ex)
-            {
-                if (ex.InnerException == null)
-                {
-                    await Logging.CreateSystemLog(ex, nameof(IndirectSalesOrderService));
-                    throw new MessageException(ex);
-                }
-                else
-                {
-                    await Logging.CreateSystemLog(ex.InnerException, nameof(IndirectSalesOrderService));
-                    throw new MessageException(ex.InnerException);
-                }
-            }
-        }
         public async Task<int> CountNew(IndirectSalesOrderFilter IndirectSalesOrderFilter)
         {
             try
@@ -329,16 +283,43 @@ namespace DMS.Services.MIndirectSalesOrder
             IndirectSalesOrder IndirectSalesOrder = await UOW.IndirectSalesOrderRepository.Get(Id);
             if (IndirectSalesOrder == null)
                 return null;
+
             IndirectSalesOrder.RequestState = await WorkflowService.GetRequestState(IndirectSalesOrder.RowId);
             if (IndirectSalesOrder.RequestState == null)
             {
                 IndirectSalesOrder.RequestWorkflowStepMappings = new List<RequestWorkflowStepMapping>();
+                RequestWorkflowStepMapping RequestWorkflowStepMapping = new RequestWorkflowStepMapping
+                {
+                    AppUserId = IndirectSalesOrder.SaleEmployeeId,
+                    CreatedAt = IndirectSalesOrder.CreatedAt,
+                    UpdatedAt = IndirectSalesOrder.UpdatedAt,
+                    RequestId = IndirectSalesOrder.RowId,
+                    AppUser = IndirectSalesOrder.SaleEmployee == null ? null : new AppUser
+                    {
+                        Id = IndirectSalesOrder.SaleEmployee.Id,
+                        Username = IndirectSalesOrder.SaleEmployee.Username,
+                        DisplayName = IndirectSalesOrder.SaleEmployee.DisplayName,
+                    },
+                };
+                IndirectSalesOrder.RequestWorkflowStepMappings.Add(RequestWorkflowStepMapping);
+                if (IndirectSalesOrder.RequestStateId == RequestStateEnum.NEW.Id)
+                    RequestWorkflowStepMapping.WorkflowStateId = WorkflowStateEnum.NEW.Id;
+                if (IndirectSalesOrder.RequestStateId == RequestStateEnum.APPROVED.Id)
+                    RequestWorkflowStepMapping.WorkflowStateId = WorkflowStateEnum.APPROVED.Id;
+                if (IndirectSalesOrder.RequestStateId == RequestStateEnum.REJECTED.Id)
+                    RequestWorkflowStepMapping.WorkflowStateId = WorkflowStateEnum.REJECTED.Id;
             }
             else
             {
                 IndirectSalesOrder.RequestStateId = IndirectSalesOrder.RequestState.Id;
                 IndirectSalesOrder.RequestWorkflowStepMappings = await WorkflowService.ListRequestWorkflowStepMapping(IndirectSalesOrder.RowId);
             }
+            return IndirectSalesOrder;
+        }
+
+        public async Task<IndirectSalesOrder> GetDetail(long Id)
+        {
+            IndirectSalesOrder IndirectSalesOrder = await Get(Id);
             return IndirectSalesOrder;
         }
 

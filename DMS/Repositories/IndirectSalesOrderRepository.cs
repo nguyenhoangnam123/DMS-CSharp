@@ -16,9 +16,6 @@ namespace DMS.Repositories
         Task<int> Count(IndirectSalesOrderFilter IndirectSalesOrderFilter);
         Task<List<IndirectSalesOrder>> List(IndirectSalesOrderFilter IndirectSalesOrderFilter);
 
-        Task<int> CountAll(IndirectSalesOrderFilter IndirectSalesOrderFilter);
-        Task<List<IndirectSalesOrder>> ListAll(IndirectSalesOrderFilter IndirectSalesOrderFilter);
-
         Task<int> CountNew(IndirectSalesOrderFilter IndirectSalesOrderFilter);
         Task<List<IndirectSalesOrder>> ListNew(IndirectSalesOrderFilter IndirectSalesOrderFilter);
 
@@ -117,7 +114,7 @@ namespace DMS.Repositories
                 query = query.Where(q => q.TotalTaxAmount, filter.TotalTaxAmount);
             if (filter.Total != null)
                 query = query.Where(q => q.Total, filter.Total);
-            query = OrFilter(query, filter);
+            
             return query;
         }
 
@@ -360,6 +357,7 @@ namespace DMS.Repositories
                 GeneralDiscountAmount = filter.Selects.Contains(IndirectSalesOrderSelect.GeneralDiscountAmount) ? q.GeneralDiscountAmount : default(long?),
                 TotalTaxAmount = filter.Selects.Contains(IndirectSalesOrderSelect.TotalTaxAmount) ? q.TotalTaxAmount : default(long),
                 Total = filter.Selects.Contains(IndirectSalesOrderSelect.Total) ? q.Total : default(long),
+                RequestStateId = filter.Selects.Contains(IndirectSalesOrderSelect.RequestState) ? q.RequestStateId : default(long),
                 BuyerStore = filter.Selects.Contains(IndirectSalesOrderSelect.BuyerStore) && q.BuyerStore != null ? new Store
                 {
                     Id = q.BuyerStore.Id,
@@ -391,45 +389,16 @@ namespace DMS.Repositories
                     Code = q.SellerStore.Code,
                     Name = q.SellerStore.Name,
                 } : null,
+                RequestState = filter.Selects.Contains(IndirectSalesOrderSelect.RequestState) && q.RequestState != null ? new RequestState
+                {
+                    Id = q.RequestState.Id,
+                    Code = q.RequestState.Code,
+                    Name = q.RequestState.Name,
+                } : null,
                 RowId = q.RowId,
                 CreatedAt = q.CreatedAt,
                 UpdatedAt = q.UpdatedAt,
             }).Skip(filter.Skip).Take(filter.Take).ToListAsync();
-
-            List<Guid> RowIds = IndirectSalesOrders.Select(x => x.RowId).ToList();
-            List<RequestWorkflowDefinitionMappingDAO> RequestWorkflowDefinitionMappingDAOs = await DataContext.RequestWorkflowDefinitionMapping
-                .Where(x => RowIds.Contains(x.RequestId))
-                .Include(x => x.RequestState)
-                .ToListAsync();
-
-
-            foreach (IndirectSalesOrder IndirectSalesOrder in IndirectSalesOrders)
-            {
-                RequestWorkflowDefinitionMappingDAO RequestWorkflowDefinitionMappingDAO = RequestWorkflowDefinitionMappingDAOs
-                    .Where(x => x.RequestId == IndirectSalesOrder.RowId)
-                    .FirstOrDefault();
-                if (RequestWorkflowDefinitionMappingDAO == null)
-                {
-                    IndirectSalesOrder.RequestStateId = RequestStateEnum.NEW.Id;
-                    IndirectSalesOrder.RequestState = new RequestState
-                    {
-                        Id = RequestStateEnum.NEW.Id,
-                        Code = RequestStateEnum.NEW.Code,
-                        Name = RequestStateEnum.NEW.Name,
-                    };
-                }
-                else
-                {
-                    IndirectSalesOrder.RequestStateId = RequestWorkflowDefinitionMappingDAO.RequestStateId;
-                    IndirectSalesOrder.RequestState = new RequestState
-                    {
-                        Id = RequestWorkflowDefinitionMappingDAO.RequestState.Id,
-                        Code = RequestWorkflowDefinitionMappingDAO.RequestState.Code,
-                        Name = RequestWorkflowDefinitionMappingDAO.RequestState.Name,
-                    };
-                }
-            }
-
             return IndirectSalesOrders;
         }
 
@@ -437,6 +406,7 @@ namespace DMS.Repositories
         {
             IQueryable<IndirectSalesOrderDAO> IndirectSalesOrderDAOs = DataContext.IndirectSalesOrder.AsNoTracking();
             IndirectSalesOrderDAOs = DynamicFilter(IndirectSalesOrderDAOs, filter);
+            IndirectSalesOrderDAOs = OrFilter(IndirectSalesOrderDAOs, filter);
             return await IndirectSalesOrderDAOs.Distinct().CountAsync();
         }
 
@@ -445,6 +415,7 @@ namespace DMS.Repositories
             if (filter == null) return new List<IndirectSalesOrder>();
             IQueryable<IndirectSalesOrderDAO> IndirectSalesOrderDAOs = DataContext.IndirectSalesOrder.AsNoTracking();
             IndirectSalesOrderDAOs = DynamicFilter(IndirectSalesOrderDAOs, filter);
+            IndirectSalesOrderDAOs = OrFilter(IndirectSalesOrderDAOs, filter);
             IndirectSalesOrderDAOs = DynamicOrder(IndirectSalesOrderDAOs, filter);
             List<IndirectSalesOrder> IndirectSalesOrders = await DynamicSelect(IndirectSalesOrderDAOs, filter);
             return IndirectSalesOrders;
@@ -572,7 +543,7 @@ namespace DMS.Repositories
                 var query2 = from q in IndirectSalesOrderDAOs
                              join r in DataContext.RequestWorkflowDefinitionMapping on q.RowId equals r.RequestId into result
                              from r in result.DefaultIfEmpty()
-                             where r == null && q.RequestStateId != RequestStateEnum.NEW.Id
+                             where r == null && q.RequestStateId != RequestStateEnum.NEW.Id && q.SaleEmployeeId == filter.ApproverId.Equal
                              select q;
                 IndirectSalesOrderDAOs = query1.Union(query2);
             }
@@ -598,7 +569,7 @@ namespace DMS.Repositories
                 var query2 = from q in IndirectSalesOrderDAOs
                              join r in DataContext.RequestWorkflowDefinitionMapping on q.RowId equals r.RequestId into result
                              from r in result.DefaultIfEmpty()
-                             where r == null && q.RequestStateId != RequestStateEnum.NEW.Id
+                             where r == null && q.RequestStateId != RequestStateEnum.NEW.Id && q.SaleEmployeeId == filter.ApproverId.Equal
                              select q;
                 IndirectSalesOrderDAOs = query1.Union(query2);
             }
@@ -730,6 +701,7 @@ namespace DMS.Repositories
             RequestWorkflowDefinitionMappingDAO RequestWorkflowDefinitionMappingDAO = await DataContext.RequestWorkflowDefinitionMapping
                .Where(x => IndirectSalesOrder.RowId == x.RequestId)
                .Include(x => x.RequestState)
+               .AsNoTracking()
                .FirstOrDefaultAsync();
             if (RequestWorkflowDefinitionMappingDAO != null)
             {
@@ -919,6 +891,24 @@ namespace DMS.Repositories
                     },
                 }).ToListAsync();
 
+            if (IndirectSalesOrder.IndirectSalesOrderContents != null)
+            {
+                List<TaxType> TaxTypes = await DataContext.TaxType.Where(x => x.StatusId == StatusEnum.ACTIVE.Id)
+                    .Select(x => new TaxType
+                    {
+                        Id = x.Id,
+                        Code = x.Code,
+                        Name = x.Name,
+                        Percentage = x.Percentage,
+                        StatusId = x.StatusId,
+                    }).ToListAsync();
+
+                foreach (var IndirectSalesOrderContent in IndirectSalesOrder.IndirectSalesOrderContents)
+                {
+                    TaxType TaxType = TaxTypes.Where(x => x.Percentage == IndirectSalesOrderContent.TaxPercentage).FirstOrDefault();
+                    IndirectSalesOrderContent.TaxType = TaxType;
+                }
+            }
             return IndirectSalesOrder;
         }
         public async Task<bool> Create(IndirectSalesOrder IndirectSalesOrder)

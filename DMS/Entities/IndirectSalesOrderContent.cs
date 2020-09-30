@@ -31,6 +31,7 @@ namespace DMS.Entities
         public IndirectSalesOrder IndirectSalesOrder { get; set; }
         public UnitOfMeasure PrimaryUnitOfMeasure { get; set; }
         public UnitOfMeasure UnitOfMeasure { get; set; }
+        public TaxType TaxType { get; set; }
 
         public bool Equals(IndirectSalesOrderContent other)
         {
