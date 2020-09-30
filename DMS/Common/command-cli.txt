@@ -2,3 +2,7 @@
 
 mỗi lần gen thì phải copy dòng này vào data context
 modelBuilder.ConfigureTempTable<long>();
+
+
+ ITempTableQuery<TempTable<long>> tempTableQuery = await DataContext
+                       .BulkInsertValuesIntoTempTableAsync<long>(StoreIds);
