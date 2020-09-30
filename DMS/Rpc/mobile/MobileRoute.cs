@@ -14,8 +14,8 @@ namespace DMS.Rpc.mobile
         public const string UpdateStoreChecking = Default + "/update-store-checking";
         public const string CheckIn = Default + "/check-in";
         public const string CheckOut = Default + "/check-out";
-        public const string CountIndirectSalesOrder = Default + "/count-indirect-sales-order";
-        public const string ListIndirectSalesOrder = Default + "/list-indirect-sales-order";
+        public const string CountCompletedIndirectSalesOrder = Default + "/count-completed-indirect-sales-order";
+        public const string ListCompletedIndirectSalesOrder = Default + "/list-completed-indirect-sales-order";
         public const string CountNewIndirectSalesOrder = Default + "/count-new-indirect-sales-order";
         public const string ListNewIndirectSalesOrder = Default + "/list-new-indirect-sales-order";
         public const string GetIndirectSalesOrder = Default + "/get-indirect-sales-order";
