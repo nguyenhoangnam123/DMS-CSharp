@@ -752,7 +752,8 @@ namespace DMS.Rpc.e_route
             if (StoreFilter.Id == null) StoreFilter.Id = new IdFilter();
             if (StoreFilter.Id.In != null)
             {
-                StoreFilter.Id.In.AddRange(await FilterStore(StoreService, OrganizationService, CurrentContext));
+                var StoreIds = await FilterStore(StoreService, OrganizationService, CurrentContext);
+                StoreFilter.Id.In = StoreFilter.Id.In.Intersect(StoreIds).ToList();
             }
             else
             {
