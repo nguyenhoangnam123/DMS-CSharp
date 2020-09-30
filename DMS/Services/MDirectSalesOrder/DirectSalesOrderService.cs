@@ -756,10 +756,9 @@ namespace DMS.Services.MDirectSalesOrder
                             .Select(x => x.Price)
                             .DefaultIfEmpty(long.MaxValue)
                             .Min();
-                        if (targetPrice < long.MaxValue)
+                        if (targetPrice < result[ItemId])
                         {
                             result[ItemId] = targetPrice;
-                            break;
                         }
                     }
                 }
@@ -788,10 +787,9 @@ namespace DMS.Services.MDirectSalesOrder
                             .Select(x => x.Price)
                             .DefaultIfEmpty(long.MinValue)
                             .Max();
-                        if (targetPrice > long.MinValue)
+                        if (targetPrice > result[ItemId])
                         {
                             result[ItemId] = targetPrice;
-                            break;
                         }
                     }
                 }

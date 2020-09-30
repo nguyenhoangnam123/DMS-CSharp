@@ -906,7 +906,6 @@ namespace DMS.Services.MIndirectSalesOrder
                         if (targetPrice < result[ItemId])
                         {
                             result[ItemId] = targetPrice;
-                            break;
                         }
                     }
                 }
@@ -938,7 +937,6 @@ namespace DMS.Services.MIndirectSalesOrder
                         if (targetPrice > result[ItemId])
                         {
                             result[ItemId] = targetPrice;
-                            break;
                         }
                     }
                 }
