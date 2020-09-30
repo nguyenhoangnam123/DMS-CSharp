@@ -903,7 +903,7 @@ namespace DMS.Services.MIndirectSalesOrder
                             .Select(x => (decimal)x.Price)
                             .DefaultIfEmpty(decimal.MaxValue)
                             .Min();
-                        if (targetPrice < decimal.MaxValue)
+                        if (targetPrice < result[ItemId])
                         {
                             result[ItemId] = targetPrice;
                             break;
@@ -935,7 +935,7 @@ namespace DMS.Services.MIndirectSalesOrder
                             .Select(x => (decimal)x.Price)
                             .DefaultIfEmpty(decimal.MinValue)
                             .Max();
-                        if (targetPrice > decimal.MinValue)
+                        if (targetPrice > result[ItemId])
                         {
                             result[ItemId] = targetPrice;
                             break;
