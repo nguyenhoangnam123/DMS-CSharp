@@ -97,6 +97,7 @@ namespace DMS.Repositories
         IStoreCheckingRepository StoreCheckingRepository { get; }
         IStoreGroupingRepository StoreGroupingRepository { get; }
         IStoreTypeRepository StoreTypeRepository { get; }
+        IStoreStatusRepository StoreStatusRepository { get; }
         ISupplierRepository SupplierRepository { get; }
         ISurveyOptionTypeRepository SurveyOptionTypeRepository { get; }
         ISurveyQuestionTypeRepository SurveyQuestionTypeRepository { get; }
@@ -213,6 +214,7 @@ namespace DMS.Repositories
         public IStoreCheckingRepository StoreCheckingRepository { get; private set; }
         public IStoreGroupingRepository StoreGroupingRepository { get; private set; }
         public IStoreTypeRepository StoreTypeRepository { get; private set; }
+        public IStoreStatusRepository StoreStatusRepository { get; private set; }
         public ISupplierRepository SupplierRepository { get; private set; }
         public ISurveyOptionTypeRepository SurveyOptionTypeRepository { get; private set; }
         public ISurveyQuestionTypeRepository SurveyQuestionTypeRepository { get; private set; }
@@ -328,6 +330,7 @@ namespace DMS.Repositories
             StoreCheckingRepository = new StoreCheckingRepository(DataContext);
             StoreGroupingRepository = new StoreGroupingRepository(DataContext);
             StoreTypeRepository = new StoreTypeRepository(DataContext);
+            StoreStatusRepository = new StoreStatusRepository(DataContext);
             SupplierRepository = new SupplierRepository(DataContext);
             SurveyOptionTypeRepository = new SurveyOptionTypeRepository(DataContext);
             SurveyQuestionTypeRepository = new SurveyQuestionTypeRepository(DataContext);

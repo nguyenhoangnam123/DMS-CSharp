@@ -19,7 +19,6 @@ namespace DMS.Rpc.store
         public const string CreateStoreScouting = Default + "/create-store-scouting";
         public const string Update = Default + "/update";
         public const string Approve = Default + "/approve";
-        public const string Reject = Default + "/reject";
         public const string Delete = Default + "/delete";
         public const string Import = Default + "/import";
         public const string Export = Default + "/export";
@@ -34,7 +33,7 @@ namespace DMS.Rpc.store
         public const string FilterListProvince = Default + "/filter-list-province";
         public const string FilterListWard = Default + "/filter-list-ward";
         public const string FilterListStatus = Default + "/filter-list-status";
-        public const string FilterListRequestState = Default + "/filter-list-request-state";
+        public const string FilterListStoreStatus = Default + "/filter-list-store-status";
 
         public const string SingleListAppUser = Default + "/single-list-app-user";
         public const string SingleListOrganization = Default + "/single-list-organization";
@@ -45,7 +44,7 @@ namespace DMS.Rpc.store
         public const string SingleListStatus = Default + "/single-list-status";
         public const string SingleListStoreGrouping = Default + "/single-list-store-grouping";
         public const string SingleListStoreType = Default + "/single-list-store-type";
-        public const string SingleListRequestState = Default + "/single-list-request-state";
+        public const string SingleListStoreStatus = Default + "/single-list-store-status";
 
         public const string ListReseller = Default + "/list-reseller";
         public const string CountReseller = Default + "/count-reseller";
@@ -61,45 +60,45 @@ namespace DMS.Rpc.store
             { "Tìm kiếm", new List<string> {
                 Parent,
                 Master, Count, List, Get,
-                FilterListAppUser, FilterListDistrict, FilterListOrganization, FilterListProvince, FilterListWard, FilterListStatus, FilterListParentStore, FilterListRequestState } },
+                FilterListAppUser, FilterListDistrict, FilterListOrganization, FilterListProvince, FilterListWard, FilterListStatus, FilterListParentStore, FilterListStoreStatus } },
             { "Thêm", new List<string> {
                 Parent,
                 Master, Count, List, Get, GetDraft,
-                FilterListAppUser, FilterListDistrict, FilterListOrganization, FilterListProvince, FilterListWard, FilterListStatus, FilterListParentStore, FilterListRequestState,
+                FilterListAppUser, FilterListDistrict, FilterListOrganization, FilterListProvince, FilterListWard, FilterListStatus, FilterListParentStore, FilterListStoreStatus,
                 Detail, Create, CreateStoreScouting, SaveImage,
-                SingleListAppUser, SingleListDistrict, SingleListOrganization, SingleListProvince, SingleListStatus, SingleListStoreGrouping, SingleListStoreType, SingleListWard, SingleListParentStore, SingleListRequestState} },
+                SingleListAppUser, SingleListDistrict, SingleListOrganization, SingleListProvince, SingleListStatus, SingleListStoreGrouping, SingleListStoreType, SingleListWard, SingleListParentStore, SingleListStoreStatus} },
             { "Sửa", new List<string> {
                 Parent,
                 Master, Count, List, Get,
-                FilterListAppUser, FilterListDistrict, FilterListOrganization, FilterListProvince, FilterListWard, FilterListStatus, FilterListParentStore, FilterListRequestState,
+                FilterListAppUser, FilterListDistrict, FilterListOrganization, FilterListProvince, FilterListWard, FilterListStatus, FilterListParentStore, FilterListStoreStatus,
                 Detail, Update, SaveImage,
-                SingleListAppUser, SingleListDistrict, SingleListOrganization, SingleListProvince, SingleListStatus, SingleListStoreGrouping, SingleListStoreType, SingleListWard, SingleListParentStore, SingleListRequestState} },
+                SingleListAppUser, SingleListDistrict, SingleListOrganization, SingleListProvince, SingleListStatus, SingleListStoreGrouping, SingleListStoreType, SingleListWard, SingleListParentStore, SingleListStoreStatus} },
             { "Xoá", new List<string> {
                 Parent,
                 Master, Count, List, Get,
-                FilterListAppUser, FilterListDistrict, FilterListOrganization, FilterListProvince, FilterListWard, FilterListStatus, FilterListParentStore, FilterListRequestState,
+                FilterListAppUser, FilterListDistrict, FilterListOrganization, FilterListProvince, FilterListWard, FilterListStatus, FilterListParentStore, FilterListStoreStatus,
                 Delete, } },
             { "Xoá nhiều", new List<string> {
                 Parent,
                 Master, Count, List, Get,
-                FilterListAppUser, FilterListDistrict, FilterListOrganization, FilterListProvince, FilterListWard, FilterListStatus, FilterListParentStore, FilterListRequestState,
+                FilterListAppUser, FilterListDistrict, FilterListOrganization, FilterListProvince, FilterListWard, FilterListStatus, FilterListParentStore, FilterListStoreStatus,
                 Detail, BulkDelete } },
             { "Xuất excel", new List<string> {
                 Parent,
                 Master, Count, List, Get,
-                FilterListAppUser, FilterListDistrict, FilterListOrganization, FilterListProvince, FilterListWard, FilterListStatus, FilterListParentStore, FilterListRequestState,
+                FilterListAppUser, FilterListDistrict, FilterListOrganization, FilterListProvince, FilterListWard, FilterListStatus, FilterListParentStore, FilterListStoreStatus,
                 Detail, Export } },
             { "Nhập excel", new List<string> {
                 Parent,
                 Master, Count, List, Get,
-                FilterListAppUser, FilterListDistrict, FilterListOrganization, FilterListProvince, FilterListWard, FilterListStatus, FilterListParentStore, FilterListRequestState,
+                FilterListAppUser, FilterListDistrict, FilterListOrganization, FilterListProvince, FilterListWard, FilterListStatus, FilterListParentStore, FilterListStoreStatus,
                 Detail, ExportTemplate, Import } },
             { "Phê duyệt", new List<string> {
                 Parent,
                 Master, Count, List, Get,
-                FilterListAppUser, FilterListDistrict, FilterListOrganization, FilterListProvince, FilterListWard, FilterListStatus, FilterListParentStore, FilterListRequestState,
-                Detail, Approve, Reject,
-                SingleListAppUser, SingleListDistrict, SingleListOrganization, SingleListProvince, SingleListStatus, SingleListStoreGrouping, SingleListStoreType, SingleListWard, SingleListParentStore, SingleListRequestState} },
+                FilterListAppUser, FilterListDistrict, FilterListOrganization, FilterListProvince, FilterListWard, FilterListStatus, FilterListParentStore, FilterListStoreStatus,
+                Detail, Approve, 
+                SingleListAppUser, SingleListDistrict, SingleListOrganization, SingleListProvince, SingleListStatus, SingleListStoreGrouping, SingleListStoreType, SingleListWard, SingleListParentStore, SingleListStoreStatus} },
         };
     }
 }

@@ -901,7 +901,7 @@ namespace DMS.Rpc.mobile
             Survey.StartAt = Mobile_SurveyDTO.StartAt;
             Survey.EndAt = Mobile_SurveyDTO.EndAt;
             Survey.StatusId = Mobile_SurveyDTO.StatusId;
-            
+
             Survey.SurveyQuestions = Mobile_SurveyDTO.SurveyQuestions?
                 .Select(x => new SurveyQuestion
                 {
@@ -1074,7 +1074,7 @@ namespace DMS.Rpc.mobile
             foreach (AlbumImageMapping AlbumImageMapping in Album.AlbumImageMappings)
             {
                 Store Store = Stores.Where(x => x.Id == AlbumImageMapping.StoreId).FirstOrDefault();
-                if(Store != null)
+                if (Store != null)
                 {
                     GeoCoordinate eCoord = new GeoCoordinate((double)Store.Latitude, (double)Store.Longitude);
                     AlbumImageMapping.Distance = (long?)sCoord.GetDistanceTo(eCoord);
@@ -1136,6 +1136,7 @@ namespace DMS.Rpc.mobile
                     Code = Mobile_StoreDTO.Ward.Code,
                     Name = Mobile_StoreDTO.Ward.Name,
                 },
+                StoreStatusId = StoreStatusEnum.DRAFT.Id
             };
             Store.BaseLanguage = CurrentContext.Language;
             Store = await StoreService.Create(Store);
@@ -1287,7 +1288,7 @@ namespace DMS.Rpc.mobile
             StoreChecking.BaseLanguage = CurrentContext.Language;
             return StoreChecking;
         }
-        
+
         private StoreScouting ConvertStoreScoutingToEntity(Mobile_StoreScoutingDTO Mobile_StoreScoutingDTO)
         {
             StoreScouting StoreScouting = new StoreScouting();
