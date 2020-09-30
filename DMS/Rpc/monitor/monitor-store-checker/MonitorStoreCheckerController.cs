@@ -15,6 +15,8 @@ using System.Dynamic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Thinktecture;
+using Thinktecture.EntityFrameworkCore.TempTables;
 
 namespace DMS.Rpc.monitor.monitor_store_checker
 {
@@ -407,9 +409,19 @@ namespace DMS.Rpc.monitor.monitor_store_checker
                 .ToListAsync();
             var AlbumImageMapping_StoreIds = AlbumImageMappingDAOs.Select(x => x.StoreId).Distinct().ToList();
             StoreIds.AddRange(AlbumImageMapping_StoreIds);
-
             StoreIds = StoreIds.Distinct().ToList();
-            List<StoreDAO> StoreDAOs = await DataContext.Store.Where(s => StoreIds.Contains(s.Id)).ToListAsync();
+
+            ITempTableQuery<TempTable<long>> tempTableQuery = await DataContext
+                      .BulkInsertValuesIntoTempTableAsync<long>(StoreIds);
+            var query2 = from s in DataContext.Store
+                         join tt in tempTableQuery.Query on s.Id equals tt.Column1
+                         select new StoreDAO
+                         {
+                             Id = s.Id,
+                             Code = s.Code,
+                             Name = s.Name,
+                         };
+            List<StoreDAO> StoreDAOs = await query2.ToListAsync();
             List<MonitorStoreChecker_MonitorStoreCheckerDetailDTO> MonitorStoreChecker_MonitorStoreCheckerDetailDTOs = new List<MonitorStoreChecker_MonitorStoreCheckerDetailDTO>();
             foreach (long StoreId in StoreIds)
             {
