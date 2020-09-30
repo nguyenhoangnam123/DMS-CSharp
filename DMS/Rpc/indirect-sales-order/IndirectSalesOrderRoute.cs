@@ -95,7 +95,7 @@ namespace DMS.Rpc.indirect_sales_order
 
             { "Thêm", new List<string> {
                 Parent,
-                Master, Count, List, GetDetail, Print,
+                Master, Count, List, Get, Print,
                 CountNew, ListNew, CountPending, ListPending, CountCompleted, ListCompleted,
                 FilterListStore, FilterListEditedPriceStatus, FilterListRequestState, FilterListAppUser,  FilterListItem, FilterListUnitOfMeasure, FilterListOrganization,
                 Detail, Create, Send,
@@ -105,7 +105,7 @@ namespace DMS.Rpc.indirect_sales_order
 
             { "Sửa", new List<string> {
                 Parent,
-                Master, Count, List, GetDetail, Print,
+                Master, Count, List, Get, Print,
                 CountNew, ListNew, CountPending, ListPending, CountCompleted, ListCompleted,
                 FilterListStore, FilterListEditedPriceStatus, FilterListRequestState, FilterListAppUser,  FilterListItem, FilterListUnitOfMeasure, FilterListOrganization,
                 Detail, Update, Send,
@@ -113,19 +113,9 @@ namespace DMS.Rpc.indirect_sales_order
                 SingleListStoreGrouping, SingleListSupplier, SingleListProductGrouping, SingleListProductType, SingleListTaxType,
                 CountItem, ListItem, CountStore, ListStore, CountBuyerStore, ListBuyerStore} },
 
-            { "PHê duyệt", new List<string> {
-                Parent,
-                Master, Count, List, GetDetail, Print,
-                CountNew, ListNew, CountPending, ListPending, CountCompleted, ListCompleted,
-                FilterListStore, FilterListEditedPriceStatus, FilterListRequestState, FilterListAppUser,  FilterListItem, FilterListUnitOfMeasure, FilterListOrganization,
-                Detail, Update, Approve, Reject,
-                SingleListOrganization, SingleListStore, SingleListEditedPriceStatus, SingleListRequestState, SingleListAppUser,  SingleListItem, SingleListUnitOfMeasure, SingleListStoreType,
-                SingleListStoreGrouping, SingleListSupplier, SingleListProductGrouping, SingleListProductType, SingleListTaxType,
-                CountItem, ListItem, CountStore, ListStore, CountBuyerStore, ListBuyerStore} },
-
             { "Xoá", new List<string> {
                 Parent,
-                Master, Count, List, GetDetail, Print,
+                Master, Count, List, Get, Print,
                 CountNew, ListNew, CountPending, ListPending, CountCompleted, ListCompleted,
                 FilterListStore, FilterListEditedPriceStatus, FilterListRequestState, FilterListAppUser,  FilterListItem, FilterListUnitOfMeasure, FilterListOrganization,
                 Delete,
@@ -133,14 +123,13 @@ namespace DMS.Rpc.indirect_sales_order
 
             { "Xuất excel", new List<string> {
                 Parent,
-                Master, Count, List, Get, Print,
+                Master, Count, List,
                 CountNew, ListNew, CountPending, ListPending, CountCompleted, ListCompleted,
                 FilterListStore, FilterListEditedPriceStatus, FilterListRequestState, FilterListAppUser, FilterListItem, FilterListUnitOfMeasure, FilterListOrganization,
                 Export } },
-            { "Phê duyệt", new List<string>
-            {
+            { "Phê duyệt", new List<string> {
                 Parent,
-                Master, Count, List, GetDetail, Print,
+                Master, Count, List, Get, Print,
                 CountNew, ListNew, CountPending, ListPending, CountCompleted, ListCompleted,
                 FilterListStore, FilterListEditedPriceStatus, FilterListRequestState, FilterListAppUser,  FilterListItem, FilterListUnitOfMeasure, FilterListOrganization,
                 Detail, Approve, Reject, Send,
