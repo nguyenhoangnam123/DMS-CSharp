@@ -553,6 +553,8 @@ namespace DMS.Rpc
                 CurrentContext.Latitude = lat;
             if (decimal.TryParse(Longitude, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal lon))
                 CurrentContext.Longitude = lon;
+            CurrentContext.RoleIds = await DataContext.AppUserRoleMapping.Where(x => x.AppUserId == UserId)
+                .Select(x => x.RoleId).ToListAsync();
             context.Succeed(requirement);
         }
     }
