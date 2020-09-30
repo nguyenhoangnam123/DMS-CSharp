@@ -750,7 +750,14 @@ namespace DMS.Rpc.e_route
             StoreFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
             if (StoreFilter.Id == null) StoreFilter.Id = new IdFilter();
-            StoreFilter.Id.In = await FilterStore(StoreService, OrganizationService, CurrentContext);
+            if (StoreFilter.Id.In != null)
+            {
+                StoreFilter.Id.In.AddRange(await FilterStore(StoreService, OrganizationService, CurrentContext));
+            }
+            else
+            {
+                StoreFilter.Id.In = await FilterStore(StoreService, OrganizationService, CurrentContext);
+            }
 
             if (ERoute_StoreFilterDTO.SaleEmployeeId != null && ERoute_StoreFilterDTO.SaleEmployeeId.Equal.HasValue)
             {
