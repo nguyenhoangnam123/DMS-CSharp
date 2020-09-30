@@ -12,14 +12,15 @@ namespace DMS.Rpc.reports.report_store.report_store_general
         public long Id { get; set; }
         public string Code { get; set; }
         public string Name { get; set; }
-        public string StoreStatusName { get; set; }
         public string Address { get; set; }
         public string Phone { get; set; }
         public long OrganizationId { get; set; }
         public long StoreTypeId { get; set; }
         public long? StoreGroupingId { get; set; }
+        public long StoreStatusId { get; set; }
         public long StatusId { get; set; }
         public ReportStoreGeneral_OrganizationDTO Organization { get; set; }
+        public ReportStoreGeneral_StoreStatusDTO StoreStatus { get; set; }
         public ReportStoreGeneral_StoreDTO() { }
         public ReportStoreGeneral_StoreDTO(Store Store)
         {
@@ -31,7 +32,9 @@ namespace DMS.Rpc.reports.report_store.report_store_general
             this.OrganizationId = Store.OrganizationId;
             this.StoreTypeId = Store.StoreTypeId;
             this.StoreGroupingId = Store.StoreGroupingId;
+            this.StoreStatusId = Store.StoreStatusId;
             this.Organization = Store.Organization == null ? null : new ReportStoreGeneral_OrganizationDTO(Store.Organization);
+            this.StoreStatus = Store.StoreStatus == null ? null : new ReportStoreGeneral_StoreStatusDTO(Store.StoreStatus);
             this.StatusId = Store.StatusId;
         }
     }

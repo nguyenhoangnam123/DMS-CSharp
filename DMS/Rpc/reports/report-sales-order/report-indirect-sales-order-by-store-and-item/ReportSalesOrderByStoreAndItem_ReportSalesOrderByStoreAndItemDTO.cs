@@ -8,6 +8,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_indirect_sales_order_by_stor
 {
     public class ReportSalesOrderByStoreAndItem_ReportSalesOrderByStoreAndItemDTO : DataDTO
     {
+        internal long OrganizationId { get; set; }
         public string OrganizationName { get; set; }
         public List<ReportSalesOrderByStoreAndItem_StoreDTO> Stores { get; set; }
     }

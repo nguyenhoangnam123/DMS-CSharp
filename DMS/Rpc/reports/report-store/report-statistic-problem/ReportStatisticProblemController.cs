@@ -18,6 +18,9 @@ using System.IO;
 using System.Dynamic;
 using NGS.Templater;
 using OfficeOpenXml.FormulaParsing.ExpressionGraph.FunctionCompilers;
+using Thinktecture.EntityFrameworkCore.TempTables;
+using Thinktecture;
+using System.Diagnostics;
 
 namespace DMS.Rpc.reports.report_store.report_statistic_problem
 {
@@ -48,6 +51,7 @@ namespace DMS.Rpc.reports.report_store.report_statistic_problem
             this.CurrentContext = CurrentContext;
         }
 
+        #region Filter List
         [Route(ReportStatisticProblemRoute.FilterListOrganization), HttpPost]
         public async Task<List<ReportStatisticProblem_OrganizationDTO>> FilterListOrganization()
         {
@@ -147,6 +151,7 @@ namespace DMS.Rpc.reports.report_store.report_statistic_problem
                 .Select(x => new ReportStatisticProblem_StoreTypeDTO(x)).ToList();
             return ReportStatisticProblem_StoreTypeDTOs;
         }
+        #endregion
 
         [Route(ReportStatisticProblemRoute.Count), HttpPost]
         public async Task<int> Count([FromBody] ReportStatisticProblem_ReportStatisticProblemFilterDTO ReportStatisticProblem_ReportStatisticProblemFilterDTO)
@@ -201,10 +206,12 @@ namespace DMS.Rpc.reports.report_store.report_statistic_problem
                 StoreGroupingIds = StoreGroupingIds.Intersect(listId).ToList();
             }
 
+            ITempTableQuery<TempTable<long>> tempTableQuery = await DataContext
+                       .BulkInsertValuesIntoTempTableAsync<long>(StoreIds);
             var query = from p in DataContext.Problem
                         join s in DataContext.Store on p.StoreId equals s.Id
+                        join tt in tempTableQuery.Query on s.Id equals tt.Column1
                         where p.NoteAt >= Start && p.NoteAt <= End &&
-                        (StoreIds.Contains(p.StoreId)) &&
                         (StoreTypeIds.Contains(s.StoreTypeId)) &&
                         (
                             (
@@ -274,11 +281,14 @@ namespace DMS.Rpc.reports.report_store.report_statistic_problem
                 var listId = new List<long> { StoreGroupingId.Value };
                 StoreGroupingIds = StoreGroupingIds.Intersect(listId).ToList();
             }
+
+            
+            ITempTableQuery<TempTable<long>> tempTableQuery = await DataContext
+                       .BulkInsertValuesIntoTempTableAsync<long>(StoreIds);
             var query = from p in DataContext.Problem
                         join s in DataContext.Store on p.StoreId equals s.Id
-                        join o in DataContext.Organization on s.OrganizationId equals o.Id
+                        join tt in tempTableQuery.Query on s.Id equals tt.Column1
                         where p.NoteAt >= Start && p.NoteAt <= End &&
-                        (StoreIds.Contains(p.StoreId)) &&
                         (StoreTypeIds.Contains(s.StoreTypeId)) &&
                         (
                             (
@@ -299,29 +309,25 @@ namespace DMS.Rpc.reports.report_store.report_statistic_problem
                             Address = s.Address,
                             Telephone = s.Telephone,
                             OrganizationId = s.OrganizationId,
-                            Organization = new Organization
-                            {
-                                Id = o.Id,
-                                Code = o.Code,
-                                Name = o.Name,
-                            }
                         };
 
-            List<Store> Stores = await query.Distinct().ToListAsync();
-
-            Stores = Stores.OrderBy(x => x.OrganizationId).ThenBy(x => x.Name)
+            List<Store> Stores = await query.Distinct().OrderBy(x => x.OrganizationId).ThenBy(x => x.Name)
                 .Skip(ReportStatisticProblem_ReportStatisticProblemFilterDTO.Skip)
                 .Take(ReportStatisticProblem_ReportStatisticProblemFilterDTO.Take)
-                .ToList();
-            List<string> OrganizationNames = Stores.Select(s => s.Organization.Name).Distinct().ToList();
-            List<ReportStatisticProblem_ReportStatisticProblemDTO> ReportStatisticProblem_ReportStatisticProblemDTOs = OrganizationNames.Select(on => new ReportStatisticProblem_ReportStatisticProblemDTO
+                .ToListAsync();
+            OrganizationIds = Stores.Select(x => x.OrganizationId).Distinct().ToList();
+
+            OrganizationDAOs = await DataContext.Organization.Where(x => OrganizationIds.Contains(x.Id)).ToListAsync();
+            List<ReportStatisticProblem_ReportStatisticProblemDTO> ReportStatisticProblem_ReportStatisticProblemDTOs = OrganizationDAOs.Select(on => new ReportStatisticProblem_ReportStatisticProblemDTO
             {
-                OrganizationName = on,
+                OrganizationId = on.Id,
+                OrganizationName = on.Name,
             }).ToList();
-            foreach (ReportStatisticProblem_ReportStatisticProblemDTO ReportStatisticProblem_ReportStatisticProblemDTO in ReportStatisticProblem_ReportStatisticProblemDTOs)
+
+            Parallel.ForEach(ReportStatisticProblem_ReportStatisticProblemDTOs, row =>
             {
-                ReportStatisticProblem_ReportStatisticProblemDTO.Stores = Stores
-                    .Where(x => x.Organization.Name == ReportStatisticProblem_ReportStatisticProblemDTO.OrganizationName)
+                row.Stores = Stores
+                    .Where(x => x.OrganizationId == row.OrganizationId)
                     .Select(x => new ReportStatisticProblem_StoreDTO
                     {
                         Id = x.Id,
@@ -333,26 +339,28 @@ namespace DMS.Rpc.reports.report_store.report_statistic_problem
                         StoreGroupingId = x.StoreGroupingId,
                         StoreTypeId = x.StoreTypeId,
                     })
+                    .AsParallel()
                     .ToList();
-            }
-
+            });
             StoreIds = Stores.Select(s => s.Id).ToList();
             List<ProblemDAO> ProblemDAOs = await DataContext.Problem
-                .Where(x => StoreIds.Contains(x.StoreId) && Start <= x.NoteAt && x.NoteAt <= End)
+                .Where(x => StoreIds.Contains(x.StoreId) &&
+                Start <= x.NoteAt && x.NoteAt <= End)
                 .ToListAsync();
             List<ProblemTypeDAO> ProblemTypeDAOs = await DataContext.ProblemType
                 .Where(x => x.DeletedAt == null)
                 .ToListAsync();
+
             // khởi tạo khung dữ liệu
             foreach (ReportStatisticProblem_ReportStatisticProblemDTO ReportStatisticProblem_ReportStatisticProblemDTO in ReportStatisticProblem_ReportStatisticProblemDTOs)
             {
-                foreach (var Store in ReportStatisticProblem_ReportStatisticProblemDTO.Stores)
+                Parallel.ForEach(ReportStatisticProblem_ReportStatisticProblemDTO.Stores, Store =>
                 {
                     var Problems = ProblemDAOs.Where(x => x.StoreId == Store.Id).ToList();
                     var ProblemTypeIds = Problems.Select(x => x.ProblemTypeId).Distinct();
                     if (Store.Contents == null)
                         Store.Contents = new List<ReportStatisticProblem_ContentDTO>();
-                    
+
                     foreach (var ProblemTypeId in ProblemTypeIds)
                     {
                         var ProblemType = ProblemTypeDAOs.Where(x => x.Id == ProblemTypeId).FirstOrDefault();
@@ -376,7 +384,7 @@ namespace DMS.Rpc.reports.report_store.report_statistic_problem
                             .Count();
                         Store.Contents.Add(ReportStatisticProblem_ContentDTO);
                     }
-                }
+                });
             }
 
             return ReportStatisticProblem_ReportStatisticProblemDTOs;
@@ -435,11 +443,12 @@ namespace DMS.Rpc.reports.report_store.report_statistic_problem
                 StoreGroupingIds = StoreGroupingIds.Intersect(listId).ToList();
             }
 
+            ITempTableQuery<TempTable<long>> tempTableQuery = await DataContext
+                       .BulkInsertValuesIntoTempTableAsync<long>(StoreIds);
             var query = from p in DataContext.Problem
                         join s in DataContext.Store on p.StoreId equals s.Id
-                        join o in DataContext.Organization on s.OrganizationId equals o.Id
+                        join tt in tempTableQuery.Query on s.Id equals tt.Column1
                         where p.NoteAt >= Start && p.NoteAt <= End &&
-                        (StoreIds.Contains(p.StoreId)) &&
                         (StoreTypeIds.Contains(s.StoreTypeId)) &&
                         (
                             (
@@ -459,42 +468,34 @@ namespace DMS.Rpc.reports.report_store.report_statistic_problem
                             Name = s.Name,
                             Address = s.Address,
                             OrganizationId = s.OrganizationId,
-                            Organization = new Organization
-                            {
-                                Id = o.Id,
-                                Code = o.Code,
-                                Name = o.Name,
-                            }
                         };
 
             List<Store> Stores = await query.Distinct().ToListAsync();
+            OrganizationIds = Stores.Select(x => x.OrganizationId).Distinct().ToList();
 
-            Stores = Stores.ToList();
-            List<string> OrganizationNames = Stores.Select(s => s.Organization.Name).Distinct().ToList();
-            List<ReportStatisticProblem_ReportStatisticProblemDTO> ReportStatisticProblem_ReportStatisticProblemDTOs = OrganizationNames.Select(on => new ReportStatisticProblem_ReportStatisticProblemDTO
+            OrganizationDAOs = await DataContext.Organization.Where(x => OrganizationIds.Contains(x.Id)).ToListAsync();
+            List<ReportStatisticProblem_ReportStatisticProblemDTO> ReportStatisticProblem_ReportStatisticProblemDTOs = OrganizationDAOs.Select(on => new ReportStatisticProblem_ReportStatisticProblemDTO
             {
-                OrganizationName = on,
+                OrganizationId = on.Id,
+                OrganizationName = on.Name,
             }).ToList();
-            foreach (ReportStatisticProblem_ReportStatisticProblemDTO ReportStatisticProblem_ReportStatisticProblemDTO in ReportStatisticProblem_ReportStatisticProblemDTOs)
+            Parallel.ForEach(ReportStatisticProblem_ReportStatisticProblemDTOs, row =>
             {
-                ReportStatisticProblem_ReportStatisticProblemDTO.Stores = Stores
-                    .Where(x => x.Organization.Name == ReportStatisticProblem_ReportStatisticProblemDTO.OrganizationName)
+                row.Stores = Stores
+                    .Where(x => x.OrganizationId == row.OrganizationId)
                     .Select(x => new ReportStatisticProblem_StoreDTO
                     {
                         Id = x.Id,
-                        Code = x.Code,
-                        Name = x.Name,
-                        Address = x.Address,
                         OrganizationId = x.OrganizationId,
-                        StoreGroupingId = x.StoreGroupingId,
-                        StoreTypeId = x.StoreTypeId,
                     })
+                    .AsParallel()
                     .ToList();
-            }
+            });
 
             StoreIds = Stores.Select(s => s.Id).ToList();
             List<ProblemDAO> ProblemDAOs = await DataContext.Problem
-                .Where(x => StoreIds.Contains(x.StoreId) && Start <= x.NoteAt && x.NoteAt <= End)
+                .Where(x => StoreIds.Contains(x.StoreId) &&
+                Start <= x.NoteAt && x.NoteAt <= End)
                 .ToListAsync();
             List<ProblemTypeDAO> ProblemTypeDAOs = await DataContext.ProblemType
                 .Where(x => x.DeletedAt == null)
@@ -503,7 +504,7 @@ namespace DMS.Rpc.reports.report_store.report_statistic_problem
             // khởi tạo khung dữ liệu
             foreach (ReportStatisticProblem_ReportStatisticProblemDTO ReportStatisticProblem_ReportStatisticProblemDTO in ReportStatisticProblem_ReportStatisticProblemDTOs)
             {
-                foreach (var Store in ReportStatisticProblem_ReportStatisticProblemDTO.Stores)
+                Parallel.ForEach(ReportStatisticProblem_ReportStatisticProblemDTO.Stores, Store =>
                 {
                     var Problems = ProblemDAOs.Where(x => x.StoreId == Store.Id).ToList();
                     var ProblemTypeIds = Problems.Select(x => x.ProblemTypeId).Distinct();
@@ -533,7 +534,7 @@ namespace DMS.Rpc.reports.report_store.report_statistic_problem
                             .Count();
                         Store.Contents.Add(ReportStatisticProblem_ContentDTO);
                     }
-                }
+                });
             }
 
             ReportStatisticProblem_TotalDTO.WaitingCounter = ReportStatisticProblem_ReportStatisticProblemDTOs.SelectMany(x => x.Stores)

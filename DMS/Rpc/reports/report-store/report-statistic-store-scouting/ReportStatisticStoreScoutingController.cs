@@ -24,6 +24,7 @@ using DMS.Services.MWard;
 using DMS.Services.MStoreScouting;
 using Thinktecture.EntityFrameworkCore.TempTables;
 using Thinktecture;
+using System.Diagnostics;
 
 namespace DMS.Rpc.reports.report_store.report_statistic_store_scouting
 {
@@ -217,11 +218,18 @@ namespace DMS.Rpc.reports.report_store.report_statistic_store_scouting
             var query = from s in DataContext.Store
                         join tt in tempTableQuery.Query on s.Id equals tt.Column1
                         where OrganizationIds.Contains(s.OrganizationId) &&
-                        ProvinceId.HasValue == false || (s.ProvinceId.HasValue && s.ProvinceId.Value == ProvinceId.Value) &&
-                        DistrictId.HasValue == false || (s.DistrictId.HasValue && s.DistrictId.Value == DistrictId.Value) &&
-                        WardId.HasValue == false || (s.WardId.HasValue && s.WardId.Value == WardId.Value) &&
+                        (ProvinceId.HasValue == false || (s.ProvinceId.HasValue && s.ProvinceId.Value == ProvinceId.Value)) &&
+                        (DistrictId.HasValue == false || (s.DistrictId.HasValue && s.DistrictId.Value == DistrictId.Value)) &&
+                        (WardId.HasValue == false || (s.WardId.HasValue && s.WardId.Value == WardId.Value)) &&
                         s.DeletedAt == null
-                        select s;
+                        select new StoreDAO 
+                        {
+                            Id = s.Id,
+                            ProvinceId = s.ProvinceId,
+                            DistrictId = s.DistrictId,
+                            WardId = s.WardId,
+                            StoreScoutingId = s.StoreScoutingId,
+                        };
 
             var Stores  = await query.ToListAsync();
             var StoreScoutings = await DataContext.StoreScouting
@@ -229,8 +237,15 @@ namespace DMS.Rpc.reports.report_store.report_statistic_store_scouting
                 .Where(x => DistrictId.HasValue == false || (x.DistrictId.HasValue && x.DistrictId.Value == DistrictId.Value))
                 .Where(x => WardId.HasValue == false || (x.WardId.HasValue && x.WardId.Value == WardId.Value))
                 .Where(x => x.CreatedAt >= Start && x.CreatedAt <= End)
+                .Select(x => new StoreScouting
+                {
+                    Id = x.Id,
+                    ProvinceId = x.ProvinceId,
+                    DistrictId = x.DistrictId,
+                    WardId = x.WardId,
+                })
                 .ToListAsync();
-            
+
             List<ReportStatisticStoreScouting_ReportStatisticStoreScoutingDTO> 
                 ReportStatisticStoreScouting_ReportStatisticStoreScoutingDTOs = new List<ReportStatisticStoreScouting_ReportStatisticStoreScoutingDTO>();
             if (ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.HasValue == false)
@@ -365,11 +380,18 @@ namespace DMS.Rpc.reports.report_store.report_statistic_store_scouting
             var query = from s in DataContext.Store
                         join tt in tempTableQuery.Query on s.Id equals tt.Column1
                         where OrganizationIds.Contains(s.OrganizationId) &&
-                        ProvinceId.HasValue == false || (s.ProvinceId.HasValue && s.ProvinceId.Value == ProvinceId.Value) &&
-                        DistrictId.HasValue == false || (s.DistrictId.HasValue && s.DistrictId.Value == DistrictId.Value) &&
-                        WardId.HasValue == false || (s.WardId.HasValue && s.WardId.Value == WardId.Value) &&
+                        (ProvinceId.HasValue == false || (s.ProvinceId.HasValue && s.ProvinceId.Value == ProvinceId.Value)) &&
+                        (DistrictId.HasValue == false || (s.DistrictId.HasValue && s.DistrictId.Value == DistrictId.Value)) &&
+                        (WardId.HasValue == false || (s.WardId.HasValue && s.WardId.Value == WardId.Value)) &&
                         s.DeletedAt == null
-                        select s;
+                        select new StoreDAO
+                        {
+                            Id = s.Id,
+                            ProvinceId = s.ProvinceId,
+                            DistrictId = s.DistrictId,
+                            WardId = s.WardId,
+                            StoreScoutingId = s.StoreScoutingId,
+                        };
 
             var Stores = await query.ToListAsync();
             var StoreScoutings = await DataContext.StoreScouting
@@ -377,6 +399,13 @@ namespace DMS.Rpc.reports.report_store.report_statistic_store_scouting
                 .Where(x => DistrictId.HasValue == false || (x.DistrictId.HasValue && x.DistrictId.Value == DistrictId.Value))
                 .Where(x => WardId.HasValue == false || (x.WardId.HasValue && x.WardId.Value == WardId.Value))
                 .Where(x => x.CreatedAt >= Start && x.CreatedAt <= End)
+                .Select(x => new StoreScouting
+                {
+                    Id = x.Id,
+                    ProvinceId = x.ProvinceId,
+                    DistrictId = x.DistrictId,
+                    WardId = x.WardId,
+                })
                 .ToListAsync();
 
             List<ReportStatisticStoreScouting_ReportStatisticStoreScoutingDTO>

@@ -8,6 +8,7 @@ namespace DMS.Rpc.reports.report_store.report_statistic_problem
 {
     public class ReportStatisticProblem_ReportStatisticProblemDTO : DataDTO
     {
+        internal long OrganizationId { get; set; }
         public string OrganizationName { get; set; }
         public List<ReportStatisticProblem_StoreDTO> Stores { get; set; }
     }

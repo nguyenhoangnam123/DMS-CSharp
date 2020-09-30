@@ -18,6 +18,8 @@ using System.Dynamic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Thinktecture;
+using Thinktecture.EntityFrameworkCore.TempTables;
 
 namespace DMS.Rpc.reports.report_store.report_store_general
 {
@@ -230,9 +232,11 @@ namespace DMS.Rpc.reports.report_store.report_store_general
                 var listId = new List<long> { StoreGroupingId.Value };
                 StoreGroupingIds = StoreGroupingIds.Intersect(listId).ToList();
             }
+            ITempTableQuery<TempTable<long>> tempTableQuery = await DataContext
+                     .BulkInsertValuesIntoTempTableAsync<long>(StoreIds);
             var query = from s in DataContext.Store
-                        where StoreIds.Contains(s.Id) &&
-                        StoreTypeIds.Contains(s.StoreTypeId) &&
+                        join tt in tempTableQuery.Query on s.Id equals tt.Column1
+                        where StoreTypeIds.Contains(s.StoreTypeId) &&
                         (
                             (
                                 StoreGroupingId.HasValue == false && 
@@ -317,9 +321,11 @@ namespace DMS.Rpc.reports.report_store.report_store_general
                 StoreGroupingIds = StoreGroupingIds.Intersect(listId).ToList();
             }
 
+            ITempTableQuery<TempTable<long>> tempTableQuery = await DataContext
+                    .BulkInsertValuesIntoTempTableAsync<long>(StoreIds);
             var query = from s in DataContext.Store
-                        where StoreIds.Contains(s.Id) &&
-                        StoreTypeIds.Contains(s.StoreTypeId) &&
+                        join tt in tempTableQuery.Query on s.Id equals tt.Column1
+                        where StoreTypeIds.Contains(s.StoreTypeId) &&
                         (
                             (
                                 StoreGroupingId.HasValue == false &&
@@ -332,42 +338,46 @@ namespace DMS.Rpc.reports.report_store.report_store_general
                         ) &&
                         (StoreStatusId.HasValue == false || StoreStatusId.Value == StoreStatusEnum.ALL.Id || s.StoreStatusId == StoreStatusId.Value) &&
                         OrganizationIds.Contains(s.OrganizationId)
-                        select s;
+                        select new StoreDAO 
+                        {
+                            Id = s.Id,
+                            Code = s.Code,
+                            Name = s.Name,
+                            StoreStatusId = s.StoreStatusId,
+                            Address = s.Address,
+                            Telephone = s.Telephone,
+                            OrganizationId = s.OrganizationId,
+                        };
 
-            StoreIds = await query.Select(x => x.Id).Distinct().ToListAsync();
-
-            List<StoreDAO> StoreDAOs = await DataContext.Store.Include(x => x.Organization).Include(x => x.StoreStatus)
-                .Where(x => OrganizationIds.Contains(x.OrganizationId) &&
-                StoreIds.Contains(x.Id))
+            List<StoreDAO> StoreDAOs = await query
                 .OrderBy(x => x.OrganizationId).ThenBy(x => x.Name)
                 .Skip(ReportStoreGeneral_ReportStoreGeneralFilterDTO.Skip)
                 .Take(ReportStoreGeneral_ReportStoreGeneralFilterDTO.Take)
                 .ToListAsync();
 
-            List<ReportStoreGeneral_StoreDTO> ReportStoreGeneral_StoreDTOs = StoreDAOs.Select(s => new ReportStoreGeneral_StoreDTO
+            List<ReportStoreGeneral_StoreDTO> ReportStoreGeneral_StoreDTOs = new List<ReportStoreGeneral_StoreDTO>();
+            foreach (var Store in StoreDAOs)
             {
-                Id = s.Id,
-                Code = s.Code,
-                Name = s.Name,
-                StoreStatusName = s.StoreStatus.Name,
-                Address = s.Address,
-                Phone = s.Telephone,
-                OrganizationId = s.OrganizationId,
-            }).ToList();
+                ReportStoreGeneral_StoreDTO ReportStoreGeneral_StoreDTO = new ReportStoreGeneral_StoreDTO();
+                ReportStoreGeneral_StoreDTO.Id = Store.Id;
+                ReportStoreGeneral_StoreDTO.Code = Store.Code;
+                ReportStoreGeneral_StoreDTO.Name = Store.Name;
+                ReportStoreGeneral_StoreDTO.StoreStatusId = Store.StoreStatusId;
+                ReportStoreGeneral_StoreDTO.Address = Store.Address;
+                ReportStoreGeneral_StoreDTO.Phone = Store.Telephone;
+                ReportStoreGeneral_StoreDTO.OrganizationId = Store.OrganizationId;
+                ReportStoreGeneral_StoreDTO.StoreStatus = StoreStatusEnum.StoreStatusEnumList.Where(x => x.Id == Store.StoreStatusId).Select(x => new ReportStoreGeneral_StoreStatusDTO
+                {
+                    Name = x.Name
+                }).FirstOrDefault();
+                ReportStoreGeneral_StoreDTOs.Add(ReportStoreGeneral_StoreDTO);
+            }
 
             OrganizationIds = StoreDAOs.Select(x => x.OrganizationId).Distinct().ToList();
-            List<Organization> Organizations = await OrganizationService.List(new OrganizationFilter
-            {
-                Skip = 0,
-                Take = int.MaxValue,
-                Selects = OrganizationSelect.Id | OrganizationSelect.Code | OrganizationSelect.Name,
-                Id = new IdFilter { In = OrganizationIds },
-                OrderBy = OrganizationOrder.Id,
-                OrderType = OrderType.ASC
-            });
+            OrganizationDAOs = await DataContext.Organization.Where(x => OrganizationIds.Contains(x.Id)).ToListAsync();
 
             StoreIds = ReportStoreGeneral_StoreDTOs.Select(x => x.Id).ToList();
-            List<ReportStoreGeneral_ReportStoreGeneralDTO> ReportStoreGeneral_ReportStoreGeneralDTOs = Organizations.Select(on => new ReportStoreGeneral_ReportStoreGeneralDTO
+            List<ReportStoreGeneral_ReportStoreGeneralDTO> ReportStoreGeneral_ReportStoreGeneralDTOs = OrganizationDAOs.Select(on => new ReportStoreGeneral_ReportStoreGeneralDTO
             {
                 OrganizationId = on.Id,
                 OrganizationName = on.Name,
@@ -381,7 +391,7 @@ namespace DMS.Rpc.reports.report_store.report_store_general
                         Id = x.Id,
                         Code = x.Code,
                         Name = x.Name,
-                        StoreStatusName = x.StoreStatusName,
+                        StoreStatusName = x.StoreStatus.Name,
                         Address = x.Address,
                         Phone = x.Phone,
                     }).ToList();
@@ -398,7 +408,16 @@ namespace DMS.Rpc.reports.report_store.report_store_general
                 .Where(x => StoreIds.Contains(x.BuyerStoreId) &&
                 x.OrderDate >= Start && x.OrderDate <= End &&
                 AppUserIds.Contains(x.SaleEmployeeId))
-                .ToListAsync();
+                .Select(x => new IndirectSalesOrderDAO
+                {
+                    Id = x.Id,
+                    Code = x.Code,
+                    OrderDate = x.OrderDate,
+                    BuyerStoreId = x.BuyerStoreId,
+                    SaleEmployeeId = x.SaleEmployeeId,
+                    SellerStoreId = x.SellerStoreId,
+                    Total = x.Total
+                }).ToListAsync();
 
             List<IndirectSalesOrderContentDAO> IndirectSalesOrderContentDAOs = await DataContext.IndirectSalesOrderContent
                 .Where(x => StoreIds.Contains(x.IndirectSalesOrder.BuyerStoreId) &&
