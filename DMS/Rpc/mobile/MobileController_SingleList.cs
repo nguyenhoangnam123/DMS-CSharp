@@ -1191,8 +1191,8 @@ namespace DMS.Rpc.mobile
             return Mobile_StoreScoutingDTOs;
         }
 
-        [Route(MobileRoute.CountIndirectSalesOrder), HttpPost]
-        public async Task<ActionResult<int>> CountIndirectSalesOrder([FromBody] Mobile_IndirectSalesOrderFilterDTO Mobile_IndirectSalesOrderFilterDTO)
+        [Route(MobileRoute.CountCompletedIndirectSalesOrder), HttpPost]
+        public async Task<ActionResult<int>> CountCompletedIndirectSalesOrder([FromBody] Mobile_IndirectSalesOrderFilterDTO Mobile_IndirectSalesOrderFilterDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
@@ -1210,12 +1210,12 @@ namespace DMS.Rpc.mobile
             IndirectSalesOrderFilter.BuyerStoreId = Mobile_IndirectSalesOrderFilterDTO.BuyerStoreId;
             IndirectSalesOrderFilter.AppUserId = new IdFilter { Equal = CurrentContext.UserId };
 
-            int count = await IndirectSalesOrderService.Count(IndirectSalesOrderFilter);
+            int count = await IndirectSalesOrderService.CountCompleted(IndirectSalesOrderFilter);
             return count;
         }
 
-        [Route(MobileRoute.ListIndirectSalesOrder), HttpPost]
-        public async Task<ActionResult<List<Mobile_IndirectSalesOrderDTO>>> ListIndirectSalesOrder([FromBody] Mobile_IndirectSalesOrderFilterDTO Mobile_IndirectSalesOrderFilterDTO)
+        [Route(MobileRoute.ListCompletedIndirectSalesOrder), HttpPost]
+        public async Task<ActionResult<List<Mobile_IndirectSalesOrderDTO>>> ListCompletedIndirectSalesOrder([FromBody] Mobile_IndirectSalesOrderFilterDTO Mobile_IndirectSalesOrderFilterDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
@@ -1234,7 +1234,7 @@ namespace DMS.Rpc.mobile
             IndirectSalesOrderFilter.StoreCheckingId = Mobile_IndirectSalesOrderFilterDTO.StoreCheckingId;
             IndirectSalesOrderFilter.AppUserId = new IdFilter { Equal = CurrentContext.UserId };
 
-            List<IndirectSalesOrder> IndirectSalesOrders = await IndirectSalesOrderService.List(IndirectSalesOrderFilter);
+            List<IndirectSalesOrder> IndirectSalesOrders = await IndirectSalesOrderService.ListCompleted(IndirectSalesOrderFilter);
             List<Mobile_IndirectSalesOrderDTO> Mobile_IndirectSalesOrderDTOs = IndirectSalesOrders
                 .Select(c => new Mobile_IndirectSalesOrderDTO(c)).ToList();
             return Mobile_IndirectSalesOrderDTOs;
