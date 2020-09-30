@@ -16,6 +16,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Thinktecture;
+using Thinktecture.EntityFrameworkCore.TempTables;
 
 namespace DMS.Rpc.monitor.monitor_store_albums
 {
@@ -87,7 +89,7 @@ namespace DMS.Rpc.monitor.monitor_store_albums
             AppUserFilter.DisplayName = MonitorStoreAlbum_AppUserFilterDTO.DisplayName;
             AppUserFilter.OrganizationId = MonitorStoreAlbum_AppUserFilterDTO.OrganizationId;
             AppUserFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
-            AppUserFilter.Id.In = await FilterAppUser(AppUserService,OrganizationService,CurrentContext);
+            AppUserFilter.Id.In = await FilterAppUser(AppUserService, OrganizationService, CurrentContext);
 
             if (AppUserFilter.Id == null) AppUserFilter.Id = new IdFilter();
             AppUserFilter.Id.In = await FilterAppUser(AppUserService, OrganizationService, CurrentContext);
@@ -189,23 +191,26 @@ namespace DMS.Rpc.monitor.monitor_store_albums
                 StoreIds = StoreIds.Intersect(listId).ToList();
             }
 
+            ITempTableQuery<TempTable<long>> tempTableQuery = await DataContext
+                      .BulkInsertValuesIntoTempTableAsync<long>(StoreIds);
+
             var query = from si in DataContext.StoreImage
-                                                 where Start <= si.ShootingAt && si.ShootingAt <= End &&
-                                                 si.AlbumId == AlbumId.Value &&
-                                                 (
-                                                     (
-                                                         SaleEmployeeId.HasValue == false &&
-                                                         (si.SaleEmployeeId.HasValue == false || FilterAppUserIds.Contains(si.SaleEmployeeId.Value))
-                                                     ) ||
-                                                     (
-                                                         SaleEmployeeId.HasValue &&
-                                                         SaleEmployeeId.Value == si.SaleEmployeeId.Value
-                                                     )
-                                                 ) &&
-                                                 StoreIds.Contains(si.StoreId) &&
-                                                 OrganizationIds.Contains(si.OrganizationId) &&
-                                                 (SaleEmployeeId.HasValue == false || si.SaleEmployeeId == SaleEmployeeId.Value) 
-                                                 select si;
+                        join tt in tempTableQuery.Query on si.StoreId equals tt.Column1
+                        where Start <= si.ShootingAt && si.ShootingAt <= End &&
+                        si.AlbumId == AlbumId.Value &&
+                        (
+                            (
+                                SaleEmployeeId.HasValue == false &&
+                                (si.SaleEmployeeId.HasValue == false || FilterAppUserIds.Contains(si.SaleEmployeeId.Value))
+                            ) ||
+                            (
+                                SaleEmployeeId.HasValue &&
+                                SaleEmployeeId.Value == si.SaleEmployeeId.Value
+                            )
+                        ) &&
+                        OrganizationIds.Contains(si.OrganizationId) &&
+                        (SaleEmployeeId.HasValue == false || si.SaleEmployeeId == SaleEmployeeId.Value)
+                        select si;
 
             return await query.CountAsync();
         }
@@ -248,7 +253,10 @@ namespace DMS.Rpc.monitor.monitor_store_albums
                 StoreIds = StoreIds.Intersect(listId).ToList();
             }
 
+            ITempTableQuery<TempTable<long>> tempTableQuery = await DataContext
+                      .BulkInsertValuesIntoTempTableAsync<long>(StoreIds);
             var query = from si in DataContext.StoreImage
+                        join tt in tempTableQuery.Query on si.StoreId equals tt.Column1
                         where Start <= si.ShootingAt && si.ShootingAt <= End &&
                         si.AlbumId == AlbumId.Value &&
                         (
@@ -261,10 +269,10 @@ namespace DMS.Rpc.monitor.monitor_store_albums
                                 SaleEmployeeId.Value == si.SaleEmployeeId.Value
                             )
                         ) &&
-                        StoreIds.Contains(si.StoreId) &&
                         OrganizationIds.Contains(si.OrganizationId) &&
                         (SaleEmployeeId.HasValue == false || si.SaleEmployeeId == SaleEmployeeId.Value)
                         select si;
+
             List<MonitorStoreAlbum_StoreCheckingImageMappingDTO> MonitorStoreAlbum_StoreCheckingImageMappingDTOs = await query.OrderByDescending(x => x.ShootingAt)
                 .Skip(MonitorStoreAlbum_MonitorStoreAlbumFilterDTO.Skip)
                 .Take(MonitorStoreAlbum_MonitorStoreAlbumFilterDTO.Take)
