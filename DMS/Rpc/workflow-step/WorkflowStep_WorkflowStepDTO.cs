@@ -47,6 +47,7 @@ namespace DMS.Rpc.workflow_step
         public StringFilter Code { get; set; }
         public StringFilter Name { get; set; }
         public IdFilter RoleId { get; set; }
+        public IdFilter StatusId { get; set; }
         public StringFilter SubjectMailForReject { get; set; }
         public StringFilter BodyMailForReject { get; set; }
         public WorkflowStepOrder OrderBy { get; set; }

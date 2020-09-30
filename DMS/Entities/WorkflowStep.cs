@@ -41,6 +41,7 @@ namespace DMS.Entities
         public StringFilter Code { get; set; }
         public StringFilter Name { get; set; }
         public IdFilter RoleId { get; set; }
+        public IdFilter StatusId { get; set; }
         public DateFilter UpdatedAt { get; set; }
         public List<WorkflowStepFilter> OrFilter { get; set; }
         public WorkflowStepOrder OrderBy { get; set; }

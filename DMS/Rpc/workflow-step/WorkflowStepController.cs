@@ -529,6 +529,7 @@ namespace DMS.Rpc.workflow_step
             WorkflowStepFilter.Code = WorkflowStep_WorkflowStepFilterDTO.Code;
             WorkflowStepFilter.Name = WorkflowStep_WorkflowStepFilterDTO.Name;
             WorkflowStepFilter.RoleId = WorkflowStep_WorkflowStepFilterDTO.RoleId;
+            WorkflowStepFilter.StatusId = WorkflowStep_WorkflowStepFilterDTO.StatusId;
             return WorkflowStepFilter;
         }
 
