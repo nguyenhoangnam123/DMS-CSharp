@@ -18,6 +18,7 @@ using System.IO;
 using System.Dynamic;
 using NGS.Templater;
 using OfficeOpenXml.FormulaParsing.ExpressionGraph.FunctionCompilers;
+using DMS.Services.MStoreStatus;
 
 namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_by_store_and_item
 {
@@ -29,6 +30,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_by_store_
         private IStoreService StoreService;
         private IStoreGroupingService StoreGroupingService;
         private IStoreTypeService StoreTypeService;
+        private IStoreStatusService StoreStatusService;
         private ICurrentContext CurrentContext;
         public ReportDirectSalesOrderByStoreAndItemController(
             DataContext DataContext,
@@ -37,6 +39,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_by_store_
             IStoreService StoreService,
             IStoreGroupingService StoreGroupingService,
             IStoreTypeService StoreTypeService,
+            IStoreStatusService StoreStatusService,
             ICurrentContext CurrentContext)
         {
             this.DataContext = DataContext;
@@ -45,6 +48,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_by_store_
             this.StoreService = StoreService;
             this.StoreGroupingService = StoreGroupingService;
             this.StoreTypeService = StoreTypeService;
+            this.StoreStatusService = StoreStatusService;
             this.CurrentContext = CurrentContext;
         }
 
@@ -148,6 +152,28 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_by_store_
             return ReportDirectSalesOrderByStoreAndItem_StoreTypeDTOs;
         }
 
+        [Route(ReportDirectSalesOrderByStoreAndItemRoute.FilterListStoreStatus), HttpPost]
+        public async Task<List<ReportDirectSalesOrderByStoreAndItem_StoreStatusDTO>> FilterListStoreStatus([FromBody] ReportDirectSalesOrderByStoreAndItem_StoreStatusFilterDTO ReportDirectSalesOrderByStoreAndItem_StoreStatusFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            StoreStatusFilter StoreStatusFilter = new StoreStatusFilter();
+            StoreStatusFilter.Skip = 0;
+            StoreStatusFilter.Take = 20;
+            StoreStatusFilter.OrderBy = StoreStatusOrder.Id;
+            StoreStatusFilter.OrderType = OrderType.ASC;
+            StoreStatusFilter.Selects = StoreStatusSelect.ALL;
+            StoreStatusFilter.Id = ReportDirectSalesOrderByStoreAndItem_StoreStatusFilterDTO.Id;
+            StoreStatusFilter.Code = ReportDirectSalesOrderByStoreAndItem_StoreStatusFilterDTO.Code;
+            StoreStatusFilter.Name = ReportDirectSalesOrderByStoreAndItem_StoreStatusFilterDTO.Name;
+
+            List<StoreStatus> StoreStatuses = await StoreStatusService.List(StoreStatusFilter);
+            List<ReportDirectSalesOrderByStoreAndItem_StoreStatusDTO> ReportDirectSalesOrderByStoreAndItem_StoreStatusDTOs = StoreStatuses
+                .Select(x => new ReportDirectSalesOrderByStoreAndItem_StoreStatusDTO(x)).ToList();
+            return ReportDirectSalesOrderByStoreAndItem_StoreStatusDTOs;
+        }
+
         [Route(ReportDirectSalesOrderByStoreAndItemRoute.Count), HttpPost]
         public async Task<int> Count([FromBody] ReportDirectSalesOrderByStoreAndItem_ReportDirectSalesOrderByStoreAndItemFilterDTO ReportDirectSalesOrderByStoreAndItem_ReportDirectSalesOrderByStoreAndItemFilterDTO)
         {
@@ -171,6 +197,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_by_store_
             long? StoreId = ReportDirectSalesOrderByStoreAndItem_ReportDirectSalesOrderByStoreAndItemFilterDTO.StoreId?.Equal;
             long? StoreTypeId = ReportDirectSalesOrderByStoreAndItem_ReportDirectSalesOrderByStoreAndItemFilterDTO.StoreTypeId?.Equal;
             long? StoreGroupingId = ReportDirectSalesOrderByStoreAndItem_ReportDirectSalesOrderByStoreAndItemFilterDTO.StoreGroupingId?.Equal;
+            long? StoreStatusId = ReportDirectSalesOrderByStoreAndItem_ReportDirectSalesOrderByStoreAndItemFilterDTO.StoreStatusId?.Equal;
 
             List<long> OrganizationIds = await FilterOrganization(OrganizationService, CurrentContext);
             List<OrganizationDAO> OrganizationDAOs = await DataContext.Organization.Where(o => o.DeletedAt == null && OrganizationIds.Contains(o.Id)).ToListAsync();
@@ -216,6 +243,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_by_store_
                                 StoreGroupingId.Value == s.StoreGroupingId.Value
                             )
                         ) &&
+                        (StoreStatusId.HasValue == false || StoreStatusId.Value == StoreStatusEnum.ALL.Id || s.StoreStatusId == StoreStatusId.Value) &&
                         OrganizationIds.Contains(s.OrganizationId)
                         select s;
 
@@ -246,6 +274,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_by_store_
             long? StoreId = ReportDirectSalesOrderByStoreAndItem_ReportDirectSalesOrderByStoreAndItemFilterDTO.StoreId?.Equal;
             long? StoreTypeId = ReportDirectSalesOrderByStoreAndItem_ReportDirectSalesOrderByStoreAndItemFilterDTO.StoreTypeId?.Equal;
             long? StoreGroupingId = ReportDirectSalesOrderByStoreAndItem_ReportDirectSalesOrderByStoreAndItemFilterDTO.StoreGroupingId?.Equal;
+            long? StoreStatusId = ReportDirectSalesOrderByStoreAndItem_ReportDirectSalesOrderByStoreAndItemFilterDTO.StoreStatusId?.Equal;
 
             List<long> OrganizationIds = await FilterOrganization(OrganizationService, CurrentContext);
             List<OrganizationDAO> OrganizationDAOs = await DataContext.Organization.Where(o => o.DeletedAt == null && (OrganizationIds.Count == 0 || OrganizationIds.Contains(o.Id))).ToListAsync();
@@ -276,6 +305,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_by_store_
             }
             var query = from i in DataContext.DirectSalesOrder
                         join s in DataContext.Store on i.BuyerStoreId equals s.Id
+                        join ss in DataContext.StoreStatus on s.StoreStatusId equals ss.Id
                         join o in DataContext.Organization on s.OrganizationId equals o.Id
                         where i.OrderDate >= Start && i.OrderDate <= End &&
                         (StoreIds.Contains(i.BuyerStoreId)) &&
@@ -290,6 +320,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_by_store_
                                 StoreGroupingId.Value == s.StoreGroupingId.Value
                             )
                         ) &&
+                        (StoreStatusId.HasValue == false || StoreStatusId.Value == StoreStatusEnum.ALL.Id || s.StoreStatusId == StoreStatusId.Value) &&
                         (OrganizationIds.Contains(s.OrganizationId))
                         select new Store
                         {
@@ -303,8 +334,11 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_by_store_
                                 Id = o.Id,
                                 Code = o.Code,
                                 Name = o.Name,
+                            },
+                            StoreStatus = new StoreStatus
+                            {
+                                Name = ss.Name
                             }
-
                         };
 
             List<Store> Stores = await query.Distinct().ToListAsync();
@@ -327,6 +361,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_by_store_
                         Id = x.Id,
                         Code = x.Code,
                         Name = x.Name,
+                        StoreStatusName = x.StoreStatus.Name,
                         Address = x.Address,
                         OrganizationId = x.OrganizationId,
                         StoreGroupingId = x.StoreGroupingId,
@@ -502,6 +537,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_by_store_
             long? StoreId = ReportDirectSalesOrderByStoreAndItem_ReportDirectSalesOrderByStoreAndItemFilterDTO.StoreId?.Equal;
             long? StoreTypeId = ReportDirectSalesOrderByStoreAndItem_ReportDirectSalesOrderByStoreAndItemFilterDTO.StoreTypeId?.Equal;
             long? StoreGroupingId = ReportDirectSalesOrderByStoreAndItem_ReportDirectSalesOrderByStoreAndItemFilterDTO.StoreGroupingId?.Equal;
+            long? StoreStatusId = ReportDirectSalesOrderByStoreAndItem_ReportDirectSalesOrderByStoreAndItemFilterDTO.StoreStatusId?.Equal;
 
             ReportDirectSalesOrderByStoreAndItem_TotalDTO ReportDirectSalesOrderByStoreAndItem_TotalDTO = new ReportDirectSalesOrderByStoreAndItem_TotalDTO();
             List<long> OrganizationIds = await FilterOrganization(OrganizationService, CurrentContext);
@@ -548,6 +584,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_by_store_
                                 StoreGroupingId.Value == s.StoreGroupingId.Value
                             )
                         ) &&
+                        (StoreStatusId.HasValue == false || StoreStatusId.Value == StoreStatusEnum.ALL.Id || s.StoreStatusId == StoreStatusId.Value) &&
                         (OrganizationIds.Contains(s.OrganizationId))
                         select new Store
                         {

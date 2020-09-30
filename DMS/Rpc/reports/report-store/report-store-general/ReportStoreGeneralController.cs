@@ -6,6 +6,7 @@ using DMS.Services.MAppUser;
 using DMS.Services.MOrganization;
 using DMS.Services.MStore;
 using DMS.Services.MStoreGrouping;
+using DMS.Services.MStoreStatus;
 using DMS.Services.MStoreType;
 using Helpers;
 using Microsoft.AspNetCore.Mvc;
@@ -28,6 +29,7 @@ namespace DMS.Rpc.reports.report_store.report_store_general
         private IStoreService StoreService;
         private IStoreGroupingService StoreGroupingService;
         private IStoreTypeService StoreTypeService;
+        private IStoreStatusService StoreStatusService;
         private ICurrentContext CurrentContext;
         public ReportStoreGeneralController(
             DataContext DataContext,
@@ -36,6 +38,7 @@ namespace DMS.Rpc.reports.report_store.report_store_general
             IStoreService StoreService,
             IStoreGroupingService StoreGroupingService,
             IStoreTypeService StoreTypeService,
+            IStoreStatusService StoreStatusService,
             ICurrentContext CurrentContext)
         {
             this.DataContext = DataContext;
@@ -44,6 +47,7 @@ namespace DMS.Rpc.reports.report_store.report_store_general
             this.StoreService = StoreService;
             this.StoreGroupingService = StoreGroupingService;
             this.StoreTypeService = StoreTypeService;
+            this.StoreStatusService = StoreStatusService;
             this.CurrentContext = CurrentContext;
         }
 
@@ -149,6 +153,28 @@ namespace DMS.Rpc.reports.report_store.report_store_general
                 .Select(x => new ReportStoreGeneral_StoreTypeDTO(x)).ToList();
             return ReportStoreGeneral_StoreTypeDTOs;
         }
+
+        [Route(ReportStoreGeneralRoute.FilterListStoreStatus), HttpPost]
+        public async Task<List<ReportStoreGeneral_StoreStatusDTO>> FilterListStoreStatus([FromBody] ReportStoreGeneral_StoreStatusFilterDTO ReportStoreGeneral_StoreStatusFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            StoreStatusFilter StoreStatusFilter = new StoreStatusFilter();
+            StoreStatusFilter.Skip = 0;
+            StoreStatusFilter.Take = 20;
+            StoreStatusFilter.OrderBy = StoreStatusOrder.Id;
+            StoreStatusFilter.OrderType = OrderType.ASC;
+            StoreStatusFilter.Selects = StoreStatusSelect.ALL;
+            StoreStatusFilter.Id = ReportStoreGeneral_StoreStatusFilterDTO.Id;
+            StoreStatusFilter.Code = ReportStoreGeneral_StoreStatusFilterDTO.Code;
+            StoreStatusFilter.Name = ReportStoreGeneral_StoreStatusFilterDTO.Name;
+
+            List<StoreStatus> StoreStatuses = await StoreStatusService.List(StoreStatusFilter);
+            List<ReportStoreGeneral_StoreStatusDTO> ReportStoreGeneral_StoreStatusDTOs = StoreStatuses
+                .Select(x => new ReportStoreGeneral_StoreStatusDTO(x)).ToList();
+            return ReportStoreGeneral_StoreStatusDTOs;
+        }
         #endregion
 
         [Route(ReportStoreGeneralRoute.Count), HttpPost]
@@ -174,6 +200,7 @@ namespace DMS.Rpc.reports.report_store.report_store_general
             long? StoreId = ReportStoreGeneral_ReportStoreGeneralFilterDTO.StoreId?.Equal;
             long? StoreTypeId = ReportStoreGeneral_ReportStoreGeneralFilterDTO.StoreTypeId?.Equal;
             long? StoreGroupingId = ReportStoreGeneral_ReportStoreGeneralFilterDTO.StoreGroupingId?.Equal;
+            long? StoreStatusId = ReportStoreGeneral_ReportStoreGeneralFilterDTO.StoreStatusId?.Equal;
 
             List<long> OrganizationIds = await FilterOrganization(OrganizationService, CurrentContext);
             List<OrganizationDAO> OrganizationDAOs = await DataContext.Organization.Where(o => o.DeletedAt == null && OrganizationIds.Contains(o.Id)).ToListAsync();
@@ -216,6 +243,7 @@ namespace DMS.Rpc.reports.report_store.report_store_general
                                 StoreGroupingId.Value == s.StoreGroupingId.Value
                             )
                         ) &&
+                        (StoreStatusId.HasValue == false || StoreStatusId.Value == StoreStatusEnum.ALL.Id || s.StoreStatusId == StoreStatusId.Value) &&
                         OrganizationIds.Contains(s.OrganizationId)
                         select s;
 
@@ -245,6 +273,7 @@ namespace DMS.Rpc.reports.report_store.report_store_general
 
             long? StoreId = ReportStoreGeneral_ReportStoreGeneralFilterDTO.StoreId?.Equal;
             long? StoreTypeId = ReportStoreGeneral_ReportStoreGeneralFilterDTO.StoreTypeId?.Equal;
+            long? StoreStatusId = ReportStoreGeneral_ReportStoreGeneralFilterDTO.StoreStatusId?.Equal;
             long? StoreGroupingId = ReportStoreGeneral_ReportStoreGeneralFilterDTO.StoreGroupingId?.Equal;
 
             List<long> OrganizationIds = await FilterOrganization(OrganizationService, CurrentContext);
@@ -301,12 +330,13 @@ namespace DMS.Rpc.reports.report_store.report_store_general
                                 StoreGroupingId.Value == s.StoreGroupingId.Value
                             )
                         ) &&
+                        (StoreStatusId.HasValue == false || StoreStatusId.Value == StoreStatusEnum.ALL.Id || s.StoreStatusId == StoreStatusId.Value) &&
                         OrganizationIds.Contains(s.OrganizationId)
                         select s;
 
             StoreIds = await query.Select(x => x.Id).Distinct().ToListAsync();
 
-            List<StoreDAO> StoreDAOs = await DataContext.Store.Include(x => x.Organization)
+            List<StoreDAO> StoreDAOs = await DataContext.Store.Include(x => x.Organization).Include(x => x.StoreStatus)
                 .Where(x => OrganizationIds.Contains(x.OrganizationId) &&
                 StoreIds.Contains(x.Id))
                 .OrderBy(x => x.OrganizationId).ThenBy(x => x.Name)
@@ -319,6 +349,7 @@ namespace DMS.Rpc.reports.report_store.report_store_general
                 Id = s.Id,
                 Code = s.Code,
                 Name = s.Name,
+                StoreStatusName = s.StoreStatus.Name,
                 Address = s.Address,
                 Phone = s.Telephone,
                 OrganizationId = s.OrganizationId,
@@ -350,6 +381,7 @@ namespace DMS.Rpc.reports.report_store.report_store_general
                         Id = x.Id,
                         Code = x.Code,
                         Name = x.Name,
+                        StoreStatusName = x.StoreStatusName,
                         Address = x.Address,
                         Phone = x.Phone,
                     }).ToList();

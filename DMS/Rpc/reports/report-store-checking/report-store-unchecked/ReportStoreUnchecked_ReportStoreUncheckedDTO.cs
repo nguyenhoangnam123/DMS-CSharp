@@ -18,11 +18,13 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_unchecked
         public IdFilter OrganizationId { get; set; }
         public IdFilter AppUserId { get; set; }
         public IdFilter ERouteId { get; set; }
+        public IdFilter StoreStatusId { get; set; }
         public DateFilter Date { get; set; }
 
         internal bool HasValue => (OrganizationId != null && OrganizationId.HasValue) ||
             (AppUserId != null && AppUserId.HasValue) ||
             (ERouteId != null && ERouteId.HasValue) ||
+            (StoreStatusId != null && StoreStatusId.HasValue) ||
             (Date != null && Date.HasValue);
     }
 

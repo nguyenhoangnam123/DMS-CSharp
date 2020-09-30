@@ -10,8 +10,10 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
         public long Id { get; set; }
         public string StoreCode { get; set; }
         public string StoreName { get; set; }
+        public string StoreStatusName { get; set; }
         public string StoreAddress { get; set; }
         public long SaleEmployeeId { get; set; }
+        public long StoreStatusId { get; set; }
         public DateTime CheckIn { get; set; }
         public DateTime CheckOut { get; set; }
         public string eCheckIn { get; set; }

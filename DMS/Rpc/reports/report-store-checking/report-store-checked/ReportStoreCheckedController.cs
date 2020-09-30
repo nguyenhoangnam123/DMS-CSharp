@@ -7,6 +7,7 @@ using DMS.Services.MOrganization;
 using DMS.Services.MStore;
 using DMS.Services.MStoreChecking;
 using DMS.Services.MStoreGrouping;
+using DMS.Services.MStoreStatus;
 using DMS.Services.MStoreType;
 using Hangfire.Annotations;
 using Helpers;
@@ -34,6 +35,7 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
         private IStoreGroupingService StoreGroupingService;
         private IStoreTypeService StoreTypeService;
         private IStoreCheckingService StoreCheckingService;
+        private IStoreStatusService StoreStatusService;
         private ICurrentContext CurrentContext;
         public ReportStoreCheckedController(
             DataContext DataContext,
@@ -43,6 +45,7 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
             IStoreGroupingService StoreGroupingService,
             IStoreTypeService StoreTypeService,
             IStoreCheckingService StoreCheckingService,
+            IStoreStatusService StoreStatusService,
             ICurrentContext CurrentContext)
         {
             this.DataContext = DataContext;
@@ -52,6 +55,7 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
             this.StoreGroupingService = StoreGroupingService;
             this.StoreTypeService = StoreTypeService;
             this.StoreCheckingService = StoreCheckingService;
+            this.StoreStatusService = StoreStatusService;
             this.CurrentContext = CurrentContext;
         }
 
@@ -181,6 +185,29 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
                 .Select(x => new ReportStoreChecked_StoreTypeDTO(x)).ToList();
             return ReportStoreChecked_StoreTypeDTOs;
         }
+
+        [Route(ReportStoreCheckedRoute.FilterListStoreStatus), HttpPost]
+        public async Task<List<ReportStoreChecked_StoreStatusDTO>> FilterListStoreStatus([FromBody] ReportStoreChecked_StoreStatusFilterDTO ReportStoreChecked_StoreStatusFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            StoreStatusFilter StoreStatusFilter = new StoreStatusFilter();
+            StoreStatusFilter.Skip = 0;
+            StoreStatusFilter.Take = 20;
+            StoreStatusFilter.OrderBy = StoreStatusOrder.Id;
+            StoreStatusFilter.OrderType = OrderType.ASC;
+            StoreStatusFilter.Selects = StoreStatusSelect.ALL;
+            StoreStatusFilter.Id = ReportStoreChecked_StoreStatusFilterDTO.Id;
+            StoreStatusFilter.Code = ReportStoreChecked_StoreStatusFilterDTO.Code;
+            StoreStatusFilter.Name = ReportStoreChecked_StoreStatusFilterDTO.Name;
+
+            List<StoreStatus> StoreStatuses = await StoreStatusService.List(StoreStatusFilter);
+            List<ReportStoreChecked_StoreStatusDTO> ReportStoreChecked_StoreStatusDTOs = StoreStatuses
+                .Select(x => new ReportStoreChecked_StoreStatusDTO(x)).ToList();
+            return ReportStoreChecked_StoreStatusDTOs;
+        }
+
         #endregion
 
         [Route(ReportStoreCheckedRoute.Count), HttpPost]
@@ -207,6 +234,7 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
             long? StoreId = ReportStoreChecked_ReportStoreCheckedFilterDTO.StoreId?.Equal;
             long? StoreTypeId = ReportStoreChecked_ReportStoreCheckedFilterDTO.StoreTypeId?.Equal;
             long? StoreGroupingId = ReportStoreChecked_ReportStoreCheckedFilterDTO.StoreGroupingId?.Equal;
+            long? StoreStatusId = ReportStoreChecked_ReportStoreCheckedFilterDTO.StoreStatusId?.Equal;
 
             List<long> OrganizationIds = await FilterOrganization(OrganizationService, CurrentContext);
             List<OrganizationDAO> OrganizationDAOs = await DataContext.Organization.Where(o => o.DeletedAt == null && OrganizationIds.Contains(o.Id)).ToListAsync();
@@ -256,6 +284,7 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
                                 StoreGroupingId.Value == s.StoreGroupingId.Value
                             )
                         ) &&
+                        (StoreStatusId.HasValue == false || StoreStatusId.Value == StoreStatusEnum.ALL.Id || s.StoreStatusId == StoreStatusId.Value) &&
                         OrganizationIds.Contains(au.OrganizationId)
                         select au;
 
@@ -287,6 +316,7 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
             long? StoreId = ReportStoreChecker_ReportStoreCheckedFilterDTO.StoreId?.Equal;
             long? StoreTypeId = ReportStoreChecker_ReportStoreCheckedFilterDTO.StoreTypeId?.Equal;
             long? StoreGroupingId = ReportStoreChecker_ReportStoreCheckedFilterDTO.StoreGroupingId?.Equal;
+            long? StoreStatusId = ReportStoreChecker_ReportStoreCheckedFilterDTO.StoreStatusId?.Equal;
 
             List<long> OrganizationIds = await FilterOrganization(OrganizationService, CurrentContext);
             List<OrganizationDAO> OrganizationDAOs = await DataContext.Organization.Where(o => o.DeletedAt == null && (OrganizationIds.Count == 0 || OrganizationIds.Contains(o.Id))).ToListAsync();
@@ -335,6 +365,7 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
                                 StoreGroupingId.Value == s.StoreGroupingId.Value
                             )
                         ) &&
+                        (StoreStatusId.HasValue == false || StoreStatusId.Value == StoreStatusEnum.ALL.Id || s.StoreStatusId == StoreStatusId.Value) &&
                         OrganizationIds.Contains(au.OrganizationId)
                         select au;
 
@@ -409,6 +440,7 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
                             ImageCounter = x.ImageCounter ?? 0,
                             Planned = x.Planned,
                             SaleEmployeeId = x.SaleEmployeeId,
+                            StoreStatusId = x.Store.StoreStatusId,
                             StoreName = x.Store.Name,
                             StoreCode = x.Store.Code,
                             StoreAddress = x.Store.Address,
@@ -426,6 +458,8 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
 
                     foreach (var StoreChecking in ReportStoreChecked_StoreCheckingGroupByDateDTO.StoreCheckings)
                     {
+                        StoreChecking.StoreStatusName = StoreStatusEnum.StoreStatusEnumList.Where(x => x.Id == StoreChecking.StoreStatusId).Select(x => x.Name).FirstOrDefault();
+
                         StoreChecking.eCheckIn = StoreChecking.CheckIn.AddHours(CurrentContext.TimeZone).ToString("HH:mm:ss");
                         StoreChecking.eCheckOut = StoreChecking.CheckOut.AddHours(CurrentContext.TimeZone).ToString("HH:mm:ss");
 

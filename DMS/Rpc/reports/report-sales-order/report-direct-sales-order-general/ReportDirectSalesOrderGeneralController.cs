@@ -18,6 +18,7 @@ using DMS.Services.MAppUser;
 using System.IO;
 using System.Dynamic;
 using NGS.Templater;
+using DMS.Services.MStoreStatus;
 
 namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_general
 {
@@ -27,18 +28,21 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_general
         private IAppUserService AppUserService;
         private IOrganizationService OrganizationService;
         private IStoreService StoreService;
+        private IStoreStatusService StoreStatusService;
         private ICurrentContext CurrentContext;
         public ReportDirectSalesOrderGeneralController(
             DataContext DataContext,
             IAppUserService AppUserService,
             IOrganizationService OrganizationService,
             IStoreService StoreService,
+            IStoreStatusService StoreStatusService,
             ICurrentContext CurrentContext)
         {
             this.DataContext = DataContext;
             this.AppUserService = AppUserService;
             this.OrganizationService = OrganizationService;
             this.StoreService = StoreService;
+            this.StoreStatusService = StoreStatusService;
             this.CurrentContext = CurrentContext;
         }
 
@@ -118,6 +122,28 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_general
             return ReportDirectSalesOrderGeneral_StoreDTOs;
         }
 
+        [Route(ReportDirectSalesOrderGeneralRoute.FilterListStoreStatus), HttpPost]
+        public async Task<List<ReportDirectSalesOrderGeneral_StoreStatusDTO>> FilterListStoreStatus([FromBody] ReportDirectSalesOrderGeneral_StoreStatusFilterDTO ReportDirectSalesOrderGeneral_StoreStatusFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            StoreStatusFilter StoreStatusFilter = new StoreStatusFilter();
+            StoreStatusFilter.Skip = 0;
+            StoreStatusFilter.Take = 20;
+            StoreStatusFilter.OrderBy = StoreStatusOrder.Id;
+            StoreStatusFilter.OrderType = OrderType.ASC;
+            StoreStatusFilter.Selects = StoreStatusSelect.ALL;
+            StoreStatusFilter.Id = ReportDirectSalesOrderGeneral_StoreStatusFilterDTO.Id;
+            StoreStatusFilter.Code = ReportDirectSalesOrderGeneral_StoreStatusFilterDTO.Code;
+            StoreStatusFilter.Name = ReportDirectSalesOrderGeneral_StoreStatusFilterDTO.Name;
+
+            List<StoreStatus> StoreStatuses = await StoreStatusService.List(StoreStatusFilter);
+            List<ReportDirectSalesOrderGeneral_StoreStatusDTO> ReportDirectSalesOrderGeneral_StoreStatusDTOs = StoreStatuses
+                .Select(x => new ReportDirectSalesOrderGeneral_StoreStatusDTO(x)).ToList();
+            return ReportDirectSalesOrderGeneral_StoreStatusDTOs;
+        }
+
         [Route(ReportDirectSalesOrderGeneralRoute.Count), HttpPost]
         public async Task<int> Count([FromBody] ReportDirectSalesOrderGeneral_ReportDirectSalesOrderGeneralFilterDTO ReportDirectSalesOrderGeneral_ReportDirectSalesOrderGeneralFilterDTO)
         {
@@ -140,6 +166,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_general
 
             long? SaleEmployeeId = ReportDirectSalesOrderGeneral_ReportDirectSalesOrderGeneralFilterDTO.AppUserId?.Equal;
             long? BuyerStoreId = ReportDirectSalesOrderGeneral_ReportDirectSalesOrderGeneralFilterDTO.BuyerStoreId?.Equal;
+            long? StoreStatusId = ReportDirectSalesOrderGeneral_ReportDirectSalesOrderGeneralFilterDTO.StoreStatusId?.Equal;
 
             List<long> OrganizationIds = await FilterOrganization(OrganizationService, CurrentContext);
             List<OrganizationDAO> OrganizationDAOs = await DataContext.Organization.Where(o => o.DeletedAt == null && OrganizationIds.Contains(o.Id)).ToListAsync();
@@ -153,9 +180,11 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_general
             
             var query = from i in DataContext.DirectSalesOrder
                         join au in DataContext.AppUser on i.SaleEmployeeId equals au.Id
+                        join s in DataContext.Store on i.BuyerStoreId equals s.Id
                         where i.OrderDate >= Start && i.OrderDate <= End &&
                         (SaleEmployeeId.HasValue == false || i.SaleEmployeeId == SaleEmployeeId.Value) &&
                         (BuyerStoreId.HasValue == false || i.BuyerStoreId == BuyerStoreId.Value) &&
+                        (StoreStatusId.HasValue == false || StoreStatusId.Value == StoreStatusEnum.ALL.Id || s.StoreStatusId == StoreStatusId.Value) &&
                         OrganizationIds.Contains(i.OrganizationId)
                         select i;
 
@@ -185,6 +214,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_general
 
             long? SaleEmployeeId = ReportDirectSalesOrderGeneral_ReportDirectSalesOrderGeneralFilterDTO.AppUserId?.Equal;
             long? BuyerStoreId = ReportDirectSalesOrderGeneral_ReportDirectSalesOrderGeneralFilterDTO.BuyerStoreId?.Equal;
+            long? StoreStatusId = ReportDirectSalesOrderGeneral_ReportDirectSalesOrderGeneralFilterDTO.StoreStatusId?.Equal;
 
             List<long> OrganizationIds = await FilterOrganization(OrganizationService, CurrentContext);
             List<OrganizationDAO> OrganizationDAOs = await DataContext.Organization.Where(o => o.DeletedAt == null && (OrganizationIds.Count == 0 || OrganizationIds.Contains(o.Id))).ToListAsync();
@@ -209,9 +239,11 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_general
             var AppUserIds = AppUsers.Select(x => x.Id).ToList();
 
             var query = from i in DataContext.DirectSalesOrder
+                        join s in DataContext.Store on i.BuyerStoreId equals s.Id
                         where i.OrderDate >= Start && i.OrderDate <= End &&
                         (SaleEmployeeId.HasValue == false || i.SaleEmployeeId == SaleEmployeeId.Value) &&
                         (BuyerStoreId.HasValue == false || i.BuyerStoreId == BuyerStoreId.Value) &&
+                        (StoreStatusId.HasValue == false || StoreStatusId.Value == StoreStatusEnum.ALL.Id || s.StoreStatusId == StoreStatusId.Value) &&
                         OrganizationIds.Contains(i.OrganizationId)
                         select i;
 
@@ -226,7 +258,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_general
                 Id = new IdFilter { In = StoreIds },
                 Skip = 0,
                 Take = int.MaxValue,
-                Selects = StoreSelect.Id | StoreSelect.Name
+                Selects = StoreSelect.Id | StoreSelect.Name | StoreSelect.StoreStatus
             });
             var OrgIds = DirectSalesOrderDAOs.Select(x => x.OrganizationId).Distinct().ToList();
             var Orgs = OrganizationDAOs.Where(x => OrgIds.Contains(x.Id)).ToList();
@@ -250,6 +282,10 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_general
                        Id = x.Id,
                        Code = x.Code,
                        Name = x.Name,
+                       StoreStatus = x.StoreStatus == null ? null : new StoreStatusDAO
+                       {
+                           Name = x.StoreStatus.Name
+                       }
                    }).FirstOrDefault();
             }
             foreach (ReportDirectSalesOrderGeneral_ReportDirectSalesOrderGeneralDTO ReportDirectSalesOrderGeneral_ReportDirectSalesOrderGeneralDTO in ReportDirectSalesOrderGeneral_ReportDirectSalesOrderGeneralDTOs)
@@ -262,6 +298,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_general
                         Id = x.Id,
                         Code = x.Code,
                         BuyerStoreName = x.BuyerStore.Name,
+                        BuyerStoreStatusName = x.BuyerStore.StoreStatus.Name,
                         SaleEmployeeName = x.SaleEmployee.DisplayName,
                         OrderDate = x.OrderDate,
                         Discount = x.GeneralDiscountAmount ?? 0,
@@ -297,6 +334,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_general
 
             long? SaleEmployeeId = ReportDirectSalesOrderGeneral_ReportDirectSalesOrderGeneralFilterDTO.AppUserId?.Equal;
             long? BuyerStoreId = ReportDirectSalesOrderGeneral_ReportDirectSalesOrderGeneralFilterDTO.BuyerStoreId?.Equal;
+            long? StoreStatusId = ReportDirectSalesOrderGeneral_ReportDirectSalesOrderGeneralFilterDTO.StoreStatusId?.Equal;
 
             List<long> OrganizationIds = await FilterOrganization(OrganizationService, CurrentContext);
             List<OrganizationDAO> OrganizationDAOs = await DataContext.Organization.Where(o => o.DeletedAt == null && (OrganizationIds.Count == 0 || OrganizationIds.Contains(o.Id))).ToListAsync();
@@ -321,9 +359,11 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_general
             var AppUserIds = AppUsers.Select(x => x.Id).ToList();
 
             var query = from i in DataContext.DirectSalesOrder
+                        join s in DataContext.Store on i.BuyerStoreId equals s.Id
                         where i.OrderDate >= Start && i.OrderDate <= End &&
                         (SaleEmployeeId.HasValue == false || i.SaleEmployeeId == SaleEmployeeId.Value) &&
                         (BuyerStoreId.HasValue == false || i.BuyerStoreId == BuyerStoreId.Value) &&
+                        (StoreStatusId.HasValue == false || StoreStatusId.Value == StoreStatusEnum.ALL.Id || s.StoreStatusId == StoreStatusId.Value) &&
                         (AppUserIds.Contains(i.SaleEmployeeId)) &&
                         OrganizationIds.Contains(i.OrganizationId)
                         select i;

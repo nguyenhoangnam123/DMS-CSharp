@@ -7,6 +7,7 @@ using DMS.Services.MERoute;
 using DMS.Services.MOrganization;
 using DMS.Services.MStore;
 using DMS.Services.MStoreGrouping;
+using DMS.Services.MStoreStatus;
 using DMS.Services.MStoreType;
 using Hangfire.Annotations;
 using Helpers;
@@ -32,6 +33,7 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_unchecked
         private IStoreService StoreService;
         private IStoreGroupingService StoreGroupingService;
         private IStoreTypeService StoreTypeService;
+        private IStoreStatusService StoreStatusService;
         private ICurrentContext CurrentContext;
         public ReportStoreUncheckedController(
             DataContext DataContext,
@@ -41,6 +43,7 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_unchecked
             IStoreService StoreService,
             IStoreGroupingService StoreGroupingService,
             IStoreTypeService StoreTypeService,
+            IStoreStatusService StoreStatusService,
             ICurrentContext CurrentContext)
         {
             this.DataContext = DataContext;
@@ -50,6 +53,7 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_unchecked
             this.StoreService = StoreService;
             this.StoreGroupingService = StoreGroupingService;
             this.StoreTypeService = StoreTypeService;
+            this.StoreStatusService = StoreStatusService;
             this.CurrentContext = CurrentContext;
         }
 
@@ -127,6 +131,28 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_unchecked
                 .Select(x => new ReportStoreUnChecked_ERouteDTO(x)).ToList();
             return ReportStoreUnChecked_ERouteDTOs;
         }
+
+        [Route(ReportStoreUncheckedRoute.FilterListStoreStatus), HttpPost]
+        public async Task<List<ReportStoreUnchecked_StoreStatusDTO>> FilterListStoreStatus([FromBody] ReportStoreUnchecked_StoreStatusFilterDTO ReportStoreUnchecked_StoreStatusFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            StoreStatusFilter StoreStatusFilter = new StoreStatusFilter();
+            StoreStatusFilter.Skip = 0;
+            StoreStatusFilter.Take = 20;
+            StoreStatusFilter.OrderBy = StoreStatusOrder.Id;
+            StoreStatusFilter.OrderType = OrderType.ASC;
+            StoreStatusFilter.Selects = StoreStatusSelect.ALL;
+            StoreStatusFilter.Id = ReportStoreUnchecked_StoreStatusFilterDTO.Id;
+            StoreStatusFilter.Code = ReportStoreUnchecked_StoreStatusFilterDTO.Code;
+            StoreStatusFilter.Name = ReportStoreUnchecked_StoreStatusFilterDTO.Name;
+
+            List<StoreStatus> StoreStatuses = await StoreStatusService.List(StoreStatusFilter);
+            List<ReportStoreUnchecked_StoreStatusDTO> ReportStoreUnchecked_StoreStatusDTOs = StoreStatuses
+                .Select(x => new ReportStoreUnchecked_StoreStatusDTO(x)).ToList();
+            return ReportStoreUnchecked_StoreStatusDTOs;
+        }
         #endregion
 
         [Route(ReportStoreUncheckedRoute.Count), HttpPost]
@@ -151,6 +177,7 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_unchecked
 
             long? AppUserId = ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.AppUserId?.Equal;
             long? ERouteId = ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.ERouteId?.Equal;
+            long? StoreStatusId = ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.StoreStatusId?.Equal;
 
             List<long> AppUserIds, OrganizationIds;
             (AppUserIds, OrganizationIds) = await FilterOrganizationAndUser(ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.OrganizationId,
@@ -169,8 +196,10 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_unchecked
                 AppUserIds = AppUserIds.Where(x => x == AppUserId.Value).ToList();
             AppUserIds = await (from su in DataContext.StoreUnchecking
                                 join a in DataContext.AppUser on su.AppUserId equals a.Id
+                                join s in DataContext.Store on su.StoreId equals s.Id
                                 where AppUserIds.Contains(a.Id) &&
                                 OrganizationIds.Contains(a.OrganizationId) &&
+                                (StoreStatusId.HasValue == false || StoreStatusId.Value == StoreStatusEnum.ALL.Id || s.StoreStatusId == StoreStatusId.Value) &&
                                 Start <= su.Date && su.Date <= End
                                 orderby a.Organization.Name, a.DisplayName
                                 select su.AppUserId)
@@ -199,6 +228,7 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_unchecked
 
             long? AppUserId = ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.AppUserId?.Equal;
             long? ERouteId = ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.ERouteId?.Equal;
+            long? StoreStatusId = ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.StoreStatusId?.Equal;
 
             List<long> AppUserIds, OrganizationIds;
             (AppUserIds, OrganizationIds) = await FilterOrganizationAndUser(ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.OrganizationId,
@@ -233,9 +263,10 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_unchecked
             List<StoreUncheckingDAO> StoreUncheckingDAOs = await DataContext.StoreUnchecking
                 .Where(su =>
                     AppUserIds.Contains(su.AppUserId) &&
-                    Start <= su.Date && su.Date <= End
-                    )
+                    Start <= su.Date && su.Date <= End &&
+                    (StoreStatusId.HasValue == false || StoreStatusId.Value == StoreStatusEnum.ALL.Id || su.Store.StoreStatusId == StoreStatusId.Value))
                 .Include(su => su.Store.StoreType)
+                .Include(su => su.Store.StoreStatus)
                 .ToListAsync();
 
             var  OrganizationNames = AppUserDAOs.Select(x => new { Path = x.Organization.Path, Name = x.Organization.Name }).Distinct().ToList();
@@ -268,6 +299,7 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_unchecked
                             StoreAddress = x.Store.Address,
                             StoreCode = x.Store.Code,
                             StoreName = x.Store.Name,
+                            StoreStatusName = x.Store.StoreStatus.Name,
                             StorePhone = x.Store.OwnerPhone,
                             StoreTypeName = x.Store.StoreType.Name,
                         })

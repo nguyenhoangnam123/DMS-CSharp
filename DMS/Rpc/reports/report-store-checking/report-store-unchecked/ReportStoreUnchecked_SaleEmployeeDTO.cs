@@ -21,6 +21,7 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_unchecked
         public long AppUserId { get; set; }
         public string StoreCode { get; set; }
         public string StoreName { get; set; }
+        public string StoreStatusName { get; set; }
         public string StoreTypeName { get; set; }
         public string StorePhone { get; set; }
         public string StoreAddress { get; set; }

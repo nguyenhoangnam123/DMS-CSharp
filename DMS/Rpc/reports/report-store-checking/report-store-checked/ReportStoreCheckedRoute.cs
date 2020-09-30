@@ -18,6 +18,7 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
         public const string FilterListStore = Default + "/filter-list-store";
         public const string FilterListStoreType = Default + "/filter-list-store-type";
         public const string FilterListStoreGrouping = Default + "/filter-list-store-grouping";
+        public const string FilterListStoreStatus = Default + "/filter-list-store-status";
 
         public static Dictionary<string, long> Filters = new Dictionary<string, long>
         {
@@ -31,7 +32,7 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
             { "Tìm kiếm", new List<string> {
                 Parent,
                 Master, Count, List, Export, 
-                FilterListOrganization, FilterListAppUser, FilterListStore, FilterListStoreType, FilterListStoreGrouping  } },
+                FilterListOrganization, FilterListAppUser, FilterListStore, FilterListStoreType, FilterListStoreGrouping, FilterListStoreStatus  } },
 
         };
     }
