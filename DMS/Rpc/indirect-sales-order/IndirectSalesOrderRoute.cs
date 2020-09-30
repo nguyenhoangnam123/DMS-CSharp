@@ -7,6 +7,7 @@ namespace DMS.Rpc.indirect_sales_order
     public class IndirectSalesOrderRoute : Root
     {
         public const string Parent = Module + "/sale-order";
+        public const string OwnerMaster = Module + "/sale-order/indirect-sales-order-owner/indirect-sales-order-owner-master";
         public const string Master = Module + "/sale-order/indirect-sales-order/indirect-sales-order-master";
         public const string Detail = Module + "/sale-order/indirect-sales-order/indirect-sales-order-detail/*";
         public const string Mobile = Module + ".indirect-sales-order.*";
@@ -87,7 +88,7 @@ namespace DMS.Rpc.indirect_sales_order
 
              { "Tìm kiếm của tôi", new List<string> {
                 Parent,
-                Master, Get, Print, GetDetail,
+                OwnerMaster, Get, Print, GetDetail,
                 CountNew, ListNew, CountPending, ListPending, CountCompleted, ListCompleted,
                 FilterListStore, FilterListEditedPriceStatus, FilterListRequestState, FilterListAppUser, FilterListItem, FilterListUnitOfMeasure, FilterListOrganization,
                 CountItem, ListItem,} },
