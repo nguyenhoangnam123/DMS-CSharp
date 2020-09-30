@@ -40,6 +40,7 @@ namespace DMS.Rpc.indirect_sales_order
             StoreFilter.Id = IndirectSalesOrder_StoreFilterDTO.Id;
             StoreFilter.Code = IndirectSalesOrder_StoreFilterDTO.Code;
             StoreFilter.Name = IndirectSalesOrder_StoreFilterDTO.Name;
+            StoreFilter.CodeDraft = IndirectSalesOrder_StoreFilterDTO.CodeDraft;
             StoreFilter.ParentStoreId = IndirectSalesOrder_StoreFilterDTO.ParentStoreId;
             StoreFilter.OrganizationId = IndirectSalesOrder_StoreFilterDTO.OrganizationId;
             StoreFilter.StoreTypeId = IndirectSalesOrder_StoreFilterDTO.StoreTypeId;
@@ -220,6 +221,7 @@ namespace DMS.Rpc.indirect_sales_order
             StoreFilter.Selects = StoreSelect.ALL;
             StoreFilter.Id = IndirectSalesOrder_StoreFilterDTO.Id;
             StoreFilter.Code = IndirectSalesOrder_StoreFilterDTO.Code;
+            StoreFilter.CodeDraft = IndirectSalesOrder_StoreFilterDTO.CodeDraft;
             StoreFilter.Name = IndirectSalesOrder_StoreFilterDTO.Name;
             StoreFilter.ParentStoreId = IndirectSalesOrder_StoreFilterDTO.ParentStoreId;
             StoreFilter.OrganizationId = IndirectSalesOrder_StoreFilterDTO.OrganizationId;
@@ -561,6 +563,7 @@ namespace DMS.Rpc.indirect_sales_order
             StoreFilter StoreFilter = new StoreFilter();
             StoreFilter.Id = IndirectSalesOrder_StoreFilterDTO.Id;
             StoreFilter.Code = IndirectSalesOrder_StoreFilterDTO.Code;
+            StoreFilter.CodeDraft = IndirectSalesOrder_StoreFilterDTO.CodeDraft;
             StoreFilter.Name = IndirectSalesOrder_StoreFilterDTO.Name;
             StoreFilter.ParentStoreId = IndirectSalesOrder_StoreFilterDTO.ParentStoreId;
             StoreFilter.OrganizationId = IndirectSalesOrder_StoreFilterDTO.OrganizationId;
@@ -610,6 +613,7 @@ namespace DMS.Rpc.indirect_sales_order
             StoreFilter.Selects = StoreSelect.ALL;
             StoreFilter.Id = IndirectSalesOrder_StoreFilterDTO.Id;
             StoreFilter.Code = IndirectSalesOrder_StoreFilterDTO.Code;
+            StoreFilter.CodeDraft = IndirectSalesOrder_StoreFilterDTO.CodeDraft;
             StoreFilter.Name = IndirectSalesOrder_StoreFilterDTO.Name;
             StoreFilter.ParentStoreId = IndirectSalesOrder_StoreFilterDTO.ParentStoreId;
             StoreFilter.OrganizationId = IndirectSalesOrder_StoreFilterDTO.OrganizationId;
@@ -657,6 +661,7 @@ namespace DMS.Rpc.indirect_sales_order
             StoreFilter StoreFilter = new StoreFilter();
             StoreFilter.Id = IndirectSalesOrder_StoreFilterDTO.Id;
             StoreFilter.Code = IndirectSalesOrder_StoreFilterDTO.Code;
+            StoreFilter.CodeDraft = IndirectSalesOrder_StoreFilterDTO.CodeDraft;
             StoreFilter.Name = IndirectSalesOrder_StoreFilterDTO.Name;
             StoreFilter.ParentStoreId = IndirectSalesOrder_StoreFilterDTO.ParentStoreId;
             StoreFilter.OrganizationId = IndirectSalesOrder_StoreFilterDTO.OrganizationId;
@@ -696,6 +701,7 @@ namespace DMS.Rpc.indirect_sales_order
             StoreFilter.Selects = StoreSelect.ALL;
             StoreFilter.Id = IndirectSalesOrder_StoreFilterDTO.Id;
             StoreFilter.Code = IndirectSalesOrder_StoreFilterDTO.Code;
+            StoreFilter.CodeDraft = IndirectSalesOrder_StoreFilterDTO.CodeDraft;
             StoreFilter.Name = IndirectSalesOrder_StoreFilterDTO.Name;
             StoreFilter.ParentStoreId = IndirectSalesOrder_StoreFilterDTO.ParentStoreId;
             StoreFilter.OrganizationId = IndirectSalesOrder_StoreFilterDTO.OrganizationId;

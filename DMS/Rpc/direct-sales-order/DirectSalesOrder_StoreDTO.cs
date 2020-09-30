@@ -9,6 +9,7 @@ namespace DMS.Rpc.direct_sales_order
         public long Id { get; set; }
 
         public string Code { get; set; }
+        public string CodeDraft { get; set; }
 
         public string Name { get; set; }
 
@@ -63,6 +64,7 @@ namespace DMS.Rpc.direct_sales_order
             this.Id = Store.Id;
 
             this.Code = Store.Code;
+            this.CodeDraft = Store.CodeDraft;
 
             this.Name = Store.Name;
 
@@ -119,6 +121,7 @@ namespace DMS.Rpc.direct_sales_order
         public IdFilter Id { get; set; }
 
         public StringFilter Code { get; set; }
+        public StringFilter CodeDraft { get; set; }
 
         public StringFilter Name { get; set; }
 

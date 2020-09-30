@@ -568,7 +568,12 @@ namespace DMS.Rpc.mobile
                     Code = Mobile_StoreDTO.Ward.Code,
                     Name = Mobile_StoreDTO.Ward.Name,
                 },
-                StoreStatusId = StoreStatusEnum.DRAFT.Id
+                StoreStatusId = StoreStatusEnum.DRAFT.Id,
+                StoreImageMappings = Mobile_StoreDTO.StoreImageMappings?.Select(x => new StoreImageMapping
+                {
+                    ImageId = x.ImageId,
+                    StoreId = x.StoreId,
+                }).ToList()
             };
             Store.BaseLanguage = CurrentContext.Language;
             Store = await StoreService.Create(Store);
