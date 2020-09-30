@@ -819,7 +819,7 @@ namespace DMS.Services.MIndirectSalesOrder
                 .Select(x => x.Id)
                 .ToList();
 
-            var ItemIds = Items.Select(x => x.Id).ToList();
+            var ItemIds = Items.Select(x => x.Id).Distinct().ToList();
             Dictionary<long, decimal> result = new Dictionary<long, decimal>();
             PriceListItemMappingFilter PriceListItemMappingFilter = new PriceListItemMappingFilter
             {
