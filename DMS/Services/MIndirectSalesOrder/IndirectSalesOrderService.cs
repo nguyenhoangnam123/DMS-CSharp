@@ -739,7 +739,7 @@ namespace DMS.Services.MIndirectSalesOrder
                 foreach (var IndirectSalesOrderContent in IndirectSalesOrder.IndirectSalesOrderContents)
                 {
                     //phân bổ chiết khấu chung = tổng chiết khấu chung * (tổng từng line/tổng trc chiết khấu)
-                    IndirectSalesOrderContent.GeneralDiscountPercentage = IndirectSalesOrderContent.Amount / IndirectSalesOrder.SubTotal * 100;
+                    IndirectSalesOrderContent.GeneralDiscountPercentage = IndirectSalesOrder.SubTotal == 0 ? 0 : (IndirectSalesOrderContent.Amount / IndirectSalesOrder.SubTotal * 100);
                     IndirectSalesOrderContent.GeneralDiscountAmount = IndirectSalesOrder.GeneralDiscountAmount * IndirectSalesOrderContent.GeneralDiscountPercentage / 100;
                     IndirectSalesOrderContent.GeneralDiscountAmount = Math.Round(IndirectSalesOrderContent.GeneralDiscountAmount ?? 0, 0);
                     //thuê từng line = (tổng từng line - chiết khấu phân bổ) * % thuế
