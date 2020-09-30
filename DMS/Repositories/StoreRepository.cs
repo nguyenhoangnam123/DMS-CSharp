@@ -160,8 +160,8 @@ namespace DMS.Repositories
                 query = query.Where(q => q.StatusId, filter.StatusId);
             if (filter.AppUserId != null)
                 query = query.Where(q => q.AppUserId, filter.AppUserId);
-            if (filter.RequestStateId != null)
-                query = query.Where(q => q.RequestStateId, filter.RequestStateId);
+            if (filter.StoreStatusId != null)
+                query = query.Where(q => q.StoreStatusId, filter.StoreStatusId);
             query = OrFilter(query, filter);
             return query;
         }
@@ -253,8 +253,8 @@ namespace DMS.Repositories
                     queryable = queryable.Where(q => q.StatusId, StoreFilter.StatusId);
                 if (StoreFilter.AppUserId != null)
                     queryable = queryable.Where(q => q.AppUserId, StoreFilter.AppUserId);
-                if (StoreFilter.RequestStateId != null)
-                    queryable = queryable.Where(q => q.RequestStateId, StoreFilter.RequestStateId);
+                if (StoreFilter.StoreStatusId != null)
+                    queryable = queryable.Where(q => q.StoreStatusId, StoreFilter.StoreStatusId);
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;
@@ -339,8 +339,8 @@ namespace DMS.Repositories
                         case StoreOrder.AppUser:
                             query = query.OrderBy(q => q.AppUserId);
                             break;
-                        case StoreOrder.RequestState:
-                            query = query.OrderBy(q => q.RequestStateId);
+                        case StoreOrder.StoreStatus:
+                            query = query.OrderBy(q => q.StoreStatusId);
                             break;
                     }
                     break;
@@ -419,8 +419,8 @@ namespace DMS.Repositories
                         case StoreOrder.AppUser:
                             query = query.OrderByDescending(q => q.AppUserId);
                             break;
-                        case StoreOrder.RequestState:
-                            query = query.OrderByDescending(q => q.RequestStateId);
+                        case StoreOrder.StoreStatus:
+                            query = query.OrderByDescending(q => q.StoreStatusId);
                             break;
                     }
                     break;
@@ -462,7 +462,7 @@ namespace DMS.Repositories
                 StatusId = filter.Selects.Contains(StoreSelect.Status) ? q.StatusId : default(long),
                 StoreScoutingId = filter.Selects.Contains(StoreSelect.StoreScouting) ? q.StoreScoutingId : default(long?),
                 AppUserId = filter.Selects.Contains(StoreSelect.AppUser) ? q.AppUserId : default(long?),
-                RequestStateId = filter.Selects.Contains(StoreSelect.RequestState) ? q.RequestStateId : default(long),
+                StoreStatusId = filter.Selects.Contains(StoreSelect.StoreStatus) ? q.StoreStatusId : default(long),
                 District = filter.Selects.Contains(StoreSelect.District) && q.District != null ? new District
                 {
                     Id = q.District.Id,
@@ -593,11 +593,11 @@ namespace DMS.Repositories
                     DistrictId = q.Ward.DistrictId,
                     StatusId = q.Ward.StatusId,
                 } : null,
-                RequestState = filter.Selects.Contains(StoreSelect.RequestState) && q.RequestState != null ? new RequestState
+                StoreStatus = filter.Selects.Contains(StoreSelect.StoreStatus) && q.StoreStatus != null ? new StoreStatus
                 {
-                    Id = q.RequestState.Id,
-                    Code = q.RequestState.Code,
-                    Name = q.RequestState.Name,
+                    Id = q.StoreStatus.Id,
+                    Code = q.StoreStatus.Code,
+                    Name = q.StoreStatus.Name,
                 } : null,
                 Used = q.Used,
                 CreatedAt = q.CreatedAt,
@@ -741,7 +741,7 @@ namespace DMS.Repositories
                     Used = x.Used,
                     StoreScoutingId = x.StoreScoutingId,
                     AppUserId = x.AppUserId,
-                    RequestStateId = x.RequestStateId,
+                    StoreStatusId = x.StoreStatusId,
                     StoreScouting = x.StoreScouting == null ? null : new StoreScouting
                     {
                         Id = x.StoreScouting.Id,
@@ -872,11 +872,11 @@ namespace DMS.Repositories
                         DistrictId = x.Ward.DistrictId,
                         StatusId = x.Ward.StatusId,
                     },
-                    RequestState = x.RequestState == null ? null : new RequestState
+                    StoreStatus = x.StoreStatus == null ? null : new StoreStatus
                     {
-                        Id = x.RequestState.Id,
-                        Code = x.RequestState.Code,
-                        Name = x.RequestState.Name,
+                        Id = x.StoreStatus.Id,
+                        Code = x.StoreStatus.Code,
+                        Name = x.StoreStatus.Name,
                     },
                 }).FirstOrDefaultAsync();
 
@@ -947,7 +947,7 @@ namespace DMS.Repositories
             StoreDAO.LegalEntity = Store.LegalEntity;
             StoreDAO.StatusId = Store.StatusId;
             StoreDAO.AppUserId = Store.AppUserId;
-            StoreDAO.RequestStateId = Store.RequestStateId;
+            StoreDAO.StoreStatusId = Store.StoreStatusId;
             StoreDAO.StoreScoutingId = Store.StoreScoutingId;
             StoreDAO.RowId = Guid.NewGuid();
             StoreDAO.CreatedAt = StaticParams.DateTimeNow;
@@ -994,7 +994,7 @@ namespace DMS.Repositories
             StoreDAO.LegalEntity = Store.LegalEntity;
             StoreDAO.StatusId = Store.StatusId;
             StoreDAO.AppUserId = Store.AppUserId;
-            StoreDAO.RequestStateId = Store.RequestStateId;
+            StoreDAO.StoreStatusId = Store.StoreStatusId;
             StoreDAO.StoreScoutingId = Store.StoreScoutingId;
             StoreDAO.UpdatedAt = StaticParams.DateTimeNow;
             await DataContext.SaveChangesAsync();
@@ -1043,7 +1043,7 @@ namespace DMS.Repositories
                 StoreDAO.LegalEntity = Store.LegalEntity;
                 StoreDAO.StatusId = Store.StatusId;
                 StoreDAO.AppUserId = Store.AppUserId;
-                StoreDAO.RequestStateId = RequestStateEnum.APPROVED.Id;
+                StoreDAO.StoreStatusId = StoreStatusEnum.OFFICIAL.Id;
                 StoreDAO.StoreScoutingId = Store.StoreScoutingId;
                 StoreDAO.RowId = Store.RowId;
                 StoreDAO.CreatedAt = StaticParams.DateTimeNow;

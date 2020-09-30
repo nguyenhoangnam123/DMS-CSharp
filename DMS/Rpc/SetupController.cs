@@ -607,6 +607,7 @@ namespace DMS.Rpc
             InitProblemStatusEnum();
             InitResellerStatusEnum();
             InitStatusEnum();
+            InitStoreStatusEnum();
             InitERouteTypeEnum();
             InitNotificationStatusEnum();
             InitSurveyEnum();
@@ -655,6 +656,17 @@ namespace DMS.Rpc
                 Name = item.Name,
             }).ToList();
             DataContext.Status.BulkSynchronize(StatusEnumList);
+        }
+
+        private void InitStoreStatusEnum()
+        {
+            List<StoreStatusDAO> StoreStatusEnumList = StoreStatusEnum.StoreStatusEnumList.Select(item => new StoreStatusDAO
+            {
+                Id = item.Id,
+                Code = item.Code,
+                Name = item.Name,
+            }).ToList();
+            DataContext.StoreStatus.BulkSynchronize(StoreStatusEnumList);
         }
 
         private void InitERouteTypeEnum()

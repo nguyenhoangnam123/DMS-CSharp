@@ -24,6 +24,7 @@ namespace DMS.Models
             PriceListItemHistories = new HashSet<PriceListItemHistoryDAO>();
             ProblemHistories = new HashSet<ProblemHistoryDAO>();
             Problems = new HashSet<ProblemDAO>();
+            RequestWorkflowHistories = new HashSet<RequestWorkflowHistoryDAO>();
             RequestWorkflowStepMappings = new HashSet<RequestWorkflowStepMappingDAO>();
             Resellers = new HashSet<ResellerDAO>();
             StoreCheckingImageMappings = new HashSet<StoreCheckingImageMappingDAO>();
@@ -132,6 +133,7 @@ namespace DMS.Models
         public virtual ICollection<PriceListItemHistoryDAO> PriceListItemHistories { get; set; }
         public virtual ICollection<ProblemHistoryDAO> ProblemHistories { get; set; }
         public virtual ICollection<ProblemDAO> Problems { get; set; }
+        public virtual ICollection<RequestWorkflowHistoryDAO> RequestWorkflowHistories { get; set; }
         public virtual ICollection<RequestWorkflowStepMappingDAO> RequestWorkflowStepMappings { get; set; }
         public virtual ICollection<ResellerDAO> Resellers { get; set; }
         public virtual ICollection<StoreCheckingImageMappingDAO> StoreCheckingImageMappings { get; set; }

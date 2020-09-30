@@ -1,7 +1,6 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Thinktecture;
 
 namespace DMS.Models
 {
@@ -119,6 +118,7 @@ namespace DMS.Models
         public virtual DbSet<ProvinceDAO> Province { get; set; }
         public virtual DbSet<RequestStateDAO> RequestState { get; set; }
         public virtual DbSet<RequestWorkflowDefinitionMappingDAO> RequestWorkflowDefinitionMapping { get; set; }
+        public virtual DbSet<RequestWorkflowHistoryDAO> RequestWorkflowHistory { get; set; }
         public virtual DbSet<RequestWorkflowParameterMappingDAO> RequestWorkflowParameterMapping { get; set; }
         public virtual DbSet<RequestWorkflowStepMappingDAO> RequestWorkflowStepMapping { get; set; }
         public virtual DbSet<ResellerDAO> Reseller { get; set; }
@@ -142,6 +142,7 @@ namespace DMS.Models
         public virtual DbSet<StoreScoutingImageMappingDAO> StoreScoutingImageMapping { get; set; }
         public virtual DbSet<StoreScoutingStatusDAO> StoreScoutingStatus { get; set; }
         public virtual DbSet<StoreScoutingTypeDAO> StoreScoutingType { get; set; }
+        public virtual DbSet<StoreStatusDAO> StoreStatus { get; set; }
         public virtual DbSet<StoreTypeDAO> StoreType { get; set; }
         public virtual DbSet<StoreUncheckingDAO> StoreUnchecking { get; set; }
         public virtual DbSet<SupplierDAO> Supplier { get; set; }
@@ -190,7 +191,6 @@ namespace DMS.Models
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.ConfigureTempTable<long>();
             modelBuilder.Entity<ActionDAO>(entity =>
             {
                 entity.ToTable("Action", "PER");
@@ -3163,6 +3163,40 @@ namespace DMS.Models
                     .HasConstraintName("FK_RequestWorkflowDefinitionMapping_WorkflowDefinition");
             });
 
+            modelBuilder.Entity<RequestWorkflowHistoryDAO>(entity =>
+            {
+                entity.ToTable("RequestWorkflowHistory", "WF");
+
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.HasOne(d => d.AppUser)
+                    .WithMany(p => p.RequestWorkflowHistories)
+                    .HasForeignKey(d => d.AppUserId)
+                    .HasConstraintName("FK_RequestWorkflowHistory_AppUser");
+
+                entity.HasOne(d => d.Status)
+                    .WithMany(p => p.RequestWorkflowHistories)
+                    .HasForeignKey(d => d.StatusId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_RequestWorkflowHistory_Status");
+
+                entity.HasOne(d => d.WorkflowState)
+                    .WithMany(p => p.RequestWorkflowHistories)
+                    .HasForeignKey(d => d.WorkflowStateId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_RequestWorkflowHistory_WorkflowState");
+
+                entity.HasOne(d => d.WorkflowStep)
+                    .WithMany(p => p.RequestWorkflowHistories)
+                    .HasForeignKey(d => d.WorkflowStepId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_RequestWorkflowHistory_WorkflowStep");
+            });
+
             modelBuilder.Entity<RequestWorkflowParameterMappingDAO>(entity =>
             {
                 entity.HasKey(e => new { e.WorkflowParameterId, e.RequestId });
@@ -3509,12 +3543,6 @@ namespace DMS.Models
                     .HasForeignKey(d => d.ProvinceId)
                     .HasConstraintName("FK_Store_Province");
 
-                entity.HasOne(d => d.RequestState)
-                    .WithMany(p => p.Stores)
-                    .HasForeignKey(d => d.RequestStateId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Store_RequestState");
-
                 entity.HasOne(d => d.Reseller)
                     .WithMany(p => p.Stores)
                     .HasForeignKey(d => d.ResellerId)
@@ -3535,6 +3563,12 @@ namespace DMS.Models
                     .WithMany(p => p.Stores)
                     .HasForeignKey(d => d.StoreScoutingId)
                     .HasConstraintName("FK_Store_StoreScouting");
+
+                entity.HasOne(d => d.StoreStatus)
+                    .WithMany(p => p.Stores)
+                    .HasForeignKey(d => d.StoreStatusId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Store_StoreStatus");
 
                 entity.HasOne(d => d.StoreType)
                     .WithMany(p => p.Stores)
@@ -3810,6 +3844,21 @@ namespace DMS.Models
                     .HasForeignKey(d => d.StatusId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_StoreScoutingType_Status");
+            });
+
+            modelBuilder.Entity<StoreStatusDAO>(entity =>
+            {
+                entity.ToTable("StoreStatus", "ENUM");
+
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(50);
             });
 
             modelBuilder.Entity<StoreTypeDAO>(entity =>
