@@ -303,11 +303,35 @@ namespace DMS.Services.MIndirectSalesOrder
                 };
                 IndirectSalesOrder.RequestWorkflowStepMappings.Add(RequestWorkflowStepMapping);
                 if (IndirectSalesOrder.RequestStateId == RequestStateEnum.NEW.Id)
+                {
                     RequestWorkflowStepMapping.WorkflowStateId = WorkflowStateEnum.NEW.Id;
+                    RequestWorkflowStepMapping.WorkflowState = new WorkflowState
+                    {
+                        Id = WorkflowStateEnum.NEW.Id,
+                        Code = WorkflowStateEnum.NEW.Code,
+                        Name = WorkflowStateEnum.NEW.Name,
+                    };
+                }
                 if (IndirectSalesOrder.RequestStateId == RequestStateEnum.APPROVED.Id)
+                {
                     RequestWorkflowStepMapping.WorkflowStateId = WorkflowStateEnum.APPROVED.Id;
+                    RequestWorkflowStepMapping.WorkflowState = new WorkflowState
+                    {
+                        Id = WorkflowStateEnum.APPROVED.Id,
+                        Code = WorkflowStateEnum.APPROVED.Code,
+                        Name = WorkflowStateEnum.APPROVED.Name,
+                    };
+                }
                 if (IndirectSalesOrder.RequestStateId == RequestStateEnum.REJECTED.Id)
+                {
                     RequestWorkflowStepMapping.WorkflowStateId = WorkflowStateEnum.REJECTED.Id;
+                    RequestWorkflowStepMapping.WorkflowState = new WorkflowState
+                    {
+                        Id = WorkflowStateEnum.REJECTED.Id,
+                        Code = WorkflowStateEnum.REJECTED.Code,
+                        Name = WorkflowStateEnum.REJECTED.Name,
+                    };
+                }
             }
             else
             {
