@@ -680,9 +680,13 @@ namespace DMS.Repositories
             List<long> DraftStoreIds = await DataContext.Store.Where(x => x.StoreStatusId == StoreStatusEnum.DRAFT.Id && x.DeletedAt == null)
                 .Select(x => x.Id).ToListAsync();
             if (filter.Id == null) filter.Id = new IdFilter();
-            
+            if (filter.Id.In == null || filter.Id.In.Count == 0)
+                filter.Id.In = StoreIds;
+
             if (StoreIds.Count > 0)
+            {
                 filter.Id.In = filter.Id.In.Intersect(StoreIds).ToList();
+            }
             else
             {
                 long? OrganizationId = filter.OrganizationId?.Equal;
