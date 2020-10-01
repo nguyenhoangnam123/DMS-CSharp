@@ -8,8 +8,6 @@ namespace DMS.Rpc.dashboards.user
 {
     public class DashboardUserRoute : Root
     {
-        public const string Parent = Module + "/dashboards";
-        public const string Master = Module + "/dashboards/user";
         private const string Default = Rpc + Module + "/dashboards/user";
 
         public const string SalesQuantity = Default + "/sales-quantity";
@@ -21,20 +19,5 @@ namespace DMS.Rpc.dashboards.user
         public const string ListComment = Default + "/list-comment";
 
         public const string FilterListTime = Default + "/filter-list-time";
-
-        public static Dictionary<string, long> Filters = new Dictionary<string, long>
-        {
-            { nameof(CurrentContext.UserId), FieldTypeEnum.ID.Id },
-        };
-
-        public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
-        {
-            { "Hiển thị", new List<string> {
-                Parent,
-                Master,
-                SalesQuantity, StoreChecking, Revenue, StatisticIndirectSalesOrder, ListIndirectSalesOrder, ListComment,
-                FilterListTime
-            } },
-        };
     }
 }
