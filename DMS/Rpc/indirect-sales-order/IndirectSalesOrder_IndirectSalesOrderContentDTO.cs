@@ -14,7 +14,7 @@ namespace DMS.Rpc.indirect_sales_order
         public long RequestedQuantity { get; set; }
         public decimal PrimaryPrice { get; set; }
         public decimal SalePrice { get; set; }
-        public decimal EditedPriceStatusId { get; set; }
+        public long EditedPriceStatusId { get; set; }
         public decimal? DiscountPercentage { get; set; }
         public decimal? DiscountAmount { get; set; }
         public decimal? GeneralDiscountPercentage { get; set; }

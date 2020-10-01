@@ -637,14 +637,14 @@ namespace DMS.Services.MIndirectSalesOrder
             }
             ProductIds = ProductIds.Distinct().ToList();
             ItemIds = ItemIds.Distinct().ToList();
-
-            var Items = await UOW.ItemRepository.List(new ItemFilter
+            ItemFilter ItemFilter = new ItemFilter
             {
-                Id = new IdFilter { In = ItemIds },
                 Skip = 0,
-                Take = int.MaxValue,
-                Selects = ItemSelect.SalePrice | ItemSelect.Id
-            });
+                Take = ItemIds.Count,
+                Id = new IdFilter { In = ItemIds },
+                Selects = ItemSelect.ALL,
+            };
+            var Items = await ListItem(ItemFilter, IndirectSalesOrder.SaleEmployeeId, IndirectSalesOrder.BuyerStoreId);
 
             var Products = await UOW.ProductRepository.List(new ProductFilter
             {
@@ -701,17 +701,22 @@ namespace DMS.Services.MIndirectSalesOrder
                     //Trường hợp không sửa giá, giá bán = giá bán cơ sở của sản phẩm * hệ số quy đổi của đơn vị tính
                     if (IndirectSalesOrder.EditedPriceStatusId == EditedPriceStatusEnum.INACTIVE.Id)
                     {
-                        //IndirectSalesOrderContent.PrimaryPrice = Item.SalePrice;
+                        IndirectSalesOrderContent.PrimaryPrice = Item.SalePrice;
                         IndirectSalesOrderContent.SalePrice = IndirectSalesOrderContent.PrimaryPrice * UOM.Factor.Value;
                         IndirectSalesOrderContent.EditedPriceStatusId = EditedPriceStatusEnum.INACTIVE.Id;
                     }
 
                     if (IndirectSalesOrder.EditedPriceStatusId == EditedPriceStatusEnum.ACTIVE.Id)
                     {
-                        if (IndirectSalesOrderContent.SalePrice == IndirectSalesOrderContent.PrimaryPrice * UOM.Factor.Value)
+                        IndirectSalesOrderContent.SalePrice = IndirectSalesOrderContent.PrimaryPrice * UOM.Factor.Value;
+                        if (Item.SalePrice == IndirectSalesOrderContent.PrimaryPrice)
+                        {
                             IndirectSalesOrderContent.EditedPriceStatusId = EditedPriceStatusEnum.INACTIVE.Id;
+                        }
                         else
+                        {
                             IndirectSalesOrderContent.EditedPriceStatusId = EditedPriceStatusEnum.ACTIVE.Id;
+                        }
                     }
                     //giá tiền từng line trước chiết khấu
                     var SubAmount = IndirectSalesOrderContent.Quantity * IndirectSalesOrderContent.SalePrice;
