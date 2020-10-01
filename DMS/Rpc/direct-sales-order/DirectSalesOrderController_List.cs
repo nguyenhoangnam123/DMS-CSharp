@@ -589,15 +589,10 @@ namespace DMS.Rpc.direct_sales_order
 
             if (DirectSalesOrder_StoreFilterDTO.SaleEmployeeId.HasValue && DirectSalesOrder_StoreFilterDTO.SaleEmployeeId.Equal.HasValue)
             {
-                AppUser AppUser = await AppUserService.Get(DirectSalesOrder_StoreFilterDTO.SaleEmployeeId.Equal.Value);
-                var StoreIds = AppUser.AppUserStoreMappings.Select(x => x.StoreId).ToList();
-                if (StoreIds.Any())
-                {
-                    StoreFilter.Id.In = StoreFilter.Id.In.Intersect(StoreIds).ToList();
-                }
+                int count = await StoreService.CountInScoped(StoreFilter, DirectSalesOrder_StoreFilterDTO.SaleEmployeeId.Equal.Value);
+                return count;
             }
-
-            return await StoreService.Count(StoreFilter);
+            return 0;
         }
 
         [Route(DirectSalesOrderRoute.ListBuyerStore), HttpPost]
@@ -639,18 +634,12 @@ namespace DMS.Rpc.direct_sales_order
 
             if (DirectSalesOrder_StoreFilterDTO.SaleEmployeeId.HasValue && DirectSalesOrder_StoreFilterDTO.SaleEmployeeId.Equal.HasValue)
             {
-                AppUser AppUser = await AppUserService.Get(DirectSalesOrder_StoreFilterDTO.SaleEmployeeId.Equal.Value);
-                var StoreIds = AppUser.AppUserStoreMappings.Select(x => x.StoreId).ToList();
-                if (StoreIds.Any())
-                {
-                    StoreFilter.Id.In = StoreFilter.Id.In.Intersect(StoreIds).ToList();
-                }
+                List<Store> Stores = await StoreService.ListInScoped(StoreFilter, DirectSalesOrder_StoreFilterDTO.SaleEmployeeId.Equal.Value);
+                List<DirectSalesOrder_StoreDTO> DirectSalesOrder_StoreDTOs = Stores
+                    .Select(x => new DirectSalesOrder_StoreDTO(x)).ToList();
+                return DirectSalesOrder_StoreDTOs;
             }
-
-            List<Store> Stores = await StoreService.List(StoreFilter);
-            List<DirectSalesOrder_StoreDTO> DirectSalesOrder_StoreDTOs = Stores
-                .Select(x => new DirectSalesOrder_StoreDTO(x)).ToList();
-            return DirectSalesOrder_StoreDTOs;
+            return new List<DirectSalesOrder_StoreDTO>();
         }
 
         [Route(DirectSalesOrderRoute.CountStore), HttpPost]
