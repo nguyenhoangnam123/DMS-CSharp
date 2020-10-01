@@ -705,16 +705,10 @@ namespace DMS.Rpc.e_route
 
             if (ERoute_StoreFilterDTO.SaleEmployeeId != null && ERoute_StoreFilterDTO.SaleEmployeeId.Equal.HasValue)
             {
-                AppUser AppUser = await AppUserService.Get(ERoute_StoreFilterDTO.SaleEmployeeId.Equal.Value);
-                var StoreIds = AppUser.AppUserStoreMappings.Select(x => x.StoreId).ToList();
-                if (StoreIds.Any())
-                {
-                    StoreFilter.Id.In = StoreFilter.Id.In.Intersect(StoreIds).ToList();
-                }
+                int count = await StoreService.CountInScoped(StoreFilter, ERoute_StoreFilterDTO.SaleEmployeeId.Equal.Value);
+                return count;
             }
-            StoreFilter = StoreService.ToFilter(StoreFilter);
-            int count = await ERouteService.CountStore(StoreFilter, StoreFilter.SalesEmployeeId?.Equal);
-            return count;
+            return 0;
         }
 
         [Route(ERouteRoute.ListStore), HttpPost]
@@ -762,19 +756,12 @@ namespace DMS.Rpc.e_route
 
             if (ERoute_StoreFilterDTO.SaleEmployeeId != null && ERoute_StoreFilterDTO.SaleEmployeeId.Equal.HasValue)
             {
-                AppUser AppUser = await AppUserService.Get(ERoute_StoreFilterDTO.SaleEmployeeId.Equal.Value);
-                var StoreIds = AppUser.AppUserStoreMappings.Select(x => x.StoreId).ToList();
-                if (StoreIds.Any())
-                {
-                    StoreFilter.Id.In = StoreFilter.Id.In.Intersect(StoreIds).ToList();
-                }
+                List<Store> Stores = await StoreService.ListInScoped(StoreFilter, ERoute_StoreFilterDTO.SaleEmployeeId.Equal.Value);
+                List<ERoute_StoreDTO> ERoute_StoreDTOs = Stores
+                    .Select(x => new ERoute_StoreDTO(x)).ToList();
+                return ERoute_StoreDTOs;
             }
-
-            StoreFilter = StoreService.ToFilter(StoreFilter);
-            List<Store> Stores = await ERouteService.ListStore(StoreFilter, StoreFilter.SalesEmployeeId?.Equal);
-            List<ERoute_StoreDTO> ERoute_StoreDTOs = Stores
-                .Select(x => new ERoute_StoreDTO(x)).ToList();
-            return ERoute_StoreDTOs;
+            return new List<ERoute_StoreDTO>();
         }
     }
 }
