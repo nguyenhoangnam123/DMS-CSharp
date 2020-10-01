@@ -53,7 +53,7 @@ namespace DMS.Repositories
             {
                 if (filter.Id.In != null)
                 {
-                    if (filter.Id.NotIn == null)
+                    if (filter.Id.NotIn == null || filter.Id.NotIn.Count == 0)
                     {
                         ITempTableQuery<TempTable<long>> tempTableQuery = await DataContext
                         .BulkInsertValuesIntoTempTableAsync<long>(filter.Id.In.Distinct().ToList());

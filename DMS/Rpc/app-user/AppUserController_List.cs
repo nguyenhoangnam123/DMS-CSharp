@@ -315,6 +315,7 @@ namespace DMS.Rpc.app_user
             StoreFilter.OwnerPhone = AppUser_StoreFilterDTO.OwnerPhone;
             StoreFilter.OwnerEmail = AppUser_StoreFilterDTO.OwnerEmail;
             StoreFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+            StoreFilter.StoreStatusId = new IdFilter { Equal = StoreStatusEnum.OFFICIAL.Id };
             StoreFilter = StoreService.ToFilter(StoreFilter);
             return await StoreService.Count(StoreFilter);
         }
@@ -350,6 +351,7 @@ namespace DMS.Rpc.app_user
             StoreFilter.OwnerPhone = AppUser_StoreFilterDTO.OwnerPhone;
             StoreFilter.OwnerEmail = AppUser_StoreFilterDTO.OwnerEmail;
             StoreFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+            StoreFilter.StoreStatusId = new IdFilter { Equal = StoreStatusEnum.OFFICIAL.Id };
             StoreFilter = StoreService.ToFilter(StoreFilter);
             List<Store> Stores = await StoreService.List(StoreFilter);
             List<AppUser_StoreDTO> AppUser_StoreDTOs = Stores
