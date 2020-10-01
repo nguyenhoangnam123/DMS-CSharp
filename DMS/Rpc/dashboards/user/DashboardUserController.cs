@@ -138,7 +138,8 @@ namespace DMS.Rpc.dashboards.user
                 throw new BindException(ModelState);
 
             var query = from i in DataContext.IndirectSalesOrder
-                        join r in DataContext.RequestWorkflowDefinitionMapping on i.RowId equals r.RequestId
+                        join r in DataContext.RequestWorkflowDefinitionMapping on i.RowId equals r.RequestId into rq
+                        from r in rq.DefaultIfEmpty()
                         where i.SaleEmployeeId == CurrentContext.UserId
                         orderby i.OrderDate descending
                         select new DashboardUser_IndirectSalesOrderDTO
