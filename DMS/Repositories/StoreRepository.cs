@@ -53,12 +53,26 @@ namespace DMS.Repositories
             {
                 if (filter.Id.In != null)
                 {
-                    ITempTableQuery<TempTable<long>> tempTableQuery = await DataContext
+                    if (filter.Id.NotIn == null)
+                    {
+                        ITempTableQuery<TempTable<long>> tempTableQuery = await DataContext
                         .BulkInsertValuesIntoTempTableAsync<long>(filter.Id.In.Distinct().ToList());
-                    query = query.Join(tempTableQuery.Query,
-                                       c => c.Id,
-                                       t => t.Column1,
-                                       (c, t) => c);
+                        query = query.Join(tempTableQuery.Query,
+                                           c => c.Id,
+                                           t => t.Column1,
+                                           (c, t) => c);
+                    }
+                    else
+                    {
+                        ITempTableQuery<TempTable<long>> tempTableQuery = await DataContext
+                            .BulkInsertValuesIntoTempTableAsync<long>(filter.Id.In.Distinct().ToList());
+                        query = query.Where(x => !filter.Id.NotIn.Contains(x.Id));
+                        query = query.Join(tempTableQuery.Query,
+                                           c => c.Id,
+                                           t => t.Column1,
+                                           (c, t) => c);
+                    }
+
                 }
                 else
                 {
