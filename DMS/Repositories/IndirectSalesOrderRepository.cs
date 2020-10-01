@@ -114,7 +114,7 @@ namespace DMS.Repositories
                 query = query.Where(q => q.TotalTaxAmount, filter.TotalTaxAmount);
             if (filter.Total != null)
                 query = query.Where(q => q.Total, filter.Total);
-            
+
             return query;
         }
 
@@ -260,8 +260,14 @@ namespace DMS.Repositories
                         case IndirectSalesOrderOrder.Total:
                             query = query.OrderBy(q => q.Total);
                             break;
+                        case IndirectSalesOrderOrder.CreatedAt:
+                            query = query.OrderBy(q => q.CreatedAt);
+                            break;
                         case IndirectSalesOrderOrder.UpdatedAt:
-                            query = query.OrderBy(q => q.Total);
+                            query = query.OrderBy(q => q.UpdatedAt);
+                            break;
+                        default:
+                            query = query.OrderBy(q => q.UpdatedAt);
                             break;
                     }
                     break;
@@ -322,7 +328,13 @@ namespace DMS.Repositories
                         case IndirectSalesOrderOrder.Total:
                             query = query.OrderByDescending(q => q.Total);
                             break;
+                        case IndirectSalesOrderOrder.CreatedAt:
+                            query = query.OrderByDescending(q => q.CreatedAt);
+                            break;
                         case IndirectSalesOrderOrder.UpdatedAt:
+                            query = query.OrderByDescending(q => q.UpdatedAt);
+                            break;
+                        default:
                             query = query.OrderByDescending(q => q.UpdatedAt);
                             break;
                     }
@@ -1121,7 +1133,11 @@ namespace DMS.Repositories
         public async Task<bool> UpdateState(IndirectSalesOrder IndirectSalesOrder)
         {
             await DataContext.IndirectSalesOrder.Where(x => x.Id == IndirectSalesOrder.Id)
-                .UpdateFromQueryAsync(x => new IndirectSalesOrderDAO { RequestStateId = IndirectSalesOrder.RequestStateId });
+                .UpdateFromQueryAsync(x => new IndirectSalesOrderDAO
+                {
+                    RequestStateId = IndirectSalesOrder.RequestStateId,
+                    UpdatedAt = StaticParams.DateTimeNow
+                });
             return true;
         }
     }

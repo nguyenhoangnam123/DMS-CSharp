@@ -105,6 +105,7 @@ namespace DMS.Entities
         Total = 17,
         Organization = 18,
         UpdatedAt = 19,
+        CreatedAt = 20,
     }
 
     [Flags]

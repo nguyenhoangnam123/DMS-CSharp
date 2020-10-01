@@ -3167,11 +3167,11 @@ namespace DMS.Models
 
             modelBuilder.Entity<RequestWorkflowHistoryDAO>(entity =>
             {
+                entity.HasKey(e => new { e.Counter, e.RequestId, e.WorkflowStepId });
+
                 entity.ToTable("RequestWorkflowHistory", "WF");
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
-
-                entity.Property(e => e.DeletedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
@@ -3179,12 +3179,6 @@ namespace DMS.Models
                     .WithMany(p => p.RequestWorkflowHistories)
                     .HasForeignKey(d => d.AppUserId)
                     .HasConstraintName("FK_RequestWorkflowHistory_AppUser");
-
-                entity.HasOne(d => d.Status)
-                    .WithMany(p => p.RequestWorkflowHistories)
-                    .HasForeignKey(d => d.StatusId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_RequestWorkflowHistory_Status");
 
                 entity.HasOne(d => d.WorkflowState)
                     .WithMany(p => p.RequestWorkflowHistories)

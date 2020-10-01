@@ -9,6 +9,7 @@ namespace DMS.Entities
         public long WorkflowDefinitionId { get; set; }
         public long RequestStateId { get; set; }
         public long CreatorId { get; set; }
+        public long Counter { get; set; }
 
         public RequestState RequestState { get; set; }
         public WorkflowDefinition WorkflowDefinition { get; set; }

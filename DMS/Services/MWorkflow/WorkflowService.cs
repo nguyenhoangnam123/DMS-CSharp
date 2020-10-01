@@ -73,6 +73,7 @@ namespace DMS.Services.MWorkflow
                     Name = x.WorkflowStep.Name,
                 },
             }).ToList();
+
             foreach (RequestWorkflowStepMapping RequestWorkflowStepMapping in RequestWorkflowStepMappings)
             {
                 if (RequestWorkflowStepMapping.WorkflowStateId == WorkflowStateEnum.PENDING.Id)
@@ -180,13 +181,23 @@ namespace DMS.Services.MWorkflow
             // Xoá tất cả thông tin cũ của workflow
             await UOW.RequestWorkflowDefinitionMappingRepository.Delete(RequestId);
             // khởi tạo workflow
-            RequestWorkflowDefinitionMapping RequestWorkflowDefinitionMapping = new RequestWorkflowDefinitionMapping
+            RequestWorkflowDefinitionMapping RequestWorkflowDefinitionMapping = await UOW.RequestWorkflowDefinitionMappingRepository.Get(RequestId);
+            if (RequestWorkflowDefinitionMapping == null)
             {
-                RequestId = RequestId,
-                WorkflowDefinitionId = WorkflowDefinition.Id,
-                RequestStateId = RequestStateEnum.NEW.Id,
-                CreatorId = CurrentContext.UserId,
-            };
+                RequestWorkflowDefinitionMapping = new RequestWorkflowDefinitionMapping
+                {
+                    RequestId = RequestId,
+                    WorkflowDefinitionId = WorkflowDefinition.Id,
+                    RequestStateId = RequestStateEnum.NEW.Id,
+                    CreatorId = CurrentContext.UserId,
+                    Counter = 1,
+                };
+            }
+            else
+            {
+                RequestWorkflowDefinitionMapping.RequestStateId = RequestStateEnum.NEW.Id;
+                RequestWorkflowDefinitionMapping.Counter += 1;
+            }
             await UOW.RequestWorkflowDefinitionMappingRepository.Update(RequestWorkflowDefinitionMapping);
 
             // khởi tạo trạng thái cho tất cả các nút với trạng thái NEW

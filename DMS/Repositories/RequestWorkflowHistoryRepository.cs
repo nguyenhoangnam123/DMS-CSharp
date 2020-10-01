@@ -62,6 +62,5 @@ namespace DMS.Repositories
                 }).ToListAsync();
             return RequestWorkflowHistories;
         }
-
     }
 }

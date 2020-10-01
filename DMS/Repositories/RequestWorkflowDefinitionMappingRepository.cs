@@ -43,6 +43,8 @@ namespace DMS.Repositories
                     RequestId = q.RequestId,
                     RequestStateId = q.RequestStateId,
                     WorkflowDefinitionId = q.WorkflowDefinitionId,
+                    Counter = q.Counter,
+                    CreatorId = q.CreatorId,
                     RequestState = new RequestState
                     {
                         Id = q.RequestState.Id,
@@ -73,8 +75,32 @@ namespace DMS.Repositories
                 RequestWorkflowDefinitionMappingDAO.RequestStateId = RequestWorkflowDefinitionMapping.RequestStateId;
                 RequestWorkflowDefinitionMappingDAO.WorkflowDefinitionId = RequestWorkflowDefinitionMapping.WorkflowDefinitionId;
             }
+            RequestWorkflowDefinitionMappingDAO.Counter = RequestWorkflowDefinitionMapping.Counter;
             await DataContext.SaveChangesAsync();
             RequestWorkflowDefinitionMapping.RequestId = RequestWorkflowDefinitionMappingDAO.RequestId;
+
+            RequestWorkflowDefinitionMappingDAO = await DataContext.RequestWorkflowDefinitionMapping
+               .Where(x => x.RequestId == RequestWorkflowDefinitionMapping.RequestId).FirstOrDefaultAsync();
+            if (RequestWorkflowDefinitionMappingDAO != null)
+            {
+                long counter = RequestWorkflowDefinitionMappingDAO.Counter;
+                List<RequestWorkflowStepMappingDAO> RequestWorkflowStepMappingDAOs = DataContext.RequestWorkflowStepMapping
+                  .Where(r => r.RequestId == RequestWorkflowDefinitionMapping.RequestId).ToList();
+                await DataContext.RequestWorkflowHistory.Where(x => x.Counter == counter && x.RequestId == RequestWorkflowDefinitionMapping.RequestId)
+                            .DeleteFromQueryAsync();
+                List<RequestWorkflowHistoryDAO> RequestWorkflowHistoryDAOs = RequestWorkflowStepMappingDAOs
+                    .Select(x => new RequestWorkflowHistoryDAO
+                    {
+                        RequestId = x.RequestId,
+                        AppUserId = x.AppUserId,
+                        CreatedAt = x.CreatedAt,
+                        UpdatedAt = x.UpdatedAt,
+                        Counter = counter,
+                        WorkflowStateId = x.WorkflowStateId,
+                        WorkflowStepId = x.WorkflowStepId,
+                    }).ToList();
+                await DataContext.RequestWorkflowHistory.BulkMergeAsync(RequestWorkflowHistoryDAOs);
+            }
             return RequestWorkflowDefinitionMapping;
         }
 
@@ -91,6 +117,8 @@ namespace DMS.Repositories
                 RequestId = q.RequestId,
                 RequestStateId = q.RequestStateId,
                 WorkflowDefinitionId = q.WorkflowDefinitionId,
+                Counter = q.Counter,
+                CreatorId = q.CreatorId,
             }).ToListAsync();
             return result;
         }
