@@ -104,7 +104,7 @@ namespace DMS.Services.MDirectSalesOrder
                     Take = 10,
                     Id = new IdFilter { Equal = DirectSalesOrder.SaleEmployeeId },
                     StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id },
-                    Selects = AppUserSelect.Id
+                    Selects = AppUserSelect.Id | AppUserSelect.Organization
                 };
 
                 var AppUser = (await UOW.AppUserRepository.List(AppUserFilter)).FirstOrDefault();
