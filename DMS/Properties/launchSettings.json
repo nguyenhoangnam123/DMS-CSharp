@@ -9,6 +9,18 @@
       },
       "applicationUrl": "http://localhost:5003"
     },
+    "Watch": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "launchUrl": "rpc/dms/swagger/index.html",
+      "commandLineArgs": "watch run",
+      "workingDirectory": "$(ProjectDir)",
+      "executablePath": "dotnet.exe",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "http://localhost:5003"
+    },
     "Production": {
       "commandName": "Project",
       "launchBrowser": true,

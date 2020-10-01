@@ -489,13 +489,14 @@ namespace DMS.Services.MDirectSalesOrder
             ProductIds = ProductIds.Distinct().ToList();
             ItemIds = ItemIds.Distinct().ToList();
 
-            var Items = await UOW.ItemRepository.List(new ItemFilter
+            ItemFilter ItemFilter = new ItemFilter
             {
-                Id = new IdFilter { In = ItemIds },
                 Skip = 0,
-                Take = int.MaxValue,
-                Selects = ItemSelect.SalePrice | ItemSelect.Id
-            });
+                Take = ItemIds.Count,
+                Id = new IdFilter { In = ItemIds },
+                Selects = ItemSelect.ALL,
+            };
+            var Items = await ListItem(ItemFilter, DirectSalesOrder.SaleEmployeeId, DirectSalesOrder.BuyerStoreId);
 
             var Products = await UOW.ProductRepository.List(new ProductFilter
             {
@@ -552,14 +553,15 @@ namespace DMS.Services.MDirectSalesOrder
                     //Trường hợp không sửa giá, giá bán = giá bán cơ sở của sản phẩm * hệ số quy đổi của đơn vị tính
                     if (DirectSalesOrder.EditedPriceStatusId == EditedPriceStatusEnum.INACTIVE.Id)
                     {
-                        //DirectSalesOrderContent.PrimaryPrice = Item.SalePrice;
+                        DirectSalesOrderContent.PrimaryPrice = Item.SalePrice;
                         DirectSalesOrderContent.SalePrice = DirectSalesOrderContent.PrimaryPrice * UOM.Factor.Value;
                         DirectSalesOrderContent.EditedPriceStatusId = EditedPriceStatusEnum.INACTIVE.Id;
                     }
 
                     if (DirectSalesOrder.EditedPriceStatusId == EditedPriceStatusEnum.ACTIVE.Id)
                     {
-                        if (DirectSalesOrderContent.SalePrice == DirectSalesOrderContent.PrimaryPrice * UOM.Factor.Value)
+                        DirectSalesOrderContent.SalePrice = DirectSalesOrderContent.PrimaryPrice * UOM.Factor.Value;
+                        if (Item.SalePrice == DirectSalesOrderContent.PrimaryPrice)
                             DirectSalesOrderContent.EditedPriceStatusId = EditedPriceStatusEnum.INACTIVE.Id;
                         else
                             DirectSalesOrderContent.EditedPriceStatusId = EditedPriceStatusEnum.ACTIVE.Id;
