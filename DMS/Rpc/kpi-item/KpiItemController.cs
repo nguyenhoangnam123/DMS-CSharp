@@ -1383,6 +1383,7 @@ namespace DMS.Rpc.kpi_item
             ItemFilter.OrderBy = ItemOrder.Id;
             ItemFilter.OrderType = OrderType.ASC;
             ItemFilter.Selects = ItemSelect.ALL;
+            ItemFilter.Id = KpiItem_ItemFilterDTO.Id;
             ItemFilter.Code = KpiItem_ItemFilterDTO.Code;
             ItemFilter.Name = KpiItem_ItemFilterDTO.Name;
             ItemFilter.ProductGroupingId = KpiItem_ItemFilterDTO.ProductGroupingId;

@@ -161,7 +161,7 @@ namespace DMS.Repositories
                 query = query.Where(q => q.StatusId, filter.StatusId);
             if (filter.AppUserId != null)
                 query = query.Where(q => q.AppUserId, filter.AppUserId);
-            if (filter.StoreStatusId != null)
+            if (filter.StoreStatusId != null && filter.StoreStatusId.Equal.HasValue && filter.StoreStatusId.Equal == StoreStatusEnum.ALL.Id)
                 query = query.Where(q => q.StoreStatusId, filter.StoreStatusId);
             query = OrFilter(query, filter);
             return query;
