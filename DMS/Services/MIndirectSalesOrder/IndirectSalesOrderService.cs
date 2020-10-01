@@ -710,13 +710,9 @@ namespace DMS.Services.MIndirectSalesOrder
                     {
                         IndirectSalesOrderContent.SalePrice = IndirectSalesOrderContent.PrimaryPrice * UOM.Factor.Value;
                         if (Item.SalePrice == IndirectSalesOrderContent.PrimaryPrice)
-                        {
                             IndirectSalesOrderContent.EditedPriceStatusId = EditedPriceStatusEnum.INACTIVE.Id;
-                        }
                         else
-                        {
                             IndirectSalesOrderContent.EditedPriceStatusId = EditedPriceStatusEnum.ACTIVE.Id;
-                        }
                     }
                     //giá tiền từng line trước chiết khấu
                     var SubAmount = IndirectSalesOrderContent.Quantity * IndirectSalesOrderContent.SalePrice;
