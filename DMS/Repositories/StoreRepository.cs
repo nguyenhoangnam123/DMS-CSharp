@@ -51,7 +51,7 @@ namespace DMS.Repositories
                 q.Name.ToLower().Contains(filter.Search.ToLower()));
             if (filter.Id != null)
             {
-                if (filter.Id.In != null)
+                if (filter.Id.In != null && filter.Id.In.Count > 0)
                 {
                     if (filter.Id.NotIn == null || filter.Id.NotIn.Count == 0)
                     {
@@ -677,8 +677,13 @@ namespace DMS.Repositories
                 .Where(au => au.AppUserId == AppUserId)
                 .Select(au => au.StoreId)
                 .ToListAsync();
+            List<long> DraftStoreIds = await DataContext.Store.Where(x => x.StoreStatusId == StoreStatusEnum.DRAFT.Id && x.DeletedAt == null)
+                .Select(x => x.Id).ToListAsync();
+            if (filter.Id == null) filter.Id = new IdFilter();
+            if (filter.Id.In == null) filter.Id.In = DraftStoreIds;
+
             if (StoreIds.Count > 0)
-                filter.Id = new IdFilter { In = StoreIds };
+                filter.Id.In.AddRange(StoreIds);
             else
             {
                 long? OrganizationId = filter.OrganizationId?.Equal;
@@ -687,6 +692,8 @@ namespace DMS.Repositories
                     filter.OrganizationId.In.Add(OrganizationId.Value);
                 filter.OrganizationId.In.Add(AppUserDAO.OrganizationId);
             }
+
+
             IQueryable<StoreDAO> Stores = DataContext.Store;
             Stores = await DynamicFilter(Stores, filter);
             int count = await Stores.CountAsync();
@@ -701,8 +708,14 @@ namespace DMS.Repositories
                 .Where(au => au.AppUserId == AppUserId)
                 .Select(au => au.StoreId)
                 .ToListAsync();
+
+            List<long> DraftStoreIds = await DataContext.Store.Where(x => x.StoreStatusId == StoreStatusEnum.DRAFT.Id && x.DeletedAt == null)
+              .Select(x => x.Id).ToListAsync();
+            if (filter.Id == null) filter.Id = new IdFilter();
+            if (filter.Id.In == null) filter.Id.In = DraftStoreIds;
+
             if (StoreIds.Count > 0)
-                filter.Id = new IdFilter { In = StoreIds };
+                filter.Id.In.AddRange(StoreIds);
             else
             {
                 long? OrganizationId = filter.OrganizationId?.Equal;

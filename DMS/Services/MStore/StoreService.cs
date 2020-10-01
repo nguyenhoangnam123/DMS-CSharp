@@ -21,6 +21,8 @@ namespace DMS.Services.MStore
     {
         Task<int> Count(StoreFilter StoreFilter);
         Task<List<Store>> List(StoreFilter StoreFilter);
+        Task<int> CountInScoped(StoreFilter StoreFilter, long AppUserId);
+        Task<List<Store>> ListInScoped(StoreFilter StoreFilter, long AppUserId);
         Task<Store> Get(long Id);
         Task<Store> Create(Store Store);
         Task<Store> Update(Store Store);
@@ -107,7 +109,51 @@ namespace DMS.Services.MStore
                 }
             }
         }
-       
+
+        public async Task<int> CountInScoped(StoreFilter StoreFilter, long AppUserId)
+        {
+            try
+            {
+                int result = await UOW.StoreRepository.CountInScoped(StoreFilter, AppUserId);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(StoreService));
+                    throw new MessageException(ex);
+                }
+                else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(StoreService));
+                    throw new MessageException(ex.InnerException);
+                }
+            }
+        }
+
+        public async Task<List<Store>> ListInScoped(StoreFilter StoreFilter, long AppUserId)
+        {
+            try
+            {
+                List<Store> Stores = await UOW.StoreRepository.ListInScoped(StoreFilter, AppUserId);
+                return Stores;
+            }
+            catch (Exception ex)
+            {
+                if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(StoreService));
+                    throw new MessageException(ex);
+                }
+                else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(StoreService));
+                    throw new MessageException(ex.InnerException);
+                }
+            }
+        }
+
         public async Task<Store> Get(long Id)
         {
             Store Store = await UOW.StoreRepository.Get(Id);
