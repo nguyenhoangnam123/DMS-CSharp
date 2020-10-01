@@ -21,6 +21,7 @@ using OfficeOpenXml.FormulaParsing.ExpressionGraph.FunctionCompilers;
 using Thinktecture.EntityFrameworkCore.TempTables;
 using Thinktecture;
 using System.Diagnostics;
+using DMS.Services.MStoreStatus;
 
 namespace DMS.Rpc.reports.report_store.report_statistic_problem
 {
@@ -32,6 +33,7 @@ namespace DMS.Rpc.reports.report_store.report_statistic_problem
         private IStoreService StoreService;
         private IStoreGroupingService StoreGroupingService;
         private IStoreTypeService StoreTypeService;
+        private IStoreStatusService StoreStatusService;
         private ICurrentContext CurrentContext;
         public ReportStatisticProblemController(
             DataContext DataContext,
@@ -40,6 +42,7 @@ namespace DMS.Rpc.reports.report_store.report_statistic_problem
             IStoreService StoreService,
             IStoreGroupingService StoreGroupingService,
             IStoreTypeService StoreTypeService,
+            IStoreStatusService StoreStatusService,
             ICurrentContext CurrentContext)
         {
             this.DataContext = DataContext;
@@ -48,6 +51,7 @@ namespace DMS.Rpc.reports.report_store.report_statistic_problem
             this.StoreService = StoreService;
             this.StoreGroupingService = StoreGroupingService;
             this.StoreTypeService = StoreTypeService;
+            this.StoreStatusService = StoreStatusService;
             this.CurrentContext = CurrentContext;
         }
 
@@ -151,6 +155,29 @@ namespace DMS.Rpc.reports.report_store.report_statistic_problem
                 .Select(x => new ReportStatisticProblem_StoreTypeDTO(x)).ToList();
             return ReportStatisticProblem_StoreTypeDTOs;
         }
+
+
+        [Route(ReportStatisticProblemRoute.FilterListStoreStatus), HttpPost]
+        public async Task<List<ReportStatisticProblem_StoreStatusDTO>> FilterListStoreStatus([FromBody] ReportStatisticProblem_StoreStatusFilterDTO ReportStatisticProblem_StoreStatusFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            StoreStatusFilter StoreStatusFilter = new StoreStatusFilter();
+            StoreStatusFilter.Skip = 0;
+            StoreStatusFilter.Take = 20;
+            StoreStatusFilter.OrderBy = StoreStatusOrder.Id;
+            StoreStatusFilter.OrderType = OrderType.ASC;
+            StoreStatusFilter.Selects = StoreStatusSelect.ALL;
+            StoreStatusFilter.Id = ReportStatisticProblem_StoreStatusFilterDTO.Id;
+            StoreStatusFilter.Code = ReportStatisticProblem_StoreStatusFilterDTO.Code;
+            StoreStatusFilter.Name = ReportStatisticProblem_StoreStatusFilterDTO.Name;
+
+            List<StoreStatus> StoreStatuses = await StoreStatusService.List(StoreStatusFilter);
+            List<ReportStatisticProblem_StoreStatusDTO> ReportStatisticProblem_StoreStatusDTOs = StoreStatuses
+                .Select(x => new ReportStatisticProblem_StoreStatusDTO(x)).ToList();
+            return ReportStatisticProblem_StoreStatusDTOs;
+        }
         #endregion
 
         [Route(ReportStatisticProblemRoute.Count), HttpPost]
@@ -176,6 +203,7 @@ namespace DMS.Rpc.reports.report_store.report_statistic_problem
             long? StoreId = ReportStatisticProblem_ReportStatisticProblemFilterDTO.StoreId?.Equal;
             long? StoreTypeId = ReportStatisticProblem_ReportStatisticProblemFilterDTO.StoreTypeId?.Equal;
             long? StoreGroupingId = ReportStatisticProblem_ReportStatisticProblemFilterDTO.StoreGroupingId?.Equal;
+            long? StoreStatusId = ReportStatisticProblem_ReportStatisticProblemFilterDTO.StoreStatusId?.Equal;
 
             List<long> OrganizationIds = await FilterOrganization(OrganizationService, CurrentContext);
             List<OrganizationDAO> OrganizationDAOs = await DataContext.Organization.Where(o => o.DeletedAt == null && OrganizationIds.Contains(o.Id)).ToListAsync();
@@ -223,6 +251,7 @@ namespace DMS.Rpc.reports.report_store.report_statistic_problem
                                 StoreGroupingId.Value == s.StoreGroupingId.Value
                             )
                         ) &&
+                        (StoreStatusId.HasValue == false || StoreStatusId.Value == StoreStatusEnum.ALL.Id || s.StoreStatusId == StoreStatusId.Value) &&
                         OrganizationIds.Contains(s.OrganizationId)
                         select s;
 
@@ -253,6 +282,7 @@ namespace DMS.Rpc.reports.report_store.report_statistic_problem
             long? StoreId = ReportStatisticProblem_ReportStatisticProblemFilterDTO.StoreId?.Equal;
             long? StoreTypeId = ReportStatisticProblem_ReportStatisticProblemFilterDTO.StoreTypeId?.Equal;
             long? StoreGroupingId = ReportStatisticProblem_ReportStatisticProblemFilterDTO.StoreGroupingId?.Equal;
+            long? StoreStatusId = ReportStatisticProblem_ReportStatisticProblemFilterDTO.StoreStatusId?.Equal;
 
             List<long> OrganizationIds = await FilterOrganization(OrganizationService, CurrentContext);
             List<OrganizationDAO> OrganizationDAOs = await DataContext.Organization.Where(o => o.DeletedAt == null && (OrganizationIds.Count == 0 || OrganizationIds.Contains(o.Id))).ToListAsync();
@@ -300,6 +330,7 @@ namespace DMS.Rpc.reports.report_store.report_statistic_problem
                                 StoreGroupingId.Value == s.StoreGroupingId.Value
                             )
                         ) &&
+                        (StoreStatusId.HasValue == false || StoreStatusId.Value == StoreStatusEnum.ALL.Id || s.StoreStatusId == StoreStatusId.Value) &&
                         (OrganizationIds.Contains(s.OrganizationId))
                         select new Store
                         {
@@ -338,6 +369,11 @@ namespace DMS.Rpc.reports.report_store.report_statistic_problem
                         OrganizationId = x.OrganizationId,
                         StoreGroupingId = x.StoreGroupingId,
                         StoreTypeId = x.StoreTypeId,
+                        StoreStatusId = x.StoreStatusId,
+                        StoreStatus = new ReportStatisticProblem_StoreStatusDTO
+                        {
+                            Name = StoreStatusEnum.StoreStatusEnumList.Where(y => y.Id == x.StoreStatusId).Select(z => z.Name).FirstOrDefault()
+                        }
                     })
                     .AsParallel()
                     .ToList();
@@ -413,6 +449,7 @@ namespace DMS.Rpc.reports.report_store.report_statistic_problem
             long? StoreId = ReportStatisticProblem_ReportStatisticProblemFilterDTO.StoreId?.Equal;
             long? StoreTypeId = ReportStatisticProblem_ReportStatisticProblemFilterDTO.StoreTypeId?.Equal;
             long? StoreGroupingId = ReportStatisticProblem_ReportStatisticProblemFilterDTO.StoreGroupingId?.Equal;
+            long? StoreStatusId = ReportStatisticProblem_ReportStatisticProblemFilterDTO.StoreStatusId?.Equal;
 
             ReportStatisticProblem_TotalDTO ReportStatisticProblem_TotalDTO = new ReportStatisticProblem_TotalDTO();
             List<long> OrganizationIds = await FilterOrganization(OrganizationService, CurrentContext);
@@ -460,6 +497,7 @@ namespace DMS.Rpc.reports.report_store.report_statistic_problem
                                 StoreGroupingId.Value == s.StoreGroupingId.Value
                             )
                         ) &&
+                        (StoreStatusId.HasValue == false || StoreStatusId.Value == StoreStatusEnum.ALL.Id || s.StoreStatusId == StoreStatusId.Value) &&
                         (OrganizationIds.Contains(s.OrganizationId))
                         select new Store
                         {

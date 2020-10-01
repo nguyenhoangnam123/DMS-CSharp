@@ -18,6 +18,8 @@ namespace DMS.Rpc.reports.report_store.report_statistic_problem
         public long OrganizationId { get; set; }
         public long StoreTypeId { get; set; }
         public long? StoreGroupingId { get; set; }
+        public long? StoreStatusId { get; set; }
+        public ReportStatisticProblem_StoreStatusDTO StoreStatus { get; set; }
         public List<ReportStatisticProblem_ContentDTO> Contents { get; set; }
         public ReportStatisticProblem_StoreDTO() { }
         public ReportStatisticProblem_StoreDTO(Store Store)
