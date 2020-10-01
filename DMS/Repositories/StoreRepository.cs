@@ -691,6 +691,7 @@ namespace DMS.Repositories
                     filter.OrganizationId.In.Add(OrganizationId.Value);
                 filter.OrganizationId.In.Add(AppUserDAO.OrganizationId);
             }
+            if (filter.Id.In == null) filter.Id.In = new List<long>();
             filter.Id.In.AddRange(DraftStoreIds);
 
             IQueryable<StoreDAO> Stores = DataContext.Store;
