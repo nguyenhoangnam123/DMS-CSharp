@@ -373,8 +373,7 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
 
             List<AppUserDAO> AppUserDAOs = await DataContext.AppUser
                 .Where(au => AppUserIds.Contains(au.Id) && OrganizationIds.Contains(au.OrganizationId))
-                .Include(au => au.Organization)
-                .OrderBy(su => su.OrganizationId)
+                .OrderBy(su => su.OrganizationId).ThenBy(x => x.DisplayName)
                 .Skip(ReportStoreChecker_ReportStoreCheckedFilterDTO.Skip)
                 .Take(ReportStoreChecker_ReportStoreCheckedFilterDTO.Take)
                 .ToListAsync();
@@ -384,42 +383,78 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
                 SaleEmployeeId = au.Id,
                 Username = au.Username,
                 DisplayName = au.DisplayName,
-                OrganizationName = au.Organization?.Name,
-                OrganizationPath = au.Organization?.Path,
+                OrganizationId = au.OrganizationId
             }).ToList();
 
-            List<string> OrganizationNames = ReportStoreChecked_SaleEmployeeDTOs.Select(se => se.OrganizationName).Distinct().ToList();
-            OrganizationNames = OrganizationNames.OrderBy(x => x).ToList();
-            List<ReportStoreChecked_ReportStoreCheckedDTO> ReportStoreChecked_ReportStoreCheckedDTOs = OrganizationNames.Select(on => new ReportStoreChecked_ReportStoreCheckedDTO
+            OrganizationIds = ReportStoreChecked_SaleEmployeeDTOs.Select(se => se.OrganizationId).Distinct().ToList();
+            OrganizationDAOs = await DataContext.Organization.Where(x => OrganizationIds.Contains(x.Id)).ToListAsync();
+            List<ReportStoreChecked_ReportStoreCheckedDTO> ReportStoreChecked_ReportStoreCheckedDTOs = OrganizationDAOs.Select(on => new ReportStoreChecked_ReportStoreCheckedDTO
             {
-                OrganizationName = on,
+                OrganizationId = on.Id,
+                OrganizationName = on.Name,
             }).ToList();
             foreach (ReportStoreChecked_ReportStoreCheckedDTO ReportStoreChecked_ReportStoreCheckedDTO in ReportStoreChecked_ReportStoreCheckedDTOs)
             {
                 ReportStoreChecked_ReportStoreCheckedDTO.SaleEmployees = ReportStoreChecked_SaleEmployeeDTOs
-                    .Where(se => se.OrganizationName == ReportStoreChecked_ReportStoreCheckedDTO.OrganizationName)
+                    .Where(se => se.OrganizationId == ReportStoreChecked_ReportStoreCheckedDTO.OrganizationId)
                     .ToList();
             }
 
             AppUserIds = AppUserDAOs.Select(s => s.Id).ToList();
-            StoreCheckingFilter StoreCheckingFilter = new StoreCheckingFilter
-            {
-                Skip = 0,
-                Take = int.MaxValue,
-                Selects = StoreCheckingSelect.ALL,
-                CheckOutAt = new DateFilter { GreaterEqual = Start, LessEqual = End },
-                SaleEmployeeId = new IdFilter { In = AppUserIds },
-                StoreId = new IdFilter { In = StoreIds }
-            };
-            List<StoreChecking> storeCheckings = await StoreCheckingService.List(StoreCheckingFilter);
+            var query2 = from sc in DataContext.StoreChecking
+                         join tt in tempTableQuery.Query on sc.StoreId equals tt.Column1
+                         where AppUserIds.Contains(sc.SaleEmployeeId) &&
+                         (sc.CheckOutAt.HasValue && Start <= sc.CheckOutAt.Value && sc.CheckOutAt.Value <= End)
+                         select sc;
+
+            List<StoreCheckingDAO> storeCheckings = await query2.ToListAsync();
+            StoreIds = storeCheckings.Select(x => x.StoreId).Distinct().ToList();
+            tempTableQuery = await DataContext
+                       .BulkInsertValuesIntoTempTableAsync<long>(StoreIds);
+            var query3 = from s in DataContext.Store
+                         join tt in tempTableQuery.Query on s.Id equals tt.Column1
+                         select new StoreDAO
+                         {
+                             Id = s.Id,
+                             Code = s.Code,
+                             Name = s.Name,
+                             Address = s.Address,
+                             StoreStatusId = s.StoreStatusId
+                         };
+            var StoreDAOs = await query3.ToListAsync();
+
             var StoreCheckingIds = storeCheckings.Select(x => x.Id).ToList();
-            var SalesOrders = await DataContext.IndirectSalesOrder.Where(x => x.StoreCheckingId.HasValue &&
-                StoreCheckingIds.Contains(x.StoreCheckingId.Value))
-                .Select(x => new
+            tempTableQuery = await DataContext
+                       .BulkInsertValuesIntoTempTableAsync<long>(StoreCheckingIds);
+            var query4 = from i in DataContext.IndirectSalesOrder
+                         join tt in tempTableQuery.Query on i.StoreCheckingId equals tt.Column1
+                         where i.StoreCheckingId.HasValue
+                         select new
+                         {
+                             Id = i.Id,
+                             StoreCheckingId = i.StoreCheckingId
+                         };
+            var SalesOrders = await query4.ToListAsync();
+
+            Parallel.ForEach(storeCheckings, storeChecking =>
+            {
+                var Store = StoreDAOs.Where(x => x.Id == storeChecking.StoreId).FirstOrDefault();
+                if(Store != null)
                 {
-                    Id = x.Id,
-                    StoreCheckingId = x.StoreCheckingId
-                }).ToListAsync();
+                    storeChecking.Store = new StoreDAO
+                    {
+                        Id = Store.Id,
+                        Code = Store.Code,
+                        Name = Store.Name,
+                        Address = Store.Address,
+                        StoreStatusId = Store.StoreStatusId,
+                    };
+                    storeChecking.Store.StoreStatus = new StoreStatusDAO
+                    {
+                        Name = StoreStatusEnum.StoreStatusEnumList.Where(x => x.Id == Store.StoreStatusId).Select(x => x.Name).FirstOrDefault()
+                    };
+                }
+            });
 
             // khởi tạo khung dữ liệu
             foreach (ReportStoreChecked_SaleEmployeeDTO ReportStoreChecked_SaleEmployeeDTO in ReportStoreChecked_SaleEmployeeDTOs)
@@ -441,6 +476,7 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
                             Planned = x.Planned,
                             SaleEmployeeId = x.SaleEmployeeId,
                             StoreStatusId = x.Store.StoreStatusId,
+                            StoreStatusName = x.Store.StoreStatus.Name,
                             StoreName = x.Store.Name,
                             StoreCode = x.Store.Code,
                             StoreAddress = x.Store.Address,
@@ -458,8 +494,6 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
 
                     foreach (var StoreChecking in ReportStoreChecked_StoreCheckingGroupByDateDTO.StoreCheckings)
                     {
-                        StoreChecking.StoreStatusName = StoreStatusEnum.StoreStatusEnumList.Where(x => x.Id == StoreChecking.StoreStatusId).Select(x => x.Name).FirstOrDefault();
-
                         StoreChecking.eCheckIn = StoreChecking.CheckIn.AddHours(CurrentContext.TimeZone).ToString("HH:mm:ss");
                         StoreChecking.eCheckOut = StoreChecking.CheckOut.AddHours(CurrentContext.TimeZone).ToString("HH:mm:ss");
 

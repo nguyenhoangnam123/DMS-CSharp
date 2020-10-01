@@ -7,6 +7,7 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
 {
     public class ReportStoreChecked_ReportStoreCheckedDTO : DataDTO
     {
+        internal long OrganizationId { get; set; }
         public string OrganizationName { get; set; }
         public List<ReportStoreChecked_SaleEmployeeDTO> SaleEmployees { get; set; }
     }
