@@ -8,6 +8,7 @@ namespace DMS.Entities
 {
     public class KpiGeneralContent : DataEntity,  IEquatable<KpiGeneralContent>
     {
+        internal long STT { get; set; }
         public long Id { get; set; }
         public long KpiGeneralId { get; set; }
         public long KpiCriteriaGeneralId { get; set; }

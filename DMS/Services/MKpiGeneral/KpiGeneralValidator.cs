@@ -204,11 +204,7 @@ namespace DMS.Services.MKpiGeneral
 
         public async Task<bool> Import(List<KpiGeneral> KpiGenerals)
         {
-            foreach (var KpiGeneral in KpiGenerals)
-            {
-                await ValidateValue(KpiGeneral);
-            }
-            return KpiGenerals.All(x => x.IsValidated);
+            return true;
         }
     }
 }

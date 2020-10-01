@@ -333,8 +333,8 @@ namespace DMS.Rpc.kpi_general
 
                 for (int i = StartRow; i <= worksheet.Dimension.End.Row; i++)
                 {
-                    string UsernameValue = worksheet.Cells[i + StartRow, UsernameColumn].Value?.ToString();
-                    string CriterialValue = worksheet.Cells[i + StartRow, CriterialColumn].Value?.ToString();
+                    string UsernameValue = worksheet.Cells[i, UsernameColumn].Value?.ToString();
+                    string CriterialValue = worksheet.Cells[i, CriterialColumn].Value?.ToString();
                     if (UsernameValue != null && UsernameValue.ToLower() == "END".ToLower())
                         break;
                     else if (!string.IsNullOrWhiteSpace(UsernameValue) && string.IsNullOrWhiteSpace(CriterialValue))
@@ -361,23 +361,23 @@ namespace DMS.Rpc.kpi_general
                         }
                     }
                         
-                    string M1Value = worksheet.Cells[i + StartRow, M1Column].Value?.ToString();
-                    string M2Value = worksheet.Cells[i + StartRow, M2Column].Value?.ToString();
-                    string M3Value = worksheet.Cells[i + StartRow, M3Column].Value?.ToString();
-                    string M4Value = worksheet.Cells[i + StartRow, M4Column].Value?.ToString();
-                    string M5Value = worksheet.Cells[i + StartRow, M5Column].Value?.ToString();
-                    string M6Value = worksheet.Cells[i + StartRow, M6Column].Value?.ToString();
-                    string M7Value = worksheet.Cells[i + StartRow, M7Column].Value?.ToString();
-                    string M8Value = worksheet.Cells[i + StartRow, M8Column].Value?.ToString();
-                    string M9Value = worksheet.Cells[i + StartRow, M9Column].Value?.ToString();
-                    string M10Value = worksheet.Cells[i + StartRow, M10Column].Value?.ToString();
-                    string M11Value = worksheet.Cells[i + StartRow, M11Column].Value?.ToString();
-                    string M12Value = worksheet.Cells[i + StartRow, M12Column].Value?.ToString();
-                    string Q1Value = worksheet.Cells[i + StartRow, Q1Column].Value?.ToString();
-                    string Q2Value = worksheet.Cells[i + StartRow, Q2Column].Value?.ToString();
-                    string Q3Value = worksheet.Cells[i + StartRow, Q3Column].Value?.ToString();
-                    string Q4Value = worksheet.Cells[i + StartRow, Q4Column].Value?.ToString();
-                    string YValue = worksheet.Cells[i + StartRow, YColumn].Value?.ToString();
+                    string M1Value = worksheet.Cells[i, M1Column].Value?.ToString();
+                    string M2Value = worksheet.Cells[i, M2Column].Value?.ToString();
+                    string M3Value = worksheet.Cells[i, M3Column].Value?.ToString();
+                    string M4Value = worksheet.Cells[i, M4Column].Value?.ToString();
+                    string M5Value = worksheet.Cells[i, M5Column].Value?.ToString();
+                    string M6Value = worksheet.Cells[i, M6Column].Value?.ToString();
+                    string M7Value = worksheet.Cells[i, M7Column].Value?.ToString();
+                    string M8Value = worksheet.Cells[i, M8Column].Value?.ToString();
+                    string M9Value = worksheet.Cells[i, M9Column].Value?.ToString();
+                    string M10Value = worksheet.Cells[i, M10Column].Value?.ToString();
+                    string M11Value = worksheet.Cells[i, M11Column].Value?.ToString();
+                    string M12Value = worksheet.Cells[i, M12Column].Value?.ToString();
+                    string Q1Value = worksheet.Cells[i, Q1Column].Value?.ToString();
+                    string Q2Value = worksheet.Cells[i, Q2Column].Value?.ToString();
+                    string Q3Value = worksheet.Cells[i, Q3Column].Value?.ToString();
+                    string Q4Value = worksheet.Cells[i, Q4Column].Value?.ToString();
+                    string YValue = worksheet.Cells[i, YColumn].Value?.ToString();
                     
                     AppUser Employee = Employees.Where(x => x.Username == UsernameValue).FirstOrDefault();
                     if(Employee == null)
@@ -408,6 +408,7 @@ namespace DMS.Rpc.kpi_general
                         KpiGeneralContent.KpiGeneralContentKpiPeriodMappings = new List<KpiGeneralContentKpiPeriodMapping>();
                         KpiGeneral.KpiGeneralContents.Add(KpiGeneralContent);
                     }
+                    KpiGeneralContent.STT = i;
 
                     #region Tháng 1
                     KpiGeneralContentKpiPeriodMapping
@@ -699,26 +700,26 @@ namespace DMS.Rpc.kpi_general
                     #endregion
                 }
 
+                KpiGenerals.ForEach(KpiGeneral =>
+                {
+                    foreach (var KpiGeneralContent in KpiGeneral.KpiGeneralContents)
+                    {
+                        bool flag = false;
+                        foreach (var item in KpiGeneralContent.KpiGeneralContentKpiPeriodMappings)
+                        {
+                            if (item.Value != null) flag = true;
+                        }
+                        if (!flag)
+                            errorContent.AppendLine($"Lỗi dòng thứ {KpiGeneralContent.STT}: Chưa nhập chỉ tiêu");
+                    }
+                });
+
                 if (errorContent.Length > 0)
                     return BadRequest(errorContent.ToString());
             }
             KpiGenerals = await KpiGeneralService.Import(KpiGenerals);
             List<KpiGeneral_KpiGeneralDTO> KpiGeneral_KpiGeneralDTOs = KpiGenerals
                 .Select(c => new KpiGeneral_KpiGeneralDTO(c)).ToList();
-            for (int i = 0; i < KpiGenerals.Count; i++)
-            {
-                if (!KpiGenerals[i].IsValidated)
-                {
-                    errorContent.Append($"Lỗi dòng thứ {i + 2}:");
-                    foreach (var Error in KpiGenerals[i].Errors)
-                    {
-                        errorContent.Append($" {Error.Value},");
-                    }
-                    errorContent.AppendLine("");
-                }
-            }
-            if (KpiGenerals.Any(s => !s.IsValidated))
-                return BadRequest(errorContent.ToString());
             return Ok(KpiGeneral_KpiGeneralDTOs);
         }
 
