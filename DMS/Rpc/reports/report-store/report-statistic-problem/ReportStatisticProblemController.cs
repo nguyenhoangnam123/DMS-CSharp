@@ -340,6 +340,7 @@ namespace DMS.Rpc.reports.report_store.report_statistic_problem
                             Address = s.Address,
                             Telephone = s.Telephone,
                             OrganizationId = s.OrganizationId,
+                            StoreStatusId = s.StoreStatusId
                         };
 
             List<Store> Stores = await query.Distinct().OrderBy(x => x.OrganizationId).ThenBy(x => x.Name)

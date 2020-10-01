@@ -239,16 +239,15 @@ namespace DMS.Rpc.dashboards.monitor
                 .Select(x => x.Id)
                 .ToListAsync();
 
-            var query = from scim in DataContext.StoreCheckingImageMapping
-                        where AppUserIds.Contains(scim.SaleEmployeeId) &&
-                        Now <= scim.ShootingAt && scim.ShootingAt <= End
-                        group scim by scim.ShootingAt.Hour into i
+            var query = from si in DataContext.StoreImage
+                        where si.SaleEmployeeId.HasValue && AppUserIds.Contains(si.SaleEmployeeId.Value) &&
+                        Now <= si.ShootingAt && si.ShootingAt <= End
+                        group si by si.ShootingAt.Hour into i
                         select new DashboardMonitor_StoreCheckingImageMappingHourDTO
                         {
                             Hour = i.Key.ToString(),
                             Counter = i.Count()
                         };
-
             List<DashboardMonitor_StoreCheckingImageMappingHourDTO> DashboardMonitor_StoreCheckingImageMappingHourDTOs = await query.ToListAsync();
             DashboardMonitor_StoreCheckingImageMappingDTO DashboardMonitor_StoreCheckingImageMappingDTO = new DashboardMonitor_StoreCheckingImageMappingDTO();
 
