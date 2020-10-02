@@ -407,6 +407,7 @@ namespace DMS.Rpc.reports.report_store.report_store_general
             List<IndirectSalesOrderDAO> IndirectSalesOrderDAOs = await DataContext.IndirectSalesOrder
                 .Where(x => StoreIds.Contains(x.BuyerStoreId) &&
                 x.OrderDate >= Start && x.OrderDate <= End &&
+                x.RequestStateId == RequestStateEnum.APPROVED.Id &&
                 AppUserIds.Contains(x.SaleEmployeeId))
                 .Select(x => new IndirectSalesOrderDAO
                 {

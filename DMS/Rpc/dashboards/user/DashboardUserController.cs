@@ -70,7 +70,8 @@ namespace DMS.Rpc.dashboards.user
             var query = from i in DataContext.IndirectSalesOrder
                         join ic in DataContext.IndirectSalesOrderContent on i.Id equals ic.IndirectSalesOrderId
                         where i.SaleEmployeeId == CurrentContext.UserId &&
-                        i.OrderDate >= Start && i.OrderDate <= End
+                        i.OrderDate >= Start && i.OrderDate <= End &&
+                        i.RequestStateId == RequestStateEnum.APPROVED.Id
                         select ic;
 
             var results = await query.ToListAsync();
@@ -106,7 +107,8 @@ namespace DMS.Rpc.dashboards.user
 
             var query = from i in DataContext.IndirectSalesOrder
                         where i.SaleEmployeeId == CurrentContext.UserId &&
-                        i.OrderDate >= Start && i.OrderDate <= End
+                        i.OrderDate >= Start && i.OrderDate <= End &&
+                        i.RequestStateId == RequestStateEnum.APPROVED.Id
                         select i;
 
             var results = await query.ToListAsync();
@@ -124,7 +126,8 @@ namespace DMS.Rpc.dashboards.user
 
             var query = from i in DataContext.IndirectSalesOrder
                         where i.SaleEmployeeId == CurrentContext.UserId &&
-                        i.OrderDate >= Start && i.OrderDate <= End
+                        i.OrderDate >= Start && i.OrderDate <= End &&
+                        i.RequestStateId == RequestStateEnum.APPROVED.Id
                         select i;
 
             var count = await query.CountAsync();
@@ -138,16 +141,17 @@ namespace DMS.Rpc.dashboards.user
                 throw new BindException(ModelState);
 
             var query = from i in DataContext.IndirectSalesOrder
-                        join r in DataContext.RequestWorkflowDefinitionMapping on i.RowId equals r.RequestId into rq
+                        join r in DataContext.RequestState on i.RequestStateId equals r.Id into rq
                         from r in rq.DefaultIfEmpty()
-                        where i.SaleEmployeeId == CurrentContext.UserId
+                        where i.SaleEmployeeId == CurrentContext.UserId &&
+                        i.RequestStateId != RequestStateEnum.NEW.Id
                         orderby i.OrderDate descending
                         select new DashboardUser_IndirectSalesOrderDTO
                         {
                             Id = i.Id,
                             Code = i.Code,
                             OrderDate = i.OrderDate,
-                            RequestStateId = r.RequestStateId,
+                            RequestStateId = r.Id,
                             SaleEmployeeId = i.SaleEmployeeId,
                             BuyerStoreId = i.BuyerStoreId,
                             SellerStoreId = i.SellerStoreId,
@@ -158,11 +162,11 @@ namespace DMS.Rpc.dashboards.user
                                 DisplayName = i.SaleEmployee.DisplayName,
                                 Username = i.SaleEmployee.Username,
                             },
-                            RequestState = r.RequestState == null ? null : new DashboardUser_RequestStateDTO
+                            RequestState = new DashboardUser_RequestStateDTO
                             {
-                                Id = r.RequestState.Id,
-                                Code = r.RequestState.Code,
-                                Name = r.RequestState.Name,
+                                Id = r.Id,
+                                Code = r.Code,
+                                Name = r.Name,
                             },
                             BuyerStore = i.BuyerStore == null ? null : new DashboardUser_StoreDTO
                             {

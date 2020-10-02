@@ -267,7 +267,8 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
 
             var IndirectSalesOrderDAOs = await DataContext.IndirectSalesOrder
                 .Where(x => SaleEmployeeIds.Contains(x.SaleEmployeeId) &&
-                x.OrderDate >= StartDate && x.OrderDate <= EndDate)
+                x.OrderDate >= StartDate && x.OrderDate <= EndDate &&
+                x.RequestStateId == RequestStateEnum.APPROVED.Id)
                 .Select(x => new IndirectSalesOrderDAO
                 {
                     Id = x.Id,
@@ -289,7 +290,8 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
 
             var DirectSalesOrderDAOs = await DataContext.DirectSalesOrder
                .Where(x => SaleEmployeeIds.Contains(x.SaleEmployeeId) &&
-               x.OrderDate >= StartDate && x.OrderDate <= EndDate)
+               x.OrderDate >= StartDate && x.OrderDate <= EndDate &&
+               x.RequestStateId == RequestStateEnum.APPROVED.Id)
                .Select(x => new DirectSalesOrderDAO
                {
                    Id = x.Id,

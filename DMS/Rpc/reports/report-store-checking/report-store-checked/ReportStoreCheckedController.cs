@@ -428,7 +428,8 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
                        .BulkInsertValuesIntoTempTableAsync<long>(StoreCheckingIds);
             var query4 = from i in DataContext.IndirectSalesOrder
                          join tt in tempTableQuery.Query on i.StoreCheckingId equals tt.Column1
-                         where i.StoreCheckingId.HasValue
+                         where i.StoreCheckingId.HasValue &&
+                         i.RequestStateId == RequestStateEnum.APPROVED.Id
                          select new
                          {
                              Id = i.Id,

@@ -249,7 +249,8 @@ namespace DMS.Rpc.reports.report_sales_order.report_indirect_sales_order_by_stor
                             )
                         ) &&
                         (StoreStatusId.HasValue == false || StoreStatusId.Value == StoreStatusEnum.ALL.Id || s.StoreStatusId == StoreStatusId.Value) &&
-                        OrganizationIds.Contains(s.OrganizationId)
+                        OrganizationIds.Contains(s.OrganizationId) &&
+                        i.RequestStateId == RequestStateEnum.APPROVED.Id
                         select s;
 
             int count = await query.Distinct().CountAsync();
@@ -328,7 +329,8 @@ namespace DMS.Rpc.reports.report_sales_order.report_indirect_sales_order_by_stor
                             )
                         ) &&
                         (StoreStatusId.HasValue == false || StoreStatusId.Value == StoreStatusEnum.ALL.Id || s.StoreStatusId == StoreStatusId.Value) &&
-                        (OrganizationIds.Contains(s.OrganizationId))
+                        (OrganizationIds.Contains(s.OrganizationId)) &&
+                        i.RequestStateId == RequestStateEnum.APPROVED.Id
                         select new Store
                         {
                             Id = s.Id,
@@ -595,7 +597,8 @@ namespace DMS.Rpc.reports.report_sales_order.report_indirect_sales_order_by_stor
                             )
                         ) &&
                         (StoreStatusId.HasValue == false || StoreStatusId.Value == StoreStatusEnum.ALL.Id || s.StoreStatusId == StoreStatusId.Value) &&
-                        (OrganizationIds.Contains(s.OrganizationId))
+                        (OrganizationIds.Contains(s.OrganizationId)) &&
+                        i.RequestStateId == RequestStateEnum.APPROVED.Id
                         select new Store
                         {
                             Id = s.Id,

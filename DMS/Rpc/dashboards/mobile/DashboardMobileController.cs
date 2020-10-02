@@ -81,7 +81,8 @@ namespace DMS.Rpc.dashboards.mobile
                 throw new BindException(ModelState);
 
             var query = from i in DataContext.IndirectSalesOrder
-                        where i.SaleEmployeeId == CurrentContext.UserId
+                        where i.SaleEmployeeId == CurrentContext.UserId &&
+                        i.RequestStateId != RequestStateEnum.NEW.Id
                         select i;
 
             return await query.CountAsync();
@@ -106,7 +107,8 @@ namespace DMS.Rpc.dashboards.mobile
                 throw new BindException(ModelState);
 
             var query = from i in DataContext.IndirectSalesOrder
-                        where i.SaleEmployeeId == CurrentContext.UserId
+                        where i.SaleEmployeeId == CurrentContext.UserId &&
+                        i.RequestStateId == RequestStateEnum.APPROVED.Id
                         select i;
 
             var results = await query.ToListAsync();
@@ -121,7 +123,8 @@ namespace DMS.Rpc.dashboards.mobile
 
             var query = from i in DataContext.IndirectSalesOrder
                         join ic in DataContext.IndirectSalesOrderContent on i.Id equals ic.IndirectSalesOrderId
-                        where i.SaleEmployeeId == CurrentContext.UserId
+                        where i.SaleEmployeeId == CurrentContext.UserId &&
+                        i.RequestStateId == RequestStateEnum.APPROVED.Id
                         select ic;
 
             var results = await query.ToListAsync();
@@ -208,7 +211,8 @@ namespace DMS.Rpc.dashboards.mobile
 
             var IndirectSalesOrderDAOs = await DataContext.IndirectSalesOrder
                 .Where(x => x.SaleEmployeeId == SaleEmployeeId &&
-                x.OrderDate >= StartDate && x.OrderDate <= EndDate)
+                x.OrderDate >= StartDate && x.OrderDate <= EndDate &&
+                x.RequestStateId == RequestStateEnum.APPROVED.Id)
                 .Select(x => new IndirectSalesOrderDAO
                 {
                     Id = x.Id,
@@ -236,7 +240,8 @@ namespace DMS.Rpc.dashboards.mobile
 
             var DirectSalesOrderDAOs = await DataContext.DirectSalesOrder
                .Where(x => x.SaleEmployeeId == SaleEmployeeId &&
-               x.OrderDate >= StartDate && x.OrderDate <= EndDate)
+               x.OrderDate >= StartDate && x.OrderDate <= EndDate &&
+               x.RequestStateId == RequestStateEnum.APPROVED.Id)
                .Select(x => new DirectSalesOrderDAO
                {
                    Id = x.Id,

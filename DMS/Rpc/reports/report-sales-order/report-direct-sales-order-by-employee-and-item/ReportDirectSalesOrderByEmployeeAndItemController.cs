@@ -144,7 +144,8 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_by_employ
                         join au in DataContext.AppUser on i.SaleEmployeeId equals au.Id
                         where i.OrderDate >= Start && i.OrderDate <= End &&
                         (SaleEmployeeId.HasValue == false || i.SaleEmployeeId == SaleEmployeeId.Value) &&
-                        OrganizationIds.Contains(au.OrganizationId)
+                        OrganizationIds.Contains(au.OrganizationId) &&
+                        i.RequestStateId == RequestStateEnum.APPROVED.Id
                         select au;
 
             int count = await query.Distinct().CountAsync();
@@ -187,7 +188,8 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_by_employ
                         join au in DataContext.AppUser on i.SaleEmployeeId equals au.Id
                         where i.OrderDate >= Start && i.OrderDate <= End &&
                         (SaleEmployeeId.HasValue == false || i.SaleEmployeeId == SaleEmployeeId.Value) &&
-                        OrganizationIds.Contains(au.OrganizationId)
+                        OrganizationIds.Contains(au.OrganizationId) &&
+                        i.RequestStateId == RequestStateEnum.APPROVED.Id
                         select au;
 
             var AppUserIds = await query.Select(x => x.Id).Distinct().ToListAsync();
@@ -418,7 +420,8 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_by_employ
                         join au in DataContext.AppUser on i.SaleEmployeeId equals au.Id
                         where i.OrderDate >= Start && i.OrderDate <= End &&
                         (SaleEmployeeId.HasValue == false || i.SaleEmployeeId == SaleEmployeeId.Value) &&
-                        OrganizationIds.Contains(au.OrganizationId)
+                        OrganizationIds.Contains(au.OrganizationId) &&
+                        i.RequestStateId == RequestStateEnum.APPROVED.Id
                         select au;
 
             var AppUserIds = await query.Select(x => x.Id).Distinct().ToListAsync();
