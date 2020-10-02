@@ -678,11 +678,14 @@ namespace DMS.Repositories
                 .Select(au => au.StoreId)
                 .ToListAsync();
             List<long> DraftStoreIds = await DataContext.Store.Where(x => x.StoreStatusId == StoreStatusEnum.DRAFT.Id && x.DeletedAt == null)
-                .Select(x => x.Id).ToListAsync();
+              .Select(x => x.Id).ToListAsync();
+            //cộng thêm đại lý dự thảo
+            StoreIds.AddRange(DraftStoreIds);
+            StoreIds = StoreIds.Distinct().ToList();
             if (filter.Id == null) filter.Id = new IdFilter();
             if (filter.Id.In == null || filter.Id.In.Count == 0)
                 filter.Id.In = StoreIds;
-
+            
             if (StoreIds.Count > 0)
             {
                 filter.Id.In = filter.Id.In.Intersect(StoreIds).ToList();
@@ -696,7 +699,6 @@ namespace DMS.Repositories
                 filter.OrganizationId.In.Add(AppUserDAO.OrganizationId);
             }
             if (filter.Id.In == null) filter.Id.In = new List<long>();
-            filter.Id.In.AddRange(DraftStoreIds);
 
             IQueryable<StoreDAO> Stores = DataContext.Store;
             Stores = await DynamicFilter(Stores, filter);
@@ -715,6 +717,9 @@ namespace DMS.Repositories
 
             List<long> DraftStoreIds = await DataContext.Store.Where(x => x.StoreStatusId == StoreStatusEnum.DRAFT.Id && x.DeletedAt == null)
               .Select(x => x.Id).ToListAsync();
+            //cộng thêm đại lý dự thảo
+            StoreIds.AddRange(DraftStoreIds);
+            StoreIds = StoreIds.Distinct().ToList();
             if (filter.Id == null) filter.Id = new IdFilter();
             //nếu nhân viên đã có phạm vi đi tuyến, lấy giao giữa tập đc phân quyền và phạm vi đi tuyến
             if (StoreIds.Count > 0)
@@ -728,8 +733,6 @@ namespace DMS.Repositories
                 else
                     filter.OrganizationId.In.Add(AppUserDAO.OrganizationId);
             }
-            //cộng thêm đại lý dự thảo
-            filter.Id.In.AddRange(DraftStoreIds);
 
             IQueryable<StoreDAO> StoreDAOs = DataContext.Store.AsNoTracking();
             StoreDAOs = await DynamicFilter(StoreDAOs, filter);
