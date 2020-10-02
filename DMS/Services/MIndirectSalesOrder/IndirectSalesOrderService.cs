@@ -302,70 +302,9 @@ namespace DMS.Services.MIndirectSalesOrder
                     },
                 };
                 IndirectSalesOrder.RequestWorkflowStepMappings.Add(RequestWorkflowStepMapping);
-                if (IndirectSalesOrder.RequestStateId == RequestStateEnum.NEW.Id)
-                {
-                    IndirectSalesOrder.RequestState = new RequestState
-                    {
-                        Id = RequestStateEnum.NEW.Id,
-                        Code = RequestStateEnum.NEW.Code,
-                        Name = RequestStateEnum.NEW.Name,
-                    };
-                    RequestWorkflowStepMapping.WorkflowStateId = WorkflowStateEnum.NEW.Id;
-                    RequestWorkflowStepMapping.WorkflowState = new WorkflowState
-                    {
-                        Id = WorkflowStateEnum.NEW.Id,
-                        Code = WorkflowStateEnum.NEW.Code,
-                        Name = WorkflowStateEnum.NEW.Name,
-                    };
-                }
-                if (IndirectSalesOrder.RequestStateId == RequestStateEnum.PENDING.Id)
-                {
-                    IndirectSalesOrder.RequestState = new RequestState
-                    {
-                        Id = RequestStateEnum.PENDING.Id,
-                        Code = RequestStateEnum.PENDING.Code,
-                        Name = RequestStateEnum.PENDING.Name,
-                    };
-                    RequestWorkflowStepMapping.WorkflowStateId = WorkflowStateEnum.PENDING.Id;
-                    RequestWorkflowStepMapping.WorkflowState = new WorkflowState
-                    {
-                        Id = WorkflowStateEnum.PENDING.Id,
-                        Code = WorkflowStateEnum.PENDING.Code,
-                        Name = WorkflowStateEnum.PENDING.Name,
-                    };
-                }
-                if (IndirectSalesOrder.RequestStateId == RequestStateEnum.APPROVED.Id)
-                {
-                    IndirectSalesOrder.RequestState = new RequestState
-                    {
-                        Id = RequestStateEnum.APPROVED.Id,
-                        Code = RequestStateEnum.APPROVED.Code,
-                        Name = RequestStateEnum.APPROVED.Name,
-                    };
-                    RequestWorkflowStepMapping.WorkflowStateId = WorkflowStateEnum.APPROVED.Id;
-                    RequestWorkflowStepMapping.WorkflowState = new WorkflowState
-                    {
-                        Id = WorkflowStateEnum.APPROVED.Id,
-                        Code = WorkflowStateEnum.APPROVED.Code,
-                        Name = WorkflowStateEnum.APPROVED.Name,
-                    };
-                }
-                if (IndirectSalesOrder.RequestStateId == RequestStateEnum.REJECTED.Id)
-                {
-                    IndirectSalesOrder.RequestState = new RequestState
-                    {
-                        Id = RequestStateEnum.REJECTED.Id,
-                        Code = RequestStateEnum.REJECTED.Code,
-                        Name = RequestStateEnum.REJECTED.Name,
-                    };
-                    RequestWorkflowStepMapping.WorkflowStateId = WorkflowStateEnum.REJECTED.Id;
-                    RequestWorkflowStepMapping.WorkflowState = new WorkflowState
-                    {
-                        Id = WorkflowStateEnum.REJECTED.Id,
-                        Code = WorkflowStateEnum.REJECTED.Code,
-                        Name = WorkflowStateEnum.REJECTED.Name,
-                    };
-                }
+                RequestWorkflowStepMapping.WorkflowStateId = IndirectSalesOrder.RequestStateId;
+                IndirectSalesOrder.RequestState = WorkflowService.GetRequestState(IndirectSalesOrder.RequestStateId);
+                RequestWorkflowStepMapping.WorkflowState = WorkflowService.GetWorkflowState(RequestWorkflowStepMapping.WorkflowStateId);
             }
             else
             {

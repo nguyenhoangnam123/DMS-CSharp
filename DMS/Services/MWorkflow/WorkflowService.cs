@@ -15,6 +15,8 @@ namespace DMS.Services.MWorkflow
     public interface IWorkflowService : IServiceScoped
     {
         Task<RequestState> GetRequestState(Guid RequestId);
+        RequestState GetRequestState(long RequestStateId);
+        WorkflowState GetWorkflowState(long WorkflowStateId);
         Task<List<RequestWorkflowStepMapping>> ListRequestWorkflowStepMapping(Guid RequestId);
         Task<GenericEnum> Send(Guid RequestId, long WorkflowTypeId, long OrganiaztionId, Dictionary<string, string> Parameters);
         Task<GenericEnum> Approve(Guid RequestId, long WorkflowTypeId, Dictionary<string, string> Parameters);
@@ -751,6 +753,32 @@ namespace DMS.Services.MWorkflow
                     Guid.NewGuid());
                 RabbitManager.PublishSingle(WorkflowDefinitionMessage, RoutingKeyEnum.WorkflowDefinitionUsed);
             }
+        }
+
+        public RequestState GetRequestState(long RequestStateId)
+        {
+            RequestState RequestState = RequestStateEnum.RequestStateEnumList
+                .Where(x => x.Id == RequestStateId)
+                .Select(x => new RequestState
+                {
+                    Id = x.Id,
+                    Code = x.Code,
+                    Name = x.Name,
+                }).FirstOrDefault();
+            return RequestState;
+        }
+
+        public WorkflowState GetWorkflowState(long WorkflowStateId)
+        {
+            WorkflowState WorkflowState = WorkflowStateEnum.WorkflowStateEnumList
+                .Where(x => x.Id == WorkflowStateId)
+                .Select(x => new WorkflowState
+                {
+                    Id = x.Id,
+                    Code = x.Code,
+                    Name = x.Name,
+                }).FirstOrDefault();
+            return WorkflowState;
         }
     }
 }
