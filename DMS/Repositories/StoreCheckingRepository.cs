@@ -40,7 +40,7 @@ namespace DMS.Repositories
                     ITempTableQuery<TempTable<long>> tempTableQuery = await DataContext
                        .BulkInsertValuesIntoTempTableAsync<long>(filter.StoreId.In.Distinct().ToList());
                     query = query.Join(tempTableQuery.Query,
-                                       c => c.Id,
+                                       c => c.StoreId,
                                        t => t.Column1,
                                        (c, t) => c);
                 }
