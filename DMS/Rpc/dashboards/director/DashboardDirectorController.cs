@@ -90,21 +90,8 @@ namespace DMS.Rpc.dashboards.director
             OrganizationFilter.Address = DashboardDirector_OrganizationFilterDTO.Address;
             OrganizationFilter.Email = DashboardDirector_OrganizationFilterDTO.Email;
 
-            if (OrganizationFilter.OrFilter == null) OrganizationFilter.OrFilter = new List<OrganizationFilter>();
-            if (CurrentContext.Filters != null)
-            {
-                foreach (var currentFilter in CurrentContext.Filters)
-                {
-                    OrganizationFilter subFilter = new OrganizationFilter();
-                    OrganizationFilter.OrFilter.Add(subFilter);
-                    List<FilterPermissionDefinition> FilterPermissionDefinitions = currentFilter.Value;
-                    foreach (FilterPermissionDefinition FilterPermissionDefinition in FilterPermissionDefinitions)
-                    {
-                        if (FilterPermissionDefinition.Name == nameof(AppUserFilter.OrganizationId))
-                            subFilter.Id = FilterPermissionDefinition.IdFilter;
-                    }
-                }
-            }
+            if (OrganizationFilter.Id == null) OrganizationFilter.Id = new IdFilter();
+            OrganizationFilter.Id.In = await FilterOrganization(OrganizationService, CurrentContext);
 
             List<Organization> Organizations = await OrganizationService.List(OrganizationFilter);
             List<DashboardDirector_OrganizationDTO> DashboardDirector_OrganizationDTOs = Organizations
@@ -378,17 +365,18 @@ namespace DMS.Rpc.dashboards.director
         {
             var appUser = await AppUserService.Get(CurrentContext.UserId);
             var query = from i in DataContext.IndirectSalesOrder
-                        join r in DataContext.RequestWorkflowDefinitionMapping on i.RowId equals r.RequestId
+                        join r in DataContext.RequestState on i.RequestStateId equals r.Id
                         join au in DataContext.AppUser on i.SaleEmployeeId equals au.Id
                         join o in DataContext.Organization on au.OrganizationId equals o.Id
-                        where o.Path.StartsWith(appUser.Organization.Path)
+                        where o.Path.StartsWith(appUser.Organization.Path) &&
+                        i.RequestStateId != RequestStateEnum.NEW.Id
                         orderby i.OrderDate descending
                         select new DashboardDirector_IndirectSalesOrderDTO
                         {
                             Id = i.Id,
                             Code = i.Code,
                             OrderDate = i.OrderDate,
-                            RequestStateId = r.RequestStateId,
+                            RequestStateId = r.Id,
                             SaleEmployeeId = i.SaleEmployeeId,
                             Total = i.Total,
                             SaleEmployee = i.SaleEmployee == null ? null : new DashboardDirector_AppUserDTO
@@ -397,11 +385,11 @@ namespace DMS.Rpc.dashboards.director
                                 DisplayName = i.SaleEmployee.DisplayName,
                                 Username = i.SaleEmployee.Username,
                             },
-                            RequestState = r.RequestState == null ? null : new DashboardDirector_RequestStateDTO
+                            RequestState = new DashboardDirector_RequestStateDTO
                             {
-                                Id = r.RequestState.Id,
-                                Code = r.RequestState.Code,
-                                Name = r.RequestState.Name,
+                                Id = r.Id,
+                                Code = r.Code,
+                                Name = r.Name,
                             }
                         };
 
