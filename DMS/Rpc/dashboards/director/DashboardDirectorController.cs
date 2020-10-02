@@ -90,21 +90,8 @@ namespace DMS.Rpc.dashboards.director
             OrganizationFilter.Address = DashboardDirector_OrganizationFilterDTO.Address;
             OrganizationFilter.Email = DashboardDirector_OrganizationFilterDTO.Email;
 
-            if (OrganizationFilter.OrFilter == null) OrganizationFilter.OrFilter = new List<OrganizationFilter>();
-            if (CurrentContext.Filters != null)
-            {
-                foreach (var currentFilter in CurrentContext.Filters)
-                {
-                    OrganizationFilter subFilter = new OrganizationFilter();
-                    OrganizationFilter.OrFilter.Add(subFilter);
-                    List<FilterPermissionDefinition> FilterPermissionDefinitions = currentFilter.Value;
-                    foreach (FilterPermissionDefinition FilterPermissionDefinition in FilterPermissionDefinitions)
-                    {
-                        if (FilterPermissionDefinition.Name == nameof(AppUserFilter.OrganizationId))
-                            subFilter.Id = FilterPermissionDefinition.IdFilter;
-                    }
-                }
-            }
+            if (OrganizationFilter.Id == null) OrganizationFilter.Id = new IdFilter();
+            OrganizationFilter.Id.In = await FilterOrganization(OrganizationService, CurrentContext);
 
             List<Organization> Organizations = await OrganizationService.List(OrganizationFilter);
             List<DashboardDirector_OrganizationDTO> DashboardDirector_OrganizationDTOs = Organizations
