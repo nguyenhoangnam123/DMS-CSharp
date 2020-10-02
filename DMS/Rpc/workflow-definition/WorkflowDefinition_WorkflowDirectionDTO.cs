@@ -1,6 +1,8 @@
 using Common;
 using DMS.Entities;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace DMS.Rpc.workflow_definition
 {
@@ -16,9 +18,11 @@ namespace DMS.Rpc.workflow_definition
         public string BodyMailForNextStep { get; set; }
         public long StatusId { get; set; }
         public DateTime UpdatedAt { get; set; }
+        public WorkflowDefinition_WorkflowDefinitionDTO WorkflowDefinition { get; set; }
         public WorkflowDefinition_StatusDTO Status { get; set; }
         public WorkflowDefinition_WorkflowStepDTO FromStep { get; set; }
         public WorkflowDefinition_WorkflowStepDTO ToStep { get; set; }
+        public List<WorkflowDefinition_WorkflowDirectionConditionDTO> WorkflowDirectionConditions { get; set; }
 
         public WorkflowDefinition_WorkflowDirectionDTO() { }
         public WorkflowDefinition_WorkflowDirectionDTO(WorkflowDirection WorkflowDirection)
@@ -33,9 +37,11 @@ namespace DMS.Rpc.workflow_definition
             this.BodyMailForNextStep = WorkflowDirection.BodyMailForNextStep;
             this.UpdatedAt = WorkflowDirection.UpdatedAt;
             this.StatusId = WorkflowDirection.StatusId;
+            this.WorkflowDefinition = WorkflowDirection.WorkflowDefinition == null ? null : new WorkflowDefinition_WorkflowDefinitionDTO(WorkflowDirection.WorkflowDefinition);
             this.Status = WorkflowDirection.Status == null ? null : new WorkflowDefinition_StatusDTO(WorkflowDirection.Status);
             this.FromStep = WorkflowDirection.FromStep == null ? null : new WorkflowDefinition_WorkflowStepDTO(WorkflowDirection.FromStep);
             this.ToStep = WorkflowDirection.ToStep == null ? null : new WorkflowDefinition_WorkflowStepDTO(WorkflowDirection.ToStep);
+            this.WorkflowDirectionConditions = WorkflowDirection.WorkflowDirectionConditions.Select(x => new WorkflowDefinition_WorkflowDirectionConditionDTO(x)).ToList();
             this.Errors = WorkflowDirection.Errors;
         }
     }
