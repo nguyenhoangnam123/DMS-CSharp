@@ -672,12 +672,20 @@ namespace DMS.Repositories
 
         public async Task<int> CountInScoped(StoreFilter filter, long AppUserId)
         {
-            AppUserDAO AppUserDAO = await DataContext.AppUser.Where(x => x.Id == AppUserId).FirstOrDefaultAsync();
+            if (filter == null) return 0;
+            AppUserDAO AppUserDAO = await DataContext.AppUser.Where(x => x.Id == AppUserId)
+                .Include(x => x.Organization)
+                .FirstOrDefaultAsync();
             List<long> StoreIds = await DataContext.AppUserStoreMapping
                 .Where(au => au.AppUserId == AppUserId)
                 .Select(au => au.StoreId)
                 .ToListAsync();
-            List<long> DraftStoreIds = await DataContext.Store.Where(x => x.StoreStatusId == StoreStatusEnum.DRAFT.Id && x.DeletedAt == null)
+
+            List<long> DraftStoreIds = await DataContext.Store
+                .Where(x =>
+                    x.StoreStatusId == StoreStatusEnum.DRAFT.Id &&
+                    x.Organization.Path.StartsWith(AppUserDAO.Organization.Path) &&
+                    x.DeletedAt == null)
               .Select(x => x.Id).ToListAsync();
             //cộng thêm đại lý dự thảo
             StoreIds.AddRange(DraftStoreIds);
@@ -709,13 +717,19 @@ namespace DMS.Repositories
         public async Task<List<Store>> ListInScoped(StoreFilter filter, long AppUserId)
         {
             if (filter == null) return new List<Store>();
-            AppUserDAO AppUserDAO = await DataContext.AppUser.Where(x => x.Id == AppUserId).FirstOrDefaultAsync();
+            AppUserDAO AppUserDAO = await DataContext.AppUser.Where(x => x.Id == AppUserId)
+                .Include(x => x.Organization)
+                .FirstOrDefaultAsync();
             List<long> StoreIds = await DataContext.AppUserStoreMapping
                 .Where(au => au.AppUserId == AppUserId)
                 .Select(au => au.StoreId)
                 .ToListAsync();
 
-            List<long> DraftStoreIds = await DataContext.Store.Where(x => x.StoreStatusId == StoreStatusEnum.DRAFT.Id && x.DeletedAt == null)
+            List<long> DraftStoreIds = await DataContext.Store
+                .Where(x => 
+                    x.StoreStatusId == StoreStatusEnum.DRAFT.Id &&
+                    x.Organization.Path.StartsWith(AppUserDAO.Organization.Path) &&
+                    x.DeletedAt == null)
               .Select(x => x.Id).ToListAsync();
 
             StoreIds.AddRange(DraftStoreIds);
