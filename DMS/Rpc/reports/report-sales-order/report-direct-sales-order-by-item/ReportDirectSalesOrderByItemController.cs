@@ -208,7 +208,8 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_by_item
                             sppgm == null ||
                             (ProductGroupingIds.Any() == false || ProductGroupingIds.Contains(sppgm.ProductGroupingId))
                         ) &&
-                        od.OrderDate >= Start && od.OrderDate <= End
+                        od.OrderDate >= Start && od.OrderDate <= End &&
+                        od.RequestStateId == RequestStateEnum.APPROVED.Id
                         group t by new {t.OrganizationId, t.ItemId } into x
                         select new
                         {
@@ -278,7 +279,8 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_by_item
                             sppgm == null ||
                             (ProductGroupingIds.Any() == false || ProductGroupingIds.Contains(sppgm.ProductGroupingId))
                         ) &&
-                        od.OrderDate >= Start && od.OrderDate <= End
+                        od.OrderDate >= Start && od.OrderDate <= End &&
+                        od.RequestStateId == RequestStateEnum.APPROVED.Id
                         group t by new { t.OrganizationId, t.ItemId } into x
                         select new
                         {
@@ -312,7 +314,8 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_by_item
                                    join o in DataContext.Organization on t.OrganizationId equals o.Id
                                    where OrgIds.Contains(t.OrganizationId) &&
                                    ItemIds.Contains(t.ItemId) &&
-                                   od.OrderDate >= Start && od.OrderDate <= End
+                                   od.OrderDate >= Start && od.OrderDate <= End &&
+                                   ind.RequestStateId == RequestStateEnum.APPROVED.Id
                                    select new DirectSalesOrderTransactionDAO
                                    {
                                        Id = t.Id,
@@ -450,7 +453,8 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_by_item
                             sppgm == null ||
                             (ProductGroupingIds.Any() == false || ProductGroupingIds.Contains(sppgm.ProductGroupingId))
                         ) &&
-                        od.OrderDate >= Start && od.OrderDate <= End
+                        od.OrderDate >= Start && od.OrderDate <= End &&
+                        od.RequestStateId == RequestStateEnum.APPROVED.Id
                         group t by new { t.OrganizationId, t.ItemId } into x
                         select new
                         {
@@ -471,7 +475,8 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_by_item
                                    join o in DataContext.Organization on t.OrganizationId equals o.Id
                                    where OrgIds.Contains(t.OrganizationId) &&
                                    ItemIds.Contains(t.ItemId) &&
-                                   od.OrderDate >= Start && od.OrderDate <= End
+                                   od.OrderDate >= Start && od.OrderDate <= End &&
+                                   ind.RequestStateId == RequestStateEnum.APPROVED.Id
                                    select new DirectSalesOrderTransactionDAO
                                    {
                                        Id = t.Id,

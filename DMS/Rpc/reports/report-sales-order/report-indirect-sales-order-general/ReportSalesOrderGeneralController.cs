@@ -187,7 +187,8 @@ namespace DMS.Rpc.reports.report_sales_order.report_indirect_sales_order_general
                         (BuyerStoreId.HasValue == false || i.BuyerStoreId == BuyerStoreId.Value) &&
                         (SellerStoreId.HasValue == false || i.SellerStoreId == SellerStoreId.Value) &&
                         (StoreStatusId.HasValue == false || StoreStatusId.Value == StoreStatusEnum.ALL.Id || s.StoreStatusId == StoreStatusId.Value) &&
-                        OrganizationIds.Contains(i.OrganizationId)
+                        OrganizationIds.Contains(i.OrganizationId) &&
+                        i.RequestStateId == RequestStateEnum.APPROVED.Id
                         select i;
 
             int count = await query.Distinct().CountAsync();
@@ -248,7 +249,8 @@ namespace DMS.Rpc.reports.report_sales_order.report_indirect_sales_order_general
                         (BuyerStoreId.HasValue == false || i.BuyerStoreId == BuyerStoreId.Value) &&
                         (SellerStoreId.HasValue == false || i.SellerStoreId == SellerStoreId.Value) &&
                         (StoreStatusId.HasValue == false || StoreStatusId.Value == StoreStatusEnum.ALL.Id || s.StoreStatusId == StoreStatusId.Value) &&
-                        OrganizationIds.Contains(i.OrganizationId)
+                        OrganizationIds.Contains(i.OrganizationId) &&
+                        i.RequestStateId == RequestStateEnum.APPROVED.Id
                         select i;
 
             List<IndirectSalesOrderDAO> IndirectSalesOrderDAOs = await query
@@ -382,7 +384,8 @@ namespace DMS.Rpc.reports.report_sales_order.report_indirect_sales_order_general
                         (SellerStoreId.HasValue == false || i.SellerStoreId == SellerStoreId.Value) &&
                         (StoreStatusId.HasValue == false || StoreStatusId.Value == StoreStatusEnum.ALL.Id || s.StoreStatusId == StoreStatusId.Value) &&
                         (AppUserIds.Contains(i.SaleEmployeeId)) &&
-                        OrganizationIds.Contains(i.OrganizationId)
+                        OrganizationIds.Contains(i.OrganizationId) &&
+                        i.RequestStateId == RequestStateEnum.APPROVED.Id
                         select i;
 
             List<IndirectSalesOrderDAO> IndirectSalesOrderDAOs = await query.ToListAsync();

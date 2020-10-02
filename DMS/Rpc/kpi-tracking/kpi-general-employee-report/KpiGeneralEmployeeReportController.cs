@@ -241,7 +241,9 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_employee_report
                 KpiGeneralEmployeeReport_KpiGeneralEmployeeReportDTOs.Add(KpiGeneralEmployeeReport_KpiGeneralEmployeeReportDTO);
             }
             var IndirectSalesOrderDAOs = await DataContext.IndirectSalesOrder
-                .Where(x => x.SaleEmployeeId == SaleEmployeeId && x.OrderDate >= StartDate && x.OrderDate <= EndDate)
+                .Where(x => x.SaleEmployeeId == SaleEmployeeId && 
+                x.OrderDate >= StartDate && x.OrderDate <= EndDate &&
+                x.RequestStateId == RequestStateEnum.APPROVED.Id)
                 .Select(x => new IndirectSalesOrderDAO
                 {
                     Id = x.Id,
@@ -258,7 +260,9 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_employee_report
                 .ToListAsync();
 
             var DirectSalesOrderDAOs = await DataContext.DirectSalesOrder
-                .Where(x => x.SaleEmployeeId == SaleEmployeeId && x.OrderDate >= StartDate && x.OrderDate <= EndDate)
+                .Where(x => x.SaleEmployeeId == SaleEmployeeId && 
+                x.OrderDate >= StartDate && x.OrderDate <= EndDate &&
+                x.RequestStateId == RequestStateEnum.APPROVED.Id)
                 .Select(x => new DirectSalesOrderDAO
                 {
                     Id = x.Id,
