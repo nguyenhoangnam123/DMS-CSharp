@@ -717,9 +717,14 @@ namespace DMS.Repositories
 
             List<long> DraftStoreIds = await DataContext.Store.Where(x => x.StoreStatusId == StoreStatusEnum.DRAFT.Id && x.DeletedAt == null)
               .Select(x => x.Id).ToListAsync();
-            //cộng thêm đại lý dự thảo
+
             StoreIds.AddRange(DraftStoreIds);
             StoreIds = StoreIds.Distinct().ToList();
+            if (filter.Id == null) filter.Id = new IdFilter();
+            if (filter.Id.In == null || filter.Id.In.Count == 0)
+                filter.Id.In = StoreIds;
+            //cộng thêm đại lý dự thảo
+
             if (filter.Id == null) filter.Id = new IdFilter();
             //nếu nhân viên đã có phạm vi đi tuyến, lấy giao giữa tập đc phân quyền và phạm vi đi tuyến
             if (StoreIds.Count > 0)
