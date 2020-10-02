@@ -94,13 +94,13 @@ namespace DMS.Rpc.workflow_definition
         }
 
         [Route(WorkflowDefinitionRoute.GetDirection), HttpPost]
-        public async Task<ActionResult<WorkflowDefinition_WorkflowDefinitionDTO>> GetDirection([FromBody] WorkflowDefinition_WorkflowDirectionDTO WorkflowDefinition_WorkflowDirectionDTO)
+        public async Task<ActionResult<WorkflowDefinition_WorkflowDirectionDTO>> GetDirection([FromBody] WorkflowDefinition_WorkflowDirectionDTO WorkflowDefinition_WorkflowDirectionDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
 
-            WorkflowDefinition WorkflowDefinition = await WorkflowDefinitionService.Get(WorkflowDefinition_WorkflowDirectionDTO.Id);
-            return new WorkflowDefinition_WorkflowDefinitionDTO(WorkflowDefinition);
+            WorkflowDirection WorkflowDirection = await WorkflowDirectionService.Get(WorkflowDefinition_WorkflowDirectionDTO.Id);
+            return new WorkflowDefinition_WorkflowDirectionDTO(WorkflowDirection);
         }
 
 
