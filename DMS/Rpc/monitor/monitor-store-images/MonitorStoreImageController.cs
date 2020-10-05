@@ -391,7 +391,7 @@ namespace DMS.Rpc.monitor.monitor_store_images
                         }
                         else
                         {
-                            row.ImageCounter += AlbumImageMappings.Where(x => x.StoreId == storeId && x.ShootingAt.AddHours(CurrentContext.TimeZone).Date == date.AddHours(CurrentContext.TimeZone).Date).Count();
+                            row.ImageCounter += StoreImages.Where(x => x.StoreId == storeId && x.ShootingAt.AddHours(CurrentContext.TimeZone).Date == date.AddHours(CurrentContext.TimeZone).Date).Count();
                         }
                     }
                 }
