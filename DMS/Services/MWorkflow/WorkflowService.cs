@@ -455,7 +455,9 @@ namespace DMS.Services.MWorkflow
                 {
                     RequestState = RequestStateEnum.REJECTED;
                 }
-                else if (RequestWorkflowStepMapping.All(x => x.WorkflowStateId == WorkflowStateEnum.APPROVED.Id))
+                else if (RequestWorkflowStepMapping
+                    .Where(x => x.WorkflowStateId != WorkflowStateEnum.NEW.Id)
+                    .All(x => x.WorkflowStateId == WorkflowStateEnum.APPROVED.Id))
                 {
                     RequestState = RequestStateEnum.APPROVED;
                 }
