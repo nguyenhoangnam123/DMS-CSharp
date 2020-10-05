@@ -16,6 +16,7 @@ namespace DMS.Models
         public string Code { get; set; }
         public string Name { get; set; }
         public long StatusId { get; set; }
+        public bool Used { get; set; }
 
         public virtual StatusDAO Status { get; set; }
         public virtual ICollection<AppUserRoleMappingDAO> AppUserRoleMappings { get; set; }
