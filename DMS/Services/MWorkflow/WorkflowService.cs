@@ -148,7 +148,9 @@ namespace DMS.Services.MWorkflow
             });
 
             WorkflowDefinition WorkflowDefinition = null;
-            WorkflowDefinitions = WorkflowDefinitions.OrderByDescending(x => x.Organization.Path).ToList();
+            WorkflowDefinitions = WorkflowDefinitions
+                .Where(x => Organization.Path.StartsWith(x.Organization.Path))
+                .OrderByDescending(x => x.Organization.Path).ToList();
             foreach (var wd in WorkflowDefinitions)
             {
                 if (Organization.Path.StartsWith(wd.Organization.Path))
