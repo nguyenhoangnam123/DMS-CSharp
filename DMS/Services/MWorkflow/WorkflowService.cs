@@ -73,6 +73,13 @@ namespace DMS.Services.MWorkflow
                     Id = x.WorkflowStep.Id,
                     Code = x.WorkflowStep.Code,
                     Name = x.WorkflowStep.Name,
+                    RoleId = x.WorkflowStep.RoleId,
+                    Role = x.WorkflowStep.Role == null ? null : new Role
+                    {
+                        Id = x.WorkflowStep.Role.Id,
+                        Code = x.WorkflowStep.Role.Code,
+                        Name = x.WorkflowStep.Role.Name,
+                    }
                 },
             }).ToList();
 
@@ -448,7 +455,9 @@ namespace DMS.Services.MWorkflow
                 {
                     RequestState = RequestStateEnum.REJECTED;
                 }
-                else if (RequestWorkflowStepMapping.All(x => x.WorkflowStateId == WorkflowStateEnum.APPROVED.Id))
+                else if (RequestWorkflowStepMapping
+                    .Where(x => x.WorkflowStateId != WorkflowStateEnum.NEW.Id)
+                    .All(x => x.WorkflowStateId == WorkflowStateEnum.APPROVED.Id))
                 {
                     RequestState = RequestStateEnum.APPROVED;
                 }
