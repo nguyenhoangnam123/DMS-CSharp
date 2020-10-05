@@ -75,7 +75,7 @@ namespace DMS.Rpc.dashboards.director
         {
             OrganizationFilter OrganizationFilter = new OrganizationFilter();
             OrganizationFilter.Skip = 0;
-            OrganizationFilter.Take = 99999;
+            OrganizationFilter.Take = 20;
             OrganizationFilter.OrderBy = OrganizationOrder.Id;
             OrganizationFilter.OrderType = OrderType.ASC;
             OrganizationFilter.Selects = OrganizationSelect.ALL;
@@ -319,6 +319,7 @@ namespace DMS.Rpc.dashboards.director
                             Latitude = s.Latitude,
                             Longitude = s.Longitude,
                             Telephone = s.Telephone,
+                            StoreStatusId = s.StoreStatusId,
                             IsScouting = false
                         };
             List<DashboardDirector_StoreDTO> DashboardMonitor_StoreDTOs = await query.Distinct().ToListAsync();
