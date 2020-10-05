@@ -89,22 +89,26 @@ namespace DMS.Repositories
                     RequestWorkflowStepMappingDAO = new RequestWorkflowStepMappingDAO();
                     RequestWorkflowStepMappingDAO.RequestId = RequestId;
                     RequestWorkflowStepMappingDAO.WorkflowStepId = RequestWorkflowStepMapping.WorkflowStepId;
+                    RequestWorkflowStepMappingDAO.WorkflowStateId = RequestWorkflowStepMapping.WorkflowStateId;
+                    RequestWorkflowStepMappingDAO.AppUserId = RequestWorkflowStepMapping.AppUserId;
                     RequestWorkflowStepMappingDAO.CreatedAt = StaticParams.DateTimeNow;
                     RequestWorkflowStepMappingDAO.UpdatedAt = StaticParams.DateTimeNow;
                     RequestWorkflowStepMappingDAO.DeletedAt = null;
-                    DataContext.RequestWorkflowStepMapping.Add(RequestWorkflowStepMappingDAO);
+                    RequestWorkflowStepMappingDAOs.Add(RequestWorkflowStepMappingDAO);
                 }
-                else if (RequestWorkflowStepMappingDAO.WorkflowStateId != RequestWorkflowStepMapping.WorkflowStateId)
+                else
                 {
-                    RequestWorkflowStepMappingDAO.WorkflowStateId = RequestWorkflowStepMapping.WorkflowStateId;
-                    RequestWorkflowStepMappingDAO.AppUserId = RequestWorkflowStepMapping.AppUserId;
-                    RequestWorkflowStepMappingDAO.UpdatedAt = StaticParams.DateTimeNow;
                     RequestWorkflowStepMappingDAO.DeletedAt = null;
+                    if (RequestWorkflowStepMappingDAO.WorkflowStateId != RequestWorkflowStepMapping.WorkflowStateId)
+                    {
+                        RequestWorkflowStepMappingDAO.WorkflowStateId = RequestWorkflowStepMapping.WorkflowStateId;
+                        RequestWorkflowStepMappingDAO.AppUserId = RequestWorkflowStepMapping.AppUserId;
+                        RequestWorkflowStepMappingDAO.UpdatedAt = StaticParams.DateTimeNow;
+                    }
                 }
             }
-            var Deleted = RequestWorkflowStepMappingDAOs.Where(r => r.DeletedAt.HasValue).ToList();
-            DataContext.RequestWorkflowStepMapping.RemoveRange(Deleted);
-            await DataContext.SaveChangesAsync();
+            await DataContext.BulkMergeAsync(RequestWorkflowStepMappingDAOs);
+            await DataContext.RequestWorkflowStepMapping.Where(x => x.DeletedAt.HasValue).DeleteFromQueryAsync();
 
             return true;
         }
