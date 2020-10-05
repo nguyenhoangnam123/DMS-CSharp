@@ -4,7 +4,7 @@ using System;
 
 namespace DMS.Rpc.mobile_sync
 {
-    public class MonitorStoreProblem_StoreCheckingDTO : DataDTO
+    public class MobileSync_StoreCheckingDTO : DataDTO
     {
 
         public long Id { get; set; }
@@ -26,8 +26,8 @@ namespace DMS.Rpc.mobile_sync
         public long? ImageCounter { get; set; }
 
 
-        public MonitorStoreProblem_StoreCheckingDTO() { }
-        public MonitorStoreProblem_StoreCheckingDTO(StoreChecking StoreChecking)
+        public MobileSync_StoreCheckingDTO() { }
+        public MobileSync_StoreCheckingDTO(StoreChecking StoreChecking)
         {
 
             this.Id = StoreChecking.Id;
