@@ -9,6 +9,7 @@ namespace DMS.Models
         public long UnitOfMeasureGroupingId { get; set; }
         public long UnitOfMeasureId { get; set; }
         public long? Factor { get; set; }
+        public Guid RowId { get; set; }
 
         public virtual UnitOfMeasureDAO UnitOfMeasure { get; set; }
         public virtual UnitOfMeasureGroupingDAO UnitOfMeasureGrouping { get; set; }

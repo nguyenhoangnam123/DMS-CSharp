@@ -1,5 +1,7 @@
 using Common;
 using DMS.Entities;
+using DMS.Enums;
+using DMS.Handlers;
 using DMS.Repositories;
 using Helpers;
 using System;
@@ -29,18 +31,21 @@ namespace DMS.Services.MWorkflow
         private ILogging Logging;
         private ICurrentContext CurrentContext;
         private IWorkflowStepValidator WorkflowStepValidator;
+        private IRabbitManager RabbitManager;
 
         public WorkflowStepService(
             IUOW UOW,
             ILogging Logging,
             ICurrentContext CurrentContext,
-            IWorkflowStepValidator WorkflowStepValidator
+            IWorkflowStepValidator WorkflowStepValidator,
+            RabbitManager RabbitManager
         )
         {
             this.UOW = UOW;
             this.Logging = Logging;
             this.CurrentContext = CurrentContext;
             this.WorkflowStepValidator = WorkflowStepValidator;
+            this.RabbitManager = RabbitManager;
         }
         public async Task<int> Count(WorkflowStepFilter WorkflowStepFilter)
         {
@@ -112,6 +117,7 @@ namespace DMS.Services.MWorkflow
                 await UOW.Begin();
                 await UOW.WorkflowStepRepository.Create(WorkflowStep);
                 await UOW.Commit();
+                NotifyUsed(WorkflowStep);
 
                 await Logging.CreateAuditLog(WorkflowStep, new { }, nameof(WorkflowStepService));
                 return await UOW.WorkflowStepRepository.Get(WorkflowStep.Id);
@@ -143,6 +149,7 @@ namespace DMS.Services.MWorkflow
                 await UOW.Begin();
                 await UOW.WorkflowStepRepository.Update(WorkflowStep);
                 await UOW.Commit();
+                NotifyUsed(WorkflowStep);
 
                 var newData = await UOW.WorkflowStepRepository.Get(WorkflowStep.Id);
                 await Logging.CreateAuditLog(newData, oldData, nameof(WorkflowStepService));
@@ -294,6 +301,20 @@ namespace DMS.Services.MWorkflow
             RoleFilter.Id.In = RoleIds;
             List<Role> Roles = await UOW.RoleRepository.List(RoleFilter);
             return Roles;
+        }
+
+        private void NotifyUsed(WorkflowStep WorkflowStep)
+        {
+            {
+                EventMessage<Role> RoleMessage = new EventMessage<Role>
+                {
+                    Content = new Role { Id = WorkflowStep.RoleId },
+                    EntityName = nameof(StoreType),
+                    RowId = Guid.NewGuid(),
+                    Time = StaticParams.DateTimeNow,
+                };
+                RabbitManager.PublishSingle(RoleMessage, RoutingKeyEnum.RoleUsed);
+            }
         }
     }
 }

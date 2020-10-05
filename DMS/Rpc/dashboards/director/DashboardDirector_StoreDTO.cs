@@ -15,6 +15,7 @@ namespace DMS.Rpc.dashboards.director
         public string Name { get; set; }
         public string Telephone { get; set; }
         public bool IsScouting { get; set; }
+        public long StoreStatusId { get; set; }
         public DashboardDirector_StoreDTO() { }
         public DashboardDirector_StoreDTO(Store Store)
         {
@@ -22,6 +23,7 @@ namespace DMS.Rpc.dashboards.director
             this.Longitude = Store.Longitude;
             this.Latitude = Store.Latitude;
             this.Name = Store.Name;
+            this.StoreStatusId = Store.StoreStatusId;
             this.Telephone = Store.Telephone;
         }
     }

@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace DMS.Rpc.dashboards.user
 {
-    public class DashboardUserRoute : Root
+    public class DashboardUserRoute
     {
-        private const string Default = Rpc + Module + "/dashboards/user";
+        private const string Default = "rpc/dms/dashboards/user";
 
         public const string SalesQuantity = Default + "/sales-quantity";
         public const string StoreChecking = Default + "/store-checking";

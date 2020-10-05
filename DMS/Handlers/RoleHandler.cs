@@ -14,6 +14,7 @@ namespace DMS.Handlers
     public class RoleHandler : Handler
     {
         private string SyncKey => Name + ".Sync";
+        private string UsedKey => Name + ".Used";
         public override string Name => nameof(Role);
 
         public override void QueueBind(IModel channel, string queue, string exchange)
@@ -24,6 +25,8 @@ namespace DMS.Handlers
         {
             if (routingKey == SyncKey)
                 await Sync(context, content);
+            if (routingKey == UsedKey)
+                await Used(context, content);
         }
 
         private async Task Sync(DataContext context, string json)
@@ -62,6 +65,13 @@ namespace DMS.Handlers
             {
 
             }
+        }
+
+        private async Task Used(DataContext context, string json)
+        {
+            List<EventMessage<Role>> EventMessageReviced = JsonConvert.DeserializeObject<List<EventMessage<Role>>>(json);
+            List<long> RoleIds = EventMessageReviced.Select(em => em.Content.Id).ToList();
+            await context.Role.Where(a => RoleIds.Contains(a.Id)).UpdateFromQueryAsync(a => new RoleDAO { Used = true });
         }
     }
 }

@@ -123,6 +123,7 @@ namespace DMS.Repositories
                     Code = q.Status.Code,
                     Name = q.Status.Name,
                 },
+                Used = q.Used
             }).ToListAsync();
             return Roles;
         }
@@ -153,6 +154,7 @@ namespace DMS.Repositories
                     Code = x.Code,
                     Name = x.Name,
                     StatusId = x.StatusId,
+                    Used = x.Used,
                     Status = x.Status == null ? null : new Status
                     {
                         Id = x.Status.Id,
@@ -222,6 +224,7 @@ namespace DMS.Repositories
             RoleDAO.Code = Role.Code;
             RoleDAO.Name = Role.Name;
             RoleDAO.StatusId = Role.StatusId;
+            RoleDAO.Used = false;
             DataContext.Role.Add(RoleDAO);
             await DataContext.SaveChangesAsync();
             Role.Id = RoleDAO.Id;

@@ -11,6 +11,7 @@ namespace DMS.Rpc.role
         public string Code { get; set; }
         public string Name { get; set; }
         public long StatusId { get; set; }
+        public bool Used { get; set; }
         public Role_StatusDTO Status { get; set; }
         public List<Role_PermissionDTO> Permissions { get; set; }
         public List<Role_AppUserRoleMappingDTO> AppUserRoleMappings { get; set; }
@@ -21,6 +22,7 @@ namespace DMS.Rpc.role
             this.Code = Role.Code;
             this.Name = Role.Name;
             this.StatusId = Role.StatusId;
+            this.Used = Role.Used;
             this.Status = Role.Status == null ? null : new Role_StatusDTO(Role.Status);
             this.Permissions = Role.Permissions?.Select(x => new Role_PermissionDTO(x)).ToList();
             this.AppUserRoleMappings = Role.AppUserRoleMappings?.Select(x => new Role_AppUserRoleMappingDTO(x)).ToList();
