@@ -172,7 +172,8 @@ namespace DMS.Services.MWorkflow
                 bool ShouldInit = false;
                 foreach (WorkflowStep WorkflowStep in WorkflowDefinition.WorkflowSteps)
                 {
-                    if (!WorkflowDefinition.WorkflowDirections.Any(d => d.FromStepId == WorkflowStep.Id))
+                    if (WorkflowDefinition.WorkflowDirections.Any(d => d.FromStepId == WorkflowStep.Id) && 
+                        !WorkflowDefinition.WorkflowDirections.Any(d => d.ToStepId == WorkflowStep.Id))
                     {
                         if (CurrentContext.RoleIds.Contains(WorkflowStep.RoleId))
                             ShouldInit = true;
@@ -311,7 +312,7 @@ namespace DMS.Services.MWorkflow
                 // tìm điểm bắt đầu cho những điểm đích tìm được
                 foreach (WorkflowStep WorkflowStep in ToSteps)
                 {
-                    var FromSteps = WorkflowDefinition.WorkflowDirections.Where(d => d.ToStepId == WorkflowStep.Id).Select(x => x.FromStep) ?? new List<WorkflowStep>();
+                    var FromSteps = WorkflowDefinition.WorkflowDirections.Where(d => d.ToStepId == WorkflowStep.Id).Select(x => x.FromStep).ToList() ?? new List<WorkflowStep>();
                     var ApprovedFromRequestSteps = new List<RequestWorkflowStepMapping>();
                     foreach (var FromStep in FromSteps)
                     {
