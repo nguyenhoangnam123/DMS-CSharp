@@ -49,7 +49,7 @@ namespace DMS.Rpc.direct_sales_order
             this.RequestStateId = DirectSalesOrder.RequestStateId;
             this.EditedPriceStatusId = DirectSalesOrder.EditedPriceStatusId;
             this.Note = DirectSalesOrder.Note;
-            this.SubTotal = Math.Round(DirectSalesOrder.SubTotal, 0);
+            this.SubTotal = DirectSalesOrder.SubTotal;
             this.GeneralDiscountPercentage = DirectSalesOrder.GeneralDiscountPercentage;
             this.GeneralDiscountAmount = DirectSalesOrder.GeneralDiscountAmount;
             this.TotalTaxAmount = DirectSalesOrder.TotalTaxAmount;

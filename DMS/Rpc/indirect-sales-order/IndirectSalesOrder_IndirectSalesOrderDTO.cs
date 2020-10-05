@@ -55,7 +55,7 @@ namespace DMS.Rpc.indirect_sales_order
             this.RequestStateId = IndirectSalesOrder.RequestStateId;
             this.EditedPriceStatusId = IndirectSalesOrder.EditedPriceStatusId;
             this.Note = IndirectSalesOrder.Note;
-            this.SubTotal = Math.Round(IndirectSalesOrder.SubTotal, 0);
+            this.SubTotal = IndirectSalesOrder.SubTotal;
             this.GeneralDiscountPercentage = IndirectSalesOrder.GeneralDiscountPercentage;
             this.GeneralDiscountAmount = IndirectSalesOrder.GeneralDiscountAmount;
             this.TotalTaxAmount = IndirectSalesOrder.TotalTaxAmount;
