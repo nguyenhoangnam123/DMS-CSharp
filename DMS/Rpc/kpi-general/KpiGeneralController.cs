@@ -405,6 +405,7 @@ namespace DMS.Rpc.kpi_general
                     {
                         KpiGeneralContent = new KpiGeneralContent();
                         KpiGeneralContent.StatusId = StatusEnum.ACTIVE.Id;
+                        KpiGeneralContent.KpiCriteriaGeneralId = KpiGeneralCriterial.Id;
                         KpiGeneralContent.KpiGeneralContentKpiPeriodMappings = new List<KpiGeneralContentKpiPeriodMapping>();
                         KpiGeneral.KpiGeneralContents.Add(KpiGeneralContent);
                     }
