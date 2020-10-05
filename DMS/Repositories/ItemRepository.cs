@@ -116,6 +116,7 @@ namespace DMS.Repositories
                 query = query.Where(q => q.Product.IsNew == filter.IsNew);
 
             query = OrFilter(query, filter);
+            query = query.Distinct();
             return query;
         }
 
