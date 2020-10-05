@@ -79,7 +79,7 @@ namespace DMS.Services.MDirectSalesOrder
                 {
                     Skip = 0,
                     Take = 10,
-                    Id = new IdFilter { Equal = DirectSalesOrder.BuyerStoreId },
+                    Id = new IdFilter { In = new List<long> { DirectSalesOrder.BuyerStoreId } },
                     StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id },
                     Selects = StoreSelect.Id
                 };
