@@ -38,7 +38,7 @@ namespace DMS.Services.MWorkflow
             ILogging Logging,
             ICurrentContext CurrentContext,
             IWorkflowStepValidator WorkflowStepValidator,
-            RabbitManager RabbitManager
+            IRabbitManager RabbitManager
         )
         {
             this.UOW = UOW;
