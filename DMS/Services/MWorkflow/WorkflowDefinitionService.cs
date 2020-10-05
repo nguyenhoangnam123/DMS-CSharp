@@ -164,11 +164,10 @@ namespace DMS.Services.MWorkflow
             {
                 var oldData = await UOW.WorkflowDefinitionRepository.Get(Id);
                 await UOW.Begin();
-                oldData.StatusId = StatusEnum.INACTIVE.Id;
                 WorkflowDefinition WorkflowDefinition = oldData.Clone();
                 WorkflowDefinition.CreatorId = CurrentContext.UserId;
                 WorkflowDefinition.ModifierId = CurrentContext.UserId; 
-                WorkflowDefinition.StatusId = StatusEnum.ACTIVE.Id;
+                WorkflowDefinition.StatusId = StatusEnum.INACTIVE.Id;
                 WorkflowDefinition.Used = false;
                 WorkflowDefinition.Id = 0;
                 WorkflowDefinition.Code = $"{WorkflowDefinition.Code}_Clone";
@@ -177,7 +176,6 @@ namespace DMS.Services.MWorkflow
                 WorkflowDefinition.WorkflowSteps = new List<WorkflowStep>();
                 
                 await UOW.WorkflowDefinitionRepository.Create(WorkflowDefinition);
-                await UOW.WorkflowDefinitionRepository.Update(oldData);
                 foreach (var WorkflowStep in oldData.WorkflowSteps)
                 {
                     WorkflowStep.Id = 0;
