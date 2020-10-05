@@ -73,6 +73,13 @@ namespace DMS.Services.MWorkflow
                     Id = x.WorkflowStep.Id,
                     Code = x.WorkflowStep.Code,
                     Name = x.WorkflowStep.Name,
+                    RoleId = x.WorkflowStep.RoleId,
+                    Role = x.WorkflowStep.Role == null ? null : new Role
+                    {
+                        Id = x.WorkflowStep.Id,
+                        Code = x.WorkflowStep.Code,
+                        Name = x.WorkflowStep.Name,
+                    }
                 },
             }).ToList();
 
