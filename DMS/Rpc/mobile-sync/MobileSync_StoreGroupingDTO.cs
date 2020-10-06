@@ -1,5 +1,6 @@
 ﻿using Common;
 using DMS.Entities;
+using DMS.Models;
 
 namespace DMS.Rpc.mobile_sync
 {
@@ -22,21 +23,21 @@ namespace DMS.Rpc.mobile_sync
 
 
         public MobileSync_StoreGroupingDTO() { }
-        public MobileSync_StoreGroupingDTO(StoreGrouping StoreGrouping)
+        public MobileSync_StoreGroupingDTO(StoreGroupingDAO StoreGroupingDAO)
         {
 
-            this.Id = StoreGrouping.Id;
+            this.Id = StoreGroupingDAO.Id;
 
-            this.Code = StoreGrouping.Code;
+            this.Code = StoreGroupingDAO.Code;
 
-            this.Name = StoreGrouping.Name;
+            this.Name = StoreGroupingDAO.Name;
 
-            this.ParentId = StoreGrouping.ParentId;
+            this.ParentId = StoreGroupingDAO.ParentId;
 
-            this.Path = StoreGrouping.Path;
+            this.Path = StoreGroupingDAO.Path;
 
-            this.Level = StoreGrouping.Level;
-            this.StatusId = StoreGrouping.StatusId;
+            this.Level = StoreGroupingDAO.Level;
+            this.StatusId = StoreGroupingDAO.StatusId;
 
         }
     }

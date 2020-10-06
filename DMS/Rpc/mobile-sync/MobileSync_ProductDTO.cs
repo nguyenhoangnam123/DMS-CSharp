@@ -1,5 +1,6 @@
 ﻿using Common;
 using DMS.Entities;
+using DMS.Models;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -33,34 +34,33 @@ namespace DMS.Rpc.mobile_sync
         public MobileSync_UnitOfMeasureGroupingDTO UnitOfMeasureGrouping { get; set; }
         public List<MobileSync_ProductProductGroupingMappingDTO> ProductProductGroupingMappings { get; set; }
         public MobileSync_ProductDTO() { }
-        public MobileSync_ProductDTO(Product Product)
+        public MobileSync_ProductDTO(ProductDAO ProductDAO)
         {
-            this.Id = Product.Id;
-            this.Code = Product.Code;
-            this.SupplierCode = Product.SupplierCode;
-            this.ERPCode = Product.ERPCode;
-            this.Name = Product.Name;
-            this.Description = Product.Description;
-            this.ScanCode = Product.ScanCode;
-            this.ProductTypeId = Product.ProductTypeId;
-            this.SupplierId = Product.SupplierId;
-            this.BrandId = Product.BrandId;
-            this.UnitOfMeasureId = Product.UnitOfMeasureId;
-            this.UnitOfMeasureGroupingId = Product.UnitOfMeasureGroupingId;
-            this.SalePrice = Product.SalePrice;
-            this.RetailPrice = Product.RetailPrice;
-            this.TaxTypeId = Product.TaxTypeId;
-            this.StatusId = Product.StatusId;
-            this.OtherName = Product.OtherName;
-            this.TechnicalName = Product.TechnicalName;
-            this.Note = Product.Note;
-            this.ProductType = Product.ProductType == null ? null : new MobileSync_ProductTypeDTO(Product.ProductType);
-            this.Supplier = Product.Supplier == null ? null : new MobileSync_SupplierDTO(Product.Supplier);
-            this.TaxType = Product.TaxType == null ? null : new MobileSync_TaxTypeDTO(Product.TaxType);
-            this.UnitOfMeasure = Product.UnitOfMeasure == null ? null : new MobileSync_UnitOfMeasureDTO(Product.UnitOfMeasure);
-            this.UnitOfMeasureGrouping = Product.UnitOfMeasureGrouping == null ? null : new MobileSync_UnitOfMeasureGroupingDTO(Product.UnitOfMeasureGrouping);
-            this.ProductProductGroupingMappings = Product.ProductProductGroupingMappings?.Select(x => new MobileSync_ProductProductGroupingMappingDTO(x)).ToList();
-            this.Errors = Product.Errors;
+            this.Id = ProductDAO.Id;
+            this.Code = ProductDAO.Code;
+            this.SupplierCode = ProductDAO.SupplierCode;
+            this.ERPCode = ProductDAO.ERPCode;
+            this.Name = ProductDAO.Name;
+            this.Description = ProductDAO.Description;
+            this.ScanCode = ProductDAO.ScanCode;
+            this.ProductTypeId = ProductDAO.ProductTypeId;
+            this.SupplierId = ProductDAO.SupplierId;
+            this.BrandId = ProductDAO.BrandId;
+            this.UnitOfMeasureId = ProductDAO.UnitOfMeasureId;
+            this.UnitOfMeasureGroupingId = ProductDAO.UnitOfMeasureGroupingId;
+            this.SalePrice = ProductDAO.SalePrice;
+            this.RetailPrice = ProductDAO.RetailPrice;
+            this.TaxTypeId = ProductDAO.TaxTypeId;
+            this.StatusId = ProductDAO.StatusId;
+            this.OtherName = ProductDAO.OtherName;
+            this.TechnicalName = ProductDAO.TechnicalName;
+            this.Note = ProductDAO.Note;
+            this.ProductType = ProductDAO.ProductType == null ? null : new MobileSync_ProductTypeDTO(ProductDAO.ProductType);
+            this.Supplier = ProductDAO.Supplier == null ? null : new MobileSync_SupplierDTO(ProductDAO.Supplier);
+            this.TaxType = ProductDAO.TaxType == null ? null : new MobileSync_TaxTypeDTO(ProductDAO.TaxType);
+            this.UnitOfMeasure = ProductDAO.UnitOfMeasure == null ? null : new MobileSync_UnitOfMeasureDTO(ProductDAO.UnitOfMeasure);
+            this.UnitOfMeasureGrouping = ProductDAO.UnitOfMeasureGrouping == null ? null : new MobileSync_UnitOfMeasureGroupingDTO(ProductDAO.UnitOfMeasureGrouping);
+            this.ProductProductGroupingMappings = ProductDAO.ProductProductGroupingMappings?.Select(x => new MobileSync_ProductProductGroupingMappingDTO(x)).ToList();
         }
     }
 

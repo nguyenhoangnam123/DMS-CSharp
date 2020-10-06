@@ -1,5 +1,6 @@
 ﻿using Common;
 using DMS.Entities;
+using DMS.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,11 +14,11 @@ namespace DMS.Rpc.mobile_sync
         public string Code { get; set; }
         public string Name { get; set; }
         public MobileSync_RoleDTO() { }
-        public MobileSync_RoleDTO(Role Role)
+        public MobileSync_RoleDTO(RoleDAO RoleDAO)
         {
-            this.Id = Role.Id;
-            this.Code = Role.Code;
-            this.Name = Role.Name;
+            this.Id = RoleDAO.Id;
+            this.Code = RoleDAO.Code;
+            this.Name = RoleDAO.Name;
         }
     }
 }

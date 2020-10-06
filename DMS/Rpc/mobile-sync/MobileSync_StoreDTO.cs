@@ -1,4 +1,5 @@
 ﻿using DMS.Entities;
+using DMS.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -60,59 +61,59 @@ namespace DMS.Rpc.mobile_sync
         public MobileSync_StoreGroupingDTO StoreGrouping { get; set; }
         public MobileSync_StoreTypeDTO StoreType { get; set; }
         public MobileSync_StoreDTO() { }
-        public MobileSync_StoreDTO(Store Store)
+        public MobileSync_StoreDTO(StoreDAO StoreDAO)
         {
 
-            this.Id = Store.Id;
+            this.Id = StoreDAO.Id;
 
-            this.Code = Store.Code;
-            this.CodeDraft = Store.CodeDraft;
+            this.Code = StoreDAO.Code;
+            this.CodeDraft = StoreDAO.CodeDraft;
 
-            this.Name = Store.Name;
+            this.Name = StoreDAO.Name;
 
-            this.ParentStoreId = Store.ParentStoreId;
+            this.ParentStoreId = StoreDAO.ParentStoreId;
 
-            this.OrganizationId = Store.OrganizationId;
+            this.OrganizationId = StoreDAO.OrganizationId;
 
-            this.StoreTypeId = Store.StoreTypeId;
+            this.StoreTypeId = StoreDAO.StoreTypeId;
 
-            this.StoreGroupingId = Store.StoreGroupingId;
+            this.StoreGroupingId = StoreDAO.StoreGroupingId;
 
-            this.ResellerId = Store.ResellerId;
+            this.ResellerId = StoreDAO.ResellerId;
 
-            this.Telephone = Store.Telephone;
+            this.Telephone = StoreDAO.Telephone;
 
-            this.ProvinceId = Store.ProvinceId;
+            this.ProvinceId = StoreDAO.ProvinceId;
 
-            this.DistrictId = Store.DistrictId;
+            this.DistrictId = StoreDAO.DistrictId;
 
-            this.WardId = Store.WardId;
+            this.WardId = StoreDAO.WardId;
 
-            this.Address = Store.Address;
+            this.Address = StoreDAO.Address;
 
-            this.DeliveryAddress = Store.DeliveryAddress;
+            this.DeliveryAddress = StoreDAO.DeliveryAddress;
 
-            this.Latitude = Store.Latitude;
+            this.Latitude = StoreDAO.Latitude;
 
-            this.Longitude = Store.Longitude;
+            this.Longitude = StoreDAO.Longitude;
 
-            this.DeliveryLatitude = Store.DeliveryLatitude;
+            this.DeliveryLatitude = StoreDAO.DeliveryLatitude;
 
-            this.DeliveryLongitude = Store.DeliveryLongitude;
+            this.DeliveryLongitude = StoreDAO.DeliveryLongitude;
 
-            this.OwnerName = Store.OwnerName;
+            this.OwnerName = StoreDAO.OwnerName;
 
-            this.OwnerPhone = Store.OwnerPhone;
+            this.OwnerPhone = StoreDAO.OwnerPhone;
 
-            this.OwnerEmail = Store.OwnerEmail;
-            this.TaxCode = Store.TaxCode;
-            this.LegalEntity = Store.LegalEntity;
+            this.OwnerEmail = StoreDAO.OwnerEmail;
+            this.TaxCode = StoreDAO.TaxCode;
+            this.LegalEntity = StoreDAO.LegalEntity;
 
-            this.StatusId = Store.StatusId;
+            this.StatusId = StoreDAO.StatusId;
 
-            this.ParentStore = Store.ParentStore == null ? null : new MobileSync_StoreDTO(Store.ParentStore);
-            this.StoreGrouping = Store.StoreGrouping == null ? null : new MobileSync_StoreGroupingDTO(Store.StoreGrouping);
-            this.StoreType = Store.StoreType == null ? null : new MobileSync_StoreTypeDTO(Store.StoreType);
+            this.ParentStore = StoreDAO.ParentStore == null ? null : new MobileSync_StoreDTO(StoreDAO.ParentStore);
+            this.StoreGrouping = StoreDAO.StoreGrouping == null ? null : new MobileSync_StoreGroupingDTO(StoreDAO.StoreGrouping);
+            this.StoreType = StoreDAO.StoreType == null ? null : new MobileSync_StoreTypeDTO(StoreDAO.StoreType);
         }
     }
 }

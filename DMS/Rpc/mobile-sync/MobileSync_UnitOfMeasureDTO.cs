@@ -1,5 +1,6 @@
 using Common;
 using DMS.Entities;
+using DMS.Models;
 using System;
 using System.Diagnostics.CodeAnalysis;
 
@@ -18,35 +19,28 @@ namespace DMS.Rpc.mobile_sync
         public long? Factor { get; set; }
         public long StatusId { get; set; }
         public MobileSync_UnitOfMeasureDTO() { }
-        public MobileSync_UnitOfMeasureDTO(UnitOfMeasure UnitOfMeasure)
+        public MobileSync_UnitOfMeasureDTO(UnitOfMeasureDAO UnitOfMeasureDAO)
         {
-
-            this.Id = UnitOfMeasure.Id;
-
-            this.Code = UnitOfMeasure.Code;
-
-            this.Name = UnitOfMeasure.Name;
-
-            this.Description = UnitOfMeasure.Description;
-
-            this.StatusId = UnitOfMeasure.StatusId;
-
-            this.Errors = UnitOfMeasure.Errors;
+            this.Id = UnitOfMeasureDAO.Id;
+            this.Code = UnitOfMeasureDAO.Code;
+            this.Name = UnitOfMeasureDAO.Name;
+            this.Description = UnitOfMeasureDAO.Description;
+            this.StatusId = UnitOfMeasureDAO.StatusId;
         }
-        public MobileSync_UnitOfMeasureDTO(UnitOfMeasureGroupingContent UnitOfMeasureGroupingContent)
+        public MobileSync_UnitOfMeasureDTO(UnitOfMeasureGroupingContentDAO UnitOfMeasureGroupingContentDAO)
         {
 
-            this.Id = UnitOfMeasureGroupingContent.UnitOfMeasure == null ? 0 : UnitOfMeasureGroupingContent.UnitOfMeasure.Id;
+            this.Id = UnitOfMeasureGroupingContentDAO.UnitOfMeasure == null ? 0 : UnitOfMeasureGroupingContentDAO.UnitOfMeasure.Id;
 
-            this.Code = UnitOfMeasureGroupingContent.UnitOfMeasure == null ? string.Empty : UnitOfMeasureGroupingContent.UnitOfMeasure.Code;
+            this.Code = UnitOfMeasureGroupingContentDAO.UnitOfMeasure == null ? string.Empty : UnitOfMeasureGroupingContentDAO.UnitOfMeasure.Code;
 
-            this.Name = UnitOfMeasureGroupingContent.UnitOfMeasure == null ? string.Empty : UnitOfMeasureGroupingContent.UnitOfMeasure.Name;
+            this.Name = UnitOfMeasureGroupingContentDAO.UnitOfMeasure == null ? string.Empty : UnitOfMeasureGroupingContentDAO.UnitOfMeasure.Name;
 
-            this.Description = UnitOfMeasureGroupingContent.UnitOfMeasure == null ? string.Empty : UnitOfMeasureGroupingContent.UnitOfMeasure.Description;
+            this.Description = UnitOfMeasureGroupingContentDAO.UnitOfMeasure == null ? string.Empty : UnitOfMeasureGroupingContentDAO.UnitOfMeasure.Description;
 
-            this.StatusId = UnitOfMeasureGroupingContent.UnitOfMeasure == null ? 0 : UnitOfMeasureGroupingContent.UnitOfMeasure.StatusId;
+            this.StatusId = UnitOfMeasureGroupingContentDAO.UnitOfMeasure == null ? 0 : UnitOfMeasureGroupingContentDAO.UnitOfMeasure.StatusId;
 
-            this.Factor = UnitOfMeasureGroupingContent.Factor;
+            this.Factor = UnitOfMeasureGroupingContentDAO.Factor;
         }
 
         public bool Equals(MobileSync_UnitOfMeasureDTO other)

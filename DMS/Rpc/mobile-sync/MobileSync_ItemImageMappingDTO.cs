@@ -1,5 +1,6 @@
 ﻿using Common;
 using DMS.Entities;
+using DMS.Models;
 
 namespace DMS.Rpc.mobile_sync
 {
@@ -10,11 +11,11 @@ namespace DMS.Rpc.mobile_sync
         public MobileSync_ImageDTO Image { get; set; }
 
         public MobileSync_ItemImageMappingDTO() { }
-        public MobileSync_ItemImageMappingDTO(ItemImageMapping ItemImageMapping)
+        public MobileSync_ItemImageMappingDTO(ItemImageMappingDAO ItemImageMappingDAO)
         {
-            this.ItemId = ItemImageMapping.ItemId;
-            this.ImageId = ItemImageMapping.ImageId;
-            this.Image = ItemImageMapping.Image == null ? null : new MobileSync_ImageDTO(ItemImageMapping.Image);
+            this.ItemId = ItemImageMappingDAO.ItemId;
+            this.ImageId = ItemImageMappingDAO.ImageId;
+            this.Image = ItemImageMappingDAO.Image == null ? null : new MobileSync_ImageDTO(ItemImageMappingDAO.Image);
         }
     }
 }

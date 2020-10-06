@@ -1,5 +1,6 @@
 ﻿using Common;
 using DMS.Entities;
+using DMS.Models;
 
 namespace DMS.Rpc.mobile_sync
 {
@@ -12,15 +13,14 @@ namespace DMS.Rpc.mobile_sync
         public MobileSync_UnitOfMeasureDTO UnitOfMeasure { get; set; }
         public MobileSync_UnitOfMeasureGroupingDTO UnitOfMeasureGrouping { get; set; }
         public MobileSync_UnitOfMeasureGroupingContentDTO() { }
-        public MobileSync_UnitOfMeasureGroupingContentDTO(UnitOfMeasureGroupingContent UnitOfMeasureGroupingContent)
+        public MobileSync_UnitOfMeasureGroupingContentDTO(UnitOfMeasureGroupingContentDAO UnitOfMeasureGroupingContentDAO)
         {
-            this.Id = UnitOfMeasureGroupingContent.Id;
-            this.UnitOfMeasureGroupingId = UnitOfMeasureGroupingContent.UnitOfMeasureGroupingId;
-            this.UnitOfMeasureId = UnitOfMeasureGroupingContent.UnitOfMeasureId;
-            this.Factor = UnitOfMeasureGroupingContent.Factor;
-            this.UnitOfMeasure = UnitOfMeasureGroupingContent.UnitOfMeasure == null ? null : new MobileSync_UnitOfMeasureDTO(UnitOfMeasureGroupingContent.UnitOfMeasure);
-            this.UnitOfMeasureGrouping = UnitOfMeasureGroupingContent.UnitOfMeasureGrouping == null ? null : new MobileSync_UnitOfMeasureGroupingDTO(UnitOfMeasureGroupingContent.UnitOfMeasureGrouping);
-            this.Errors = UnitOfMeasureGroupingContent.Errors;
+            this.Id = UnitOfMeasureGroupingContentDAO.Id;
+            this.UnitOfMeasureGroupingId = UnitOfMeasureGroupingContentDAO.UnitOfMeasureGroupingId;
+            this.UnitOfMeasureId = UnitOfMeasureGroupingContentDAO.UnitOfMeasureId;
+            this.Factor = UnitOfMeasureGroupingContentDAO.Factor;
+            this.UnitOfMeasure = UnitOfMeasureGroupingContentDAO.UnitOfMeasure == null ? null : new MobileSync_UnitOfMeasureDTO(UnitOfMeasureGroupingContentDAO.UnitOfMeasure);
+            this.UnitOfMeasureGrouping = UnitOfMeasureGroupingContentDAO.UnitOfMeasureGrouping == null ? null : new MobileSync_UnitOfMeasureGroupingDTO(UnitOfMeasureGroupingContentDAO.UnitOfMeasureGrouping);
         }
     }
 }

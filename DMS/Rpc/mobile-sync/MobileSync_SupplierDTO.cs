@@ -1,5 +1,6 @@
 ﻿using Common;
 using DMS.Entities;
+using DMS.Models;
 
 namespace DMS.Rpc.mobile_sync
 {
@@ -17,19 +18,13 @@ namespace DMS.Rpc.mobile_sync
 
 
         public MobileSync_SupplierDTO() { }
-        public MobileSync_SupplierDTO(Supplier Supplier)
+        public MobileSync_SupplierDTO(SupplierDAO SupplierDAO)
         {
-
-            this.Id = Supplier.Id;
-
-            this.Code = Supplier.Code;
-
-            this.Name = Supplier.Name;
-
-            this.TaxCode = Supplier.TaxCode;
-
-            this.StatusId = Supplier.StatusId;
-
+            this.Id = SupplierDAO.Id;
+            this.Code = SupplierDAO.Code;
+            this.Name = SupplierDAO.Name;
+            this.TaxCode = SupplierDAO.TaxCode;
+            this.StatusId = SupplierDAO.StatusId;
         }
     }
 }

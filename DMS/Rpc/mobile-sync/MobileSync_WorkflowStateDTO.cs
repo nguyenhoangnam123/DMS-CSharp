@@ -1,5 +1,6 @@
 ﻿using Common;
 using DMS.Entities;
+using DMS.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,11 +14,11 @@ namespace DMS.Rpc.mobile_sync
         public string Code { get; set; }
         public string Name { get; set; }
         public MobileSync_WorkflowStateDTO() { }
-        public MobileSync_WorkflowStateDTO(WorkflowState WorkflowState)
+        public MobileSync_WorkflowStateDTO(WorkflowStateDAO WorkflowStateDAO)
         {
-            this.Id = WorkflowState.Id;
-            this.Code = WorkflowState.Code;
-            this.Name = WorkflowState.Name;
+            this.Id = WorkflowStateDAO.Id;
+            this.Code = WorkflowStateDAO.Code;
+            this.Name = WorkflowStateDAO.Name;
         }
     }
 }

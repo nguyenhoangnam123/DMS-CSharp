@@ -1,5 +1,6 @@
 using Common;
 using DMS.Entities;
+using DMS.Models;
 
 namespace DMS.Rpc.mobile_sync
 {
@@ -19,21 +20,20 @@ namespace DMS.Rpc.mobile_sync
         public MobileSync_UnitOfMeasureDTO UnitOfMeasure { get; set; }
 
         public MobileSync_IndirectSalesOrderPromotionDTO() { }
-        public MobileSync_IndirectSalesOrderPromotionDTO(IndirectSalesOrderPromotion IndirectSalesOrderPromotion)
+        public MobileSync_IndirectSalesOrderPromotionDTO(IndirectSalesOrderPromotionDAO IndirectSalesOrderPromotionDAO)
         {
-            this.Id = IndirectSalesOrderPromotion.Id;
-            this.IndirectSalesOrderId = IndirectSalesOrderPromotion.IndirectSalesOrderId;
-            this.ItemId = IndirectSalesOrderPromotion.ItemId;
-            this.UnitOfMeasureId = IndirectSalesOrderPromotion.UnitOfMeasureId;
-            this.Quantity = IndirectSalesOrderPromotion.Quantity;
-            this.PrimaryUnitOfMeasureId = IndirectSalesOrderPromotion.PrimaryUnitOfMeasureId;
-            this.RequestedQuantity = IndirectSalesOrderPromotion.RequestedQuantity;
-            this.Note = IndirectSalesOrderPromotion.Note;
-            this.Factor = IndirectSalesOrderPromotion.Factor;
-            this.Item = IndirectSalesOrderPromotion.Item == null ? null : new MobileSync_ItemDTO(IndirectSalesOrderPromotion.Item);
-            this.PrimaryUnitOfMeasure = IndirectSalesOrderPromotion.PrimaryUnitOfMeasure == null ? null : new MobileSync_UnitOfMeasureDTO(IndirectSalesOrderPromotion.PrimaryUnitOfMeasure);
-            this.UnitOfMeasure = IndirectSalesOrderPromotion.UnitOfMeasure == null ? null : new MobileSync_UnitOfMeasureDTO(IndirectSalesOrderPromotion.UnitOfMeasure);
-            this.Errors = IndirectSalesOrderPromotion.Errors;
+            this.Id = IndirectSalesOrderPromotionDAO.Id;
+            this.IndirectSalesOrderId = IndirectSalesOrderPromotionDAO.IndirectSalesOrderId;
+            this.ItemId = IndirectSalesOrderPromotionDAO.ItemId;
+            this.UnitOfMeasureId = IndirectSalesOrderPromotionDAO.UnitOfMeasureId;
+            this.Quantity = IndirectSalesOrderPromotionDAO.Quantity;
+            this.PrimaryUnitOfMeasureId = IndirectSalesOrderPromotionDAO.PrimaryUnitOfMeasureId;
+            this.RequestedQuantity = IndirectSalesOrderPromotionDAO.RequestedQuantity;
+            this.Note = IndirectSalesOrderPromotionDAO.Note;
+            this.Factor = IndirectSalesOrderPromotionDAO.Factor;
+            this.Item = IndirectSalesOrderPromotionDAO.Item == null ? null : new MobileSync_ItemDTO(IndirectSalesOrderPromotionDAO.Item);
+            this.PrimaryUnitOfMeasure = IndirectSalesOrderPromotionDAO.PrimaryUnitOfMeasure == null ? null : new MobileSync_UnitOfMeasureDTO(IndirectSalesOrderPromotionDAO.PrimaryUnitOfMeasure);
+            this.UnitOfMeasure = IndirectSalesOrderPromotionDAO.UnitOfMeasure == null ? null : new MobileSync_UnitOfMeasureDTO(IndirectSalesOrderPromotionDAO.UnitOfMeasure);
         }
     }
 

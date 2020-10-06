@@ -1,5 +1,6 @@
 using Common;
 using DMS.Entities;
+using DMS.Models;
 
 namespace DMS.Rpc.mobile_sync
 {
@@ -14,16 +15,11 @@ namespace DMS.Rpc.mobile_sync
 
 
         public MobileSync_ProblemTypeDTO() { }
-        public MobileSync_ProblemTypeDTO(ProblemType ProblemType)
+        public MobileSync_ProblemTypeDTO(ProblemTypeDAO ProblemTypeDAO)
         {
-
-            this.Id = ProblemType.Id;
-
-            this.Code = ProblemType.Code;
-
-            this.Name = ProblemType.Name;
-
-            this.Errors = ProblemType.Errors;
+            this.Id = ProblemTypeDAO.Id;
+            this.Code = ProblemTypeDAO.Code;
+            this.Name = ProblemTypeDAO.Name;
         }
     }
 

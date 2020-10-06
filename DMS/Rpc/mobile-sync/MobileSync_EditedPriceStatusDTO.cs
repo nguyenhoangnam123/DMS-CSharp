@@ -1,5 +1,6 @@
 using Common;
 using DMS.Entities;
+using DMS.Models;
 
 namespace DMS.Rpc.mobile_sync
 {
@@ -9,12 +10,11 @@ namespace DMS.Rpc.mobile_sync
         public string Code { get; set; }
         public string Name { get; set; }
         public MobileSync_EditedPriceStatusDTO() { }
-        public MobileSync_EditedPriceStatusDTO(EditedPriceStatus EditedPriceStatus)
+        public MobileSync_EditedPriceStatusDTO(EditedPriceStatusDAO EditedPriceStatusDAO)
         {
-            this.Id = EditedPriceStatus.Id;
-            this.Code = EditedPriceStatus.Code;
-            this.Name = EditedPriceStatus.Name;
-            this.Errors = EditedPriceStatus.Errors;
+            this.Id = EditedPriceStatusDAO.Id;
+            this.Code = EditedPriceStatusDAO.Code;
+            this.Name = EditedPriceStatusDAO.Name;
         }
     }
 }

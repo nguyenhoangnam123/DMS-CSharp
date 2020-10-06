@@ -1,5 +1,6 @@
 ﻿using Common;
 using DMS.Entities;
+using DMS.Models;
 
 namespace DMS.Rpc.mobile_sync
 {
@@ -11,14 +12,13 @@ namespace DMS.Rpc.mobile_sync
         public decimal Percentage { get; set; }
         public long StatusId { get; set; }
         public MobileSync_TaxTypeDTO() { }
-        public MobileSync_TaxTypeDTO(TaxType TaxType)
+        public MobileSync_TaxTypeDTO(TaxTypeDAO TaxTypeDAO)
         {
-            this.Id = TaxType.Id;
-            this.Code = TaxType.Code;
-            this.Name = TaxType.Name;
-            this.Percentage = TaxType.Percentage;
-            this.StatusId = TaxType.StatusId;
-            this.Errors = TaxType.Errors;
+            this.Id = TaxTypeDAO.Id;
+            this.Code = TaxTypeDAO.Code;
+            this.Name = TaxTypeDAO.Name;
+            this.Percentage = TaxTypeDAO.Percentage;
+            this.StatusId = TaxTypeDAO.StatusId;
         }
     }
 }

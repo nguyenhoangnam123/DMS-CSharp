@@ -1,5 +1,6 @@
 ﻿using Common;
 using DMS.Entities;
+using DMS.Models;
 
 namespace DMS.Rpc.mobile_sync
 {
@@ -10,11 +11,11 @@ namespace DMS.Rpc.mobile_sync
         public MobileSync_ProductGroupingDTO ProductGrouping { get; set; }
 
         public MobileSync_ProductProductGroupingMappingDTO() { }
-        public MobileSync_ProductProductGroupingMappingDTO(ProductProductGroupingMapping ProductProductGroupingMapping)
+        public MobileSync_ProductProductGroupingMappingDTO(ProductProductGroupingMappingDAO ProductProductGroupingMappingDAO)
         {
-            this.ProductId = ProductProductGroupingMapping.ProductId;
-            this.ProductGroupingId = ProductProductGroupingMapping.ProductGroupingId;
-            this.ProductGrouping = ProductProductGroupingMapping.ProductGrouping == null ? null : new MobileSync_ProductGroupingDTO(ProductProductGroupingMapping.ProductGrouping);
+            this.ProductId = ProductProductGroupingMappingDAO.ProductId;
+            this.ProductGroupingId = ProductProductGroupingMappingDAO.ProductGroupingId;
+            this.ProductGrouping = ProductProductGroupingMappingDAO.ProductGrouping == null ? null : new MobileSync_ProductGroupingDTO(ProductProductGroupingMappingDAO.ProductGrouping);
         }
     }
 

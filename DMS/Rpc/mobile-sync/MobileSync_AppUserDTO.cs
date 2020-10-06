@@ -1,5 +1,6 @@
 using Common;
 using DMS.Entities;
+using DMS.Models;
 using System;
 
 namespace DMS.Rpc.mobile_sync
@@ -38,36 +39,34 @@ namespace DMS.Rpc.mobile_sync
 
 
         public MobileSync_AppUserDTO() { }
-        public MobileSync_AppUserDTO(AppUser AppUser)
+        public MobileSync_AppUserDTO(AppUserDAO AppUserDAO)
         {
 
-            this.Id = AppUser.Id;
+            this.Id = AppUserDAO.Id;
 
-            this.Username = AppUser.Username;
+            this.Username = AppUserDAO.Username;
 
-            this.DisplayName = AppUser.DisplayName;
+            this.DisplayName = AppUserDAO.DisplayName;
 
-            this.Address = AppUser.Address;
+            this.Address = AppUserDAO.Address;
 
-            this.Email = AppUser.Email;
+            this.Email = AppUserDAO.Email;
 
-            this.Phone = AppUser.Phone;
+            this.Phone = AppUserDAO.Phone;
 
-            this.PositionId = AppUser.PositionId;
+            this.PositionId = AppUserDAO.PositionId;
 
-            this.Department = AppUser.Department;
+            this.Department = AppUserDAO.Department;
 
-            this.OrganizationId = AppUser.OrganizationId;
+            this.OrganizationId = AppUserDAO.OrganizationId;
 
-            this.SexId = AppUser.SexId;
+            this.SexId = AppUserDAO.SexId;
 
-            this.StatusId = AppUser.StatusId;
+            this.StatusId = AppUserDAO.StatusId;
 
-            this.Birthday = AppUser.Birthday;
+            this.Birthday = AppUserDAO.Birthday;
 
-            this.ProvinceId = AppUser.ProvinceId;
-
-            this.Errors = AppUser.Errors;
+            this.ProvinceId = AppUserDAO.ProvinceId;
         }
     }
 }

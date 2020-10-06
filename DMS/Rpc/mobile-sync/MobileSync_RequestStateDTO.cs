@@ -1,5 +1,6 @@
 ﻿using Common;
 using DMS.Entities;
+using DMS.Models;
 
 namespace DMS.Rpc.mobile_sync
 {
@@ -9,12 +10,11 @@ namespace DMS.Rpc.mobile_sync
         public string Code { get; set; }
         public string Name { get; set; }
         public MobileSync_RequestStateDTO() { }
-        public MobileSync_RequestStateDTO(RequestState RequestState)
+        public MobileSync_RequestStateDTO(RequestStateDAO RequestStateDAO)
         {
-            this.Id = RequestState.Id;
-            this.Code = RequestState.Code;
-            this.Name = RequestState.Name;
-            this.Errors = RequestState.Errors;
+            this.Id = RequestStateDAO.Id;
+            this.Code = RequestStateDAO.Code;
+            this.Name = RequestStateDAO.Name;
         }
     }
 }
