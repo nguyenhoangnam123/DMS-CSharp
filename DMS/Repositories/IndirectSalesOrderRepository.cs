@@ -726,16 +726,7 @@ namespace DMS.Repositories
                 };
             }
 
-            decimal GeneralDiscountAmount = IndirectSalesOrder.GeneralDiscountAmount.HasValue ? IndirectSalesOrder.GeneralDiscountAmount.Value : 0;
-            decimal DiscountAmount = IndirectSalesOrder.IndirectSalesOrderContents != null ?
-                IndirectSalesOrder.IndirectSalesOrderContents
-                .Select(x => x.DiscountAmount.GetValueOrDefault(0))
-                .Sum() : 0;
-            IndirectSalesOrder.TotalDiscountAmount = GeneralDiscountAmount + DiscountAmount;
-            IndirectSalesOrder.TotalRequestedQuantity = IndirectSalesOrder.IndirectSalesOrderContents != null ?
-                IndirectSalesOrder.IndirectSalesOrderContents
-                .Select(x => x.RequestedQuantity)
-                .Sum() : 0;
+          
 
             IndirectSalesOrder.IndirectSalesOrderContents = await DataContext.IndirectSalesOrderContent.AsNoTracking()
                 .Where(x => x.IndirectSalesOrderId == IndirectSalesOrder.Id)
@@ -921,6 +912,17 @@ namespace DMS.Repositories
                     IndirectSalesOrderContent.TaxType = TaxType;
                 }
             }
+
+            decimal GeneralDiscountAmount = IndirectSalesOrder.GeneralDiscountAmount.HasValue ? IndirectSalesOrder.GeneralDiscountAmount.Value : 0;
+            decimal DiscountAmount = IndirectSalesOrder.IndirectSalesOrderContents != null ?
+                IndirectSalesOrder.IndirectSalesOrderContents
+                .Select(x => x.DiscountAmount.GetValueOrDefault(0))
+                .Sum() : 0;
+            IndirectSalesOrder.TotalDiscountAmount = GeneralDiscountAmount + DiscountAmount;
+            IndirectSalesOrder.TotalRequestedQuantity = IndirectSalesOrder.IndirectSalesOrderContents != null ?
+                IndirectSalesOrder.IndirectSalesOrderContents
+                .Select(x => x.RequestedQuantity)
+                .Sum() : 0;
             return IndirectSalesOrder;
         }
         public async Task<bool> Create(IndirectSalesOrder IndirectSalesOrder)
