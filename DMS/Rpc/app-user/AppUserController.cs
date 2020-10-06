@@ -104,7 +104,8 @@ namespace DMS.Rpc.app_user
                 return Forbid();
 
             AppUser AppUser = await AppUserService.Get(AppUser_AppUserDTO.Id);
-            return new AppUser_AppUserDTO(AppUser);
+            AppUser_AppUserDTO = new AppUser_AppUserDTO(AppUser);
+            return AppUser_AppUserDTO;
         }
 
         [Route(AppUserRoute.Update), HttpPost]
@@ -214,19 +215,19 @@ namespace DMS.Rpc.app_user
                     }
 
                     Store Store = Stores.Where(x => x.CodeDraft == StoreCodeValue.Trim()).FirstOrDefault();
-                    if(Store == null)
+                    if (Store == null)
                     {
                         errorContent.AppendLine($"Lỗi dòng thứ {i + 1}: Đại lý không tồn tại");
                         continue;
                     }
                     var Employee = AppUsers.Where(x => x.Username == appUser.Username).FirstOrDefault();
-                    if(Employee == null)
+                    if (Employee == null)
                     {
                         Employee = new AppUser();
                         Employee.Id = appUser.Id;
                         Employee.Username = appUser.Username;
                         Employee.AppUserStoreMappings = new List<AppUserStoreMapping>();
-                        Employee.AppUserStoreMappings.Add(new AppUserStoreMapping 
+                        Employee.AppUserStoreMappings.Add(new AppUserStoreMapping
                         {
                             AppUserId = appUser.Id,
                             StoreId = Store.Id
