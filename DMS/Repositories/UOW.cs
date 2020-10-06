@@ -12,6 +12,7 @@ namespace DMS.Repositories
 
         IAlbumRepository AlbumRepository { get; }
         IAppUserRepository AppUserRepository { get; }
+        IAppUserStoreMappingRepository AppUserStoreMappingRepository { get; }
         IBannerRepository BannerRepository { get; }
         IBrandRepository BrandRepository { get; }
         IColorRepository ColorRepository { get; }
@@ -129,6 +130,7 @@ namespace DMS.Repositories
 
         public IAlbumRepository AlbumRepository { get; private set; }
         public IAppUserRepository AppUserRepository { get; private set; }
+        public IAppUserStoreMappingRepository AppUserStoreMappingRepository { get; private set; }
         public IBannerRepository BannerRepository { get; private set; }
         public IBrandRepository BrandRepository { get; private set; }
         public IColorRepository ColorRepository { get; private set; }
@@ -245,6 +247,7 @@ namespace DMS.Repositories
 
             AlbumRepository = new AlbumRepository(DataContext);
             AppUserRepository = new AppUserRepository(DataContext);
+            AppUserStoreMappingRepository = new AppUserStoreMappingRepository(DataContext);
             BrandRepository = new BrandRepository(DataContext);
             BannerRepository = new BannerRepository(DataContext);
             ColorRepository = new ColorRepository(DataContext);

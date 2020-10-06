@@ -290,6 +290,13 @@ namespace DMS.Services.MStore
                 StoreCodeGenerate(Store);
                 await UOW.Begin();
                 await UOW.StoreRepository.Update(Store);
+                if (Store.StoreStatusId == StoreStatusEnum.OFFICIAL.Id)
+                {
+                    if (oldData.AppUserId.HasValue)
+                        await UOW.AppUserStoreMappingRepository.Delete(oldData.AppUserId.Value, oldData.Id);
+                    if (Store.AppUserId.HasValue)
+                        await UOW.AppUserStoreMappingRepository.Update(Store.AppUserId.Value, Store.Id);
+                }
                 await UOW.Commit();
 
                 NotifyUsed(Store);
@@ -343,7 +350,14 @@ namespace DMS.Services.MStore
 
             try
             {
+                var oldData = await UOW.StoreRepository.Get(Store.Id);
                 await UOW.Begin();
+                if (oldData.StoreStatusId == StoreStatusEnum.OFFICIAL.Id)
+                {
+                    if (oldData.AppUserId.HasValue)
+                        await UOW.AppUserStoreMappingRepository.Update(oldData.AppUserId.Value, oldData.Id);
+                }
+
                 await UOW.StoreRepository.Delete(Store);
                 await UOW.Commit();
 
@@ -448,7 +462,7 @@ namespace DMS.Services.MStore
                 {
                     Skip = 0,
                     Take = int.MaxValue,
-                    Selects = StoreSelect.Id | StoreSelect.Code | StoreSelect.Name | StoreSelect.ParentStore ,
+                    Selects = StoreSelect.Id | StoreSelect.Code | StoreSelect.Name | StoreSelect.ParentStore,
                 };
                 List<Store> dbStores = await UOW.StoreRepository.List(StoreFilter);
                 var createCounter = Stores.Where(x => x.Id == 0).Count();
