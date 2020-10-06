@@ -680,6 +680,14 @@ namespace DMS.Repositories
                 .Where(au => au.AppUserId == AppUserId)
                 .Select(au => au.StoreId)
                 .ToListAsync();
+            if (StoreIds.Count == 0)
+            {
+                OrganizationDAO OrganizationDAO = await DataContext.Organization.Where(x => x.Id == AppUserDAO.OrganizationId).FirstOrDefaultAsync();
+                StoreIds = await DataContext.Store
+                .Where(x => x.Organization.Path.StartsWith(OrganizationDAO.Path))
+                .Select(x => x.Id)
+                .ToListAsync();
+            }
 
             List<long> DraftStoreIds = await DataContext.Store
                 .Where(x =>
@@ -693,20 +701,9 @@ namespace DMS.Repositories
             if (filter.Id == null) filter.Id = new IdFilter();
             if (filter.Id.In == null || filter.Id.In.Count == 0)
                 filter.Id.In = StoreIds;
-            
-            if (StoreIds.Count > 0)
-            {
-                filter.Id.In = filter.Id.In.Intersect(StoreIds).ToList();
-            }
-            else
-            {
-                long? OrganizationId = filter.OrganizationId?.Equal;
-                filter.OrganizationId = new IdFilter { In = new List<long>() };
-                if (OrganizationId.HasValue)
-                    filter.OrganizationId.In.Add(OrganizationId.Value);
-                filter.OrganizationId.In.Add(AppUserDAO.OrganizationId);
-            }
-            if (filter.Id.In == null) filter.Id.In = new List<long>();
+
+            //nếu nhân viên đã có phạm vi đi tuyến, lấy giao giữa tập đc phân quyền và phạm vi đi tuyến
+            filter.Id.In = filter.Id.In.Intersect(StoreIds).ToList();
 
             IQueryable<StoreDAO> Stores = DataContext.Store;
             Stores = await DynamicFilter(Stores, filter);
@@ -724,34 +721,30 @@ namespace DMS.Repositories
                 .Where(au => au.AppUserId == AppUserId)
                 .Select(au => au.StoreId)
                 .ToListAsync();
-
+            if (StoreIds.Count == 0)
+            {
+                OrganizationDAO OrganizationDAO = await DataContext.Organization.Where(x => x.Id == AppUserDAO.OrganizationId).FirstOrDefaultAsync();
+                StoreIds = await DataContext.Store
+                .Where(x => x.Organization.Path.StartsWith(OrganizationDAO.Path))
+                .Select(x => x.Id)
+                .ToListAsync();
+            }
             List<long> DraftStoreIds = await DataContext.Store
-                .Where(x => 
+                .Where(x =>
                     x.StoreStatusId == StoreStatusEnum.DRAFT.Id &&
                     x.Organization.Path.StartsWith(AppUserDAO.Organization.Path) &&
                     x.DeletedAt == null)
               .Select(x => x.Id).ToListAsync();
 
+            //cộng thêm đại lý dự thảo
             StoreIds.AddRange(DraftStoreIds);
             StoreIds = StoreIds.Distinct().ToList();
             if (filter.Id == null) filter.Id = new IdFilter();
             if (filter.Id.In == null || filter.Id.In.Count == 0)
                 filter.Id.In = StoreIds;
-            //cộng thêm đại lý dự thảo
 
-            if (filter.Id == null) filter.Id = new IdFilter();
             //nếu nhân viên đã có phạm vi đi tuyến, lấy giao giữa tập đc phân quyền và phạm vi đi tuyến
-            if (StoreIds.Count > 0)
-                filter.Id.In = filter.Id.In.Intersect(StoreIds).ToList();
-            else
-            {
-                long? OrganizationId = filter.OrganizationId?.Equal;
-                filter.OrganizationId = new IdFilter { In = new List<long>() };
-                if (OrganizationId.HasValue)
-                    filter.OrganizationId.In.Add(OrganizationId.Value);
-                else
-                    filter.OrganizationId.In.Add(AppUserDAO.OrganizationId);
-            }
+            filter.Id.In = filter.Id.In.Intersect(StoreIds).ToList();
 
             IQueryable<StoreDAO> StoreDAOs = DataContext.Store.AsNoTracking();
             StoreDAOs = await DynamicFilter(StoreDAOs, filter);
