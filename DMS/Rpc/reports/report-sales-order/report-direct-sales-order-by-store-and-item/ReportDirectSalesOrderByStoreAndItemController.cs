@@ -373,7 +373,8 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_by_store_
 
             StoreIds = Stores.Select(s => s.Id).ToList();
             List<DirectSalesOrderDAO> DirectSalesOrderDAOs = await DataContext.DirectSalesOrder
-                .Where(x => StoreIds.Contains(x.BuyerStoreId) && Start <= x.OrderDate && x.OrderDate <= End)
+                .Where(x => StoreIds.Contains(x.BuyerStoreId) && Start <= x.OrderDate && x.OrderDate <= End &&
+                x.RequestStateId == RequestStateEnum.APPROVED.Id)
                 .Select(x => new DirectSalesOrderDAO
                 {
                     Id = x.Id,
