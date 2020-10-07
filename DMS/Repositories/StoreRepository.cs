@@ -91,8 +91,10 @@ namespace DMS.Repositories
             {
                 if (filter.StoreCheckingStatusId.Equal.HasValue)
                 {
+                    var Start = StaticParams.DateTimeNow.AddHours(filter.TimeZone).Date.AddHours(0 - filter.TimeZone);
+                    var End = StaticParams.DateTimeNow.AddHours(filter.TimeZone).Date.AddHours(0 - filter.TimeZone).AddDays(1).AddSeconds(-1);
                     var storeCheckingQuery = DataContext.StoreChecking
-                           .Where(sc => sc.CheckInAt.HasValue && sc.CheckOutAt.HasValue && sc.CheckOutAt.Value.Date == StaticParams.DateTimeNow.Date);
+                           .Where(sc => sc.CheckOutAt.HasValue && Start <= sc.CheckOutAt.Value && sc.CheckOutAt.Value <= End);
                     if (filter.SalesEmployeeId != null && filter.SalesEmployeeId.Equal.HasValue)
                     {
                         storeCheckingQuery = storeCheckingQuery.Where(x => x.SaleEmployeeId == filter.SalesEmployeeId.Equal.Value);
