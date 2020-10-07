@@ -41,37 +41,37 @@ namespace DMS.Rpc.mobile_sync
         public List<MobileSync_IndirectSalesOrderPromotionDTO> IndirectSalesOrderPromotions { get; set; }
         public List<MobileSync_RequestWorkflowStepMappingDTO> RequestWorkflowStepMappings { get; set; }
         public MobileSync_IndirectSalesOrderDTO() { }
-        public MobileSync_IndirectSalesOrderDTO(IndirectSalesOrderDAO IndirectSalesOrderDAO)
+        public MobileSync_IndirectSalesOrderDTO(IndirectSalesOrder IndirectSalesOrder)
         {
-            this.Id = IndirectSalesOrderDAO.Id;
-            this.Code = IndirectSalesOrderDAO.Code;
-            this.BuyerStoreId = IndirectSalesOrderDAO.BuyerStoreId;
-            this.PhoneNumber = IndirectSalesOrderDAO.PhoneNumber;
-            this.StoreAddress = IndirectSalesOrderDAO.StoreAddress;
-            this.DeliveryAddress = IndirectSalesOrderDAO.DeliveryAddress;
-            this.SellerStoreId = IndirectSalesOrderDAO.SellerStoreId;
-            this.SaleEmployeeId = IndirectSalesOrderDAO.SaleEmployeeId;
-            this.OrganizationId = IndirectSalesOrderDAO.OrganizationId;
-            this.OrderDate = IndirectSalesOrderDAO.OrderDate;
-            this.DeliveryDate = IndirectSalesOrderDAO.DeliveryDate;
-            this.RequestStateId = IndirectSalesOrderDAO.RequestStateId;
-            this.EditedPriceStatusId = IndirectSalesOrderDAO.EditedPriceStatusId;
-            this.Note = IndirectSalesOrderDAO.Note;
-            this.SubTotal = Math.Round(IndirectSalesOrderDAO.SubTotal, 0);
-            this.GeneralDiscountPercentage = IndirectSalesOrderDAO.GeneralDiscountPercentage;
-            this.GeneralDiscountAmount = IndirectSalesOrderDAO.GeneralDiscountAmount;
-            this.TotalTaxAmount = IndirectSalesOrderDAO.TotalTaxAmount;
-            this.Total = Math.Round(IndirectSalesOrderDAO.Total, 0);
-            this.CreatedAt = IndirectSalesOrderDAO.CreatedAt;
-            this.UpdatedAt = IndirectSalesOrderDAO.UpdatedAt;
-            this.BuyerStore = IndirectSalesOrderDAO.BuyerStore == null ? null : new MobileSync_StoreDTO(IndirectSalesOrderDAO.BuyerStore);
-            this.EditedPriceStatus = IndirectSalesOrderDAO.EditedPriceStatus == null ? null : new MobileSync_EditedPriceStatusDTO(IndirectSalesOrderDAO.EditedPriceStatus);
-            this.RequestState = IndirectSalesOrderDAO.RequestState == null ? null : new MobileSync_RequestStateDTO(IndirectSalesOrderDAO.RequestState);
-            this.SaleEmployee = IndirectSalesOrderDAO.SaleEmployee == null ? null : new MobileSync_AppUserDTO(IndirectSalesOrderDAO.SaleEmployee);
-            this.Organization = IndirectSalesOrderDAO.Organization == null ? null : new MobileSync_OrganizationDTO(IndirectSalesOrderDAO.Organization);
-            this.SellerStore = IndirectSalesOrderDAO.SellerStore == null ? null : new MobileSync_StoreDTO(IndirectSalesOrderDAO.SellerStore);
-            this.IndirectSalesOrderContents = IndirectSalesOrderDAO.IndirectSalesOrderContents?.Select(x => new MobileSync_IndirectSalesOrderContentDTO(x)).ToList();
-            this.IndirectSalesOrderPromotions = IndirectSalesOrderDAO.IndirectSalesOrderPromotions?.Select(x => new MobileSync_IndirectSalesOrderPromotionDTO(x)).ToList();
+            this.Id = IndirectSalesOrder.Id;
+            this.Code = IndirectSalesOrder.Code;
+            this.BuyerStoreId = IndirectSalesOrder.BuyerStoreId;
+            this.PhoneNumber = IndirectSalesOrder.PhoneNumber;
+            this.StoreAddress = IndirectSalesOrder.StoreAddress;
+            this.DeliveryAddress = IndirectSalesOrder.DeliveryAddress;
+            this.SellerStoreId = IndirectSalesOrder.SellerStoreId;
+            this.SaleEmployeeId = IndirectSalesOrder.SaleEmployeeId;
+            this.OrganizationId = IndirectSalesOrder.OrganizationId;
+            this.OrderDate = IndirectSalesOrder.OrderDate;
+            this.DeliveryDate = IndirectSalesOrder.DeliveryDate;
+            this.RequestStateId = IndirectSalesOrder.RequestStateId;
+            this.EditedPriceStatusId = IndirectSalesOrder.EditedPriceStatusId;
+            this.Note = IndirectSalesOrder.Note;
+            this.SubTotal = Math.Round(IndirectSalesOrder.SubTotal, 0);
+            this.GeneralDiscountPercentage = IndirectSalesOrder.GeneralDiscountPercentage;
+            this.GeneralDiscountAmount = IndirectSalesOrder.GeneralDiscountAmount;
+            this.TotalTaxAmount = IndirectSalesOrder.TotalTaxAmount;
+            this.Total = Math.Round(IndirectSalesOrder.Total, 0);
+            this.CreatedAt = IndirectSalesOrder.CreatedAt;
+            this.UpdatedAt = IndirectSalesOrder.UpdatedAt;
+            this.BuyerStore = IndirectSalesOrder.BuyerStore == null ? null : new MobileSync_StoreDTO(IndirectSalesOrder.BuyerStore);
+            this.EditedPriceStatus = IndirectSalesOrder.EditedPriceStatus == null ? null : new MobileSync_EditedPriceStatusDTO(IndirectSalesOrder.EditedPriceStatus);
+            this.RequestState = IndirectSalesOrder.RequestState == null ? null : new MobileSync_RequestStateDTO(IndirectSalesOrder.RequestState);
+            this.SaleEmployee = IndirectSalesOrder.SaleEmployee == null ? null : new MobileSync_AppUserDTO(IndirectSalesOrder.SaleEmployee);
+            this.Organization = IndirectSalesOrder.Organization == null ? null : new MobileSync_OrganizationDTO(IndirectSalesOrder.Organization);
+            this.SellerStore = IndirectSalesOrder.SellerStore == null ? null : new MobileSync_StoreDTO(IndirectSalesOrder.SellerStore);
+            this.IndirectSalesOrderContents = IndirectSalesOrder.IndirectSalesOrderContents?.Select(x => new MobileSync_IndirectSalesOrderContentDTO(x)).ToList();
+            this.IndirectSalesOrderPromotions = IndirectSalesOrder.IndirectSalesOrderPromotions?.Select(x => new MobileSync_IndirectSalesOrderPromotionDTO(x)).ToList();
             
         }
     }

@@ -18,15 +18,15 @@ namespace DMS.Rpc.mobile_sync
         public MobileSync_AppUserDTO Modifier { get; set; }
         public MobileSync_ProblemStatusDTO ProblemStatus { get; set; }
         public MobileSync_ProblemHistoryDTO() { }
-        public MobileSync_ProblemHistoryDTO(ProblemHistoryDAO ProblemHistoryDAO)
+        public MobileSync_ProblemHistoryDTO(ProblemHistory ProblemHistory)
         {
-            this.Id = ProblemHistoryDAO.Id;
-            this.ProblemId = ProblemHistoryDAO.ProblemId;
-            this.Time = ProblemHistoryDAO.Time;
-            this.ModifierId = ProblemHistoryDAO.ModifierId;
-            this.ProblemStatusId = ProblemHistoryDAO.ProblemStatusId;
-            this.Modifier = ProblemHistoryDAO.Modifier == null ? null : new MobileSync_AppUserDTO(ProblemHistoryDAO.Modifier);
-            this.ProblemStatus = ProblemHistoryDAO.ProblemStatus == null ? null : new MobileSync_ProblemStatusDTO(ProblemHistoryDAO.ProblemStatus);
+            this.Id = ProblemHistory.Id;
+            this.ProblemId = ProblemHistory.ProblemId;
+            this.Time = ProblemHistory.Time;
+            this.ModifierId = ProblemHistory.ModifierId;
+            this.ProblemStatusId = ProblemHistory.ProblemStatusId;
+            this.Modifier = ProblemHistory.Modifier == null ? null : new MobileSync_AppUserDTO(ProblemHistory.Modifier);
+            this.ProblemStatus = ProblemHistory.ProblemStatus == null ? null : new MobileSync_ProblemStatusDTO(ProblemHistory.ProblemStatus);
         }
     }
 

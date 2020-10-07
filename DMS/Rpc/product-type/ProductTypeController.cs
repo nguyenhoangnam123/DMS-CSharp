@@ -162,7 +162,7 @@ namespace DMS.Rpc.product_type
             ProductType.Name = ProductType_ProductTypeDTO.Name;
             ProductType.Description = ProductType_ProductTypeDTO.Description;
             ProductType.StatusId = ProductType_ProductTypeDTO.StatusId;
-            ProductType.UpdatedTime = ProductType_ProductTypeDTO.UpdateTime;
+            ProductType.UpdatedAt = ProductType_ProductTypeDTO.UpdateTime;
             ProductType.Status = ProductType_ProductTypeDTO.Status == null ? null : new Status
             {
                 Id = ProductType_ProductTypeDTO.Status.Id,

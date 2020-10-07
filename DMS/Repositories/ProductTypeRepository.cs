@@ -139,7 +139,7 @@ namespace DMS.Repositories
                 Name = filter.Selects.Contains(ProductTypeSelect.Name) ? q.Name : default(string),
                 Description = filter.Selects.Contains(ProductTypeSelect.Description) ? q.Description : default(string),
                 StatusId = filter.Selects.Contains(ProductTypeSelect.Status) ? q.StatusId : default(long),
-                UpdatedTime = filter.Selects.Contains(ProductTypeSelect.UpdatedTime) ? q.UpdatedAt : default(DateTime),
+                UpdatedAt = filter.Selects.Contains(ProductTypeSelect.UpdatedTime) ? q.UpdatedAt : default(DateTime),
                 Status = filter.Selects.Contains(ProductTypeSelect.Status) && q.Status != null ? new Status
                 {
                     Id = q.Status.Id,
@@ -178,7 +178,7 @@ namespace DMS.Repositories
                     Name = x.Name,
                     Description = x.Description,
                     StatusId = x.StatusId,
-                    UpdatedTime = x.UpdatedAt,
+                    UpdatedAt = x.UpdatedAt,
                     Used = x.Used,
                     Status = x.Status == null ? null : new Status
                     {

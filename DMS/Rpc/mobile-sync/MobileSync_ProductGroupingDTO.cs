@@ -20,14 +20,14 @@ namespace DMS.Rpc.mobile_sync
 
 
         public MobileSync_ProductGroupingDTO() { }
-        public MobileSync_ProductGroupingDTO(ProductGroupingDAO ProductGroupingDAO)
+        public MobileSync_ProductGroupingDTO(ProductGrouping ProductGrouping)
         {
-            this.Id = ProductGroupingDAO.Id;
-            this.Code = ProductGroupingDAO.Code;
-            this.Name = ProductGroupingDAO.Name;
-            this.ParentId = ProductGroupingDAO.ParentId;
-            this.Path = ProductGroupingDAO.Path;
-            this.Description = ProductGroupingDAO.Description;
+            this.Id = ProductGrouping.Id;
+            this.Code = ProductGrouping.Code;
+            this.Name = ProductGrouping.Name;
+            this.ParentId = ProductGrouping.ParentId;
+            this.Path = ProductGrouping.Path;
+            this.Description = ProductGrouping.Description;
         }
     }
 

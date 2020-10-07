@@ -31,7 +31,7 @@ namespace DMS.Rpc.price_list
             this.Description = ProductType.Description;
 
             this.StatusId = ProductType.StatusId;
-            this.UpdatedTime = ProductType.UpdatedTime;
+            this.UpdatedTime = ProductType.UpdatedAt;
         }
     }
 

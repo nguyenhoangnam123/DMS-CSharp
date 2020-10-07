@@ -10,11 +10,11 @@ namespace DMS.Rpc.mobile_sync
         public string Code { get; set; }
         public string Name { get; set; }
         public MobileSync_RequestStateDTO() { }
-        public MobileSync_RequestStateDTO(RequestStateDAO RequestStateDAO)
+        public MobileSync_RequestStateDTO(RequestState RequestState)
         {
-            this.Id = RequestStateDAO.Id;
-            this.Code = RequestStateDAO.Code;
-            this.Name = RequestStateDAO.Name;
+            this.Id = RequestState.Id;
+            this.Code = RequestState.Code;
+            this.Name = RequestState.Name;
         }
     }
 }

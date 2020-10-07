@@ -17,12 +17,12 @@ namespace DMS.Rpc.mobile_sync
 
 
         public MobileSync_StoreTypeDTO() { }
-        public MobileSync_StoreTypeDTO(StoreTypeDAO StoreTypeDAO)
+        public MobileSync_StoreTypeDTO(StoreType StoreType)
         {
-            this.Id = StoreTypeDAO.Id;
-            this.Code = StoreTypeDAO.Code;
-            this.Name = StoreTypeDAO.Name;
-            this.StatusId = StoreTypeDAO.StatusId;
+            this.Id = StoreType.Id;
+            this.Code = StoreType.Code;
+            this.Name = StoreType.Name;
+            this.StatusId = StoreType.StatusId;
         }
     }
 

@@ -14,19 +14,19 @@ namespace DMS.Rpc.mobile_sync
         public long StatusId { get; set; }
         public DateTime UpdatedAt { get; set; }
         public MobileSync_ProductTypeDTO() { }
-        public MobileSync_ProductTypeDTO(ProductTypeDAO ProductTypeDAO)
+        public MobileSync_ProductTypeDTO(ProductType ProductType)
         {
 
-            this.Id = ProductTypeDAO.Id;
+            this.Id = ProductType.Id;
 
-            this.Code = ProductTypeDAO.Code;
+            this.Code = ProductType.Code;
 
-            this.Name = ProductTypeDAO.Name;
+            this.Name = ProductType.Name;
 
-            this.Description = ProductTypeDAO.Description;
+            this.Description = ProductType.Description;
 
-            this.StatusId = ProductTypeDAO.StatusId;
-            this.UpdatedAt = ProductTypeDAO.UpdatedAt;
+            this.StatusId = ProductType.StatusId;
+            this.UpdatedAt = ProductType.UpdatedAt;
         }
     }
 

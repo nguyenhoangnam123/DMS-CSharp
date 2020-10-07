@@ -23,21 +23,21 @@ namespace DMS.Rpc.mobile_sync
 
 
         public MobileSync_StoreGroupingDTO() { }
-        public MobileSync_StoreGroupingDTO(StoreGroupingDAO StoreGroupingDAO)
+        public MobileSync_StoreGroupingDTO(StoreGrouping StoreGrouping)
         {
 
-            this.Id = StoreGroupingDAO.Id;
+            this.Id = StoreGrouping.Id;
 
-            this.Code = StoreGroupingDAO.Code;
+            this.Code = StoreGrouping.Code;
 
-            this.Name = StoreGroupingDAO.Name;
+            this.Name = StoreGrouping.Name;
 
-            this.ParentId = StoreGroupingDAO.ParentId;
+            this.ParentId = StoreGrouping.ParentId;
 
-            this.Path = StoreGroupingDAO.Path;
+            this.Path = StoreGrouping.Path;
 
-            this.Level = StoreGroupingDAO.Level;
-            this.StatusId = StoreGroupingDAO.StatusId;
+            this.Level = StoreGrouping.Level;
+            this.StatusId = StoreGrouping.StatusId;
 
         }
     }

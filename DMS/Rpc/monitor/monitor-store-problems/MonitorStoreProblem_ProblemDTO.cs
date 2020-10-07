@@ -52,7 +52,7 @@ namespace DMS.Rpc.monitor_store_problems
             this.Store = Problem.Store == null ? null : new MonitorStoreProblem_StoreDTO(Problem.Store);
             this.StoreChecking = Problem.StoreChecking == null ? null : new MonitorStoreProblem_StoreCheckingDTO(Problem.StoreChecking);
             this.ProblemImageMappings = Problem.ProblemImageMappings?.Select(x => new MonitorStoreProblem_ProblemImageMappingDTO(x)).ToList();
-            this.ProblemHistorys = Problem.ProblemHistorys?.Select(x => new MonitorStoreProblem_ProblemHistoryDTO(x)).ToList();
+            this.ProblemHistorys = Problem.ProblemHistories?.Select(x => new MonitorStoreProblem_ProblemHistoryDTO(x)).ToList();
             this.Errors = Problem.Errors;
         }
     }

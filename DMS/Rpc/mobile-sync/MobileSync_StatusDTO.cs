@@ -15,11 +15,11 @@ namespace DMS.Rpc.mobile_sync
 
 
         public MobileSync_StatusDTO() { }
-        public MobileSync_StatusDTO(StatusDAO StatusDAO)
+        public MobileSync_StatusDTO(Status Status)
         {
-            this.Id = StatusDAO.Id;
-            this.Code = StatusDAO.Code;
-            this.Name = StatusDAO.Name;
+            this.Id = Status.Id;
+            this.Code = Status.Code;
+            this.Name = Status.Name;
         }
     }
 }

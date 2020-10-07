@@ -468,7 +468,7 @@ namespace DMS.Repositories
                         ThumbnailUrl = x.Image.ThumbnailUrl,
                     },
                 }).ToListAsync();
-            Problem.ProblemHistorys = await DataContext.ProblemHistory.AsNoTracking()
+            Problem.ProblemHistories = await DataContext.ProblemHistory.AsNoTracking()
                 .Where(x => x.ProblemId == Problem.Id)
                 .Select(x => new ProblemHistory
                 {
@@ -593,9 +593,9 @@ namespace DMS.Repositories
             await DataContext.ProblemHistory.Where(x => x.ProblemId == Problem.Id).DeleteFromQueryAsync();
 
             List<ProblemHistoryDAO> ProblemHistoryDAOs = new List<ProblemHistoryDAO>();
-            if (Problem.ProblemHistorys != null)
+            if (Problem.ProblemHistories != null)
             {
-                foreach (ProblemHistory ProblemHistory in Problem.ProblemHistorys)
+                foreach (ProblemHistory ProblemHistory in Problem.ProblemHistories)
                 {
                     ProblemHistoryDAO ProblemHistoryDAO = new ProblemHistoryDAO();
                     ProblemHistoryDAO.ProblemId = Problem.Id;

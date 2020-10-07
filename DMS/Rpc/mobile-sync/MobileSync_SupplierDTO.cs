@@ -18,13 +18,13 @@ namespace DMS.Rpc.mobile_sync
 
 
         public MobileSync_SupplierDTO() { }
-        public MobileSync_SupplierDTO(SupplierDAO SupplierDAO)
+        public MobileSync_SupplierDTO(Supplier Supplier)
         {
-            this.Id = SupplierDAO.Id;
-            this.Code = SupplierDAO.Code;
-            this.Name = SupplierDAO.Name;
-            this.TaxCode = SupplierDAO.TaxCode;
-            this.StatusId = SupplierDAO.StatusId;
+            this.Id = Supplier.Id;
+            this.Code = Supplier.Code;
+            this.Name = Supplier.Name;
+            this.TaxCode = Supplier.TaxCode;
+            this.StatusId = Supplier.StatusId;
         }
     }
 }

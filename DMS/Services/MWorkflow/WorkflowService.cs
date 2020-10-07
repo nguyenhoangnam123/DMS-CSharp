@@ -179,7 +179,7 @@ namespace DMS.Services.MWorkflow
                 bool ShouldInit = false;
                 foreach (WorkflowStep WorkflowStep in WorkflowDefinition.WorkflowSteps)
                 {
-                    if (WorkflowDefinition.WorkflowDirections.Any(d => d.FromStepId == WorkflowStep.Id) && 
+                    if (WorkflowDefinition.WorkflowDirections.Any(d => d.FromStepId == WorkflowStep.Id) &&
                         !WorkflowDefinition.WorkflowDirections.Any(d => d.ToStepId == WorkflowStep.Id))
                     {
                         if (CurrentContext.RoleIds.Contains(WorkflowStep.RoleId))
@@ -319,13 +319,22 @@ namespace DMS.Services.MWorkflow
                 // tìm điểm bắt đầu cho những điểm đích tìm được
                 foreach (WorkflowStep WorkflowStep in ToSteps)
                 {
-                    var FromSteps = WorkflowDefinition.WorkflowDirections.Where(d => d.ToStepId == WorkflowStep.Id).Select(x => x.FromStep).ToList() ?? new List<WorkflowStep>();
+                    // Xác định các direction đang trỏ đến đích
+                    var ActiveDirections = WorkflowDefinition.WorkflowDirections.Where(d => d.ToStepId == WorkflowStep.Id).ToList();
                     var ApprovedFromRequestSteps = new List<RequestWorkflowStepMapping>();
-                    foreach (var FromStep in FromSteps)
+                    foreach (var Direction in ActiveDirections)
                     {
-                        var FromRequestStep = RequestWorkflowStepMappings.Where(x => x.WorkflowStepId == FromStep.Id).FirstOrDefault();
-                        ApprovedFromRequestSteps.Add(FromRequestStep);
-                        PreviousStepIds.Add(FromStep.Id);
+                        // Với các direction 
+                        bool result = await ApplyCondition(RequestId, Direction);
+                        if (result)
+                        {
+                            var FromRequestStep = RequestWorkflowStepMappings
+                            .Where(x =>
+                                x.WorkflowStepId == Direction.FromStepId)
+                            .FirstOrDefault();
+                            ApprovedFromRequestSteps.Add(FromRequestStep);
+                            PreviousStepIds.Add(Direction.FromStepId);
+                        }
                     }
 
                     // Nếu tất cả các điểm bắt đầu của điểm đích đang xét đều là APPROVED thì điểm đích sẽ là PENDING

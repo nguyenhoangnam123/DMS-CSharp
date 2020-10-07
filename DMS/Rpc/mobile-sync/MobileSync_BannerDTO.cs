@@ -23,21 +23,21 @@ namespace DMS.Rpc.mobile_sync
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public MobileSync_BannerDTO() { }
-        public MobileSync_BannerDTO(BannerDAO BannerDAO)
+        public MobileSync_BannerDTO(Banner Banner)
         {
-            this.Id = BannerDAO.Id;
-            this.Code = BannerDAO.Code;
-            this.Title = BannerDAO.Title;
-            this.Priority = BannerDAO.Priority;
-            this.Content = BannerDAO.Content;
-            this.CreatorId = BannerDAO.CreatorId;
-            this.ImageId = BannerDAO.ImageId;
-            this.StatusId = BannerDAO.StatusId;
-            this.Creator = BannerDAO.Creator == null ? null : new MobileSync_AppUserDTO(BannerDAO.Creator);
-            this.Images = new List<MobileSync_ImageDTO> { BannerDAO.Image == null ? null : new MobileSync_ImageDTO(BannerDAO.Image) };
-            this.Status = BannerDAO.Status == null ? null : new MobileSync_StatusDTO(BannerDAO.Status);
-            this.CreatedAt = BannerDAO.CreatedAt;
-            this.UpdatedAt = BannerDAO.UpdatedAt;
+            this.Id = Banner.Id;
+            this.Code = Banner.Code;
+            this.Title = Banner.Title;
+            this.Priority = Banner.Priority;
+            this.Content = Banner.Content;
+            this.CreatorId = Banner.CreatorId;
+            this.ImageId = Banner.ImageId;
+            this.StatusId = Banner.StatusId;
+            this.Creator = Banner.Creator == null ? null : new MobileSync_AppUserDTO(Banner.Creator);
+            this.Images = new List<MobileSync_ImageDTO> { Banner.Image == null ? null : new MobileSync_ImageDTO(Banner.Image) };
+            this.Status = Banner.Status == null ? null : new MobileSync_StatusDTO(Banner.Status);
+            this.CreatedAt = Banner.CreatedAt;
+            this.UpdatedAt = Banner.UpdatedAt;
         }
     }
 }

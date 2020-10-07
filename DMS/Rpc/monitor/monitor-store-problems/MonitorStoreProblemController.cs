@@ -320,7 +320,7 @@ namespace DMS.Rpc.monitor_store_problems
                         ThumbnailUrl = x.Image.ThumbnailUrl,
                     },
                 }).ToList();
-            Problem.ProblemHistorys = MonitorStoreProblem_ProblemDTO.ProblemHistorys?
+            Problem.ProblemHistories = MonitorStoreProblem_ProblemDTO.ProblemHistorys?
                 .Select(x => new ProblemHistory
                 {
                     Id = x.Id,

@@ -10,11 +10,11 @@ namespace DMS.Rpc.mobile_sync
         public string Code { get; set; }
         public string Name { get; set; }
         public MobileSync_EditedPriceStatusDTO() { }
-        public MobileSync_EditedPriceStatusDTO(EditedPriceStatusDAO EditedPriceStatusDAO)
+        public MobileSync_EditedPriceStatusDTO(EditedPriceStatus EditedPriceStatus)
         {
-            this.Id = EditedPriceStatusDAO.Id;
-            this.Code = EditedPriceStatusDAO.Code;
-            this.Name = EditedPriceStatusDAO.Name;
+            this.Id = EditedPriceStatus.Id;
+            this.Code = EditedPriceStatus.Code;
+            this.Name = EditedPriceStatus.Name;
         }
     }
 }

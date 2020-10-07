@@ -25,7 +25,7 @@ namespace DMS.Rpc.indirect_sales_order
             this.Description = ProductType.Description;
 
             this.StatusId = ProductType.StatusId;
-            this.UpdatedTime = ProductType.UpdatedTime;
+            this.UpdatedTime = ProductType.UpdatedAt;
         }
     }
 

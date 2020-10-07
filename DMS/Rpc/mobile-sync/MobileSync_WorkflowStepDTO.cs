@@ -16,13 +16,13 @@ namespace DMS.Rpc.mobile_sync
         public long RoleId { get; set; }
         public MobileSync_RoleDTO Role { get; set; }
         public MobileSync_WorkflowStepDTO() { }
-        public MobileSync_WorkflowStepDTO(WorkflowStepDAO WorkflowStepDAO)
+        public MobileSync_WorkflowStepDTO(WorkflowStep WorkflowStep)
         {
-            this.Id = WorkflowStepDAO.Id;
-            this.Code = WorkflowStepDAO.Code;
-            this.Name = WorkflowStepDAO.Name;
-            this.RoleId = WorkflowStepDAO.RoleId;
-            this.Role = WorkflowStepDAO.Role == null ? null : new MobileSync_RoleDTO(WorkflowStepDAO.Role);
+            this.Id = WorkflowStep.Id;
+            this.Code = WorkflowStep.Code;
+            this.Name = WorkflowStep.Name;
+            this.RoleId = WorkflowStep.RoleId;
+            this.Role = WorkflowStep.Role == null ? null : new MobileSync_RoleDTO(WorkflowStep.Role);
         }
     }
 }

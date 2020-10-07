@@ -12,13 +12,13 @@ namespace DMS.Rpc.mobile_sync
         public decimal Percentage { get; set; }
         public long StatusId { get; set; }
         public MobileSync_TaxTypeDTO() { }
-        public MobileSync_TaxTypeDTO(TaxTypeDAO TaxTypeDAO)
+        public MobileSync_TaxTypeDTO(TaxType TaxType)
         {
-            this.Id = TaxTypeDAO.Id;
-            this.Code = TaxTypeDAO.Code;
-            this.Name = TaxTypeDAO.Name;
-            this.Percentage = TaxTypeDAO.Percentage;
-            this.StatusId = TaxTypeDAO.StatusId;
+            this.Id = TaxType.Id;
+            this.Code = TaxType.Code;
+            this.Name = TaxType.Name;
+            this.Percentage = TaxType.Percentage;
+            this.StatusId = TaxType.StatusId;
         }
     }
 }

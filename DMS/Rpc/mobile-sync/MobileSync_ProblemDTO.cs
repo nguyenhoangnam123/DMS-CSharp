@@ -32,28 +32,28 @@ namespace DMS.Rpc.mobile_sync
         public List<MobileSync_ProblemImageMappingDTO> ProblemImageMappings { get; set; }
         public List<MobileSync_ProblemHistoryDTO> ProblemHistorys { get; set; }
         public MobileSync_ProblemDTO() { }
-        public MobileSync_ProblemDTO(ProblemDAO ItemImageMappingDAO)
+        public MobileSync_ProblemDTO(Problem ItemImageMapping)
         {
-            this.Id = ItemImageMappingDAO.Id;
-            this.Code = ItemImageMappingDAO.Code;
-            this.StoreCheckingId = ItemImageMappingDAO.StoreCheckingId;
-            this.StoreId = ItemImageMappingDAO.StoreId;
-            this.CreatorId = ItemImageMappingDAO.CreatorId;
-            this.OrganizationId = ItemImageMappingDAO.Creator.OrganizationId;
-            this.ProblemTypeId = ItemImageMappingDAO.ProblemTypeId;
-            this.NoteAt = ItemImageMappingDAO.NoteAt;
-            this.CompletedAt = ItemImageMappingDAO.CompletedAt;
-            this.Content = ItemImageMappingDAO.Content;
-            this.ProblemStatusId = ItemImageMappingDAO.ProblemStatusId;
-            this.RowId = ItemImageMappingDAO.RowId;
-            this.Creator = ItemImageMappingDAO.Creator == null ? null : new MobileSync_AppUserDTO(ItemImageMappingDAO.Creator);
-            this.Organization = ItemImageMappingDAO.Creator.Organization == null ? null : new MobileSync_OrganizationDTO(ItemImageMappingDAO.Creator.Organization);
-            this.ProblemStatus = ItemImageMappingDAO.ProblemStatus == null ? null : new MobileSync_ProblemStatusDTO(ItemImageMappingDAO.ProblemStatus);
-            this.ProblemType = ItemImageMappingDAO.ProblemType == null ? null : new MobileSync_ProblemTypeDTO(ItemImageMappingDAO.ProblemType);
-            this.Store = ItemImageMappingDAO.Store == null ? null : new MobileSync_StoreDTO(ItemImageMappingDAO.Store);
-            this.StoreChecking = ItemImageMappingDAO.StoreChecking == null ? null : new MobileSync_StoreCheckingDTO(ItemImageMappingDAO.StoreChecking);
-            this.ProblemImageMappings = ItemImageMappingDAO.ProblemImageMappings?.Select(x => new MobileSync_ProblemImageMappingDTO(x)).ToList();
-            this.ProblemHistorys = ItemImageMappingDAO.ProblemHistories?.Select(x => new MobileSync_ProblemHistoryDTO(x)).ToList();
+            this.Id = ItemImageMapping.Id;
+            this.Code = ItemImageMapping.Code;
+            this.StoreCheckingId = ItemImageMapping.StoreCheckingId;
+            this.StoreId = ItemImageMapping.StoreId;
+            this.CreatorId = ItemImageMapping.CreatorId;
+            this.OrganizationId = ItemImageMapping.Creator.OrganizationId;
+            this.ProblemTypeId = ItemImageMapping.ProblemTypeId;
+            this.NoteAt = ItemImageMapping.NoteAt;
+            this.CompletedAt = ItemImageMapping.CompletedAt;
+            this.Content = ItemImageMapping.Content;
+            this.ProblemStatusId = ItemImageMapping.ProblemStatusId;
+            this.RowId = ItemImageMapping.RowId;
+            this.Creator = ItemImageMapping.Creator == null ? null : new MobileSync_AppUserDTO(ItemImageMapping.Creator);
+            this.Organization = ItemImageMapping.Creator.Organization == null ? null : new MobileSync_OrganizationDTO(ItemImageMapping.Creator.Organization);
+            this.ProblemStatus = ItemImageMapping.ProblemStatus == null ? null : new MobileSync_ProblemStatusDTO(ItemImageMapping.ProblemStatus);
+            this.ProblemType = ItemImageMapping.ProblemType == null ? null : new MobileSync_ProblemTypeDTO(ItemImageMapping.ProblemType);
+            this.Store = ItemImageMapping.Store == null ? null : new MobileSync_StoreDTO(ItemImageMapping.Store);
+            this.StoreChecking = ItemImageMapping.StoreChecking == null ? null : new MobileSync_StoreCheckingDTO(ItemImageMapping.StoreChecking);
+            this.ProblemImageMappings = ItemImageMapping.ProblemImageMappings?.Select(x => new MobileSync_ProblemImageMappingDTO(x)).ToList();
+            this.ProblemHistorys = ItemImageMapping.ProblemHistories?.Select(x => new MobileSync_ProblemHistoryDTO(x)).ToList();
         }
     }
 

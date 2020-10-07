@@ -17,11 +17,11 @@ namespace DMS.Rpc.mobile_sync
 
 
         public MobileSync_ImageDTO() { }
-        public MobileSync_ImageDTO(ImageDAO ImageDAO)
+        public MobileSync_ImageDTO(Image Image)
         {
-            this.Id = ImageDAO.Id;
-            this.Name = ImageDAO.Name;
-            this.Url = ImageDAO.Url;
+            this.Id = Image.Id;
+            this.Name = Image.Name;
+            this.Url = Image.Url;
         }
     }
 }

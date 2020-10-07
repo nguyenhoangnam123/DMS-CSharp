@@ -14,11 +14,11 @@ namespace DMS.Rpc.mobile_sync
         public string Code { get; set; }
         public string Name { get; set; }
         public MobileSync_RoleDTO() { }
-        public MobileSync_RoleDTO(RoleDAO RoleDAO)
+        public MobileSync_RoleDTO(Role Role)
         {
-            this.Id = RoleDAO.Id;
-            this.Code = RoleDAO.Code;
-            this.Name = RoleDAO.Name;
+            this.Id = Role.Id;
+            this.Code = Role.Code;
+            this.Name = Role.Name;
         }
     }
 }
