@@ -228,7 +228,9 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_by_employ
 
             List<long> SaleEmployeeIds = AppUsers.Select(s => s.Id).ToList();
             List<DirectSalesOrderDAO> DirectSalesOrderDAOs = await DataContext.DirectSalesOrder
-                .Where(x => SaleEmployeeIds.Contains(x.SaleEmployeeId) && Start <= x.OrderDate && x.OrderDate <= End)
+                .Where(x => SaleEmployeeIds.Contains(x.SaleEmployeeId) && 
+                Start <= x.OrderDate && x.OrderDate <= End &&
+                x.RequestStateId == RequestStateEnum.APPROVED.Id)
                 .ToListAsync();
             List<long> DirectSalesOrderIds = DirectSalesOrderDAOs.Select(x => x.Id).ToList();
             List<DirectSalesOrderContentDAO> DirectSalesOrderContentDAOs = await DataContext.DirectSalesOrderContent

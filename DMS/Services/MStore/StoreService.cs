@@ -319,6 +319,24 @@ namespace DMS.Services.MStore
                     };
                     UserNotifications.Add(UserNotification);
                 }
+                if (Store.StoreStatusId == StoreStatusEnum.OFFICIAL.Id && oldData.StoreStatusId != Store.StoreStatusId)
+                {
+                    foreach (var Id in RecipientIds)
+                    {
+                        UserNotification UserNotification = new UserNotification
+                        {
+                            TitleWeb = $"Thông báo từ DMS",
+                            ContentWeb = $"Đại lý dự thảo {Store.Code} - {Store.Name} vừa được phê duyệt thành đại lý chính thức bởi {CurrentUser.DisplayName}.",
+                            LinkWebsite = $"{StoreRoute.Master}/?id=*".Replace("*", Store.Id.ToString()),
+                            LinkMobile = $"{StoreRoute.Mobile}".Replace("*", Store.Id.ToString()),
+                            RecipientId = Id,
+                            SenderId = CurrentContext.UserId,
+                            Time = StaticParams.DateTimeNow,
+                            Unread = false
+                        };
+                        UserNotifications.Add(UserNotification);
+                    }
+                }
 
                 await NotificationService.BulkSend(UserNotifications);
 

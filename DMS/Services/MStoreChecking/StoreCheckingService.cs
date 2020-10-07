@@ -243,6 +243,7 @@ namespace DMS.Services.MStoreChecking
         {
             var AppUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
             StoreFilter.OrganizationId = new IdFilter { Equal = AppUser.OrganizationId };
+            StoreFilter.TimeZone = CurrentContext.TimeZone;
             int count = await UOW.StoreRepository.Count(StoreFilter);
             return count;
         }
@@ -268,6 +269,7 @@ namespace DMS.Services.MStoreChecking
                 StoreSelect.Longitude | StoreSelect.HasChecking | StoreSelect.OwnerPhone;
             var AppUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
             StoreFilter.OrganizationId = new IdFilter { Equal = AppUser.OrganizationId };
+            StoreFilter.TimeZone = CurrentContext.TimeZone;
             Stores = await UOW.StoreRepository.List(StoreFilter);
             if (CurrentContext.Latitude.HasValue && CurrentContext.Longitude.HasValue)
             {
@@ -291,6 +293,7 @@ namespace DMS.Services.MStoreChecking
                 Dictionary<long, long> StoreIds = await ListOnlineStoreIds(ERouteId);
                 StoreFilter.Id = new IdFilter { In = StoreIds.Select(x => x.Key).ToList() };
                 StoreFilter.SalesEmployeeId = new IdFilter { Equal = CurrentContext.UserId };
+                StoreFilter.TimeZone = CurrentContext.TimeZone;
                 int count = await UOW.StoreRepository.Count(StoreFilter);
                 return count;
             }
@@ -333,6 +336,7 @@ namespace DMS.Services.MStoreChecking
                 StoreFilter.Selects = StoreSelect.Id | StoreSelect.Code | StoreSelect.Name |
                 StoreSelect.Address | StoreSelect.Telephone | StoreSelect.Latitude |
                 StoreSelect.Longitude | StoreSelect.HasChecking | StoreSelect.OwnerPhone;
+                StoreFilter.TimeZone = CurrentContext.TimeZone;
                 Stores = await UOW.StoreRepository.List(StoreFilter);
                 if (CurrentContext.Latitude.HasValue && CurrentContext.Longitude.HasValue)
                 {
@@ -376,6 +380,7 @@ namespace DMS.Services.MStoreChecking
                 Dictionary<long, long> StoreIds = await ListOfflineStoreIds(ERouteId);
                 StoreFilter.Id.In = StoreIds.Select(x => x.Key).ToList();
                 StoreFilter.SalesEmployeeId = new IdFilter { Equal = CurrentContext.UserId };
+                StoreFilter.TimeZone = CurrentContext.TimeZone;
                 int count = await UOW.StoreRepository.Count(StoreFilter);
                 return count;
             }
@@ -416,6 +421,7 @@ namespace DMS.Services.MStoreChecking
                 StoreFilter.SalesEmployeeId = new IdFilter { Equal = CurrentContext.UserId };
                 StoreFilter.Skip = 0;
                 StoreFilter.Take = int.MaxValue;
+                StoreFilter.TimeZone = CurrentContext.TimeZone;
                 Stores = await UOW.StoreRepository.List(StoreFilter);
                 if (CurrentContext.Latitude.HasValue && CurrentContext.Longitude.HasValue)
                 {
@@ -454,6 +460,7 @@ namespace DMS.Services.MStoreChecking
         {
             try
             {
+                StoreFilter.TimeZone = CurrentContext.TimeZone;
                 var count = await UOW.StoreRepository.CountInScoped(StoreFilter, CurrentContext.UserId);
                 return count;
             }
@@ -491,7 +498,7 @@ namespace DMS.Services.MStoreChecking
                 StoreFilter.Selects = StoreSelect.Id | StoreSelect.Code | StoreSelect.Name |
                 StoreSelect.Address | StoreSelect.Telephone | StoreSelect.Latitude |
                 StoreSelect.Longitude | StoreSelect.HasChecking | StoreSelect.OwnerPhone;
-
+                StoreFilter.TimeZone = CurrentContext.TimeZone;
                 Stores = await UOW.StoreRepository.ListInScoped(StoreFilter, CurrentContext.UserId);
                 if (CurrentContext.Latitude.HasValue && CurrentContext.Longitude.HasValue)
                 {
