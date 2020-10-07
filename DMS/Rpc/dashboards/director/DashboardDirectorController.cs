@@ -92,6 +92,14 @@ namespace DMS.Rpc.dashboards.director
 
             if (OrganizationFilter.Id == null) OrganizationFilter.Id = new IdFilter();
             OrganizationFilter.Id.In = await FilterOrganization(OrganizationService, CurrentContext);
+            List<OrganizationDAO> OrganizationDAOs = await DataContext.Organization.Where(o => o.DeletedAt == null && OrganizationFilter.Id.In.Contains(o.Id)).ToListAsync();
+            OrganizationDAO OrganizationDAO = null;
+            if (DashboardDirector_OrganizationFilterDTO.Id?.Equal != null)
+            {
+                OrganizationDAO = await DataContext.Organization.Where(o => o.Id == DashboardDirector_OrganizationFilterDTO.Id.Equal.Value).FirstOrDefaultAsync();
+                OrganizationDAOs = OrganizationDAOs.Where(o => o.Path.StartsWith(OrganizationDAO.Path)).ToList();
+            }
+            OrganizationFilter.Id.In = OrganizationDAOs.Select(o => o.Id).ToList();
 
             List<Organization> Organizations = await OrganizationService.List(OrganizationFilter);
             List<DashboardDirector_OrganizationDTO> DashboardDirector_OrganizationDTOs = Organizations
