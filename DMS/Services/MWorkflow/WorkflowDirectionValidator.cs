@@ -34,7 +34,7 @@ namespace DMS.Services.MWorkflow
             WorkflowDefinitionEmpty,
             WorkflowDefinitionNotExisted,
             WorkflowDirectionExisted,
-            DirectionDuplicate
+            DirectionDuplicate,
         }
 
         private IUOW UOW;
@@ -61,12 +61,7 @@ namespace DMS.Services.MWorkflow
                 WorkflowDirection.AddError(nameof(WorkflowDirectionValidator), nameof(WorkflowDirection.Id), ErrorCode.IdNotExisted);
             return count == 1;
         }
-
-        private async Task<bool> CanDelete(WorkflowDirection WorkflowDirection)
-        {
-            return WorkflowDirection.IsValidated;
-        }
-
+       
         private async Task<bool> ValidateWorkflowDefinition(WorkflowDirection WorkflowDirection)
         {
             if (WorkflowDirection.WorkflowDefinitionId == 0)
@@ -198,7 +193,9 @@ namespace DMS.Services.MWorkflow
         {
             if (await ValidateId(WorkflowDirection))
             {
-                await CanDelete(WorkflowDirection);
+                WorkflowDefinition WorkflowDefinition = await UOW.WorkflowDefinitionRepository.Get(WorkflowDirection.WorkflowDefinitionId);
+                if (WorkflowDefinition.Used)
+                    WorkflowDirection.AddError(nameof(WorkflowDirectionValidator), nameof(WorkflowDirection.Id), ErrorCode.IdInUsed);
             }
             return WorkflowDirection.IsValidated;
         }

@@ -345,19 +345,17 @@ namespace DMS.Repositories
             WorkflowDirectionDAO WorkflowDirectionDAO = await DataContext.WorkflowDirection
                 .Where(x => x.Id == WorkflowDirection.Id)
                 .FirstOrDefaultAsync();
+            if (WorkflowDirectionDAO == null)
+                return false;
             WorkflowDefinitionDAO WorkflowDefinitionDAO = await DataContext.WorkflowDefinition
                 .Where(x => x.Id == WorkflowDirectionDAO.WorkflowDefinitionId)
                 .FirstOrDefaultAsync();
-            if (WorkflowDirectionDAO == null)
-                return false;
+        
             WorkflowDefinitionDAO.ModifierId = WorkflowDirection.ModifierId;
 
-            if (WorkflowDefinitionDAO.Used == false)
-            {
-                WorkflowDirectionDAO.FromStepId = WorkflowDirection.FromStepId;
-                WorkflowDirectionDAO.ToStepId = WorkflowDirection.ToStepId;
-                WorkflowDirectionDAO.StatusId = WorkflowDirection.StatusId;
-            }
+            WorkflowDirectionDAO.FromStepId = WorkflowDirection.FromStepId;
+            WorkflowDirectionDAO.ToStepId = WorkflowDirection.ToStepId;
+            WorkflowDirectionDAO.StatusId = WorkflowDirection.StatusId;
             WorkflowDirectionDAO.SubjectMailForCreator = WorkflowDirection.SubjectMailForCreator;
             WorkflowDirectionDAO.SubjectMailForCurrentStep = WorkflowDirection.SubjectMailForCurrentStep;
             WorkflowDirectionDAO.SubjectMailForNextStep = WorkflowDirection.SubjectMailForNextStep;
@@ -375,19 +373,9 @@ namespace DMS.Repositories
             WorkflowDirectionDAO WorkflowDirectionDAO = await DataContext.WorkflowDirection
                .Where(x => x.Id == WorkflowDirection.Id)
                .FirstOrDefaultAsync();
-            WorkflowDefinitionDAO WorkflowDefinitionDAO = await DataContext.WorkflowDefinition
-                .Where(x => x.Id == WorkflowDirectionDAO.WorkflowDefinitionId)
-                .FirstOrDefaultAsync();
-            WorkflowDefinitionDAO.ModifierId = WorkflowDirection.ModifierId;
-            await DataContext.SaveChangesAsync();
-            if (WorkflowDirectionDAO == null)
-                return false;
 
-            if (WorkflowDefinitionDAO.Used == false)
-            {
-                await DataContext.WorkflowDirectionCondition.Where(x => x.WorkflowDirectionId == WorkflowDirection.Id).DeleteFromQueryAsync();
-                await DataContext.WorkflowDirection.Where(x => x.Id == WorkflowDirection.Id).DeleteFromQueryAsync();
-            }
+            await DataContext.WorkflowDirectionCondition.Where(x => x.WorkflowDirectionId == WorkflowDirection.Id).DeleteFromQueryAsync();
+            await DataContext.WorkflowDirection.Where(x => x.Id == WorkflowDirection.Id).DeleteFromQueryAsync();
             return true;
         }
 
@@ -418,7 +406,7 @@ namespace DMS.Repositories
             foreach (WorkflowDirection WorkflowDirection in WorkflowDirections)
             {
                 long Id = WorkflowDirectionDAOs.Where(x => x.RowId == WorkflowDirection.RowId).Select(x => x.Id).FirstOrDefault();
-                foreach(WorkflowDirectionCondition WorkflowDirectionCondition in WorkflowDirection.WorkflowDirectionConditions)
+                foreach (WorkflowDirectionCondition WorkflowDirectionCondition in WorkflowDirection.WorkflowDirectionConditions)
                 {
                     WorkflowDirectionConditionDAO WorkflowDirectionConditionDAO = new WorkflowDirectionConditionDAO
                     {
@@ -428,7 +416,7 @@ namespace DMS.Repositories
                         WorkflowParameterId = WorkflowDirectionCondition.WorkflowParameterId,
                     };
                     WorkflowDirectionConditionDAOs.Add(WorkflowDirectionConditionDAO);
-                }    
+                }
             }
             await DataContext.WorkflowDirectionCondition.BulkMergeAsync(WorkflowDirectionConditionDAOs);
             return true;
@@ -447,7 +435,7 @@ namespace DMS.Repositories
         private async Task SaveReference(WorkflowDirection WorkflowDirection)
         {
             await DataContext.WorkflowDirectionCondition.Where(x => x.WorkflowDirectionId == WorkflowDirection.Id).DeleteFromQueryAsync();
-            if(WorkflowDirection.WorkflowDirectionConditions != null)
+            if (WorkflowDirection.WorkflowDirectionConditions != null)
             {
                 List<WorkflowDirectionConditionDAO> WorkflowDirectionConditionDAOs = new List<WorkflowDirectionConditionDAO>();
                 foreach (WorkflowDirectionCondition WorkflowDirectionCondition in WorkflowDirection.WorkflowDirectionConditions)
