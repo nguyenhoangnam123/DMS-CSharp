@@ -17,8 +17,10 @@ namespace DMS.Rpc.mobile_sync
     public class MobileSyncController : SimpleController
     {
         private DataContext DataContext;
+        private ICurrentContext CurrentContext;
         private IStoreCheckingService StoreCheckingService;
         public MobileSyncController(
+            ICurrentContext CurrentContext,
             IStoreCheckingService StoreCheckingService,
             DataContext DataContext)
         {
@@ -26,16 +28,16 @@ namespace DMS.Rpc.mobile_sync
             this.DataContext = DataContext;
         }
 
-        [Route("rpc/dms/mobile-sync/pull"), HttpPost]
-        public async Task<MobileSync_ChangeDTO> Pull([FromBody] MobileSync_MobileSyncDTO MobileSync_MobileSyncDTO)
+        [Route("rpc/dms/mobile-sync/pull"), HttpGet]
+        public async Task<MobileSync_ChangeDTO> Pull([FromQuery] DateTime Timestamp)
         {
             MobileSync_ChangeDTO MobileSync_ChangeDTO = new MobileSync_ChangeDTO();
-            MobileSync_ChangeDTO.Banner = await BuildBanner(MobileSync_MobileSyncDTO.Timestamp);
-            MobileSync_ChangeDTO.Product = await BuildProduct(MobileSync_MobileSyncDTO.Timestamp);
-            MobileSync_ChangeDTO.Item = await BuildItem(MobileSync_MobileSyncDTO.Timestamp);
-            MobileSync_ChangeDTO.StoreInScoped = await BuildStoreInScoped(MobileSync_MobileSyncDTO.Timestamp);
-            MobileSync_ChangeDTO.StorePlanned = await BuildStorePlanned(MobileSync_MobileSyncDTO.Timestamp);
-            MobileSync_ChangeDTO.StoreUnplanned = await BuildStoreUnplanned(MobileSync_MobileSyncDTO.Timestamp);
+            MobileSync_ChangeDTO.Banner = await BuildBanner(Timestamp);
+            MobileSync_ChangeDTO.Product = await BuildProduct(Timestamp);
+            MobileSync_ChangeDTO.Item = await BuildItem(Timestamp);
+            MobileSync_ChangeDTO.StoreInScoped = await BuildStoreInScoped(Timestamp);
+            MobileSync_ChangeDTO.StorePlanned = await BuildStorePlanned(Timestamp);
+            MobileSync_ChangeDTO.StoreUnplanned = await BuildStoreUnplanned(Timestamp);
             return MobileSync_ChangeDTO;
         }
 
@@ -63,12 +65,15 @@ namespace DMS.Rpc.mobile_sync
                     Title = BannerDAO.Title,
                 };
                 MobileSync_BannerDTO.Images = new List<MobileSync_ImageDTO>();
-                MobileSync_BannerDTO.Images.Add(new MobileSync_ImageDTO
+                if (BannerDAO.Image != null)
                 {
-                    Id = BannerDAO.Image.Id,
-                    Name = BannerDAO.Image.Name,
-                    Url = BannerDAO.Image.Url,
-                });
+                    MobileSync_BannerDTO.Images.Add(new MobileSync_ImageDTO
+                    {
+                        Id = BannerDAO.Image.Id,
+                        Name = BannerDAO.Image.Name,
+                        Url = BannerDAO.Image.Url,
+                    });
+                }
 
                 if (BannerDAO.CreatedAt >= Timestamp)
                     MobileSync_BannerSyncDTO.Created.Add(MobileSync_BannerDTO);
@@ -459,6 +464,19 @@ namespace DMS.Rpc.mobile_sync
                 Created = MobileSync_StoreDTOs,
             };
             return MobileSync_StoreSyncDTO;
+        }
+
+        private async Task<MobileSync_StoreScoutingSyncDTO> BuildStoreScouting(DateTime Timestamp)
+        {
+            AppUserDAO AppUserDAO = await DataContext.AppUser.Where(x => x.Id == CurrentContext.UserId).FirstOrDefaultAsync();
+            List<StoreScoutingDAO> StoreScoutingDAOs = await DataContext.StoreScouting
+                .Where(x => x.UpdatedAt >= Timestamp)
+                .ToListAsync();
+            MobileSync_StoreScoutingSyncDTO MobileSync_StoreScoutingSyncDTO = new MobileSync_StoreScoutingSyncDTO()
+            {
+
+            };
+            return MobileSync_StoreScoutingSyncDTO;
         }
     }
 }
