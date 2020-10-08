@@ -396,6 +396,7 @@ namespace DMS.Repositories
             List<WorkflowDirectionDAO> WorkflowDirectionDAOs = new List<WorkflowDirectionDAO>();
             foreach (WorkflowDirection WorkflowDirection in WorkflowDirections)
             {
+                WorkflowDirection.RowId = Guid.NewGuid();
                 WorkflowDirectionDAO WorkflowDirectionDAO = new WorkflowDirectionDAO();
                 WorkflowDirectionDAO.Id = WorkflowDirection.Id;
                 WorkflowDirectionDAO.WorkflowDefinitionId = WorkflowDirection.WorkflowDefinitionId;
@@ -409,9 +410,27 @@ namespace DMS.Repositories
                 WorkflowDirectionDAO.BodyMailForCurrentStep = WorkflowDirection.BodyMailForCurrentStep;
                 WorkflowDirectionDAO.BodyMailForNextStep = WorkflowDirection.BodyMailForNextStep;
                 WorkflowDirectionDAO.UpdatedAt = StaticParams.DateTimeNow;
+                WorkflowDirectionDAO.RowId = WorkflowDirection.RowId;
                 WorkflowDirectionDAOs.Add(WorkflowDirectionDAO);
             }
             await DataContext.BulkMergeAsync(WorkflowDirectionDAOs);
+            List<WorkflowDirectionConditionDAO> WorkflowDirectionConditionDAOs = new List<WorkflowDirectionConditionDAO>();
+            foreach (WorkflowDirection WorkflowDirection in WorkflowDirections)
+            {
+                long Id = WorkflowDirectionDAOs.Where(x => x.RowId == WorkflowDirection.RowId).Select(x => x.Id).FirstOrDefault();
+                foreach(WorkflowDirectionCondition WorkflowDirectionCondition in WorkflowDirection.WorkflowDirectionConditions)
+                {
+                    WorkflowDirectionConditionDAO WorkflowDirectionConditionDAO = new WorkflowDirectionConditionDAO
+                    {
+                        WorkflowDirectionId = Id,
+                        Value = WorkflowDirectionCondition.Value,
+                        WorkflowOperatorId = WorkflowDirectionCondition.WorkflowOperatorId,
+                        WorkflowParameterId = WorkflowDirectionCondition.WorkflowParameterId,
+                    };
+                    WorkflowDirectionConditionDAOs.Add(WorkflowDirectionConditionDAO);
+                }    
+            }
+            await DataContext.WorkflowDirectionCondition.BulkMergeAsync(WorkflowDirectionConditionDAOs);
             return true;
         }
 
