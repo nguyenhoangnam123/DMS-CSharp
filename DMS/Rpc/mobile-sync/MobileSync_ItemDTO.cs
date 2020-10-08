@@ -18,6 +18,7 @@ namespace DMS.Rpc.mobile_sync
         public decimal? RetailPrice { get; set; }
         public long SaleStock { get; set; }
         public long StatusId { get; set; }
+        public MobileSync_StatusDTO Status { get; set; }
         public MobileSync_ProductDTO Product { get; set; }
         public List<MobileSync_ItemImageMappingDTO> ItemImageMappings { get; set; }
         public MobileSync_ItemDTO() { }

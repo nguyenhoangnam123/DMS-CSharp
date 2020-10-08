@@ -25,6 +25,7 @@ namespace DMS.Rpc.mobile_sync
             MobileSync_ChangeDTO MobileSync_ChangeDTO = new MobileSync_ChangeDTO();
             MobileSync_ChangeDTO.Banner = await BuildBanner(MobileSync_MobileSyncDTO.Timestamp);
             MobileSync_ChangeDTO.Product = await BuildProduct(MobileSync_MobileSyncDTO.Timestamp);
+            MobileSync_ChangeDTO.Item = await BuildItem(MobileSync_MobileSyncDTO.Timestamp);
             return MobileSync_ChangeDTO;
         }
 
@@ -88,33 +89,34 @@ namespace DMS.Rpc.mobile_sync
                 .ToListAsync();
 
             List<ProductImageMappingDAO> ProductImageMappings = await DataContext.ProductImageMapping
-                .Where(x => x.Product.UpdatedAt >= Timestamp && x.Product.StatusId == StatusEnum.ACTIVE.Id)
+                .Where(x => x.Product.UpdatedAt >= Timestamp)
                 .Include(x => x.Image)
                 .ToListAsync();
 
             List<ProductProductGroupingMappingDAO> ProductProductGroupingMappings = await DataContext.ProductProductGroupingMapping
-                .Where(x => x.Product.UpdatedAt >= Timestamp && x.Product.StatusId == StatusEnum.ACTIVE.Id)
+                .Where(x => x.Product.UpdatedAt >= Timestamp)
                 .Include(x => x.ProductGrouping)
                 .ToListAsync();
 
             List<ItemDAO> ItemDAOs = await DataContext.Item
-                .Where(x => x.Product.UpdatedAt >= Timestamp && x.StatusId == StatusEnum.ACTIVE.Id)
+                .Where(x => x.Product.UpdatedAt >= Timestamp)
                 .ToListAsync();
             List<ItemImageMappingDAO> ItemImageMappingDAOs = await DataContext.ItemImageMapping
-                .Where(x => x.Item.Product.UpdatedAt >= Timestamp && x.Item.StatusId == StatusEnum.ACTIVE.Id)
+                .Where(x => x.Item.UpdatedAt >= Timestamp)
                 .ToListAsync();
 
             List<UnitOfMeasureGroupingDAO> UnitOfMeasureGroupings =
                 await (from uomg in DataContext.UnitOfMeasureGrouping
                        join p in DataContext.Product on uomg.Id equals p.UnitOfMeasureGroupingId
-                       where p.UpdatedAt >= Timestamp
+                       where p.UpdatedAt >= Timestamp || p.Items.Any(i => i.UpdatedAt >= Timestamp)
                        select uomg)
                 .Include(x => x.UnitOfMeasureGroupingContents)
                 .ToListAsync();
             foreach (ProductDAO ProductDAO in ProductDAOs)
             {
                 ProductDAO.ProductImageMappings = ProductImageMappings.Where(x => x.ProductId == ProductDAO.Id).ToList();
-                ProductDAO.ProductProductGroupingMappings = ProductProductGroupingMappings.Where(x => x.ProductId == ProductDAO.Id).ToList();
+                ProductDAO.ProductProductGroupingMappings = ProductProductGroupingMappings
+                    .Where(x => x.ProductId == ProductDAO.Id).ToList();
                 ProductDAO.Items = ItemDAOs.Where(x => x.ProductId == x.ProductId).ToList();
                 foreach (ItemDAO ItemDAO in ProductDAO.Items)
                 {
@@ -196,6 +198,12 @@ namespace DMS.Rpc.mobile_sync
                         Id = ProductDAO.UnitOfMeasureGrouping.Id,
                         Code = ProductDAO.UnitOfMeasureGrouping.Code,
                         Name = ProductDAO.UnitOfMeasureGrouping.Name,
+                        UnitOfMeasure = ProductDAO.UnitOfMeasureGrouping.UnitOfMeasure == null ? null : new MobileSync_UnitOfMeasureDTO
+                        {
+                            Id = ProductDAO.UnitOfMeasureGrouping.UnitOfMeasure.Id,
+                            Code = ProductDAO.UnitOfMeasureGrouping.UnitOfMeasure.Code,
+                            Name = ProductDAO.UnitOfMeasureGrouping.UnitOfMeasure.Name,
+                        },
                         UnitOfMeasureGroupingContents = ProductDAO.UnitOfMeasureGrouping.UnitOfMeasureGroupingContents?.Select(x => new MobileSync_UnitOfMeasureGroupingContentDTO
                         {
                             Factor = x.Factor,
@@ -219,6 +227,178 @@ namespace DMS.Rpc.mobile_sync
                     MobileSync_ProductSyncDTO.Updated.Add(MobileSync_ProductDTO);
             }
             return MobileSync_ProductSyncDTO;
+        }
+
+        private async Task<MobileSync_ItemSyncDTO> BuildItem(DateTime Timestamp)
+        {
+            MobileSync_ItemSyncDTO MobileSync_ItemSyncDTO = new MobileSync_ItemSyncDTO
+            {
+                Created = new List<MobileSync_ItemDTO>(),
+                Updated = new List<MobileSync_ItemDTO>(),
+                Deleted = new List<MobileSync_ItemDTO>()
+            };
+
+            List<ItemDAO> ItemDAOs = await DataContext.Item
+                .Where(x => x.UpdatedAt >= Timestamp || x.Product.UpdatedAt >= Timestamp)
+                .Include(x => x.Status)
+                .ToListAsync();
+            List<ItemImageMappingDAO> ItemImageMappingDAOs = await DataContext.ItemImageMapping
+                .Where(x => x.Item.UpdatedAt >= Timestamp || x.Item.Product.UpdatedAt >= Timestamp)
+                .Include(x => x.Image)
+                .ToListAsync();
+
+            List<ProductDAO> ProductDAOs = await DataContext.Product
+                                                .Where(x => x.UpdatedAt >= Timestamp || x.Items.Any(i => i.UpdatedAt >= Timestamp))
+                                                 .Include(x => x.UnitOfMeasure)
+                                                 .Include(x => x.Brand)
+                                                 .Include(x => x.ProductType)
+                                                 .Include(x => x.Supplier)
+                                                 .Include(x => x.UnitOfMeasure)
+                                                 .ToListAsync();
+            List<ProductImageMappingDAO> ProductImageMappingDAOs = await DataContext.ProductImageMapping
+                                                .Where(x => x.Product.UpdatedAt >= Timestamp || x.Product.Items.Any(i => i.UpdatedAt >= Timestamp))
+                                                .ToListAsync();
+            List<ProductProductGroupingMappingDAO> ProductProductGroupingMappings = await DataContext.ProductProductGroupingMapping
+               .Where(x => x.Product.UpdatedAt >= Timestamp || x.Product.Items.Any(i => i.UpdatedAt >= Timestamp))
+               .Include(x => x.ProductGrouping)
+               .ToListAsync();
+            List<UnitOfMeasureGroupingDAO> UnitOfMeasureGroupingDAOs =
+             await (from uomg in DataContext.UnitOfMeasureGrouping
+                    join p in DataContext.Product on uomg.Id equals p.UnitOfMeasureGroupingId
+                    where p.UpdatedAt >= Timestamp || p.Items.Any(i => i.UpdatedAt >= Timestamp)
+                    select uomg)
+                    .Include(x => x.UnitOfMeasure)
+                    .Include(x => x.UnitOfMeasureGroupingContents).ThenInclude(y => y.UnitOfMeasure)
+                    .ToListAsync();
+
+            foreach (ItemDAO ItemDAO in ItemDAOs)
+            {
+                ItemDAO.ItemImageMappings = ItemImageMappingDAOs.Where(x => x.ItemId == ItemDAO.Id).ToList();
+                ItemDAO.Product = ProductDAOs.Where(x => x.Id == ItemDAO.ProductId).FirstOrDefault();
+                ItemDAO.Product.ProductImageMappings = ProductImageMappingDAOs.Where(x => x.ProductId == ItemDAO.ProductId).ToList();
+                ItemDAO.Product.UnitOfMeasureGrouping = UnitOfMeasureGroupingDAOs
+                    .Where(x => ItemDAO.Product.UnitOfMeasureGroupingId.HasValue && x.Id == ItemDAO.Product.UnitOfMeasureGroupingId.Value)
+                    .FirstOrDefault();
+                ItemDAO.Product.ProductProductGroupingMappings = ProductProductGroupingMappings.Where(x => x.ProductId == ItemDAO.ProductId).ToList();
+
+            }
+
+            foreach (ItemDAO ItemDAO in ItemDAOs)
+            {
+                MobileSync_ItemDTO MobileSync_ItemDTO = new MobileSync_ItemDTO
+                {
+                    Id = ItemDAO.Id,
+                    Code = ItemDAO.Code,
+                    Name = ItemDAO.Name,
+                    ProductId = ItemDAO.ProductId,
+                    RetailPrice = ItemDAO.RetailPrice,
+                    SalePrice = ItemDAO.SalePrice,
+                    ScanCode = ItemDAO.ScanCode,
+                    StatusId = ItemDAO.StatusId,
+                    Status = ItemDAO.Status == null ? null : new MobileSync_StatusDTO
+                    {
+                        Id = ItemDAO.Status.Id,
+                        Code = ItemDAO.Status.Code,
+                        Name = ItemDAO.Status.Name,
+                    },
+                    ItemImageMappings = ItemDAO.ItemImageMappings?.Select(x => new MobileSync_ItemImageMappingDTO
+                    {
+                        ImageId = x.ImageId,
+                        ItemId = x.ItemId,
+                        Image = x.Image == null ? null : new MobileSync_ImageDTO
+                        {
+                            Id = x.Image.Id,
+                            Name = x.Image.Name,
+                            Url = x.Image.Url,
+                        }
+                    }).ToList(),
+                    Product = ItemDAO.Product == null ? null : new MobileSync_ProductDTO
+                    {
+                        BrandId = ItemDAO.Product.BrandId,
+                        Code = ItemDAO.Product.Code,
+                        Description = ItemDAO.Product.Description,
+                        ERPCode = ItemDAO.Product.ERPCode,
+                        Id = ItemDAO.Product.Id,
+                        Name = ItemDAO.Product.Name,
+                        Note = ItemDAO.Product.Note,
+                        OtherName = ItemDAO.Product.OtherName,
+                        ProductTypeId = ItemDAO.Product.ProductTypeId,
+                        RetailPrice = ItemDAO.Product.RetailPrice,
+                        SalePrice = ItemDAO.Product.SalePrice,
+                        ScanCode = ItemDAO.Product.ScanCode,
+                        StatusId = ItemDAO.Product.StatusId,
+                        SupplierCode = ItemDAO.Product.SupplierCode,
+                        SupplierId = ItemDAO.Product.SupplierId,
+                        TaxTypeId = ItemDAO.Product.TaxTypeId,
+                        TechnicalName = ItemDAO.Product.TechnicalName,
+                        UnitOfMeasureGroupingId = ItemDAO.Product.UnitOfMeasureGroupingId,
+                        UnitOfMeasureId = ItemDAO.Product.UnitOfMeasureId,
+                        ProductProductGroupingMappings = ItemDAO.Product.ProductProductGroupingMappings?.Select(x => new MobileSync_ProductProductGroupingMappingDTO
+                        {
+                            ProductGroupingId = x.ProductGroupingId,
+                            ProductId = x.ProductId,
+                            ProductGrouping = x.ProductGrouping == null ? null : new MobileSync_ProductGroupingDTO
+                            {
+                                Code = x.ProductGrouping.Code,
+                                Name = x.ProductGrouping.Name,
+                                Id = x.ProductGrouping.Id,
+                            }
+                        }).ToList(),
+                        UnitOfMeasure = ItemDAO.Product.UnitOfMeasure == null ? null : new MobileSync_UnitOfMeasureDTO
+                        {
+                            Id = ItemDAO.Product.UnitOfMeasure.Id,
+                            Code = ItemDAO.Product.UnitOfMeasure.Code,
+                            Name = ItemDAO.Product.UnitOfMeasure.Name,
+                        },
+                        UnitOfMeasureGrouping = ItemDAO.Product.UnitOfMeasureGrouping == null ? null : new MobileSync_UnitOfMeasureGroupingDTO
+                        {
+                            Id = ItemDAO.Product.UnitOfMeasureGrouping.Id,
+                            Code = ItemDAO.Product.UnitOfMeasureGrouping.Code,
+                            Name = ItemDAO.Product.UnitOfMeasureGrouping.Name,
+                            UnitOfMeasureGroupingContents = ItemDAO.Product.UnitOfMeasureGrouping.UnitOfMeasureGroupingContents
+                            ?.Select(x => new MobileSync_UnitOfMeasureGroupingContentDTO
+                            {
+                                Id = x.Id,
+                                Factor = x.Factor,
+                                UnitOfMeasureGroupingId = x.UnitOfMeasureGroupingId,
+                                UnitOfMeasureId = x.UnitOfMeasureId,
+                                UnitOfMeasure = x.UnitOfMeasure == null ? null : new MobileSync_UnitOfMeasureDTO
+                                {
+                                    Id = x.UnitOfMeasure.Id,
+                                    Code = x.UnitOfMeasure.Code,
+                                    Name = x.UnitOfMeasure.Name,
+                                }
+                            }).ToList(),
+                        },
+                        ProductType = ItemDAO.Product.ProductType == null ? null : new MobileSync_ProductTypeDTO
+                        {
+                            Id = ItemDAO.Product.ProductType.Id,
+                            Code = ItemDAO.Product.ProductType.Code,
+                            Name = ItemDAO.Product.ProductType.Name,
+                        },
+                        Supplier = ItemDAO.Product.Supplier == null ? null : new MobileSync_SupplierDTO
+                        {
+                            Id = ItemDAO.Product.Supplier.Id,
+                            Code = ItemDAO.Product.Supplier.Code,
+                            Name = ItemDAO.Product.Supplier.Name,
+                        },
+                        TaxType = ItemDAO.Product.TaxType == null ? null : new MobileSync_TaxTypeDTO
+                        {
+                            Id = ItemDAO.Product.TaxType.Id,
+                            Code = ItemDAO.Product.TaxType.Code,
+                            Name = ItemDAO.Product.TaxType.Name,
+                        },
+                    },
+                };
+
+                if (ItemDAO.CreatedAt >= Timestamp)
+                    MobileSync_ItemSyncDTO.Created.Add(MobileSync_ItemDTO);
+                else if (ItemDAO.DeletedAt >= Timestamp)
+                    MobileSync_ItemSyncDTO.Deleted.Add(MobileSync_ItemDTO);
+                else
+                    MobileSync_ItemSyncDTO.Updated.Add(MobileSync_ItemDTO);
+            }
+            return MobileSync_ItemSyncDTO;
         }
     }
 }
