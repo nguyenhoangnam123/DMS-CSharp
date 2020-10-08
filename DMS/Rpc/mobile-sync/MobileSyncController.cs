@@ -2,8 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Common;
+using DMS.Entities;
 using DMS.Enums;
 using DMS.Models;
+using DMS.Services.MStoreChecking;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -14,8 +17,12 @@ namespace DMS.Rpc.mobile_sync
     public class MobileSyncController : SimpleController
     {
         private DataContext DataContext;
-        public MobileSyncController(DataContext DataContext)
+        private IStoreCheckingService StoreCheckingService;
+        public MobileSyncController(
+            IStoreCheckingService StoreCheckingService,
+            DataContext DataContext)
         {
+            this.StoreCheckingService = StoreCheckingService;
             this.DataContext = DataContext;
         }
 
@@ -26,6 +33,9 @@ namespace DMS.Rpc.mobile_sync
             MobileSync_ChangeDTO.Banner = await BuildBanner(MobileSync_MobileSyncDTO.Timestamp);
             MobileSync_ChangeDTO.Product = await BuildProduct(MobileSync_MobileSyncDTO.Timestamp);
             MobileSync_ChangeDTO.Item = await BuildItem(MobileSync_MobileSyncDTO.Timestamp);
+            MobileSync_ChangeDTO.StoreInScoped = await BuildStoreInScoped(MobileSync_MobileSyncDTO.Timestamp);
+            MobileSync_ChangeDTO.StorePlanned = await BuildStorePlanned(MobileSync_MobileSyncDTO.Timestamp);
+            MobileSync_ChangeDTO.StoreUnplanned = await BuildStoreUnplanned(MobileSync_MobileSyncDTO.Timestamp);
             return MobileSync_ChangeDTO;
         }
 
@@ -399,6 +409,56 @@ namespace DMS.Rpc.mobile_sync
                     MobileSync_ItemSyncDTO.Updated.Add(MobileSync_ItemDTO);
             }
             return MobileSync_ItemSyncDTO;
+        }
+
+        private async Task<MobileSync_StoreSyncDTO> BuildStoreInScoped(DateTime Timestamp)
+        {
+            List<Store> Stores = await StoreCheckingService.ListStoreInScope(new StoreFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = StoreSelect.ALL,
+                StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id }
+            }, null);
+            List<MobileSync_StoreDTO> MobileSync_StoreDTOs = Stores.Select(x => new MobileSync_StoreDTO(x)).ToList();
+            MobileSync_StoreSyncDTO MobileSync_StoreSyncDTO = new MobileSync_StoreSyncDTO
+            {
+                Created = MobileSync_StoreDTOs,
+            };
+            return MobileSync_StoreSyncDTO;
+        }
+
+        private async Task<MobileSync_StoreSyncDTO> BuildStorePlanned(DateTime Timestamp)
+        {
+            List<Store> Stores = await StoreCheckingService.ListStorePlanned(new StoreFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = StoreSelect.ALL,
+                StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id }
+            }, null);
+            List<MobileSync_StoreDTO> MobileSync_StoreDTOs = Stores.Select(x => new MobileSync_StoreDTO(x)).ToList();
+            MobileSync_StoreSyncDTO MobileSync_StoreSyncDTO = new MobileSync_StoreSyncDTO
+            {
+                Created = MobileSync_StoreDTOs,
+            };
+            return MobileSync_StoreSyncDTO;
+        }
+        private async Task<MobileSync_StoreSyncDTO> BuildStoreUnplanned(DateTime Timestamp)
+        {
+            List<Store> Stores = await StoreCheckingService.ListStorePlanned(new StoreFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = StoreSelect.ALL,
+                StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id }
+            }, null);
+            List<MobileSync_StoreDTO> MobileSync_StoreDTOs = Stores.Select(x => new MobileSync_StoreDTO(x)).ToList();
+            MobileSync_StoreSyncDTO MobileSync_StoreSyncDTO = new MobileSync_StoreSyncDTO
+            {
+                Created = MobileSync_StoreDTOs,
+            };
+            return MobileSync_StoreSyncDTO;
         }
     }
 }

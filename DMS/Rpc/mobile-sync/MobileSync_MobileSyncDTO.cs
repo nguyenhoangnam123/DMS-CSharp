@@ -7,8 +7,6 @@ namespace DMS.Rpc.mobile_sync
 {
     public class MobileSync_MobileSyncDTO
     {
-        public MobileSync_ChangeDTO Changes { get; set; }
-
         public DateTime Timestamp { get; set; }
     }
 
@@ -20,7 +18,9 @@ namespace DMS.Rpc.mobile_sync
         public MobileSync_ProductSyncDTO Product { get; set; }
         public MobileSync_ItemSyncDTO Item { get; set; }
         public MobileSync_StoreScoutingSyncDTO StoreScouting { get; set; }
-        public MobileSync_StoreSyncDTO Store { get; set; }
+        public MobileSync_StoreSyncDTO StoreInScoped { get; set; }
+        public MobileSync_StoreSyncDTO StorePlanned { get; set; }
+        public MobileSync_StoreSyncDTO StoreUnplanned { get; set; }
         public MobileSync_SurveySyncDTO Survey { get; set; }
     }
 }
