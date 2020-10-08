@@ -180,6 +180,8 @@ namespace DMS.Services.MWorkflow
                 {
                     WorkflowStep.Id = 0;
                     WorkflowStep.WorkflowDefinitionId = WorkflowDefinition.Id;
+                    WorkflowStep.Code = $"{WorkflowStep.Code}_Clone";
+                    WorkflowStep.Name = $"{WorkflowStep.Name}_Clone";
                     WorkflowDefinition.WorkflowSteps.Add(WorkflowStep);
                 }
                 await UOW.WorkflowStepRepository.BulkMerge(WorkflowDefinition.WorkflowSteps);
@@ -189,14 +191,14 @@ namespace DMS.Services.MWorkflow
                     Skip = 0,
                     Take = int.MaxValue,
                     Selects = WorkflowStepSelect.ALL,
-                    WorkflowDefinitionId = new IdFilter { Equal = Id }
+                    WorkflowDefinitionId = new IdFilter { Equal = WorkflowDefinition.Id }
                 });
                 foreach (var WorkflowDirection in oldData.WorkflowDirections)
                 {
                     WorkflowDirection.Id = 0;
                     WorkflowDirection.WorkflowDefinitionId = WorkflowDefinition.Id;
-                    WorkflowDirection.FromStepId = WorkflowSteps.Where(x => x.Code == WorkflowDirection.FromStep.Code).Select(x => x.Id).FirstOrDefault();
-                    WorkflowDirection.ToStepId = WorkflowSteps.Where(x => x.Code == WorkflowDirection.ToStep.Code).Select(x => x.Id).FirstOrDefault();
+                    WorkflowDirection.FromStepId = WorkflowSteps.Where(x => x.Code == WorkflowDirection.FromStep.Code + "_Clone").Select(x => x.Id).FirstOrDefault();
+                    WorkflowDirection.ToStepId = WorkflowSteps.Where(x => x.Code == WorkflowDirection.ToStep.Code + "_Clone").Select(x => x.Id).FirstOrDefault();
                     WorkflowDefinition.WorkflowDirections.Add(WorkflowDirection);
                 }
                 await UOW.WorkflowDirectionRepository.BulkMerge(WorkflowDefinition.WorkflowDirections);
