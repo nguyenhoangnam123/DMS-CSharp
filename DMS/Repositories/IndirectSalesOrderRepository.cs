@@ -102,7 +102,7 @@ namespace DMS.Repositories
                 query = query.Where(q => q.EditedPriceStatusId, filter.EditedPriceStatusId);
             if (filter.Note != null)
                 query = query.Where(q => q.Note, filter.Note);
-            if (filter.RequestStateId != null && filter.UserId.HasValue)
+            if (filter.RequestStateId != null)
                 query = query.Where(q => q.RequestStateId, filter.RequestStateId);
             if (filter.SubTotal != null)
                 query = query.Where(q => q.SubTotal, filter.SubTotal);
