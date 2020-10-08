@@ -366,15 +366,15 @@ namespace DMS.Rpc.monitor.monitor_store_images
 
                 foreach (var SalesEmployee in MonitorStoreImage_MonitorStoreImageDTO.SaleEmployees)
                 {
-                    List<Tuple<DateTime,long>> Date1s = StoreCheckingDAOs.Where(x => x.SaleEmployeeId == SalesEmployee.SaleEmployeeId).Select(x => new Tuple<DateTime, long> ( x.CheckOutAt.Value.AddHours(CurrentContext.TimeZone).Date, x.StoreId )).ToList();
-                    List<Tuple<DateTime,long>> Date2s = StoreImageDAOs.Where(x => x.SaleEmployeeId.HasValue && x.SaleEmployeeId.Value == SalesEmployee.SaleEmployeeId).Select(x => new Tuple<DateTime, long> ( x.ShootingAt.AddHours(CurrentContext.TimeZone).Date, x.StoreId )).ToList();
+                    List<Tuple<DateTime, long>> Date1s = StoreCheckingDAOs.Where(x => x.SaleEmployeeId == SalesEmployee.SaleEmployeeId).Select(x => new Tuple<DateTime, long>(x.CheckOutAt.Value.AddHours(CurrentContext.TimeZone).Date, x.StoreId)).ToList();
+                    List<Tuple<DateTime, long>> Date2s = StoreImageDAOs.Where(x => x.SaleEmployeeId.HasValue && x.SaleEmployeeId.Value == SalesEmployee.SaleEmployeeId).Select(x => new Tuple<DateTime, long>(x.ShootingAt.AddHours(CurrentContext.TimeZone).Date, x.StoreId)).ToList();
 
                     List<Tuple<DateTime, long>> Dates = new List<Tuple<DateTime, long>>();
                     Dates.AddRange(Date1s);
                     Dates.AddRange(Date2s);
                     Dates = Dates.Distinct().ToList();
 
-                    Parallel.ForEach(Dates, Date => 
+                    Parallel.ForEach(Dates, Date =>
                     {
                         var Checkings = StoreCheckingDAOs
                             .Where(x => x.SaleEmployeeId == SalesEmployee.SaleEmployeeId &&
@@ -401,60 +401,15 @@ namespace DMS.Rpc.monitor.monitor_store_images
                         }
                         if (Images.Count != 0)
                         {
-                            MonitorStoreImage_DetailDTO.StoreName = Checkings.Select(x => x.Store.Name).FirstOrDefault();
+                            MonitorStoreImage_DetailDTO.StoreName = Images.Select(x => x.StoreName).FirstOrDefault();
                             MonitorStoreImage_DetailDTO.ImageCounter += Images.Count();
                         }
                         SalesEmployee.StoreCheckings.Add(MonitorStoreImage_DetailDTO);
                     });
-
-            //        SalesEmployee.StoreCheckings = StoreCheckingDAOs.Where(x => x.SaleEmployeeId == SalesEmployee.SaleEmployeeId)
-            //            .GroupBy(x => new
-            //            {
-            //                x.CheckOutAt.Value.AddHours(CurrentContext.TimeZone).Date,
-            //                x.StoreId,
-            //                x.Store.Name
-            //            })
-            //            .Select(y => new MonitorStoreImage_DetailDTO
-            //            {
-            //                StoreId = y.Key.StoreId,
-            //                Date = y.Key.Date,
-            //                StoreName = y.Key.Name,
-            //            }).ToList();
-
-            //        var StoreImages = StoreImageDAOs.Where(x => x.SaleEmployeeId == SalesEmployee.SaleEmployeeId).ToList();
-            //        var StoreIds = StoreImages.Select(x => x.StoreId).Distinct().ToList();
-            //        foreach (var storeId in StoreIds)
-            //        {
-            //            var dates = StoreImages.OrderByDescending(x => x.ShootingAt).Select(x => x.ShootingAt.AddHours(CurrentContext.TimeZone).Date).Distinct().ToList();
-            //            foreach (var date in dates)
-            //            {
-            //                var row = MonitorStoreImage_SaleEmployeeDTO.StoreCheckings.Where(x => x.StoreId == storeId && x.Date == date.Date).FirstOrDefault();
-            //                if (row == null)
-            //                {
-            //                    row = new MonitorStoreImage_DetailDTO();
-            //                    row.Date = date.AddHours(CurrentContext.TimeZone).Date;
-            //                    row.ImageCounter = StoreImages.Where(x => x.StoreId == storeId && x.ShootingAt.AddHours(CurrentContext.TimeZone).Date == date.AddHours(CurrentContext.TimeZone).Date).Count();
-            //                    row.SaleEmployeeId = SalesEmployee.Id;
-            //                    row.StoreId = storeId;
-            //                    row.StoreName = StoreImages.Where(x => x.StoreId == storeId).Select(x => x.StoreName).FirstOrDefault();
-            //                    MonitorStoreImage_SaleEmployeeDTO.StoreCheckings.Add(row);
-            //                }
-            //                else
-            //                {
-            //                    row.ImageCounter += StoreImages.Where(x => x.StoreId == storeId && x.ShootingAt.AddHours(CurrentContext.TimeZone).Date == date.AddHours(CurrentContext.TimeZone).Date).Count();
-            //                }
-            //            }
-            //        }
-
-            //        MonitorStoreImage_SaleEmployeeDTOs.Add(MonitorStoreImage_SaleEmployeeDTO);
                 }
             }
 
-
-
-
-            //MonitorStoreImage_MonitorStoreImageDTOs = MonitorStoreImage_MonitorStoreImageDTOs.Where(si => si.SaleEmployees.Count > 0).ToList();
-
+            MonitorStoreImage_MonitorStoreImageDTOs = MonitorStoreImage_MonitorStoreImageDTOs.Where(si => si.SaleEmployees.Count > 0).ToList();
             return MonitorStoreImage_MonitorStoreImageDTOs;
         }
 
