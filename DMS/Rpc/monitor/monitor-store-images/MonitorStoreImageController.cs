@@ -207,12 +207,10 @@ namespace DMS.Rpc.monitor.monitor_store_images
             ITempTableQuery<TempTable<long>> tempTableQuery = await DataContext
                        .BulkInsertValuesIntoTempTableAsync<long>(StoreIds);
 
-            List<long> AppUserIds = await FilterAppUser(AppUserService, OrganizationService, CurrentContext);
             var query = from sc in DataContext.StoreChecking
                         join s in DataContext.Store on sc.StoreId equals s.Id
                         join tt in tempTableQuery.Query on s.Id equals tt.Column1
                         where sc.CheckOutAt.HasValue && Start <= sc.CheckOutAt.Value && sc.CheckOutAt.Value <= End &&
-                        AppUserIds.Contains(sc.SaleEmployeeId) &&
                         OrganizationIds.Contains(s.OrganizationId) &&
                         (SaleEmployeeId.HasValue == false || sc.SaleEmployeeId == SaleEmployeeId.Value) &&
                         (StoreId.HasValue == false || sc.StoreId == StoreId.Value) &&
@@ -225,7 +223,6 @@ namespace DMS.Rpc.monitor.monitor_store_images
             var SaleEmployeeIds = await query.Distinct().ToListAsync();
             var query2 = from si in DataContext.StoreImage
                          where Start <= si.ShootingAt && si.ShootingAt <= End &&
-                        (si.SaleEmployeeId.HasValue && AppUserIds.Contains(si.SaleEmployeeId.Value)) &&
                         OrganizationIds.Contains(si.OrganizationId) &&
                         (SaleEmployeeId.HasValue == false || si.SaleEmployeeId == SaleEmployeeId.Value) &&
                         (StoreId.HasValue == false || si.StoreId == StoreId.Value)
@@ -277,12 +274,10 @@ namespace DMS.Rpc.monitor.monitor_store_images
             ITempTableQuery<TempTable<long>> tempTableQuery = await DataContext
                        .BulkInsertValuesIntoTempTableAsync<long>(StoreIds);
 
-            List<long> AppUserIds = await FilterAppUser(AppUserService, OrganizationService, CurrentContext);
             var StoreCheckingQuery = from sc in DataContext.StoreChecking
                                      join s in DataContext.Store on sc.StoreId equals s.Id
                                      join tt in tempTableQuery.Query on s.Id equals tt.Column1
                                      where sc.CheckOutAt.HasValue && Start <= sc.CheckOutAt.Value && sc.CheckOutAt.Value <= End &&
-                                     AppUserIds.Contains(sc.SaleEmployeeId) &&
                                      OrganizationIds.Contains(s.OrganizationId) &&
                                      (SaleEmployeeId.HasValue == false || sc.SaleEmployeeId == SaleEmployeeId.Value) &&
                                      (StoreId.HasValue == false || sc.StoreId == StoreId.Value) &&
@@ -309,7 +304,6 @@ namespace DMS.Rpc.monitor.monitor_store_images
             var StoreImageQuery = from si in DataContext.StoreImage
                                   join tt in tempTableQuery.Query on si.StoreId equals tt.Column1
                                   where Start <= si.ShootingAt && si.ShootingAt <= End &&
-                                 (si.SaleEmployeeId.HasValue && AppUserIds.Contains(si.SaleEmployeeId.Value)) &&
                                  OrganizationIds.Contains(si.OrganizationId) &&
                                  (SaleEmployeeId.HasValue == false || si.SaleEmployeeId == SaleEmployeeId.Value) &&
                                  (StoreId.HasValue == false || si.StoreId == StoreId.Value)
