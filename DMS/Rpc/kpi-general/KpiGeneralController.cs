@@ -287,8 +287,49 @@ namespace DMS.Rpc.kpi_general
             };
             List<AppUser> Employees = await AppUserService.List(EmployeeFilter);
 
-            List<KpiGeneral> KpiGenerals = new List<KpiGeneral>();
-            
+            GenericEnum KpiYear;
+            using (ExcelPackage excelPackage = new ExcelPackage(file.OpenReadStream()))
+            {
+                ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets["KPI nhan vien"];
+
+                if (worksheet == null)
+                {
+                    errorContent.AppendLine("File không đúng biểu mẫu import");
+                    return BadRequest(errorContent.ToString());
+                }
+
+                string KpiYearValue = worksheet.Cells[2, 7].Value?.ToString();
+                if (long.TryParse(KpiYearValue, out long KpiYearId))
+                    KpiYear = KpiYearEnum.KpiYearEnumList.Where(x => x.Id == KpiYearId).FirstOrDefault();
+                else
+                {
+                    errorContent.AppendLine("Chưa chọn năm Kpi hoặc năm không hợp lệ");
+                    return BadRequest(errorContent.ToString());
+                }
+            }
+
+            var AppUserIds = Employees.Select(x => x.Id).ToList();
+            List<KpiGeneral> KpiGenerals = await KpiGeneralService.List(new KpiGeneralFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                AppUserId = new IdFilter { In = AppUserIds },
+                KpiYearId = new IdFilter { Equal = KpiYear.Id },
+            });
+
+            var KpiGeneralIds = KpiGenerals.Select(x => x.Id).ToList();
+            List<KpiGeneralContent> KpiGeneralContents = await KpiGeneralContentService.List(new KpiGeneralContentFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = KpiGeneralContentSelect.ALL,
+                KpiGeneralId = new IdFilter { In = KpiGeneralIds },
+                StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id }
+            });
+            Parallel.ForEach(KpiGenerals, KpiGeneral =>
+            {
+                KpiGeneral.KpiGeneralContents = KpiGeneralContents.Where(x => x.KpiGeneralId == KpiGeneral.Id).ToList();
+            });
             using (ExcelPackage excelPackage = new ExcelPackage(file.OpenReadStream()))
             {
                 ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets["KPI nhan vien"];
@@ -320,16 +361,6 @@ namespace DMS.Rpc.kpi_general
                 int Q3Column = 17 + StartColumn;
                 int Q4Column = 18 + StartColumn;
                 int YColumn = 19 + StartColumn;
-
-                string KpiYearValue = worksheet.Cells[2, 7].Value?.ToString();
-                GenericEnum KpiYear;
-                if (long.TryParse(KpiYearValue, out long KpiYearId))
-                    KpiYear = KpiYearEnum.KpiYearEnumList.Where(x => x.Id == KpiYearId).FirstOrDefault();
-                else
-                {
-                    errorContent.AppendLine("Chưa chọn năm Kpi hoặc năm không hợp lệ");
-                    return BadRequest(errorContent.ToString());
-                }
 
                 for (int i = StartRow; i <= worksheet.Dimension.End.Row; i++)
                 {
@@ -390,15 +421,16 @@ namespace DMS.Rpc.kpi_general
                     {
                         KpiGeneral = new KpiGeneral();
                         KpiGeneral.KpiGeneralContents = new List<KpiGeneralContent>();
-                        KpiGeneral.CreatorId = AppUser == null ? 0 : AppUser.Id;
-                        KpiGeneral.Creator = AppUser;
-                        KpiGeneral.OrganizationId = AppUser.OrganizationId;
                         KpiGeneral.EmployeeId = Employee == null ? 0 : Employee.Id;
                         KpiGeneral.Employee = Employee;
                         KpiGeneral.KpiYearId = KpiYear == null ? 0 : KpiYear.Id;
                         KpiGeneral.StatusId = StatusEnum.ACTIVE.Id;
                         KpiGenerals.Add(KpiGeneral);
                     }
+                    KpiGeneral.CreatorId = AppUser == null ? 0 : AppUser.Id;
+                    KpiGeneral.Creator = AppUser;
+                    KpiGeneral.OrganizationId = AppUser.OrganizationId;
+
                     KpiGeneralCriterial = KpiCriteriaGeneralEnum.KpiCriteriaGeneralEnumList.Where(x => x.Name == CriterialValue.Trim()).FirstOrDefault();
                     KpiGeneralContent KpiGeneralContent = KpiGeneral.KpiGeneralContents.Where(x => x.KpiCriteriaGeneralId == KpiGeneralCriterial.Id).FirstOrDefault();
                     if(KpiGeneralContent == null)
