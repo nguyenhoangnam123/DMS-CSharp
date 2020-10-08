@@ -402,9 +402,23 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
 
             AppUserIds = AppUserDAOs.Select(s => s.Id).ToList();
             var query2 = from sc in DataContext.StoreChecking
-                         join tt in tempTableQuery.Query on sc.StoreId equals tt.Column1
+                         join s in DataContext.Store on sc.StoreId equals s.Id
+                         join tt in tempTableQuery.Query on s.Id equals tt.Column1
                          where AppUserIds.Contains(sc.SaleEmployeeId) &&
-                         (sc.CheckOutAt.HasValue && Start <= sc.CheckOutAt.Value && sc.CheckOutAt.Value <= End)
+                         (sc.CheckOutAt.HasValue && Start <= sc.CheckOutAt.Value && sc.CheckOutAt.Value <= End) &&
+                         StoreTypeIds.Contains(s.StoreTypeId) &&
+                        (
+                            (
+                                StoreGroupingId.HasValue == false &&
+                                (s.StoreGroupingId.HasValue == false || StoreGroupingIds.Contains(s.StoreGroupingId.Value))
+                            ) ||
+                            (
+                                StoreGroupingId.HasValue &&
+                                StoreGroupingId.Value == s.StoreGroupingId.Value
+                            )
+                        ) &&
+                        (StoreStatusId.HasValue == false || StoreStatusId.Value == StoreStatusEnum.ALL.Id || s.StoreStatusId == StoreStatusId.Value) &&
+                        OrganizationIds.Contains(s.OrganizationId)
                          select sc;
 
             List<StoreCheckingDAO> storeCheckings = await query2.ToListAsync();
