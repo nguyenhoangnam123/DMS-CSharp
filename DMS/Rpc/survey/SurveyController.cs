@@ -393,9 +393,8 @@ namespace DMS.Rpc.survey
                                 List<SurveyResultText> SurveyResultTexts = SurveyResult.SurveyResultTexts.Where(sr => sr.SurveyQuestionId == surveyQuestion.Id).ToList();
                                 foreach (SurveyResultText SurveyResultText in SurveyResultTexts)
                                 {
-                                    optionResults.Add(SurveyResultText.Content);
+                                    optionResults.Add(surveyQuestion.TextResult);
                                 }
-                                optionResults.Add(surveyQuestion.TextResult);
                             }
                         }
                 }
