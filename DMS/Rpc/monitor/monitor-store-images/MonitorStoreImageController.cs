@@ -18,6 +18,8 @@ using System.Dynamic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Thinktecture;
+using Thinktecture.EntityFrameworkCore.TempTables;
 
 namespace DMS.Rpc.monitor.monitor_store_images
 {
@@ -196,32 +198,35 @@ namespace DMS.Rpc.monitor.monitor_store_images
             }
             OrganizationIds = OrganizationDAOs.Select(o => o.Id).ToList();
 
-            List<long> FilterAppUserIds = await FilterAppUser(AppUserService, OrganizationService, CurrentContext);
+            List<long> StoreIds = await FilterStore(StoreService, OrganizationService, CurrentContext);
+            if (StoreId.HasValue)
+            {
+                var listId = new List<long> { StoreId.Value };
+                StoreIds = StoreIds.Intersect(listId).ToList();
+            }
+            ITempTableQuery<TempTable<long>> tempTableQuery = await DataContext
+                       .BulkInsertValuesIntoTempTableAsync<long>(StoreIds);
+
             var query = from sc in DataContext.StoreChecking
-                        join au in DataContext.AppUser on sc.SaleEmployeeId equals au.Id
+                        join s in DataContext.Store on sc.StoreId equals s.Id
+                        join tt in tempTableQuery.Query on s.Id equals tt.Column1
                         where sc.CheckOutAt.HasValue && Start <= sc.CheckOutAt.Value && sc.CheckOutAt.Value <= End &&
-                        FilterAppUserIds.Contains(sc.SaleEmployeeId) &&
-                        OrganizationIds.Contains(au.OrganizationId) &&
+                        OrganizationIds.Contains(s.OrganizationId) &&
                         (SaleEmployeeId.HasValue == false || sc.SaleEmployeeId == SaleEmployeeId.Value) &&
                         (StoreId.HasValue == false || sc.StoreId == StoreId.Value) &&
                         (
                             HasImage == null ||
                             (HasImage.Value == 0 && sc.ImageCounter == 0) ||
                             (HasImage.Value == 1 && sc.ImageCounter > 0)
-                        ) &&
-                        (
-                            HasOrder == null ||
-                            (HasOrder.Value == 0 && sc.IndirectSalesOrderCounter == 0) ||
-                            (HasOrder.Value == 1 && sc.IndirectSalesOrderCounter > 0)
                         )
                         select sc.SaleEmployeeId;
             var SaleEmployeeIds = await query.Distinct().ToListAsync();
-            var query2 = from aim in DataContext.AlbumImageMapping
-                         where Start <= aim.ShootingAt && aim.ShootingAt <= End &&
-                        (aim.SaleEmployeeId.HasValue && FilterAppUserIds.Contains(aim.SaleEmployeeId.Value)) &&
-                        (SaleEmployeeId.HasValue == false || aim.SaleEmployeeId == SaleEmployeeId.Value) &&
-                        (StoreId.HasValue == false || aim.StoreId == StoreId.Value)
-                         select aim.SaleEmployeeId.Value;
+            var query2 = from si in DataContext.StoreImage
+                         where Start <= si.ShootingAt && si.ShootingAt <= End &&
+                        OrganizationIds.Contains(si.OrganizationId) &&
+                        (SaleEmployeeId.HasValue == false || si.SaleEmployeeId == SaleEmployeeId.Value) &&
+                        (StoreId.HasValue == false || si.StoreId == StoreId.Value)
+                         select si.SaleEmployeeId.Value;
             var SaleEmployeeIds2 = await query2.Distinct().ToListAsync();
             var Ids = new List<long>();
             Ids.AddRange(SaleEmployeeIds);
@@ -260,45 +265,51 @@ namespace DMS.Rpc.monitor.monitor_store_images
                 OrganizationDAOs = OrganizationDAOs.Where(o => o.Path.StartsWith(OrganizationDAO.Path)).ToList();
             }
             OrganizationIds = OrganizationDAOs.Select(o => o.Id).ToList();
-
-            List<long> FilterAppUserIds = await FilterAppUser(AppUserService, OrganizationService, CurrentContext);
-            var query = from au in DataContext.AppUser
-                        join sc in DataContext.StoreChecking on au.Id equals sc.SaleEmployeeId
-                        join o in DataContext.Organization on au.OrganizationId equals o.Id
-                        where sc.CheckOutAt.HasValue && Start <= sc.CheckOutAt.Value && sc.CheckOutAt.Value <= End &&
-                        FilterAppUserIds.Contains(au.Id) &&
-                        OrganizationIds.Contains(au.OrganizationId) &&
-                        (SaleEmployeeId.HasValue == false || sc.SaleEmployeeId == SaleEmployeeId.Value) &&
-                        (StoreId.HasValue == false || sc.StoreId == StoreId.Value)
-                        select au.Id;
-
-            var SaleEmployeeIds = await query.Distinct().ToListAsync();
-            if (HasImage.HasValue)
+            List<long> StoreIds = await FilterStore(StoreService, OrganizationService, CurrentContext);
+            if (StoreId.HasValue)
             {
-                var query_HasImage = from si in DataContext.StoreImage
-                                     where Start <= si.ShootingAt && si.ShootingAt <= End &&
-                                     (si.SaleEmployeeId.HasValue && FilterAppUserIds.Contains(si.SaleEmployeeId.Value)) &&
-                                     OrganizationIds.Contains(si.OrganizationId)
-                                     select si.SaleEmployeeId.Value;
-                if(HasImage.Value == 0)
-                {
-                    var ids = await query_HasImage.Distinct().ToListAsync();
-                    SaleEmployeeIds = SaleEmployeeIds.Except(ids).ToList();
-                }
-                else if(HasImage.Value == 1)
-                {
-                    var ids = await query_HasImage.Distinct().ToListAsync();
-                    SaleEmployeeIds = SaleEmployeeIds.Intersect(ids).ToList();
-                }
+                var listId = new List<long> { StoreId.Value };
+                StoreIds = StoreIds.Intersect(listId).ToList();
             }
-            
-            var query2 = from aim in DataContext.AlbumImageMapping
-                         where Start <= aim.ShootingAt && aim.ShootingAt <= End &&
-                        (aim.SaleEmployeeId.HasValue && FilterAppUserIds.Contains(aim.SaleEmployeeId.Value)) &&
-                        (SaleEmployeeId.HasValue == false || aim.SaleEmployeeId == SaleEmployeeId.Value) &&
-                        (StoreId.HasValue == false || aim.StoreId == StoreId.Value)
-                         select aim.SaleEmployeeId.Value;
-            var SaleEmployeeIds2 = await query2.Distinct().ToListAsync();
+            ITempTableQuery<TempTable<long>> tempTableQuery = await DataContext
+                       .BulkInsertValuesIntoTempTableAsync<long>(StoreIds);
+
+            var StoreCheckingQuery = from sc in DataContext.StoreChecking
+                                     join s in DataContext.Store on sc.StoreId equals s.Id
+                                     join tt in tempTableQuery.Query on s.Id equals tt.Column1
+                                     where sc.CheckOutAt.HasValue && Start <= sc.CheckOutAt.Value && sc.CheckOutAt.Value <= End &&
+                                     OrganizationIds.Contains(s.OrganizationId) &&
+                                     (SaleEmployeeId.HasValue == false || sc.SaleEmployeeId == SaleEmployeeId.Value) &&
+                                     (StoreId.HasValue == false || sc.StoreId == StoreId.Value) &&
+                                     (
+                                         HasImage == null ||
+                                         (HasImage.Value == 0 && sc.ImageCounter == 0) ||
+                                         (HasImage.Value == 1 && sc.ImageCounter > 0)
+                                     )
+                                     select new StoreCheckingDAO
+                                     {
+                                         Id = sc.Id,
+                                         StoreId = sc.StoreId,
+                                         CheckOutAt = sc.CheckOutAt,
+                                         ImageCounter = sc.ImageCounter,
+                                         Store = new StoreDAO
+                                         {
+                                             Id = s.Id,
+                                             Name = s.Name,
+                                             OrganizationId = s.OrganizationId
+                                         }
+                                     };
+            var SaleEmployeeIds = await StoreCheckingQuery.Select(x => x.SaleEmployeeId).Distinct().ToListAsync();
+
+            var StoreImageQuery = from si in DataContext.StoreImage
+                                  join tt in tempTableQuery.Query on si.StoreId equals tt.Column1
+                                  where Start <= si.ShootingAt && si.ShootingAt <= End &&
+                                 OrganizationIds.Contains(si.OrganizationId) &&
+                                 (SaleEmployeeId.HasValue == false || si.SaleEmployeeId == SaleEmployeeId.Value) &&
+                                 (StoreId.HasValue == false || si.StoreId == StoreId.Value)
+                                  select si;
+            var SaleEmployeeIds2 = await StoreImageQuery.Select(x => x.SaleEmployeeId.Value).Distinct().ToListAsync();
+
             var Ids = new List<long>();
             Ids.AddRange(SaleEmployeeIds);
             Ids.AddRange(SaleEmployeeIds2);
@@ -309,108 +320,140 @@ namespace DMS.Rpc.monitor.monitor_store_images
                 .Skip(MonitorStoreImage_MonitorStoreImageFilterDTO.Skip)
                 .Take(MonitorStoreImage_MonitorStoreImageFilterDTO.Take)
                 .ToListAsync();
-
             SaleEmployeeIds = SalesEmployees.Select(x => x.Id).ToList();
 
-            var StoreCheckingQuery = from sc in DataContext.StoreChecking
-                                     join s in DataContext.Store on sc.StoreId equals s.Id
-                                     join au in DataContext.AppUser on sc.SaleEmployeeId equals au.Id
-                                     where sc.CheckOutAt.HasValue && Start <= sc.CheckOutAt.Value && sc.CheckOutAt.Value <= End &&
-                                     OrganizationIds.Contains(au.OrganizationId) &&
-                                     (SaleEmployeeIds.Contains(sc.SaleEmployeeId)) &&
-                                     (StoreId.HasValue == false || sc.StoreId == StoreId.Value) &&
-                                     (
-                                         HasImage == null ||
-                                         (HasImage.Value == 0 && sc.ImageCounter == 0) ||
-                                         (HasImage.Value == 1 && sc.ImageCounter > 0)
-                                     )
-                                     select sc;
-
-            List<StoreCheckingDAO> StoreCheckingDAOs = await StoreCheckingQuery.Include(s => s.Store).ToListAsync();
-
-            var StoreImageQuery = from si in DataContext.StoreImage
-                                  where Start <= si.ShootingAt && si.ShootingAt <= End &&
-                                  OrganizationIds.Contains(si.OrganizationId) &&
-                                  (si.SaleEmployeeId.HasValue && SaleEmployeeIds.Contains(si.SaleEmployeeId.Value))
-                                  select si;
+            List<StoreCheckingDAO> StoreCheckingDAOs = await StoreCheckingQuery.ToListAsync();
             var StoreImageDAOs = await StoreImageQuery.ToListAsync();
 
-            OrganizationIds = SalesEmployees.Select(x => x.OrganizationId).ToList();
-            List<Organization> Organizations = await OrganizationService.List(new OrganizationFilter
-            {
-                Skip = 0,
-                Take = int.MaxValue,
-                Selects = OrganizationSelect.Id | OrganizationSelect.Name | OrganizationSelect.Path,
-                OrderBy = OrganizationOrder.Path,
-                OrderType = OrderType.ASC,
-                Id = new IdFilter { In = OrganizationIds }
-            });
+            var OrganizationIds1 = StoreCheckingDAOs.Select(x => x.Store.OrganizationId).Distinct().ToList();
+            var OrganizationIds2 = StoreImageDAOs.Select(x => x.OrganizationId).Distinct().ToList();
+
+            OrganizationIds = new List<long>();
+            OrganizationIds.AddRange(OrganizationIds1);
+            OrganizationIds.AddRange(OrganizationIds2);
+            OrganizationIds = OrganizationIds.Distinct().ToList();
+
+            var Organizations = await DataContext.Organization
+                .Where(x => OrganizationIds.Contains(x.Id))
+                .OrderBy(x => x.Id)
+                .Select(x => new OrganizationDAO
+                {
+                    Id = x.Id,
+                    Name = x.Name
+                }).ToListAsync();
             //build
-            List<MonitorStoreImage_SaleEmployeeDTO> MonitorStoreImage_SaleEmployeeDTOs = new List<MonitorStoreImage_SaleEmployeeDTO>();
-            foreach (var SalesEmployee in SalesEmployees)
-            {
-                MonitorStoreImage_SaleEmployeeDTO MonitorStoreImage_SaleEmployeeDTO = new MonitorStoreImage_SaleEmployeeDTO
-                {
-                    DisplayName = SalesEmployee.DisplayName,
-                    Username = SalesEmployee.Username,
-                    SaleEmployeeId = SalesEmployee.Id,
-                    OrganizationName = SalesEmployee.Organization.Name,
-                    OrganizationPath = SalesEmployee.Organization.Path
-                };
-
-                MonitorStoreImage_SaleEmployeeDTO.StoreCheckings = StoreCheckingDAOs.Where(x => x.SaleEmployeeId == SalesEmployee.Id)
-                    .GroupBy(x => new { 
-                        x.CheckOutAt.Value.AddHours(CurrentContext.TimeZone).Date, 
-                        x.StoreId, 
-                        x.Store.Name 
-                    })
-                    .Select(y => new MonitorStoreImage_DetailDTO
-                    {
-                        StoreId = y.Key.StoreId,
-                        Date = y.Key.Date,
-                        StoreName = y.Key.Name,
-                    }).ToList();
-
-                var StoreImages = StoreImageDAOs.Where(x => x.SaleEmployeeId == SalesEmployee.Id).ToList();
-                var StoreIds = StoreImages.Select(x => x.StoreId).Distinct().ToList();
-                foreach (var storeId in StoreIds)
-                {
-                    var dates = StoreImages.OrderByDescending(x => x.ShootingAt).Select(x => x.ShootingAt.AddHours(CurrentContext.TimeZone).Date).Distinct().ToList();
-                    foreach (var date in dates)
-                    {
-                        var row = MonitorStoreImage_SaleEmployeeDTO.StoreCheckings.Where(x => x.StoreId == storeId && x.Date == date.Date).FirstOrDefault();
-                        if(row == null)
-                        {
-                            row = new MonitorStoreImage_DetailDTO();
-                            row.Date = date.AddHours(CurrentContext.TimeZone).Date;
-                            row.ImageCounter = StoreImages.Where(x => x.StoreId == storeId && x.ShootingAt.AddHours(CurrentContext.TimeZone).Date == date.AddHours(CurrentContext.TimeZone).Date).Count();
-                            row.SaleEmployeeId = SalesEmployee.Id;
-                            row.StoreId = storeId;
-                            row.StoreName = StoreImages.Where(x => x.StoreId == storeId).Select(x => x.StoreName).FirstOrDefault();
-                            MonitorStoreImage_SaleEmployeeDTO.StoreCheckings.Add(row);
-                        }
-                        else
-                        {
-                            row.ImageCounter += StoreImages.Where(x => x.StoreId == storeId && x.ShootingAt.AddHours(CurrentContext.TimeZone).Date == date.AddHours(CurrentContext.TimeZone).Date).Count();
-                        }
-                    }
-                }
-
-                MonitorStoreImage_SaleEmployeeDTOs.Add(MonitorStoreImage_SaleEmployeeDTO);
-            }
-
             List<MonitorStoreImage_MonitorStoreImageDTO> MonitorStoreImage_MonitorStoreImageDTOs = new List<MonitorStoreImage_MonitorStoreImageDTO>();
-            foreach (Organization Organization in Organizations)
+            foreach (var Organization in Organizations)
             {
                 MonitorStoreImage_MonitorStoreImageDTO MonitorStoreImage_MonitorStoreImageDTO = new MonitorStoreImage_MonitorStoreImageDTO()
                 {
+                    OrganizationId = Organization.Id,
                     OrganizationName = Organization.Name,
-                    SaleEmployees = MonitorStoreImage_SaleEmployeeDTOs.Where(x => x.OrganizationPath.Equals(Organization.Path)).ToList()
+                    SaleEmployees = new List<MonitorStoreImage_SaleEmployeeDTO>()
                 };
                 MonitorStoreImage_MonitorStoreImageDTOs.Add(MonitorStoreImage_MonitorStoreImageDTO);
             }
 
-            MonitorStoreImage_MonitorStoreImageDTOs = MonitorStoreImage_MonitorStoreImageDTOs.Where(si => si.SaleEmployees.Count > 0).ToList();
+            foreach (var MonitorStoreImage_MonitorStoreImageDTO in MonitorStoreImage_MonitorStoreImageDTOs)
+            {
+                MonitorStoreImage_MonitorStoreImageDTO.SaleEmployees = SalesEmployees.Where(x => x.OrganizationId == MonitorStoreImage_MonitorStoreImageDTO.OrganizationId).Select(x => new MonitorStoreImage_SaleEmployeeDTO
+                {
+                    SaleEmployeeId = x.Id,
+                    Username = x.Username,
+                    DisplayName = x.DisplayName,
+                    StoreCheckings = new List<MonitorStoreImage_DetailDTO>()
+                }).ToList();
+
+                foreach (var SalesEmployee in MonitorStoreImage_MonitorStoreImageDTO.SaleEmployees)
+                {
+                    List<Tuple<DateTime,long>> Date1s = StoreCheckingDAOs.Where(x => x.SaleEmployeeId == SalesEmployee.SaleEmployeeId).Select(x => new Tuple<DateTime, long> ( x.CheckOutAt.Value.AddHours(CurrentContext.TimeZone).Date, x.StoreId )).ToList();
+                    List<Tuple<DateTime,long>> Date2s = StoreImageDAOs.Where(x => x.SaleEmployeeId.HasValue && x.SaleEmployeeId.Value == SalesEmployee.SaleEmployeeId).Select(x => new Tuple<DateTime, long> ( x.ShootingAt.AddHours(CurrentContext.TimeZone).Date, x.StoreId )).ToList();
+
+                    List<Tuple<DateTime, long>> Dates = new List<Tuple<DateTime, long>>();
+                    Dates.AddRange(Date1s);
+                    Dates.AddRange(Date2s);
+                    Dates = Dates.Distinct().ToList();
+
+                    Parallel.ForEach(Dates, Date => 
+                    {
+                        var Checkings = StoreCheckingDAOs
+                            .Where(x => x.SaleEmployeeId == SalesEmployee.SaleEmployeeId &&
+                            x.CheckOutAt.Value.AddHours(CurrentContext.TimeZone).Date == Date.Item1 &&
+                            x.StoreId == Date.Item2)
+                            .ToList();
+                        var Images = StoreImageDAOs
+                            .Where(x => x.SaleEmployeeId == SalesEmployee.SaleEmployeeId &&
+                            x.ShootingAt.AddHours(CurrentContext.TimeZone).Date == Date.Item1 &&
+                            x.StoreId == Date.Item2)
+                            .ToList();
+
+                        MonitorStoreImage_DetailDTO MonitorStoreImage_DetailDTO = new MonitorStoreImage_DetailDTO()
+                        {
+                            Date = Date.Item1,
+                            StoreId = Date.Item2,
+                            SaleEmployeeId = SalesEmployee.SaleEmployeeId
+                        };
+
+                        if (Checkings.Count() != 0)
+                        {
+                            MonitorStoreImage_DetailDTO.StoreName = Checkings.Select(x => x.Store.Name).FirstOrDefault();
+                            MonitorStoreImage_DetailDTO.ImageCounter += Checkings.Where(x => x.ImageCounter.HasValue).Select(x => x.ImageCounter.Value).Sum();
+                        }
+                        if (Images.Count != 0)
+                        {
+                            MonitorStoreImage_DetailDTO.StoreName = Checkings.Select(x => x.Store.Name).FirstOrDefault();
+                            MonitorStoreImage_DetailDTO.ImageCounter += Images.Count();
+                        }
+                        SalesEmployee.StoreCheckings.Add(MonitorStoreImage_DetailDTO);
+                    });
+
+            //        SalesEmployee.StoreCheckings = StoreCheckingDAOs.Where(x => x.SaleEmployeeId == SalesEmployee.SaleEmployeeId)
+            //            .GroupBy(x => new
+            //            {
+            //                x.CheckOutAt.Value.AddHours(CurrentContext.TimeZone).Date,
+            //                x.StoreId,
+            //                x.Store.Name
+            //            })
+            //            .Select(y => new MonitorStoreImage_DetailDTO
+            //            {
+            //                StoreId = y.Key.StoreId,
+            //                Date = y.Key.Date,
+            //                StoreName = y.Key.Name,
+            //            }).ToList();
+
+            //        var StoreImages = StoreImageDAOs.Where(x => x.SaleEmployeeId == SalesEmployee.SaleEmployeeId).ToList();
+            //        var StoreIds = StoreImages.Select(x => x.StoreId).Distinct().ToList();
+            //        foreach (var storeId in StoreIds)
+            //        {
+            //            var dates = StoreImages.OrderByDescending(x => x.ShootingAt).Select(x => x.ShootingAt.AddHours(CurrentContext.TimeZone).Date).Distinct().ToList();
+            //            foreach (var date in dates)
+            //            {
+            //                var row = MonitorStoreImage_SaleEmployeeDTO.StoreCheckings.Where(x => x.StoreId == storeId && x.Date == date.Date).FirstOrDefault();
+            //                if (row == null)
+            //                {
+            //                    row = new MonitorStoreImage_DetailDTO();
+            //                    row.Date = date.AddHours(CurrentContext.TimeZone).Date;
+            //                    row.ImageCounter = StoreImages.Where(x => x.StoreId == storeId && x.ShootingAt.AddHours(CurrentContext.TimeZone).Date == date.AddHours(CurrentContext.TimeZone).Date).Count();
+            //                    row.SaleEmployeeId = SalesEmployee.Id;
+            //                    row.StoreId = storeId;
+            //                    row.StoreName = StoreImages.Where(x => x.StoreId == storeId).Select(x => x.StoreName).FirstOrDefault();
+            //                    MonitorStoreImage_SaleEmployeeDTO.StoreCheckings.Add(row);
+            //                }
+            //                else
+            //                {
+            //                    row.ImageCounter += StoreImages.Where(x => x.StoreId == storeId && x.ShootingAt.AddHours(CurrentContext.TimeZone).Date == date.AddHours(CurrentContext.TimeZone).Date).Count();
+            //                }
+            //            }
+            //        }
+
+            //        MonitorStoreImage_SaleEmployeeDTOs.Add(MonitorStoreImage_SaleEmployeeDTO);
+                }
+            }
+
+
+
+
+            //MonitorStoreImage_MonitorStoreImageDTOs = MonitorStoreImage_MonitorStoreImageDTOs.Where(si => si.SaleEmployees.Count > 0).ToList();
 
             return MonitorStoreImage_MonitorStoreImageDTOs;
         }
@@ -422,88 +465,42 @@ namespace DMS.Rpc.monitor.monitor_store_images
                 throw new BindException(ModelState);
             DateTime Start = MonitorStoreImage_StoreCheckingDTO.Date.AddHours(CurrentContext.TimeZone).Date.AddHours(0 - CurrentContext.TimeZone);
             DateTime End = Start.AddDays(1).AddSeconds(-1);
-            var query = from scim in DataContext.StoreCheckingImageMapping
-                        join sc in DataContext.StoreChecking on scim.StoreCheckingId equals sc.Id
-                        join s in DataContext.Store on sc.StoreId equals s.Id
-                        join a in DataContext.Album on scim.AlbumId equals a.Id
-                        join i in DataContext.Image on scim.ImageId equals i.Id
-                        join au in DataContext.AppUser on scim.SaleEmployeeId equals au.Id
-                        where scim.StoreId == MonitorStoreImage_StoreCheckingDTO.StoreId &&
-                        scim.SaleEmployeeId == MonitorStoreImage_StoreCheckingDTO.SaleEmployeeId &&
-                        Start <= scim.ShootingAt && scim.ShootingAt <= End
+
+            var query = from si in DataContext.StoreImage
+                        where si.StoreId == MonitorStoreImage_StoreCheckingDTO.StoreId &&
+                        (si.SaleEmployeeId.HasValue && si.SaleEmployeeId.Value == MonitorStoreImage_StoreCheckingDTO.SaleEmployeeId) &&
+                        Start <= si.ShootingAt && si.ShootingAt <= End
                         select new MonitorStoreImage_StoreCheckingImageMappingDTO
                         {
-                            AlbumId = scim.AlbumId,
-                            ImageId = scim.ImageId,
-                            SaleEmployeeId = scim.SaleEmployeeId,
-                            ShootingAt = scim.ShootingAt,
-                            StoreCheckingId = scim.StoreCheckingId,
-                            StoreId = scim.StoreId,
-                            Distance = scim.Distance,
+                            AlbumId = si.AlbumId,
+                            ImageId = si.ImageId,
+                            SaleEmployeeId = si.SaleEmployeeId.Value,
+                            ShootingAt = si.ShootingAt,
+                            StoreId = si.StoreId,
+                            Distance = si.Distance,
                             Album = new MonitorStoreImage_AlbumDTO
                             {
-                                Id = a.Id,
-                                Name = a.Name
+                                Id = si.AlbumId,
+                                Name = si.AlbumName
                             },
                             Image = new MonitorStoreImage_ImageDTO
                             {
-                                Id = i.Id,
-                                Url = i.Url
+                                Id = si.ImageId,
+                                Url = si.Url
                             },
                             SaleEmployee = new MonitorStoreImage_AppUserDTO
                             {
-                                Id = au.Id,
-                                DisplayName = au.DisplayName
+                                Id = si.SaleEmployeeId.Value,
+                                DisplayName = si.DisplayName
                             },
                             Store = new MonitorStoreImage_StoreDTO
                             {
-                                Id = s.Id,
-                                Address = s.Address,
-                                Name = s.Name
+                                Id = si.StoreId,
+                                Address = si.StoreAddress,
+                                Name = si.StoreName
                             }
                         };
-
-            var query2 = from aim in DataContext.AlbumImageMapping
-                        join s in DataContext.Store on aim.StoreId equals s.Id
-                        join a in DataContext.Album on aim.AlbumId equals a.Id
-                        join i in DataContext.Image on aim.ImageId equals i.Id
-                        join au in DataContext.AppUser on aim.SaleEmployeeId equals au.Id
-                        where aim.StoreId == MonitorStoreImage_StoreCheckingDTO.StoreId &&
-                        (aim.SaleEmployeeId.HasValue && aim.SaleEmployeeId == MonitorStoreImage_StoreCheckingDTO.SaleEmployeeId) &&
-                        Start <= aim.ShootingAt && aim.ShootingAt <= End
-                         select new MonitorStoreImage_StoreCheckingImageMappingDTO
-                        {
-                            AlbumId = aim.AlbumId,
-                            ImageId = aim.ImageId,
-                            SaleEmployeeId = aim.SaleEmployeeId.Value,
-                            ShootingAt = aim.ShootingAt,
-                            StoreId = aim.StoreId,
-                            Album = new MonitorStoreImage_AlbumDTO
-                            {
-                                Id = a.Id,
-                                Name = a.Name
-                            },
-                            Image = new MonitorStoreImage_ImageDTO
-                            {
-                                Id = i.Id,
-                                Url = i.Url
-                            },
-                            SaleEmployee = new MonitorStoreImage_AppUserDTO
-                            {
-                                Id = au.Id,
-                                DisplayName = au.DisplayName
-                            },
-                            Store = new MonitorStoreImage_StoreDTO
-                            {
-                                Id = s.Id,
-                                Address = s.Address,
-                                Name = s.Name
-                            }
-                        };
-            var result = await query.ToListAsync();
-            var result2 = await query2.ToListAsync();
-            result.AddRange(result2);
-            return result;
+            return await query.ToListAsync();
         }
 
         [Route(MonitorStoreImageRoute.UpdateAlbum), HttpPost]
@@ -515,7 +512,7 @@ namespace DMS.Rpc.monitor.monitor_store_images
             var AlbumImageMappingDAO = await DataContext
                 .AlbumImageMapping.Where(x => x.ImageId == MonitorStoreImage_StoreCheckingImageMappingDTO.ImageId)
                 .FirstOrDefaultAsync();
-            if(AlbumImageMappingDAO != null)
+            if (AlbumImageMappingDAO != null)
             {
                 var newObj = Utils.Clone(AlbumImageMappingDAO);
                 await DataContext.AlbumImageMapping.Where(x => x.ImageId == MonitorStoreImage_StoreCheckingImageMappingDTO.ImageId).DeleteFromQueryAsync();
@@ -535,7 +532,7 @@ namespace DMS.Rpc.monitor.monitor_store_images
                     await DataContext.SaveChangesAsync();
                 }
             }
-            
+
             return MonitorStoreImage_StoreCheckingImageMappingDTO;
         }
 
