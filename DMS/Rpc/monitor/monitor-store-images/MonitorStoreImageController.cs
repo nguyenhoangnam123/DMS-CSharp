@@ -482,9 +482,10 @@ namespace DMS.Rpc.monitor.monitor_store_images
                 .FirstOrDefaultAsync();
                 if (StoreCheckingImageMappingDAO != null)
                 {
-                    await DataContext.StoreCheckingImageMapping.Where(x => x.ImageId == MonitorStoreImage_StoreCheckingImageMappingDTO.ImageId).DeleteFromQueryAsync();
-                    StoreCheckingImageMappingDAO.AlbumId = MonitorStoreImage_StoreCheckingImageMappingDTO.AlbumId;
-                    await DataContext.SaveChangesAsync();
+                    await DataContext.StoreCheckingImageMapping.Where(x => x.ImageId == MonitorStoreImage_StoreCheckingImageMappingDTO.ImageId).UpdateFromQueryAsync(x => new StoreCheckingImageMappingDAO 
+                    {
+                        AlbumId = MonitorStoreImage_StoreCheckingImageMappingDTO.AlbumId
+                    });
                 }
             }
 
