@@ -367,7 +367,7 @@ namespace DMS.Rpc.monitor.monitor_store_images
                 foreach (var SalesEmployee in MonitorStoreImage_MonitorStoreImageDTO.SaleEmployees)
                 {
                     List<Tuple<DateTime,long>> Date1s = StoreCheckingDAOs.Where(x => x.SaleEmployeeId == SalesEmployee.SaleEmployeeId).Select(x => new Tuple<DateTime, long> ( x.CheckOutAt.Value.AddHours(CurrentContext.TimeZone).Date, x.StoreId )).ToList();
-                    List<Tuple<DateTime,long>> Date2s = StoreImageDAOs.Where(x => x.SaleEmployeeId.Value == SalesEmployee.SaleEmployeeId).Select(x => new Tuple<DateTime, long> ( x.ShootingAt.AddHours(CurrentContext.TimeZone).Date, x.StoreId )).ToList();
+                    List<Tuple<DateTime,long>> Date2s = StoreImageDAOs.Where(x => x.SaleEmployeeId.HasValue && x.SaleEmployeeId.Value == SalesEmployee.SaleEmployeeId).Select(x => new Tuple<DateTime, long> ( x.ShootingAt.AddHours(CurrentContext.TimeZone).Date, x.StoreId )).ToList();
 
                     List<Tuple<DateTime, long>> Dates = new List<Tuple<DateTime, long>>();
                     Dates.AddRange(Date1s);
