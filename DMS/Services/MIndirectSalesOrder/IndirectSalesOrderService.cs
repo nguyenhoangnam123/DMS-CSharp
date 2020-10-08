@@ -974,10 +974,10 @@ namespace DMS.Services.MIndirectSalesOrder
 
         public async Task<IndirectSalesOrder> Approve(IndirectSalesOrder IndirectSalesOrder)
         {
-
             IndirectSalesOrder = await Update(IndirectSalesOrder);
             if (IndirectSalesOrder.IsValidated == false)
                 return IndirectSalesOrder;
+            IndirectSalesOrder = await UOW.IndirectSalesOrderRepository.Get(IndirectSalesOrder.Id);
             Dictionary<string, string> Parameters = await MapParameters(IndirectSalesOrder);
             await WorkflowService.Approve(IndirectSalesOrder.RowId, WorkflowTypeEnum.INDIRECT_SALES_ORDER.Id, Parameters);
             RequestState RequestState = await WorkflowService.GetRequestState(IndirectSalesOrder.RowId);

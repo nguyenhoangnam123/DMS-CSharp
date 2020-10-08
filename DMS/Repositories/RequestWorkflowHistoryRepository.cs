@@ -50,6 +50,8 @@ namespace DMS.Repositories
                         RoleId = r.WorkflowStep.RoleId,
                         Role = new Role
                         {
+                            Id = r.WorkflowStep.Role.Id,
+                            Code = r.WorkflowStep.Role.Code,
                             Name = r.WorkflowStep.Role.Name,
                         },
                     },
