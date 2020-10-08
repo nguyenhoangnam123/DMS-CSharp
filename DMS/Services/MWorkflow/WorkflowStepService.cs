@@ -147,7 +147,16 @@ namespace DMS.Services.MWorkflow
                 var oldData = await UOW.WorkflowStepRepository.Get(WorkflowStep.Id);
                 WorkflowStep.ModifierId = CurrentContext.UserId;
                 await UOW.Begin();
-                await UOW.WorkflowStepRepository.Update(WorkflowStep);
+                if (oldData.Used)
+                {
+                    oldData.SubjectMailForReject = WorkflowStep.SubjectMailForReject;
+                    oldData.BodyMailForReject = WorkflowStep.BodyMailForReject;
+                    await UOW.WorkflowStepRepository.Update(oldData);
+                }
+                else
+                {
+                    await UOW.WorkflowStepRepository.Update(WorkflowStep);
+                }
                 await UOW.Commit();
                 NotifyUsed(WorkflowStep);
 

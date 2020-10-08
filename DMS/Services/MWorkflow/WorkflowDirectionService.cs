@@ -147,8 +147,12 @@ namespace DMS.Services.MWorkflow
                     oldData.SubjectMailForCreator = WorkflowDirection.SubjectMailForCreator;
                     oldData.SubjectMailForCurrentStep = WorkflowDirection.SubjectMailForCurrentStep;
                     oldData.SubjectMailForNextStep = WorkflowDirection.SubjectMailForNextStep;
+                    await UOW.WorkflowDirectionRepository.Update(oldData);
                 }
-                await UOW.WorkflowDirectionRepository.Update(oldData);
+                else
+                {
+                    await UOW.WorkflowDirectionRepository.Update(WorkflowDirection);
+                }
                 await UOW.Commit();
 
                 var newData = await UOW.WorkflowDirectionRepository.Get(WorkflowDirection.Id);
