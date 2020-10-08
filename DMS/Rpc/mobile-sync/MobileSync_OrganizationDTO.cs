@@ -17,18 +17,18 @@ namespace DMS.Rpc.mobile_sync
         public string Email { get; set; }
         public string Address { get; set; }
         public MobileSync_OrganizationDTO() { }
-        public MobileSync_OrganizationDTO(OrganizationDAO OrganizationDAO)
+        public MobileSync_OrganizationDTO(Organization Organization)
         {
-            this.Id = OrganizationDAO.Id;
-            this.Code = OrganizationDAO.Code;
-            this.Name = OrganizationDAO.Name;
-            this.ParentId = OrganizationDAO.ParentId;
-            this.Path = OrganizationDAO.Path;
-            this.Level = OrganizationDAO.Level;
-            this.StatusId = OrganizationDAO.StatusId;
-            this.Phone = OrganizationDAO.Phone;
-            this.Address = OrganizationDAO.Address;
-            this.Email = OrganizationDAO.Email;
+            this.Id = Organization.Id;
+            this.Code = Organization.Code;
+            this.Name = Organization.Name;
+            this.ParentId = Organization.ParentId;
+            this.Path = Organization.Path;
+            this.Level = Organization.Level;
+            this.StatusId = Organization.StatusId;
+            this.Phone = Organization.Phone;
+            this.Address = Organization.Address;
+            this.Email = Organization.Email;
         }
     }
 }

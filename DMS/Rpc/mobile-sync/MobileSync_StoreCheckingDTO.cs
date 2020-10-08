@@ -28,15 +28,15 @@ namespace DMS.Rpc.mobile_sync
 
 
         public MobileSync_StoreCheckingDTO() { }
-        public MobileSync_StoreCheckingDTO(StoreCheckingDAO StoreCheckingDAO)
+        public MobileSync_StoreCheckingDTO(StoreChecking StoreChecking)
         {
-            this.Id = StoreCheckingDAO.Id;
-            this.StoreId = StoreCheckingDAO.StoreId;
-            this.SaleEmployeeId = StoreCheckingDAO.SaleEmployeeId;
-            this.Longitude = StoreCheckingDAO.Longitude;
-            this.Latitude = StoreCheckingDAO.Latitude;
-            this.CheckInAt = StoreCheckingDAO.CheckInAt;
-            this.CheckOutAt = StoreCheckingDAO.CheckOutAt;
+            this.Id = StoreChecking.Id;
+            this.StoreId = StoreChecking.StoreId;
+            this.SaleEmployeeId = StoreChecking.SaleEmployeeId;
+            this.Longitude = StoreChecking.Longitude;
+            this.Latitude = StoreChecking.Latitude;
+            this.CheckInAt = StoreChecking.CheckInAt;
+            this.CheckOutAt = StoreChecking.CheckOutAt;
         }
     }
 

@@ -31,30 +31,30 @@ namespace DMS.Rpc.mobile_sync
         public MobileSync_UnitOfMeasureDTO UnitOfMeasure { get; set; }
 
         public MobileSync_IndirectSalesOrderContentDTO() { }
-        public MobileSync_IndirectSalesOrderContentDTO(IndirectSalesOrderContentDAO IndirectSalesOrderContentDAO)
+        public MobileSync_IndirectSalesOrderContentDTO(IndirectSalesOrderContent IndirectSalesOrderContent)
         {
-            this.Id = IndirectSalesOrderContentDAO.Id;
-            this.IndirectSalesOrderId = IndirectSalesOrderContentDAO.IndirectSalesOrderId;
-            this.ItemId = IndirectSalesOrderContentDAO.ItemId;
-            this.UnitOfMeasureId = IndirectSalesOrderContentDAO.UnitOfMeasureId;
-            this.Quantity = IndirectSalesOrderContentDAO.Quantity;
-            this.PrimaryUnitOfMeasureId = IndirectSalesOrderContentDAO.PrimaryUnitOfMeasureId;
-            this.RequestedQuantity = IndirectSalesOrderContentDAO.RequestedQuantity;
-            this.PrimaryPrice = IndirectSalesOrderContentDAO.PrimaryPrice;
-            this.SalePrice = IndirectSalesOrderContentDAO.SalePrice;
-            this.EditedPriceStatusId = IndirectSalesOrderContentDAO.EditedPriceStatusId;
-            this.DiscountPercentage = IndirectSalesOrderContentDAO.DiscountPercentage;
-            this.DiscountAmount = IndirectSalesOrderContentDAO.DiscountAmount;
-            this.GeneralDiscountPercentage = IndirectSalesOrderContentDAO.GeneralDiscountPercentage;
-            this.GeneralDiscountAmount = IndirectSalesOrderContentDAO.GeneralDiscountAmount;
-            this.Amount = IndirectSalesOrderContentDAO.Amount;
-            this.TaxPercentage = IndirectSalesOrderContentDAO.TaxPercentage;
-            this.TaxAmount = IndirectSalesOrderContentDAO.TaxAmount;
-            this.Factor = IndirectSalesOrderContentDAO.Factor;
-            this.EditedPriceStatus = IndirectSalesOrderContentDAO.EditedPriceStatus == null ? null : new MobileSync_EditedPriceStatusDTO(IndirectSalesOrderContentDAO.EditedPriceStatus);
-            this.Item = IndirectSalesOrderContentDAO.Item == null ? null : new MobileSync_ItemDTO(IndirectSalesOrderContentDAO.Item);
-            this.PrimaryUnitOfMeasure = IndirectSalesOrderContentDAO.PrimaryUnitOfMeasure == null ? null : new MobileSync_UnitOfMeasureDTO(IndirectSalesOrderContentDAO.PrimaryUnitOfMeasure);
-            this.UnitOfMeasure = IndirectSalesOrderContentDAO.UnitOfMeasure == null ? null : new MobileSync_UnitOfMeasureDTO(IndirectSalesOrderContentDAO.UnitOfMeasure);
+            this.Id = IndirectSalesOrderContent.Id;
+            this.IndirectSalesOrderId = IndirectSalesOrderContent.IndirectSalesOrderId;
+            this.ItemId = IndirectSalesOrderContent.ItemId;
+            this.UnitOfMeasureId = IndirectSalesOrderContent.UnitOfMeasureId;
+            this.Quantity = IndirectSalesOrderContent.Quantity;
+            this.PrimaryUnitOfMeasureId = IndirectSalesOrderContent.PrimaryUnitOfMeasureId;
+            this.RequestedQuantity = IndirectSalesOrderContent.RequestedQuantity;
+            this.PrimaryPrice = IndirectSalesOrderContent.PrimaryPrice;
+            this.SalePrice = IndirectSalesOrderContent.SalePrice;
+            this.EditedPriceStatusId = IndirectSalesOrderContent.EditedPriceStatusId;
+            this.DiscountPercentage = IndirectSalesOrderContent.DiscountPercentage;
+            this.DiscountAmount = IndirectSalesOrderContent.DiscountAmount;
+            this.GeneralDiscountPercentage = IndirectSalesOrderContent.GeneralDiscountPercentage;
+            this.GeneralDiscountAmount = IndirectSalesOrderContent.GeneralDiscountAmount;
+            this.Amount = IndirectSalesOrderContent.Amount;
+            this.TaxPercentage = IndirectSalesOrderContent.TaxPercentage;
+            this.TaxAmount = IndirectSalesOrderContent.TaxAmount;
+            this.Factor = IndirectSalesOrderContent.Factor;
+            this.EditedPriceStatus = IndirectSalesOrderContent.EditedPriceStatus == null ? null : new MobileSync_EditedPriceStatusDTO(IndirectSalesOrderContent.EditedPriceStatus);
+            this.Item = IndirectSalesOrderContent.Item == null ? null : new MobileSync_ItemDTO(IndirectSalesOrderContent.Item);
+            this.PrimaryUnitOfMeasure = IndirectSalesOrderContent.PrimaryUnitOfMeasure == null ? null : new MobileSync_UnitOfMeasureDTO(IndirectSalesOrderContent.PrimaryUnitOfMeasure);
+            this.UnitOfMeasure = IndirectSalesOrderContent.UnitOfMeasure == null ? null : new MobileSync_UnitOfMeasureDTO(IndirectSalesOrderContent.UnitOfMeasure);
             
         }
     }

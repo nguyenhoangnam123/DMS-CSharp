@@ -14,11 +14,11 @@ namespace DMS.Rpc.mobile_sync
         public string Code { get; set; }
         public string Name { get; set; }
         public MobileSync_WorkflowStateDTO() { }
-        public MobileSync_WorkflowStateDTO(WorkflowStateDAO WorkflowStateDAO)
+        public MobileSync_WorkflowStateDTO(WorkflowState WorkflowState)
         {
-            this.Id = WorkflowStateDAO.Id;
-            this.Code = WorkflowStateDAO.Code;
-            this.Name = WorkflowStateDAO.Name;
+            this.Id = WorkflowState.Id;
+            this.Code = WorkflowState.Code;
+            this.Name = WorkflowState.Name;
         }
     }
 }

@@ -34,7 +34,7 @@ namespace DMS.Rpc.kpi_item
             this.Description = ProductType.Description;
 
             this.StatusId = ProductType.StatusId;
-            this.UpdatedTime = ProductType.UpdatedTime;
+            this.UpdatedTime = ProductType.UpdatedAt;
         }
     }
 

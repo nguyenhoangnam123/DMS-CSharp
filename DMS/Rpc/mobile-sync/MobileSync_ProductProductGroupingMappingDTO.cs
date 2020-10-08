@@ -11,11 +11,11 @@ namespace DMS.Rpc.mobile_sync
         public MobileSync_ProductGroupingDTO ProductGrouping { get; set; }
 
         public MobileSync_ProductProductGroupingMappingDTO() { }
-        public MobileSync_ProductProductGroupingMappingDTO(ProductProductGroupingMappingDAO ProductProductGroupingMappingDAO)
+        public MobileSync_ProductProductGroupingMappingDTO(ProductProductGroupingMapping ProductProductGroupingMapping)
         {
-            this.ProductId = ProductProductGroupingMappingDAO.ProductId;
-            this.ProductGroupingId = ProductProductGroupingMappingDAO.ProductGroupingId;
-            this.ProductGrouping = ProductProductGroupingMappingDAO.ProductGrouping == null ? null : new MobileSync_ProductGroupingDTO(ProductProductGroupingMappingDAO.ProductGrouping);
+            this.ProductId = ProductProductGroupingMapping.ProductId;
+            this.ProductGroupingId = ProductProductGroupingMapping.ProductGroupingId;
+            this.ProductGrouping = ProductProductGroupingMapping.ProductGrouping == null ? null : new MobileSync_ProductGroupingDTO(ProductProductGroupingMapping.ProductGrouping);
         }
     }
 

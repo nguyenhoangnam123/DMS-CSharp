@@ -61,59 +61,59 @@ namespace DMS.Rpc.mobile_sync
         public MobileSync_StoreGroupingDTO StoreGrouping { get; set; }
         public MobileSync_StoreTypeDTO StoreType { get; set; }
         public MobileSync_StoreDTO() { }
-        public MobileSync_StoreDTO(StoreDAO StoreDAO)
+        public MobileSync_StoreDTO(Store Store)
         {
 
-            this.Id = StoreDAO.Id;
+            this.Id = Store.Id;
 
-            this.Code = StoreDAO.Code;
-            this.CodeDraft = StoreDAO.CodeDraft;
+            this.Code = Store.Code;
+            this.CodeDraft = Store.CodeDraft;
 
-            this.Name = StoreDAO.Name;
+            this.Name = Store.Name;
 
-            this.ParentStoreId = StoreDAO.ParentStoreId;
+            this.ParentStoreId = Store.ParentStoreId;
 
-            this.OrganizationId = StoreDAO.OrganizationId;
+            this.OrganizationId = Store.OrganizationId;
 
-            this.StoreTypeId = StoreDAO.StoreTypeId;
+            this.StoreTypeId = Store.StoreTypeId;
 
-            this.StoreGroupingId = StoreDAO.StoreGroupingId;
+            this.StoreGroupingId = Store.StoreGroupingId;
 
-            this.ResellerId = StoreDAO.ResellerId;
+            this.ResellerId = Store.ResellerId;
 
-            this.Telephone = StoreDAO.Telephone;
+            this.Telephone = Store.Telephone;
 
-            this.ProvinceId = StoreDAO.ProvinceId;
+            this.ProvinceId = Store.ProvinceId;
 
-            this.DistrictId = StoreDAO.DistrictId;
+            this.DistrictId = Store.DistrictId;
 
-            this.WardId = StoreDAO.WardId;
+            this.WardId = Store.WardId;
 
-            this.Address = StoreDAO.Address;
+            this.Address = Store.Address;
 
-            this.DeliveryAddress = StoreDAO.DeliveryAddress;
+            this.DeliveryAddress = Store.DeliveryAddress;
 
-            this.Latitude = StoreDAO.Latitude;
+            this.Latitude = Store.Latitude;
 
-            this.Longitude = StoreDAO.Longitude;
+            this.Longitude = Store.Longitude;
 
-            this.DeliveryLatitude = StoreDAO.DeliveryLatitude;
+            this.DeliveryLatitude = Store.DeliveryLatitude;
 
-            this.DeliveryLongitude = StoreDAO.DeliveryLongitude;
+            this.DeliveryLongitude = Store.DeliveryLongitude;
 
-            this.OwnerName = StoreDAO.OwnerName;
+            this.OwnerName = Store.OwnerName;
 
-            this.OwnerPhone = StoreDAO.OwnerPhone;
+            this.OwnerPhone = Store.OwnerPhone;
 
-            this.OwnerEmail = StoreDAO.OwnerEmail;
-            this.TaxCode = StoreDAO.TaxCode;
-            this.LegalEntity = StoreDAO.LegalEntity;
+            this.OwnerEmail = Store.OwnerEmail;
+            this.TaxCode = Store.TaxCode;
+            this.LegalEntity = Store.LegalEntity;
 
-            this.StatusId = StoreDAO.StatusId;
+            this.StatusId = Store.StatusId;
 
-            this.ParentStore = StoreDAO.ParentStore == null ? null : new MobileSync_StoreDTO(StoreDAO.ParentStore);
-            this.StoreGrouping = StoreDAO.StoreGrouping == null ? null : new MobileSync_StoreGroupingDTO(StoreDAO.StoreGrouping);
-            this.StoreType = StoreDAO.StoreType == null ? null : new MobileSync_StoreTypeDTO(StoreDAO.StoreType);
+            this.ParentStore = Store.ParentStore == null ? null : new MobileSync_StoreDTO(Store.ParentStore);
+            this.StoreGrouping = Store.StoreGrouping == null ? null : new MobileSync_StoreGroupingDTO(Store.StoreGrouping);
+            this.StoreType = Store.StoreType == null ? null : new MobileSync_StoreTypeDTO(Store.StoreType);
         }
     }
 }

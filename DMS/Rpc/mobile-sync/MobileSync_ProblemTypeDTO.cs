@@ -15,11 +15,11 @@ namespace DMS.Rpc.mobile_sync
 
 
         public MobileSync_ProblemTypeDTO() { }
-        public MobileSync_ProblemTypeDTO(ProblemTypeDAO ProblemTypeDAO)
+        public MobileSync_ProblemTypeDTO(ProblemType ProblemType)
         {
-            this.Id = ProblemTypeDAO.Id;
-            this.Code = ProblemTypeDAO.Code;
-            this.Name = ProblemTypeDAO.Name;
+            this.Id = ProblemType.Id;
+            this.Code = ProblemType.Code;
+            this.Name = ProblemType.Name;
         }
     }
 

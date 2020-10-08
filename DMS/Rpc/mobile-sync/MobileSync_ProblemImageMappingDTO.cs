@@ -11,11 +11,11 @@ namespace DMS.Rpc.mobile_sync
         public MobileSync_ImageDTO Image { get; set; }
 
         public MobileSync_ProblemImageMappingDTO() { }
-        public MobileSync_ProblemImageMappingDTO(ProblemImageMappingDAO ProblemImageMappingDAO)
+        public MobileSync_ProblemImageMappingDTO(ProblemImageMapping ProblemImageMapping)
         {
-            this.ProblemId = ProblemImageMappingDAO.ProblemId;
-            this.ImageId = ProblemImageMappingDAO.ImageId;
-            this.Image = ProblemImageMappingDAO.Image == null ? null : new MobileSync_ImageDTO(ProblemImageMappingDAO.Image);
+            this.ProblemId = ProblemImageMapping.ProblemId;
+            this.ImageId = ProblemImageMapping.ImageId;
+            this.Image = ProblemImageMapping.Image == null ? null : new MobileSync_ImageDTO(ProblemImageMapping.Image);
         }
     }
 

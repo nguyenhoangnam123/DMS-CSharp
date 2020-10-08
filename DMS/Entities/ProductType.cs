@@ -14,7 +14,7 @@ namespace DMS.Entities
         public string Description { get; set; }
         public long StatusId { get; set; }
         public bool Used { get; set; }
-        public DateTime UpdatedTime { get; set; }
+        public DateTime UpdatedAt { get; set; }
         public Status Status { get; set; }
 
         public bool Equals(ProductType other)

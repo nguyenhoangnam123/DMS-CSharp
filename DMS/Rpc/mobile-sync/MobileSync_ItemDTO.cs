@@ -21,19 +21,19 @@ namespace DMS.Rpc.mobile_sync
         public MobileSync_ProductDTO Product { get; set; }
         public List<MobileSync_ItemImageMappingDTO> ItemImageMappings { get; set; }
         public MobileSync_ItemDTO() { }
-        public MobileSync_ItemDTO(ItemDAO ItemDAO)
+        public MobileSync_ItemDTO(Item Item)
         {
-            this.Id = ItemDAO.Id;
-            this.ProductId = ItemDAO.ProductId;
-            this.Code = ItemDAO.Code;
-            this.Name = ItemDAO.Name;
-            this.ScanCode = ItemDAO.ScanCode;
-            this.SalePrice = ItemDAO.SalePrice;
-            this.RetailPrice = ItemDAO.RetailPrice;
-            this.SaleStock = 0;
-            this.StatusId = ItemDAO.StatusId;
-            this.Product = ItemDAO.Product == null ? null : new MobileSync_ProductDTO(ItemDAO.Product);
-            this.ItemImageMappings = ItemDAO.ItemImageMappings?.Select(x => new MobileSync_ItemImageMappingDTO(x)).ToList();
+            this.Id = Item.Id;
+            this.ProductId = Item.ProductId;
+            this.Code = Item.Code;
+            this.Name = Item.Name;
+            this.ScanCode = Item.ScanCode;
+            this.SalePrice = Item.SalePrice;
+            this.RetailPrice = Item.RetailPrice;
+            this.SaleStock = Item.SaleStock;
+            this.StatusId = Item.StatusId;
+            this.Product = Item.Product == null ? null : new MobileSync_ProductDTO(Item.Product);
+            this.ItemImageMappings = Item.ItemImageMappings?.Select(x => new MobileSync_ItemImageMappingDTO(x)).ToList();
         }
     }
 

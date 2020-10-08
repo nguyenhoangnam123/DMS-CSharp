@@ -39,34 +39,34 @@ namespace DMS.Rpc.mobile_sync
 
 
         public MobileSync_AppUserDTO() { }
-        public MobileSync_AppUserDTO(AppUserDAO AppUserDAO)
+        public MobileSync_AppUserDTO(AppUser AppUser)
         {
 
-            this.Id = AppUserDAO.Id;
+            this.Id = AppUser.Id;
 
-            this.Username = AppUserDAO.Username;
+            this.Username = AppUser.Username;
 
-            this.DisplayName = AppUserDAO.DisplayName;
+            this.DisplayName = AppUser.DisplayName;
 
-            this.Address = AppUserDAO.Address;
+            this.Address = AppUser.Address;
 
-            this.Email = AppUserDAO.Email;
+            this.Email = AppUser.Email;
 
-            this.Phone = AppUserDAO.Phone;
+            this.Phone = AppUser.Phone;
 
-            this.PositionId = AppUserDAO.PositionId;
+            this.PositionId = AppUser.PositionId;
 
-            this.Department = AppUserDAO.Department;
+            this.Department = AppUser.Department;
 
-            this.OrganizationId = AppUserDAO.OrganizationId;
+            this.OrganizationId = AppUser.OrganizationId;
 
-            this.SexId = AppUserDAO.SexId;
+            this.SexId = AppUser.SexId;
 
-            this.StatusId = AppUserDAO.StatusId;
+            this.StatusId = AppUser.StatusId;
 
-            this.Birthday = AppUserDAO.Birthday;
+            this.Birthday = AppUser.Birthday;
 
-            this.ProvinceId = AppUserDAO.ProvinceId;
+            this.ProvinceId = AppUser.ProvinceId;
         }
     }
 }

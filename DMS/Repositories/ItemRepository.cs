@@ -283,7 +283,7 @@ namespace DMS.Repositories
                         Name = q.Product.ProductType.Name,
                         Description = q.Product.ProductType.Description,
                         StatusId = q.Product.ProductType.StatusId,
-                        UpdatedTime = q.Product.ProductType.UpdatedAt,
+                        UpdatedAt = q.Product.ProductType.UpdatedAt,
                     },
                     Supplier = new Supplier
                     {
@@ -448,7 +448,7 @@ namespace DMS.Repositories
                         Name = x.Product.ProductType.Name,
                         Description = x.Product.ProductType.Description,
                         StatusId = x.Product.ProductType.StatusId,
-                        UpdatedTime = x.Product.ProductType.UpdatedAt,
+                        UpdatedAt = x.Product.ProductType.UpdatedAt,
                     },
                     TaxType = x.Product.TaxType == null ? null : new TaxType
                     {

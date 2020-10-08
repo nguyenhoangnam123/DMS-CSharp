@@ -25,7 +25,7 @@ namespace DMS.Entities
         public Store Store { get; set; }
         public StoreChecking StoreChecking { get; set; }
         public List<ProblemImageMapping> ProblemImageMappings { get; set; }
-        public List<ProblemHistory> ProblemHistorys { get; set; }
+        public List<ProblemHistory> ProblemHistories { get; set; }
         public bool Equals(Problem other)
         {
             return other != null && Id == other.Id;

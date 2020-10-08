@@ -22,17 +22,17 @@ namespace DMS.Rpc.mobile_sync
         public DateTime? UpdatedAt { get; set; }
 
         public MobileSync_RequestWorkflowStepMappingDTO() { }
-        public MobileSync_RequestWorkflowStepMappingDTO(RequestWorkflowStepMappingDAO RequestWorkflowStepMappingDAO)
+        public MobileSync_RequestWorkflowStepMappingDTO(RequestWorkflowStepMapping RequestWorkflowStepMapping)
         {
-            this.RequestId = RequestWorkflowStepMappingDAO.RequestId;
-            this.WorkflowStepId = RequestWorkflowStepMappingDAO.WorkflowStepId;
-            this.WorkflowStateId = RequestWorkflowStepMappingDAO.WorkflowStateId;
-            this.AppUserId = RequestWorkflowStepMappingDAO.AppUserId;
-            this.CreatedAt = RequestWorkflowStepMappingDAO.CreatedAt;
-            this.UpdatedAt = RequestWorkflowStepMappingDAO.UpdatedAt;
-            this.AppUser = RequestWorkflowStepMappingDAO.AppUser == null ? null : new MobileSync_AppUserDTO(RequestWorkflowStepMappingDAO.AppUser);
-            this.WorkflowState = RequestWorkflowStepMappingDAO.WorkflowState == null ? null : new MobileSync_WorkflowStateDTO(RequestWorkflowStepMappingDAO.WorkflowState);
-            this.WorkflowStep = RequestWorkflowStepMappingDAO.WorkflowStep == null ? null : new MobileSync_WorkflowStepDTO(RequestWorkflowStepMappingDAO.WorkflowStep);
+            this.RequestId = RequestWorkflowStepMapping.RequestId;
+            this.WorkflowStepId = RequestWorkflowStepMapping.WorkflowStepId;
+            this.WorkflowStateId = RequestWorkflowStepMapping.WorkflowStateId;
+            this.AppUserId = RequestWorkflowStepMapping.AppUserId;
+            this.CreatedAt = RequestWorkflowStepMapping.CreatedAt;
+            this.UpdatedAt = RequestWorkflowStepMapping.UpdatedAt;
+            this.AppUser = RequestWorkflowStepMapping.AppUser == null ? null : new MobileSync_AppUserDTO(RequestWorkflowStepMapping.AppUser);
+            this.WorkflowState = RequestWorkflowStepMapping.WorkflowState == null ? null : new MobileSync_WorkflowStateDTO(RequestWorkflowStepMapping.WorkflowState);
+            this.WorkflowStep = RequestWorkflowStepMapping.WorkflowStep == null ? null : new MobileSync_WorkflowStepDTO(RequestWorkflowStepMapping.WorkflowStep);
         }
     }
 }
