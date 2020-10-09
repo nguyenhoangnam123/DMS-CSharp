@@ -258,6 +258,12 @@ namespace DMS.Repositories
                         case DirectSalesOrderOrder.Total:
                             query = query.OrderBy(q => q.Total);
                             break;
+                        case DirectSalesOrderOrder.CreatedAt:
+                            query = query.OrderBy(q => q.CreatedAt);
+                            break;
+                        case DirectSalesOrderOrder.UpdatedAt:
+                            query = query.OrderBy(q => q.UpdatedAt);
+                            break;
                         default:
                             query = query.OrderBy(q => q.UpdatedAt);
                             break;
@@ -319,6 +325,12 @@ namespace DMS.Repositories
                             break;
                         case DirectSalesOrderOrder.Total:
                             query = query.OrderByDescending(q => q.Total);
+                            break;
+                        case DirectSalesOrderOrder.CreatedAt:
+                            query = query.OrderByDescending(q => q.CreatedAt);
+                            break;
+                        case DirectSalesOrderOrder.UpdatedAt:
+                            query = query.OrderByDescending(q => q.UpdatedAt);
                             break;
                         default:
                             query = query.OrderByDescending(q => q.UpdatedAt);
