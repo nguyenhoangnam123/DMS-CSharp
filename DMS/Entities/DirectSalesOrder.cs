@@ -26,6 +26,8 @@ namespace DMS.Entities
         public decimal? GeneralDiscountAmount { get; set; }
         public decimal TotalTaxAmount { get; set; }
         public decimal Total { get; set; }
+        public decimal TotalDiscountAmount { get; set; }
+        public long TotalRequestedQuantity { get; set; }
         public Store BuyerStore { get; set; }
         public EditedPriceStatus EditedPriceStatus { get; set; }
         public Organization Organization { get; set; }
@@ -49,6 +51,7 @@ namespace DMS.Entities
     public class DirectSalesOrderFilter : FilterEntity
     {
         public IdFilter Id { get; set; }
+        public IdFilter ApproverId { get; set; }
         public IdFilter OrganizationId { get; set; }
         public StringFilter Code { get; set; }
         public IdFilter BuyerStoreId { get; set; }

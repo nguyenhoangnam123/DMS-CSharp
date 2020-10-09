@@ -74,6 +74,7 @@ namespace DMS.Services.MIndirectSalesOrder
             this.ItemService = ItemService;
             this.WorkflowService = WorkflowService;
         }
+
         public async Task<int> Count(IndirectSalesOrderFilter IndirectSalesOrderFilter)
         {
             try
@@ -96,7 +97,6 @@ namespace DMS.Services.MIndirectSalesOrder
                 }
             }
         }
-
         public async Task<List<IndirectSalesOrder>> List(IndirectSalesOrderFilter IndirectSalesOrderFilter)
         {
             try
@@ -142,7 +142,6 @@ namespace DMS.Services.MIndirectSalesOrder
                 }
             }
         }
-
         public async Task<List<IndirectSalesOrder>> ListNew(IndirectSalesOrderFilter IndirectSalesOrderFilter)
         {
             try
@@ -165,6 +164,7 @@ namespace DMS.Services.MIndirectSalesOrder
                 }
             }
         }
+        
         public async Task<int> CountPending(IndirectSalesOrderFilter IndirectSalesOrderFilter)
         {
             try
@@ -187,7 +187,6 @@ namespace DMS.Services.MIndirectSalesOrder
                 }
             }
         }
-
         public async Task<List<IndirectSalesOrder>> ListPending(IndirectSalesOrderFilter IndirectSalesOrderFilter)
         {
             try
@@ -210,6 +209,7 @@ namespace DMS.Services.MIndirectSalesOrder
                 }
             }
         }
+        
         public async Task<int> CountCompleted(IndirectSalesOrderFilter IndirectSalesOrderFilter)
         {
             try
@@ -232,7 +232,6 @@ namespace DMS.Services.MIndirectSalesOrder
                 }
             }
         }
-
         public async Task<List<IndirectSalesOrder>> ListCompleted(IndirectSalesOrderFilter IndirectSalesOrderFilter)
         {
             try
@@ -255,6 +254,7 @@ namespace DMS.Services.MIndirectSalesOrder
                 }
             }
         }
+       
         public async Task<List<Item>> ListItem(ItemFilter ItemFilter, long? SalesEmployeeId, long? StoreId)
         {
             try

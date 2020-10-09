@@ -726,8 +726,6 @@ namespace DMS.Repositories
                 };
             }
 
-          
-
             IndirectSalesOrder.IndirectSalesOrderContents = await DataContext.IndirectSalesOrderContent.AsNoTracking()
                 .Where(x => x.IndirectSalesOrderId == IndirectSalesOrder.Id)
                 .Select(x => new IndirectSalesOrderContent

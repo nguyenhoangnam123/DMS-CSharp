@@ -19,7 +19,14 @@ namespace DMS.Services.MDirectSalesOrder
     {
         Task<int> Count(DirectSalesOrderFilter DirectSalesOrderFilter);
         Task<List<DirectSalesOrder>> List(DirectSalesOrderFilter DirectSalesOrderFilter);
+        Task<int> CountNew(DirectSalesOrderFilter DirectSalesOrderFilter);
+        Task<List<DirectSalesOrder>> ListNew(DirectSalesOrderFilter DirectSalesOrderFilter);
+        Task<int> CountPending(DirectSalesOrderFilter DirectSalesOrderFilter);
+        Task<List<DirectSalesOrder>> ListPending(DirectSalesOrderFilter DirectSalesOrderFilter);
+        Task<int> CountCompleted(DirectSalesOrderFilter DirectSalesOrderFilter);
+        Task<List<DirectSalesOrder>> ListCompleted(DirectSalesOrderFilter DirectSalesOrderFilter);
         Task<DirectSalesOrder> Get(long Id);
+        Task<DirectSalesOrder> GetDetail(long Id);
         Task<List<Item>> ListItem(ItemFilter ItemFilter, long? SalesEmployeeId, long? StoreId);
         Task<DirectSalesOrder> Create(DirectSalesOrder DirectSalesOrder);
         Task<DirectSalesOrder> Update(DirectSalesOrder DirectSalesOrder);
@@ -63,10 +70,12 @@ namespace DMS.Services.MDirectSalesOrder
             this.OrganizationService = OrganizationService;
             this.WorkflowService = WorkflowService;
         }
+
         public async Task<int> Count(DirectSalesOrderFilter DirectSalesOrderFilter)
         {
             try
             {
+                DirectSalesOrderFilter.ApproverId = new IdFilter { Equal = CurrentContext.UserId };
                 int result = await UOW.DirectSalesOrderRepository.Count(DirectSalesOrderFilter);
                 return result;
             }
@@ -84,11 +93,11 @@ namespace DMS.Services.MDirectSalesOrder
                 }
             }
         }
-
         public async Task<List<DirectSalesOrder>> List(DirectSalesOrderFilter DirectSalesOrderFilter)
         {
             try
             {
+                DirectSalesOrderFilter.ApproverId = new IdFilter { Equal = CurrentContext.UserId };
                 List<DirectSalesOrder> DirectSalesOrders = await UOW.DirectSalesOrderRepository.List(DirectSalesOrderFilter);
                 return DirectSalesOrders;
             }
@@ -106,6 +115,142 @@ namespace DMS.Services.MDirectSalesOrder
                 }
             }
         }
+
+        public async Task<int> CountNew(DirectSalesOrderFilter DirectSalesOrderFilter)
+        {
+            try
+            {
+                DirectSalesOrderFilter.ApproverId = new IdFilter { Equal = CurrentContext.UserId };
+                int result = await UOW.DirectSalesOrderRepository.CountNew(DirectSalesOrderFilter);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(DirectSalesOrderService));
+                    throw new MessageException(ex);
+                }
+                else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(DirectSalesOrderService));
+                    throw new MessageException(ex.InnerException);
+                }
+            }
+        }
+        public async Task<List<DirectSalesOrder>> ListNew(DirectSalesOrderFilter DirectSalesOrderFilter)
+        {
+            try
+            {
+                DirectSalesOrderFilter.ApproverId = new IdFilter { Equal = CurrentContext.UserId };
+                List<DirectSalesOrder> DirectSalesOrders = await UOW.DirectSalesOrderRepository.ListNew(DirectSalesOrderFilter);
+                return DirectSalesOrders;
+            }
+            catch (Exception ex)
+            {
+                if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(DirectSalesOrderService));
+                    throw new MessageException(ex);
+                }
+                else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(DirectSalesOrderService));
+                    throw new MessageException(ex.InnerException);
+                }
+            }
+        }
+
+        public async Task<int> CountPending(DirectSalesOrderFilter DirectSalesOrderFilter)
+        {
+            try
+            {
+                DirectSalesOrderFilter.ApproverId = new IdFilter { Equal = CurrentContext.UserId };
+                int result = await UOW.DirectSalesOrderRepository.CountPending(DirectSalesOrderFilter);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(DirectSalesOrderService));
+                    throw new MessageException(ex);
+                }
+                else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(DirectSalesOrderService));
+                    throw new MessageException(ex.InnerException);
+                }
+            }
+        }
+        public async Task<List<DirectSalesOrder>> ListPending(DirectSalesOrderFilter DirectSalesOrderFilter)
+        {
+            try
+            {
+                DirectSalesOrderFilter.ApproverId = new IdFilter { Equal = CurrentContext.UserId };
+                List<DirectSalesOrder> DirectSalesOrders = await UOW.DirectSalesOrderRepository.ListPending(DirectSalesOrderFilter);
+                return DirectSalesOrders;
+            }
+            catch (Exception ex)
+            {
+                if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(DirectSalesOrderService));
+                    throw new MessageException(ex);
+                }
+                else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(DirectSalesOrderService));
+                    throw new MessageException(ex.InnerException);
+                }
+            }
+        }
+
+        public async Task<int> CountCompleted(DirectSalesOrderFilter DirectSalesOrderFilter)
+        {
+            try
+            {
+                DirectSalesOrderFilter.ApproverId = new IdFilter { Equal = CurrentContext.UserId };
+                int result = await UOW.DirectSalesOrderRepository.CountCompleted(DirectSalesOrderFilter);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(DirectSalesOrderService));
+                    throw new MessageException(ex);
+                }
+                else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(DirectSalesOrderService));
+                    throw new MessageException(ex.InnerException);
+                }
+            }
+        }
+        public async Task<List<DirectSalesOrder>> ListCompleted(DirectSalesOrderFilter DirectSalesOrderFilter)
+        {
+            try
+            {
+                DirectSalesOrderFilter.ApproverId = new IdFilter { Equal = CurrentContext.UserId };
+                List<DirectSalesOrder> DirectSalesOrders = await UOW.DirectSalesOrderRepository.ListCompleted(DirectSalesOrderFilter);
+                return DirectSalesOrders;
+            }
+            catch (Exception ex)
+            {
+                if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(DirectSalesOrderService));
+                    throw new MessageException(ex);
+                }
+                else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(DirectSalesOrderService));
+                    throw new MessageException(ex.InnerException);
+                }
+            }
+        }
+
         public async Task<List<Item>> ListItem(ItemFilter ItemFilter, long? SalesEmployeeId, long? StoreId)
         {
             try
@@ -161,6 +306,24 @@ namespace DMS.Services.MDirectSalesOrder
         }
 
         public async Task<DirectSalesOrder> Get(long Id)
+        {
+            DirectSalesOrder DirectSalesOrder = await UOW.DirectSalesOrderRepository.Get(Id);
+            if (DirectSalesOrder == null)
+                return null;
+            DirectSalesOrder.RequestState = await WorkflowService.GetRequestState(DirectSalesOrder.RowId);
+            if (DirectSalesOrder.RequestState == null)
+            {
+                DirectSalesOrder.RequestWorkflowStepMappings = new List<RequestWorkflowStepMapping>();
+            }
+            else
+            {
+                DirectSalesOrder.RequestStateId = DirectSalesOrder.RequestState.Id;
+                DirectSalesOrder.RequestWorkflowStepMappings = await WorkflowService.ListRequestWorkflowStepMapping(DirectSalesOrder.RowId);
+            }
+            return DirectSalesOrder;
+        }
+
+        public async Task<DirectSalesOrder> GetDetail(long Id)
         {
             DirectSalesOrder DirectSalesOrder = await UOW.DirectSalesOrderRepository.Get(Id);
             if (DirectSalesOrder == null)
@@ -819,38 +982,59 @@ namespace DMS.Services.MDirectSalesOrder
                 DirectSalesOrder = await Create(DirectSalesOrder);
             else
                 DirectSalesOrder = await Update(DirectSalesOrder);
-            Dictionary<string, string> Parameters = MapParameters(DirectSalesOrder);
-            GenericEnum Action = await WorkflowService.Send(DirectSalesOrder.RowId, WorkflowTypeEnum.DIRECT_SALES_ORDER.Id, DirectSalesOrder.OrganizationId, Parameters);
-            if (Action.Id != WorkflowActionEnum.OK.Id)
-                return null;
+            if (DirectSalesOrder.IsValidated == false)
+                return DirectSalesOrder;
+            DirectSalesOrder = await UOW.DirectSalesOrderRepository.Get(DirectSalesOrder.Id);
+            Dictionary<string, string> Parameters = await MapParameters(DirectSalesOrder);
+            GenericEnum RequestState = await WorkflowService.Send(DirectSalesOrder.RowId, WorkflowTypeEnum.DIRECT_SALES_ORDER.Id, DirectSalesOrder.OrganizationId, Parameters);
+            DirectSalesOrder.RequestStateId = RequestState.Id;
+            await UOW.DirectSalesOrderRepository.UpdateState(DirectSalesOrder);
             return await Get(DirectSalesOrder.Id);
         }
 
         public async Task<DirectSalesOrder> Approve(DirectSalesOrder DirectSalesOrder)
         {
             DirectSalesOrder = await Update(DirectSalesOrder);
-            Dictionary<string, string> Parameters = MapParameters(DirectSalesOrder);
-            GenericEnum Action = await WorkflowService.Approve(DirectSalesOrder.RowId, WorkflowTypeEnum.DIRECT_SALES_ORDER.Id, Parameters);
-            if (Action.Id != WorkflowActionEnum.OK.Id)
-                return null;
+            if (DirectSalesOrder.IsValidated == false)
+                return DirectSalesOrder;
+            DirectSalesOrder = await UOW.DirectSalesOrderRepository.Get(DirectSalesOrder.Id);
+            Dictionary<string, string> Parameters = await MapParameters(DirectSalesOrder);
+            await WorkflowService.Approve(DirectSalesOrder.RowId, WorkflowTypeEnum.DIRECT_SALES_ORDER.Id, Parameters);
+            RequestState RequestState = await WorkflowService.GetRequestState(DirectSalesOrder.RowId);
+            DirectSalesOrder.RequestStateId = RequestState.Id;
+            await UOW.DirectSalesOrderRepository.UpdateState(DirectSalesOrder);
             return await Get(DirectSalesOrder.Id);
         }
 
         public async Task<DirectSalesOrder> Reject(DirectSalesOrder DirectSalesOrder)
         {
             DirectSalesOrder = await UOW.DirectSalesOrderRepository.Get(DirectSalesOrder.Id);
-            Dictionary<string, string> Parameters = MapParameters(DirectSalesOrder);
+            Dictionary<string, string> Parameters = await MapParameters(DirectSalesOrder);
             GenericEnum Action = await WorkflowService.Reject(DirectSalesOrder.RowId, WorkflowTypeEnum.DIRECT_SALES_ORDER.Id, Parameters);
-            if (Action.Id != WorkflowActionEnum.OK.Id)
-                return null;
+            RequestState RequestState = await WorkflowService.GetRequestState(DirectSalesOrder.RowId);
+            DirectSalesOrder.RequestStateId = RequestState.Id;
+            await UOW.DirectSalesOrderRepository.UpdateState(DirectSalesOrder);
             return await Get(DirectSalesOrder.Id);
         }
 
-        private Dictionary<string, string> MapParameters(DirectSalesOrder DirectSalesOrder)
+        private async Task<Dictionary<string, string>> MapParameters(DirectSalesOrder DirectSalesOrder)
         {
             Dictionary<string, string> Parameters = new Dictionary<string, string>();
             Parameters.Add(nameof(DirectSalesOrder.Id), DirectSalesOrder.Id.ToString());
             Parameters.Add(nameof(DirectSalesOrder.Code), DirectSalesOrder.Code);
+            Parameters.Add(nameof(DirectSalesOrder.SaleEmployeeId), DirectSalesOrder.SaleEmployeeId.ToString());
+            Parameters.Add(nameof(DirectSalesOrder.BuyerStoreId), DirectSalesOrder.BuyerStoreId.ToString());
+
+            Parameters.Add(nameof(DirectSalesOrder.Total), DirectSalesOrder.Total.ToString());
+            Parameters.Add(nameof(DirectSalesOrder.TotalDiscountAmount), DirectSalesOrder.TotalDiscountAmount.ToString());
+            Parameters.Add(nameof(DirectSalesOrder.TotalRequestedQuantity), DirectSalesOrder.TotalRequestedQuantity.ToString());
+            Parameters.Add(nameof(DirectSalesOrder.OrganizationId), DirectSalesOrder.OrganizationId.ToString());
+
+            RequestWorkflowDefinitionMapping RequestWorkflowDefinitionMapping = await UOW.RequestWorkflowDefinitionMappingRepository.Get(DirectSalesOrder.RowId);
+            if (RequestWorkflowDefinitionMapping == null)
+                Parameters.Add(nameof(RequestState), RequestStateEnum.NEW.Id.ToString());
+            else
+                Parameters.Add(nameof(RequestState), RequestWorkflowDefinitionMapping.RequestStateId.ToString());
             Parameters.Add("Username", CurrentContext.UserName);
             return Parameters;
         }

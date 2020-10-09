@@ -7,12 +7,22 @@ namespace DMS.Rpc.direct_sales_order
     public class DirectSalesOrderRoute : Root
     {
         public const string Parent = Module + "/sale-order";
+        public const string OwnerMaster = Module + "/sale-order/direct-sales-order-owner/direct-sales-order-owner-master";
         public const string Master = Module + "/sale-order/direct-sales-order/direct-sales-order-master";
-        public const string Detail = Module + "/sale-order/direct-sales-order/direct-sales-order-detail/*";
+        public const string Detail = Module + "/sale-order/direct-sales-order-owner/direct-sales-order-owner-detail/*";
         public const string Mobile = Module + ".direct-sales-order.*";
         private const string Default = Rpc + Module + "/direct-sales-order";
         public const string Count = Default + "/count";
         public const string List = Default + "/list";
+
+        public const string CountNew = Default + "/count-new";
+        public const string ListNew = Default + "/list-new";
+        public const string CountPending = Default + "/count-pending";
+        public const string ListPending = Default + "/list-pending";
+        public const string CountCompleted = Default + "/count-completed";
+        public const string ListCompleted = Default + "/list-completed";
+
+        public const string GetDetail = Default + "/get-detail";
         public const string Get = Default + "/get";
         public const string Create = Default + "/create";
         public const string Update = Default + "/update";
@@ -69,17 +79,25 @@ namespace DMS.Rpc.direct_sales_order
 
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
         {
-            { "Tìm kiếm", new List<string> {
+           { "Tìm kiếm tất cả", new List<string> {
                 Parent,
-                Master, Count, List, Get, Print,
+                Master, Count, List, Print, GetDetail,
+                FilterListStore, FilterListEditedPriceStatus, FilterListRequestState, FilterListAppUser, FilterListItem, FilterListUnitOfMeasure, FilterListOrganization,
+                CountItem, ListItem,} },
+
+             { "Tìm kiếm của tôi", new List<string> {
+                Parent,
+                OwnerMaster, Get, Print, GetDetail,
+                CountNew, ListNew, CountPending, ListPending, CountCompleted, ListCompleted,
                 FilterListStore, FilterListEditedPriceStatus, FilterListRequestState, FilterListAppUser, FilterListItem, FilterListUnitOfMeasure, FilterListOrganization,
                 CountItem, ListItem,} },
 
             { "Thêm", new List<string> {
                 Parent,
                 Master, Count, List, Get, Print,
+                CountNew, ListNew, CountPending, ListPending, CountCompleted, ListCompleted,
                 FilterListStore, FilterListEditedPriceStatus, FilterListRequestState, FilterListAppUser,  FilterListItem, FilterListUnitOfMeasure, FilterListOrganization,
-                Detail, Create,
+                Detail, Create, Send,
                 SingleListOrganization, SingleListStore, SingleListEditedPriceStatus, SingleListRequestState, SingleListAppUser,  SingleListItem, SingleListUnitOfMeasure, SingleListStoreType,
                 SingleListStoreGrouping, SingleListSupplier, SingleListProductGrouping, SingleListProductType, SingleListTaxType,
                 CountItem, ListItem, CountStore, ListStore, CountBuyerStore, ListBuyerStore} },
@@ -87,8 +105,9 @@ namespace DMS.Rpc.direct_sales_order
             { "Sửa", new List<string> {
                 Parent,
                 Master, Count, List, Get, Print,
+                CountNew, ListNew, CountPending, ListPending, CountCompleted, ListCompleted,
                 FilterListStore, FilterListEditedPriceStatus, FilterListRequestState, FilterListAppUser,  FilterListItem, FilterListUnitOfMeasure, FilterListOrganization,
-                Detail, Update,
+                Detail, Update, Send,
                 SingleListOrganization, SingleListStore, SingleListEditedPriceStatus, SingleListRequestState, SingleListAppUser,  SingleListItem, SingleListUnitOfMeasure, SingleListStoreType,
                 SingleListStoreGrouping, SingleListSupplier, SingleListProductGrouping, SingleListProductType, SingleListTaxType,
                 CountItem, ListItem, CountStore, ListStore, CountBuyerStore, ListBuyerStore} },
@@ -96,24 +115,26 @@ namespace DMS.Rpc.direct_sales_order
             { "Xoá", new List<string> {
                 Parent,
                 Master, Count, List, Get, Print,
+                CountNew, ListNew, CountPending, ListPending, CountCompleted, ListCompleted,
                 FilterListStore, FilterListEditedPriceStatus, FilterListRequestState, FilterListAppUser,  FilterListItem, FilterListUnitOfMeasure, FilterListOrganization,
                 Delete,
                 } },
 
             { "Xuất excel", new List<string> {
                 Parent,
-                Master, Count, List, Get, Print,
+                Master, Count, List,
+                CountNew, ListNew, CountPending, ListPending, CountCompleted, ListCompleted,
                 FilterListStore, FilterListEditedPriceStatus, FilterListRequestState, FilterListAppUser, FilterListItem, FilterListUnitOfMeasure, FilterListOrganization,
                 Export } },
-            { "Phê duyệt", new List<string>
-            {
+            { "Phê duyệt", new List<string> {
                 Parent,
                 Master, Count, List, Get, Print,
+                CountNew, ListNew, CountPending, ListPending, CountCompleted, ListCompleted,
                 FilterListStore, FilterListEditedPriceStatus, FilterListRequestState, FilterListAppUser,  FilterListItem, FilterListUnitOfMeasure, FilterListOrganization,
-                Detail, Approve, Reject,
+                Detail, Approve, Reject, Send,
                 SingleListOrganization, SingleListStore, SingleListEditedPriceStatus, SingleListRequestState, SingleListAppUser,  SingleListItem, SingleListUnitOfMeasure, SingleListStoreType,
                 SingleListStoreGrouping, SingleListSupplier, SingleListProductGrouping, SingleListProductType, SingleListTaxType,
-                CountItem, ListItem, CountStore, ListStore, CountBuyerStore, ListBuyerStore,
+                CountItem, ListItem, CountStore, ListStore, CountBuyerStore, ListBuyerStore
             } },
         };
     }
