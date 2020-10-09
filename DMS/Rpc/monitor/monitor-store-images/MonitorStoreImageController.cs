@@ -398,6 +398,7 @@ namespace DMS.Rpc.monitor.monitor_store_images
                     {
                         SaleEmployee.Username = appUser.Username;
                         SaleEmployee.DisplayName = appUser.DisplayName;
+                        SaleEmployee.StoreCheckings = new List<MonitorStoreImage_DetailDTO>();
                     }
                 });
 
