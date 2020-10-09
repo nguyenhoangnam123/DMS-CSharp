@@ -135,7 +135,7 @@ namespace DMS.Services.MStoreScouting
                     {
                         TitleWeb = $"Thông báo từ DMS",
                         ContentWeb = $"Đại lý cắm cờ {StoreScouting.Code} - {StoreScouting.Name} vừa được thêm mới vào hệ thống bởi {User.DisplayName}",
-                        LinkWebsite = $"{StoreScoutingRoute.Master}/?id=*".Replace("*", StoreScouting.Id.ToString()),
+                        LinkWebsite = $"{StoreScoutingRoute.Master}/id=*".Replace("*", StoreScouting.Id.ToString()),
                         LinkMobile = $"{StoreScoutingRoute.Mobile}".Replace("*", StoreScouting.Id.ToString()),
                         Time = Now,
                         Unread = false,
@@ -249,7 +249,7 @@ namespace DMS.Services.MStoreScouting
                 {
                     TitleWeb = $"Thông báo từ DMS",
                     ContentWeb = $"{oldData.Name} đã bị từ chối bởi {CurrentUser.DisplayName}.",
-                    LinkWebsite = $"{StoreScoutingRoute.Master}/?id=*".Replace("*", StoreScouting.Id.ToString()),
+                    LinkWebsite = $"{StoreScoutingRoute.Master}/id=*".Replace("*", StoreScouting.Id.ToString()),
                     LinkMobile = $"{StoreScoutingRoute.Mobile}".Replace("*", StoreScouting.Id.ToString()),
                     Time = Now,
                     Unread = false,
