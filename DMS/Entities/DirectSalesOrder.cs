@@ -51,6 +51,7 @@ namespace DMS.Entities
     public class DirectSalesOrderFilter : FilterEntity
     {
         public IdFilter Id { get; set; }
+        public IdFilter ApproverId { get; set; }
         public IdFilter OrganizationId { get; set; }
         public StringFilter Code { get; set; }
         public IdFilter BuyerStoreId { get; set; }
