@@ -47,7 +47,7 @@ namespace DMS.Rpc.app_user
         {
             { "Tìm kiếm", new List<string> {
                 Parent, 
-                Master, Count, List, Get, ExportTemplateStore,
+                Master, Count, List, Get,
                 FilterListPosition, FilterListOrganization, FilterListStatus,
                 SingleListOrganization, SingleListPosition, SingleListSex, SingleListStatus, SingleListRole, SingleListStore, SingleListStoreGrouping, SingleListStoreType,
                 }},
@@ -55,7 +55,7 @@ namespace DMS.Rpc.app_user
                 Parent,
                 Master, Count, List, Get,
                 FilterListPosition,
-                Detail, Get, Update, ImportStore, ExportStore,
+                Detail, Get, Update, ImportStore, ExportStore, ExportTemplateStore,
                 SingleListOrganization, SingleListPosition, SingleListSex, SingleListStatus, SingleListRole, SingleListStore, SingleListStoreGrouping, SingleListStoreType,
                 CountStore, ListStore }},
             { "Thiết lập vai trò", new List<string> {

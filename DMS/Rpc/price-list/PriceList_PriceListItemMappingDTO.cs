@@ -9,7 +9,7 @@ namespace DMS.Rpc.price_list
     {
         public long PriceListId { get; set; }
         public long ItemId { get; set; }
-        public long Price { get; set; }
+        public decimal Price { get; set; }
         public PriceList_ItemDTO Item { get; set; }
         public List<PriceList_PriceListItemHistoryDTO> PriceListItemHistories { get; set; }
         public PriceList_PriceListItemMappingDTO() { }
@@ -31,7 +31,7 @@ namespace DMS.Rpc.price_list
 
         public IdFilter ItemId { get; set; }
 
-        public LongFilter Price { get; set; }
+        public DecimalFilter Price { get; set; }
 
         public PriceListItemMappingOrder OrderBy { get; set; }
     }

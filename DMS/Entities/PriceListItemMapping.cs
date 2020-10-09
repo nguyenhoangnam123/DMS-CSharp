@@ -10,7 +10,7 @@ namespace DMS.Entities
     {
         public long PriceListId { get; set; }
         public long ItemId { get; set; }
-        public long Price { get; set; }
+        public decimal Price { get; set; }
         public Item Item { get; set; }
         public PriceList PriceList { get; set; }
         public List<PriceListItemHistory> PriceListItemHistories { get; set; }
@@ -35,7 +35,7 @@ namespace DMS.Entities
         public IdFilter StoreTypeId { get; set; }
         public IdFilter ItemId { get; set; }
         public IdFilter StatusId { get; set; }
-        public LongFilter Price { get; set; }
+        public DecimalFilter Price { get; set; }
         public List<PriceListItemMappingFilter> OrFilter { get; set; }
         public PriceListItemMappingOrder OrderBy { get; set; }
         public PriceListItemMappingSelect Selects { get; set; }

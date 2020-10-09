@@ -261,9 +261,9 @@ namespace DMS.Services.MPriceListItemHistory
                     if (FilterPermissionDefinition.Name == nameof(subFilter.ItemId))
                         subFilter.ItemId = FilterBuilder.Merge(subFilter.ItemId, FilterPermissionDefinition.IdFilter);
                     if (FilterPermissionDefinition.Name == nameof(subFilter.OldPrice))
-                        subFilter.OldPrice = FilterBuilder.Merge(subFilter.OldPrice, FilterPermissionDefinition.LongFilter);
+                        subFilter.OldPrice = FilterBuilder.Merge(subFilter.OldPrice, FilterPermissionDefinition.DecimalFilter);
                     if (FilterPermissionDefinition.Name == nameof(subFilter.NewPrice))
-                        subFilter.NewPrice = FilterBuilder.Merge(subFilter.NewPrice, FilterPermissionDefinition.LongFilter);
+                        subFilter.NewPrice = FilterBuilder.Merge(subFilter.NewPrice, FilterPermissionDefinition.DecimalFilter);
                     if (FilterPermissionDefinition.Name == nameof(subFilter.ModifierId))
                         subFilter.ModifierId = FilterBuilder.Merge(subFilter.ModifierId, FilterPermissionDefinition.IdFilter); 
                     if (FilterPermissionDefinition.Name == nameof(CurrentContext.UserId) && FilterPermissionDefinition.IdFilter != null)
