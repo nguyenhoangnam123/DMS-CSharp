@@ -7,8 +7,9 @@ namespace DMS.Rpc.direct_sales_order
     public class DirectSalesOrderRoute : Root
     {
         public const string Parent = Module + "/sale-order";
+        public const string OwnerMaster = Module + "/sale-order/direct-sales-order-owner/direct-sales-order-owner-master";
         public const string Master = Module + "/sale-order/direct-sales-order/direct-sales-order-master";
-        public const string Detail = Module + "/sale-order/direct-sales-order/direct-sales-order-detail/*";
+        public const string Detail = Module + "/sale-order/direct-sales-order-owner/direct-sales-order-owner-detail/*";
         public const string Mobile = Module + ".direct-sales-order.*";
         private const string Default = Rpc + Module + "/direct-sales-order";
         public const string Count = Default + "/count";
