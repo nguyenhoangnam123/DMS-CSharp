@@ -207,6 +207,28 @@ namespace DMS.Rpc.direct_sales_order
                 .Select(x => new DirectSalesOrder_EditedPriceStatusDTO(x)).ToList();
             return DirectSalesOrder_EditedPriceStatusDTOs;
         }
+        [Route(DirectSalesOrderRoute.FilterListRequestState), HttpPost]
+        public async Task<List<DirectSalesOrder_RequestStateDTO>> FilterListRequestState([FromBody] DirectSalesOrder_RequestStateFilterDTO DirectSalesOrder_RequestStateFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            RequestStateFilter RequestStateFilter = new RequestStateFilter();
+            RequestStateFilter.Skip = 0;
+            RequestStateFilter.Take = 20;
+            RequestStateFilter.OrderBy = RequestStateOrder.Id;
+            RequestStateFilter.OrderType = OrderType.ASC;
+            RequestStateFilter.Selects = RequestStateSelect.ALL;
+            RequestStateFilter.Id = DirectSalesOrder_RequestStateFilterDTO.Id;
+            RequestStateFilter.Code = DirectSalesOrder_RequestStateFilterDTO.Code;
+            RequestStateFilter.Name = DirectSalesOrder_RequestStateFilterDTO.Name;
+
+            List<RequestState> RequestStatees = await RequestStateService.List(RequestStateFilter);
+            List<DirectSalesOrder_RequestStateDTO> DirectSalesOrder_RequestStateDTOs = RequestStatees
+                .Select(x => new DirectSalesOrder_RequestStateDTO(x)).ToList();
+            return DirectSalesOrder_RequestStateDTOs;
+        }
+
 
         [Route(DirectSalesOrderRoute.SingleListOrganization), HttpPost]
         public async Task<List<DirectSalesOrder_OrganizationDTO>> SingleListOrganization([FromBody] DirectSalesOrder_OrganizationFilterDTO DirectSalesOrder_OrganizationFilterDTO)
