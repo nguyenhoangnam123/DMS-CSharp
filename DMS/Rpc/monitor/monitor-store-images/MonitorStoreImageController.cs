@@ -350,6 +350,7 @@ namespace DMS.Rpc.monitor.monitor_store_images
                                          CheckOutAt = sc.CheckOutAt,
                                          ImageCounter = sc.ImageCounter,
                                          SaleEmployeeId = sc.SaleEmployeeId,
+                                         OrganizationId = sc.OrganizationId,
                                          Store = new StoreDAO
                                          {
                                              Id = s.Id,
@@ -380,10 +381,12 @@ namespace DMS.Rpc.monitor.monitor_store_images
                     OrganizationName = Organization.Name,
                     SaleEmployees = new List<MonitorStoreImage_SaleEmployeeDTO>()
                 };
-                MonitorStoreImage_MonitorStoreImageDTO.SaleEmployees = Ids.Select(x => new MonitorStoreImage_SaleEmployeeDTO
-                {
-                    SaleEmployeeId = x.SalesEmployeeId
-                }).ToList();
+                MonitorStoreImage_MonitorStoreImageDTO.SaleEmployees = Ids
+                    .Where(x => x.OrganizationId == Organization.Id)
+                    .Select(x => new MonitorStoreImage_SaleEmployeeDTO
+                    {
+                        SaleEmployeeId = x.SalesEmployeeId
+                    }).ToList();
                 MonitorStoreImage_MonitorStoreImageDTOs.Add(MonitorStoreImage_MonitorStoreImageDTO);
             }
 
@@ -402,8 +405,16 @@ namespace DMS.Rpc.monitor.monitor_store_images
 
                 foreach (var SalesEmployee in MonitorStoreImage_MonitorStoreImageDTO.SaleEmployees)
                 {
-                    List<Tuple<DateTime, long>> Date1s = StoreCheckingDAOs.Where(x => x.SaleEmployeeId == SalesEmployee.SaleEmployeeId).Select(x => new Tuple<DateTime, long>(x.CheckOutAt.Value.AddHours(CurrentContext.TimeZone).Date, x.StoreId)).ToList();
-                    List<Tuple<DateTime, long>> Date2s = StoreImageDAOs.Where(x => x.SaleEmployeeId.HasValue && x.SaleEmployeeId.Value == SalesEmployee.SaleEmployeeId).Select(x => new Tuple<DateTime, long>(x.ShootingAt.AddHours(CurrentContext.TimeZone).Date, x.StoreId)).ToList();
+                    List<Tuple<DateTime, long>> Date1s = StoreCheckingDAOs
+                        .Where(x => x.SaleEmployeeId == SalesEmployee.SaleEmployeeId)
+                        .Where(x => x.OrganizationId == MonitorStoreImage_MonitorStoreImageDTO.OrganizationId)
+                        .Select(x => new Tuple<DateTime, long>(x.CheckOutAt.Value.AddHours(CurrentContext.TimeZone).Date, x.StoreId))
+                        .ToList();
+                    List<Tuple<DateTime, long>> Date2s = StoreImageDAOs
+                        .Where(x => x.SaleEmployeeId.HasValue && x.SaleEmployeeId.Value == SalesEmployee.SaleEmployeeId)
+                        .Where(x => x.OrganizationId == MonitorStoreImage_MonitorStoreImageDTO.OrganizationId)
+                        .Select(x => new Tuple<DateTime, long>(x.ShootingAt.AddHours(CurrentContext.TimeZone).Date, x.StoreId))
+                        .ToList();
 
                     List<Tuple<DateTime, long>> Dates = new List<Tuple<DateTime, long>>();
                     Dates.AddRange(Date1s);
