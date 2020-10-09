@@ -8,8 +8,8 @@ namespace DMS.Models
         public long Id { get; set; }
         public long PriceListId { get; set; }
         public long ItemId { get; set; }
-        public long OldPrice { get; set; }
-        public long NewPrice { get; set; }
+        public decimal OldPrice { get; set; }
+        public decimal NewPrice { get; set; }
         public long ModifierId { get; set; }
         public DateTime UpdatedAt { get; set; }
 

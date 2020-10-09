@@ -2036,6 +2036,10 @@ namespace DMS.Models
 
             modelBuilder.Entity<PriceListItemHistoryDAO>(entity =>
             {
+                entity.Property(e => e.NewPrice).HasColumnType("decimal(18, 4)");
+
+                entity.Property(e => e.OldPrice).HasColumnType("decimal(18, 4)");
+
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
                 entity.HasOne(d => d.Item)
@@ -2061,6 +2065,8 @@ namespace DMS.Models
             {
                 entity.HasKey(e => new { e.PriceListId, e.ItemId })
                     .HasName("PK_IndirectPriceListItemMapping");
+
+                entity.Property(e => e.Price).HasColumnType("decimal(18, 4)");
 
                 entity.HasOne(d => d.Item)
                     .WithMany(p => p.PriceListItemMappings)

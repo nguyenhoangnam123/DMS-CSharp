@@ -13,8 +13,8 @@ namespace DMS.Rpc.price_list
         public long PriceListId { get; set; }
         public long ItemId { get; set; }
         public long ModifierId { get; set; }
-        public long OldPrice { get; set; }
-        public long NewPrice { get; set; }
+        public decimal OldPrice { get; set; }
+        public decimal NewPrice { get; set; }
         public DateTime UpdatedAt { get; set; }
         public PriceList_AppUserDTO Modifier { get; set; }
         public PriceList_PriceListItemHistoryDTO() { }
@@ -37,8 +37,8 @@ namespace DMS.Rpc.price_list
         public IdFilter PriceListId { get; set; }
         public IdFilter ItemId { get; set; }
         public IdFilter ModifierId { get; set; }
-        public LongFilter OldPrice { get; set; }
-        public LongFilter NewPrice { get; set; }
+        public DecimalFilter OldPrice { get; set; }
+        public DecimalFilter NewPrice { get; set; }
         public DateFilter UpdatedAt { get; set; }
         public ItemHistoryOrder OrderBy { get; set; }
     }
