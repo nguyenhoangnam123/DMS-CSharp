@@ -21,6 +21,7 @@ namespace DMS.Repositories
         Task<bool> Delete(DirectSalesOrder DirectSalesOrder);
         Task<bool> BulkMerge(List<DirectSalesOrder> DirectSalesOrders);
         Task<bool> BulkDelete(List<DirectSalesOrder> DirectSalesOrders);
+        Task<bool> UpdateState(DirectSalesOrder DirectSalesOrder);
     }
     public class DirectSalesOrderRepository : IDirectSalesOrderRepository
     {
@@ -509,6 +510,23 @@ namespace DMS.Repositories
 
             if (DirectSalesOrder == null)
                 return null;
+
+            RequestWorkflowDefinitionMappingDAO RequestWorkflowDefinitionMappingDAO = await DataContext.RequestWorkflowDefinitionMapping
+              .Where(x => DirectSalesOrder.RowId == x.RequestId)
+              .Include(x => x.RequestState)
+              .AsNoTracking()
+              .FirstOrDefaultAsync();
+            if (RequestWorkflowDefinitionMappingDAO != null)
+            {
+                DirectSalesOrder.RequestStateId = RequestWorkflowDefinitionMappingDAO.RequestStateId;
+                DirectSalesOrder.RequestState = new RequestState
+                {
+                    Id = RequestWorkflowDefinitionMappingDAO.RequestState.Id,
+                    Code = RequestWorkflowDefinitionMappingDAO.RequestState.Code,
+                    Name = RequestWorkflowDefinitionMappingDAO.RequestState.Name,
+                };
+            }
+
             DirectSalesOrder.DirectSalesOrderContents = await DataContext.DirectSalesOrderContent.AsNoTracking()
                 .Where(x => x.DirectSalesOrderId == DirectSalesOrder.Id)
                 .Select(x => new DirectSalesOrderContent
@@ -675,6 +693,16 @@ namespace DMS.Repositories
                     },
                 }).ToListAsync();
 
+            decimal GeneralDiscountAmount = DirectSalesOrder.GeneralDiscountAmount.HasValue ? DirectSalesOrder.GeneralDiscountAmount.Value : 0;
+            decimal DiscountAmount = DirectSalesOrder.DirectSalesOrderContents != null ?
+                DirectSalesOrder.DirectSalesOrderContents
+                .Select(x => x.DiscountAmount.GetValueOrDefault(0))
+                .Sum() : 0;
+            DirectSalesOrder.TotalDiscountAmount = GeneralDiscountAmount + DiscountAmount;
+            DirectSalesOrder.TotalRequestedQuantity = DirectSalesOrder.DirectSalesOrderContents != null ?
+                DirectSalesOrder.DirectSalesOrderContents
+                .Select(x => x.RequestedQuantity)
+                .Sum() : 0;
             return DirectSalesOrder;
         }
         public async Task<bool> Create(DirectSalesOrder DirectSalesOrder)
@@ -881,6 +909,17 @@ namespace DMS.Repositories
                 }
             }
             await DataContext.DirectSalesOrderTransaction.BulkMergeAsync(DirectSalesOrderTransactionDAOs);
+        }
+
+        public async Task<bool> UpdateState(DirectSalesOrder DirectSalesOrder)
+        {
+            await DataContext.DirectSalesOrder.Where(x => x.Id == DirectSalesOrder.Id)
+                .UpdateFromQueryAsync(x => new DirectSalesOrderDAO
+                {
+                    RequestStateId = DirectSalesOrder.RequestStateId,
+                    UpdatedAt = StaticParams.DateTimeNow
+                });
+            return true;
         }
     }
 }

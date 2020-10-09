@@ -819,38 +819,59 @@ namespace DMS.Services.MDirectSalesOrder
                 DirectSalesOrder = await Create(DirectSalesOrder);
             else
                 DirectSalesOrder = await Update(DirectSalesOrder);
-            Dictionary<string, string> Parameters = MapParameters(DirectSalesOrder);
-            GenericEnum Action = await WorkflowService.Send(DirectSalesOrder.RowId, WorkflowTypeEnum.DIRECT_SALES_ORDER.Id, DirectSalesOrder.OrganizationId, Parameters);
-            if (Action.Id != WorkflowActionEnum.OK.Id)
-                return null;
+            if (DirectSalesOrder.IsValidated == false)
+                return DirectSalesOrder;
+            DirectSalesOrder = await UOW.DirectSalesOrderRepository.Get(DirectSalesOrder.Id);
+            Dictionary<string, string> Parameters = await MapParameters(DirectSalesOrder);
+            GenericEnum RequestState = await WorkflowService.Send(DirectSalesOrder.RowId, WorkflowTypeEnum.DIRECT_SALES_ORDER.Id, DirectSalesOrder.OrganizationId, Parameters);
+            DirectSalesOrder.RequestStateId = RequestState.Id;
+            await UOW.DirectSalesOrderRepository.UpdateState(DirectSalesOrder);
             return await Get(DirectSalesOrder.Id);
         }
 
         public async Task<DirectSalesOrder> Approve(DirectSalesOrder DirectSalesOrder)
         {
             DirectSalesOrder = await Update(DirectSalesOrder);
-            Dictionary<string, string> Parameters = MapParameters(DirectSalesOrder);
-            GenericEnum Action = await WorkflowService.Approve(DirectSalesOrder.RowId, WorkflowTypeEnum.DIRECT_SALES_ORDER.Id, Parameters);
-            if (Action.Id != WorkflowActionEnum.OK.Id)
-                return null;
+            if (DirectSalesOrder.IsValidated == false)
+                return DirectSalesOrder;
+            DirectSalesOrder = await UOW.DirectSalesOrderRepository.Get(DirectSalesOrder.Id);
+            Dictionary<string, string> Parameters = await MapParameters(DirectSalesOrder);
+            await WorkflowService.Approve(DirectSalesOrder.RowId, WorkflowTypeEnum.DIRECT_SALES_ORDER.Id, Parameters);
+            RequestState RequestState = await WorkflowService.GetRequestState(DirectSalesOrder.RowId);
+            DirectSalesOrder.RequestStateId = RequestState.Id;
+            await UOW.DirectSalesOrderRepository.UpdateState(DirectSalesOrder);
             return await Get(DirectSalesOrder.Id);
         }
 
         public async Task<DirectSalesOrder> Reject(DirectSalesOrder DirectSalesOrder)
         {
             DirectSalesOrder = await UOW.DirectSalesOrderRepository.Get(DirectSalesOrder.Id);
-            Dictionary<string, string> Parameters = MapParameters(DirectSalesOrder);
+            Dictionary<string, string> Parameters = await MapParameters(DirectSalesOrder);
             GenericEnum Action = await WorkflowService.Reject(DirectSalesOrder.RowId, WorkflowTypeEnum.DIRECT_SALES_ORDER.Id, Parameters);
-            if (Action.Id != WorkflowActionEnum.OK.Id)
-                return null;
+            RequestState RequestState = await WorkflowService.GetRequestState(DirectSalesOrder.RowId);
+            DirectSalesOrder.RequestStateId = RequestState.Id;
+            await UOW.DirectSalesOrderRepository.UpdateState(DirectSalesOrder);
             return await Get(DirectSalesOrder.Id);
         }
 
-        private Dictionary<string, string> MapParameters(DirectSalesOrder DirectSalesOrder)
+        private async Task<Dictionary<string, string>> MapParameters(DirectSalesOrder DirectSalesOrder)
         {
             Dictionary<string, string> Parameters = new Dictionary<string, string>();
             Parameters.Add(nameof(DirectSalesOrder.Id), DirectSalesOrder.Id.ToString());
             Parameters.Add(nameof(DirectSalesOrder.Code), DirectSalesOrder.Code);
+            Parameters.Add(nameof(DirectSalesOrder.SaleEmployeeId), DirectSalesOrder.SaleEmployeeId.ToString());
+            Parameters.Add(nameof(DirectSalesOrder.BuyerStoreId), DirectSalesOrder.BuyerStoreId.ToString());
+
+            Parameters.Add(nameof(DirectSalesOrder.Total), DirectSalesOrder.Total.ToString());
+            Parameters.Add(nameof(DirectSalesOrder.TotalDiscountAmount), DirectSalesOrder.TotalDiscountAmount.ToString());
+            Parameters.Add(nameof(DirectSalesOrder.TotalRequestedQuantity), DirectSalesOrder.TotalRequestedQuantity.ToString());
+            Parameters.Add(nameof(DirectSalesOrder.OrganizationId), DirectSalesOrder.OrganizationId.ToString());
+
+            RequestWorkflowDefinitionMapping RequestWorkflowDefinitionMapping = await UOW.RequestWorkflowDefinitionMappingRepository.Get(DirectSalesOrder.RowId);
+            if (RequestWorkflowDefinitionMapping == null)
+                Parameters.Add(nameof(RequestState), RequestStateEnum.NEW.Id.ToString());
+            else
+                Parameters.Add(nameof(RequestState), RequestWorkflowDefinitionMapping.RequestStateId.ToString());
             Parameters.Add("Username", CurrentContext.UserName);
             return Parameters;
         }

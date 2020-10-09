@@ -192,7 +192,6 @@ namespace DMS.Rpc.direct_sales_order
                 return BadRequest(DirectSalesOrder_DirectSalesOrderDTO);
         }
 
-
         [Route(DirectSalesOrderRoute.Approve), HttpPost]
         public async Task<ActionResult<DirectSalesOrder_DirectSalesOrderDTO>> Approve([FromBody] DirectSalesOrder_DirectSalesOrderDTO DirectSalesOrder_DirectSalesOrderDTO)
         {
