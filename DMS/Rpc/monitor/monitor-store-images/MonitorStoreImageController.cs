@@ -292,6 +292,7 @@ namespace DMS.Rpc.monitor.monitor_store_images
                                          StoreId = sc.StoreId,
                                          CheckOutAt = sc.CheckOutAt,
                                          ImageCounter = sc.ImageCounter,
+                                         SaleEmployeeId = sc.SaleEmployeeId,
                                          Store = new StoreDAO
                                          {
                                              Id = s.Id,
