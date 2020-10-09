@@ -134,7 +134,7 @@ namespace DMS.Services.MERoute
                 {
                     TitleWeb = $"Thông báo từ DMS",
                     ContentWeb = $"Tuyên {ERoute.Code} - {ERoute.Name} đã được thêm mới cho anh/chị bởi {CurrentUser.DisplayName}",
-                    LinkWebsite = $"{ERouteRoute.Master}/id=*".Replace("*", ERoute.Id.ToString()),
+                    LinkWebsite = $"{ERouteRoute.Master}#*".Replace("*", ERoute.Id.ToString()),
                     LinkMobile = $"{ERouteRoute.Detail}".Replace("*", ERoute.Id.ToString()),
                     Time = Now,
                     Unread = true,
@@ -186,7 +186,7 @@ namespace DMS.Services.MERoute
                 {
                     TitleWeb = $"Thông báo từ DMS",
                     ContentWeb = $"Tuyên {ERoute.Code} - {ERoute.Name} đã được cập nhật cho anh/chị bởi {CurrentUser.DisplayName}",
-                    LinkWebsite = $"{ERouteRoute.Master}/id=*".Replace("*", ERoute.Id.ToString()),
+                    LinkWebsite = $"{ERouteRoute.Master}#*".Replace("*", ERoute.Id.ToString()),
                     LinkMobile = $"{ERouteRoute.Detail}".Replace("*", ERoute.Id.ToString()),
                     Time = Now,
                     Unread = true,

@@ -351,7 +351,7 @@ namespace DMS.Services.MIndirectSalesOrder
                     {
                         TitleWeb = $"Thông báo từ DMS",
                         ContentWeb = $"Đơn hàng {IndirectSalesOrder.Code} đã được thêm mới lên hệ thống bởi {CurrentUser.DisplayName}",
-                        LinkWebsite = $"{IndirectSalesOrderRoute.Master}/id=*".Replace("*", IndirectSalesOrder.Id.ToString()),
+                        LinkWebsite = $"{IndirectSalesOrderRoute.Master}#*".Replace("*", IndirectSalesOrder.Id.ToString()),
                         LinkMobile = $"{IndirectSalesOrderRoute.Mobile}".Replace("*", IndirectSalesOrder.Id.ToString()),
                         Time = Now,
                         Unread = true,
@@ -410,7 +410,7 @@ namespace DMS.Services.MIndirectSalesOrder
                 {
                     TitleWeb = $"Thông báo từ DMS",
                     ContentWeb = $"Đơn hàng {IndirectSalesOrder.Code} đã được cập nhật thông tin bởi {CurrentUser.DisplayName}",
-                    LinkWebsite = $"{IndirectSalesOrderRoute.Master}/id=*".Replace("*", IndirectSalesOrder.Id.ToString()),
+                    LinkWebsite = $"{IndirectSalesOrderRoute.Master}#*".Replace("*", IndirectSalesOrder.Id.ToString()),
                     LinkMobile = $"{IndirectSalesOrderRoute.Mobile}".Replace("*", IndirectSalesOrder.Id.ToString()),
                     Time = Now,
                     Unread = true,
