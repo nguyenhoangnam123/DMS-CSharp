@@ -1,7 +1,6 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Thinktecture;
 
 namespace DMS.Models
 {
@@ -192,7 +191,6 @@ namespace DMS.Models
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.ConfigureTempTable<long>();
             modelBuilder.Entity<ActionDAO>(entity =>
             {
                 entity.ToTable("Action", "PER");
@@ -3599,6 +3597,14 @@ namespace DMS.Models
                 entity.Property(e => e.Latitude).HasColumnType("decimal(18, 15)");
 
                 entity.Property(e => e.Longitude).HasColumnType("decimal(18, 15)");
+
+                entity.Property(e => e.OrganizationId).HasDefaultValueSql("((1))");
+
+                entity.HasOne(d => d.Organization)
+                    .WithMany(p => p.StoreCheckings)
+                    .HasForeignKey(d => d.OrganizationId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_StoreChecking_Organization");
 
                 entity.HasOne(d => d.SaleEmployee)
                     .WithMany(p => p.StoreCheckings)

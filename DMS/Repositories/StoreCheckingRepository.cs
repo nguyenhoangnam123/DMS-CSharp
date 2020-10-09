@@ -49,7 +49,39 @@ namespace DMS.Repositories
                     query = query.Where(q => q.StoreId, filter.StoreId);
                 }
             }
-
+            if (filter.OrganizationId != null)
+            {
+                if (filter.OrganizationId.Equal != null)
+                {
+                    OrganizationDAO OrganizationDAO = DataContext.Organization
+                        .Where(o => o.Id == filter.OrganizationId.Equal.Value).FirstOrDefault();
+                    query = query.Where(q => q.Organization.Path.StartsWith(OrganizationDAO.Path));
+                }
+                if (filter.OrganizationId.NotEqual != null)
+                {
+                    OrganizationDAO OrganizationDAO = DataContext.Organization
+                        .Where(o => o.Id == filter.OrganizationId.NotEqual.Value).FirstOrDefault();
+                    query = query.Where(q => !q.Organization.Path.StartsWith(OrganizationDAO.Path));
+                }
+                if (filter.OrganizationId.In != null)
+                {
+                    List<OrganizationDAO> OrganizationDAOs = DataContext.Organization
+                        .Where(o => o.DeletedAt == null && o.StatusId == 1).ToList();
+                    List<OrganizationDAO> Parents = OrganizationDAOs.Where(o => filter.OrganizationId.In.Contains(o.Id)).ToList();
+                    List<OrganizationDAO> Branches = OrganizationDAOs.Where(o => Parents.Any(p => o.Path.StartsWith(p.Path))).ToList();
+                    List<long> Ids = Branches.Select(o => o.Id).ToList();
+                    query = query.Where(q => Ids.Contains(q.OrganizationId));
+                }
+                if (filter.OrganizationId.NotIn != null)
+                {
+                    List<OrganizationDAO> OrganizationDAOs = DataContext.Organization
+                        .Where(o => o.DeletedAt == null && o.StatusId == 1).ToList();
+                    List<OrganizationDAO> Parents = OrganizationDAOs.Where(o => filter.OrganizationId.NotIn.Contains(o.Id)).ToList();
+                    List<OrganizationDAO> Branches = OrganizationDAOs.Where(o => Parents.Any(p => o.Path.StartsWith(p.Path))).ToList();
+                    List<long> Ids = Branches.Select(o => o.Id).ToList();
+                    query = query.Where(q => !Ids.Contains(q.OrganizationId));
+                }
+            }
             if (filter.SaleEmployeeId != null)
                 query = query.Where(q => q.SaleEmployeeId, filter.SaleEmployeeId);
             if (filter.Longitude != null)
@@ -82,6 +114,39 @@ namespace DMS.Repositories
                     queryable = queryable.Where(q => q.StoreId, StoreCheckingFilter.StoreId);
                 if (StoreCheckingFilter.SaleEmployeeId != null)
                     queryable = queryable.Where(q => q.SaleEmployeeId, StoreCheckingFilter.SaleEmployeeId);
+                if (StoreCheckingFilter.OrganizationId != null)
+                {
+                    if (StoreCheckingFilter.OrganizationId.Equal != null)
+                    {
+                        OrganizationDAO OrganizationDAO = DataContext.Organization
+                            .Where(o => o.Id == StoreCheckingFilter.OrganizationId.Equal.Value).FirstOrDefault();
+                        queryable = queryable.Where(q => q.Organization.Path.StartsWith(OrganizationDAO.Path));
+                    }
+                    if (StoreCheckingFilter.OrganizationId.NotEqual != null)
+                    {
+                        OrganizationDAO OrganizationDAO = DataContext.Organization
+                            .Where(o => o.Id == StoreCheckingFilter.OrganizationId.NotEqual.Value).FirstOrDefault();
+                        queryable = queryable.Where(q => !q.Organization.Path.StartsWith(OrganizationDAO.Path));
+                    }
+                    if (StoreCheckingFilter.OrganizationId.In != null)
+                    {
+                        List<OrganizationDAO> OrganizationDAOs = DataContext.Organization
+                            .Where(o => o.DeletedAt == null && o.StatusId == 1).ToList();
+                        List<OrganizationDAO> Parents = OrganizationDAOs.Where(o => StoreCheckingFilter.OrganizationId.In.Contains(o.Id)).ToList();
+                        List<OrganizationDAO> Branches = OrganizationDAOs.Where(o => Parents.Any(p => o.Path.StartsWith(p.Path))).ToList();
+                        List<long> Ids = Branches.Select(o => o.Id).ToList();
+                        queryable = queryable.Where(q => Ids.Contains(q.OrganizationId));
+                    }
+                    if (StoreCheckingFilter.OrganizationId.NotIn != null)
+                    {
+                        List<OrganizationDAO> OrganizationDAOs = DataContext.Organization
+                            .Where(o => o.DeletedAt == null && o.StatusId == 1).ToList();
+                        List<OrganizationDAO> Parents = OrganizationDAOs.Where(o => StoreCheckingFilter.OrganizationId.NotIn.Contains(o.Id)).ToList();
+                        List<OrganizationDAO> Branches = OrganizationDAOs.Where(o => Parents.Any(p => o.Path.StartsWith(p.Path))).ToList();
+                        List<long> Ids = Branches.Select(o => o.Id).ToList();
+                        queryable = queryable.Where(q => !Ids.Contains(q.OrganizationId));
+                    }
+                }
                 if (StoreCheckingFilter.Longitude != null)
                     queryable = queryable.Where(q => q.Longitude, StoreCheckingFilter.Longitude);
                 if (StoreCheckingFilter.Latitude != null)
@@ -210,6 +275,19 @@ namespace DMS.Repositories
                         Name = q.SaleEmployee.Organization.Name,
                     },
                 },
+                Organization = filter.Selects.Contains(StoreSelect.Organization) && q.Organization != null ? new Organization
+                {
+                    Id = q.Organization.Id,
+                    Code = q.Organization.Code,
+                    Name = q.Organization.Name,
+                    ParentId = q.Organization.ParentId,
+                    Path = q.Organization.Path,
+                    Level = q.Organization.Level,
+                    StatusId = q.Organization.StatusId,
+                    Phone = q.Organization.Phone,
+                    Address = q.Organization.Address,
+                    Email = q.Organization.Email,
+                } : null,
                 Store = filter.Selects.Contains(StoreCheckingSelect.Store) && q.Store == null ? null : new Store
                 {
                     Id = q.Store.Id,
@@ -266,6 +344,7 @@ namespace DMS.Repositories
                 Id = x.Id,
                 StoreId = x.StoreId,
                 SaleEmployeeId = x.SaleEmployeeId,
+                OrganizationId = x.OrganizationId,
                 DeviceName = x.DeviceName,
                 Longitude = x.Longitude,
                 Latitude = x.Latitude,
@@ -299,6 +378,19 @@ namespace DMS.Repositories
                         Code = x.SaleEmployee.Organization.Code,
                         Name = x.SaleEmployee.Organization.Name,
                     },
+                },
+                Organization = x.Organization == null ? null : new Organization
+                {
+                    Id = x.Organization.Id,
+                    Code = x.Organization.Code,
+                    Name = x.Organization.Name,
+                    ParentId = x.Organization.ParentId,
+                    Path = x.Organization.Path,
+                    Level = x.Organization.Level,
+                    StatusId = x.Organization.StatusId,
+                    Phone = x.Organization.Phone,
+                    Address = x.Organization.Address,
+                    Email = x.Organization.Email,
                 },
                 Store = x.Store == null ? null : new Store
                 {
@@ -378,6 +470,7 @@ namespace DMS.Repositories
             StoreCheckingDAO StoreCheckingDAO = new StoreCheckingDAO();
             StoreCheckingDAO.Id = StoreChecking.Id;
             StoreCheckingDAO.StoreId = StoreChecking.StoreId;
+            StoreCheckingDAO.OrganizationId = StoreChecking.OrganizationId;
             StoreCheckingDAO.SaleEmployeeId = StoreChecking.SaleEmployeeId;
             StoreCheckingDAO.DeviceName = StoreChecking.DeviceName;
             StoreCheckingDAO.Longitude = StoreChecking.Longitude;

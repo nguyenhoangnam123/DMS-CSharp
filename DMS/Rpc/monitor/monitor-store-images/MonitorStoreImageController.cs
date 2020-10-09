@@ -208,7 +208,6 @@ namespace DMS.Rpc.monitor.monitor_store_images
                        .BulkInsertValuesIntoTempTableAsync<long>(StoreIds);
 
             var StoreCheckingQuery = from sc in DataContext.StoreChecking
-                                     join au in DataContext.AppUser on sc.SaleEmployeeId equals au.Id
                                      join s in DataContext.Store on sc.StoreId equals s.Id
                                      join tt in tempTableQuery.Query on s.Id equals tt.Column1
                                      where sc.CheckOutAt.HasValue && Start <= sc.CheckOutAt.Value && sc.CheckOutAt.Value <= End &&
@@ -220,10 +219,10 @@ namespace DMS.Rpc.monitor.monitor_store_images
                                          (HasImage.Value == 0 && sc.ImageCounter == 0) ||
                                          (HasImage.Value == 1 && sc.ImageCounter > 0)
                                      )
-                                     group au by new { au.Id, s.OrganizationId } into x
+                                     group sc by new { sc.SaleEmployeeId, sc.OrganizationId } into x
                                      select new
                                      {
-                                         SalesEmployeeId = x.Key.Id,
+                                         SalesEmployeeId = x.Key.SaleEmployeeId,
                                          OrganizationId = x.Key.OrganizationId,
                                      };
 
@@ -284,7 +283,6 @@ namespace DMS.Rpc.monitor.monitor_store_images
                        .BulkInsertValuesIntoTempTableAsync<long>(StoreIds);
 
             var StoreCheckingQuery = from sc in DataContext.StoreChecking
-                                     join au in DataContext.AppUser on sc.SaleEmployeeId equals au.Id
                                      join s in DataContext.Store on sc.StoreId equals s.Id
                                      join tt in tempTableQuery.Query on s.Id equals tt.Column1
                                      where sc.CheckOutAt.HasValue && Start <= sc.CheckOutAt.Value && sc.CheckOutAt.Value <= End &&
@@ -296,10 +294,10 @@ namespace DMS.Rpc.monitor.monitor_store_images
                                          (HasImage.Value == 0 && sc.ImageCounter == 0) ||
                                          (HasImage.Value == 1 && sc.ImageCounter > 0)
                                      )
-                                     group au by new { au.Id, s.OrganizationId } into x
+                                     group sc by new { sc.SaleEmployeeId, sc.OrganizationId } into x
                                      select new
                                      {
-                                         SalesEmployeeId = x.Key.Id,
+                                         SalesEmployeeId = x.Key.SaleEmployeeId,
                                          OrganizationId = x.Key.OrganizationId,
                                      };
             

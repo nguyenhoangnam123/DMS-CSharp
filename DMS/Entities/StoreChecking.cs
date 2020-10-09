@@ -23,8 +23,10 @@ namespace DMS.Entities
         public long? ImageCounter { get; set; }
         public bool Planned { get; set; }
         public bool IsOpenedStore { get; set; }
+        public long OrganizationId { get; set; }
         public string DeviceName { get; set; }
         public Store Store { get; set; }
+        public Organization Organization { get; set; }
         public AppUser SaleEmployee { get; set; }
         public List<StoreCheckingImageMapping> StoreCheckingImageMappings { get; set; }
 
@@ -42,6 +44,7 @@ namespace DMS.Entities
     {
         public IdFilter Id { get; set; }
         public IdFilter StoreId { get; set; }
+        public IdFilter OrganizationId { get; set; }
         public IdFilter SaleEmployeeId { get; set; }
         public DecimalFilter Longitude { get; set; }
         public DecimalFilter Latitude { get; set; }
@@ -66,6 +69,7 @@ namespace DMS.Entities
         CheckOutAt = 6,
         CountIndirectSalesOrder = 7,
         CountImage = 8,
+        Organization = 9,
     }
 
     [Flags]
@@ -85,5 +89,6 @@ namespace DMS.Entities
         CheckOutLatitude = E._10,
         CheckInDistance = E._11,
         CheckOutDistance = E._12,
+        Organization = E._13,
     }
 }

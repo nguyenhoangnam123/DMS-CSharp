@@ -15,6 +15,7 @@ namespace DMS.Models
         public long Id { get; set; }
         public long StoreId { get; set; }
         public long SaleEmployeeId { get; set; }
+        public long OrganizationId { get; set; }
         public decimal? Longitude { get; set; }
         public decimal? Latitude { get; set; }
         public decimal? CheckOutLongitude { get; set; }
@@ -29,6 +30,7 @@ namespace DMS.Models
         public bool IsOpenedStore { get; set; }
         public string DeviceName { get; set; }
 
+        public virtual OrganizationDAO Organization { get; set; }
         public virtual AppUserDAO SaleEmployee { get; set; }
         public virtual StoreDAO Store { get; set; }
         public virtual ICollection<DirectSalesOrderDAO> DirectSalesOrders { get; set; }

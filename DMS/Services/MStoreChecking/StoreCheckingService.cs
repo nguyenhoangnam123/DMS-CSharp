@@ -120,8 +120,10 @@ namespace DMS.Services.MStoreChecking
 
             try
             {
+                var currentUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
                 StoreChecking.CheckInAt = StaticParams.DateTimeNow;
                 StoreChecking.SaleEmployeeId = CurrentContext.UserId;
+                StoreChecking.OrganizationId = currentUser.OrganizationId;
 
                 Dictionary<long, long> StorePlannedIds = await ListOnlineStoreIds(null);
                 if (StorePlannedIds.Any(x => x.Key == StoreChecking.StoreId))
