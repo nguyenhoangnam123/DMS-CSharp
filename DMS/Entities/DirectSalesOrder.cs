@@ -96,6 +96,8 @@ namespace DMS.Entities
         TotalTaxAmount = 16,
         Total = 17,
         Organization = 18,
+        CreatedAt = 19,
+        UpdatedAt = 20,
     }
 
     [Flags]
