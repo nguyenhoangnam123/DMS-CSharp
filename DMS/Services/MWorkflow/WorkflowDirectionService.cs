@@ -139,7 +139,20 @@ namespace DMS.Services.MWorkflow
                 var oldData = await UOW.WorkflowDirectionRepository.Get(WorkflowDirection.Id);
                 WorkflowDirection.ModifierId = CurrentContext.UserId;
                 await UOW.Begin();
-                await UOW.WorkflowDirectionRepository.Update(WorkflowDirection);
+                if (oldData.Used)
+                {
+                    oldData.BodyMailForCreator = WorkflowDirection.BodyMailForCreator;
+                    oldData.BodyMailForCurrentStep = WorkflowDirection.BodyMailForCurrentStep;
+                    oldData.BodyMailForNextStep = WorkflowDirection.BodyMailForNextStep;
+                    oldData.SubjectMailForCreator = WorkflowDirection.SubjectMailForCreator;
+                    oldData.SubjectMailForCurrentStep = WorkflowDirection.SubjectMailForCurrentStep;
+                    oldData.SubjectMailForNextStep = WorkflowDirection.SubjectMailForNextStep;
+                    await UOW.WorkflowDirectionRepository.Update(oldData);
+                }
+                else
+                {
+                    await UOW.WorkflowDirectionRepository.Update(WorkflowDirection);
+                }
                 await UOW.Commit();
 
                 var newData = await UOW.WorkflowDirectionRepository.Get(WorkflowDirection.Id);

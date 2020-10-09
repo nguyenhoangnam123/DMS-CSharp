@@ -67,6 +67,7 @@ namespace DMS.Repositories
                     RequestStateId = RequestWorkflowDefinitionMapping.RequestStateId,
                     WorkflowDefinitionId = RequestWorkflowDefinitionMapping.WorkflowDefinitionId,
                     CreatorId = RequestWorkflowDefinitionMapping.CreatorId,
+                    Counter = RequestWorkflowDefinitionMapping.Counter,
                 };
                 DataContext.RequestWorkflowDefinitionMapping.Add(RequestWorkflowDefinitionMappingDAO);
             }
@@ -74,6 +75,7 @@ namespace DMS.Repositories
             {
                 RequestWorkflowDefinitionMappingDAO.RequestStateId = RequestWorkflowDefinitionMapping.RequestStateId;
                 RequestWorkflowDefinitionMappingDAO.WorkflowDefinitionId = RequestWorkflowDefinitionMapping.WorkflowDefinitionId;
+                RequestWorkflowDefinitionMappingDAO.Counter = RequestWorkflowDefinitionMapping.Counter;
             }
             RequestWorkflowDefinitionMappingDAO.Counter = RequestWorkflowDefinitionMapping.Counter;
             await DataContext.SaveChangesAsync();

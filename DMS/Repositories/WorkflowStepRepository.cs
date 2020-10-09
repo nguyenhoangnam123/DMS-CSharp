@@ -262,13 +262,11 @@ namespace DMS.Repositories
                 return false;
             WorkflowDefinitionDAO.ModifierId = WorkflowStep.ModifierId;
             await DataContext.SaveChangesAsync();
-            if (WorkflowDefinitionDAO.Used == false)
-            {
-                WorkflowStepDAO.Code = WorkflowStep.Code;
-                WorkflowStepDAO.Name = WorkflowStep.Name;
-                WorkflowStepDAO.RoleId = WorkflowStep.RoleId;
-                WorkflowStepDAO.StatusId = WorkflowStep.StatusId;
-            }
+
+            WorkflowStepDAO.Code = WorkflowStep.Code;
+            WorkflowStepDAO.Name = WorkflowStep.Name;
+            WorkflowStepDAO.RoleId = WorkflowStep.RoleId;
+            WorkflowStepDAO.StatusId = WorkflowStep.StatusId;
             WorkflowStepDAO.SubjectMailForReject = WorkflowStep.SubjectMailForReject;
             WorkflowStepDAO.BodyMailForReject = WorkflowStep.BodyMailForReject;
             WorkflowStepDAO.UpdatedAt = StaticParams.DateTimeNow;

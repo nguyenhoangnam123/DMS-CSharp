@@ -528,6 +528,9 @@ namespace DMS.Services.MWorkflow
             {
                 List<WorkflowDirectionCondition> WorkflowDirectionConditions = WorkflowDirection.WorkflowDirectionConditions
                     .Where(x => x.WorkflowParameterId == RequestWorkflowParameterMapping.WorkflowParameterId).ToList();
+                if (WorkflowDirectionConditions.Count == 0)
+                    continue;
+
                 if (RequestWorkflowParameterMapping.WorkflowParameterTypeId == WorkflowParameterTypeEnum.ID.Id && RequestWorkflowParameterMapping.IdValue.HasValue)
                 {
                     List<long> In = new List<long>();
