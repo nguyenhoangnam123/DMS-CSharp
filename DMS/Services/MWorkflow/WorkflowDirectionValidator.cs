@@ -61,7 +61,7 @@ namespace DMS.Services.MWorkflow
                 WorkflowDirection.AddError(nameof(WorkflowDirectionValidator), nameof(WorkflowDirection.Id), ErrorCode.IdNotExisted);
             return count == 1;
         }
-       
+
         private async Task<bool> ValidateWorkflowDefinition(WorkflowDirection WorkflowDirection)
         {
             if (WorkflowDirection.WorkflowDefinitionId == 0)
@@ -123,8 +123,11 @@ namespace DMS.Services.MWorkflow
                     if (WFoldData != null)
                     {
                         var countDirection = WFoldData.WorkflowDirections
-                            .Where(x => x.FromStepId == WorkflowDirection.FromStepId && x.ToStepId == WorkflowDirection.ToStepId &&
-                            x.StatusId == StatusEnum.ACTIVE.Id)
+                            .Where(x =>
+                                x.Id != WorkflowDirection.Id &&
+                                x.FromStepId == WorkflowDirection.FromStepId &&
+                                x.ToStepId == WorkflowDirection.ToStepId &&
+                                x.StatusId == StatusEnum.ACTIVE.Id)
                             .Count();
                         if (countDirection != 0)
                         {
@@ -153,6 +156,7 @@ namespace DMS.Services.MWorkflow
             {
                 WorkflowDirectionFilter WorkflowDirectionFilter = new WorkflowDirectionFilter()
                 {
+                    Id = new IdFilter { NotEqual = WorkflowDirection.Id },
                     WorkflowDefinitionId = new IdFilter { Equal = WorkflowDirection.WorkflowDefinitionId },
                     FromStepId = new IdFilter { Equal = WorkflowDirection.FromStepId },
                     ToStepId = new IdFilter { Equal = WorkflowDirection.ToStepId },
@@ -160,7 +164,7 @@ namespace DMS.Services.MWorkflow
                 };
 
                 int count = await UOW.WorkflowDirectionRepository.Count(WorkflowDirectionFilter);
-                if(count > 0)
+                if (count > 0)
                 {
                     WorkflowDirection.AddError(nameof(WorkflowDirectionValidator), nameof(WorkflowDirection.ToStep), ErrorCode.DirectionDuplicate);
                 }
