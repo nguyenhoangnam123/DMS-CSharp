@@ -355,7 +355,10 @@ namespace DMS.Services.MWorkflow
                 {
                     StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id },
                     OrganizationId = new IdFilter { Equal = WorkflowDefinition.OrganizationId },
-                    WorkflowTypeId = new IdFilter { Equal = WorkflowDefinition.WorkflowTypeId }
+                    WorkflowTypeId = new IdFilter { Equal = WorkflowDefinition.WorkflowTypeId },
+                    Skip = 0,
+                    Take = int.MaxValue,
+                    Selects = WorkflowDefinitionSelect.ALL
                 };
 
                 var WorkflowDefinitions = await UOW.WorkflowDefinitionRepository.List(WorkflowDefinitionFilter);
