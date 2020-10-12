@@ -208,10 +208,9 @@ namespace DMS.Rpc.monitor.monitor_store_images
                        .BulkInsertValuesIntoTempTableAsync<long>(StoreIds);
 
             var StoreCheckingQuery = from sc in DataContext.StoreChecking
-                                     join s in DataContext.Store on sc.StoreId equals s.Id
-                                     join tt in tempTableQuery.Query on s.Id equals tt.Column1
+                                     join tt in tempTableQuery.Query on sc.StoreId equals tt.Column1
                                      where sc.CheckOutAt.HasValue && Start <= sc.CheckOutAt.Value && sc.CheckOutAt.Value <= End &&
-                                     OrganizationIds.Contains(s.OrganizationId) &&
+                                     OrganizationIds.Contains(sc.OrganizationId) &&
                                      (SaleEmployeeId.HasValue == false || sc.SaleEmployeeId == SaleEmployeeId.Value) &&
                                      (StoreId.HasValue == false || sc.StoreId == StoreId.Value) &&
                                      (
@@ -219,11 +218,10 @@ namespace DMS.Rpc.monitor.monitor_store_images
                                          (HasImage.Value == 0 && sc.ImageCounter == 0) ||
                                          (HasImage.Value == 1 && sc.ImageCounter > 0)
                                      )
-                                     group sc by new { sc.SaleEmployeeId, sc.OrganizationId } into x
                                      select new
                                      {
-                                         SalesEmployeeId = x.Key.SaleEmployeeId,
-                                         OrganizationId = x.Key.OrganizationId,
+                                         SalesEmployeeId = sc.SaleEmployeeId,
+                                         OrganizationId = sc.OrganizationId,
                                      };
 
             var Ids = await StoreCheckingQuery.ToListAsync();
@@ -283,10 +281,9 @@ namespace DMS.Rpc.monitor.monitor_store_images
                        .BulkInsertValuesIntoTempTableAsync<long>(StoreIds);
 
             var StoreCheckingQuery = from sc in DataContext.StoreChecking
-                                     join s in DataContext.Store on sc.StoreId equals s.Id
-                                     join tt in tempTableQuery.Query on s.Id equals tt.Column1
+                                     join tt in tempTableQuery.Query on sc.StoreId equals tt.Column1
                                      where sc.CheckOutAt.HasValue && Start <= sc.CheckOutAt.Value && sc.CheckOutAt.Value <= End &&
-                                     OrganizationIds.Contains(s.OrganizationId) &&
+                                     OrganizationIds.Contains(sc.OrganizationId) &&
                                      (SaleEmployeeId.HasValue == false || sc.SaleEmployeeId == SaleEmployeeId.Value) &&
                                      (StoreId.HasValue == false || sc.StoreId == StoreId.Value) &&
                                      (
@@ -294,11 +291,10 @@ namespace DMS.Rpc.monitor.monitor_store_images
                                          (HasImage.Value == 0 && sc.ImageCounter == 0) ||
                                          (HasImage.Value == 1 && sc.ImageCounter > 0)
                                      )
-                                     group sc by new { sc.SaleEmployeeId, sc.OrganizationId } into x
                                      select new
                                      {
-                                         SalesEmployeeId = x.Key.SaleEmployeeId,
-                                         OrganizationId = x.Key.OrganizationId,
+                                         SalesEmployeeId = sc.SaleEmployeeId,
+                                         OrganizationId = sc.OrganizationId,
                                      };
             
             var Ids = await StoreCheckingQuery.ToListAsync();
