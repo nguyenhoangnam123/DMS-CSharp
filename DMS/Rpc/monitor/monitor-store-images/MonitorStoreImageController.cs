@@ -402,11 +402,13 @@ namespace DMS.Rpc.monitor.monitor_store_images
                     {
                         var Checkings = StoreCheckingDAOs
                             .Where(x => x.SaleEmployeeId == SalesEmployee.SaleEmployeeId &&
+                            x.OrganizationId == MonitorStoreImage_MonitorStoreImageDTO.OrganizationId &&
                             x.CheckOutAt.Value.AddHours(CurrentContext.TimeZone).Date == Date.Item1 &&
                             x.StoreId == Date.Item2)
                             .ToList();
                         var Images = StoreImageDAOs
                             .Where(x => x.SaleEmployeeId == SalesEmployee.SaleEmployeeId &&
+                            x.OrganizationId == MonitorStoreImage_MonitorStoreImageDTO.OrganizationId &&
                             x.ShootingAt.AddHours(CurrentContext.TimeZone).Date == Date.Item1 &&
                             x.StoreId == Date.Item2)
                             .ToList();
