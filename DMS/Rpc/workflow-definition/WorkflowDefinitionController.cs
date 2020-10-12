@@ -103,6 +103,23 @@ namespace DMS.Rpc.workflow_definition
             return new WorkflowDefinition_WorkflowDirectionDTO(WorkflowDirection);
         }
 
+        [Route(WorkflowDefinitionRoute.Check), HttpPost]
+        public async Task<ActionResult<WorkflowDefinition_WorkflowDefinitionDTO>> Check([FromBody] WorkflowDefinition_WorkflowDefinitionDTO WorkflowDefinition_WorkflowDefinitionDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            if (!await HasPermission(WorkflowDefinition_WorkflowDefinitionDTO.Id))
+                return Forbid();
+
+            WorkflowDefinition WorkflowDefinition = ConvertDTOToEntity(WorkflowDefinition_WorkflowDefinitionDTO);
+            WorkflowDefinition = await WorkflowDefinitionService.Check(WorkflowDefinition);
+            WorkflowDefinition_WorkflowDefinitionDTO = new WorkflowDefinition_WorkflowDefinitionDTO(WorkflowDefinition);
+            if (WorkflowDefinition.IsValidated)
+                return WorkflowDefinition_WorkflowDefinitionDTO;
+            else
+                return BadRequest(WorkflowDefinition_WorkflowDefinitionDTO);
+        }
 
         [Route(WorkflowDefinitionRoute.Create), HttpPost]
         public async Task<ActionResult<WorkflowDefinition_WorkflowDefinitionDTO>> Create([FromBody] WorkflowDefinition_WorkflowDefinitionDTO WorkflowDefinition_WorkflowDefinitionDTO)

@@ -18,6 +18,7 @@ namespace DMS.Rpc.workflow_definition
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
         public long StatusId { get; set; }
+        public bool HasConflict { get; set; }
         public WorkflowDefinition_OrganizationDTO Organization { get; set; }
         public WorkflowDefinition_AppUserDTO Creator { get; set; }
         public WorkflowDefinition_AppUserDTO Modifier { get; set; }
@@ -45,6 +46,7 @@ namespace DMS.Rpc.workflow_definition
             this.CreatedAt = WorkflowDefinition.CreatedAt;
             this.UpdatedAt = WorkflowDefinition.UpdatedAt;
             this.Used = WorkflowDefinition.Used;
+            this.HasConflict = WorkflowDefinition.HasConflict;
             this.Organization = WorkflowDefinition.Organization == null ? null : new WorkflowDefinition_OrganizationDTO(WorkflowDefinition.Organization);
             this.Creator = WorkflowDefinition.Creator == null ? null : new WorkflowDefinition_AppUserDTO(WorkflowDefinition.Creator);
             this.Modifier = WorkflowDefinition.Modifier == null ? null : new WorkflowDefinition_AppUserDTO(WorkflowDefinition.Modifier);

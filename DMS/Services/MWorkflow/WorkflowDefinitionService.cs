@@ -17,6 +17,7 @@ namespace DMS.Services.MWorkflow
         Task<List<WorkflowDefinition>> List(WorkflowDefinitionFilter WorkflowDefinitionFilter);
         Task<WorkflowDefinition> Get(long Id);
         Task<WorkflowDefinition> Create(WorkflowDefinition WorkflowDefinition);
+        Task<WorkflowDefinition> Check(WorkflowDefinition WorkflowDefinition);
         Task<WorkflowDefinition> Update(WorkflowDefinition WorkflowDefinition);
         Task<WorkflowDefinition> Clone(long Id);
         Task<WorkflowDefinition> Delete(WorkflowDefinition WorkflowDefinition);
@@ -94,6 +95,57 @@ namespace DMS.Services.MWorkflow
             return WorkflowDefinition;
         }
 
+        public async Task<WorkflowDefinition> Check(WorkflowDefinition WorkflowDefinition)
+        {
+            if (!await WorkflowDefinitionValidator.Create(WorkflowDefinition))
+                return WorkflowDefinition;
+
+            try
+            {
+                WorkflowDefinition.HasConflict = false;
+                if (WorkflowDefinition.StatusId == StatusEnum.ACTIVE.Id)
+                {
+                    WorkflowDefinitionFilter WorkflowDefinitionFilter = new WorkflowDefinitionFilter
+                    {
+                        StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id },
+                        OrganizationId = new IdFilter { Equal = WorkflowDefinition.OrganizationId },
+                        WorkflowTypeId = new IdFilter { Equal = WorkflowDefinition.WorkflowTypeId },
+                        Skip = 0,
+                        Take = int.MaxValue,
+                        Selects = WorkflowDefinitionSelect.Id | WorkflowDefinitionSelect.EndDate
+                    };
+
+                    var WorkflowDefinitions = await UOW.WorkflowDefinitionRepository.List(WorkflowDefinitionFilter);
+                    foreach (var oldWorkflowDefinition in WorkflowDefinitions)
+                    {
+                        if (oldWorkflowDefinition.EndDate.HasValue == false)
+                        {
+                            WorkflowDefinition.HasConflict = true;
+                        }
+                        else if (oldWorkflowDefinition.EndDate.Value > WorkflowDefinition.StartDate)
+                        {
+                            WorkflowDefinition.HasConflict = true;
+                        }
+                    }
+                }
+                return WorkflowDefinition;
+            }
+            catch (Exception ex)
+            {
+                await UOW.Rollback();
+                if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(WorkflowDefinitionService));
+                    throw new MessageException(ex);
+                }
+                else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(WorkflowDefinitionService));
+                    throw new MessageException(ex.InnerException);
+                }
+            }
+        }
+
         public async Task<WorkflowDefinition> Create(WorkflowDefinition WorkflowDefinition)
         {
             if (!await WorkflowDefinitionValidator.Create(WorkflowDefinition))
@@ -104,6 +156,9 @@ namespace DMS.Services.MWorkflow
                 await UOW.Begin();
                 WorkflowDefinition.CreatorId = CurrentContext.UserId;
                 WorkflowDefinition.ModifierId = CurrentContext.UserId;
+
+                await InactiveOldWorkflow(WorkflowDefinition);
+
                 await UOW.WorkflowDefinitionRepository.Create(WorkflowDefinition);
                 await UOW.Commit();
 
@@ -134,6 +189,9 @@ namespace DMS.Services.MWorkflow
             {
                 var oldData = await UOW.WorkflowDefinitionRepository.Get(WorkflowDefinition.Id);
                 WorkflowDefinition.ModifierId = CurrentContext.UserId;
+
+                await InactiveOldWorkflow(WorkflowDefinition);
+
                 await UOW.Begin();
                 await UOW.WorkflowDefinitionRepository.Update(WorkflowDefinition);
                 await UOW.Commit();
@@ -339,6 +397,37 @@ namespace DMS.Services.MWorkflow
                 }
             }
             return filter;
+        }
+
+        private async Task InactiveOldWorkflow(WorkflowDefinition WorkflowDefinition)
+        {
+            if (WorkflowDefinition.StatusId == StatusEnum.ACTIVE.Id)
+            {
+                WorkflowDefinitionFilter WorkflowDefinitionFilter = new WorkflowDefinitionFilter
+                {
+                    StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id },
+                    OrganizationId = new IdFilter { Equal = WorkflowDefinition.OrganizationId },
+                    WorkflowTypeId = new IdFilter { Equal = WorkflowDefinition.WorkflowTypeId },
+                    Skip = 0,
+                    Take = int.MaxValue,
+                    Selects = WorkflowDefinitionSelect.ALL
+                };
+
+                var WorkflowDefinitions = await UOW.WorkflowDefinitionRepository.List(WorkflowDefinitionFilter);
+                foreach (var oldWorkflowDefinition in WorkflowDefinitions)
+                {
+                    if (oldWorkflowDefinition.EndDate.HasValue == false)
+                    {
+                        oldWorkflowDefinition.StatusId = StatusEnum.INACTIVE.Id;
+                    }
+                    else if (oldWorkflowDefinition.EndDate.Value > WorkflowDefinition.StartDate)
+                    {
+                        oldWorkflowDefinition.StatusId = StatusEnum.INACTIVE.Id;
+                    }
+                }
+
+                await UOW.WorkflowDefinitionRepository.BulkMerge(WorkflowDefinitions);
+            }
         }
     }
 }
