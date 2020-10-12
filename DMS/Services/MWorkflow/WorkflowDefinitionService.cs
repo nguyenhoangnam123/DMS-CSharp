@@ -164,7 +164,8 @@ namespace DMS.Services.MWorkflow
             {
                 var oldData = await UOW.WorkflowDefinitionRepository.Get(Id);
                 int counter = 1;
-                while (true)
+
+                while(true)
                 {
                     WorkflowDefinitionFilter WorkflowDefinitionFilter = new WorkflowDefinitionFilter
                     {
@@ -172,9 +173,9 @@ namespace DMS.Services.MWorkflow
                     };
                     int count = await UOW.WorkflowDefinitionRepository.Count(WorkflowDefinitionFilter);
                     if (count == 0)
-                        counter++;
-                    else
                         break;
+                    else
+                        count++;
                 }    
                 await UOW.Begin();
                 WorkflowDefinition WorkflowDefinition = oldData.Clone();
