@@ -462,6 +462,7 @@ namespace DMS.Services.MStoreChecking
         {
             try
             {
+                StoreFilter.SalesEmployeeId = new IdFilter { Equal = CurrentContext.UserId };
                 StoreFilter.TimeZone = CurrentContext.TimeZone;
                 var count = await UOW.StoreRepository.CountInScoped(StoreFilter, CurrentContext.UserId);
                 return count;
@@ -500,6 +501,7 @@ namespace DMS.Services.MStoreChecking
                 StoreFilter.Selects = StoreSelect.Id | StoreSelect.Code | StoreSelect.Name |
                 StoreSelect.Address | StoreSelect.Telephone | StoreSelect.Latitude |
                 StoreSelect.Longitude | StoreSelect.HasChecking | StoreSelect.OwnerPhone;
+                StoreFilter.SalesEmployeeId = new IdFilter { Equal = CurrentContext.UserId };
                 StoreFilter.TimeZone = CurrentContext.TimeZone;
                 Stores = await UOW.StoreRepository.ListInScoped(StoreFilter, CurrentContext.UserId);
                 if (CurrentContext.Latitude.HasValue && CurrentContext.Longitude.HasValue)
