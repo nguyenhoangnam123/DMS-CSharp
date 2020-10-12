@@ -14,6 +14,7 @@ namespace DMS.Rpc.workflow_definition
         public const string List = Default + "/list";
         public const string Get = Default + "/get";
         public const string GetDirection = Default + "/get-direction";
+        public const string Check = Default + "/check";
         public const string Create = Default + "/create";
         public const string Update = Default + "/update";
         public const string Clone = Default + "/clone";
@@ -56,7 +57,7 @@ namespace DMS.Rpc.workflow_definition
                 Master, Count, List, Get,
                 FilterListAppUser, FilterListWorkflowType, FilterListWorkflowDirection, FilterListWorkflowStep, FilterListWorkflowParameter, 
                 FilterListRole, FilterListStatus, FilterListOrganization,
-                Detail, Create,
+                Detail, Create, Check,
                 SingleListAppUser, SingleListWorkflowType, SingleListWorkflowDirection, SingleListWorkflowStep, SingleListWorkflowParameter, 
                 SingleListRole, SingleListStatus, SingleListOrganization } },
             { "Sửa", new List<string> {
@@ -64,7 +65,7 @@ namespace DMS.Rpc.workflow_definition
                 Master, Count, List, Get,
                 FilterListAppUser, FilterListWorkflowType, FilterListWorkflowDirection, FilterListWorkflowStep, FilterListWorkflowParameter, 
                 FilterListRole, FilterListStatus, FilterListOrganization,
-                Detail, Update, Clone,
+                Detail, Update, Clone, Check,
                 SingleListAppUser, SingleListWorkflowType, SingleListWorkflowDirection, SingleListWorkflowStep, SingleListWorkflowParameter, 
                 SingleListRole, SingleListStatus, SingleListOrganization } },
             { "Xoá", new List<string> {
