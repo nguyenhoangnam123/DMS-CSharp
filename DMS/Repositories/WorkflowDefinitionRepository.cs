@@ -517,9 +517,11 @@ namespace DMS.Repositories
                 WorkflowDefinitionDAO.CreatorId = WorkflowDefinition.CreatorId;
                 WorkflowDefinitionDAO.ModifierId = WorkflowDefinition.ModifierId;
                 WorkflowDefinitionDAO.WorkflowTypeId = WorkflowDefinition.WorkflowTypeId;
+                WorkflowDefinitionDAO.OrganizationId = WorkflowDefinition.OrganizationId;
                 WorkflowDefinitionDAO.StartDate = WorkflowDefinition.StartDate;
                 WorkflowDefinitionDAO.EndDate = WorkflowDefinition.EndDate;
                 WorkflowDefinitionDAO.StatusId = WorkflowDefinition.StatusId;
+                WorkflowDefinitionDAO.Used = WorkflowDefinition.Used;
                 WorkflowDefinitionDAO.CreatedAt = StaticParams.DateTimeNow;
                 WorkflowDefinitionDAO.UpdatedAt = StaticParams.DateTimeNow;
                 WorkflowDefinitionDAOs.Add(WorkflowDefinitionDAO);

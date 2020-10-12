@@ -104,6 +104,9 @@ namespace DMS.Services.MWorkflow
                 await UOW.Begin();
                 WorkflowDefinition.CreatorId = CurrentContext.UserId;
                 WorkflowDefinition.ModifierId = CurrentContext.UserId;
+
+                await InactiveOldWorkflow(WorkflowDefinition);
+
                 await UOW.WorkflowDefinitionRepository.Create(WorkflowDefinition);
                 await UOW.Commit();
 
@@ -134,6 +137,9 @@ namespace DMS.Services.MWorkflow
             {
                 var oldData = await UOW.WorkflowDefinitionRepository.Get(WorkflowDefinition.Id);
                 WorkflowDefinition.ModifierId = CurrentContext.UserId;
+
+                await InactiveOldWorkflow(WorkflowDefinition);
+
                 await UOW.Begin();
                 await UOW.WorkflowDefinitionRepository.Update(WorkflowDefinition);
                 await UOW.Commit();
@@ -325,6 +331,34 @@ namespace DMS.Services.MWorkflow
                 }
             }
             return filter;
+        }
+
+        private async Task InactiveOldWorkflow(WorkflowDefinition WorkflowDefinition)
+        {
+            if (WorkflowDefinition.StatusId == StatusEnum.ACTIVE.Id)
+            {
+                WorkflowDefinitionFilter WorkflowDefinitionFilter = new WorkflowDefinitionFilter
+                {
+                    StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id },
+                    OrganizationId = new IdFilter { Equal = WorkflowDefinition.OrganizationId },
+                    WorkflowTypeId = new IdFilter { Equal = WorkflowDefinition.WorkflowTypeId }
+                };
+
+                var WorkflowDefinitions = await UOW.WorkflowDefinitionRepository.List(WorkflowDefinitionFilter);
+                foreach (var oldWorkflowDefinition in WorkflowDefinitions)
+                {
+                    if (oldWorkflowDefinition.EndDate.HasValue == false)
+                    {
+                        oldWorkflowDefinition.StatusId = StatusEnum.INACTIVE.Id;
+                    }
+                    else if (oldWorkflowDefinition.EndDate.Value > WorkflowDefinition.StartDate)
+                    {
+                        oldWorkflowDefinition.StatusId = StatusEnum.INACTIVE.Id;
+                    }
+                }
+
+                await UOW.WorkflowDefinitionRepository.BulkMerge(WorkflowDefinitions);
+            }
         }
     }
 }
