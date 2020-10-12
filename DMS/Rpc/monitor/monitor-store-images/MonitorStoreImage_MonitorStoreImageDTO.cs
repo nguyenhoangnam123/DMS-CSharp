@@ -40,8 +40,6 @@ namespace DMS.Rpc.monitor.monitor_store_images
         public IdFilter AppUserId { get; set; }
         public DateFilter CheckIn { get; set; }
         public IdFilter StoreId { get; set; }
-        public IdFilter HasImage { get; set; }
-        public IdFilter HasOrder { get; set; }
         public List<MonitorStoreImage_MonitorStoreImageFilterDTO> OrFilters { get; set; }
     }
 }

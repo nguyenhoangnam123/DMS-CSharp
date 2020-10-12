@@ -177,8 +177,6 @@ namespace DMS.Rpc.monitor.monitor_store_images
             long? OrganizationId = MonitorStoreImage_MonitorStoreImageFilterDTO.OrganizationId?.Equal;
             long? SaleEmployeeId = MonitorStoreImage_MonitorStoreImageFilterDTO.AppUserId?.Equal;
             long? StoreId = MonitorStoreImage_MonitorStoreImageFilterDTO.StoreId?.Equal;
-            long? HasImage = MonitorStoreImage_MonitorStoreImageFilterDTO.HasImage?.Equal;
-            long? HasOrder = MonitorStoreImage_MonitorStoreImageFilterDTO.HasOrder?.Equal;
 
             DateTime Start = MonitorStoreImage_MonitorStoreImageFilterDTO.CheckIn?.GreaterEqual == null ?
                     LocalStartDay(CurrentContext) :
@@ -212,12 +210,7 @@ namespace DMS.Rpc.monitor.monitor_store_images
                                      where sc.CheckOutAt.HasValue && Start <= sc.CheckOutAt.Value && sc.CheckOutAt.Value <= End &&
                                      OrganizationIds.Contains(sc.OrganizationId) &&
                                      (SaleEmployeeId.HasValue == false || sc.SaleEmployeeId == SaleEmployeeId.Value) &&
-                                     (StoreId.HasValue == false || sc.StoreId == StoreId.Value) &&
-                                     (
-                                         HasImage == null ||
-                                         (HasImage.Value == 0 && sc.ImageCounter == 0) ||
-                                         (HasImage.Value == 1 && sc.ImageCounter > 0)
-                                     )
+                                     (StoreId.HasValue == false || sc.StoreId == StoreId.Value)
                                      select new
                                      {
                                          SalesEmployeeId = sc.SaleEmployeeId,
@@ -251,8 +244,6 @@ namespace DMS.Rpc.monitor.monitor_store_images
             long? OrganizationId = MonitorStoreImage_MonitorStoreImageFilterDTO.OrganizationId?.Equal;
             long? SaleEmployeeId = MonitorStoreImage_MonitorStoreImageFilterDTO.AppUserId?.Equal;
             long? StoreId = MonitorStoreImage_MonitorStoreImageFilterDTO.StoreId?.Equal;
-            long? HasImage = MonitorStoreImage_MonitorStoreImageFilterDTO.HasImage?.Equal;
-            long? HasOrder = MonitorStoreImage_MonitorStoreImageFilterDTO.HasOrder?.Equal;
 
             DateTime Start = MonitorStoreImage_MonitorStoreImageFilterDTO.CheckIn?.GreaterEqual == null ?
                     LocalStartDay(CurrentContext) :
@@ -285,12 +276,7 @@ namespace DMS.Rpc.monitor.monitor_store_images
                                      where sc.CheckOutAt.HasValue && Start <= sc.CheckOutAt.Value && sc.CheckOutAt.Value <= End &&
                                      OrganizationIds.Contains(sc.OrganizationId) &&
                                      (SaleEmployeeId.HasValue == false || sc.SaleEmployeeId == SaleEmployeeId.Value) &&
-                                     (StoreId.HasValue == false || sc.StoreId == StoreId.Value) &&
-                                     (
-                                         HasImage == null ||
-                                         (HasImage.Value == 0 && sc.ImageCounter == 0) ||
-                                         (HasImage.Value == 1 && sc.ImageCounter > 0)
-                                     )
+                                     (StoreId.HasValue == false || sc.StoreId == StoreId.Value)
                                      select new
                                      {
                                          SalesEmployeeId = sc.SaleEmployeeId,
@@ -333,12 +319,7 @@ namespace DMS.Rpc.monitor.monitor_store_images
                                      join tt in tempTableQuery.Query on s.Id equals tt.Column1
                                      where sc.CheckOutAt.HasValue && Start <= sc.CheckOutAt.Value && sc.CheckOutAt.Value <= End &&
                                      AppUserIds.Contains(sc.SaleEmployeeId) &&
-                                     (StoreId.HasValue == false || sc.StoreId == StoreId.Value) &&
-                                     (
-                                         HasImage == null ||
-                                         (HasImage.Value == 0 && sc.ImageCounter == 0) ||
-                                         (HasImage.Value == 1 && sc.ImageCounter > 0)
-                                     )
+                                     (StoreId.HasValue == false || sc.StoreId == StoreId.Value)
                                      select new StoreCheckingDAO
                                      {
                                          Id = sc.Id,
@@ -440,7 +421,6 @@ namespace DMS.Rpc.monitor.monitor_store_images
                         if (Checkings.Count() != 0)
                         {
                             MonitorStoreImage_DetailDTO.StoreName = Checkings.Select(x => x.Store.Name).FirstOrDefault();
-                            MonitorStoreImage_DetailDTO.ImageCounter += Checkings.Where(x => x.ImageCounter.HasValue).Select(x => x.ImageCounter.Value).Sum();
                         }
                         if (Images.Count != 0)
                         {
