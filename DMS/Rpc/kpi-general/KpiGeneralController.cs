@@ -315,6 +315,7 @@ namespace DMS.Rpc.kpi_general
                 Take = int.MaxValue,
                 AppUserId = new IdFilter { In = AppUserIds },
                 KpiYearId = new IdFilter { Equal = KpiYear.Id },
+                Selects = KpiGeneralSelect.ALL
             });
 
             var KpiGeneralIds = KpiGenerals.Select(x => x.Id).ToList();
@@ -731,21 +732,18 @@ namespace DMS.Rpc.kpi_general
                     else
                         KpiGeneralContentKpiPeriodMappingY.Value = null;
                     #endregion
-                }
 
-                KpiGenerals.ForEach(KpiGeneral =>
-                {
-                    foreach (var KpiGeneralContent in KpiGeneral.KpiGeneralContents)
+                    foreach (var content in KpiGeneral.KpiGeneralContents)
                     {
                         bool flag = false;
-                        foreach (var item in KpiGeneralContent.KpiGeneralContentKpiPeriodMappings)
+                        foreach (var item in content.KpiGeneralContentKpiPeriodMappings)
                         {
                             if (item.Value != null) flag = true;
                         }
                         if (!flag)
-                            errorContent.AppendLine($"Lỗi dòng thứ {KpiGeneralContent.STT}: Chưa nhập chỉ tiêu");
+                            errorContent.AppendLine($"Lỗi dòng thứ {content.STT}: Chưa nhập chỉ tiêu");
                     }
-                });
+                }
 
                 if (errorContent.Length > 0)
                     return BadRequest(errorContent.ToString());
