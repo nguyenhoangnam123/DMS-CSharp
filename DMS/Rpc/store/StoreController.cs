@@ -569,7 +569,8 @@ namespace DMS.Rpc.store
                     new string[]
                     {
                         "STT",
-                        "Mã đại lý",
+                        "Mã đại lý (tự sinh)",
+                        "Mã đại lý (tự nhập)",
                         "Tên đại lý",
                         "Đơn vị quản lý",
                         "Đại lý cấp cha",
@@ -601,6 +602,7 @@ namespace DMS.Rpc.store
                     {
                         i+1,
                         Store.Code,
+                        Store.CodeDraft,
                         Store.Name,
                         Store.Organization?.Name,
                         Store.ParentStore?.Name,
