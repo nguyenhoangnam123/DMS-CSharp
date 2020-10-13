@@ -8,6 +8,7 @@ namespace DMS.Models
         public SalesOrderTypeDAO()
         {
             PriceLists = new HashSet<PriceListDAO>();
+            PromotionCodeHistories = new HashSet<PromotionCodeHistoryDAO>();
         }
 
         public long Id { get; set; }
@@ -15,5 +16,6 @@ namespace DMS.Models
         public string Name { get; set; }
 
         public virtual ICollection<PriceListDAO> PriceLists { get; set; }
+        public virtual ICollection<PromotionCodeHistoryDAO> PromotionCodeHistories { get; set; }
     }
 }

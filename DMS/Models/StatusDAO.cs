@@ -23,6 +23,7 @@ namespace DMS.Models
             PriceLists = new HashSet<PriceListDAO>();
             ProductTypes = new HashSet<ProductTypeDAO>();
             Products = new HashSet<ProductDAO>();
+            PromotionCodes = new HashSet<PromotionCodeDAO>();
             PromotionPromotionPolicyMappings = new HashSet<PromotionPromotionPolicyMappingDAO>();
             Promotions = new HashSet<PromotionDAO>();
             Provinces = new HashSet<ProvinceDAO>();
@@ -64,6 +65,7 @@ namespace DMS.Models
         public virtual ICollection<PriceListDAO> PriceLists { get; set; }
         public virtual ICollection<ProductTypeDAO> ProductTypes { get; set; }
         public virtual ICollection<ProductDAO> Products { get; set; }
+        public virtual ICollection<PromotionCodeDAO> PromotionCodes { get; set; }
         public virtual ICollection<PromotionPromotionPolicyMappingDAO> PromotionPromotionPolicyMappings { get; set; }
         public virtual ICollection<PromotionDAO> Promotions { get; set; }
         public virtual ICollection<ProvinceDAO> Provinces { get; set; }

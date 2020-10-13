@@ -3,12 +3,11 @@ using System.Collections.Generic;
 
 namespace DMS.Models
 {
-    public partial class PromotionTypeDAO
+    public partial class PromotionItemTypeDAO
     {
-        public PromotionTypeDAO()
+        public PromotionItemTypeDAO()
         {
             PromotionCodes = new HashSet<PromotionCodeDAO>();
-            Promotions = new HashSet<PromotionDAO>();
         }
 
         public long Id { get; set; }
@@ -16,6 +15,5 @@ namespace DMS.Models
         public string Name { get; set; }
 
         public virtual ICollection<PromotionCodeDAO> PromotionCodes { get; set; }
-        public virtual ICollection<PromotionDAO> Promotions { get; set; }
     }
 }
