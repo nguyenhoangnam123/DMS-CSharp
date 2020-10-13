@@ -276,6 +276,16 @@ namespace DMS.Services.MWorkflow
         {
             RequestWorkflowDefinitionMapping RequestWorkflowDefinitionMapping = await UOW.RequestWorkflowDefinitionMappingRepository.Get(RequestId);
             WorkflowDefinition WorkflowDefinition = await UOW.WorkflowDefinitionRepository.Get(RequestWorkflowDefinitionMapping.WorkflowDefinitionId);
+            List<WorkflowDirection> WorkflowDirections = new List<WorkflowDirection>();
+            foreach(WorkflowDirection WorkflowDirection in WorkflowDefinition.WorkflowDirections)
+            {
+                bool result = await ApplyCondition(RequestId, WorkflowDirection);
+                if (result)
+                {
+                    WorkflowDirections.Add(WorkflowDirection);
+                }
+                WorkflowDefinition.WorkflowDirections = WorkflowDirections;
+            }    
             // tìm điểm bắt đầu
             // tìm điểm nhảy tiếp theo
             // chuyển trạng thái điểm nhảy
