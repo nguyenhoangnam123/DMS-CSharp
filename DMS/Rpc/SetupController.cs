@@ -1035,15 +1035,6 @@ namespace DMS.Rpc
             DataContext.WorkflowOperator.BulkSynchronize(WorkflowOperatorDAOs);
 
             List<WorkflowParameterDAO> WorkflowParameterDAOs = new List<WorkflowParameterDAO>();
-            List<WorkflowParameterDAO> STORE_PARAMETER = WorkflowParameterEnum.StoreEnumList.Select(item => new WorkflowParameterDAO
-            {
-                Id = item.Id,
-                Code = item.Code,
-                Name = item.Name,
-                WorkflowParameterTypeId = long.Parse(item.Value),
-                WorkflowTypeId = WorkflowTypeEnum.STORE.Id,
-            }).ToList();
-            WorkflowParameterDAOs.AddRange(STORE_PARAMETER);
 
             List<WorkflowParameterDAO> EROUTE_PARAMETER = WorkflowParameterEnum.ERouteEnumList.Select(item => new WorkflowParameterDAO
             {

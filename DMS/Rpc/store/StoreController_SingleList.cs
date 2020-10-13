@@ -188,6 +188,26 @@ namespace DMS.Rpc.store
             return Store_StatusDTOs;
         }
 
+        [Route(StoreRoute.FilterListStoreType), HttpPost]
+        public async Task<List<Store_StoreTypeDTO>> FilterListStoreType([FromBody] Store_StoreTypeFilterDTO Store_StoreTypeFilterDTO)
+        {
+            StoreTypeFilter StoreTypeFilter = new StoreTypeFilter();
+            StoreTypeFilter.Skip = 0;
+            StoreTypeFilter.Take = 20;
+            StoreTypeFilter.OrderBy = StoreTypeOrder.Id;
+            StoreTypeFilter.OrderType = OrderType.ASC;
+            StoreTypeFilter.Selects = StoreTypeSelect.ALL;
+            StoreTypeFilter.Id = Store_StoreTypeFilterDTO.Id;
+            StoreTypeFilter.Code = Store_StoreTypeFilterDTO.Code;
+            StoreTypeFilter.Name = Store_StoreTypeFilterDTO.Name;
+            StoreTypeFilter.StatusId = null;
+
+            List<StoreType> StoreTypes = await StoreTypeService.List(StoreTypeFilter);
+            List<Store_StoreTypeDTO> Store_StoreTypeDTOs = StoreTypes
+                .Select(x => new Store_StoreTypeDTO(x)).ToList();
+            return Store_StoreTypeDTOs;
+        }
+
         [Route(StoreRoute.SingleListAppUser), HttpPost]
         public async Task<List<Store_AppUserDTO>> SingleListAppUser([FromBody] Store_AppUserFilterDTO Store_AppUserFilterDTO)
         {
