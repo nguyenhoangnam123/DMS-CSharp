@@ -224,6 +224,33 @@ namespace DMS.Rpc.price_list
             return PriceList_StatusDTOs;
         }
 
+        [Route(PriceListRoute.SingleListAppUser), HttpPost]
+        public async Task<List<PriceList_AppUserDTO>> SingleListAppUser([FromBody] PriceList_AppUserFilterDTO PriceList_AppUserFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            AppUserFilter AppUserFilter = new AppUserFilter();
+            AppUserFilter.Skip = 0;
+            AppUserFilter.Take = 20;
+            AppUserFilter.OrderBy = AppUserOrder.Id;
+            AppUserFilter.OrderType = OrderType.ASC;
+            AppUserFilter.Selects = AppUserSelect.ALL;
+            AppUserFilter.Id = PriceList_AppUserFilterDTO.Id;
+            AppUserFilter.Username = PriceList_AppUserFilterDTO.Username;
+            AppUserFilter.DisplayName = PriceList_AppUserFilterDTO.DisplayName;
+            AppUserFilter.Address = PriceList_AppUserFilterDTO.Address;
+            AppUserFilter.Email = PriceList_AppUserFilterDTO.Email;
+
+            if (AppUserFilter.Id == null) AppUserFilter.Id = new IdFilter();
+            AppUserFilter.Id.In = await FilterAppUser(AppUserService, OrganizationService, CurrentContext);
+
+            List<AppUser> AppUsers = await AppUserService.List(AppUserFilter);
+            List<PriceList_AppUserDTO> PriceList_AppUserDTOs = AppUsers
+                .Select(x => new PriceList_AppUserDTO(x)).ToList();
+            return PriceList_AppUserDTOs;
+        }
+
         [Route(PriceListRoute.SingleListOrganization), HttpPost]
         public async Task<List<PriceList_OrganizationDTO>> SingleListOrganization([FromBody] PriceList_OrganizationFilterDTO PriceList_OrganizationFilterDTO)
         {

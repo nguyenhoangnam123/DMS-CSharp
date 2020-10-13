@@ -48,6 +48,7 @@ namespace DMS.Rpc.price_list
         public const string FilterListSalesOrderType = Default + "/filter-list-sales-order-type";
         public const string FilterListStatus = Default + "/filter-list-status";
         
+        public const string SingleListAppUser = Default + "/single-list-app-user";
         public const string SingleListOrganization = Default + "/single-list-organization";
         public const string SingleListItem = Default + "/single-list-item";
         public const string SingleListProvince = Default + "/single-list-province";
