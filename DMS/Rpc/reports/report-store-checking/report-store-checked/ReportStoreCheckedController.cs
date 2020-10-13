@@ -285,7 +285,8 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
                             )
                         ) &&
                         (StoreStatusId.HasValue == false || StoreStatusId.Value == StoreStatusEnum.ALL.Id || s.StoreStatusId == StoreStatusId.Value) &&
-                        OrganizationIds.Contains(au.OrganizationId)
+                        OrganizationIds.Contains(au.OrganizationId) &&
+                        s.DeletedAt == null
                         select au;
 
             int count = await query.Distinct().CountAsync();
@@ -366,12 +367,14 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
                             )
                         ) &&
                         (StoreStatusId.HasValue == false || StoreStatusId.Value == StoreStatusEnum.ALL.Id || s.StoreStatusId == StoreStatusId.Value) &&
-                        OrganizationIds.Contains(au.OrganizationId)
+                        OrganizationIds.Contains(au.OrganizationId) &&
+                        s.DeletedAt == null
                         select au;
 
             var AppUserIds = await query.Select(x => x.Id).Distinct().ToListAsync();
 
             List<AppUserDAO> AppUserDAOs = await DataContext.AppUser
+                .Where(x => x.DeletedAt == null)
                 .Where(au => AppUserIds.Contains(au.Id) && OrganizationIds.Contains(au.OrganizationId))
                 .OrderBy(su => su.OrganizationId).ThenBy(x => x.DisplayName)
                 .Skip(ReportStoreChecker_ReportStoreCheckedFilterDTO.Skip)
@@ -418,7 +421,8 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
                             )
                         ) &&
                         (StoreStatusId.HasValue == false || StoreStatusId.Value == StoreStatusEnum.ALL.Id || s.StoreStatusId == StoreStatusId.Value) &&
-                        OrganizationIds.Contains(s.OrganizationId)
+                        OrganizationIds.Contains(s.OrganizationId) &&
+                        s.DeletedAt == null
                          select sc;
 
             List<StoreCheckingDAO> storeCheckings = await query2.ToListAsync();
@@ -427,6 +431,7 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
                        .BulkInsertValuesIntoTempTableAsync<long>(StoreIds);
             var query3 = from s in DataContext.Store
                          join tt in tempTableQuery.Query on s.Id equals tt.Column1
+                         where s.DeletedAt == null
                          select new StoreDAO
                          {
                              Id = s.Id,

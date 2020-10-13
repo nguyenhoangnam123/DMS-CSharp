@@ -252,7 +252,8 @@ namespace DMS.Rpc.reports.report_store.report_statistic_problem
                             )
                         ) &&
                         (StoreStatusId.HasValue == false || StoreStatusId.Value == StoreStatusEnum.ALL.Id || s.StoreStatusId == StoreStatusId.Value) &&
-                        OrganizationIds.Contains(s.OrganizationId)
+                        OrganizationIds.Contains(s.OrganizationId) &&
+                        s.DeletedAt == null
                         select s;
 
             int count = await query.Distinct().CountAsync();
@@ -331,7 +332,8 @@ namespace DMS.Rpc.reports.report_store.report_statistic_problem
                             )
                         ) &&
                         (StoreStatusId.HasValue == false || StoreStatusId.Value == StoreStatusEnum.ALL.Id || s.StoreStatusId == StoreStatusId.Value) &&
-                        (OrganizationIds.Contains(s.OrganizationId))
+                        (OrganizationIds.Contains(s.OrganizationId)) &&
+                        s.DeletedAt == null
                         select new Store
                         {
                             Id = s.Id,
@@ -499,7 +501,8 @@ namespace DMS.Rpc.reports.report_store.report_statistic_problem
                             )
                         ) &&
                         (StoreStatusId.HasValue == false || StoreStatusId.Value == StoreStatusEnum.ALL.Id || s.StoreStatusId == StoreStatusId.Value) &&
-                        (OrganizationIds.Contains(s.OrganizationId))
+                        (OrganizationIds.Contains(s.OrganizationId)) &&
+                        s.DeletedAt == null
                         select new Store
                         {
                             Id = s.Id,

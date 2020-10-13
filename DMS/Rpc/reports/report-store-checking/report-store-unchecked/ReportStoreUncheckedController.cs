@@ -200,7 +200,8 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_unchecked
                                 where AppUserIds.Contains(a.Id) &&
                                 OrganizationIds.Contains(a.OrganizationId) &&
                                 (StoreStatusId.HasValue == false || StoreStatusId.Value == StoreStatusEnum.ALL.Id || s.StoreStatusId == StoreStatusId.Value) &&
-                                Start <= su.Date && su.Date <= End
+                                Start <= su.Date && su.Date <= End &&
+                                s.DeletedAt == null
                                 orderby a.Organization.Name, a.DisplayName
                                 select su.AppUserId)
                                 .Distinct()
@@ -256,6 +257,7 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_unchecked
                                 .ToList();
 
             List<AppUserDAO> AppUserDAOs = await DataContext.AppUser.Where(au => AppUserIds.Contains(au.Id))
+                .Where(x => x.DeletedAt == null)
                 .Where(x => OrganizationIds.Contains(x.OrganizationId))
                 .Include(au => au.Organization)
                 .OrderBy(su => su.Organization.Path)

@@ -210,7 +210,8 @@ namespace DMS.Rpc.monitor.monitor_store_images
                                      where sc.CheckOutAt.HasValue && Start <= sc.CheckOutAt.Value && sc.CheckOutAt.Value <= End &&
                                      OrganizationIds.Contains(sc.OrganizationId) &&
                                      (SaleEmployeeId.HasValue == false || sc.SaleEmployeeId == SaleEmployeeId.Value) &&
-                                     (StoreId.HasValue == false || sc.StoreId == StoreId.Value)
+                                     (StoreId.HasValue == false || sc.StoreId == StoreId.Value) &&
+                                     sc.Store.DeletedAt == null
                                      select new
                                      {
                                          SalesEmployeeId = sc.SaleEmployeeId,
@@ -276,7 +277,8 @@ namespace DMS.Rpc.monitor.monitor_store_images
                                      where sc.CheckOutAt.HasValue && Start <= sc.CheckOutAt.Value && sc.CheckOutAt.Value <= End &&
                                      OrganizationIds.Contains(sc.OrganizationId) &&
                                      (SaleEmployeeId.HasValue == false || sc.SaleEmployeeId == SaleEmployeeId.Value) &&
-                                     (StoreId.HasValue == false || sc.StoreId == StoreId.Value)
+                                     (StoreId.HasValue == false || sc.StoreId == StoreId.Value) &&
+                                     sc.Store.DeletedAt == null
                                      select new
                                      {
                                          SalesEmployeeId = sc.SaleEmployeeId,
@@ -319,7 +321,8 @@ namespace DMS.Rpc.monitor.monitor_store_images
                                      join tt in tempTableQuery.Query on s.Id equals tt.Column1
                                      where sc.CheckOutAt.HasValue && Start <= sc.CheckOutAt.Value && sc.CheckOutAt.Value <= End &&
                                      AppUserIds.Contains(sc.SaleEmployeeId) &&
-                                     (StoreId.HasValue == false || sc.StoreId == StoreId.Value)
+                                     (StoreId.HasValue == false || sc.StoreId == StoreId.Value) &&
+                                     s.DeletedAt == null
                                      select new StoreCheckingDAO
                                      {
                                          Id = sc.Id,

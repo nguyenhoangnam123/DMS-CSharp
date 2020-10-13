@@ -113,7 +113,8 @@ namespace DMS.Rpc.dashboards.director
             AppUser CurrentUser = await AppUserService.Get(CurrentContext.UserId);
             var query = from s in DataContext.Store
                         join o in DataContext.Organization on s.OrganizationId equals o.Id
-                        where o.Path.StartsWith(CurrentUser.Organization.Path)
+                        where o.Path.StartsWith(CurrentUser.Organization.Path) &&
+                        s.DeletedAt == null
                         select s;
 
             var StoreCounter = query.Count();
@@ -132,7 +133,8 @@ namespace DMS.Rpc.dashboards.director
                         join o in DataContext.Organization on au.OrganizationId equals o.Id
                         where i.OrderDate >= Start && i.OrderDate <= End &&
                         o.Path.StartsWith(CurrentUser.Organization.Path) &&
-                        i.RequestStateId == RequestStateEnum.APPROVED.Id
+                        i.RequestStateId == RequestStateEnum.APPROVED.Id &&
+                        au.DeletedAt == null && o.DeletedAt == null
                         select i;
 
             return query.Count();
@@ -150,7 +152,8 @@ namespace DMS.Rpc.dashboards.director
                         join o in DataContext.Organization on au.OrganizationId equals o.Id
                         where i.OrderDate >= Start && i.OrderDate <= End &&
                         o.Path.StartsWith(CurrentUser.Organization.Path) &&
-                        i.RequestStateId == RequestStateEnum.APPROVED.Id
+                        i.RequestStateId == RequestStateEnum.APPROVED.Id &&
+                        au.DeletedAt == null && o.DeletedAt == null
                         select i;
 
             var RevenueTotal = query.Select(x => x.Total).Sum();
@@ -170,7 +173,8 @@ namespace DMS.Rpc.dashboards.director
                         join o in DataContext.Organization on au.OrganizationId equals o.Id
                         where i.OrderDate >= Start && i.OrderDate <= End &&
                         o.Path.StartsWith(CurrentUser.Organization.Path) &&
-                        i.RequestStateId == RequestStateEnum.APPROVED.Id
+                        i.RequestStateId == RequestStateEnum.APPROVED.Id &&
+                        au.DeletedAt == null && o.DeletedAt == null
                         select ic;
 
             var ItemSalesTotal = query.Select(x => x.RequestedQuantity).Sum();
@@ -185,10 +189,12 @@ namespace DMS.Rpc.dashboards.director
             DateTime End = Start.AddMonths(1).AddSeconds(-1);
             AppUser CurrentUser = await AppUserService.Get(CurrentContext.UserId);
             var query = from sc in DataContext.StoreChecking
+                        join s in DataContext.Store on sc.StoreId equals s.Id 
                         join au in DataContext.AppUser on sc.SaleEmployeeId equals au.Id
                         join o in DataContext.Organization on au.OrganizationId equals o.Id
                         where sc.CheckOutAt.HasValue && sc.CheckOutAt >= Start && sc.CheckOutAt <= End &&
-                        o.Path.StartsWith(CurrentUser.Organization.Path)
+                        o.Path.StartsWith(CurrentUser.Organization.Path) &&
+                        au.DeletedAt == null && o.DeletedAt == null && s.DeletedAt == null
                         select sc;
 
             var StoreCheckingCounter = query.Count();
@@ -208,7 +214,8 @@ namespace DMS.Rpc.dashboards.director
                                join o in DataContext.Organization on au.OrganizationId equals o.Id
                                where i.OrderDate >= Start && i.OrderDate <= End &&
                                o.Path.StartsWith(CurrentUser.Organization.Path) &&
-                               i.RequestStateId == RequestStateEnum.APPROVED.Id
+                               i.RequestStateId == RequestStateEnum.APPROVED.Id &&
+                               au.DeletedAt == null && o.DeletedAt == null
                                select i;
 
             var queryIndirectSalesOrder = from i in DataContext.IndirectSalesOrder
@@ -216,7 +223,8 @@ namespace DMS.Rpc.dashboards.director
                                           join o in DataContext.Organization on au.OrganizationId equals o.Id
                                           where i.OrderDate >= Start && i.OrderDate <= End &&
                                           o.Path.StartsWith(CurrentUser.Organization.Path) &&
-                                          i.RequestStateId == RequestStateEnum.APPROVED.Id
+                                          i.RequestStateId == RequestStateEnum.APPROVED.Id &&
+                                          au.DeletedAt == null && o.DeletedAt == null
                                           select i;
 
             var queryItem = from ic in DataContext.IndirectSalesOrderContent
@@ -225,14 +233,17 @@ namespace DMS.Rpc.dashboards.director
                             join o in DataContext.Organization on au.OrganizationId equals o.Id
                             where i.OrderDate >= Start && i.OrderDate <= End &&
                             o.Path.StartsWith(CurrentUser.Organization.Path) &&
-                            i.RequestStateId == RequestStateEnum.APPROVED.Id
+                            i.RequestStateId == RequestStateEnum.APPROVED.Id &&
+                            au.DeletedAt == null && o.DeletedAt == null
                             select ic;
 
             var queryStoreChecking = from sc in DataContext.StoreChecking
+                                     join s in DataContext.Store on sc.StoreId equals s.Id
                                      join au in DataContext.AppUser on sc.SaleEmployeeId equals au.Id
                                      join o in DataContext.Organization on au.OrganizationId equals o.Id
                                      where sc.CheckOutAt.HasValue && sc.CheckOutAt >= Start && sc.CheckOutAt <= End &&
-                                     o.Path.StartsWith(CurrentUser.Organization.Path)
+                                     o.Path.StartsWith(CurrentUser.Organization.Path) &&
+                                     au.DeletedAt == null && o.DeletedAt == null && s.DeletedAt == null
                                      select sc;
 
             var RevenueTotal = queryRevenue.Select(x => x.Total).Sum();
@@ -263,7 +274,8 @@ namespace DMS.Rpc.dashboards.director
                                join o in DataContext.Organization on au.OrganizationId equals o.Id
                                where i.OrderDate >= Start && i.OrderDate <= End &&
                                o.Path.StartsWith(CurrentUser.Organization.Path) &&
-                               i.RequestStateId == RequestStateEnum.APPROVED.Id
+                               i.RequestStateId == RequestStateEnum.APPROVED.Id &&
+                               au.DeletedAt == null && o.DeletedAt == null
                                select i;
 
             var queryIndirectSalesOrder = from i in DataContext.IndirectSalesOrder
@@ -271,7 +283,8 @@ namespace DMS.Rpc.dashboards.director
                                           join o in DataContext.Organization on au.OrganizationId equals o.Id
                                           where i.OrderDate >= Start && i.OrderDate <= End &&
                                           o.Path.StartsWith(CurrentUser.Organization.Path) &&
-                                          i.RequestStateId == RequestStateEnum.APPROVED.Id
+                                          i.RequestStateId == RequestStateEnum.APPROVED.Id &&
+                                          au.DeletedAt == null && o.DeletedAt == null
                                           select i;
 
             var queryItem = from ic in DataContext.IndirectSalesOrderContent
@@ -280,14 +293,17 @@ namespace DMS.Rpc.dashboards.director
                             join o in DataContext.Organization on au.OrganizationId equals o.Id
                             where i.OrderDate >= Start && i.OrderDate <= End &&
                             o.Path.StartsWith(CurrentUser.Organization.Path) &&
-                            i.RequestStateId == RequestStateEnum.APPROVED.Id
+                            i.RequestStateId == RequestStateEnum.APPROVED.Id &&
+                            au.DeletedAt == null && o.DeletedAt == null
                             select ic;
 
             var queryStoreChecking = from sc in DataContext.StoreChecking
+                                     join s in DataContext.Store on sc.StoreId equals s.Id
                                      join au in DataContext.AppUser on sc.SaleEmployeeId equals au.Id
                                      join o in DataContext.Organization on au.OrganizationId equals o.Id
                                      where sc.CheckOutAt.HasValue && sc.CheckOutAt >= Start && sc.CheckOutAt <= End &&
-                                     o.Path.StartsWith(CurrentUser.Organization.Path)
+                                     o.Path.StartsWith(CurrentUser.Organization.Path) &&
+                                     au.DeletedAt == null && o.DeletedAt == null && s.DeletedAt == null
                                      select sc;
 
             var RevenueTotal = queryRevenue.Select(x => x.Total).Sum();
@@ -319,7 +335,8 @@ namespace DMS.Rpc.dashboards.director
             OrganizationIds = OrganizationDAOs.Select(o => o.Id).ToList();
 
             var query = from s in DataContext.Store
-                        where OrganizationIds.Contains(s.OrganizationId)
+                        where OrganizationIds.Contains(s.OrganizationId) &&
+                        s.DeletedAt == null
                         select new DashboardDirector_StoreDTO
                         {
                             Id = s.Id,
@@ -334,7 +351,8 @@ namespace DMS.Rpc.dashboards.director
 
             var query_Scouting = from ss in DataContext.StoreScouting
                                  join au in DataContext.AppUser on ss.CreatorId equals au.Id
-                                 where (OrganizationIds.Contains(au.OrganizationId))
+                                 where (OrganizationIds.Contains(au.OrganizationId)) &&
+                                 ss.DeletedAt == null
                                  select new DashboardDirector_StoreDTO
                                  {
                                      Id = ss.Id,
@@ -364,7 +382,8 @@ namespace DMS.Rpc.dashboards.director
 
             var query = from au in DataContext.AppUser
                         where au.DeletedAt.HasValue == false && au.StatusId == Enums.StatusEnum.ACTIVE.Id &&
-                        (OrganizationIds.Contains(au.OrganizationId))
+                        (OrganizationIds.Contains(au.OrganizationId)) &&
+                        au.DeletedAt == null
                         select new DashboardDirector_AppUserDTO
                         {
                             Id = au.Id,
@@ -387,7 +406,8 @@ namespace DMS.Rpc.dashboards.director
                         join au in DataContext.AppUser on i.SaleEmployeeId equals au.Id
                         join o in DataContext.Organization on au.OrganizationId equals o.Id
                         where o.Path.StartsWith(appUser.Organization.Path) &&
-                        i.RequestStateId != RequestStateEnum.NEW.Id
+                        i.RequestStateId != RequestStateEnum.NEW.Id &&
+                        au.DeletedAt == null && o.DeletedAt == null
                         orderby i.OrderDate descending
                         select new DashboardDirector_IndirectSalesOrderDTO
                         {
@@ -458,7 +478,8 @@ namespace DMS.Rpc.dashboards.director
                         join org in DataContext.Organization on au.OrganizationId equals org.Id
                         where o.OrderDate >= Start && o.OrderDate <= End &&
                         org.Path.StartsWith(CurrentUser.Organization.Path) &&
-                        o.RequestStateId == RequestStateEnum.APPROVED.Id
+                        o.RequestStateId == RequestStateEnum.APPROVED.Id &&
+                        au.DeletedAt == null && o.DeletedAt == null && i.DeletedAt == null && p.DeletedAt == null
                         group oc by p.Name into x
                         select new DashboardDirector_Top5RevenueByProductDTO
                         {
@@ -515,7 +536,8 @@ namespace DMS.Rpc.dashboards.director
                         join o in DataContext.Organization on au.OrganizationId equals o.Id
                         where i.OrderDate >= Start && i.OrderDate <= End &&
                         o.Path.StartsWith(CurrentUser.Organization.Path) &&
-                        i.RequestStateId == RequestStateEnum.APPROVED.Id
+                        i.RequestStateId == RequestStateEnum.APPROVED.Id &&
+                        au.DeletedAt == null && o.DeletedAt == null && s.DeletedAt == null
                         group ic by s.Name into x
                         select new DashboardDirector_Top5RevenueByStoreDTO
                         {
@@ -549,7 +571,8 @@ namespace DMS.Rpc.dashboards.director
                             join o in DataContext.Organization on au.OrganizationId equals o.Id
                             where i.OrderDate >= Start && i.OrderDate <= End &&
                             o.Path.StartsWith(CurrentUser.Organization.Path) &&
-                            i.RequestStateId == RequestStateEnum.APPROVED.Id
+                            i.RequestStateId == RequestStateEnum.APPROVED.Id &&
+                            au.DeletedAt == null && o.DeletedAt == null
                             group ic by i.OrderDate.Day into x
                             select new DashboardDirector_RevenueFluctuationByMonthDTO
                             {
@@ -591,7 +614,8 @@ namespace DMS.Rpc.dashboards.director
                             join o in DataContext.Organization on au.OrganizationId equals o.Id
                             where i.OrderDate >= Start && i.OrderDate <= End &&
                             o.Path.StartsWith(CurrentUser.Organization.Path) &&
-                            i.RequestStateId == RequestStateEnum.APPROVED.Id
+                            i.RequestStateId == RequestStateEnum.APPROVED.Id &&
+                            au.DeletedAt == null && o.DeletedAt == null
                             group ic by i.OrderDate.Day into x
                             select new DashboardDirector_RevenueFluctuationByMonthDTO
                             {
@@ -634,7 +658,8 @@ namespace DMS.Rpc.dashboards.director
                             join o in DataContext.Organization on au.OrganizationId equals o.Id
                             where i.OrderDate >= Start && i.OrderDate <= End &&
                             o.Path.StartsWith(CurrentUser.Organization.Path) &&
-                            i.RequestStateId == RequestStateEnum.APPROVED.Id
+                            i.RequestStateId == RequestStateEnum.APPROVED.Id &&
+                            au.DeletedAt == null && o.DeletedAt == null
                             group ic by i.OrderDate.Month into x
                             select new DashboardDirector_RevenueFluctuationByQuarterDTO
                             {
@@ -678,7 +703,8 @@ namespace DMS.Rpc.dashboards.director
                             join o in DataContext.Organization on au.OrganizationId equals o.Id
                             where i.OrderDate >= Start && i.OrderDate <= End &&
                             o.Path.StartsWith(CurrentUser.Organization.Path) &&
-                            i.RequestStateId == RequestStateEnum.APPROVED.Id
+                            i.RequestStateId == RequestStateEnum.APPROVED.Id &&
+                            au.DeletedAt == null && o.DeletedAt == null
                             group ic by i.OrderDate.Month into x
                             select new DashboardDirector_RevenueFluctuationByQuarterDTO
                             {
@@ -721,7 +747,8 @@ namespace DMS.Rpc.dashboards.director
                             join o in DataContext.Organization on au.OrganizationId equals o.Id
                             where i.OrderDate >= Start && i.OrderDate <= End &&
                             o.Path.StartsWith(CurrentUser.Organization.Path) &&
-                            i.RequestStateId == RequestStateEnum.APPROVED.Id
+                            i.RequestStateId == RequestStateEnum.APPROVED.Id &&
+                            au.DeletedAt == null && o.DeletedAt == null
                             group ic by i.OrderDate.Month into x
                             select new DashboardDirector_RevenueFluctuationByYearDTO
                             {
@@ -773,7 +800,8 @@ namespace DMS.Rpc.dashboards.director
                             join o in DataContext.Organization on au.OrganizationId equals o.Id
                             where i.OrderDate >= Start && i.OrderDate <= End &&
                             o.Path.StartsWith(CurrentUser.Organization.Path) &&
-                            i.RequestStateId == RequestStateEnum.APPROVED.Id
+                            i.RequestStateId == RequestStateEnum.APPROVED.Id &&
+                            au.DeletedAt == null && o.DeletedAt == null
                             group i by i.OrderDate.Day into x
                             select new DashboardDirector_IndirectSalesOrderFluctuationByMonthDTO
                             {
@@ -814,7 +842,8 @@ namespace DMS.Rpc.dashboards.director
                             join o in DataContext.Organization on au.OrganizationId equals o.Id
                             where i.OrderDate >= Start && i.OrderDate <= End &&
                             o.Path.StartsWith(CurrentUser.Organization.Path) &&
-                            i.RequestStateId == RequestStateEnum.APPROVED.Id
+                            i.RequestStateId == RequestStateEnum.APPROVED.Id &&
+                            au.DeletedAt == null && o.DeletedAt == null
                             group i by i.OrderDate.Day into x
                             select new DashboardDirector_IndirectSalesOrderFluctuationByMonthDTO
                             {
@@ -856,7 +885,8 @@ namespace DMS.Rpc.dashboards.director
                             join o in DataContext.Organization on au.OrganizationId equals o.Id
                             where i.OrderDate >= Start && i.OrderDate <= End &&
                             o.Path.StartsWith(CurrentUser.Organization.Path) &&
-                            i.RequestStateId == RequestStateEnum.APPROVED.Id
+                            i.RequestStateId == RequestStateEnum.APPROVED.Id &&
+                            au.DeletedAt == null && o.DeletedAt == null
                             group i by i.OrderDate.Month into x
                             select new DashboardDirector_IndirectSalesOrderFluctuationByQuarterDTO
                             {
@@ -899,7 +929,8 @@ namespace DMS.Rpc.dashboards.director
                             join o in DataContext.Organization on au.OrganizationId equals o.Id
                             where i.OrderDate >= Start && i.OrderDate <= End &&
                             o.Path.StartsWith(CurrentUser.Organization.Path) &&
-                            i.RequestStateId == RequestStateEnum.APPROVED.Id
+                            i.RequestStateId == RequestStateEnum.APPROVED.Id &&
+                            au.DeletedAt == null && o.DeletedAt == null
                             group i by i.OrderDate.Month into x
                             select new DashboardDirector_IndirectSalesOrderFluctuationByQuarterDTO
                             {
@@ -941,7 +972,8 @@ namespace DMS.Rpc.dashboards.director
                             join o in DataContext.Organization on au.OrganizationId equals o.Id
                             where i.OrderDate >= Start && i.OrderDate <= End &&
                             o.Path.StartsWith(CurrentUser.Organization.Path) &&
-                            i.RequestStateId == RequestStateEnum.APPROVED.Id
+                            i.RequestStateId == RequestStateEnum.APPROVED.Id &&
+                            au.DeletedAt == null && o.DeletedAt == null
                             group i by i.OrderDate.Month into x
                             select new DashboardDirector_IndirectSalesOrderFluctuationByYearDTO
                             {
@@ -994,7 +1026,8 @@ namespace DMS.Rpc.dashboards.director
                             join o in DataContext.Organization on au.OrganizationId equals o.Id
                             where i.OrderDate >= Start && i.OrderDate <= End &&
                             o.Path.StartsWith(CurrentUser.Organization.Path) &&
-                            i.RequestStateId == RequestStateEnum.APPROVED.Id
+                            i.RequestStateId == RequestStateEnum.APPROVED.Id &&
+                            au.DeletedAt == null && o.DeletedAt == null
                             group ic by i.OrderDate.Day into x
                             select new DashboardDirector_SaledItemFluctuationByMonthDTO
                             {
@@ -1036,7 +1069,8 @@ namespace DMS.Rpc.dashboards.director
                             join o in DataContext.Organization on au.OrganizationId equals o.Id
                             where i.OrderDate >= Start && i.OrderDate <= End &&
                             o.Path.StartsWith(CurrentUser.Organization.Path) &&
-                            i.RequestStateId == RequestStateEnum.APPROVED.Id
+                            i.RequestStateId == RequestStateEnum.APPROVED.Id &&
+                            au.DeletedAt == null && o.DeletedAt == null
                             group ic by i.OrderDate.Day into x
                             select new DashboardDirector_SaledItemFluctuationByMonthDTO
                             {
@@ -1079,7 +1113,8 @@ namespace DMS.Rpc.dashboards.director
                             join o in DataContext.Organization on au.OrganizationId equals o.Id
                             where i.OrderDate >= Start && i.OrderDate <= End &&
                             o.Path.StartsWith(CurrentUser.Organization.Path) &&
-                            i.RequestStateId == RequestStateEnum.APPROVED.Id
+                            i.RequestStateId == RequestStateEnum.APPROVED.Id &&
+                            au.DeletedAt == null && o.DeletedAt == null
                             group ic by i.OrderDate.Month into x
                             select new DashboardDirector_SaledItemFluctuationByQuarterDTO
                             {
@@ -1123,7 +1158,8 @@ namespace DMS.Rpc.dashboards.director
                             join o in DataContext.Organization on au.OrganizationId equals o.Id
                             where i.OrderDate >= Start && i.OrderDate <= End &&
                             o.Path.StartsWith(CurrentUser.Organization.Path) &&
-                            i.RequestStateId == RequestStateEnum.APPROVED.Id
+                            i.RequestStateId == RequestStateEnum.APPROVED.Id &&
+                            au.DeletedAt == null && o.DeletedAt == null
                             group ic by i.OrderDate.Month into x
                             select new DashboardDirector_SaledItemFluctuationByQuarterDTO
                             {
@@ -1166,7 +1202,8 @@ namespace DMS.Rpc.dashboards.director
                             join o in DataContext.Organization on au.OrganizationId equals o.Id
                             where i.OrderDate >= Start && i.OrderDate <= End &&
                             o.Path.StartsWith(CurrentUser.Organization.Path) &&
-                            i.RequestStateId == RequestStateEnum.APPROVED.Id
+                            i.RequestStateId == RequestStateEnum.APPROVED.Id &&
+                            au.DeletedAt == null && o.DeletedAt == null
                             group ic by i.OrderDate.Month into x
                             select new DashboardDirector_SaledItemFluctuationByYearDTO
                             {

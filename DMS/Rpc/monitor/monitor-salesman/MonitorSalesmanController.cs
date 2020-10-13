@@ -116,6 +116,7 @@ namespace DMS.Rpc.monitor.monitor_salesman
             List<long> AppUserIds = await FilterAppUser(AppUserService, OrganizationService, CurrentContext);
 
             int count = await DataContext.AppUser.Where(au =>
+                au.DeletedAt == null &&
                 AppUserIds.Contains(au.Id) &&
                 OrganizationIds.Contains(au.OrganizationId) &&
                 (SaleEmployeeId == null || au.Id == SaleEmployeeId.Value)
@@ -153,6 +154,7 @@ namespace DMS.Rpc.monitor.monitor_salesman
 
             var query = DataContext.AppUser
                 .Where(au =>
+                    au.DeletedAt == null &&
                     FilterAppUserIds.Contains(au.Id) &&
                     OrganizationIds.Contains(au.OrganizationId) &&
                     (SaleEmployeeId == null || au.Id == SaleEmployeeId.Value))
@@ -417,90 +419,42 @@ namespace DMS.Rpc.monitor.monitor_salesman
                 throw new BindException(ModelState);
             DateTime Start = MonitorSalesman_MonitorSalesmanDetailFilterDTO.Date.AddHours(CurrentContext.TimeZone).Date.AddHours(0 - CurrentContext.TimeZone);
             DateTime End = Start.AddDays(1);
-            var query = from scim in DataContext.StoreCheckingImageMapping
-                        join sc in DataContext.StoreChecking on scim.StoreCheckingId equals sc.Id
-                        join s in DataContext.Store on sc.StoreId equals s.Id
-                        join a in DataContext.Album on scim.AlbumId equals a.Id
-                        join i in DataContext.Image on scim.ImageId equals i.Id
-                        join au in DataContext.AppUser on scim.SaleEmployeeId equals au.Id
-                        where scim.StoreId == MonitorSalesman_MonitorSalesmanDetailFilterDTO.StoreId &&
-                        scim.SaleEmployeeId == MonitorSalesman_MonitorSalesmanDetailFilterDTO.SaleEmployeeId &&
-                        sc.CheckOutAt.HasValue &&
-                        Start <= sc.CheckOutAt.Value && sc.CheckOutAt.Value < End
+
+            var query = from si in DataContext.StoreImage
+                        where si.StoreId == MonitorSalesman_MonitorSalesmanDetailFilterDTO.StoreId &&
+                        si.SaleEmployeeId.HasValue && si.SaleEmployeeId.Value == MonitorSalesman_MonitorSalesmanDetailFilterDTO.SaleEmployeeId &&
+                        Start <= si.ShootingAt && si.ShootingAt < End
                         select new MonitorSalesman_StoreImageDTO
                         {
-                            AlbumId = scim.AlbumId,
-                            ImageId = scim.ImageId,
-                            SaleEmployeeId = scim.SaleEmployeeId,
-                            ShootingAt = scim.ShootingAt,
-                            StoreId = scim.StoreId,
-                            Distance = scim.Distance,
+                            AlbumId = si.AlbumId,
+                            ImageId = si.ImageId,
+                            SaleEmployeeId = si.SaleEmployeeId.Value,
+                            ShootingAt = si.ShootingAt,
+                            StoreId = si.StoreId,
+                            Distance = si.Distance,
                             Album = new MonitorSalesman_AlbumDTO
                             {
-                                Id = a.Id,
-                                Name = a.Name
+                                Id = si.AlbumId,
+                                Name = si.AlbumName
                             },
                             Image = new MonitorSalesman_ImageDTO
                             {
-                                Id = i.Id,
-                                Url = i.Url
+                                Url = si.Url
                             },
                             SaleEmployee = new MonitorSalesman_AppUserDTO
                             {
-                                Id = au.Id,
-                                DisplayName = au.DisplayName
+                                Id = si.SaleEmployeeId.Value,
+                                DisplayName = si.DisplayName
                             },
                             Store = new MonitorSalesman_StoreDTO
                             {
-                                Id = s.Id,
-                                Address = s.Address,
-                                Name = s.Name
+                                Id = si.StoreId,
+                                Address = si.StoreAddress,
+                                Name = si.StoreName
                             }
                         };
-
-            var query2 = from aim in DataContext.AlbumImageMapping
-                         join s in DataContext.Store on aim.StoreId equals s.Id
-                         join a in DataContext.Album on aim.AlbumId equals a.Id
-                         join i in DataContext.Image on aim.ImageId equals i.Id
-                         join au in DataContext.AppUser on aim.SaleEmployeeId equals au.Id
-                         where aim.StoreId == MonitorSalesman_MonitorSalesmanDetailFilterDTO.StoreId &&
-                         aim.SaleEmployeeId == MonitorSalesman_MonitorSalesmanDetailFilterDTO.SaleEmployeeId &&
-                         Start <= aim.ShootingAt && aim.ShootingAt <= End
-                         select new MonitorSalesman_StoreImageDTO
-                         {
-                             AlbumId = aim.AlbumId,
-                             ImageId = aim.ImageId,
-                             SaleEmployeeId = aim.SaleEmployeeId ?? 0,
-                             ShootingAt = aim.ShootingAt,
-                             StoreId = aim.StoreId,
-                             Album = new MonitorSalesman_AlbumDTO
-                             {
-                                 Id = a.Id,
-                                 Name = a.Name
-                             },
-                             Image = new MonitorSalesman_ImageDTO
-                             {
-                                 Id = i.Id,
-                                 Url = i.Url
-                             },
-                             SaleEmployee = new MonitorSalesman_AppUserDTO
-                             {
-                                 Id = au.Id,
-                                 DisplayName = au.DisplayName
-                             },
-                             Store = new MonitorSalesman_StoreDTO
-                             {
-                                 Id = s.Id,
-                                 Address = s.Address,
-                                 Name = s.Name
-                             }
-                         };
-            var list1 = await query.ToListAsync();
-            var list2 = await query2.ToListAsync();
-            var result = new List<MonitorSalesman_StoreImageDTO>();
-            result.AddRange(list1);
-            result.AddRange(list2);
-            return result;
+            
+            return await query.ToListAsync();
         }
 
         [Route(MonitorSalesmanRoute.Export), HttpPost]

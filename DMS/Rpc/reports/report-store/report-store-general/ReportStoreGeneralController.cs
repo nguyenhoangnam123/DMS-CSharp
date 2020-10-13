@@ -248,7 +248,8 @@ namespace DMS.Rpc.reports.report_store.report_store_general
                             )
                         ) &&
                         (StoreStatusId.HasValue == false || StoreStatusId.Value == StoreStatusEnum.ALL.Id || s.StoreStatusId == StoreStatusId.Value) &&
-                        OrganizationIds.Contains(s.OrganizationId)
+                        OrganizationIds.Contains(s.OrganizationId) &&
+                        s.DeletedAt == null
                         select s;
 
             int count = await query.Distinct().CountAsync();
@@ -337,7 +338,8 @@ namespace DMS.Rpc.reports.report_store.report_store_general
                             )
                         ) &&
                         (StoreStatusId.HasValue == false || StoreStatusId.Value == StoreStatusEnum.ALL.Id || s.StoreStatusId == StoreStatusId.Value) &&
-                        OrganizationIds.Contains(s.OrganizationId)
+                        OrganizationIds.Contains(s.OrganizationId) &&
+                        s.DeletedAt == null
                         select new StoreDAO 
                         {
                             Id = s.Id,

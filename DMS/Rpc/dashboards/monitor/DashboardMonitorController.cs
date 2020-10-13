@@ -102,6 +102,7 @@ namespace DMS.Rpc.dashboards.monitor
 
             var CurrentUser = await AppUserService.Get(CurrentContext.UserId);
             var AppUserIds = await DataContext.AppUser
+                .Where(x => x.DeletedAt == null)
                 .Where(x => x.Organization.Path.StartsWith(CurrentUser.Organization.Path))
                 .Select(x => x.Id)
                 .ToListAsync();
@@ -148,7 +149,8 @@ namespace DMS.Rpc.dashboards.monitor
                         join o in DataContext.Organization on au.OrganizationId equals o.Id
                         where au.DeletedAt.HasValue == false && au.StatusId == Enums.StatusEnum.ACTIVE.Id &&
                         o.Path.StartsWith(AppUser.Organization.Path) &&
-                        au.UpdatedAt > OnlineTime
+                        au.UpdatedAt > OnlineTime &&
+                        o.DeletedAt == null && au.DeletedAt == null
                         group au by au.UpdatedAt.Hour into x
                         select new DashboardMonitor_SaleEmployeeOnlineHourDTO
                         {
@@ -185,6 +187,7 @@ namespace DMS.Rpc.dashboards.monitor
 
             var CurrentUser = await AppUserService.Get(CurrentContext.UserId);
             var AppUserIds = await DataContext.AppUser
+                .Where(x => x.DeletedAt == null)
                 .Where(x => x.Organization.Path.StartsWith(CurrentUser.Organization.Path))
                 .Select(x => x.Id)
                 .ToListAsync();
@@ -231,6 +234,7 @@ namespace DMS.Rpc.dashboards.monitor
 
             var CurrentUser = await AppUserService.Get(CurrentContext.UserId);
             var AppUserIds = await DataContext.AppUser
+                .Where(x => x.DeletedAt == null)
                 .Where(x => x.Organization.Path.StartsWith(CurrentUser.Organization.Path))
                 .Select(x => x.Id)
                 .ToListAsync();
@@ -278,7 +282,8 @@ namespace DMS.Rpc.dashboards.monitor
             OrganizationIds = OrganizationDAOs.Select(o => o.Id).ToList();
 
             var query = from s in DataContext.Store
-                        where OrganizationIds.Contains(s.OrganizationId)
+                        where OrganizationIds.Contains(s.OrganizationId) &&
+                        s.DeletedAt == null
                         select new DashboardMonitor_StoreDTO
                         {
                             Id = s.Id,
@@ -292,7 +297,8 @@ namespace DMS.Rpc.dashboards.monitor
 
             var query_Scouting = from ss in DataContext.StoreScouting
                                  join au in DataContext.AppUser on ss.CreatorId equals au.Id
-                                 where (OrganizationIds.Contains(au.OrganizationId))
+                                 where (OrganizationIds.Contains(au.OrganizationId)) &&
+                                 ss.DeletedAt == null
                                  select new DashboardMonitor_StoreDTO
                                  {
                                      Id = ss.Id,
@@ -322,6 +328,7 @@ namespace DMS.Rpc.dashboards.monitor
 
             var query = from au in DataContext.AppUser
                         where au.DeletedAt.HasValue == false && au.StatusId == Enums.StatusEnum.ACTIVE.Id &&
+                        au.DeletedAt == null &&
                         OrganizationIds.Contains(au.OrganizationId)
                         select new DashboardMonitor_AppUserDTO
                         {
@@ -345,7 +352,8 @@ namespace DMS.Rpc.dashboards.monitor
                         join au in DataContext.AppUser on i.SaleEmployeeId equals au.Id
                         join o in DataContext.Organization on au.OrganizationId equals o.Id
                         where o.Path.StartsWith(appUser.Organization.Path) &&
-                        i.RequestStateId != RequestStateEnum.NEW.Id
+                        i.RequestStateId != RequestStateEnum.NEW.Id &&
+                        au.DeletedAt == null && o.DeletedAt == null
                         orderby i.OrderDate descending
                         select new DashboardMonitor_IndirectSalesOrderDTO
                         {
@@ -409,6 +417,7 @@ namespace DMS.Rpc.dashboards.monitor
 
             var CurrentUser = await AppUserService.Get(CurrentContext.UserId);
             var AppUserIds = await DataContext.AppUser
+                .Where(x => x.DeletedAt == null)
                 .Where(x => x.Organization.Path.StartsWith(CurrentUser.Organization.Path))
                 .Select(x => x.Id)
                 .ToListAsync();
