@@ -268,7 +268,7 @@ namespace DMS.Services.MStoreChecking
             StoreFilter.Take = int.MaxValue;
             StoreFilter.Selects = StoreSelect.Id | StoreSelect.Code | StoreSelect.Name |
                 StoreSelect.Address | StoreSelect.Telephone | StoreSelect.Latitude |
-                StoreSelect.Longitude | StoreSelect.HasChecking | StoreSelect.OwnerPhone;
+                StoreSelect.Longitude | StoreSelect.HasChecking | StoreSelect.OwnerPhone | StoreSelect.StoreType;
             var AppUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
             StoreFilter.OrganizationId = new IdFilter { Equal = AppUser.OrganizationId };
             StoreFilter.TimeZone = CurrentContext.TimeZone;
@@ -337,7 +337,7 @@ namespace DMS.Services.MStoreChecking
                 StoreFilter.Take = int.MaxValue;
                 StoreFilter.Selects = StoreSelect.Id | StoreSelect.Code | StoreSelect.Name |
                 StoreSelect.Address | StoreSelect.Telephone | StoreSelect.Latitude |
-                StoreSelect.Longitude | StoreSelect.HasChecking | StoreSelect.OwnerPhone;
+                StoreSelect.Longitude | StoreSelect.HasChecking | StoreSelect.OwnerPhone | StoreSelect.StoreType;
                 StoreFilter.TimeZone = CurrentContext.TimeZone;
                 Stores = await UOW.StoreRepository.List(StoreFilter);
                 if (CurrentContext.Latitude.HasValue && CurrentContext.Longitude.HasValue)
@@ -423,6 +423,9 @@ namespace DMS.Services.MStoreChecking
                 StoreFilter.SalesEmployeeId = new IdFilter { Equal = CurrentContext.UserId };
                 StoreFilter.Skip = 0;
                 StoreFilter.Take = int.MaxValue;
+                StoreFilter.Selects = StoreSelect.Id | StoreSelect.Code | StoreSelect.Name |
+                StoreSelect.Address | StoreSelect.Telephone | StoreSelect.Latitude |
+                StoreSelect.Longitude | StoreSelect.HasChecking | StoreSelect.OwnerPhone | StoreSelect.StoreType;
                 StoreFilter.TimeZone = CurrentContext.TimeZone;
                 Stores = await UOW.StoreRepository.List(StoreFilter);
                 if (CurrentContext.Latitude.HasValue && CurrentContext.Longitude.HasValue)
@@ -500,7 +503,7 @@ namespace DMS.Services.MStoreChecking
                 StoreFilter.Take = int.MaxValue;
                 StoreFilter.Selects = StoreSelect.Id | StoreSelect.Code | StoreSelect.Name |
                 StoreSelect.Address | StoreSelect.Telephone | StoreSelect.Latitude |
-                StoreSelect.Longitude | StoreSelect.HasChecking | StoreSelect.OwnerPhone;
+                StoreSelect.Longitude | StoreSelect.HasChecking | StoreSelect.OwnerPhone | StoreSelect.StoreType;
                 StoreFilter.SalesEmployeeId = new IdFilter { Equal = CurrentContext.UserId };
                 StoreFilter.TimeZone = CurrentContext.TimeZone;
                 Stores = await UOW.StoreRepository.ListInScoped(StoreFilter, CurrentContext.UserId);
