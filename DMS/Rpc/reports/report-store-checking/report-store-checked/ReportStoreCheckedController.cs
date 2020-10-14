@@ -512,7 +512,9 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
                     {
                         ReportStoreChecked_StoreCheckingGroupByDateDTO ReportStoreChecked_StoreCheckingGroupByDateDTO = new ReportStoreChecked_StoreCheckingGroupByDateDTO();
 
-                        ReportStoreChecked_StoreCheckingGroupByDateDTO.StoreCheckings = storeCheckings.Where(x => x.SaleEmployeeId == SaleEmployee.SaleEmployeeId)
+                        ReportStoreChecked_StoreCheckingGroupByDateDTO.StoreCheckings = storeCheckings
+                            .Where(x => x.SaleEmployeeId == SaleEmployee.SaleEmployeeId)
+                            .Where(x => x.OrganizationId == ReportStoreChecked_ReportStoreCheckedDTO.OrganizationId)
                             .Where(x => i <= x.CheckOutAt.Value && x.CheckOutAt.Value < i.AddDays(1))
                             .Select(x => new ReportStoreChecked_StoreCheckingDTO
                             {
