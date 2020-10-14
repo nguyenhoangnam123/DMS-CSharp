@@ -117,24 +117,24 @@ namespace DMS.Services.MWorkflow
                 {
                     WorkflowDirection.AddError(nameof(WorkflowDirectionValidator), nameof(WorkflowDirection.ToStep), ErrorCode.ToStepNotSameFromStep);
                 }
-                else
-                {
-                    var WFoldData = await UOW.WorkflowDefinitionRepository.Get(WorkflowDirection.WorkflowDefinitionId);
-                    if (WFoldData != null)
-                    {
-                        var countDirection = WFoldData.WorkflowDirections
-                            .Where(x =>
-                                x.Id != WorkflowDirection.Id &&
-                                x.FromStepId == WorkflowDirection.FromStepId &&
-                                x.ToStepId == WorkflowDirection.ToStepId &&
-                                x.StatusId == StatusEnum.ACTIVE.Id)
-                            .Count();
-                        if (countDirection != 0)
-                        {
-                            WorkflowDirection.AddError(nameof(WorkflowDirectionValidator), nameof(WorkflowDirection.Id), ErrorCode.WorkflowDirectionExisted);
-                        }
-                    }
-                }
+                //else
+                //{
+                //    var WFoldData = await UOW.WorkflowDefinitionRepository.Get(WorkflowDirection.WorkflowDefinitionId);
+                //    if (WFoldData != null)
+                //    {
+                //        var countDirection = WFoldData.WorkflowDirections
+                //            .Where(x =>
+                //                x.Id != WorkflowDirection.Id &&
+                //                x.FromStepId == WorkflowDirection.FromStepId &&
+                //                x.ToStepId == WorkflowDirection.ToStepId &&
+                //                x.StatusId == StatusEnum.ACTIVE.Id)
+                //            .Count();
+                //        if (countDirection != 0)
+                //        {
+                //            WorkflowDirection.AddError(nameof(WorkflowDirectionValidator), nameof(WorkflowDirection.Id), ErrorCode.WorkflowDirectionExisted);
+                //        }
+                //    }
+                //}
             }
             return WorkflowDirection.IsValidated;
         }
@@ -177,7 +177,7 @@ namespace DMS.Services.MWorkflow
             await ValidateWorkflowDefinition(WorkflowDirection);
             await ValidateStep(WorkflowDirection);
             await ValidateSubjectMail(WorkflowDirection);
-            await ValidateDuplicateDirection(WorkflowDirection);
+            //await ValidateDuplicateDirection(WorkflowDirection);
             return WorkflowDirection.IsValidated;
         }
 
@@ -188,7 +188,7 @@ namespace DMS.Services.MWorkflow
                 await ValidateWorkflowDefinition(WorkflowDirection);
                 await ValidateStep(WorkflowDirection);
                 await ValidateSubjectMail(WorkflowDirection);
-                await ValidateDuplicateDirection(WorkflowDirection);
+                //await ValidateDuplicateDirection(WorkflowDirection);
             }
             return WorkflowDirection.IsValidated;
         }

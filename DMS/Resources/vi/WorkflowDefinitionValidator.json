@@ -26,6 +26,9 @@
     },
     "EndDate": {
       "EndDateInvalid": "Thời gian áp dụng không hợp lệ"
+    },
+    "StartDate": {
+      "StartDateEmpty":  "Chưa chọn thời gian bắt đầu"
     }
   }
 }

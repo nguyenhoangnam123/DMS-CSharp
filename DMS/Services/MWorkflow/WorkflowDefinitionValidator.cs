@@ -34,6 +34,7 @@ namespace DMS.Services.MWorkflow
             StatusNotExisted,
             EndDateInvalid,
             OrganizationNotExisted,
+            StartDateEmpty,
         }
 
         private IUOW UOW;
@@ -155,6 +156,10 @@ namespace DMS.Services.MWorkflow
                         WorkflowDefinition.AddError(nameof(WorkflowDefinitionValidator), nameof(WorkflowDefinition.EndDate), ErrorCode.EndDateInvalid);
                     }
                 }
+            }
+            if (!WorkflowDefinition.StartDate.HasValue)
+            {
+                WorkflowDefinition.AddError(nameof(WorkflowDefinitionValidator), nameof(WorkflowDefinition.StartDate), ErrorCode.StartDateEmpty);
             }
             return WorkflowDefinition.IsValidated;
         }
