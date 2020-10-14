@@ -45,6 +45,7 @@ namespace DMS.Models
         /// Ngày xoá
         /// </summary>
         public DateTime? DeletedAt { get; set; }
+        public Guid? RowId { get; set; }
 
         public virtual ICollection<AlbumImageMappingDAO> AlbumImageMappings { get; set; }
         public virtual ICollection<BannerDAO> Banners { get; set; }

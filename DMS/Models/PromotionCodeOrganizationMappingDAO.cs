@@ -3,12 +3,12 @@ using System.Collections.Generic;
 
 namespace DMS.Models
 {
-    public partial class PromotionCodeStoreDAO
+    public partial class PromotionCodeOrganizationMappingDAO
     {
         public long PromotionCodeId { get; set; }
-        public long StoreId { get; set; }
+        public long OrganizationId { get; set; }
 
+        public virtual OrganizationDAO Organization { get; set; }
         public virtual PromotionCodeDAO PromotionCode { get; set; }
-        public virtual StoreDAO Store { get; set; }
     }
 }

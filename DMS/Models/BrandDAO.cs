@@ -43,6 +43,7 @@ namespace DMS.Models
         /// </summary>
         public DateTime? DeletedAt { get; set; }
         public bool Used { get; set; }
+        public Guid? RowId { get; set; }
 
         public virtual StatusDAO Status { get; set; }
         public virtual ICollection<ProductDAO> Products { get; set; }
