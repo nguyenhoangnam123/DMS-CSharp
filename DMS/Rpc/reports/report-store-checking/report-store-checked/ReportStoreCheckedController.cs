@@ -227,8 +227,8 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
                     LocalEndDay(CurrentContext) :
                     ReportStoreChecked_ReportStoreCheckedFilterDTO.CheckIn.LessEqual.Value;
 
-            //if (End.Subtract(Start).Days > 31)
-            //    return 0;
+            if (End.Subtract(Start).Days > 31)
+                return 0;
 
             long? SaleEmployeeId = ReportStoreChecked_ReportStoreCheckedFilterDTO.AppUserId?.Equal;
             long? StoreId = ReportStoreChecked_ReportStoreCheckedFilterDTO.StoreId?.Equal;
@@ -287,7 +287,11 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
                         (StoreStatusId.HasValue == false || StoreStatusId.Value == StoreStatusEnum.ALL.Id || s.StoreStatusId == StoreStatusId.Value) &&
                         OrganizationIds.Contains(sc.OrganizationId) &&
                         s.DeletedAt == null
-                        select au;
+                        select new 
+                        {
+                            SalesEmployeeId = au.Id,
+                            OrganizationId = sc.OrganizationId
+                        };
 
             int count = await query.Distinct().CountAsync();
             return count;
@@ -310,8 +314,8 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
                     LocalEndDay(CurrentContext) :
                     ReportStoreChecker_ReportStoreCheckedFilterDTO.CheckIn.LessEqual.Value;
 
-            //if (End.Subtract(Start).Days > 31)
-            //    return BadRequest(new { message = "Chỉ được phép xem tối đa trong vòng 31 ngày" });
+            if (End.Subtract(Start).Days > 31)
+                return BadRequest(new { message = "Chỉ được phép xem tối đa trong vòng 31 ngày" });
 
             long? SaleEmployeeId = ReportStoreChecker_ReportStoreCheckedFilterDTO.AppUserId?.Equal;
             long? StoreId = ReportStoreChecker_ReportStoreCheckedFilterDTO.StoreId?.Equal;
@@ -369,39 +373,33 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
                         (StoreStatusId.HasValue == false || StoreStatusId.Value == StoreStatusEnum.ALL.Id || s.StoreStatusId == StoreStatusId.Value) &&
                         OrganizationIds.Contains(sc.OrganizationId) &&
                         s.DeletedAt == null
-                        select au;
+                        select new
+                        {
+                            SalesEmployeeId = au.Id,
+                            OrganizationId = sc.OrganizationId
+                        };
 
-            var AppUserIds = await query.Select(x => x.Id).Distinct().ToListAsync();
+            var Ids = await query
+                .OrderBy(x => x.OrganizationId)
+                .Skip(ReportStoreChecker_ReportStoreCheckedFilterDTO.Skip)
+                .Take(ReportStoreChecker_ReportStoreCheckedFilterDTO.Take)
+                .Distinct().ToListAsync();
+            var AppUserIds = Ids.Select(x => x.SalesEmployeeId).Distinct().ToList();
 
             List<AppUserDAO> AppUserDAOs = await DataContext.AppUser
                 .Where(x => x.DeletedAt == null)
-                .Where(au => AppUserIds.Contains(au.Id) && OrganizationIds.Contains(au.OrganizationId))
+                .Where(au => AppUserIds.Contains(au.Id))
                 .OrderBy(su => su.OrganizationId).ThenBy(x => x.DisplayName)
-                .Skip(ReportStoreChecker_ReportStoreCheckedFilterDTO.Skip)
-                .Take(ReportStoreChecker_ReportStoreCheckedFilterDTO.Take)
                 .ToListAsync();
-
-            List<ReportStoreChecked_SaleEmployeeDTO> ReportStoreChecked_SaleEmployeeDTOs = AppUserDAOs.Select(au => new ReportStoreChecked_SaleEmployeeDTO
-            {
-                SaleEmployeeId = au.Id,
-                Username = au.Username,
-                DisplayName = au.DisplayName,
-                OrganizationId = au.OrganizationId
-            }).ToList();
-
-            OrganizationIds = ReportStoreChecked_SaleEmployeeDTOs.Select(se => se.OrganizationId).Distinct().ToList();
-            OrganizationDAOs = await DataContext.Organization.Where(x => OrganizationIds.Contains(x.Id)).ToListAsync();
-            List<ReportStoreChecked_ReportStoreCheckedDTO> ReportStoreChecked_ReportStoreCheckedDTOs = OrganizationDAOs.Select(on => new ReportStoreChecked_ReportStoreCheckedDTO
-            {
-                OrganizationId = on.Id,
-                OrganizationName = on.Name,
-            }).ToList();
-            foreach (ReportStoreChecked_ReportStoreCheckedDTO ReportStoreChecked_ReportStoreCheckedDTO in ReportStoreChecked_ReportStoreCheckedDTOs)
-            {
-                ReportStoreChecked_ReportStoreCheckedDTO.SaleEmployees = ReportStoreChecked_SaleEmployeeDTOs
-                    .Where(se => se.OrganizationId == ReportStoreChecked_ReportStoreCheckedDTO.OrganizationId)
-                    .ToList();
-            }
+            OrganizationIds = Ids.Select(x => x.OrganizationId).Distinct().ToList();
+            var Organizations = await DataContext.Organization
+                .Where(x => OrganizationIds.Contains(x.Id))
+                .OrderBy(x => x.Id)
+                .Select(x => new OrganizationDAO
+                {
+                    Id = x.Id,
+                    Name = x.Name
+                }).ToListAsync();
 
             AppUserIds = AppUserDAOs.Select(s => s.Id).ToList();
             var query2 = from sc in DataContext.StoreChecking
@@ -410,19 +408,19 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
                          where AppUserIds.Contains(sc.SaleEmployeeId) &&
                          (sc.CheckOutAt.HasValue && Start <= sc.CheckOutAt.Value && sc.CheckOutAt.Value <= End) &&
                          StoreTypeIds.Contains(s.StoreTypeId) &&
-                        (
-                            (
-                                StoreGroupingId.HasValue == false &&
-                                (s.StoreGroupingId.HasValue == false || StoreGroupingIds.Contains(s.StoreGroupingId.Value))
-                            ) ||
-                            (
-                                StoreGroupingId.HasValue &&
-                                StoreGroupingId.Value == s.StoreGroupingId.Value
-                            )
-                        ) &&
-                        (StoreStatusId.HasValue == false || StoreStatusId.Value == StoreStatusEnum.ALL.Id || s.StoreStatusId == StoreStatusId.Value) &&
-                        OrganizationIds.Contains(sc.OrganizationId) &&
-                        s.DeletedAt == null
+                         (
+                             (
+                                 StoreGroupingId.HasValue == false &&
+                                 (s.StoreGroupingId.HasValue == false || StoreGroupingIds.Contains(s.StoreGroupingId.Value))
+                             ) ||
+                             (
+                                 StoreGroupingId.HasValue &&
+                                 StoreGroupingId.Value == s.StoreGroupingId.Value
+                             )
+                         ) &&
+                         (StoreStatusId.HasValue == false || StoreStatusId.Value == StoreStatusEnum.ALL.Id || s.StoreStatusId == StoreStatusId.Value) &&
+                         OrganizationIds.Contains(sc.OrganizationId) &&
+                         s.DeletedAt == null
                          select sc;
 
             List<StoreCheckingDAO> storeCheckings = await query2.ToListAsync();
@@ -459,7 +457,7 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
             Parallel.ForEach(storeCheckings, storeChecking =>
             {
                 var Store = StoreDAOs.Where(x => x.Id == storeChecking.StoreId).FirstOrDefault();
-                if(Store != null)
+                if (Store != null)
                 {
                     storeChecking.Store = new StoreDAO
                     {
@@ -476,59 +474,91 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
                 }
             });
 
-            // khởi tạo khung dữ liệu
-            foreach (ReportStoreChecked_SaleEmployeeDTO ReportStoreChecked_SaleEmployeeDTO in ReportStoreChecked_SaleEmployeeDTOs)
+            List<ReportStoreChecked_ReportStoreCheckedDTO> ReportStoreChecked_ReportStoreCheckedDTOs = new List<ReportStoreChecked_ReportStoreCheckedDTO>();
+            foreach (var Organization in Organizations)
             {
-                ReportStoreChecked_SaleEmployeeDTO.StoreCheckingGroupByDates = new List<ReportStoreChecked_StoreCheckingGroupByDateDTO>();
-                for (DateTime i = Start; i <= End; i = i.AddDays(1))
+                ReportStoreChecked_ReportStoreCheckedDTO ReportStoreChecked_ReportStoreCheckedDTO = new ReportStoreChecked_ReportStoreCheckedDTO()
                 {
-                    ReportStoreChecked_StoreCheckingGroupByDateDTO ReportStoreChecked_StoreCheckingGroupByDateDTO = new ReportStoreChecked_StoreCheckingGroupByDateDTO();
-
-                    ReportStoreChecked_StoreCheckingGroupByDateDTO.StoreCheckings = storeCheckings.Where(x => x.SaleEmployeeId == ReportStoreChecked_SaleEmployeeDTO.SaleEmployeeId)
-                        .Where(x => i <= x.CheckOutAt.Value && x.CheckOutAt.Value < i.AddDays(1))
-                        .Select(x => new ReportStoreChecked_StoreCheckingDTO
-                        {
-                            Id = x.Id,
-                            CheckIn = x.CheckInAt.Value,
-                            CheckOut = x.CheckOutAt.Value,
-                            DeviceName = x.DeviceName,
-                            ImageCounter = x.ImageCounter ?? 0,
-                            Planned = x.Planned,
-                            SaleEmployeeId = x.SaleEmployeeId,
-                            StoreStatusId = x.Store.StoreStatusId,
-                            StoreStatusName = x.Store.StoreStatus.Name,
-                            StoreName = x.Store.Name,
-                            StoreCode = x.Store.Code,
-                            StoreAddress = x.Store.Address,
-                            CheckInDistance = $"{x.CheckInDistance} m",
-                            CheckOutDistance = $"{x.CheckOutDistance} m",
-                        }).ToList();
-
-                    if (!ReportStoreChecked_StoreCheckingGroupByDateDTO.StoreCheckings.Any())
-                        continue;
-
-                    ReportStoreChecked_StoreCheckingGroupByDateDTO.Date = i;
-                    ReportStoreChecked_StoreCheckingGroupByDateDTO.DateString = ReportStoreChecked_StoreCheckingGroupByDateDTO.Date.ToString("dd-MM-yyyy");
-                    var dayOfWeek = ReportStoreChecked_StoreCheckingGroupByDateDTO.Date.AddHours(CurrentContext.TimeZone).DayOfWeek.ToString();
-                    ReportStoreChecked_StoreCheckingGroupByDateDTO.DayOfWeek = DayOfWeekEnum.DayOfWeekEnumList.Where(x => x.Code == dayOfWeek).Select(x => x.Name).FirstOrDefault();
-
-                    foreach (var StoreChecking in ReportStoreChecked_StoreCheckingGroupByDateDTO.StoreCheckings)
+                    OrganizationId = Organization.Id,
+                    OrganizationName = Organization.Name,
+                    SaleEmployees = new List<ReportStoreChecked_SaleEmployeeDTO>()
+                };
+                ReportStoreChecked_ReportStoreCheckedDTO.SaleEmployees = Ids
+                    .Where(x => x.OrganizationId == Organization.Id)
+                    .Select(x => new ReportStoreChecked_SaleEmployeeDTO
                     {
-                        StoreChecking.eCheckIn = StoreChecking.CheckIn.AddHours(CurrentContext.TimeZone).ToString("HH:mm:ss");
-                        StoreChecking.eCheckOut = StoreChecking.CheckOut.AddHours(CurrentContext.TimeZone).ToString("HH:mm:ss");
-
-                        var TotalMinuteChecking = StoreChecking.CheckOut.Subtract(StoreChecking.CheckIn).TotalSeconds;
-                        TimeSpan timeSpan = TimeSpan.FromSeconds(TotalMinuteChecking);
-                        StoreChecking.Duaration = $"{timeSpan.Hours.ToString().PadLeft(2, '0')} : {timeSpan.Minutes.ToString().PadLeft(2, '0')} : {timeSpan.Seconds.ToString().PadLeft(2, '0')}";
-                        var HasSalesOrder = SalesOrders.Where(x => x.StoreCheckingId == StoreChecking.Id).FirstOrDefault();
-                        if (HasSalesOrder == null)
-                            StoreChecking.SalesOrder = false;
-                        else
-                            StoreChecking.SalesOrder = true;
-                    }
-                    ReportStoreChecked_SaleEmployeeDTO.StoreCheckingGroupByDates.Add(ReportStoreChecked_StoreCheckingGroupByDateDTO);
-                }
+                        SaleEmployeeId = x.SalesEmployeeId
+                    }).ToList();
+                ReportStoreChecked_ReportStoreCheckedDTOs.Add(ReportStoreChecked_ReportStoreCheckedDTO);
             }
+
+            foreach (var ReportStoreChecked_ReportStoreCheckedDTO in ReportStoreChecked_ReportStoreCheckedDTOs)
+            {
+                Parallel.ForEach(ReportStoreChecked_ReportStoreCheckedDTO.SaleEmployees, SaleEmployee =>
+                {
+                    var appUser = AppUserDAOs.Where(x => x.Id == SaleEmployee.SaleEmployeeId).FirstOrDefault();
+                    if (appUser != null)
+                    {
+                        SaleEmployee.Username = appUser.Username;
+                        SaleEmployee.DisplayName = appUser.DisplayName;
+                        SaleEmployee.StoreCheckingGroupByDates = new List<ReportStoreChecked_StoreCheckingGroupByDateDTO>();
+                    }
+                });
+
+                Parallel.ForEach(ReportStoreChecked_ReportStoreCheckedDTO.SaleEmployees, SaleEmployee =>
+                {
+                    SaleEmployee.StoreCheckingGroupByDates = new List<ReportStoreChecked_StoreCheckingGroupByDateDTO>();
+                    for (DateTime i = Start; i <= End; i = i.AddDays(1))
+                    {
+                        ReportStoreChecked_StoreCheckingGroupByDateDTO ReportStoreChecked_StoreCheckingGroupByDateDTO = new ReportStoreChecked_StoreCheckingGroupByDateDTO();
+
+                        ReportStoreChecked_StoreCheckingGroupByDateDTO.StoreCheckings = storeCheckings.Where(x => x.SaleEmployeeId == SaleEmployee.SaleEmployeeId)
+                            .Where(x => i <= x.CheckOutAt.Value && x.CheckOutAt.Value < i.AddDays(1))
+                            .Select(x => new ReportStoreChecked_StoreCheckingDTO
+                            {
+                                Id = x.Id,
+                                CheckIn = x.CheckInAt.Value,
+                                CheckOut = x.CheckOutAt.Value,
+                                DeviceName = x.DeviceName,
+                                ImageCounter = x.ImageCounter ?? 0,
+                                Planned = x.Planned,
+                                SaleEmployeeId = x.SaleEmployeeId,
+                                StoreStatusId = x.Store.StoreStatusId,
+                                StoreStatusName = x.Store.StoreStatus.Name,
+                                StoreName = x.Store.Name,
+                                StoreCode = x.Store.Code,
+                                StoreAddress = x.Store.Address,
+                                CheckInDistance = $"{x.CheckInDistance} m",
+                                CheckOutDistance = $"{x.CheckOutDistance} m",
+                            }).ToList();
+
+                        if (!ReportStoreChecked_StoreCheckingGroupByDateDTO.StoreCheckings.Any())
+                            continue;
+
+                        ReportStoreChecked_StoreCheckingGroupByDateDTO.Date = i;
+                        ReportStoreChecked_StoreCheckingGroupByDateDTO.DateString = ReportStoreChecked_StoreCheckingGroupByDateDTO.Date.ToString("dd-MM-yyyy");
+                        var dayOfWeek = ReportStoreChecked_StoreCheckingGroupByDateDTO.Date.AddHours(CurrentContext.TimeZone).DayOfWeek.ToString();
+                        ReportStoreChecked_StoreCheckingGroupByDateDTO.DayOfWeek = DayOfWeekEnum.DayOfWeekEnumList.Where(x => x.Code == dayOfWeek).Select(x => x.Name).FirstOrDefault();
+
+                        foreach (var StoreChecking in ReportStoreChecked_StoreCheckingGroupByDateDTO.StoreCheckings)
+                        {
+                            StoreChecking.eCheckIn = StoreChecking.CheckIn.AddHours(CurrentContext.TimeZone).ToString("HH:mm:ss");
+                            StoreChecking.eCheckOut = StoreChecking.CheckOut.AddHours(CurrentContext.TimeZone).ToString("HH:mm:ss");
+
+                            var TotalMinuteChecking = StoreChecking.CheckOut.Subtract(StoreChecking.CheckIn).TotalSeconds;
+                            TimeSpan timeSpan = TimeSpan.FromSeconds(TotalMinuteChecking);
+                            StoreChecking.Duaration = $"{timeSpan.Hours.ToString().PadLeft(2, '0')} : {timeSpan.Minutes.ToString().PadLeft(2, '0')} : {timeSpan.Seconds.ToString().PadLeft(2, '0')}";
+                            var HasSalesOrder = SalesOrders.Where(x => x.StoreCheckingId == StoreChecking.Id).FirstOrDefault();
+                            if (HasSalesOrder == null)
+                                StoreChecking.SalesOrder = false;
+                            else
+                                StoreChecking.SalesOrder = true;
+                        }
+                        SaleEmployee.StoreCheckingGroupByDates.Add(ReportStoreChecked_StoreCheckingGroupByDateDTO);
+                    }
+                });
+            }
+
             return ReportStoreChecked_ReportStoreCheckedDTOs;
         }
 
