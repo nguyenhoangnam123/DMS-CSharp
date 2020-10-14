@@ -82,7 +82,7 @@ namespace DMS.Services.MWorkflow
                     }
                 },
             }).ToList();
-
+            RequestWorkflowStepMappings = RequestWorkflowStepMappings.OrderByDescending(x => x.WorkflowStateId).ToList();
             foreach (RequestWorkflowStepMapping RequestWorkflowStepMapping in RequestWorkflowStepMappings)
             {
                 if (RequestWorkflowStepMapping.WorkflowStateId == WorkflowStateEnum.PENDING.Id)
