@@ -405,7 +405,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_employee_report
                     }
                     Period.SkuIndirectOrder = IndirectSalesOrders.Count() == 0 ? null :
                         (decimal?)
-                        Math.Round(Period.SKUIndirectItems.Count() / Period.TotalIndirectOrders.Value, 2);
+                        Math.Round(Period.SKUIndirectItems.Count() / IndirectSalesOrders.Count(), 2);
                     if (Period.SkuIndirectOrderPlanned == null)
                         Period.SkuIndirectOrder = null;
                     //tỉ lệ
@@ -488,7 +488,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_employee_report
                     }
                     Period.SkuDirectOrder = IndirectSalesOrders.Count() == 0 ? null :
                         (decimal?)
-                        Math.Round(Period.SKUIndirectItems.Count() / Period.TotalDirectOrders.Value, 2);
+                        Math.Round(Period.SKUIndirectItems.Count() / IndirectSalesOrders.Count(), 2);
                     if (Period.SkuDirectOrderPlanned == null)
                         Period.SkuDirectOrder = null;
                     //tỉ lệ
