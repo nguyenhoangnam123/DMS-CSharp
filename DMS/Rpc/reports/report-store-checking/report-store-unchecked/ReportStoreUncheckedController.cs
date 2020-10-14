@@ -194,20 +194,19 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_unchecked
 
             if (AppUserId.HasValue)
                 AppUserIds = AppUserIds.Where(x => x == AppUserId.Value).ToList();
-            AppUserIds = await (from su in DataContext.StoreUnchecking
-                                join a in DataContext.AppUser on su.AppUserId equals a.Id
-                                join s in DataContext.Store on su.StoreId equals s.Id
-                                where AppUserIds.Contains(a.Id) &&
-                                OrganizationIds.Contains(a.OrganizationId) &&
-                                (StoreStatusId.HasValue == false || StoreStatusId.Value == StoreStatusEnum.ALL.Id || s.StoreStatusId == StoreStatusId.Value) &&
-                                Start <= su.Date && su.Date <= End &&
-                                s.DeletedAt == null
-                                orderby a.Organization.Name, a.DisplayName
-                                select su.AppUserId)
-                                .Distinct()
-                                .ToListAsync();
-            int count = AppUserIds.Count();
-            return count;
+            var query = from su in DataContext.StoreUnchecking
+                        join s in DataContext.Store on su.StoreId equals s.Id
+                        where AppUserIds.Contains(su.AppUserId) &&
+                        OrganizationIds.Contains(su.OrganizationId) &&
+                        (StoreStatusId.HasValue == false || StoreStatusId.Value == StoreStatusEnum.ALL.Id || s.StoreStatusId == StoreStatusId.Value) &&
+                        Start <= su.Date && su.Date <= End &&
+                        s.DeletedAt == null
+                        select new
+                        {
+                            AppUserId = su.AppUserId,
+                            OrganizationId = su.OrganizationId
+                        };
+            return await query.Distinct().CountAsync();
         }
 
         [Route(ReportStoreUncheckedRoute.List), HttpPost]
@@ -246,22 +245,40 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_unchecked
 
             if (AppUserId.HasValue)
                 AppUserIds = AppUserIds.Where(x => x == AppUserId.Value).ToList();
-            AppUserIds = (await DataContext.StoreUnchecking.Where(su => AppUserIds.Contains(su.AppUserId))
-                                .Select(su => su.AppUser)
-                                .Distinct()
-                                .OrderBy(su => su.Organization.Path).ThenBy(su => su.DisplayName)
-                                .Skip(ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.Skip)
-                                .Take(ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.Take)
-                                .ToListAsync())
-                                .Select(x => x.Id)
-                                .ToList();
+            var query = from su in DataContext.StoreUnchecking
+                        join s in DataContext.Store on su.StoreId equals s.Id
+                        where AppUserIds.Contains(su.AppUserId) &&
+                        OrganizationIds.Contains(su.OrganizationId) &&
+                        (StoreStatusId.HasValue == false || StoreStatusId.Value == StoreStatusEnum.ALL.Id || s.StoreStatusId == StoreStatusId.Value) &&
+                        Start <= su.Date && su.Date <= End &&
+                        s.DeletedAt == null
+                        select new
+                        {
+                            AppUserId = su.AppUserId,
+                            OrganizationId = su.OrganizationId
+                        };
 
-            List<AppUserDAO> AppUserDAOs = await DataContext.AppUser.Where(au => AppUserIds.Contains(au.Id))
+            var Ids = await query
+                 .OrderBy(x => x.OrganizationId)
+                 .Skip(ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.Skip)
+                 .Take(ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.Take)
+                 .Distinct().ToListAsync();
+            AppUserIds = Ids.Select(x => x.AppUserId).Distinct().ToList();
+
+            List<AppUserDAO> AppUserDAOs = await DataContext.AppUser
+                .Where(x => AppUserIds.Contains(x.Id))
                 .Where(x => x.DeletedAt == null)
-                .Where(x => OrganizationIds.Contains(x.OrganizationId))
-                .Include(au => au.Organization)
-                .OrderBy(su => su.Organization.Path)
+                .OrderBy(x => x.OrganizationId).ThenBy(x => x.DisplayName)
                 .ToListAsync();
+            OrganizationIds = Ids.Select(x => x.OrganizationId).Distinct().ToList();
+            var Organizations = await DataContext.Organization
+                .Where(x => OrganizationIds.Contains(x.Id))
+                .OrderBy(x => x.Id)
+                .Select(x => new OrganizationDAO
+                {
+                    Id = x.Id,
+                    Name = x.Name
+                }).ToListAsync();
             List<StoreUncheckingDAO> StoreUncheckingDAOs = await DataContext.StoreUnchecking
                 .Where(su =>
                     AppUserIds.Contains(su.AppUserId) &&
@@ -271,51 +288,49 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_unchecked
                 .Include(su => su.Store.StoreStatus)
                 .ToListAsync();
 
-            var  OrganizationNames = AppUserDAOs.Select(x => new { Path = x.Organization.Path, Name = x.Organization.Name }).Distinct().ToList();
-            List<ReportStoreUnchecked_ReportStoreUncheckedDTO> ReportStoreUnchecked_ReportStoreUncheckedDTOs = OrganizationNames.Select(x => new ReportStoreUnchecked_ReportStoreUncheckedDTO
+            List<ReportStoreUnchecked_ReportStoreUncheckedDTO> ReportStoreUnchecked_ReportStoreUncheckedDTOs = new List<ReportStoreUnchecked_ReportStoreUncheckedDTO>();
+            foreach (var Organization in Organizations)
             {
-                OrganizationName = x.Name,
-                OrganizationPath = x.Path,
-                SaleEmployees = new List<ReportStoreUnchecked_SaleEmployeeDTO>()
-            }).ToList();
-            foreach (AppUserDAO AppUserDAO in AppUserDAOs)
-            {
-                ReportStoreUnchecked_ReportStoreUncheckedDTO ReportStoreUnchecked_ReportStoreUncheckedDTO = ReportStoreUnchecked_ReportStoreUncheckedDTOs
-                    .Where(x => x.OrganizationName == AppUserDAO.Organization.Name)
-                    .FirstOrDefault();
-                ReportStoreUnchecked_SaleEmployeeDTO ReportStoreUnChecked_SaleEmployeeDTO = new ReportStoreUnchecked_SaleEmployeeDTO
+                ReportStoreUnchecked_ReportStoreUncheckedDTO ReportStoreUnchecked_ReportStoreUncheckedDTO = new ReportStoreUnchecked_ReportStoreUncheckedDTO()
                 {
-                    SaleEmployeeId = AppUserDAO.Id,
-                    Username = AppUserDAO.Username,
-                    DisplayName = AppUserDAO.DisplayName,
-                    Stores = new List<ReportStoreUnchecked_StoreDTO>()
+                    OrganizationId = Organization.Id,
+                    OrganizationName = Organization.Name,
+                    SaleEmployees = new List<ReportStoreUnchecked_SaleEmployeeDTO>()
                 };
-
-                for (DateTime index = Start; index <= End; index = index.AddDays(1))
-                {
-                    var ReportStoreUnchecked_StoreDTOs = StoreUncheckingDAOs.Where(e => e.AppUserId == AppUserDAO.Id && index <= e.Date && e.Date < index.AddDays(1))
-                        .Select(x => new ReportStoreUnchecked_StoreDTO
-                        {
-                            Date = x.Date,
-                            AppUserId = x.AppUserId,
-                            StoreAddress = x.Store.Address,
-                            StoreCode = x.Store.Code,
-                            StoreName = x.Store.Name,
-                            StoreStatusName = x.Store.StoreStatus.Name,
-                            StorePhone = x.Store.OwnerPhone,
-                            StoreTypeName = x.Store.StoreType.Name,
-                        })
-                        .Distinct()
-                        .ToList();
-                    ReportStoreUnChecked_SaleEmployeeDTO.Stores.AddRange(ReportStoreUnchecked_StoreDTOs);
-                }
-                ReportStoreUnchecked_ReportStoreUncheckedDTO.SaleEmployees.Add(ReportStoreUnChecked_SaleEmployeeDTO);
+                ReportStoreUnchecked_ReportStoreUncheckedDTO.SaleEmployees = Ids
+                    .Where(x => x.OrganizationId == Organization.Id)
+                    .Select(x => new ReportStoreUnchecked_SaleEmployeeDTO
+                    {
+                        SaleEmployeeId = x.AppUserId
+                    }).ToList();
+                ReportStoreUnchecked_ReportStoreUncheckedDTOs.Add(ReportStoreUnchecked_ReportStoreUncheckedDTO);
             }
+
             foreach (var ReportStoreUnchecked_ReportStoreUncheckedDTO in ReportStoreUnchecked_ReportStoreUncheckedDTOs)
             {
-                ReportStoreUnchecked_ReportStoreUncheckedDTO.SaleEmployees = ReportStoreUnchecked_ReportStoreUncheckedDTO.SaleEmployees.Where(x => x.Stores.Any()).ToList();
+                Parallel.ForEach(ReportStoreUnchecked_ReportStoreUncheckedDTO.SaleEmployees, SaleEmployee =>
+                {
+                    for (DateTime index = Start; index <= End; index = index.AddDays(1))
+                    {
+                        var ReportStoreUnchecked_StoreDTOs = StoreUncheckingDAOs.Where(e => e.AppUserId == SaleEmployee.SaleEmployeeId && index <= e.Date && e.Date < index.AddDays(1))
+                            .Select(x => new ReportStoreUnchecked_StoreDTO
+                            {
+                                Date = x.Date,
+                                AppUserId = x.AppUserId,
+                                StoreAddress = x.Store.Address,
+                                StoreCode = x.Store.Code,
+                                StoreName = x.Store.Name,
+                                StoreStatusName = x.Store.StoreStatus.Name,
+                                StorePhone = x.Store.OwnerPhone,
+                                StoreTypeName = x.Store.StoreType.Name,
+                            })
+                            .Distinct()
+                            .ToList();
+                        SaleEmployee.Stores.AddRange(ReportStoreUnchecked_StoreDTOs);
+                    }
+                });
             }
-            ReportStoreUnchecked_ReportStoreUncheckedDTOs = ReportStoreUnchecked_ReportStoreUncheckedDTOs.Where(x => x.SaleEmployees.Any()).ToList();
+
             return ReportStoreUnchecked_ReportStoreUncheckedDTOs;
         }
 

@@ -24,18 +24,15 @@ namespace DMS.Rpc
             this.DataContext = DataContext;
         }
 
-        //[HttpGet, Route("rpc/dms/setup/count")]
+        //[HttpGet, Route("rpc/dms/setup/set-org")]
         //public async Task Count()
         //{
-        //    List<StoreDAO> Stores = await DataContext.Store.OrderByDescending(x => x.CreatedAt).ToListAsync();
-        //    List<OrganizationDAO> Organizations = await DataContext.Organization.OrderByDescending(x => x.CreatedAt).ToListAsync();
-        //    List<StoreTypeDAO> StoreTypes = await DataContext.StoreType.OrderByDescending(x => x.CreatedAt).ToListAsync();
-        //    var counter = Stores.Count();
-        //    foreach (var Store in Stores)
+        //    List<StoreUncheckingDAO> StoreUncheckingDAOs = await DataContext.StoreUnchecking.ToListAsync();
+        //    var AppUserIds = StoreUncheckingDAOs.Select(x => x.AppUserId).Distinct().ToList();
+        //    var AppUserDAOs = await DataContext.AppUser.Where(x => AppUserIds.Contains(x.Id)).ToListAsync();
+        //    foreach (var StoreUncheckingDAO in StoreUncheckingDAOs)
         //    {
-        //        var Organization = Organizations.Where(x => x.Id == Store.OrganizationId).Select(x => x.Code).FirstOrDefault();
-        //        var StoreType = StoreTypes.Where(x => x.Id == Store.StoreTypeId).Select(x => x.Code).FirstOrDefault();
-        //        Store.Code = $"{Organization}.{StoreType}.{(10000000 + counter--).ToString().Substring(1)}";
+        //        StoreUncheckingDAO.OrganizationId = AppUserDAOs.Where(x => x.Id == StoreUncheckingDAO.AppUserId).AsParallel().Select(x => x.OrganizationId).FirstOrDefault();
         //    }
         //    await DataContext.SaveChangesAsync();
         //}

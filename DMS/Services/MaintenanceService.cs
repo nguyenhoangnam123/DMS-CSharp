@@ -87,6 +87,7 @@ namespace DMS.Services
                                 AppUserId = ERouteContentDAO.ERoute.SaleEmployeeId,
                                 Date = Start,
                                 StoreId = ERouteContentDAO.StoreId,
+                                OrganizationId = ERouteContentDAO.ERoute.OrganizationId
                             };
                             PlannedStoreUncheckingDAOs.Add(StoreUncheckingDAO);
                         }

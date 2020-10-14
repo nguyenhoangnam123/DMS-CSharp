@@ -4074,6 +4074,12 @@ namespace DMS.Models
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_StoreUnchecking_AppUser");
 
+                entity.HasOne(d => d.Organization)
+                    .WithMany(p => p.StoreUncheckings)
+                    .HasForeignKey(d => d.OrganizationId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_StoreUnchecking_Organization");
+
                 entity.HasOne(d => d.Store)
                     .WithMany(p => p.StoreUncheckings)
                     .HasForeignKey(d => d.StoreId)
