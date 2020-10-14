@@ -177,7 +177,7 @@ namespace DMS.Services.MWorkflow
             await ValidateWorkflowDefinition(WorkflowDirection);
             await ValidateStep(WorkflowDirection);
             await ValidateSubjectMail(WorkflowDirection);
-            await ValidateDuplicateDirection(WorkflowDirection);
+            //await ValidateDuplicateDirection(WorkflowDirection);
             return WorkflowDirection.IsValidated;
         }
 
@@ -188,7 +188,7 @@ namespace DMS.Services.MWorkflow
                 await ValidateWorkflowDefinition(WorkflowDirection);
                 await ValidateStep(WorkflowDirection);
                 await ValidateSubjectMail(WorkflowDirection);
-                await ValidateDuplicateDirection(WorkflowDirection);
+                //await ValidateDuplicateDirection(WorkflowDirection);
             }
             return WorkflowDirection.IsValidated;
         }
