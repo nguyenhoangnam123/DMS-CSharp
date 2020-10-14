@@ -1039,6 +1039,11 @@ namespace DMS.Models
                 entity.Property(e => e.Field).HasMaxLength(100);
             });
 
+            modelBuilder.Entity<IdGeneratorDAO>(entity =>
+            {
+                entity.ToTable("IdGenerator", "MDM");
+            });
+
             modelBuilder.Entity<ImageDAO>(entity =>
             {
                 entity.ToTable("Image", "MDM");

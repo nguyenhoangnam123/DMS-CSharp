@@ -285,7 +285,7 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
                             )
                         ) &&
                         (StoreStatusId.HasValue == false || StoreStatusId.Value == StoreStatusEnum.ALL.Id || s.StoreStatusId == StoreStatusId.Value) &&
-                        OrganizationIds.Contains(au.OrganizationId) &&
+                        OrganizationIds.Contains(sc.OrganizationId) &&
                         s.DeletedAt == null
                         select au;
 
@@ -367,7 +367,7 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
                             )
                         ) &&
                         (StoreStatusId.HasValue == false || StoreStatusId.Value == StoreStatusEnum.ALL.Id || s.StoreStatusId == StoreStatusId.Value) &&
-                        OrganizationIds.Contains(au.OrganizationId) &&
+                        OrganizationIds.Contains(sc.OrganizationId) &&
                         s.DeletedAt == null
                         select au;
 
@@ -421,7 +421,7 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
                             )
                         ) &&
                         (StoreStatusId.HasValue == false || StoreStatusId.Value == StoreStatusEnum.ALL.Id || s.StoreStatusId == StoreStatusId.Value) &&
-                        OrganizationIds.Contains(s.OrganizationId) &&
+                        OrganizationIds.Contains(sc.OrganizationId) &&
                         s.DeletedAt == null
                          select sc;
 
