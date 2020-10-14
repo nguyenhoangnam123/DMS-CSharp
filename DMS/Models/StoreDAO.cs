@@ -17,7 +17,7 @@ namespace DMS.Models
             InverseParentStore = new HashSet<StoreDAO>();
             PriceListStoreMappings = new HashSet<PriceListStoreMappingDAO>();
             Problems = new HashSet<ProblemDAO>();
-            PromotionCodeStores = new HashSet<PromotionCodeStoreDAO>();
+            PromotionCodeStoreMappings = new HashSet<PromotionCodeStoreMappingDAO>();
             PromotionStoreMappings = new HashSet<PromotionStoreMappingDAO>();
             StoreCheckingImageMappings = new HashSet<StoreCheckingImageMappingDAO>();
             StoreCheckings = new HashSet<StoreCheckingDAO>();
@@ -84,7 +84,7 @@ namespace DMS.Models
         public virtual ICollection<StoreDAO> InverseParentStore { get; set; }
         public virtual ICollection<PriceListStoreMappingDAO> PriceListStoreMappings { get; set; }
         public virtual ICollection<ProblemDAO> Problems { get; set; }
-        public virtual ICollection<PromotionCodeStoreDAO> PromotionCodeStores { get; set; }
+        public virtual ICollection<PromotionCodeStoreMappingDAO> PromotionCodeStoreMappings { get; set; }
         public virtual ICollection<PromotionStoreMappingDAO> PromotionStoreMappings { get; set; }
         public virtual ICollection<StoreCheckingImageMappingDAO> StoreCheckingImageMappings { get; set; }
         public virtual ICollection<StoreCheckingDAO> StoreCheckings { get; set; }

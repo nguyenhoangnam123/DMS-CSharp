@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 namespace DMS.Models
 {
-    public partial class PromotionItemTypeDAO
+    public partial class PromotionProductAppliedTypeDAO
     {
-        public PromotionItemTypeDAO()
+        public PromotionProductAppliedTypeDAO()
         {
             PromotionCodes = new HashSet<PromotionCodeDAO>();
         }

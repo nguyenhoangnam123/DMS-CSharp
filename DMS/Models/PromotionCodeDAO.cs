@@ -8,9 +8,9 @@ namespace DMS.Models
         public PromotionCodeDAO()
         {
             PromotionCodeHistories = new HashSet<PromotionCodeHistoryDAO>();
-            PromotionCodeOrganizations = new HashSet<PromotionCodeOrganizationDAO>();
+            PromotionCodeOrganizationMappings = new HashSet<PromotionCodeOrganizationMappingDAO>();
             PromotionCodeProductMappings = new HashSet<PromotionCodeProductMappingDAO>();
-            PromotionCodeStores = new HashSet<PromotionCodeStoreDAO>();
+            PromotionCodeStoreMappings = new HashSet<PromotionCodeStoreMappingDAO>();
         }
 
         public long Id { get; set; }
@@ -21,7 +21,7 @@ namespace DMS.Models
         public decimal Value { get; set; }
         public decimal? MaxValue { get; set; }
         public long PromotionTypeId { get; set; }
-        public long PromotionItemTypeId { get; set; }
+        public long PromotionProductAppliedTypeId { get; set; }
         public long OrganizationId { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime? EndDate { get; set; }
@@ -32,12 +32,12 @@ namespace DMS.Models
 
         public virtual OrganizationDAO Organization { get; set; }
         public virtual PromotionDiscountTypeDAO PromotionDiscountType { get; set; }
-        public virtual PromotionItemTypeDAO PromotionItemType { get; set; }
+        public virtual PromotionProductAppliedTypeDAO PromotionProductAppliedType { get; set; }
         public virtual PromotionTypeDAO PromotionType { get; set; }
         public virtual StatusDAO Status { get; set; }
         public virtual ICollection<PromotionCodeHistoryDAO> PromotionCodeHistories { get; set; }
-        public virtual ICollection<PromotionCodeOrganizationDAO> PromotionCodeOrganizations { get; set; }
+        public virtual ICollection<PromotionCodeOrganizationMappingDAO> PromotionCodeOrganizationMappings { get; set; }
         public virtual ICollection<PromotionCodeProductMappingDAO> PromotionCodeProductMappings { get; set; }
-        public virtual ICollection<PromotionCodeStoreDAO> PromotionCodeStores { get; set; }
+        public virtual ICollection<PromotionCodeStoreMappingDAO> PromotionCodeStoreMappings { get; set; }
     }
 }

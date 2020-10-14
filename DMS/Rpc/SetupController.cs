@@ -621,6 +621,7 @@ namespace DMS.Rpc
             InitColorEnum();
             InitIdGenerate();
             InitPromotionTypeEnum();
+            InitPromotionProductAppliedTypeEnum();
             InitPromotionPolicyEnum();
             InitPromotionDiscountTypeEnum();
             return Ok();
@@ -796,6 +797,17 @@ namespace DMS.Rpc
                 Name = item.Name,
             }).ToList();
             DataContext.PromotionType.BulkSynchronize(PromotionTypeEnumList);
+        }
+
+        private void InitPromotionProductAppliedTypeEnum()
+        {
+            List<PromotionProductAppliedTypeDAO> PromotionProductAppliedTypeDAOs = PromotionProductAppliedTypeEnum.PromotionProductAppliedTypeEnumList.Select(item => new PromotionProductAppliedTypeDAO
+            {
+                Id = item.Id,
+                Code = item.Code,
+                Name = item.Name,
+            }).ToList();
+            DataContext.PromotionProductAppliedType.BulkSynchronize(PromotionProductAppliedTypeDAOs);
         }
 
         private void InitPromotionPolicyEnum()

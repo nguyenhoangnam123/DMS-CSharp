@@ -67,12 +67,14 @@ namespace DMS.Repositories
         IProductTypeRepository ProductTypeRepository { get; }
         IPromotionComboRepository PromotionComboRepository { get; }
         IPromotionRepository PromotionRepository { get; }
+        IPromotionCodeRepository PromotionCodeRepository { get; }
         IPromotionDirectSalesOrderRepository PromotionDirectSalesOrderRepository { get; }
         IPromotionDiscountTypeRepository PromotionDiscountTypeRepository { get; }
+        IPromotionProductTypeRepository PromotionProductTypeRepository { get; }
         IPromotionPolicyRepository PromotionPolicyRepository { get; }
+        IPromotionProductAppliedTypeRepository PromotionProductAppliedTypeRepository { get; }
         IPromotionProductRepository PromotionProductRepository { get; }
         IPromotionProductGroupingRepository PromotionProductGroupingRepository { get; }
-        IPromotionProductTypeRepository PromotionProductTypeRepository { get; }
         IPromotionSamePriceRepository PromotionSamePriceRepository { get; }
         IPromotionStoreRepository PromotionStoreRepository { get; }
         IPromotionStoreGroupingRepository PromotionStoreGroupingRepository { get; }
@@ -183,14 +185,17 @@ namespace DMS.Repositories
         public IProductRepository ProductRepository { get; private set; }
         public IProductGroupingRepository ProductGroupingRepository { get; private set; }
         public IProductTypeRepository ProductTypeRepository { get; private set; }
+        public IPromotionCodeRepository PromotionCodeRepository { get; private set; }
         public IPromotionComboRepository PromotionComboRepository { get; private set; }
         public IPromotionRepository PromotionRepository { get; private set; }
         public IPromotionDirectSalesOrderRepository PromotionDirectSalesOrderRepository { get; private set; }
         public IPromotionDiscountTypeRepository PromotionDiscountTypeRepository { get; private set; }
+        public IPromotionProductTypeRepository PromotionProductTypeRepository { get; private set; }
         public IPromotionPolicyRepository PromotionPolicyRepository { get; private set; }
+        
+        public IPromotionProductAppliedTypeRepository PromotionProductAppliedTypeRepository { get; private set; }
         public IPromotionProductRepository PromotionProductRepository { get; private set; }
         public IPromotionProductGroupingRepository PromotionProductGroupingRepository { get; private set; }
-        public IPromotionProductTypeRepository PromotionProductTypeRepository { get; private set; }
         public IPromotionSamePriceRepository PromotionSamePriceRepository { get; private set; }
         public IPromotionStoreRepository PromotionStoreRepository { get; private set; }
         public IPromotionStoreGroupingRepository PromotionStoreGroupingRepository { get; private set; }
@@ -302,8 +307,10 @@ namespace DMS.Repositories
             ProductTypeRepository = new ProductTypeRepository(DataContext);
             PromotionComboRepository = new PromotionComboRepository(DataContext);
             PromotionRepository = new PromotionRepository(DataContext);
+            PromotionCodeRepository = new PromotionCodeRepository(DataContext);
             PromotionDirectSalesOrderRepository = new PromotionDirectSalesOrderRepository(DataContext);
             PromotionDiscountTypeRepository = new PromotionDiscountTypeRepository(DataContext);
+            PromotionProductAppliedTypeRepository = new PromotionProductAppliedTypeRepository(DataContext);
             PromotionPolicyRepository = new PromotionPolicyRepository(DataContext);
             PromotionProductRepository = new PromotionProductRepository(DataContext);
             PromotionProductGroupingRepository = new PromotionProductGroupingRepository(DataContext);
