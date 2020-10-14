@@ -89,67 +89,6 @@ namespace DMS.Services.MProduct
             try
             {
                 List<Product> Products = await UOW.ProductRepository.List(ProductFilter);
-                List<long> ProductIds = Products.Select(p => p.Id).ToList();
-                ItemFilter ItemFilter = new ItemFilter
-                {
-                    ProductId = new IdFilter { In = ProductIds },
-                    StatusId = null,
-                    Selects = ItemSelect.Id | ItemSelect.ProductId,
-                    Skip = 0,
-                    Take = int.MaxValue,
-                };
-                List<Item> Items = await UOW.ItemRepository.List(ItemFilter);
-                foreach (Product Product in Products)
-                {
-                    Product.CanDelete = true;
-                    Product.VariationCounter = Items.Where(i => i.ProductId == Product.Id).Count();
-                    List<long> ItemIds = Items.Where(i => i.ProductId == Product.Id).Select(i => i.Id).ToList();
-                    IndirectSalesOrderContentFilter IndirectSalesOrderContentFilter = new IndirectSalesOrderContentFilter()
-                    {
-                        ItemId = new IdFilter { In = ItemIds }
-                    };
-
-                    int count = await UOW.IndirectSalesOrderContentRepository.Count(IndirectSalesOrderContentFilter);
-                    if (count != 0)
-                    {
-                        Product.CanDelete = false;
-                        continue;
-                    }
-
-                    IndirectSalesOrderPromotionFilter IndirectSalesOrderPromotionFilter = new IndirectSalesOrderPromotionFilter
-                    {
-                        ItemId = new IdFilter { In = ItemIds }
-                    };
-                    count = await UOW.IndirectSalesOrderPromotionRepository.Count(IndirectSalesOrderPromotionFilter);
-                    if (count != 0)
-                    {
-                        Product.CanDelete = false;
-                        continue;
-                    }
-
-                    DirectSalesOrderContentFilter DirectSalesOrderContentFilter = new DirectSalesOrderContentFilter()
-                    {
-                        ItemId = new IdFilter { In = ItemIds }
-                    };
-
-                    count = await UOW.DirectSalesOrderContentRepository.Count(DirectSalesOrderContentFilter);
-                    if (count != 0)
-                    {
-                        Product.CanDelete = false;
-                        continue;
-                    }
-
-                    DirectSalesOrderPromotionFilter DirectSalesOrderPromotionFilter = new DirectSalesOrderPromotionFilter
-                    {
-                        ItemId = new IdFilter { In = ItemIds }
-                    };
-                    count = await UOW.DirectSalesOrderPromotionRepository.Count(DirectSalesOrderPromotionFilter);
-                    if (count != 0)
-                    {
-                        Product.CanDelete = false;
-                        continue;
-                    }
-                }
                 return Products;
             }
             catch (Exception ex)
@@ -171,19 +110,6 @@ namespace DMS.Services.MProduct
             Product Product = await UOW.ProductRepository.Get(Id);
             if (Product == null)
                 return null;
-            Product.CanDelete = true;
-            if (Product.Items != null && Product.Items.Any())
-            {
-                Product.VariationCounter = Product.Items.Count;
-                Product.Items.ForEach(x => x.CanDelete = true);
-
-                foreach (var Item in Product.Items)
-                {
-                    Item.CanDelete = await CanDelete(Item);
-                    if (Item.CanDelete == false)
-                        Product.CanDelete = false;
-                }
-            }
             return Product;
         }
 
