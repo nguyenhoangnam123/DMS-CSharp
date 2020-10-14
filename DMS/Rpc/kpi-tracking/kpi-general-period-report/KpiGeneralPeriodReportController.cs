@@ -408,7 +408,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
                     SaleEmployeeDTO.SKUIndirectItems.AddRange(itemIds);
                 }
 
-                SaleEmployeeDTO.SkuIndirectOrder = SaleEmployeeDTO.TotalIndirectOrders == null || SaleEmployeeDTO.TotalIndirectOrders.Value == 0
+                SaleEmployeeDTO.SkuIndirectOrder = IndirectSalesOrders.Count() == 0
                     ? null
                     : (decimal?)Math.Round(SaleEmployeeDTO.SKUIndirectItems.Count() / SaleEmployeeDTO.TotalIndirectOrders.Value, 2);
                 if (SaleEmployeeDTO.SkuIndirectOrderPlanned != null && SaleEmployeeDTO.SkuIndirectOrder == null)
@@ -478,7 +478,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
                     SaleEmployeeDTO.SKUDirectItems.AddRange(itemIds);
                 }
 
-                SaleEmployeeDTO.SkuDirectOrder = SaleEmployeeDTO.TotalDirectOrders == null || SaleEmployeeDTO.TotalDirectOrders.Value == 0
+                SaleEmployeeDTO.SkuDirectOrder = DirectSalesOrders.Count() == 0
                     ? null
                     : (decimal?)Math.Round(SaleEmployeeDTO.SKUDirectItems.Count() / SaleEmployeeDTO.TotalDirectOrders.Value, 2);
                 if (SaleEmployeeDTO.SkuDirectOrderPlanned != null && SaleEmployeeDTO.SkuDirectOrder == null)

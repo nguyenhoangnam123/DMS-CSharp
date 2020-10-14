@@ -403,7 +403,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_employee_report
                         var itemIds = IndirectSalesOrder.IndirectSalesOrderContents.Select(x => x.ItemId).Distinct().ToList();
                         Period.SKUIndirectItems.AddRange(itemIds);
                     }
-                    Period.SkuIndirectOrder = Period.TotalIndirectOrders == null || Period.TotalIndirectOrders == 0 ? null :
+                    Period.SkuIndirectOrder = IndirectSalesOrders.Count() == 0 ? null :
                         (decimal?)
                         Math.Round(Period.SKUIndirectItems.Count() / Period.TotalIndirectOrders.Value, 2);
                     if (Period.SkuIndirectOrderPlanned == null)
@@ -486,7 +486,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_employee_report
                         var itemIds = DirectSalesOrder.DirectSalesOrderContents.Select(x => x.ItemId).Distinct().ToList();
                         Period.SKUDirectItems.AddRange(itemIds);
                     }
-                    Period.SkuDirectOrder = Period.TotalDirectOrders == null || Period.TotalDirectOrders == 0 ? null :
+                    Period.SkuDirectOrder = IndirectSalesOrders.Count() == 0 ? null :
                         (decimal?)
                         Math.Round(Period.SKUIndirectItems.Count() / Period.TotalDirectOrders.Value, 2);
                     if (Period.SkuDirectOrderPlanned == null)
