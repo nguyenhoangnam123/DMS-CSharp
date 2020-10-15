@@ -14,9 +14,20 @@ namespace DMS.Repositories
     {
         Task<int> Count(ERouteFilter ERouteFilter);
         Task<List<ERoute>> List(ERouteFilter ERouteFilter);
+
+        Task<int> CountNew(ERouteFilter ERouteFilter);
+        Task<List<ERoute>> ListNew(ERouteFilter ERouteFilter);
+
+        Task<int> CountPending(ERouteFilter ERouteFilter);
+        Task<List<ERoute>> ListPending(ERouteFilter ERouteFilter);
+
+        Task<int> CountCompleted(ERouteFilter ERouteFilter);
+        Task<List<ERoute>> ListCompleted(ERouteFilter ERouteFilter);
+
         Task<ERoute> Get(long Id);
         Task<bool> Create(ERoute ERoute);
         Task<bool> Update(ERoute ERoute);
+        Task<bool> UpdateState(ERoute ERoute);
         Task<bool> Delete(ERoute ERoute);
         Task<bool> BulkMerge(List<ERoute> ERoutes);
         Task<bool> BulkDelete(List<ERoute> ERoutes);
@@ -317,6 +328,123 @@ namespace DMS.Repositories
             return ERoutes;
         }
 
+        public async Task<int> CountNew(ERouteFilter filter)
+        {
+            IQueryable<ERouteDAO> ERouteDAOs = DataContext.ERoute.AsNoTracking();
+            ERouteDAOs = DynamicFilter(ERouteDAOs, filter);
+            ERouteDAOs = from q in ERouteDAOs
+                                     where q.RequestStateId == RequestStateEnum.NEW.Id &&
+                                     q.SaleEmployeeId == filter.ApproverId.Equal
+                                     select q;
+
+            return await ERouteDAOs.Distinct().CountAsync();
+        }
+
+        public async Task<List<ERoute>> ListNew(ERouteFilter filter)
+        {
+            if (filter == null) return new List<ERoute>();
+            IQueryable<ERouteDAO> ERouteDAOs = DataContext.ERoute.AsNoTracking();
+            ERouteDAOs = DynamicFilter(ERouteDAOs, filter);
+            ERouteDAOs = from q in ERouteDAOs
+                                     where q.RequestStateId == RequestStateEnum.NEW.Id &&
+                                     q.SaleEmployeeId == filter.ApproverId.Equal
+                                     select q;
+
+            ERouteDAOs = DynamicOrder(ERouteDAOs, filter);
+            List<ERoute> ERoutes = await DynamicSelect(ERouteDAOs, filter);
+            return ERoutes;
+        }
+
+        public async Task<int> CountPending(ERouteFilter filter)
+        {
+            IQueryable<ERouteDAO> ERouteDAOs = DataContext.ERoute.AsNoTracking();
+            ERouteDAOs = DynamicFilter(ERouteDAOs, filter);
+            if (filter.ApproverId.Equal.HasValue)
+            {
+                ERouteDAOs = from q in ERouteDAOs
+                                         join r in DataContext.RequestWorkflowDefinitionMapping.Where(x => x.RequestStateId == RequestStateEnum.PENDING.Id) on q.RowId equals r.RequestId
+                                         join step in DataContext.WorkflowStep on r.WorkflowDefinitionId equals step.WorkflowDefinitionId
+                                         join rstep in DataContext.RequestWorkflowStepMapping.Where(x => x.WorkflowStateId == WorkflowStateEnum.PENDING.Id) on step.Id equals rstep.WorkflowStepId
+                                         join ra in DataContext.AppUserRoleMapping on step.RoleId equals ra.RoleId
+                                         where ra.AppUserId == filter.ApproverId.Equal && q.RowId == rstep.RequestId
+                                         select q;
+            }
+            return await ERouteDAOs.Distinct().CountAsync();
+        }
+
+        public async Task<List<ERoute>> ListPending(ERouteFilter filter)
+        {
+            if (filter == null) return new List<ERoute>();
+            IQueryable<ERouteDAO> ERouteDAOs = DataContext.ERoute.AsNoTracking();
+            ERouteDAOs = DynamicFilter(ERouteDAOs, filter);
+            if (filter.ApproverId.Equal.HasValue)
+            {
+                ERouteDAOs = from q in ERouteDAOs
+                                         join r in DataContext.RequestWorkflowDefinitionMapping.Where(x => x.RequestStateId == RequestStateEnum.PENDING.Id) on q.RowId equals r.RequestId
+                                         join step in DataContext.WorkflowStep on r.WorkflowDefinitionId equals step.WorkflowDefinitionId
+                                         join rstep in DataContext.RequestWorkflowStepMapping.Where(x => x.WorkflowStateId == WorkflowStateEnum.PENDING.Id) on step.Id equals rstep.WorkflowStepId
+                                         join ra in DataContext.AppUserRoleMapping on step.RoleId equals ra.RoleId
+                                         where ra.AppUserId == filter.ApproverId.Equal && q.RowId == rstep.RequestId
+                                         select q;
+            }
+            ERouteDAOs = DynamicOrder(ERouteDAOs, filter);
+            List<ERoute> ERoutes = await DynamicSelect(ERouteDAOs, filter);
+            return ERoutes;
+        }
+
+        public async Task<int> CountCompleted(ERouteFilter filter)
+        {
+            IQueryable<ERouteDAO> ERouteDAOs = DataContext.ERoute.AsNoTracking();
+            ERouteDAOs = DynamicFilter(ERouteDAOs, filter);
+            if (filter.ApproverId.Equal.HasValue)
+            {
+                var query1 = from q in ERouteDAOs
+                             join r in DataContext.RequestWorkflowDefinitionMapping on q.RowId equals r.RequestId
+                             join step in DataContext.WorkflowStep on r.WorkflowDefinitionId equals step.WorkflowDefinitionId
+                             join rstep in DataContext.RequestWorkflowStepMapping on step.Id equals rstep.WorkflowStepId
+                             where
+                             (q.RequestStateId != RequestStateEnum.NEW.Id) &&
+                             (rstep.WorkflowStateId == WorkflowStateEnum.APPROVED.Id || rstep.WorkflowStateId == WorkflowStateEnum.REJECTED.Id) &&
+                             rstep.AppUserId == filter.ApproverId.Equal
+                             select q;
+                var query2 = from q in ERouteDAOs
+                             join r in DataContext.RequestWorkflowDefinitionMapping on q.RowId equals r.RequestId into result
+                             from r in result.DefaultIfEmpty()
+                             where r == null && q.RequestStateId != RequestStateEnum.NEW.Id && q.SaleEmployeeId == filter.ApproverId.Equal
+                             select q;
+                ERouteDAOs = query1.Union(query2);
+            }
+            return await ERouteDAOs.Distinct().CountAsync();
+        }
+
+        public async Task<List<ERoute>> ListCompleted(ERouteFilter filter)
+        {
+            if (filter == null) return new List<ERoute>();
+            IQueryable<ERouteDAO> ERouteDAOs = DataContext.ERoute.AsNoTracking();
+            ERouteDAOs = DynamicFilter(ERouteDAOs, filter);
+            if (filter.ApproverId.Equal.HasValue)
+            {
+                var query1 = from q in ERouteDAOs
+                             join r in DataContext.RequestWorkflowDefinitionMapping on q.RowId equals r.RequestId
+                             join step in DataContext.WorkflowStep on r.WorkflowDefinitionId equals step.WorkflowDefinitionId
+                             join rstep in DataContext.RequestWorkflowStepMapping on step.Id equals rstep.WorkflowStepId
+                             where
+                             (q.RequestStateId != RequestStateEnum.NEW.Id) &&
+                             (rstep.WorkflowStateId == WorkflowStateEnum.APPROVED.Id || rstep.WorkflowStateId == WorkflowStateEnum.REJECTED.Id) &&
+                             rstep.AppUserId == filter.ApproverId.Equal
+                             select q;
+                var query2 = from q in ERouteDAOs
+                             join r in DataContext.RequestWorkflowDefinitionMapping on q.RowId equals r.RequestId into result
+                             from r in result.DefaultIfEmpty()
+                             where r == null && q.RequestStateId != RequestStateEnum.NEW.Id && q.SaleEmployeeId == filter.ApproverId.Equal
+                             select q;
+                ERouteDAOs = query1.Union(query2);
+            }
+            ERouteDAOs = DynamicOrder(ERouteDAOs, filter);
+            List<ERoute> ERoutes = await DynamicSelect(ERouteDAOs, filter);
+            return ERoutes;
+        }
+
         public async Task<ERoute> Get(long Id)
         {
             ERoute ERoute = await DataContext.ERoute.AsNoTracking()
@@ -334,6 +462,8 @@ namespace DMS.Repositories
                 ERouteTypeId = x.ERouteTypeId,
                 StatusId = x.StatusId,
                 CreatorId = x.CreatorId,
+                RequestStateId = x.RequestStateId,
+                RowId = x.RowId,
                 Creator = x.Creator == null ? null : new AppUser
                 {
                     Id = x.Creator.Id,
@@ -342,6 +472,12 @@ namespace DMS.Repositories
                     Address = x.Creator.Address,
                     Email = x.Creator.Email,
                     Phone = x.Creator.Phone,
+                },
+                RequestState = x.RequestState == null ? null : new RequestState
+                {
+                    Id = x.RequestState.Id,
+                    Code = x.RequestState.Code,
+                    Name = x.RequestState.Name,
                 },
                 ERouteType = x.ERouteType == null ? null : new ERouteType
                 {
@@ -381,6 +517,21 @@ namespace DMS.Repositories
 
             if (ERoute == null)
                 return null;
+            RequestWorkflowDefinitionMappingDAO RequestWorkflowDefinitionMappingDAO = await DataContext.RequestWorkflowDefinitionMapping
+               .Where(x => ERoute.RowId == x.RequestId)
+               .Include(x => x.RequestState)
+               .AsNoTracking()
+               .FirstOrDefaultAsync();
+            if (RequestWorkflowDefinitionMappingDAO != null)
+            {
+                ERoute.RequestStateId = RequestWorkflowDefinitionMappingDAO.RequestStateId;
+                ERoute.RequestState = new RequestState
+                {
+                    Id = RequestWorkflowDefinitionMappingDAO.RequestState.Id,
+                    Code = RequestWorkflowDefinitionMappingDAO.RequestState.Code,
+                    Name = RequestWorkflowDefinitionMappingDAO.RequestState.Name,
+                };
+            }
 
             ERoute.ERouteContents = await DataContext.ERouteContent.Where(x => x.ERouteId == Id).Select(x => new ERouteContent
             {
@@ -427,6 +578,7 @@ namespace DMS.Repositories
                     StatusId = x.Store.StatusId,
                 },
             }).ToListAsync();
+            ERoute.TotalStoreCounter = ERoute.ERouteContents.Select(x => x.StoreId).Count();
             return ERoute;
         }
         public async Task<bool> Create(ERoute ERoute)
@@ -443,6 +595,8 @@ namespace DMS.Repositories
             ERouteDAO.ERouteTypeId = ERoute.ERouteTypeId;
             ERouteDAO.StatusId = ERoute.StatusId;
             ERouteDAO.CreatorId = ERoute.CreatorId;
+            ERouteDAO.RowId = Guid.NewGuid();
+            ERouteDAO.RequestStateId = ERoute.RequestStateId;
             ERouteDAO.CreatedAt = StaticParams.DateTimeNow;
             ERouteDAO.UpdatedAt = StaticParams.DateTimeNow;
             DataContext.ERoute.Add(ERouteDAO);
@@ -468,6 +622,7 @@ namespace DMS.Repositories
             ERouteDAO.ERouteTypeId = ERoute.ERouteTypeId;
             ERouteDAO.StatusId = ERoute.StatusId;
             ERouteDAO.CreatorId = ERoute.CreatorId;
+            ERouteDAO.RequestStateId = ERoute.RequestStateId;
             ERouteDAO.UpdatedAt = StaticParams.DateTimeNow;
             await DataContext.SaveChangesAsync();
             await SaveReference(ERoute);
@@ -502,6 +657,7 @@ namespace DMS.Repositories
                 ERouteDAO.ERouteTypeId = ERoute.ERouteTypeId;
                 ERouteDAO.StatusId = ERoute.StatusId;
                 ERouteDAO.CreatorId = ERoute.CreatorId;
+                ERouteDAO.RequestStateId = ERoute.RequestStateId;
                 ERouteDAO.CreatedAt = StaticParams.DateTimeNow;
                 ERouteDAO.UpdatedAt = StaticParams.DateTimeNow;
                 ERouteDAOs.Add(ERouteDAO);
@@ -713,6 +869,17 @@ namespace DMS.Repositories
             }
             
             return ERouteContentDays;
+        }
+
+        public async Task<bool> UpdateState(ERoute ERoute)
+        {
+            await DataContext.ERoute.Where(x => x.Id == ERoute.Id)
+                .UpdateFromQueryAsync(x => new ERouteDAO
+                {
+                    RequestStateId = ERoute.RequestStateId,
+                    UpdatedAt = StaticParams.DateTimeNow
+                });
+            return true;
         }
     }
 }

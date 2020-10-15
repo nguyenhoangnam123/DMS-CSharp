@@ -25,10 +25,16 @@ namespace DMS.Models
         public DateTime UpdatedAt { get; set; }
         public DateTime? DeletedAt { get; set; }
         public long CreatorId { get; set; }
+        /// <summary>
+        /// Id global cho phê duyệt
+        /// </summary>
+        public Guid RowId { get; set; }
+        public long RequestStateId { get; set; }
 
         public virtual AppUserDAO Creator { get; set; }
         public virtual ERouteTypeDAO ERouteType { get; set; }
         public virtual OrganizationDAO Organization { get; set; }
+        public virtual RequestStateDAO RequestState { get; set; }
         public virtual AppUserDAO SaleEmployee { get; set; }
         public virtual StatusDAO Status { get; set; }
         public virtual ICollection<ERouteChangeRequestDAO> ERouteChangeRequests { get; set; }

@@ -29,6 +29,7 @@ namespace DMS.Enums
 
         public static GenericEnum EROUTE_ORGANIZATION = new GenericEnum { Id = WorkflowTypeEnum.EROUTE.Id * 100 + 1, Code = "OrganizationId", Name = "Đơn vị tổ chức", Value = WorkflowParameterTypeEnum.ID.Id.ToString() };
         public static GenericEnum EROUTE_TOTAL_STORE_COUNTER = new GenericEnum { Id = WorkflowTypeEnum.EROUTE.Id * 100 + 2, Code = "TotalStoreCounter", Name = "Tổng số cửa hàng trong tuyến", Value = WorkflowParameterTypeEnum.LONG.Id.ToString() };
+        public static GenericEnum EROUTE_EROUTE_TYPE = new GenericEnum { Id = WorkflowTypeEnum.EROUTE.Id * 100 + 3, Code = "ERouteTypeId", Name = "Loại tuyến", Value = WorkflowParameterTypeEnum.ID.Id.ToString() };
         public static List<GenericEnum> ERouteEnumList = new List<GenericEnum>()
         {
            EROUTE_ORGANIZATION, EROUTE_TOTAL_STORE_COUNTER
@@ -53,10 +54,10 @@ namespace DMS.Enums
         };
 
         public static GenericEnum PRICE_LIST_ORGANIZATION = new GenericEnum { Id = WorkflowTypeEnum.PRICE_LIST.Id * 100 + 1, Code = "OrganizationId", Name = "Đơn vị tổ chức", Value = WorkflowParameterTypeEnum.ID.Id.ToString() };
-        public static GenericEnum PRICE_LIST_OVER_PRICE_BASE = new GenericEnum { Id = WorkflowTypeEnum.PRICE_LIST.Id * 100 + 2, Code = "OverPriceBase", Name = "% chênh lệch so với giá cơ bản", Value = WorkflowParameterTypeEnum.DECIMAL.Id.ToString() };
+        public static GenericEnum PRICE_LIST_SALES_ORDER_TYPE = new GenericEnum { Id = WorkflowTypeEnum.PRICE_LIST.Id * 100 + 2, Code = "SalesOrderTypeId", Name = "Loại đơn hàng", Value = WorkflowParameterTypeEnum.ID.Id.ToString() };
         public static List<GenericEnum> PriceListEnumList = new List<GenericEnum>()
         {
-           PRICE_LIST_ORGANIZATION, PRICE_LIST_OVER_PRICE_BASE
+           PRICE_LIST_ORGANIZATION, PRICE_LIST_SALES_ORDER_TYPE
         };
     }
 }

@@ -20,6 +20,8 @@ namespace DMS.Entities
         public long RequestStateId { get; set; }
         public long StatusId { get; set; }
         public long CreatorId { get; set; }
+        public long TotalStoreCounter { get; set; }
+        public Guid RowId { get; set; }
         public AppUser Creator { get; set; }
         public ERouteType ERouteType { get; set; }
         public Organization Organization { get; set; }
@@ -47,6 +49,7 @@ namespace DMS.Entities
         public StringFilter Name { get; set; }
         public IdFilter OrganizationId { get; set; }
         public IdFilter AppUserId { get; set; }
+        public IdFilter ApproverId { get; set; }
         public DateFilter StartDate { get; set; }
         public DateFilter EndDate { get; set; }
         public IdFilter ERouteTypeId { get; set; }

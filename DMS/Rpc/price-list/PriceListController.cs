@@ -107,6 +107,86 @@ namespace DMS.Rpc.price_list
             return PriceList_PriceListDTOs;
         }
 
+        [Route(PriceListRoute.CountNew), HttpPost]
+        public async Task<ActionResult<int>> CountNew([FromBody] PriceList_PriceListFilterDTO PriceList_PriceListFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            PriceListFilter PriceListFilter = ConvertFilterDTOToFilterEntity(PriceList_PriceListFilterDTO);
+            PriceListFilter = await PriceListService.ToFilter(PriceListFilter);
+            int count = await PriceListService.CountNew(PriceListFilter);
+            return count;
+        }
+
+        [Route(PriceListRoute.ListNew), HttpPost]
+        public async Task<ActionResult<List<PriceList_PriceListDTO>>> ListNew([FromBody] PriceList_PriceListFilterDTO PriceList_PriceListFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            PriceListFilter PriceListFilter = ConvertFilterDTOToFilterEntity(PriceList_PriceListFilterDTO);
+            PriceListFilter = await PriceListService.ToFilter(PriceListFilter);
+            List<PriceList> PriceLists = await PriceListService.ListNew(PriceListFilter);
+            List<PriceList_PriceListDTO> PriceList_PriceListDTOs = PriceLists
+                .Select(c => new PriceList_PriceListDTO(c)).ToList();
+            return PriceList_PriceListDTOs;
+        }
+
+
+        [Route(PriceListRoute.CountPending), HttpPost]
+        public async Task<ActionResult<int>> CountPending([FromBody] PriceList_PriceListFilterDTO PriceList_PriceListFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            PriceListFilter PriceListFilter = ConvertFilterDTOToFilterEntity(PriceList_PriceListFilterDTO);
+            PriceListFilter = await PriceListService.ToFilter(PriceListFilter);
+            int count = await PriceListService.CountPending(PriceListFilter);
+            return count;
+        }
+
+        [Route(PriceListRoute.ListPending), HttpPost]
+        public async Task<ActionResult<List<PriceList_PriceListDTO>>> ListPending([FromBody] PriceList_PriceListFilterDTO PriceList_PriceListFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            PriceListFilter PriceListFilter = ConvertFilterDTOToFilterEntity(PriceList_PriceListFilterDTO);
+            PriceListFilter = await PriceListService.ToFilter(PriceListFilter);
+            List<PriceList> PriceLists = await PriceListService.ListPending(PriceListFilter);
+            List<PriceList_PriceListDTO> PriceList_PriceListDTOs = PriceLists
+                .Select(c => new PriceList_PriceListDTO(c)).ToList();
+            return PriceList_PriceListDTOs;
+        }
+
+
+        [Route(PriceListRoute.CountCompleted), HttpPost]
+        public async Task<ActionResult<int>> CountCompleted([FromBody] PriceList_PriceListFilterDTO PriceList_PriceListFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            PriceListFilter PriceListFilter = ConvertFilterDTOToFilterEntity(PriceList_PriceListFilterDTO);
+            PriceListFilter = await PriceListService.ToFilter(PriceListFilter);
+            int count = await PriceListService.CountCompleted(PriceListFilter);
+            return count;
+        }
+
+        [Route(PriceListRoute.ListCompleted), HttpPost]
+        public async Task<ActionResult<List<PriceList_PriceListDTO>>> ListCompleted([FromBody] PriceList_PriceListFilterDTO PriceList_PriceListFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            PriceListFilter PriceListFilter = ConvertFilterDTOToFilterEntity(PriceList_PriceListFilterDTO);
+            PriceListFilter = await PriceListService.ToFilter(PriceListFilter);
+            List<PriceList> PriceLists = await PriceListService.ListCompleted(PriceListFilter);
+            List<PriceList_PriceListDTO> PriceList_PriceListDTOs = PriceLists
+                .Select(c => new PriceList_PriceListDTO(c)).ToList();
+            return PriceList_PriceListDTOs;
+        }
+
         [Route(PriceListRoute.Get), HttpPost]
         public async Task<ActionResult<PriceList_PriceListDTO>> Get([FromBody] PriceList_PriceListDTO PriceList_PriceListDTO)
         {
@@ -149,6 +229,60 @@ namespace DMS.Rpc.price_list
 
             PriceList PriceList = ConvertDTOToEntity(PriceList_PriceListDTO);
             PriceList = await PriceListService.Update(PriceList);
+            PriceList_PriceListDTO = new PriceList_PriceListDTO(PriceList);
+            if (PriceList.IsValidated)
+                return PriceList_PriceListDTO;
+            else
+                return BadRequest(PriceList_PriceListDTO);
+        }
+
+        [Route(PriceListRoute.Send), HttpPost]
+        public async Task<ActionResult<PriceList_PriceListDTO>> Send([FromBody] PriceList_PriceListDTO PriceList_PriceListDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            if (!await HasPermission(PriceList_PriceListDTO.Id))
+                return Forbid();
+
+            PriceList PriceList = ConvertDTOToEntity(PriceList_PriceListDTO);
+            PriceList = await PriceListService.Send(PriceList);
+            PriceList_PriceListDTO = new PriceList_PriceListDTO(PriceList);
+            if (PriceList.IsValidated)
+                return PriceList_PriceListDTO;
+            else
+                return BadRequest(PriceList_PriceListDTO);
+        }
+
+        [Route(PriceListRoute.Approve), HttpPost]
+        public async Task<ActionResult<PriceList_PriceListDTO>> Approve([FromBody] PriceList_PriceListDTO PriceList_PriceListDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            if (!await HasPermission(PriceList_PriceListDTO.Id))
+                return Forbid();
+
+            PriceList PriceList = ConvertDTOToEntity(PriceList_PriceListDTO);
+            PriceList = await PriceListService.Approve(PriceList);
+            PriceList_PriceListDTO = new PriceList_PriceListDTO(PriceList);
+            if (PriceList.IsValidated)
+                return PriceList_PriceListDTO;
+            else
+                return BadRequest(PriceList_PriceListDTO);
+        }
+
+        [Route(PriceListRoute.Reject), HttpPost]
+        public async Task<ActionResult<PriceList_PriceListDTO>> Reject([FromBody] PriceList_PriceListDTO PriceList_PriceListDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            if (!await HasPermission(PriceList_PriceListDTO.Id))
+                return Forbid();
+
+            PriceList PriceList = ConvertDTOToEntity(PriceList_PriceListDTO);
+            PriceList = await PriceListService.Reject(PriceList);
             PriceList_PriceListDTO = new PriceList_PriceListDTO(PriceList);
             if (PriceList.IsValidated)
                 return PriceList_PriceListDTO;
@@ -563,12 +697,27 @@ namespace DMS.Rpc.price_list
             PriceList.Id = PriceList_PriceListDTO.Id;
             PriceList.Code = PriceList_PriceListDTO.Code;
             PriceList.Name = PriceList_PriceListDTO.Name;
+            PriceList.CreatorId = PriceList_PriceListDTO.CreatorId;
             PriceList.StartDate = PriceList_PriceListDTO.StartDate;
             PriceList.EndDate = PriceList_PriceListDTO.EndDate;
             PriceList.StatusId = PriceList_PriceListDTO.StatusId;
             PriceList.OrganizationId = PriceList_PriceListDTO.OrganizationId;
             PriceList.PriceListTypeId = PriceList_PriceListDTO.PriceListTypeId;
             PriceList.SalesOrderTypeId = PriceList_PriceListDTO.SalesOrderTypeId;
+            PriceList.RequestStateId = PriceList_PriceListDTO.RequestStateId;
+            PriceList.Creator = PriceList_PriceListDTO.Creator == null ? null : new AppUser
+            {
+                Id = PriceList_PriceListDTO.Creator.Id,
+                Username = PriceList_PriceListDTO.Creator.Username,
+                DisplayName = PriceList_PriceListDTO.Creator.DisplayName,
+                Address = PriceList_PriceListDTO.Creator.Address,
+                Email = PriceList_PriceListDTO.Creator.Email,
+                Phone = PriceList_PriceListDTO.Creator.Phone,
+                Department = PriceList_PriceListDTO.Creator.Department,
+                OrganizationId = PriceList_PriceListDTO.Creator.OrganizationId,
+                SexId = PriceList_PriceListDTO.Creator.SexId,
+                StatusId = PriceList_PriceListDTO.Creator.StatusId,
+            };
             PriceList.Organization = PriceList_PriceListDTO.Organization == null ? null : new Organization
             {
                 Id = PriceList_PriceListDTO.Organization.Id,
@@ -742,12 +891,14 @@ namespace DMS.Rpc.price_list
             PriceListFilter.Id = PriceList_PriceListFilterDTO.Id;
             PriceListFilter.Code = PriceList_PriceListFilterDTO.Code;
             PriceListFilter.Name = PriceList_PriceListFilterDTO.Name;
+            PriceListFilter.CreatorId = PriceList_PriceListFilterDTO.CreatorId;
             PriceListFilter.StartDate = PriceList_PriceListFilterDTO.StartDate;
             PriceListFilter.EndDate = PriceList_PriceListFilterDTO.EndDate;
             PriceListFilter.StatusId = PriceList_PriceListFilterDTO.StatusId;
             PriceListFilter.OrganizationId = PriceList_PriceListFilterDTO.OrganizationId;
             PriceListFilter.PriceListTypeId = PriceList_PriceListFilterDTO.PriceListTypeId;
             PriceListFilter.SalesOrderTypeId = PriceList_PriceListFilterDTO.SalesOrderTypeId;
+            PriceListFilter.RequestStateId = PriceList_PriceListFilterDTO.RequestStateId;
             PriceListFilter.CreatedAt = PriceList_PriceListFilterDTO.CreatedAt;
             PriceListFilter.UpdatedAt = PriceList_PriceListFilterDTO.UpdatedAt;
             return PriceListFilter;

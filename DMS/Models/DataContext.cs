@@ -839,6 +839,8 @@ namespace DMS.Models
 
                 entity.Property(e => e.RealStartDate).HasColumnType("datetime");
 
+                entity.Property(e => e.RowId).HasComment("Id global cho phê duyệt");
+
                 entity.Property(e => e.StartDate).HasColumnType("datetime");
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
@@ -860,6 +862,12 @@ namespace DMS.Models
                     .HasForeignKey(d => d.OrganizationId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_ERoute_Organization");
+
+                entity.HasOne(d => d.RequestState)
+                    .WithMany(p => p.ERoutes)
+                    .HasForeignKey(d => d.RequestStateId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ERoute_RequestState");
 
                 entity.HasOne(d => d.SaleEmployee)
                     .WithMany(p => p.ERouteSaleEmployees)
@@ -2022,9 +2030,17 @@ namespace DMS.Models
 
                 entity.Property(e => e.Name).HasMaxLength(500);
 
+                entity.Property(e => e.RowId).HasComment("Id global cho phê duyệt");
+
                 entity.Property(e => e.StartDate).HasColumnType("datetime");
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.HasOne(d => d.Creator)
+                    .WithMany(p => p.PriceLists)
+                    .HasForeignKey(d => d.CreatorId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PriceList_AppUser");
 
                 entity.HasOne(d => d.Organization)
                     .WithMany(p => p.PriceLists)
@@ -2037,6 +2053,12 @@ namespace DMS.Models
                     .HasForeignKey(d => d.PriceListTypeId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_PriceList_PriceListType");
+
+                entity.HasOne(d => d.RequestState)
+                    .WithMany(p => p.PriceLists)
+                    .HasForeignKey(d => d.RequestStateId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PriceList_RequestState");
 
                 entity.HasOne(d => d.SalesOrderType)
                     .WithMany(p => p.PriceLists)
