@@ -624,6 +624,8 @@ namespace DMS.Repositories
                 SaleEmployeeId = x.SaleEmployeeId,
                 OrderDate = x.OrderDate,
                 DeliveryDate = x.DeliveryDate,
+                CreatedAt = x.CreatedAt,
+                UpdatedAt = x.UpdatedAt,
                 EditedPriceStatusId = x.EditedPriceStatusId,
                 Note = x.Note,
                 RequestStateId = x.RequestStateId,

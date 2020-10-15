@@ -332,6 +332,23 @@ namespace DMS.Services.MDirectSalesOrder
             if (DirectSalesOrder.RequestState == null)
             {
                 DirectSalesOrder.RequestWorkflowStepMappings = new List<RequestWorkflowStepMapping>();
+                RequestWorkflowStepMapping RequestWorkflowStepMapping = new RequestWorkflowStepMapping
+                {
+                    AppUserId = DirectSalesOrder.SaleEmployeeId,
+                    CreatedAt = DirectSalesOrder.CreatedAt,
+                    UpdatedAt = DirectSalesOrder.UpdatedAt,
+                    RequestId = DirectSalesOrder.RowId,
+                    AppUser = DirectSalesOrder.SaleEmployee == null ? null : new AppUser
+                    {
+                        Id = DirectSalesOrder.SaleEmployee.Id,
+                        Username = DirectSalesOrder.SaleEmployee.Username,
+                        DisplayName = DirectSalesOrder.SaleEmployee.DisplayName,
+                    },
+                };
+                DirectSalesOrder.RequestWorkflowStepMappings.Add(RequestWorkflowStepMapping);
+                RequestWorkflowStepMapping.WorkflowStateId = DirectSalesOrder.RequestStateId;
+                DirectSalesOrder.RequestState = WorkflowService.GetRequestState(DirectSalesOrder.RequestStateId);
+                RequestWorkflowStepMapping.WorkflowState = WorkflowService.GetWorkflowState(RequestWorkflowStepMapping.WorkflowStateId);
             }
             else
             {

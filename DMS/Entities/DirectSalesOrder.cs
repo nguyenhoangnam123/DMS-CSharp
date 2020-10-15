@@ -17,6 +17,8 @@ namespace DMS.Entities
         public string DeliveryAddress { get; set; }
         public long SaleEmployeeId { get; set; }
         public DateTime OrderDate { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; }
         public DateTime? DeliveryDate { get; set; }
         public long RequestStateId { get; set; }
         public long EditedPriceStatusId { get; set; }
