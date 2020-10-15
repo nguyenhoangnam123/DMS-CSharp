@@ -223,32 +223,33 @@ namespace DMS.Rpc.dashboards.user
             DateTime Now = StaticParams.DateTimeNow.Date;
             DateTime Start = new DateTime(Now.Year, Now.Month, Now.Day);
             DateTime End = new DateTime(Now.Year, Now.Month, Now.Day);
+            DateTime LocalTimeNow = StaticParams.DateTimeNow.AddHours(CurrentContext.TimeZone).Date.AddHours(0 - CurrentContext.TimeZone);
 
             if (DashboardUser_DashboardUserFilterDTO.Time.Equal.HasValue == false)
             {
                 DashboardUser_DashboardUserFilterDTO.Time.Equal = 0;
-                Start = new DateTime(Now.Year, Now.Month, Now.Day);
+                Start = LocalTimeNow;
                 End = Start.AddDays(1).AddSeconds(-1);
             }
             else if (DashboardUser_DashboardUserFilterDTO.Time.Equal.Value == TODAY)
             {
-                Start = new DateTime(Now.Year, Now.Month, Now.Day);
+                Start = LocalTimeNow;
                 End = Start.AddDays(1).AddSeconds(-1);
             }
             else if (DashboardUser_DashboardUserFilterDTO.Time.Equal.Value == THIS_WEEK)
             {
                 int diff = (7 + (Now.DayOfWeek - DayOfWeek.Monday)) % 7;
-                Start = Now.AddDays(-1 * diff);
+                Start = LocalTimeNow.AddDays(-1 * diff);
                 End = Start.AddDays(7).AddSeconds(-1);
             }
             else if (DashboardUser_DashboardUserFilterDTO.Time.Equal.Value == THIS_MONTH)
             {
-                Start = new DateTime(Now.Year, Now.Month, 1);
+                Start = new DateTime(Now.Year, Now.Month, 1).AddHours(0 - CurrentContext.TimeZone);
                 End = Start.AddMonths(1).AddSeconds(-1);
             }
             else if (DashboardUser_DashboardUserFilterDTO.Time.Equal.Value == LAST_MONTH)
             {
-                Start = new DateTime(Now.Year, Now.Month, 1).AddMonths(-1);
+                Start = new DateTime(Now.Year, Now.Month, 1).AddMonths(-1).AddHours(0 - CurrentContext.TimeZone);
                 End = Start.AddMonths(1).AddSeconds(-1);
             }
 

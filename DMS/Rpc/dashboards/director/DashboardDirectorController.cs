@@ -125,7 +125,7 @@ namespace DMS.Rpc.dashboards.director
         public async Task<long> CountIndirectSalesOrder()
         {
             DateTime Now = StaticParams.DateTimeNow;
-            DateTime Start = new DateTime(Now.Year, Now.Month, 1);
+            DateTime Start = new DateTime(Now.Year, Now.Month, 1).AddHours(0 - CurrentContext.TimeZone);
             DateTime End = Start.AddMonths(1).AddSeconds(-1);
             AppUser CurrentUser = await AppUserService.Get(CurrentContext.UserId);
             var query = from i in DataContext.IndirectSalesOrder
@@ -144,7 +144,7 @@ namespace DMS.Rpc.dashboards.director
         public async Task<decimal> RevenueTotal()
         {
             DateTime Now = StaticParams.DateTimeNow;
-            DateTime Start = new DateTime(Now.Year, Now.Month, 1);
+            DateTime Start = new DateTime(Now.Year, Now.Month, 1).AddHours(0 - CurrentContext.TimeZone);
             DateTime End = Start.AddMonths(1).AddSeconds(-1);
             AppUser CurrentUser = await AppUserService.Get(CurrentContext.UserId);
             var query = from i in DataContext.IndirectSalesOrder
@@ -164,7 +164,7 @@ namespace DMS.Rpc.dashboards.director
         public async Task<long> ItemSalesTotal()
         {
             DateTime Now = StaticParams.DateTimeNow;
-            DateTime Start = new DateTime(Now.Year, Now.Month, 1);
+            DateTime Start = new DateTime(Now.Year, Now.Month, 1).AddHours(0 - CurrentContext.TimeZone);
             DateTime End = Start.AddMonths(1).AddSeconds(-1);
             AppUser CurrentUser = await AppUserService.Get(CurrentContext.UserId);
             var query = from ic in DataContext.IndirectSalesOrderContent
@@ -185,7 +185,7 @@ namespace DMS.Rpc.dashboards.director
         public async Task<long> CountStoreChecking()
         {
             DateTime Now = StaticParams.DateTimeNow;
-            DateTime Start = new DateTime(Now.Year, Now.Month, 1);
+            DateTime Start = new DateTime(Now.Year, Now.Month, 1).AddHours(0 - CurrentContext.TimeZone);
             DateTime End = Start.AddMonths(1).AddSeconds(-1);
             AppUser CurrentUser = await AppUserService.Get(CurrentContext.UserId);
             var query = from sc in DataContext.StoreChecking
@@ -204,8 +204,7 @@ namespace DMS.Rpc.dashboards.director
         [Route(DashboardDirectorRoute.StatisticToday), HttpPost]
         public async Task<DashboardDirector_StatisticDailyDTO> StatisticToday()
         {
-            DateTime Now = StaticParams.DateTimeNow.Date;
-            DateTime Start = new DateTime(Now.Year, Now.Month, Now.Day);
+            DateTime Start = LocalStartDay(CurrentContext);
             DateTime End = Start.AddDays(1).AddSeconds(-1);
             AppUser CurrentUser = await AppUserService.Get(CurrentContext.UserId);
 
@@ -265,7 +264,7 @@ namespace DMS.Rpc.dashboards.director
         public async Task<DashboardDirector_StatisticDailyDTO> StatisticYesterday()
         {
             DateTime Now = StaticParams.DateTimeNow.Date;
-            DateTime Start = new DateTime(Now.Year, Now.Month, Now.Day).AddDays(-1);
+            DateTime Start = LocalStartDay(CurrentContext).AddDays(-1);
             DateTime End = Start.AddDays(1).AddSeconds(-1);
             AppUser CurrentUser = await AppUserService.Get(CurrentContext.UserId);
 
@@ -445,28 +444,28 @@ namespace DMS.Rpc.dashboards.director
             if (DashboardDirector_Top5RevenueByProductFilterDTO.Time.Equal.HasValue == false)
             {
                 DashboardDirector_Top5RevenueByProductFilterDTO.Time.Equal = 0;
-                Start = new DateTime(Now.Year, Now.Month, Now.Day);
+                Start = LocalStartDay(CurrentContext);
                 End = Start.AddDays(1).AddSeconds(-1);
             }
             else if (DashboardDirector_Top5RevenueByProductFilterDTO.Time.Equal.Value == TODAY)
             {
-                Start = new DateTime(Now.Year, Now.Month, Now.Day);
+                Start = LocalStartDay(CurrentContext);
                 End = Start.AddDays(1).AddSeconds(-1);
             }
             else if (DashboardDirector_Top5RevenueByProductFilterDTO.Time.Equal.Value == THIS_WEEK)
             {
                 int diff = (7 + (Now.DayOfWeek - DayOfWeek.Monday)) % 7;
-                Start = Now.AddDays(-1 * diff);
+                Start = LocalStartDay(CurrentContext).AddDays(-1 * diff);
                 End = Start.AddDays(7).AddSeconds(-1);
             }
             else if (DashboardDirector_Top5RevenueByProductFilterDTO.Time.Equal.Value == THIS_MONTH)
             {
-                Start = new DateTime(Now.Year, Now.Month, 1);
+                Start = new DateTime(Now.Year, Now.Month, 1).AddHours(0 - CurrentContext.TimeZone);
                 End = Start.AddMonths(1).AddSeconds(-1);
             }
             else if (DashboardDirector_Top5RevenueByProductFilterDTO.Time.Equal.Value == LAST_MONTH)
             {
-                Start = new DateTime(Now.Year, Now.Month, 1).AddMonths(-1);
+                Start = new DateTime(Now.Year, Now.Month, 1).AddMonths(-1).AddHours(0 - CurrentContext.TimeZone);
                 End = Start.AddMonths(1).AddSeconds(-1);
             }
 
@@ -504,28 +503,28 @@ namespace DMS.Rpc.dashboards.director
             if (DashboardDirector_Top5RevenueByStoreFilterDTO.Time.Equal.HasValue == false)
             {
                 DashboardDirector_Top5RevenueByStoreFilterDTO.Time.Equal = 0;
-                Start = new DateTime(Now.Year, Now.Month, Now.Day);
+                Start = LocalStartDay(CurrentContext);
                 End = Start.AddDays(1).AddSeconds(-1);
             }
             else if (DashboardDirector_Top5RevenueByStoreFilterDTO.Time.Equal.Value == TODAY)
             {
-                Start = new DateTime(Now.Year, Now.Month, Now.Day);
+                Start = LocalStartDay(CurrentContext);
                 End = Start.AddDays(1).AddSeconds(-1);
             }
             else if (DashboardDirector_Top5RevenueByStoreFilterDTO.Time.Equal.Value == THIS_WEEK)
             {
                 int diff = (7 + (Now.DayOfWeek - DayOfWeek.Monday)) % 7;
-                Start = Now.AddDays(-1 * diff);
+                Start = LocalStartDay(CurrentContext).AddDays(-1 * diff);
                 End = Start.AddDays(7).AddSeconds(-1);
             }
             else if (DashboardDirector_Top5RevenueByStoreFilterDTO.Time.Equal.Value == THIS_MONTH)
             {
-                Start = new DateTime(Now.Year, Now.Month, 1);
+                Start = new DateTime(Now.Year, Now.Month, 1).AddHours(0 - CurrentContext.TimeZone);
                 End = Start.AddMonths(1).AddSeconds(-1);
             }
             else if (DashboardDirector_Top5RevenueByStoreFilterDTO.Time.Equal.Value == LAST_MONTH)
             {
-                Start = new DateTime(Now.Year, Now.Month, 1).AddMonths(-1);
+                Start = new DateTime(Now.Year, Now.Month, 1).AddMonths(-1).AddHours(0 - CurrentContext.TimeZone);
                 End = Start.AddMonths(1).AddSeconds(-1);
             }
 
@@ -556,13 +555,13 @@ namespace DMS.Rpc.dashboards.director
         {
             AppUser CurrentUser = await AppUserService.Get(CurrentContext.UserId);
             DateTime Now = StaticParams.DateTimeNow.Date;
-            DateTime Start = new DateTime(Now.Year, Now.Month, Now.Day);
+            DateTime Start = LocalStartDay(CurrentContext);
             DateTime End = new DateTime(Now.Year, Now.Month, Now.Day);
 
             if (DashboardDirector_RevenueFluctuationFilterDTO.Time.Equal.HasValue == false
                 || DashboardDirector_RevenueFluctuationFilterDTO.Time.Equal.Value == THIS_MONTH)
             {
-                Start = new DateTime(Now.Year, Now.Month, 1);
+                Start = new DateTime(Now.Year, Now.Month, 1).AddHours(0 - CurrentContext.TimeZone);
                 End = Start.AddMonths(1).AddSeconds(-1);
 
                 var query = from i in DataContext.IndirectSalesOrder
@@ -605,7 +604,7 @@ namespace DMS.Rpc.dashboards.director
             }
             else if (DashboardDirector_RevenueFluctuationFilterDTO.Time.Equal.Value == LAST_MONTH)
             {
-                Start = new DateTime(Now.Year, Now.Month, 1).AddMonths(-1);
+                Start = new DateTime(Now.Year, Now.Month, 1).AddMonths(-1).AddHours(0 - CurrentContext.TimeZone);
                 End = Start.AddMonths(1).AddSeconds(-1);
 
                 var query = from i in DataContext.IndirectSalesOrder
@@ -649,7 +648,7 @@ namespace DMS.Rpc.dashboards.director
             else if (DashboardDirector_RevenueFluctuationFilterDTO.Time.Equal.Value == THIS_QUARTER)
             {
                 var this_quarter = Convert.ToInt32(Math.Ceiling(Now.Month / 3m));
-                Start = new DateTime(Now.Year, (this_quarter - 1) * 3 + 1, 1);
+                Start = new DateTime(Now.Year, (this_quarter - 1) * 3 + 1, 1).AddHours(0 - CurrentContext.TimeZone);
                 End = Start.AddMonths(3).AddSeconds(-1);
 
                 var query = from i in DataContext.IndirectSalesOrder
@@ -694,7 +693,7 @@ namespace DMS.Rpc.dashboards.director
             else if (DashboardDirector_RevenueFluctuationFilterDTO.Time.Equal.Value == LAST_QUATER)
             {
                 var this_quarter = Convert.ToInt32(Math.Ceiling(Now.Month / 3m));
-                Start = new DateTime(Now.Year, (this_quarter - 1) * 3 + 1, 1).AddMonths(-3);
+                Start = new DateTime(Now.Year, (this_quarter - 1) * 3 + 1, 1).AddMonths(-3).AddHours(0 - CurrentContext.TimeZone);
                 End = Start.AddMonths(3).AddSeconds(-1);
 
                 var query = from i in DataContext.IndirectSalesOrder
@@ -738,7 +737,7 @@ namespace DMS.Rpc.dashboards.director
             }
             else if (DashboardDirector_RevenueFluctuationFilterDTO.Time.Equal.Value == YEAR)
             {
-                Start = new DateTime(Now.Year, 1, 1);
+                Start = new DateTime(Now.Year, 1, 1).AddHours(0 - CurrentContext.TimeZone);
                 End = Start.AddYears(1).AddSeconds(-1);
 
                 var query = from i in DataContext.IndirectSalesOrder
@@ -786,13 +785,13 @@ namespace DMS.Rpc.dashboards.director
         {
             AppUser CurrentUser = await AppUserService.Get(CurrentContext.UserId);
             DateTime Now = StaticParams.DateTimeNow.Date;
-            DateTime Start = new DateTime(Now.Year, Now.Month, Now.Day);
+            DateTime Start = LocalStartDay(CurrentContext);
             DateTime End = new DateTime(Now.Year, Now.Month, Now.Day);
 
             if (DashboardDirector_IndirectSalesOrderFluctuationFilterDTO.Time.Equal.HasValue == false
                 || DashboardDirector_IndirectSalesOrderFluctuationFilterDTO.Time.Equal.Value == THIS_MONTH)
             {
-                Start = new DateTime(Now.Year, Now.Month, 1);
+                Start = new DateTime(Now.Year, Now.Month, 1).AddHours(0 - CurrentContext.TimeZone);
                 End = Start.AddMonths(1).AddSeconds(-1);
 
                 var query = from i in DataContext.IndirectSalesOrder
@@ -834,7 +833,7 @@ namespace DMS.Rpc.dashboards.director
             }
             else if (DashboardDirector_IndirectSalesOrderFluctuationFilterDTO.Time.Equal.Value == LAST_MONTH)
             {
-                Start = new DateTime(Now.Year, Now.Month, 1).AddMonths(-1);
+                Start = new DateTime(Now.Year, Now.Month, 1).AddMonths(-1).AddHours(0 - CurrentContext.TimeZone);
                 End = Start.AddMonths(1).AddSeconds(-1);
 
                 var query = from i in DataContext.IndirectSalesOrder
@@ -877,7 +876,7 @@ namespace DMS.Rpc.dashboards.director
             else if (DashboardDirector_IndirectSalesOrderFluctuationFilterDTO.Time.Equal.Value == THIS_QUARTER)
             {
                 var this_quarter = Convert.ToInt32(Math.Ceiling(Now.Month / 3m));
-                Start = new DateTime(Now.Year, (this_quarter - 1) * 3 + 1, 1);
+                Start = new DateTime(Now.Year, (this_quarter - 1) * 3 + 1, 1).AddHours(0 - CurrentContext.TimeZone);
                 End = Start.AddMonths(3).AddSeconds(-1);
 
                 var query = from i in DataContext.IndirectSalesOrder
@@ -921,7 +920,7 @@ namespace DMS.Rpc.dashboards.director
             else if (DashboardDirector_IndirectSalesOrderFluctuationFilterDTO.Time.Equal.Value == LAST_QUATER)
             {
                 var this_quarter = Convert.ToInt32(Math.Ceiling(Now.Month / 3m));
-                Start = new DateTime(Now.Year, (this_quarter - 1) * 3 + 1, 1).AddMonths(-3);
+                Start = new DateTime(Now.Year, (this_quarter - 1) * 3 + 1, 1).AddMonths(-3).AddHours(0 - CurrentContext.TimeZone);
                 End = Start.AddMonths(3).AddSeconds(-1);
 
                 var query = from i in DataContext.IndirectSalesOrder
@@ -964,7 +963,7 @@ namespace DMS.Rpc.dashboards.director
             }
             else if (DashboardDirector_IndirectSalesOrderFluctuationFilterDTO.Time.Equal.Value == YEAR)
             {
-                Start = new DateTime(Now.Year, 1, 1);
+                Start = new DateTime(Now.Year, 1, 1).AddHours(0 - CurrentContext.TimeZone);
                 End = Start.AddYears(1).AddSeconds(-1);
 
                 var query = from i in DataContext.IndirectSalesOrder
@@ -1011,13 +1010,13 @@ namespace DMS.Rpc.dashboards.director
         {
             AppUser CurrentUser = await AppUserService.Get(CurrentContext.UserId);
             DateTime Now = StaticParams.DateTimeNow.Date;
-            DateTime Start = new DateTime(Now.Year, Now.Month, Now.Day);
+            DateTime Start = LocalStartDay(CurrentContext);
             DateTime End = new DateTime(Now.Year, Now.Month, Now.Day);
 
             if (DashboardDirector_SaledItemFluctuationFilterDTO.Time.Equal.HasValue == false
                 || DashboardDirector_SaledItemFluctuationFilterDTO.Time.Equal.Value == THIS_MONTH)
             {
-                Start = new DateTime(Now.Year, Now.Month, 1);
+                Start = new DateTime(Now.Year, Now.Month, 1).AddHours(0 - CurrentContext.TimeZone);
                 End = Start.AddMonths(1).AddSeconds(-1);
 
                 var query = from i in DataContext.IndirectSalesOrder
@@ -1060,7 +1059,7 @@ namespace DMS.Rpc.dashboards.director
             }
             else if (DashboardDirector_SaledItemFluctuationFilterDTO.Time.Equal.Value == LAST_MONTH)
             {
-                Start = new DateTime(Now.Year, Now.Month, 1).AddMonths(-1);
+                Start = new DateTime(Now.Year, Now.Month, 1).AddMonths(-1).AddHours(0 - CurrentContext.TimeZone);
                 End = Start.AddMonths(1).AddSeconds(-1);
 
                 var query = from i in DataContext.IndirectSalesOrder
@@ -1104,7 +1103,7 @@ namespace DMS.Rpc.dashboards.director
             else if (DashboardDirector_SaledItemFluctuationFilterDTO.Time.Equal.Value == THIS_QUARTER)
             {
                 var this_quarter = Convert.ToInt32(Math.Ceiling(Now.Month / 3m));
-                Start = new DateTime(Now.Year, (this_quarter - 1) * 3 + 1, 1);
+                Start = new DateTime(Now.Year, (this_quarter - 1) * 3 + 1, 1).AddHours(0 - CurrentContext.TimeZone);
                 End = Start.AddMonths(3).AddSeconds(-1);
 
                 var query = from i in DataContext.IndirectSalesOrder
@@ -1149,7 +1148,7 @@ namespace DMS.Rpc.dashboards.director
             else if (DashboardDirector_SaledItemFluctuationFilterDTO.Time.Equal.Value == LAST_QUATER)
             {
                 var this_quarter = Convert.ToInt32(Math.Ceiling(Now.Month / 3m));
-                Start = new DateTime(Now.Year, (this_quarter - 1) * 3 + 1, 1).AddMonths(-3);
+                Start = new DateTime(Now.Year, (this_quarter - 1) * 3 + 1, 1).AddMonths(-3).AddHours(0 - CurrentContext.TimeZone);
                 End = Start.AddMonths(3).AddSeconds(-1);
 
                 var query = from i in DataContext.IndirectSalesOrder
@@ -1193,7 +1192,7 @@ namespace DMS.Rpc.dashboards.director
             }
             else if (DashboardDirector_SaledItemFluctuationFilterDTO.Time.Equal.Value == YEAR)
             {
-                Start = new DateTime(Now.Year, 1, 1);
+                Start = new DateTime(Now.Year, 1, 1).AddHours(0 - CurrentContext.TimeZone);
                 End = Start.AddYears(1).AddSeconds(-1);
 
                 var query = from i in DataContext.IndirectSalesOrder
