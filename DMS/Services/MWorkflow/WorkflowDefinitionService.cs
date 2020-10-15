@@ -252,6 +252,7 @@ namespace DMS.Services.MWorkflow
                     WorkflowStep.WorkflowDefinitionId = WorkflowDefinition.Id;
                     WorkflowStep.Code = $"{WorkflowStep.Code}_Clone_{counter}";
                     WorkflowStep.Name = $"{WorkflowStep.Name}_Clone_{counter}";
+                    WorkflowStep.StatusId = WorkflowStep.StatusId;
                     WorkflowDefinition.WorkflowSteps.Add(WorkflowStep);
                 }
                 await UOW.WorkflowStepRepository.BulkMerge(WorkflowDefinition.WorkflowSteps);
