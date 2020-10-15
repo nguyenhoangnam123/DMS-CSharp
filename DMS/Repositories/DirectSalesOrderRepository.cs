@@ -626,8 +626,6 @@ namespace DMS.Repositories
                 CreatedAt = x.CreatedAt,
                 UpdatedAt = x.UpdatedAt,
                 DeliveryDate = x.DeliveryDate,
-                CreatedAt = x.CreatedAt,
-                UpdatedAt = x.UpdatedAt,
                 EditedPriceStatusId = x.EditedPriceStatusId,
                 Note = x.Note,
                 RequestStateId = x.RequestStateId,
