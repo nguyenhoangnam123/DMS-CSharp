@@ -623,6 +623,8 @@ namespace DMS.Repositories
                 DeliveryAddress = x.DeliveryAddress,
                 SaleEmployeeId = x.SaleEmployeeId,
                 OrderDate = x.OrderDate,
+                CreatedAt = x.CreatedAt,
+                UpdatedAt = x.UpdatedAt,
                 DeliveryDate = x.DeliveryDate,
                 CreatedAt = x.CreatedAt,
                 UpdatedAt = x.UpdatedAt,
