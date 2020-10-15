@@ -17,7 +17,7 @@ namespace DMS.Entities
         public KpiGeneral KpiGeneral { get; set; }
         public Status Status { get; set; }
         public Guid RowId { get; set; }
-
+        public bool HasChanged { get; set; }
         public List<KpiGeneralContentKpiPeriodMapping> KpiGeneralContentKpiPeriodMappings { get; set; }
 
 

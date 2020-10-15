@@ -282,7 +282,7 @@ namespace DMS.Rpc.kpi_general
             {
                 Skip = 0,
                 Take = int.MaxValue,
-                Selects = AppUserSelect.Id | AppUserSelect.Username | AppUserSelect.DisplayName,
+                Selects = AppUserSelect.Id | AppUserSelect.Username | AppUserSelect.DisplayName | AppUserSelect.Organization,
                 OrganizationId = new IdFilter { Equal = AppUser.OrganizationId }
             };
             List<AppUser> Employees = await AppUserService.List(EmployeeFilter);
@@ -430,7 +430,7 @@ namespace DMS.Rpc.kpi_general
                     }
                     KpiGeneral.CreatorId = AppUser == null ? 0 : AppUser.Id;
                     KpiGeneral.Creator = AppUser;
-                    KpiGeneral.OrganizationId = AppUser.OrganizationId;
+                    KpiGeneral.OrganizationId = Employee.OrganizationId;
 
                     KpiGeneralCriterial = KpiCriteriaGeneralEnum.KpiCriteriaGeneralEnumList.Where(x => x.Name == CriterialValue.Trim()).FirstOrDefault();
                     KpiGeneralContent KpiGeneralContent = KpiGeneral.KpiGeneralContents.Where(x => x.KpiCriteriaGeneralId == KpiGeneralCriterial.Id).FirstOrDefault();
@@ -443,6 +443,7 @@ namespace DMS.Rpc.kpi_general
                         KpiGeneral.KpiGeneralContents.Add(KpiGeneralContent);
                     }
                     KpiGeneralContent.STT = i;
+                    KpiGeneralContent.HasChanged = true;
 
                     #region Tháng 1
                     KpiGeneralContentKpiPeriodMapping
@@ -735,13 +736,16 @@ namespace DMS.Rpc.kpi_general
 
                     foreach (var content in KpiGeneral.KpiGeneralContents)
                     {
-                        bool flag = false;
-                        foreach (var item in content.KpiGeneralContentKpiPeriodMappings)
+                        if (content.HasChanged)
                         {
-                            if (item.Value != null) flag = true;
+                            bool flag = false;
+                            foreach (var item in content.KpiGeneralContentKpiPeriodMappings)
+                            {
+                                if (item.Value != null) flag = true;
+                            }
+                            if (!flag)
+                                errorContent.AppendLine($"Lỗi dòng thứ {content.STT}: Chưa nhập chỉ tiêu");
                         }
-                        if (!flag)
-                            errorContent.AppendLine($"Lỗi dòng thứ {content.STT}: Chưa nhập chỉ tiêu");
                     }
                 }
 

@@ -466,6 +466,14 @@ namespace DMS.Repositories
             }
             await DataContext.BulkMergeAsync(KpiGeneralDAOs);
 
+            var KpiGeneralIds = KpiGeneralDAOs.Select(x => x.Id).ToList();
+            await DataContext.KpiGeneralContentKpiPeriodMapping
+                .Where(x => KpiGeneralIds.Contains(x.KpiGeneralContent.KpiGeneralId))
+                .DeleteFromQueryAsync();
+            await DataContext.KpiGeneralContent
+                .Where(x => KpiGeneralIds.Contains(x.KpiGeneralId))
+                .DeleteFromQueryAsync();
+
             var KpiGeneralContentDAOs = new List<KpiGeneralContentDAO>();
             foreach (var KpiGeneral in KpiGenerals)
             {
