@@ -519,7 +519,7 @@ namespace DMS.Repositories
                 return false;
             AppUserDAO.Latitude = AppUser.Latitude;
             AppUserDAO.Longitude = AppUser.Longitude;
-            AppUserDAO.UpdatedAt = StaticParams.DateTimeNow;
+            AppUserDAO.GPSUpdatedAt = StaticParams.DateTimeNow;
             await DataContext.SaveChangesAsync();
             return true;
         }

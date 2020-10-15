@@ -106,6 +106,7 @@ namespace DMS.Models
         /// Ngày xoá
         /// </summary>
         public DateTime? DeletedAt { get; set; }
+        public DateTime GPSUpdatedAt { get; set; }
         /// <summary>
         /// Trường để đồng bộ
         /// </summary>
