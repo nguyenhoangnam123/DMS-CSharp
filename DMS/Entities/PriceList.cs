@@ -14,9 +14,14 @@ namespace DMS.Entities
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
         public long StatusId { get; set; }
+        public long CreatorId { get; set; }
         public long OrganizationId { get; set; }
         public long PriceListTypeId { get; set; }
         public long SalesOrderTypeId { get; set; }
+        public Guid RowId { get; set; }
+        public long RequestStateId { get; set; }
+        public AppUser Creator { get; set; }
+        public RequestState RequestState { get; set; }
         public Organization Organization { get; set; }
         public PriceListType PriceListType { get; set; }
         public SalesOrderType SalesOrderType { get; set; }
@@ -25,6 +30,7 @@ namespace DMS.Entities
         public List<PriceListStoreMapping> PriceListStoreMappings { get; set; }
         public List<PriceListStoreTypeMapping> PriceListStoreTypeMappings { get; set; }
         public List<PriceListStoreGroupingMapping> PriceListStoreGroupingMappings { get; set; }
+        public List<RequestWorkflowStepMapping> RequestWorkflowStepMappings { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
 
@@ -43,12 +49,15 @@ namespace DMS.Entities
         public IdFilter Id { get; set; }
         public StringFilter Code { get; set; }
         public StringFilter Name { get; set; }
+        public IdFilter CreatorId { get; set; }
         public DateFilter StartDate { get; set; }
         public DateFilter EndDate { get; set; }
         public IdFilter StatusId { get; set; }
         public IdFilter OrganizationId { get; set; }
         public IdFilter PriceListTypeId { get; set; }
         public IdFilter SalesOrderTypeId { get; set; }
+        public IdFilter RequestStateId { get; set; }
+        public IdFilter ApproverId { get; set; }
         public DateFilter CreatedAt { get; set; }
         public DateFilter UpdatedAt { get; set; }
         public List<PriceListFilter> OrFilter { get; set; }
@@ -68,6 +77,8 @@ namespace DMS.Entities
         Organization = 6,
         PriceListType = 7,
         SalesOrderType = 8,
+        RequestState = 9,
+        Creator = 10,
         CreatedAt = 50,
         UpdatedAt = 51,
     }
@@ -85,5 +96,7 @@ namespace DMS.Entities
         Organization = E._6,
         PriceListType = E._7,
         SalesOrderType = E._8,
+        RequestState = E._9,
+        Creator = E._10,
     }
 }

@@ -944,8 +944,8 @@ namespace DMS.Repositories
             IndirectSalesOrderDAO.TotalTaxAmount = IndirectSalesOrder.TotalTaxAmount;
             IndirectSalesOrderDAO.Total = IndirectSalesOrder.Total;
             IndirectSalesOrderDAO.RowId = Guid.NewGuid();
-            IndirectSalesOrderDAO.StoreCheckingId = IndirectSalesOrder.StoreCheckingId;
             IndirectSalesOrderDAO.RequestStateId = IndirectSalesOrder.RequestStateId;
+            IndirectSalesOrderDAO.StoreCheckingId = IndirectSalesOrder.StoreCheckingId;
             IndirectSalesOrderDAO.CreatedAt = StaticParams.DateTimeNow;
             IndirectSalesOrderDAO.UpdatedAt = StaticParams.DateTimeNow;
             DataContext.IndirectSalesOrder.Add(IndirectSalesOrderDAO);
