@@ -36,6 +36,8 @@ namespace DMS.Rpc.promotion_code
         public const string SingleListStatus = Default + "/single-list-status";
         public const string SingleListProduct = Default + "/single-list-product";
         public const string SingleListStore = Default + "/single-list-store";
+        public const string SingleListStoreType = Default + "/single-list-store-type";
+        public const string SingleListStoreGrouping = Default + "/single-list-store-grouping";
         
         public const string CountOrganization = Default + "/count-organization";
         public const string ListOrganization = Default + "/list-organization";
@@ -65,27 +67,29 @@ namespace DMS.Rpc.promotion_code
             { "Tìm kiếm", new List<string> { 
                 Master, Count, List,
                 Get, GetPreview,
-                
-                 FilterListOrganization, FilterListPromotionDiscountType, FilterListPromotionProductAppliedType, FilterListPromotionType, FilterListStatus, FilterListProduct, FilterListStore, } },
+                FilterListOrganization, FilterListPromotionDiscountType, FilterListPromotionProductAppliedType, FilterListPromotionType, FilterListStatus, FilterListProduct, FilterListStore, } },
             { "Thêm", new List<string> { 
                 Master, Count, List, Get, GetPreview,
                 FilterListOrganization, FilterListPromotionDiscountType, FilterListPromotionProductAppliedType, FilterListPromotionType, FilterListStatus, FilterListProduct, FilterListStore,  
                 Detail, Create, 
-                SingleListOrganization, SingleListPromotionDiscountType, SingleListPromotionProductAppliedType, SingleListPromotionType, SingleListStatus, SingleListProduct, SingleListStore, 
-                Count, List, Count, List, Count, List, Count, List, Count, List, Count, List, Count, List, Count, List, Count, List,  } },
+                SingleListOrganization, SingleListPromotionDiscountType, SingleListPromotionProductAppliedType, SingleListPromotionType, SingleListStatus, SingleListProduct, SingleListStore,
+                SingleListStoreType, SingleListStoreGrouping,
+                CountOrganization, ListOrganization, CountProduct, ListProduct, CountStore, ListStore, } },
 
             { "Sửa", new List<string> { 
                 Master, Count, List, Get, GetPreview,
                 FilterListOrganization, FilterListPromotionDiscountType, FilterListPromotionProductAppliedType, FilterListPromotionType, FilterListStatus, FilterListProduct, FilterListStore,  
                 Detail, Update, 
-                SingleListOrganization, SingleListPromotionDiscountType, SingleListPromotionProductAppliedType, SingleListPromotionType, SingleListStatus, SingleListProduct, SingleListStore,  
-                Count, List, Count, List, Count, List, Count, List, Count, List, Count, List, Count, List, Count, List, Count, List,  } },
+                SingleListOrganization, SingleListPromotionDiscountType, SingleListPromotionProductAppliedType, SingleListPromotionType, SingleListStatus, SingleListProduct, SingleListStore,
+                SingleListStoreType, SingleListStoreGrouping,
+                CountOrganization, ListOrganization, CountProduct, ListProduct, CountStore, ListStore, } },
 
             { "Xoá", new List<string> { 
                 Master, Count, List, Get, GetPreview,
                 FilterListOrganization, FilterListPromotionDiscountType, FilterListPromotionProductAppliedType, FilterListPromotionType, FilterListStatus, FilterListProduct, FilterListStore,  
                 Delete, 
-                SingleListOrganization, SingleListPromotionDiscountType, SingleListPromotionProductAppliedType, SingleListPromotionType, SingleListStatus, SingleListProduct, SingleListStore,  } },
+                SingleListOrganization, SingleListPromotionDiscountType, SingleListPromotionProductAppliedType, SingleListPromotionType, SingleListStatus, SingleListProduct, SingleListStore,
+                SingleListStoreType, SingleListStoreGrouping } },
 
             { "Xoá nhiều", new List<string> { 
                 Master, Count, List, Get, GetPreview,
