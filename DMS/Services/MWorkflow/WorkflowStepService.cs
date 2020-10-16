@@ -151,6 +151,7 @@ namespace DMS.Services.MWorkflow
                 {
                     oldData.SubjectMailForReject = WorkflowStep.SubjectMailForReject;
                     oldData.BodyMailForReject = WorkflowStep.BodyMailForReject;
+                    oldData.ModifierId = WorkflowStep.ModifierId;
                     await UOW.WorkflowStepRepository.Update(oldData);
                 }
                 else
