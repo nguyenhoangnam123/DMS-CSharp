@@ -26,6 +26,7 @@ using Helpers;
 using System.IO;
 using GleamTech.DocumentUltimate;
 using System.Net.Mime;
+using DMS.Services.MStoreStatus;
 
 namespace DMS.Rpc.direct_sales_order
 {
@@ -45,6 +46,7 @@ namespace DMS.Rpc.direct_sales_order
         private IRequestStateService RequestStateService;
         private ISupplierService SupplierService;
         private IStoreGroupingService StoreGroupingService;
+        private IStoreStatusService StoreStatusService;
         private IStoreTypeService StoreTypeService;
         private ITaxTypeService TaxTypeService;
         private ICurrentContext CurrentContext;
@@ -63,6 +65,7 @@ namespace DMS.Rpc.direct_sales_order
             IRequestStateService RequestStateService,
             ISupplierService SupplierService,
             IStoreGroupingService StoreGroupingService,
+            IStoreStatusService StoreStatusService,
             IStoreTypeService StoreTypeService,
             ITaxTypeService TaxTypeService,
             ICurrentContext CurrentContext
@@ -82,6 +85,7 @@ namespace DMS.Rpc.direct_sales_order
             this.RequestStateService = RequestStateService;
             this.SupplierService = SupplierService;
             this.StoreGroupingService = StoreGroupingService;
+            this.StoreStatusService = StoreStatusService;
             this.StoreTypeService = StoreTypeService;
             this.TaxTypeService = TaxTypeService;
             this.CurrentContext = CurrentContext;
@@ -728,6 +732,7 @@ namespace DMS.Rpc.direct_sales_order
             DirectSalesOrderFilter.GeneralDiscountAmount = DirectSalesOrder_DirectSalesOrderFilterDTO.GeneralDiscountAmount;
             DirectSalesOrderFilter.TotalTaxAmount = DirectSalesOrder_DirectSalesOrderFilterDTO.TotalTaxAmount;
             DirectSalesOrderFilter.Total = DirectSalesOrder_DirectSalesOrderFilterDTO.Total;
+            DirectSalesOrderFilter.StoreStatusId = DirectSalesOrder_DirectSalesOrderFilterDTO.StoreStatusId;
             return DirectSalesOrderFilter;
         }
     }
