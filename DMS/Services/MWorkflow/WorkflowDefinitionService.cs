@@ -112,7 +112,7 @@ namespace DMS.Services.MWorkflow
                         WorkflowTypeId = new IdFilter { Equal = WorkflowDefinition.WorkflowTypeId },
                         Skip = 0,
                         Take = int.MaxValue,
-                        Selects = WorkflowDefinitionSelect.Id | WorkflowDefinitionSelect.EndDate
+                        Selects = WorkflowDefinitionSelect.Id | WorkflowDefinitionSelect.EndDate | WorkflowDefinitionSelect.WorkflowType | WorkflowDefinitionSelect.Organization
                     };
 
                     var WorkflowDefinitions = await UOW.WorkflowDefinitionRepository.List(WorkflowDefinitionFilter);
