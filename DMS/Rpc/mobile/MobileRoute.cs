@@ -34,6 +34,7 @@ namespace DMS.Rpc.mobile
         public const string SingleListEroute = Default + "/single-list-e-route";
         public const string SingleListStore = Default + "/single-list-store";
         public const string SingleListStoreGrouping = Default + "/single-list-store-grouping";
+        public const string SingleListStoreStatus = Default + "/single-list-store-status";
         public const string SingleListStoreType = Default + "/single-list-store-type";
         public const string SingleListTaxType = Default + "/single-list-tax-type";
         public const string SingleListUnitOfMeasure = Default + "/single-list-unit-of-measure";
@@ -98,7 +99,7 @@ namespace DMS.Rpc.mobile
                 Detail, CheckIn,  UpdateStoreChecking, CheckOut,
                 CreateIndirectSalesOrder, CreateProblem, SaveImage, GetSurveyForm, SaveSurveyForm,
                 CountItem, ListItem, CountStorePlanned, ListStorePlanned, CountStoreUnPlanned, ListStoreUnPlanned, CountStoreInScope, ListStoreInScope, CountProblem, ListProblem, CountSurvey, ListSurvey, CountStoreScouting, ListStoreScouting,
-                SingleListAlbum, SingleListAppUser, SingleListStore, SingleListTaxType, SingleListUnitOfMeasure, SingleListProblemType, SingleListStoreScoutingType, SingleListProvince, SingleListDistrict, SingleListWard, } },
+                SingleListAlbum, SingleListAppUser, SingleListStore, SingleListStoreStatus, SingleListTaxType, SingleListUnitOfMeasure, SingleListProblemType, SingleListStoreScoutingType, SingleListProvince, SingleListDistrict, SingleListWard, } },
         };
     }
 }

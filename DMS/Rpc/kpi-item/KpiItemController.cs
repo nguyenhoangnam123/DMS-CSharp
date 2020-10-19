@@ -288,22 +288,22 @@ namespace DMS.Rpc.kpi_item
 
                 string KpiPeriodValue = worksheet.Cells[2, 4].Value?.ToString();
                 GenericEnum KpiPeriod;
-                if (long.TryParse(KpiPeriodValue, out long KpiPeriodId))
-                    KpiPeriod = KpiPeriodEnum.KpiPeriodEnumList.Where(x => x.Id == KpiPeriodId).FirstOrDefault();
+                if (!string.IsNullOrWhiteSpace(KpiPeriodValue))
+                    KpiPeriod = KpiPeriodEnum.KpiPeriodEnumList.Where(x => x.Name == KpiPeriodValue).FirstOrDefault();
                 else
-                    return BadRequest(new { message = "Kỳ Kpi không hợp lệ" });
+                    return BadRequest(new { message = "Chưa chọn kỳ Kpi hoặc kỳ Kpi không hợp lệ" });
 
                 string KpiYearValue = worksheet.Cells[2, 6].Value?.ToString();
                 GenericEnum KpiYear;
-                if (long.TryParse(KpiYearValue, out long KpiYearId))
-                    KpiYear = KpiYearEnum.KpiYearEnumList.Where(x => x.Id == KpiYearId).FirstOrDefault();
+                if (!string.IsNullOrWhiteSpace(KpiYearValue))
+                    KpiYear = KpiYearEnum.KpiYearEnumList.Where(x => x.Name == KpiYearValue).FirstOrDefault();
                 else
-                    return BadRequest(new { message = "Năm Kpi không hợp lệ" });
+                    return BadRequest(new { message = "Chưa chọn măm Kpi hoặc năm Kpi không hợp lệ" });
 
                 for (int i = StartRow; i <= worksheet.Dimension.End.Row; i++)
                 {
-                    string UsernameValue = worksheet.Cells[i + StartRow, UsernameColumn].Value?.ToString();
-                    string ItemCodeValue = worksheet.Cells[i + StartRow, ItemCodeColumn].Value?.ToString();
+                    string UsernameValue = worksheet.Cells[i, UsernameColumn].Value?.ToString();
+                    string ItemCodeValue = worksheet.Cells[i, ItemCodeColumn].Value?.ToString();
                     if (UsernameValue != null && UsernameValue.ToLower() == "END".ToLower())
                         break;
                     else if (!string.IsNullOrWhiteSpace(UsernameValue) && string.IsNullOrWhiteSpace(ItemCodeValue))
@@ -330,12 +330,12 @@ namespace DMS.Rpc.kpi_item
                         }
                     }
 
-                    string QuantityValue = worksheet.Cells[i + StartRow, QuantityColumn].Value?.ToString();
-                    string RevenueValue = worksheet.Cells[i + StartRow, RevenueColumn].Value?.ToString();
-                    string SalesOrderValue = worksheet.Cells[i + StartRow, SaleOrderColumn].Value?.ToString();
-                    string StoreValue = worksheet.Cells[i + StartRow, StoreColumn].Value?.ToString();
+                    string QuantityValue = worksheet.Cells[i, QuantityColumn].Value?.ToString();
+                    string RevenueValue = worksheet.Cells[i, RevenueColumn].Value?.ToString();
+                    string SalesOrderValue = worksheet.Cells[i, SaleOrderColumn].Value?.ToString();
+                    string StoreValue = worksheet.Cells[i, StoreColumn].Value?.ToString();
 
-                    AppUser Employee = Employees.Where(x => x.Username == UsernameValue).FirstOrDefault();
+                    AppUser Employee = Employees.Where(x => x.Username.ToLower() == UsernameValue.ToLower()).FirstOrDefault();
                     if (Employee == null)
                     {
                         errorContent.AppendLine($"Lỗi dòng thứ {i + 1}: Nhân viên không tồn tại");

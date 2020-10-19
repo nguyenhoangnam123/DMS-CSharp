@@ -37,6 +37,7 @@ namespace DMS.Rpc.mobile
         public bool Used { get; set; }
         public long? StoreScoutingId { get; set; }
         public long? StoreId { get; set; }
+        public long StoreStatusId { get; set; }
         public Mobile_DistrictDTO District { get; set; }
         public Mobile_OrganizationDTO Organization { get; set; }
         public Mobile_StoreDTO ParentStore { get; set; }
@@ -46,6 +47,7 @@ namespace DMS.Rpc.mobile
         public Mobile_WardDTO Ward { get; set; }
         public Mobile_StatusDTO Status { get; set; }
         public Mobile_StoreScoutingDTO StoreScouting { get; set; }
+        public Mobile_StoreStatusDTO StoreStatus { get; set; }
         public List<Mobile_StoreImageMappingDTO> StoreImageMappings { get; set; }
         public List<Mobile_AlbumImageMappingDTO> AlbumImageMappings { get; set; }
         public List<Mobile_StoreCheckingDTO> StoreCheckings { get; set; }
@@ -83,6 +85,7 @@ namespace DMS.Rpc.mobile
             this.Used = Store.Used;
             this.StoreScoutingId = Store.StoreScoutingId;
             this.Distance = Store.Distance;
+            this.StoreStatusId = Store.StoreStatusId;
             this.Status = Store.Status == null ? null : new Mobile_StatusDTO(Store.Status);
             this.District = Store.District == null ? null : new Mobile_DistrictDTO(Store.District);
             this.Organization = Store.Organization == null ? null : new Mobile_OrganizationDTO(Store.Organization);
@@ -92,6 +95,7 @@ namespace DMS.Rpc.mobile
             this.StoreType = Store.StoreType == null ? null : new Mobile_StoreTypeDTO(Store.StoreType);
             this.Ward = Store.Ward == null ? null : new Mobile_WardDTO(Store.Ward);
             this.StoreScouting = Store.StoreScouting == null ? null : new Mobile_StoreScoutingDTO(Store.StoreScouting);
+            this.StoreStatus = Store.StoreStatus == null ? null : new Mobile_StoreStatusDTO(Store.StoreStatus);
             this.StoreImageMappings = Store.StoreImageMappings?.Select(x => new Mobile_StoreImageMappingDTO(x)).ToList();
             this.StoreCheckings = Store.StoreCheckings?.Select(x => new Mobile_StoreCheckingDTO(x)).ToList();
             this.Errors = Store.Errors;
@@ -151,6 +155,7 @@ namespace DMS.Rpc.mobile
         public StringFilter LegalEntity { get; set; }
 
         public IdFilter StatusId { get; set; }
+        public IdFilter StoreStatusId { get; set; }
 
         public StoreOrder OrderBy { get; set; }
     }

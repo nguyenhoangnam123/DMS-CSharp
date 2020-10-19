@@ -224,6 +224,7 @@ namespace DMS.Rpc.app_user
                     if (Employee == null)
                     {
                         Employee = new AppUser();
+                        AppUsers.Add(Employee);
                         Employee.Id = appUser.Id;
                         Employee.Username = appUser.Username;
                         Employee.AppUserStoreMappings = new List<AppUserStoreMapping>();

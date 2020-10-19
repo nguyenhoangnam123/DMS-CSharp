@@ -100,6 +100,7 @@ namespace DMS.Rpc.indirect_sales_order
         public DecimalFilter GeneralDiscountAmount { get; set; }
         public DecimalFilter TotalTaxAmount { get; set; }
         public DecimalFilter Total { get; set; }
+        public IdFilter StoreStatusId { get; set; }
         public IndirectSalesOrderOrder OrderBy { get; set; }
     }
 }

@@ -339,6 +339,31 @@ namespace DMS.Rpc.promotion_code
                 .Select(x => new PromotionCode_ProductDTO(x)).ToList();
             return PromotionCode_ProductDTOs;
         }
+        [Route(PromotionCodeRoute.SingleListStoreGrouping), HttpPost]
+        public async Task<List<PromotionCode_StoreGroupingDTO>> SingleListStoreGrouping([FromBody] PromotionCode_StoreGroupingFilterDTO PromotionCode_StoreGroupingFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            StoreGroupingFilter StoreGroupingFilter = new StoreGroupingFilter();
+            StoreGroupingFilter.Skip = 0;
+            StoreGroupingFilter.Take = int.MaxValue;
+            StoreGroupingFilter.OrderBy = StoreGroupingOrder.Id;
+            StoreGroupingFilter.OrderType = OrderType.ASC;
+            StoreGroupingFilter.Selects = StoreGroupingSelect.ALL;
+            StoreGroupingFilter.Id = PromotionCode_StoreGroupingFilterDTO.Id;
+            StoreGroupingFilter.Code = PromotionCode_StoreGroupingFilterDTO.Code;
+            StoreGroupingFilter.Name = PromotionCode_StoreGroupingFilterDTO.Name;
+            StoreGroupingFilter.ParentId = PromotionCode_StoreGroupingFilterDTO.ParentId;
+            StoreGroupingFilter.Path = PromotionCode_StoreGroupingFilterDTO.Path;
+            StoreGroupingFilter.Level = PromotionCode_StoreGroupingFilterDTO.Level;
+            StoreGroupingFilter.StatusId = PromotionCode_StoreGroupingFilterDTO.StatusId;
+
+            List<StoreGrouping> StoreGroupings = await StoreGroupingService.List(StoreGroupingFilter);
+            List<PromotionCode_StoreGroupingDTO> PromotionCode_StoreGroupingDTOs = StoreGroupings
+                .Select(x => new PromotionCode_StoreGroupingDTO(x)).ToList();
+            return PromotionCode_StoreGroupingDTOs;
+        }
         [Route(PromotionCodeRoute.SingleListStore), HttpPost]
         public async Task<List<PromotionCode_StoreDTO>> SingleListStore([FromBody] PromotionCode_StoreFilterDTO PromotionCode_StoreFilterDTO)
         {
@@ -384,7 +409,29 @@ namespace DMS.Rpc.promotion_code
                 .Select(x => new PromotionCode_StoreDTO(x)).ToList();
             return PromotionCode_StoreDTOs;
         }
+        [Route(PromotionCodeRoute.SingleListStoreType), HttpPost]
+        public async Task<List<PromotionCode_StoreTypeDTO>> SingleListStoreType([FromBody] PromotionCode_StoreTypeFilterDTO PromotionCode_StoreTypeFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
 
+            StoreTypeFilter StoreTypeFilter = new StoreTypeFilter();
+            StoreTypeFilter.Skip = 0;
+            StoreTypeFilter.Take = 20;
+            StoreTypeFilter.OrderBy = StoreTypeOrder.Id;
+            StoreTypeFilter.OrderType = OrderType.ASC;
+            StoreTypeFilter.Selects = StoreTypeSelect.ALL;
+            StoreTypeFilter.Id = PromotionCode_StoreTypeFilterDTO.Id;
+            StoreTypeFilter.Code = PromotionCode_StoreTypeFilterDTO.Code;
+            StoreTypeFilter.Name = PromotionCode_StoreTypeFilterDTO.Name;
+            StoreTypeFilter.ColorId = PromotionCode_StoreTypeFilterDTO.ColorId;
+            StoreTypeFilter.StatusId = PromotionCode_StoreTypeFilterDTO.StatusId;
+
+            List<StoreType> StoreTypes = await StoreTypeService.List(StoreTypeFilter);
+            List<PromotionCode_StoreTypeDTO> PromotionCode_StoreTypeDTOs = StoreTypes
+                .Select(x => new PromotionCode_StoreTypeDTO(x)).ToList();
+            return PromotionCode_StoreTypeDTOs;
+        }
         [Route(PromotionCodeRoute.CountOrganization), HttpPost]
         public async Task<long> CountOrganization([FromBody] PromotionCode_OrganizationFilterDTO PromotionCode_OrganizationFilterDTO)
         {
