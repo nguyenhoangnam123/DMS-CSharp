@@ -66,8 +66,8 @@ namespace DMS.Services.MWorkflow
 
             if (WorkflowDefinition == null)
                 WorkflowStep.AddError(nameof(WorkflowStepValidator), nameof(WorkflowStep.WorkflowDefinition), ErrorCode.WorkflowDefinitionNotExisted);
-            else if (WorkflowDefinition.Used)
-                WorkflowStep.AddError(nameof(WorkflowStepValidator), nameof(WorkflowStep.WorkflowDefinition), ErrorCode.WorkflowDefinitionInUsed);
+            //else if (WorkflowDefinition.Used)
+            //    WorkflowStep.AddError(nameof(WorkflowStepValidator), nameof(WorkflowStep.WorkflowDefinition), ErrorCode.WorkflowDefinitionInUsed);
             return WorkflowStep.IsValidated;
         }
 
