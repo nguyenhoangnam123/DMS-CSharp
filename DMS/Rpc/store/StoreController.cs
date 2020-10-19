@@ -292,8 +292,10 @@ namespace DMS.Rpc.store
             {
                 Skip = 0,
                 Take = int.MaxValue,
-                Selects = StoreSelect.Id | StoreSelect.Code | StoreSelect.Name
+                Selects = StoreSelect.Id | StoreSelect.Code | StoreSelect.Name | StoreSelect.CodeDraft
             });
+
+            Dictionary<string, Store> DictionaryAll = All.ToDictionary(x => x.Code, y => y);
             #endregion
             List<Store_ImportDTO> Store_ImportDTOs = new List<Store_ImportDTO>();
 
@@ -309,27 +311,28 @@ namespace DMS.Rpc.store
                 int StartRow = 1;
                 int SttColumnn = 0 + StartColumn;
                 int CodeColumn = 1 + StartColumn;
-                int NameColumn = 2 + StartColumn;
-                int OrganizationCodeColumn = 3 + StartColumn;
-                int ParentStoreCodeColumn = 4 + StartColumn;
-                int StoreTypeCodeColumn = 5 + StartColumn;
-                int StoreGroupingCodeColumn = 6 + StartColumn;
-                int LegalEntityColumn = 7 + StartColumn;
-                int TaxCodeColumn = 8 + StartColumn;
-                int ProvinceCodeColumn = 9 + StartColumn;
-                int DistrictCodeColumn = 10 + StartColumn;
-                int WardCodeColumn = 11 + StartColumn;
-                int AddressColumn = 12 + StartColumn;
-                int LongitudeColumn = 13 + StartColumn;
-                int LatitudeColumn = 14 + StartColumn;
-                int DeliveryAddressColumn = 15 + StartColumn;
-                int DeliveryLongitudeColumn = 16 + StartColumn;
-                int DeliveryLatitudeColumn = 17 + StartColumn;
-                int TelephoneColumn = 18 + StartColumn;
-                int OwnerNameColumn = 19 + StartColumn;
-                int OwnerPhoneColumn = 20 + StartColumn;
-                int OwnerEmailColumn = 21 + StartColumn;
-                int StatusColumn = 22 + StartColumn;
+                int CodeDraftColumn = 2 + StartColumn;
+                int NameColumn = 3 + StartColumn;
+                int OrganizationCodeColumn = 4 + StartColumn;
+                int ParentStoreCodeColumn = 5 + StartColumn;
+                int StoreTypeCodeColumn = 6 + StartColumn;
+                int StoreGroupingCodeColumn = 7 + StartColumn;
+                int LegalEntityColumn = 8 + StartColumn;
+                int TaxCodeColumn = 9 + StartColumn;
+                int ProvinceCodeColumn = 10 + StartColumn;
+                int DistrictCodeColumn = 11 + StartColumn;
+                int WardCodeColumn = 12 + StartColumn;
+                int AddressColumn = 13 + StartColumn;
+                int LongitudeColumn = 14 + StartColumn;
+                int LatitudeColumn = 15 + StartColumn;
+                int DeliveryAddressColumn = 16 + StartColumn;
+                int DeliveryLongitudeColumn = 17 + StartColumn;
+                int DeliveryLatitudeColumn = 18 + StartColumn;
+                int TelephoneColumn = 19 + StartColumn;
+                int OwnerNameColumn = 20 + StartColumn;
+                int OwnerPhoneColumn = 21 + StartColumn;
+                int OwnerEmailColumn = 22 + StartColumn;
+                int StatusColumn = 23 + StartColumn;
                 #endregion
 
                 for (int i = StartRow; i <= worksheet.Dimension.End.Row; i++)
@@ -345,6 +348,7 @@ namespace DMS.Rpc.store
                     Store_ImportDTOs.Add(Store_ImportDTO);
                     Store_ImportDTO.Stt = Stt;
                     Store_ImportDTO.CodeValue = worksheet.Cells[i + StartRow, CodeColumn].Value?.ToString();
+                    Store_ImportDTO.CodeDraftValue = worksheet.Cells[i + StartRow, CodeDraftColumn].Value?.ToString();
 
                     Store_ImportDTO.NameValue = worksheet.Cells[i + StartRow, NameColumn].Value?.ToString();
                     Store_ImportDTO.OrganizationCodeValue = worksheet.Cells[i + StartRow, OrganizationCodeColumn].Value?.ToString();
@@ -389,7 +393,7 @@ namespace DMS.Rpc.store
             {
                 if (!string.IsNullOrWhiteSpace(Store_ImportDTO.CodeValue))
                 {
-                    if (StoreCodes.Contains(Store_ImportDTO.CodeValue))
+                    if (!StoreCodes.Contains(Store_ImportDTO.CodeValue))
                     {
                         Errors[Store_ImportDTO.Stt].AppendLine($"Lỗi dòng thứ {Store_ImportDTO.Stt}: Mã đại lý không tồn tại");
                         return;
@@ -431,18 +435,14 @@ namespace DMS.Rpc.store
 
             Parallel.ForEach(Store_ImportDTOs, Store_ImportDTO =>
             {
-                var listCode = Store_ImportDTOs.Select(x => x.CodeValue).ToList();
-                var listCodeInDB = All.Select(x => x.Code).ToList();
-                for (int i = 0; i < Store_ImportDTOs.Count; i++)
+                HashSet<string> listCode = Store_ImportDTOs.Select(x => x.CodeValue).ToHashSet();
+                if (!string.IsNullOrWhiteSpace(Store_ImportDTO.ParentStoreCodeValue))
                 {
-                    if (Store_ImportDTO.ParentStoreCodeValue != null)
-                    {
-                        if (!listCode.Contains(Store_ImportDTO.ParentStoreCodeValue) && !listCodeInDB.Contains(Store_ImportDTO.ParentStoreCodeValue))
-                            Errors[Store_ImportDTO.Stt].AppendLine($"Lỗi dòng thứ {Store_ImportDTO.Stt}: Đại lý cấp cha không tồn tại");
-                    }
+                    if (!listCode.Contains(Store_ImportDTO.ParentStoreCodeValue) && !StoreCodes.Contains(Store_ImportDTO.ParentStoreCodeValue))
+                        Errors[Store_ImportDTO.Stt].AppendLine($"Lỗi dòng thứ {Store_ImportDTO.Stt}: Đại lý cấp cha không tồn tại");
                 }
             });
-            string error = string.Join("\n", Errors.Select(x => x.Value.ToString()).ToList());
+            string error = string.Join("\n", Errors.Where(x => !string.IsNullOrWhiteSpace(x.Value.ToString())).Select(x => x.Value.ToString()).ToList());
             if (!string.IsNullOrWhiteSpace(error))
                 return BadRequest(error);
 
@@ -452,11 +452,12 @@ namespace DMS.Rpc.store
                 Store Store = DictionaryStores[Store_ImportDTO.Stt];
                 if (Store_ImportDTO.IsNew == false)
                 {
-                    Store Old = All.Where(x => x.Code == Store_ImportDTO.CodeValue).FirstOrDefault();
+                    Store Old = DictionaryAll[Store_ImportDTO.CodeValue];
                     Store.Id = Old.Id;
                     Store.ParentStoreId = Old.ParentStoreId;
                 }
                 Store.Code = Store_ImportDTO.CodeValue;
+                Store.CodeDraft = Store_ImportDTO.CodeDraftValue;
                 Store.Name = Store_ImportDTO.NameValue;
                 Store.OrganizationId = Store_ImportDTO.OrganizationId;
                 Store.ParentStore = new Store { Code = Store_ImportDTO.ParentStoreCodeValue };

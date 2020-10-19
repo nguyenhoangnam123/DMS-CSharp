@@ -180,6 +180,7 @@ namespace DMS.Repositories
             if (filter.StoreStatusId != null && filter.StoreStatusId.Equal.HasValue && filter.StoreStatusId.Equal != StoreStatusEnum.ALL.Id)
                 query = query.Where(q => q.StoreStatusId, filter.StoreStatusId);
             query = OrFilter(query, filter);
+            query = query.Distinct();
             return query;
         }
 

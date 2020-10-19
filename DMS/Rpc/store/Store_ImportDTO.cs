@@ -11,6 +11,7 @@ namespace DMS.Rpc.store
     {
         public long Stt { get; set; }
         public string CodeValue { get; set; }
+        public string CodeDraftValue { get; set; }
         public string NameValue { get; set; }
         public string OrganizationCodeValue { get; set; }
         public string ParentStoreCodeValue { get; set; }
