@@ -11,6 +11,7 @@ using DMS.Services.MStatus;
 using DMS.Services.MStore;
 using DMS.Services.MStoreGrouping;
 using DMS.Services.MStoreType;
+using DMS.Services.MSupplier;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using OfficeOpenXml;
@@ -34,6 +35,7 @@ namespace DMS.Rpc.promotion_code
         private IStoreGroupingService StoreGroupingService;
         private IStoreService StoreService;
         private IStoreTypeService StoreTypeService;
+        private ISupplierService SupplierService;
         private IPromotionCodeService PromotionCodeService;
         private ICurrentContext CurrentContext;
         public PromotionCodeController(
@@ -47,6 +49,7 @@ namespace DMS.Rpc.promotion_code
             IStoreGroupingService StoreGroupingService,
             IStoreService StoreService,
             IStoreTypeService StoreTypeService,
+            ISupplierService SupplierService,
             IPromotionCodeService PromotionCodeService,
             ICurrentContext CurrentContext
         )
@@ -61,6 +64,7 @@ namespace DMS.Rpc.promotion_code
             this.StoreGroupingService = StoreGroupingService;
             this.StoreService = StoreService;
             this.StoreTypeService = StoreTypeService;
+            this.SupplierService = SupplierService;
             this.PromotionCodeService = PromotionCodeService;
             this.CurrentContext = CurrentContext;
         }

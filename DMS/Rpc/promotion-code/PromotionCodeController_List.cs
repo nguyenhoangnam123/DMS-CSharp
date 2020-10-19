@@ -1,5 +1,6 @@
 using Common;
 using DMS.Entities;
+using DMS.Enums;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
@@ -300,6 +301,26 @@ namespace DMS.Rpc.promotion_code
             List<PromotionCode_StatusDTO> PromotionCode_StatusDTOs = Statuses
                 .Select(x => new PromotionCode_StatusDTO(x)).ToList();
             return PromotionCode_StatusDTOs;
+        }
+        [Route(PromotionCodeRoute.SingleListSupplier), HttpPost]
+        public async Task<List<PromotionCode_SupplierDTO>> SingleListSupplier([FromBody] PromotionCode_SupplierFilterDTO PromotionCode_SupplierFilterDTO)
+        {
+            SupplierFilter SupplierFilter = new SupplierFilter();
+            SupplierFilter.Skip = 0;
+            SupplierFilter.Take = 20;
+            SupplierFilter.OrderBy = SupplierOrder.Id;
+            SupplierFilter.OrderType = OrderType.ASC;
+            SupplierFilter.Selects = SupplierSelect.ALL;
+            SupplierFilter.Id = PromotionCode_SupplierFilterDTO.Id;
+            SupplierFilter.Code = PromotionCode_SupplierFilterDTO.Code;
+            SupplierFilter.Name = PromotionCode_SupplierFilterDTO.Name;
+            SupplierFilter.TaxCode = PromotionCode_SupplierFilterDTO.TaxCode;
+            SupplierFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+
+            List<Supplier> Suppliers = await SupplierService.List(SupplierFilter);
+            List<PromotionCode_SupplierDTO> PromotionCode_SupplierDTOs = Suppliers
+                .Select(x => new PromotionCode_SupplierDTO(x)).ToList();
+            return PromotionCode_SupplierDTOs;
         }
         [Route(PromotionCodeRoute.SingleListProduct), HttpPost]
         public async Task<List<PromotionCode_ProductDTO>> SingleListProduct([FromBody] PromotionCode_ProductFilterDTO PromotionCode_ProductFilterDTO)

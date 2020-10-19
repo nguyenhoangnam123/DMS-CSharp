@@ -34,6 +34,7 @@ namespace DMS.Rpc.promotion_code
         public const string SingleListPromotionProductAppliedType = Default + "/single-list-promotion-product-applied-type";
         public const string SingleListPromotionType = Default + "/single-list-promotion-type";
         public const string SingleListStatus = Default + "/single-list-status";
+        public const string SingleListSupplier = Default + "/single-list-supplier";
         public const string SingleListProduct = Default + "/single-list-product";
         public const string SingleListStore = Default + "/single-list-store";
         public const string SingleListStoreType = Default + "/single-list-store-type";
@@ -73,7 +74,7 @@ namespace DMS.Rpc.promotion_code
                 FilterListOrganization, FilterListPromotionDiscountType, FilterListPromotionProductAppliedType, FilterListPromotionType, FilterListStatus, FilterListProduct, FilterListStore,  
                 Detail, Create, 
                 SingleListOrganization, SingleListPromotionDiscountType, SingleListPromotionProductAppliedType, SingleListPromotionType, SingleListStatus, SingleListProduct, SingleListStore,
-                SingleListStoreType, SingleListStoreGrouping,
+                SingleListStoreType, SingleListStoreGrouping, SingleListSupplier,
                 CountOrganization, ListOrganization, CountProduct, ListProduct, CountStore, ListStore, } },
 
             { "Sửa", new List<string> { 
@@ -81,7 +82,7 @@ namespace DMS.Rpc.promotion_code
                 FilterListOrganization, FilterListPromotionDiscountType, FilterListPromotionProductAppliedType, FilterListPromotionType, FilterListStatus, FilterListProduct, FilterListStore,  
                 Detail, Update, 
                 SingleListOrganization, SingleListPromotionDiscountType, SingleListPromotionProductAppliedType, SingleListPromotionType, SingleListStatus, SingleListProduct, SingleListStore,
-                SingleListStoreType, SingleListStoreGrouping,
+                SingleListStoreType, SingleListStoreGrouping, SingleListSupplier,
                 CountOrganization, ListOrganization, CountProduct, ListProduct, CountStore, ListStore, } },
 
             { "Xoá", new List<string> { 
@@ -89,7 +90,7 @@ namespace DMS.Rpc.promotion_code
                 FilterListOrganization, FilterListPromotionDiscountType, FilterListPromotionProductAppliedType, FilterListPromotionType, FilterListStatus, FilterListProduct, FilterListStore,  
                 Delete, 
                 SingleListOrganization, SingleListPromotionDiscountType, SingleListPromotionProductAppliedType, SingleListPromotionType, SingleListStatus, SingleListProduct, SingleListStore,
-                SingleListStoreType, SingleListStoreGrouping } },
+                SingleListStoreType, SingleListStoreGrouping, SingleListSupplier } },
 
             { "Xoá nhiều", new List<string> { 
                 Master, Count, List, Get, GetPreview,
