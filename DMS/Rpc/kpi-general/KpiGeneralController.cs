@@ -430,6 +430,7 @@ namespace DMS.Rpc.kpi_general
                     KpiGeneral_ImportDTO.Q3Value = worksheet.Cells[i, Q3Column].Value?.ToString();
                     KpiGeneral_ImportDTO.Q4Value = worksheet.Cells[i, Q4Column].Value?.ToString();
                     KpiGeneral_ImportDTO.YValue = worksheet.Cells[i, YColumn].Value?.ToString();
+                    KpiGeneral_ImportDTO.KpiYearId = KpiYear.Id;
                     KpiGeneral_ImportDTOs.Add(KpiGeneral_ImportDTO);
                 }
             }
@@ -617,7 +618,7 @@ namespace DMS.Rpc.kpi_general
 
             if (errorContent.Length > 0)
                 return BadRequest(errorContent.ToString());
-            string error = string.Join("\n", Errors.Select(x => x.Value.ToString()).ToList());
+            string error = string.Join("\n", Errors.Where(x => !string.IsNullOrWhiteSpace(x.Value.ToString())).Select(x => x.Value.ToString()).ToList());
             if (!string.IsNullOrWhiteSpace(error))
                 return BadRequest(error);
 
