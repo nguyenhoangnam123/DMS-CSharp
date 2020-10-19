@@ -112,6 +112,8 @@ namespace DMS.Repositories
                 query = query.Where(q => q.TotalTaxAmount, filter.TotalTaxAmount);
             if (filter.Total != null)
                 query = query.Where(q => q.Total, filter.Total);
+            if (filter.StoreStatusId != null)
+                query = query.Where(q => q.BuyerStore.StoreStatusId, filter.StoreStatusId);
             query = OrFilter(query, filter);
             return query;
         }
@@ -623,6 +625,8 @@ namespace DMS.Repositories
                 DeliveryAddress = x.DeliveryAddress,
                 SaleEmployeeId = x.SaleEmployeeId,
                 OrderDate = x.OrderDate,
+                CreatedAt = x.CreatedAt,
+                UpdatedAt = x.UpdatedAt,
                 DeliveryDate = x.DeliveryDate,
                 EditedPriceStatusId = x.EditedPriceStatusId,
                 Note = x.Note,

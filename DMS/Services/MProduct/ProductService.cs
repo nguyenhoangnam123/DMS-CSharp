@@ -89,6 +89,20 @@ namespace DMS.Services.MProduct
             try
             {
                 List<Product> Products = await UOW.ProductRepository.List(ProductFilter);
+                List<long> ProductIds = Products.Select(p => p.Id).ToList();
+                ItemFilter ItemFilter = new ItemFilter
+                {
+                    ProductId = new IdFilter { In = ProductIds },
+                    StatusId = null,
+                    Selects = ItemSelect.Id | ItemSelect.ProductId,
+                    Skip = 0,
+                    Take = int.MaxValue,
+                };
+                List<Item> Items = await UOW.ItemRepository.List(ItemFilter);
+                foreach (Product Product in Products)
+                {
+                    Product.VariationCounter = Items.Where(i => i.ProductId == Product.Id).Count();
+                }
                 return Products;
             }
             catch (Exception ex)
@@ -110,6 +124,10 @@ namespace DMS.Services.MProduct
             Product Product = await UOW.ProductRepository.Get(Id);
             if (Product == null)
                 return null;
+            if (Product.Items != null && Product.Items.Any())
+            {
+                Product.VariationCounter = Product.Items.Count;
+            }
             return Product;
         }
 

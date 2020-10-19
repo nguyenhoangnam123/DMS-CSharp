@@ -114,7 +114,8 @@ namespace DMS.Repositories
                 query = query.Where(q => q.TotalTaxAmount, filter.TotalTaxAmount);
             if (filter.Total != null)
                 query = query.Where(q => q.Total, filter.Total);
-
+            if (filter.StoreStatusId != null)
+                query = query.Where(q => q.BuyerStore.StoreStatusId, filter.StoreStatusId);
             return query;
         }
 
@@ -904,8 +905,8 @@ namespace DMS.Repositories
             IndirectSalesOrderDAO.TotalTaxAmount = IndirectSalesOrder.TotalTaxAmount;
             IndirectSalesOrderDAO.Total = IndirectSalesOrder.Total;
             IndirectSalesOrderDAO.RowId = Guid.NewGuid();
-            IndirectSalesOrderDAO.StoreCheckingId = IndirectSalesOrder.StoreCheckingId;
             IndirectSalesOrderDAO.RequestStateId = IndirectSalesOrder.RequestStateId;
+            IndirectSalesOrderDAO.StoreCheckingId = IndirectSalesOrder.StoreCheckingId;
             IndirectSalesOrderDAO.CreatedAt = StaticParams.DateTimeNow;
             IndirectSalesOrderDAO.UpdatedAt = StaticParams.DateTimeNow;
             DataContext.IndirectSalesOrder.Add(IndirectSalesOrderDAO);

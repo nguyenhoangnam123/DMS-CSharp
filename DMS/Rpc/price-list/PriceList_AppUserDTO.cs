@@ -13,7 +13,7 @@ namespace DMS.Rpc.price_list
         public string Email { get; set; }
         public string Phone { get; set; }
         public string Department { get; set; }
-        public long? OrganizationId { get; set; }
+        public long OrganizationId { get; set; }
         public long? SexId { get; set; }
         public long StatusId { get; set; }
 

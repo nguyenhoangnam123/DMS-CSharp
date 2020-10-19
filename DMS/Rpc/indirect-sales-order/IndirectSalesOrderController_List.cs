@@ -70,6 +70,28 @@ namespace DMS.Rpc.indirect_sales_order
             return IndirectSalesOrder_StoreDTOs;
         }
 
+        [Route(IndirectSalesOrderRoute.FilterListStoreStatus), HttpPost]
+        public async Task<List<IndirectSalesOrder_StoreStatusDTO>> FilterListStoreStatus([FromBody] IndirectSalesOrder_StoreStatusFilterDTO IndirectSalesOrder_StoreStatusFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            StoreStatusFilter StoreStatusFilter = new StoreStatusFilter();
+            StoreStatusFilter.Skip = 0;
+            StoreStatusFilter.Take = 20;
+            StoreStatusFilter.OrderBy = StoreStatusOrder.Id;
+            StoreStatusFilter.OrderType = OrderType.ASC;
+            StoreStatusFilter.Selects = StoreStatusSelect.ALL;
+            StoreStatusFilter.Id = IndirectSalesOrder_StoreStatusFilterDTO.Id;
+            StoreStatusFilter.Code = IndirectSalesOrder_StoreStatusFilterDTO.Code;
+            StoreStatusFilter.Name = IndirectSalesOrder_StoreStatusFilterDTO.Name;
+
+            List<StoreStatus> StoreStatuses = await StoreStatusService.List(StoreStatusFilter);
+            List<IndirectSalesOrder_StoreStatusDTO> IndirectSalesOrder_StoreStatusDTOs = StoreStatuses
+                .Select(x => new IndirectSalesOrder_StoreStatusDTO(x)).ToList();
+            return IndirectSalesOrder_StoreStatusDTOs;
+        }
+
         [Route(IndirectSalesOrderRoute.FilterListAppUser), HttpPost]
         public async Task<List<IndirectSalesOrder_AppUserDTO>> FilterListAppUser([FromBody] IndirectSalesOrder_AppUserFilterDTO IndirectSalesOrder_AppUserFilterDTO)
         {

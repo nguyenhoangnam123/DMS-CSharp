@@ -369,6 +369,8 @@ namespace DMS.Rpc.dashboards.director
         [Route(DashboardDirectorRoute.SaleEmployeeLocation), HttpPost]
         public async Task<List<DashboardDirector_AppUserDTO>> SaleEmployeeLocation([FromBody] DashboardDirector_AppUserFilterDTO DashboardDirector_AppUserFilterDTO)
         {
+            DateTime Start = LocalStartDay(CurrentContext);
+            DateTime End = LocalEndDay(CurrentContext);
             List<long> OrganizationIds = await FilterOrganization(OrganizationService, CurrentContext);
             List<OrganizationDAO> OrganizationDAOs = await DataContext.Organization.Where(o => o.DeletedAt == null && (OrganizationIds.Count == 0 || OrganizationIds.Contains(o.Id))).ToListAsync();
             OrganizationDAO OrganizationDAO = null;
@@ -380,9 +382,10 @@ namespace DMS.Rpc.dashboards.director
             OrganizationIds = OrganizationDAOs.Select(o => o.Id).ToList();
 
             var query = from au in DataContext.AppUser
-                        where au.DeletedAt.HasValue == false && au.StatusId == Enums.StatusEnum.ACTIVE.Id &&
+                        where au.StatusId == Enums.StatusEnum.ACTIVE.Id &&
                         (OrganizationIds.Contains(au.OrganizationId)) &&
-                        au.DeletedAt == null
+                        au.DeletedAt == null &&
+                        Start <= au.GPSUpdatedAt && au.GPSUpdatedAt <= End
                         select new DashboardDirector_AppUserDTO
                         {
                             Id = au.Id,

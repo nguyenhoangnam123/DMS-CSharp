@@ -17,6 +17,8 @@ namespace DMS.Entities
         public string DeliveryAddress { get; set; }
         public long SaleEmployeeId { get; set; }
         public DateTime OrderDate { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; }
         public DateTime? DeliveryDate { get; set; }
         public long RequestStateId { get; set; }
         public long EditedPriceStatusId { get; set; }
@@ -70,6 +72,7 @@ namespace DMS.Entities
         public DecimalFilter TotalTaxAmount { get; set; }
         public DecimalFilter Total { get; set; }
         public IdFilter StoreCheckingId { get; set; }
+        public IdFilter StoreStatusId { get; set; }
         public List<DirectSalesOrderFilter> OrFilter { get; set; }
         public DirectSalesOrderOrder OrderBy { get; set; }
         public DirectSalesOrderSelect Selects { get; set; }

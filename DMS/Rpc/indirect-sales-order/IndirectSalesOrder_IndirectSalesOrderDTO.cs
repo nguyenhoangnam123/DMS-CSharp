@@ -19,7 +19,6 @@ namespace DMS.Rpc.indirect_sales_order
         public long OrganizationId { get; set; }
         public DateTime OrderDate { get; set; }
         public DateTime? DeliveryDate { get; set; }
-        public long RequestStateId { get; set; }
         public long EditedPriceStatusId { get; set; }
         public string Note { get; set; }
         public decimal SubTotal { get; set; }
@@ -27,6 +26,7 @@ namespace DMS.Rpc.indirect_sales_order
         public decimal? GeneralDiscountAmount { get; set; }
         public decimal TotalTaxAmount { get; set; }
         public decimal Total { get; set; }
+        public long RequestStateId { get; set; }
         public Guid RowId { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
@@ -100,6 +100,7 @@ namespace DMS.Rpc.indirect_sales_order
         public DecimalFilter GeneralDiscountAmount { get; set; }
         public DecimalFilter TotalTaxAmount { get; set; }
         public DecimalFilter Total { get; set; }
+        public IdFilter StoreStatusId { get; set; }
         public IndirectSalesOrderOrder OrderBy { get; set; }
     }
 }
