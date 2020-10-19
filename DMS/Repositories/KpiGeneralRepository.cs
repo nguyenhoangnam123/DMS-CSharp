@@ -460,9 +460,8 @@ namespace DMS.Repositories
                 KpiGeneralDAO.CreatorId = KpiGeneral.CreatorId;
                 KpiGeneralDAO.CreatedAt = StaticParams.DateTimeNow;
                 KpiGeneralDAO.UpdatedAt = StaticParams.DateTimeNow;
-                KpiGeneralDAO.RowId = Guid.NewGuid();
+                KpiGeneralDAO.RowId = KpiGeneral.RowId;
                 KpiGeneralDAOs.Add(KpiGeneralDAO);
-                KpiGeneral.RowId = KpiGeneralDAO.RowId;
             }
             await DataContext.BulkMergeAsync(KpiGeneralDAOs);
 
@@ -491,12 +490,6 @@ namespace DMS.Repositories
                             KpiGeneralContentId = 0, // se duoc gan luc sau
                         }).ToList(),
                         RowId = Guid.NewGuid(),
-                        Status = new StatusDAO
-                        {
-                            Id = x.StatusId == 0 ? Enums.StatusEnum.INACTIVE.Id : Enums.StatusEnum.ACTIVE.Id,
-                            Name = x.StatusId == 0 ? Enums.StatusEnum.INACTIVE.Name : Enums.StatusEnum.ACTIVE.Name,
-                            Code = x.StatusId == 0 ? Enums.StatusEnum.INACTIVE.Code : Enums.StatusEnum.ACTIVE.Code,
-                        },
                         StatusId = x.StatusId,
                     }).ToList();
                     KpiGeneralContentDAOs.AddRange(listContent);

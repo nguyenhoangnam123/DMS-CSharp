@@ -317,7 +317,6 @@ namespace DMS.Rpc.kpi_general
                 KpiYearId = new IdFilter { Equal = KpiYear.Id },
                 Selects = KpiGeneralSelect.ALL
             });
-
             var KpiGeneralIds = KpiGenerals.Select(x => x.Id).ToList();
             List<KpiGeneralContent> KpiGeneralContents = await KpiGeneralContentService.List(new KpiGeneralContentFilter
             {
@@ -331,6 +330,9 @@ namespace DMS.Rpc.kpi_general
             {
                 KpiGeneral.KpiGeneralContents = KpiGeneralContents.Where(x => x.KpiGeneralId == KpiGeneral.Id).ToList();
             });
+
+            List<KpiGeneral_ImportDTO> KpiGeneral_ImportDTOs = new List<KpiGeneral_ImportDTO>();
+
             using (ExcelPackage excelPackage = new ExcelPackage(file.OpenReadStream()))
             {
                 ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets["KPI nhan vien"];
@@ -382,376 +384,243 @@ namespace DMS.Rpc.kpi_general
                     else if (string.IsNullOrWhiteSpace(UsernameValue) && i == worksheet.Dimension.End.Row)
                         break;
 
-                    GenericEnum KpiGeneralCriterial;
-                    if (!string.IsNullOrWhiteSpace(CriterialValue))
-                    {
-                        KpiGeneralCriterial = KpiCriteriaGeneralEnum.KpiCriteriaGeneralEnumList.Where(x => x.Name == CriterialValue.Trim()).FirstOrDefault();
-                        if(KpiGeneralCriterial == null)
-                        {
-                            errorContent.AppendLine($"Lỗi dòng thứ {i + 1}: Tên chỉ tiêu không hợp lệ");
-                            continue;
-                        }
-                    }
-                        
-                    string M1Value = worksheet.Cells[i, M1Column].Value?.ToString();
-                    string M2Value = worksheet.Cells[i, M2Column].Value?.ToString();
-                    string M3Value = worksheet.Cells[i, M3Column].Value?.ToString();
-                    string M4Value = worksheet.Cells[i, M4Column].Value?.ToString();
-                    string M5Value = worksheet.Cells[i, M5Column].Value?.ToString();
-                    string M6Value = worksheet.Cells[i, M6Column].Value?.ToString();
-                    string M7Value = worksheet.Cells[i, M7Column].Value?.ToString();
-                    string M8Value = worksheet.Cells[i, M8Column].Value?.ToString();
-                    string M9Value = worksheet.Cells[i, M9Column].Value?.ToString();
-                    string M10Value = worksheet.Cells[i, M10Column].Value?.ToString();
-                    string M11Value = worksheet.Cells[i, M11Column].Value?.ToString();
-                    string M12Value = worksheet.Cells[i, M12Column].Value?.ToString();
-                    string Q1Value = worksheet.Cells[i, Q1Column].Value?.ToString();
-                    string Q2Value = worksheet.Cells[i, Q2Column].Value?.ToString();
-                    string Q3Value = worksheet.Cells[i, Q3Column].Value?.ToString();
-                    string Q4Value = worksheet.Cells[i, Q4Column].Value?.ToString();
-                    string YValue = worksheet.Cells[i, YColumn].Value?.ToString();
-                    
-                    AppUser Employee = Employees.Where(x => x.Username == UsernameValue).FirstOrDefault();
-                    if(Employee == null)
+                    KpiGeneral_ImportDTO KpiGeneral_ImportDTO = new KpiGeneral_ImportDTO();
+                    AppUser Employee = Employees.Where(x => x.Username.ToLower() == UsernameValue.ToLower()).FirstOrDefault();
+                    if (Employee == null)
                     {
                         errorContent.AppendLine($"Lỗi dòng thứ {i + 1}: Nhân viên không tồn tại");
                         continue;
                     }
-                    KpiGeneral KpiGeneral = KpiGenerals.Where(x => x.EmployeeId == Employee.Id).FirstOrDefault();
-                    if (KpiGeneral == null)
-                    {
-                        KpiGeneral = new KpiGeneral();
-                        KpiGeneral.KpiGeneralContents = new List<KpiGeneralContent>();
-                        KpiGeneral.EmployeeId = Employee == null ? 0 : Employee.Id;
-                        KpiGeneral.Employee = Employee;
-                        KpiGeneral.KpiYearId = KpiYear == null ? 0 : KpiYear.Id;
-                        KpiGeneral.StatusId = StatusEnum.ACTIVE.Id;
-                        KpiGenerals.Add(KpiGeneral);
-                    }
-                    KpiGeneral.CreatorId = AppUser == null ? 0 : AppUser.Id;
-                    KpiGeneral.Creator = AppUser;
-                    KpiGeneral.OrganizationId = Employee.OrganizationId;
-
-                    KpiGeneralCriterial = KpiCriteriaGeneralEnum.KpiCriteriaGeneralEnumList.Where(x => x.Name == CriterialValue.Trim()).FirstOrDefault();
-                    KpiGeneralContent KpiGeneralContent = KpiGeneral.KpiGeneralContents.Where(x => x.KpiCriteriaGeneralId == KpiGeneralCriterial.Id).FirstOrDefault();
-                    if(KpiGeneralContent == null)
-                    {
-                        KpiGeneralContent = new KpiGeneralContent();
-                        KpiGeneralContent.StatusId = StatusEnum.ACTIVE.Id;
-                        KpiGeneralContent.KpiCriteriaGeneralId = KpiGeneralCriterial.Id;
-                        KpiGeneralContent.KpiGeneralContentKpiPeriodMappings = new List<KpiGeneralContentKpiPeriodMapping>();
-                        KpiGeneral.KpiGeneralContents.Add(KpiGeneralContent);
-                    }
-                    KpiGeneralContent.STT = i;
-                    KpiGeneralContent.HasChanged = true;
-
-                    #region Tháng 1
-                    KpiGeneralContentKpiPeriodMapping
-                            KpiGeneralContentKpiPeriodMappingM1 = KpiGeneralContent.KpiGeneralContentKpiPeriodMappings
-                            .Where(x => x.KpiPeriodId == KpiPeriodEnum.PERIOD_MONTH01.Id)
-                            .FirstOrDefault();
-                    if (KpiGeneralContentKpiPeriodMappingM1 == null)
-                    {
-                        KpiGeneralContentKpiPeriodMappingM1 = new KpiGeneralContentKpiPeriodMapping();
-                        KpiGeneralContentKpiPeriodMappingM1.KpiPeriodId = KpiPeriodEnum.PERIOD_MONTH01.Id;
-                        KpiGeneralContent.KpiGeneralContentKpiPeriodMappings.Add(KpiGeneralContentKpiPeriodMappingM1);
-                    }
-                    if (decimal.TryParse(M1Value, out decimal M1))
-                        KpiGeneralContentKpiPeriodMappingM1.Value = M1;
                     else
-                        KpiGeneralContentKpiPeriodMappingM1.Value = null;
-                    #endregion
-
-                    #region Tháng 2
-                    KpiGeneralContentKpiPeriodMapping
-                            KpiGeneralContentKpiPeriodMappingM2 = KpiGeneralContent.KpiGeneralContentKpiPeriodMappings
-                            .Where(x => x.KpiPeriodId == KpiPeriodEnum.PERIOD_MONTH02.Id)
-                            .FirstOrDefault();
-                    if (KpiGeneralContentKpiPeriodMappingM2 == null)
                     {
-                        KpiGeneralContentKpiPeriodMappingM2 = new KpiGeneralContentKpiPeriodMapping();
-                        KpiGeneralContentKpiPeriodMappingM2.KpiPeriodId = KpiPeriodEnum.PERIOD_MONTH02.Id;
-                        KpiGeneralContent.KpiGeneralContentKpiPeriodMappings.Add(KpiGeneralContentKpiPeriodMappingM2);
+                        KpiGeneral_ImportDTO.EmployeeId = Employee.Id;
                     }
-                    if (decimal.TryParse(M2Value, out decimal M2))
-                        KpiGeneralContentKpiPeriodMappingM2.Value = M2;
-                    else
-                        KpiGeneralContentKpiPeriodMappingM2.Value = null;
-                    #endregion
 
-                    #region Tháng 3
-                    KpiGeneralContentKpiPeriodMapping
-                            KpiGeneralContentKpiPeriodMappingM3 = KpiGeneralContent.KpiGeneralContentKpiPeriodMappings
-                            .Where(x => x.KpiPeriodId == KpiPeriodEnum.PERIOD_MONTH03.Id)
-                            .FirstOrDefault();
-                    if (KpiGeneralContentKpiPeriodMappingM3 == null)
+                    if (!string.IsNullOrWhiteSpace(CriterialValue))
                     {
-                        KpiGeneralContentKpiPeriodMappingM3 = new KpiGeneralContentKpiPeriodMapping();
-                        KpiGeneralContentKpiPeriodMappingM3.KpiPeriodId = KpiPeriodEnum.PERIOD_MONTH03.Id;
-                        KpiGeneralContent.KpiGeneralContentKpiPeriodMappings.Add(KpiGeneralContentKpiPeriodMappingM3);
-                    }
-                    if (decimal.TryParse(M3Value, out decimal M3))
-                        KpiGeneralContentKpiPeriodMappingM3.Value = M3;
-                    else
-                        KpiGeneralContentKpiPeriodMappingM3.Value = null;
-                    #endregion
-
-                    #region Tháng 4
-                    KpiGeneralContentKpiPeriodMapping
-                            KpiGeneralContentKpiPeriodMappingM4 = KpiGeneralContent.KpiGeneralContentKpiPeriodMappings
-                            .Where(x => x.KpiPeriodId == KpiPeriodEnum.PERIOD_MONTH04.Id)
-                            .FirstOrDefault();
-                    if (KpiGeneralContentKpiPeriodMappingM4 == null)
-                    {
-                        KpiGeneralContentKpiPeriodMappingM4 = new KpiGeneralContentKpiPeriodMapping();
-                        KpiGeneralContentKpiPeriodMappingM4.KpiPeriodId = KpiPeriodEnum.PERIOD_MONTH04.Id;
-                        KpiGeneralContent.KpiGeneralContentKpiPeriodMappings.Add(KpiGeneralContentKpiPeriodMappingM4);
-                    }
-                    if (decimal.TryParse(M4Value, out decimal M4))
-                        KpiGeneralContentKpiPeriodMappingM4.Value = M4;
-                    else
-                        KpiGeneralContentKpiPeriodMappingM4.Value = null;
-                    #endregion
-
-                    #region Tháng 5
-                    KpiGeneralContentKpiPeriodMapping
-                            KpiGeneralContentKpiPeriodMappingM5 = KpiGeneralContent.KpiGeneralContentKpiPeriodMappings
-                            .Where(x => x.KpiPeriodId == KpiPeriodEnum.PERIOD_MONTH05.Id)
-                            .FirstOrDefault();
-                    if (KpiGeneralContentKpiPeriodMappingM5 == null)
-                    {
-                        KpiGeneralContentKpiPeriodMappingM5 = new KpiGeneralContentKpiPeriodMapping();
-                        KpiGeneralContentKpiPeriodMappingM5.KpiPeriodId = KpiPeriodEnum.PERIOD_MONTH05.Id;
-                        KpiGeneralContent.KpiGeneralContentKpiPeriodMappings.Add(KpiGeneralContentKpiPeriodMappingM5);
-                    }
-                    if (decimal.TryParse(M5Value, out decimal M5))
-                        KpiGeneralContentKpiPeriodMappingM5.Value = M5;
-                    else
-                        KpiGeneralContentKpiPeriodMappingM5.Value = null;
-                    #endregion
-
-                    #region Tháng 6
-                    KpiGeneralContentKpiPeriodMapping
-                            KpiGeneralContentKpiPeriodMappingM6 = KpiGeneralContent.KpiGeneralContentKpiPeriodMappings
-                            .Where(x => x.KpiPeriodId == KpiPeriodEnum.PERIOD_MONTH06.Id)
-                            .FirstOrDefault();
-                    if (KpiGeneralContentKpiPeriodMappingM6 == null)
-                    {
-                        KpiGeneralContentKpiPeriodMappingM6 = new KpiGeneralContentKpiPeriodMapping();
-                        KpiGeneralContentKpiPeriodMappingM6.KpiPeriodId = KpiPeriodEnum.PERIOD_MONTH06.Id;
-                        KpiGeneralContent.KpiGeneralContentKpiPeriodMappings.Add(KpiGeneralContentKpiPeriodMappingM6);
-                    }
-                    if (decimal.TryParse(M6Value, out decimal M6))
-                        KpiGeneralContentKpiPeriodMappingM6.Value = M6;
-                    else
-                        KpiGeneralContentKpiPeriodMappingM6.Value = null;
-                    #endregion
-
-                    #region Tháng 7
-                    KpiGeneralContentKpiPeriodMapping
-                            KpiGeneralContentKpiPeriodMappingM7 = KpiGeneralContent.KpiGeneralContentKpiPeriodMappings
-                            .Where(x => x.KpiPeriodId == KpiPeriodEnum.PERIOD_MONTH07.Id)
-                            .FirstOrDefault();
-                    if (KpiGeneralContentKpiPeriodMappingM7 == null)
-                    {
-                        KpiGeneralContentKpiPeriodMappingM7 = new KpiGeneralContentKpiPeriodMapping();
-                        KpiGeneralContentKpiPeriodMappingM7.KpiPeriodId = KpiPeriodEnum.PERIOD_MONTH07.Id;
-                        KpiGeneralContent.KpiGeneralContentKpiPeriodMappings.Add(KpiGeneralContentKpiPeriodMappingM7);
-                    }
-                    if (decimal.TryParse(M7Value, out decimal M7))
-                        KpiGeneralContentKpiPeriodMappingM7.Value = M7;
-                    else
-                        KpiGeneralContentKpiPeriodMappingM7.Value = null;
-                    #endregion
-
-                    #region Tháng 8
-                    KpiGeneralContentKpiPeriodMapping
-                            KpiGeneralContentKpiPeriodMappingM8 = KpiGeneralContent.KpiGeneralContentKpiPeriodMappings
-                            .Where(x => x.KpiPeriodId == KpiPeriodEnum.PERIOD_MONTH08.Id)
-                            .FirstOrDefault();
-                    if (KpiGeneralContentKpiPeriodMappingM8 == null)
-                    {
-                        KpiGeneralContentKpiPeriodMappingM8 = new KpiGeneralContentKpiPeriodMapping();
-                        KpiGeneralContentKpiPeriodMappingM8.KpiPeriodId = KpiPeriodEnum.PERIOD_MONTH08.Id;
-                        KpiGeneralContent.KpiGeneralContentKpiPeriodMappings.Add(KpiGeneralContentKpiPeriodMappingM8);
-                    }
-                    if (decimal.TryParse(M8Value, out decimal M8))
-                        KpiGeneralContentKpiPeriodMappingM8.Value = M8;
-                    else
-                        KpiGeneralContentKpiPeriodMappingM8.Value = null;
-                    #endregion
-
-                    #region Tháng 9
-                    KpiGeneralContentKpiPeriodMapping
-                            KpiGeneralContentKpiPeriodMappingM9 = KpiGeneralContent.KpiGeneralContentKpiPeriodMappings
-                            .Where(x => x.KpiPeriodId == KpiPeriodEnum.PERIOD_MONTH09.Id)
-                            .FirstOrDefault();
-                    if (KpiGeneralContentKpiPeriodMappingM9 == null)
-                    {
-                        KpiGeneralContentKpiPeriodMappingM9 = new KpiGeneralContentKpiPeriodMapping();
-                        KpiGeneralContentKpiPeriodMappingM9.KpiPeriodId = KpiPeriodEnum.PERIOD_MONTH09.Id;
-                        KpiGeneralContent.KpiGeneralContentKpiPeriodMappings.Add(KpiGeneralContentKpiPeriodMappingM9);
-                    }
-                    if (decimal.TryParse(M9Value, out decimal M9))
-                        KpiGeneralContentKpiPeriodMappingM9.Value = M9;
-                    else
-                        KpiGeneralContentKpiPeriodMappingM9.Value = null;
-                    #endregion
-
-                    #region Tháng 10
-                    KpiGeneralContentKpiPeriodMapping
-                            KpiGeneralContentKpiPeriodMappingM10 = KpiGeneralContent.KpiGeneralContentKpiPeriodMappings
-                            .Where(x => x.KpiPeriodId == KpiPeriodEnum.PERIOD_MONTH10.Id)
-                            .FirstOrDefault();
-                    if (KpiGeneralContentKpiPeriodMappingM10 == null)
-                    {
-                        KpiGeneralContentKpiPeriodMappingM10 = new KpiGeneralContentKpiPeriodMapping();
-                        KpiGeneralContentKpiPeriodMappingM10.KpiPeriodId = KpiPeriodEnum.PERIOD_MONTH10.Id;
-                        KpiGeneralContent.KpiGeneralContentKpiPeriodMappings.Add(KpiGeneralContentKpiPeriodMappingM10);
-                    }
-                    if (decimal.TryParse(M10Value, out decimal M10))
-                        KpiGeneralContentKpiPeriodMappingM10.Value = M10;
-                    else
-                        KpiGeneralContentKpiPeriodMappingM10.Value = null;
-                    #endregion
-
-                    #region Tháng 11
-                    KpiGeneralContentKpiPeriodMapping
-                            KpiGeneralContentKpiPeriodMappingM11 = KpiGeneralContent.KpiGeneralContentKpiPeriodMappings
-                            .Where(x => x.KpiPeriodId == KpiPeriodEnum.PERIOD_MONTH11.Id)
-                            .FirstOrDefault();
-                    if (KpiGeneralContentKpiPeriodMappingM11 == null)
-                    {
-                        KpiGeneralContentKpiPeriodMappingM11 = new KpiGeneralContentKpiPeriodMapping();
-                        KpiGeneralContentKpiPeriodMappingM11.KpiPeriodId = KpiPeriodEnum.PERIOD_MONTH11.Id;
-                        KpiGeneralContent.KpiGeneralContentKpiPeriodMappings.Add(KpiGeneralContentKpiPeriodMappingM11);
-                    }
-                    if (decimal.TryParse(M11Value, out decimal M11))
-                        KpiGeneralContentKpiPeriodMappingM11.Value = M11;
-                    else
-                        KpiGeneralContentKpiPeriodMappingM11.Value = null;
-                    #endregion
-
-                    #region Tháng 12
-                    KpiGeneralContentKpiPeriodMapping
-                            KpiGeneralContentKpiPeriodMappingM12 = KpiGeneralContent.KpiGeneralContentKpiPeriodMappings
-                            .Where(x => x.KpiPeriodId == KpiPeriodEnum.PERIOD_MONTH12.Id)
-                            .FirstOrDefault();
-                    if (KpiGeneralContentKpiPeriodMappingM12 == null)
-                    {
-                        KpiGeneralContentKpiPeriodMappingM12 = new KpiGeneralContentKpiPeriodMapping();
-                        KpiGeneralContentKpiPeriodMappingM12.KpiPeriodId = KpiPeriodEnum.PERIOD_MONTH12.Id;
-                        KpiGeneralContent.KpiGeneralContentKpiPeriodMappings.Add(KpiGeneralContentKpiPeriodMappingM12);
-                    }
-                    if (decimal.TryParse(M12Value, out decimal M12))
-                        KpiGeneralContentKpiPeriodMappingM12.Value = M12;
-                    else
-                        KpiGeneralContentKpiPeriodMappingM12.Value = null;
-                    #endregion
-
-                    #region Quý 1
-                    KpiGeneralContentKpiPeriodMapping
-                            KpiGeneralContentKpiPeriodMappingQ1 = KpiGeneralContent.KpiGeneralContentKpiPeriodMappings
-                            .Where(x => x.KpiPeriodId == KpiPeriodEnum.PERIOD_QUATER01.Id)
-                            .FirstOrDefault();
-                    if (KpiGeneralContentKpiPeriodMappingQ1 == null)
-                    {
-                        KpiGeneralContentKpiPeriodMappingQ1 = new KpiGeneralContentKpiPeriodMapping();
-                        KpiGeneralContentKpiPeriodMappingQ1.KpiPeriodId = KpiPeriodEnum.PERIOD_QUATER01.Id;
-                        KpiGeneralContent.KpiGeneralContentKpiPeriodMappings.Add(KpiGeneralContentKpiPeriodMappingQ1);
-                    }
-                    if (decimal.TryParse(Q1Value, out decimal Q1))
-                        KpiGeneralContentKpiPeriodMappingQ1.Value = Q1;
-                    else
-                        KpiGeneralContentKpiPeriodMappingQ1.Value = null;
-                    #endregion
-
-                    #region Quý 2
-                    KpiGeneralContentKpiPeriodMapping
-                            KpiGeneralContentKpiPeriodMappingQ2 = KpiGeneralContent.KpiGeneralContentKpiPeriodMappings
-                            .Where(x => x.KpiPeriodId == KpiPeriodEnum.PERIOD_QUATER02.Id)
-                            .FirstOrDefault();
-                    if (KpiGeneralContentKpiPeriodMappingQ2 == null)
-                    {
-                        KpiGeneralContentKpiPeriodMappingQ2 = new KpiGeneralContentKpiPeriodMapping();
-                        KpiGeneralContentKpiPeriodMappingQ2.KpiPeriodId = KpiPeriodEnum.PERIOD_QUATER02.Id;
-                        KpiGeneralContent.KpiGeneralContentKpiPeriodMappings.Add(KpiGeneralContentKpiPeriodMappingQ2);
-                    }
-                    if (decimal.TryParse(Q2Value, out decimal Q2))
-                        KpiGeneralContentKpiPeriodMappingQ2.Value = Q2;
-                    else
-                        KpiGeneralContentKpiPeriodMappingQ2.Value = null;
-                    #endregion
-
-                    #region Quý 3
-                    KpiGeneralContentKpiPeriodMapping
-                            KpiGeneralContentKpiPeriodMappingQ3 = KpiGeneralContent.KpiGeneralContentKpiPeriodMappings
-                            .Where(x => x.KpiPeriodId == KpiPeriodEnum.PERIOD_QUATER03.Id)
-                            .FirstOrDefault();
-                    if (KpiGeneralContentKpiPeriodMappingQ3 == null)
-                    {
-                        KpiGeneralContentKpiPeriodMappingQ3 = new KpiGeneralContentKpiPeriodMapping();
-                        KpiGeneralContentKpiPeriodMappingQ3.KpiPeriodId = KpiPeriodEnum.PERIOD_QUATER03.Id;
-                        KpiGeneralContent.KpiGeneralContentKpiPeriodMappings.Add(KpiGeneralContentKpiPeriodMappingQ3);
-                    }
-                    if (decimal.TryParse(Q3Value, out decimal Q3))
-                        KpiGeneralContentKpiPeriodMappingQ3.Value = Q3;
-                    else
-                        KpiGeneralContentKpiPeriodMappingQ3.Value = null;
-                    #endregion
-
-                    #region Quý 4
-                    KpiGeneralContentKpiPeriodMapping
-                            KpiGeneralContentKpiPeriodMappingQ4 = KpiGeneralContent.KpiGeneralContentKpiPeriodMappings
-                            .Where(x => x.KpiPeriodId == KpiPeriodEnum.PERIOD_QUATER04.Id)
-                            .FirstOrDefault();
-                    if (KpiGeneralContentKpiPeriodMappingQ4 == null)
-                    {
-                        KpiGeneralContentKpiPeriodMappingQ4 = new KpiGeneralContentKpiPeriodMapping();
-                        KpiGeneralContentKpiPeriodMappingQ4.KpiPeriodId = KpiPeriodEnum.PERIOD_QUATER04.Id;
-                        KpiGeneralContent.KpiGeneralContentKpiPeriodMappings.Add(KpiGeneralContentKpiPeriodMappingQ4);
-                    }
-                    if (decimal.TryParse(Q4Value, out decimal Q4))
-                        KpiGeneralContentKpiPeriodMappingQ4.Value = Q4;
-                    else
-                        KpiGeneralContentKpiPeriodMappingQ4.Value = null;
-                    #endregion
-
-                    #region Năm
-                    KpiGeneralContentKpiPeriodMapping
-                            KpiGeneralContentKpiPeriodMappingY = KpiGeneralContent.KpiGeneralContentKpiPeriodMappings
-                            .Where(x => x.KpiPeriodId == KpiPeriodEnum.PERIOD_YEAR01.Id)
-                            .FirstOrDefault();
-                    if (KpiGeneralContentKpiPeriodMappingY == null)
-                    {
-                        KpiGeneralContentKpiPeriodMappingY = new KpiGeneralContentKpiPeriodMapping();
-                        KpiGeneralContentKpiPeriodMappingY.KpiPeriodId = KpiPeriodEnum.PERIOD_YEAR01.Id;
-                        KpiGeneralContent.KpiGeneralContentKpiPeriodMappings.Add(KpiGeneralContentKpiPeriodMappingY);
-                    }
-                    if (decimal.TryParse(YValue, out decimal Y))
-                        KpiGeneralContentKpiPeriodMappingY.Value = Y;
-                    else
-                        KpiGeneralContentKpiPeriodMappingY.Value = null;
-                    #endregion
-
-                    foreach (var content in KpiGeneral.KpiGeneralContents)
-                    {
-                        if (content.HasChanged)
+                        GenericEnum KpiCriteriaGeneral = KpiCriteriaGeneralEnum.KpiCriteriaGeneralEnumList.Where(x => x.Name == CriterialValue).FirstOrDefault();
+                        if (KpiCriteriaGeneral == null)
                         {
-                            bool flag = false;
-                            foreach (var item in content.KpiGeneralContentKpiPeriodMappings)
-                            {
-                                if (item.Value != null) flag = true;
-                            }
-                            if (!flag)
-                                errorContent.AppendLine($"Lỗi dòng thứ {content.STT}: Chưa nhập chỉ tiêu");
+                            errorContent.AppendLine($"Lỗi dòng thứ {i + 1}: Tên chỉ tiêu không hợp lệ");
+                            continue;
+                        }
+                        else
+                        {
+                            KpiGeneral_ImportDTO.KpiCriteriaGeneralId = KpiCriteriaGeneral.Id;
+                        }
+                    }
+
+                    KpiGeneral_ImportDTO.Stt = i;
+                    KpiGeneral_ImportDTO.UsernameValue = UsernameValue;
+                    KpiGeneral_ImportDTO.CriterialValue = CriterialValue;
+                    KpiGeneral_ImportDTO.M1Value = worksheet.Cells[i, M1Column].Value?.ToString();
+                    KpiGeneral_ImportDTO.M2Value = worksheet.Cells[i, M2Column].Value?.ToString();
+                    KpiGeneral_ImportDTO.M3Value = worksheet.Cells[i, M3Column].Value?.ToString();
+                    KpiGeneral_ImportDTO.M4Value = worksheet.Cells[i, M4Column].Value?.ToString();
+                    KpiGeneral_ImportDTO.M5Value = worksheet.Cells[i, M5Column].Value?.ToString();
+                    KpiGeneral_ImportDTO.M6Value = worksheet.Cells[i, M6Column].Value?.ToString();
+                    KpiGeneral_ImportDTO.M7Value = worksheet.Cells[i, M7Column].Value?.ToString();
+                    KpiGeneral_ImportDTO.M8Value = worksheet.Cells[i, M8Column].Value?.ToString();
+                    KpiGeneral_ImportDTO.M9Value = worksheet.Cells[i, M9Column].Value?.ToString();
+                    KpiGeneral_ImportDTO.M10Value = worksheet.Cells[i, M10Column].Value?.ToString();
+                    KpiGeneral_ImportDTO.M11Value = worksheet.Cells[i, M11Column].Value?.ToString();
+                    KpiGeneral_ImportDTO.M12Value = worksheet.Cells[i, M12Column].Value?.ToString();
+                    KpiGeneral_ImportDTO.Q1Value = worksheet.Cells[i, Q1Column].Value?.ToString();
+                    KpiGeneral_ImportDTO.Q2Value = worksheet.Cells[i, Q2Column].Value?.ToString();
+                    KpiGeneral_ImportDTO.Q3Value = worksheet.Cells[i, Q3Column].Value?.ToString();
+                    KpiGeneral_ImportDTO.Q4Value = worksheet.Cells[i, Q4Column].Value?.ToString();
+                    KpiGeneral_ImportDTO.YValue = worksheet.Cells[i, YColumn].Value?.ToString();
+                    KpiGeneral_ImportDTOs.Add(KpiGeneral_ImportDTO);
+                }
+            }
+
+            Dictionary<long, StringBuilder> Errors = new Dictionary<long, StringBuilder>();
+            HashSet<KpiGeneral_RowDTO> KpiGeneral_RowDTOs = new HashSet<KpiGeneral_RowDTO>(KpiGenerals.Select(x => new KpiGeneral_RowDTO { AppUserId = x.EmployeeId, KpiYearId = x.KpiYearId }).ToList());
+            foreach (KpiGeneral_ImportDTO KpiGeneral_ImportDTO in KpiGeneral_ImportDTOs)
+            {
+                Errors.Add(KpiGeneral_ImportDTO.Stt, new StringBuilder(""));
+                KpiGeneral_ImportDTO.IsNew = false;
+            }
+
+            Parallel.ForEach(KpiGeneral_ImportDTOs, KpiGeneral_ImportDTO =>
+            {
+                if (!KpiGeneral_RowDTOs.Contains(new KpiGeneral_RowDTO { AppUserId = KpiGeneral_ImportDTO.EmployeeId, KpiYearId = KpiGeneral_ImportDTO.KpiYearId }))
+                {
+                    KpiGeneral_ImportDTO.IsNew = true;
+                    KpiGeneral_ImportDTO.OrganizationId = AppUser.OrganizationId;
+                }
+
+                KpiGeneral_ImportDTO.KpiCriteriaGeneralId = KpiPeriodEnum.KpiPeriodEnumList.Where(x => x.Name.ToLower() == KpiGeneral_ImportDTO.CriterialValue.ToLower()).Select(x => x.Id).FirstOrDefault();
+            });
+
+            HashSet<long> KpiPeriodIds = new HashSet<long>();
+            long CurrentMonth = 100 + StaticParams.DateTimeNow.Month;
+            long CurrentQuater = 0;
+            if (Enums.KpiPeriodEnum.PERIOD_MONTH01.Id <= CurrentMonth && CurrentMonth <= Enums.KpiPeriodEnum.PERIOD_MONTH03.Id)
+                CurrentQuater = Enums.KpiPeriodEnum.PERIOD_QUATER01.Id;
+            if (Enums.KpiPeriodEnum.PERIOD_MONTH04.Id <= CurrentMonth && CurrentMonth <= Enums.KpiPeriodEnum.PERIOD_MONTH06.Id)
+                CurrentQuater = Enums.KpiPeriodEnum.PERIOD_QUATER02.Id;
+            if (Enums.KpiPeriodEnum.PERIOD_MONTH07.Id <= CurrentMonth && CurrentMonth <= Enums.KpiPeriodEnum.PERIOD_MONTH09.Id)
+                CurrentQuater = Enums.KpiPeriodEnum.PERIOD_QUATER03.Id;
+            if (Enums.KpiPeriodEnum.PERIOD_MONTH10.Id <= CurrentMonth && CurrentMonth <= Enums.KpiPeriodEnum.PERIOD_MONTH12.Id)
+                CurrentQuater = Enums.KpiPeriodEnum.PERIOD_QUATER04.Id;
+            if (KpiYear.Id >= StaticParams.DateTimeNow.Year)
+            {
+                KpiPeriodIds.Add(KpiYear.Id);
+            }
+            foreach (var KpiPeriod in KpiPeriodEnum.KpiPeriodEnumList)
+            {
+                if (CurrentMonth <= KpiPeriod.Id && KpiPeriod.Id <= Enums.KpiPeriodEnum.PERIOD_MONTH12.Id)
+                    KpiPeriodIds.Add(KpiPeriod.Id);
+                if (CurrentQuater <= KpiPeriod.Id && KpiPeriod.Id <= Enums.KpiPeriodEnum.PERIOD_QUATER04.Id)
+                    KpiPeriodIds.Add(KpiPeriod.Id);
+            }
+
+            Parallel.ForEach(KpiGeneral_ImportDTOs, KpiGeneral_ImportDTO =>
+            {
+                KpiGeneral KpiGeneral;
+                if (KpiGeneral_ImportDTO.IsNew)
+                {
+                    KpiGeneral = new KpiGeneral();
+                    KpiGenerals.Add(KpiGeneral);
+                    KpiGeneral.EmployeeId = KpiGeneral_ImportDTO.EmployeeId;
+                    KpiGeneral.OrganizationId = KpiGeneral_ImportDTO.OrganizationId;
+                    KpiGeneral.KpiYearId = KpiGeneral_ImportDTO.KpiYearId;
+                    KpiGeneral.RowId = Guid.NewGuid();
+                    KpiGeneral.KpiGeneralContents = KpiCriteriaGeneralEnum.KpiCriteriaGeneralEnumList.Select(x => new KpiGeneralContent
+                    {
+                        KpiCriteriaGeneralId = x.Id,
+                        RowId = Guid.NewGuid(),
+                        StatusId = StatusEnum.ACTIVE.Id,
+                        KpiGeneralContentKpiPeriodMappings = KpiPeriodEnum.KpiPeriodEnumList.Select(x => new KpiGeneralContentKpiPeriodMapping
+                        {
+                            KpiPeriodId = x.Id
+                        }).ToList()
+                    }).ToList();
+                }
+                else
+                {
+                    KpiGeneral = KpiGenerals.Where(x => x.EmployeeId == KpiGeneral_ImportDTO.EmployeeId && x.KpiYearId == KpiGeneral_ImportDTO.KpiYearId).FirstOrDefault();
+                }
+
+                KpiGeneralContent KpiGeneralContent = KpiGeneral.KpiGeneralContents.Where(x => x.KpiCriteriaGeneralId == KpiGeneral_ImportDTO.KpiCriteriaGeneralId).FirstOrDefault();
+                if (KpiGeneralContent != null)
+                {
+                    foreach (var KpiGeneralContentKpiPeriodMapping in KpiGeneralContent.KpiGeneralContentKpiPeriodMappings)
+                    {
+                        if (decimal.TryParse(KpiGeneral_ImportDTO.M1Value, out decimal M1) &&
+                        KpiGeneralContentKpiPeriodMapping.KpiPeriodId == KpiPeriodEnum.PERIOD_MONTH01.Id &&
+                        KpiPeriodIds.Contains(KpiPeriodEnum.PERIOD_MONTH01.Id))
+                        {
+                            KpiGeneralContentKpiPeriodMapping.Value = M1;
+                        }
+                        else if (decimal.TryParse(KpiGeneral_ImportDTO.M2Value, out decimal M2) &&
+                        KpiGeneralContentKpiPeriodMapping.KpiPeriodId == KpiPeriodEnum.PERIOD_MONTH02.Id &&
+                        KpiPeriodIds.Contains(KpiPeriodEnum.PERIOD_MONTH02.Id))
+                        {
+                            KpiGeneralContentKpiPeriodMapping.Value = M2;
+                        }
+                        else if(decimal.TryParse(KpiGeneral_ImportDTO.M3Value, out decimal M3) &&
+                        KpiGeneralContentKpiPeriodMapping.KpiPeriodId == KpiPeriodEnum.PERIOD_MONTH03.Id &&
+                        KpiPeriodIds.Contains(KpiPeriodEnum.PERIOD_MONTH03.Id))
+                        {
+                            KpiGeneralContentKpiPeriodMapping.Value = M3;
+                        }
+                        else if(decimal.TryParse(KpiGeneral_ImportDTO.M4Value, out decimal M4) &&
+                        KpiGeneralContentKpiPeriodMapping.KpiPeriodId == KpiPeriodEnum.PERIOD_MONTH04.Id &&
+                        KpiPeriodIds.Contains(KpiPeriodEnum.PERIOD_MONTH04.Id))
+                        {
+                            KpiGeneralContentKpiPeriodMapping.Value = M4;
+                        }
+                        else if(decimal.TryParse(KpiGeneral_ImportDTO.M5Value, out decimal M5) &&
+                        KpiGeneralContentKpiPeriodMapping.KpiPeriodId == KpiPeriodEnum.PERIOD_MONTH05.Id &&
+                        KpiPeriodIds.Contains(KpiPeriodEnum.PERIOD_MONTH05.Id))
+                        {
+                            KpiGeneralContentKpiPeriodMapping.Value = M5;
+                        }
+                        else if(decimal.TryParse(KpiGeneral_ImportDTO.M6Value, out decimal M6) &&
+                        KpiGeneralContentKpiPeriodMapping.KpiPeriodId == KpiPeriodEnum.PERIOD_MONTH06.Id &&
+                        KpiPeriodIds.Contains(KpiPeriodEnum.PERIOD_MONTH06.Id))
+                        {
+                            KpiGeneralContentKpiPeriodMapping.Value = M6;
+                        }
+                        else if(decimal.TryParse(KpiGeneral_ImportDTO.M7Value, out decimal M7) &&
+                        KpiGeneralContentKpiPeriodMapping.KpiPeriodId == KpiPeriodEnum.PERIOD_MONTH07.Id &&
+                        KpiPeriodIds.Contains(KpiPeriodEnum.PERIOD_MONTH07.Id))
+                        {
+                            KpiGeneralContentKpiPeriodMapping.Value = M7;
+                        }
+                        else if(decimal.TryParse(KpiGeneral_ImportDTO.M8Value, out decimal M8) &&
+                        KpiGeneralContentKpiPeriodMapping.KpiPeriodId == KpiPeriodEnum.PERIOD_MONTH08.Id &&
+                        KpiPeriodIds.Contains(KpiPeriodEnum.PERIOD_MONTH08.Id))
+                        {
+                            KpiGeneralContentKpiPeriodMapping.Value = M8;
+                        }
+                        else if(decimal.TryParse(KpiGeneral_ImportDTO.M9Value, out decimal M9) &&
+                        KpiGeneralContentKpiPeriodMapping.KpiPeriodId == KpiPeriodEnum.PERIOD_MONTH09.Id &&
+                        KpiPeriodIds.Contains(KpiPeriodEnum.PERIOD_MONTH09.Id))
+                        {
+                            KpiGeneralContentKpiPeriodMapping.Value = M9;
+                        }
+                        else if(decimal.TryParse(KpiGeneral_ImportDTO.M10Value, out decimal M10) &&
+                        KpiGeneralContentKpiPeriodMapping.KpiPeriodId == KpiPeriodEnum.PERIOD_MONTH10.Id &&
+                        KpiPeriodIds.Contains(KpiPeriodEnum.PERIOD_MONTH10.Id))
+                        {
+                            KpiGeneralContentKpiPeriodMapping.Value = M10;
+                        }
+                        else if(decimal.TryParse(KpiGeneral_ImportDTO.M11Value, out decimal M11) &&
+                        KpiGeneralContentKpiPeriodMapping.KpiPeriodId == KpiPeriodEnum.PERIOD_MONTH11.Id &&
+                        KpiPeriodIds.Contains(KpiPeriodEnum.PERIOD_MONTH11.Id))
+                        {
+                            KpiGeneralContentKpiPeriodMapping.Value = M11;
+                        }
+                        else if(decimal.TryParse(KpiGeneral_ImportDTO.M12Value, out decimal M12) &&
+                        KpiGeneralContentKpiPeriodMapping.KpiPeriodId == KpiPeriodEnum.PERIOD_MONTH12.Id &&
+                        KpiPeriodIds.Contains(KpiPeriodEnum.PERIOD_MONTH12.Id))
+                        {
+                            KpiGeneralContentKpiPeriodMapping.Value = M12;
+                        }
+                        else if(decimal.TryParse(KpiGeneral_ImportDTO.Q1Value, out decimal Q1) &&
+                        KpiGeneralContentKpiPeriodMapping.KpiPeriodId == KpiPeriodEnum.PERIOD_QUATER01.Id &&
+                        KpiPeriodIds.Contains(KpiPeriodEnum.PERIOD_QUATER01.Id))
+                        {
+                            KpiGeneralContentKpiPeriodMapping.Value = Q1;
+                        }
+                        else if(decimal.TryParse(KpiGeneral_ImportDTO.Q2Value, out decimal Q2) &&
+                        KpiGeneralContentKpiPeriodMapping.KpiPeriodId == KpiPeriodEnum.PERIOD_QUATER02.Id &&
+                        KpiPeriodIds.Contains(KpiPeriodEnum.PERIOD_QUATER02.Id))
+                        {
+                            KpiGeneralContentKpiPeriodMapping.Value = Q2;
+                        }
+                        else if(decimal.TryParse(KpiGeneral_ImportDTO.Q4Value, out decimal Q4) &&
+                        KpiGeneralContentKpiPeriodMapping.KpiPeriodId == KpiPeriodEnum.PERIOD_QUATER04.Id &&
+                        KpiPeriodIds.Contains(KpiPeriodEnum.PERIOD_QUATER04.Id))
+                        {
+                            KpiGeneralContentKpiPeriodMapping.Value = Q4;
+                        }
+                        else if(decimal.TryParse(KpiGeneral_ImportDTO.YValue, out decimal Y) &&
+                        KpiGeneralContentKpiPeriodMapping.KpiPeriodId == KpiPeriodEnum.PERIOD_YEAR01.Id &&
+                        KpiPeriodIds.Contains(KpiPeriodEnum.PERIOD_YEAR01.Id))
+                        {
+                            KpiGeneralContentKpiPeriodMapping.Value = Y;
+                        }
+                        else
+                        {
+                            Errors[KpiGeneral_ImportDTO.Stt].AppendLine($"Lỗi dòng thứ {KpiGeneral_ImportDTO.Stt}: Chưa nhập chỉ tiêu");
+                            continue;
                         }
                     }
                 }
+                KpiGeneral.CreatorId = AppUser.Id;
+                KpiGeneral.StatusId = StatusEnum.ACTIVE.Id;
+            });
 
-                if (errorContent.Length > 0)
-                    return BadRequest(errorContent.ToString());
-            }
+            if (errorContent.Length > 0)
+                return BadRequest(errorContent.ToString());
+            string error = string.Join("\n", Errors.Select(x => x.Value.ToString()).ToList());
+            if (!string.IsNullOrWhiteSpace(error))
+                return BadRequest(error);
+
             KpiGenerals = await KpiGeneralService.Import(KpiGenerals);
             List<KpiGeneral_KpiGeneralDTO> KpiGeneral_KpiGeneralDTOs = KpiGenerals
                 .Select(c => new KpiGeneral_KpiGeneralDTO(c)).ToList();
