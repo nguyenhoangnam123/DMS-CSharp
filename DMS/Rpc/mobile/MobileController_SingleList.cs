@@ -153,6 +153,29 @@ namespace DMS.Rpc.mobile
                 .Select(x => new Mobile_StoreGroupingDTO(x)).ToList();
             return Mobile_StoreGroupingDTOs;
         }
+
+        [Route(MobileRoute.SingleListStoreStatus), HttpPost]
+        public async Task<List<Mobile_StoreStatusDTO>> SingleListStoreStatus([FromBody] Mobile_StoreStatusFilterDTO Mobile_StoreStatusFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            StoreStatusFilter StoreStatusFilter = new StoreStatusFilter();
+            StoreStatusFilter.Skip = 0;
+            StoreStatusFilter.Take = 20;
+            StoreStatusFilter.OrderBy = StoreStatusOrder.Id;
+            StoreStatusFilter.OrderType = OrderType.ASC;
+            StoreStatusFilter.Selects = StoreStatusSelect.ALL;
+            StoreStatusFilter.Id = Mobile_StoreStatusFilterDTO.Id;
+            StoreStatusFilter.Code = Mobile_StoreStatusFilterDTO.Code;
+            StoreStatusFilter.Name = Mobile_StoreStatusFilterDTO.Name;
+
+            List<StoreStatus> StoreStatuses = await StoreStatusService.List(StoreStatusFilter);
+            List<Mobile_StoreStatusDTO> Mobile_StoreStatusDTOs = StoreStatuses
+                .Select(x => new Mobile_StoreStatusDTO(x)).ToList();
+            return Mobile_StoreStatusDTOs;
+        }
+
         [Route(MobileRoute.SingleListStoreType), HttpPost]
         public async Task<List<Mobile_StoreTypeDTO>> SingleListStoreType([FromBody] Mobile_StoreTypeFilterDTO Mobile_StoreTypeFilterDTO)
         {
