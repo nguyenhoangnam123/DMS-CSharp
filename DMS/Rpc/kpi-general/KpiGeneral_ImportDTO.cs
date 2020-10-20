@@ -41,11 +41,11 @@ namespace DMS.Rpc.kpi_general
         public long KpiYearId { get; set; }
         public bool Equals(KpiGeneral_RowDTO other)
         {
-            return true;
+            return other!= null && this.AppUserId == other.AppUserId && this.KpiYearId == other.KpiYearId;
         }
         public override int GetHashCode()
         {
-            return base.GetHashCode();
+            return (AppUserId + KpiYearId).GetHashCode();
         }
     }
 }

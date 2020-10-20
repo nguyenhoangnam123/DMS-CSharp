@@ -443,17 +443,6 @@ namespace DMS.Rpc.kpi_general
                 KpiGeneral_ImportDTO.IsNew = false;
             }
 
-            Parallel.ForEach(KpiGeneral_ImportDTOs, KpiGeneral_ImportDTO =>
-            {
-                if (!KpiGeneral_RowDTOs.Contains(new KpiGeneral_RowDTO { AppUserId = KpiGeneral_ImportDTO.EmployeeId, KpiYearId = KpiGeneral_ImportDTO.KpiYearId }))
-                {
-                    KpiGeneral_ImportDTO.IsNew = true;
-                    KpiGeneral_ImportDTO.OrganizationId = AppUser.OrganizationId;
-                }
-
-                KpiGeneral_ImportDTO.KpiCriteriaGeneralId = KpiPeriodEnum.KpiPeriodEnumList.Where(x => x.Name.ToLower() == KpiGeneral_ImportDTO.CriterialValue.ToLower()).Select(x => x.Id).FirstOrDefault();
-            });
-
             HashSet<long> KpiPeriodIds = new HashSet<long>();
             long CurrentMonth = 100 + StaticParams.DateTimeNow.Month;
             long CurrentQuater = 0;
@@ -477,11 +466,21 @@ namespace DMS.Rpc.kpi_general
                     KpiPeriodIds.Add(KpiPeriod.Id);
             }
 
-            Parallel.ForEach(KpiGeneral_ImportDTOs, KpiGeneral_ImportDTO =>
+            //Parallel.ForEach(KpiGeneral_ImportDTOs, KpiGeneral_ImportDTO =>
+            foreach (var KpiGeneral_ImportDTO in KpiGeneral_ImportDTOs)
             {
+                if (!KpiGeneral_RowDTOs.Contains(new KpiGeneral_RowDTO { AppUserId = KpiGeneral_ImportDTO.EmployeeId, KpiYearId = KpiGeneral_ImportDTO.KpiYearId }))
+                {
+                    KpiGeneral_ImportDTO.IsNew = true;
+                    KpiGeneral_ImportDTO.OrganizationId = AppUser.OrganizationId;
+                }
+
+                KpiGeneral_ImportDTO.KpiCriteriaGeneralId = KpiCriteriaGeneralEnum.KpiCriteriaGeneralEnumList.Where(x => x.Name.ToLower() == KpiGeneral_ImportDTO.CriterialValue.ToLower()).Select(x => x.Id).FirstOrDefault();
                 KpiGeneral KpiGeneral;
                 if (KpiGeneral_ImportDTO.IsNew)
                 {
+                    KpiGeneral_RowDTOs.Add(new KpiGeneral_RowDTO { AppUserId = KpiGeneral_ImportDTO.EmployeeId, KpiYearId = KpiGeneral_ImportDTO.KpiYearId });
+
                     KpiGeneral = new KpiGeneral();
                     KpiGenerals.Add(KpiGeneral);
                     KpiGeneral.EmployeeId = KpiGeneral_ImportDTO.EmployeeId;
@@ -605,16 +604,20 @@ namespace DMS.Rpc.kpi_general
                         {
                             KpiGeneralContentKpiPeriodMapping.Value = Y;
                         }
-                        else
-                        {
-                            Errors[KpiGeneral_ImportDTO.Stt].AppendLine($"Lỗi dòng thứ {KpiGeneral_ImportDTO.Stt}: Chưa nhập chỉ tiêu");
-                            continue;
-                        }
+                    }
+                    bool flag = false;
+                    foreach (var item in KpiGeneralContent.KpiGeneralContentKpiPeriodMappings)
+                    {
+                        if (item.Value != null) flag = true;
+                    }
+                    if (flag == false)
+                    {
+                        Errors[KpiGeneral_ImportDTO.Stt].AppendLine($"Lỗi dòng thứ {KpiGeneral_ImportDTO.Stt}: Chưa nhập chỉ tiêu");
                     }
                 }
                 KpiGeneral.CreatorId = AppUser.Id;
                 KpiGeneral.StatusId = StatusEnum.ACTIVE.Id;
-            });
+            }
 
             if (errorContent.Length > 0)
                 return BadRequest(errorContent.ToString());
