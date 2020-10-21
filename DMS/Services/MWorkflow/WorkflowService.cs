@@ -285,8 +285,8 @@ namespace DMS.Services.MWorkflow
                     {
                         WorkflowDirections.Add(WorkflowDirection);
                     }
-                    WorkflowDefinition.WorkflowDirections = WorkflowDirections;
                 }
+                WorkflowDefinition.WorkflowDirections = WorkflowDirections;
             }
             // tìm điểm bắt đầu
             // tìm điểm nhảy tiếp theo
