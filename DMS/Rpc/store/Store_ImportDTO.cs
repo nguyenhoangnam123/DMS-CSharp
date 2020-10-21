@@ -41,7 +41,7 @@ namespace DMS.Rpc.store
         public decimal DeliveryLongitude { get; set; }
         public decimal DeliveryLatitude { get; set; }
         public long StoreTypeId { get; set; }
-        public long StoreGroupingId { get; set; }
+        public long? StoreGroupingId { get; set; }
         public long? ProvinceId { get; set; }
         public long? DistrictId { get; set; }
         public long? WardId { get; set; }

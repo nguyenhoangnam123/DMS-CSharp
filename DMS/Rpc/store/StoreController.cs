@@ -460,14 +460,32 @@ namespace DMS.Rpc.store
                 Store.CodeDraft = Store_ImportDTO.CodeDraftValue;
                 Store.Name = Store_ImportDTO.NameValue;
                 Store.OrganizationId = Store_ImportDTO.OrganizationId;
+                Store.Organization = new Organization { Code = Store_ImportDTO.OrganizationCodeValue };
                 Store.ParentStore = new Store { Code = Store_ImportDTO.ParentStoreCodeValue };
                 Store.StoreTypeId = Store_ImportDTO.StoreTypeId;
+                Store.StoreType = new StoreType { Code = Store_ImportDTO.StoreTypeCodeValue };
                 Store.StoreGroupingId = Store_ImportDTO.StoreGroupingId;
+                if (Store.StoreGroupingId.HasValue)
+                {
+                    Store.StoreGrouping = new StoreGrouping { Code = Store_ImportDTO.StoreGroupingCodeValue };
+                }
                 Store.LegalEntity = Store_ImportDTO.LegalEntityValue;
                 Store.TaxCode = Store_ImportDTO.TaxCodeValue;
                 Store.ProvinceId = Store_ImportDTO.ProvinceId;
+                if (Store.ProvinceId.HasValue)
+                {
+                    Store.Province = new Province { Code = Store_ImportDTO.ProvinceCodeValue };
+                }
                 Store.DistrictId = Store_ImportDTO.DistrictId;
+                if (Store.DistrictId.HasValue)
+                {
+                    Store.District = new District { Code = Store_ImportDTO.DistrictCodeValue };
+                }
                 Store.WardId = Store_ImportDTO.WardId;
+                if (Store.WardId.HasValue)
+                {
+                    Store.Ward = new Ward { Code = Store_ImportDTO.WardCodeValue };
+                }
                 Store.Address = Store_ImportDTO.AddressValue;
                 Store.Longitude = Store_ImportDTO.Longitude;
                 Store.Latitude = Store_ImportDTO.Latitude;
