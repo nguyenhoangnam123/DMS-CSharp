@@ -229,7 +229,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_employee_report
                 .ToList();
             List<KpiGeneralEmployeeReport_KpiGeneralEmployeeReportDTO>
                 KpiGeneralEmployeeReport_KpiGeneralEmployeeReportDTOs = new List<KpiGeneralEmployeeReport_KpiGeneralEmployeeReportDTO>();
-            foreach (var KpiPeriod in KpiPeriods)
+            Parallel.ForEach(KpiPeriods, KpiPeriod =>
             {
                 KpiGeneralEmployeeReport_KpiGeneralEmployeeReportDTO KpiGeneralEmployeeReport_KpiGeneralEmployeeReportDTO
                     = new KpiGeneralEmployeeReport_KpiGeneralEmployeeReportDTO();
@@ -239,7 +239,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_employee_report
                 KpiGeneralEmployeeReport_KpiGeneralEmployeeReportDTO.KpiYearName = KpiGeneral.KpiYear.Name;
                 KpiGeneralEmployeeReport_KpiGeneralEmployeeReportDTO.SaleEmployeeId = SaleEmployeeId.Value;
                 KpiGeneralEmployeeReport_KpiGeneralEmployeeReportDTOs.Add(KpiGeneralEmployeeReport_KpiGeneralEmployeeReportDTO);
-            }
+            });
             var IndirectSalesOrderDAOs = await DataContext.IndirectSalesOrder
                 .Where(x => x.SaleEmployeeId == SaleEmployeeId &&
                 x.OrderDate >= StartDate && x.OrderDate <= EndDate &&
@@ -306,7 +306,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_employee_report
                 })
                 .ToListAsync();
 
-            foreach (var Period in KpiGeneralEmployeeReport_KpiGeneralEmployeeReportDTOs)
+            Parallel.ForEach(KpiGeneralEmployeeReport_KpiGeneralEmployeeReportDTOs, Period =>
             {
                 foreach (var KpiPeriod in KpiPeriodEnum.KpiPeriodEnumList)
                 {
@@ -585,7 +585,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_employee_report
                         Math.Round((Period.NumberOfStoreVisits.Value / Period.NumberOfStoreVisitsPlanned.Value) * 100, 2);
                 }
                 #endregion
-            };
+            });
 
             return KpiGeneralEmployeeReport_KpiGeneralEmployeeReportDTOs;
         }
