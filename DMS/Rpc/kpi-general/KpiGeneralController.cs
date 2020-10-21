@@ -466,13 +466,12 @@ namespace DMS.Rpc.kpi_general
                     KpiPeriodIds.Add(KpiPeriod.Id);
             }
 
-            //Parallel.ForEach(KpiGeneral_ImportDTOs, KpiGeneral_ImportDTO =>
-            foreach (var KpiGeneral_ImportDTO in KpiGeneral_ImportDTOs)
+            Parallel.ForEach(KpiGeneral_ImportDTOs, KpiGeneral_ImportDTO =>
             {
                 if (!KpiGeneral_RowDTOs.Contains(new KpiGeneral_RowDTO { AppUserId = KpiGeneral_ImportDTO.EmployeeId, KpiYearId = KpiGeneral_ImportDTO.KpiYearId }))
                 {
                     KpiGeneral_ImportDTO.IsNew = true;
-                    KpiGeneral_ImportDTO.OrganizationId = AppUser.OrganizationId;
+                    KpiGeneral_ImportDTO.OrganizationId = Employees.Where(x => x.Username == KpiGeneral_ImportDTO.UsernameValue).Select(x => x.OrganizationId).FirstOrDefault();
                 }
 
                 KpiGeneral_ImportDTO.KpiCriteriaGeneralId = KpiCriteriaGeneralEnum.KpiCriteriaGeneralEnumList.Where(x => x.Name.ToLower() == KpiGeneral_ImportDTO.CriterialValue.ToLower()).Select(x => x.Id).FirstOrDefault();
@@ -520,85 +519,85 @@ namespace DMS.Rpc.kpi_general
                         {
                             KpiGeneralContentKpiPeriodMapping.Value = M2;
                         }
-                        else if(decimal.TryParse(KpiGeneral_ImportDTO.M3Value, out decimal M3) &&
+                        else if (decimal.TryParse(KpiGeneral_ImportDTO.M3Value, out decimal M3) &&
                         KpiGeneralContentKpiPeriodMapping.KpiPeriodId == KpiPeriodEnum.PERIOD_MONTH03.Id &&
                         KpiPeriodIds.Contains(KpiPeriodEnum.PERIOD_MONTH03.Id))
                         {
                             KpiGeneralContentKpiPeriodMapping.Value = M3;
                         }
-                        else if(decimal.TryParse(KpiGeneral_ImportDTO.M4Value, out decimal M4) &&
+                        else if (decimal.TryParse(KpiGeneral_ImportDTO.M4Value, out decimal M4) &&
                         KpiGeneralContentKpiPeriodMapping.KpiPeriodId == KpiPeriodEnum.PERIOD_MONTH04.Id &&
                         KpiPeriodIds.Contains(KpiPeriodEnum.PERIOD_MONTH04.Id))
                         {
                             KpiGeneralContentKpiPeriodMapping.Value = M4;
                         }
-                        else if(decimal.TryParse(KpiGeneral_ImportDTO.M5Value, out decimal M5) &&
+                        else if (decimal.TryParse(KpiGeneral_ImportDTO.M5Value, out decimal M5) &&
                         KpiGeneralContentKpiPeriodMapping.KpiPeriodId == KpiPeriodEnum.PERIOD_MONTH05.Id &&
                         KpiPeriodIds.Contains(KpiPeriodEnum.PERIOD_MONTH05.Id))
                         {
                             KpiGeneralContentKpiPeriodMapping.Value = M5;
                         }
-                        else if(decimal.TryParse(KpiGeneral_ImportDTO.M6Value, out decimal M6) &&
+                        else if (decimal.TryParse(KpiGeneral_ImportDTO.M6Value, out decimal M6) &&
                         KpiGeneralContentKpiPeriodMapping.KpiPeriodId == KpiPeriodEnum.PERIOD_MONTH06.Id &&
                         KpiPeriodIds.Contains(KpiPeriodEnum.PERIOD_MONTH06.Id))
                         {
                             KpiGeneralContentKpiPeriodMapping.Value = M6;
                         }
-                        else if(decimal.TryParse(KpiGeneral_ImportDTO.M7Value, out decimal M7) &&
+                        else if (decimal.TryParse(KpiGeneral_ImportDTO.M7Value, out decimal M7) &&
                         KpiGeneralContentKpiPeriodMapping.KpiPeriodId == KpiPeriodEnum.PERIOD_MONTH07.Id &&
                         KpiPeriodIds.Contains(KpiPeriodEnum.PERIOD_MONTH07.Id))
                         {
                             KpiGeneralContentKpiPeriodMapping.Value = M7;
                         }
-                        else if(decimal.TryParse(KpiGeneral_ImportDTO.M8Value, out decimal M8) &&
+                        else if (decimal.TryParse(KpiGeneral_ImportDTO.M8Value, out decimal M8) &&
                         KpiGeneralContentKpiPeriodMapping.KpiPeriodId == KpiPeriodEnum.PERIOD_MONTH08.Id &&
                         KpiPeriodIds.Contains(KpiPeriodEnum.PERIOD_MONTH08.Id))
                         {
                             KpiGeneralContentKpiPeriodMapping.Value = M8;
                         }
-                        else if(decimal.TryParse(KpiGeneral_ImportDTO.M9Value, out decimal M9) &&
+                        else if (decimal.TryParse(KpiGeneral_ImportDTO.M9Value, out decimal M9) &&
                         KpiGeneralContentKpiPeriodMapping.KpiPeriodId == KpiPeriodEnum.PERIOD_MONTH09.Id &&
                         KpiPeriodIds.Contains(KpiPeriodEnum.PERIOD_MONTH09.Id))
                         {
                             KpiGeneralContentKpiPeriodMapping.Value = M9;
                         }
-                        else if(decimal.TryParse(KpiGeneral_ImportDTO.M10Value, out decimal M10) &&
+                        else if (decimal.TryParse(KpiGeneral_ImportDTO.M10Value, out decimal M10) &&
                         KpiGeneralContentKpiPeriodMapping.KpiPeriodId == KpiPeriodEnum.PERIOD_MONTH10.Id &&
                         KpiPeriodIds.Contains(KpiPeriodEnum.PERIOD_MONTH10.Id))
                         {
                             KpiGeneralContentKpiPeriodMapping.Value = M10;
                         }
-                        else if(decimal.TryParse(KpiGeneral_ImportDTO.M11Value, out decimal M11) &&
+                        else if (decimal.TryParse(KpiGeneral_ImportDTO.M11Value, out decimal M11) &&
                         KpiGeneralContentKpiPeriodMapping.KpiPeriodId == KpiPeriodEnum.PERIOD_MONTH11.Id &&
                         KpiPeriodIds.Contains(KpiPeriodEnum.PERIOD_MONTH11.Id))
                         {
                             KpiGeneralContentKpiPeriodMapping.Value = M11;
                         }
-                        else if(decimal.TryParse(KpiGeneral_ImportDTO.M12Value, out decimal M12) &&
+                        else if (decimal.TryParse(KpiGeneral_ImportDTO.M12Value, out decimal M12) &&
                         KpiGeneralContentKpiPeriodMapping.KpiPeriodId == KpiPeriodEnum.PERIOD_MONTH12.Id &&
                         KpiPeriodIds.Contains(KpiPeriodEnum.PERIOD_MONTH12.Id))
                         {
                             KpiGeneralContentKpiPeriodMapping.Value = M12;
                         }
-                        else if(decimal.TryParse(KpiGeneral_ImportDTO.Q1Value, out decimal Q1) &&
+                        else if (decimal.TryParse(KpiGeneral_ImportDTO.Q1Value, out decimal Q1) &&
                         KpiGeneralContentKpiPeriodMapping.KpiPeriodId == KpiPeriodEnum.PERIOD_QUATER01.Id &&
                         KpiPeriodIds.Contains(KpiPeriodEnum.PERIOD_QUATER01.Id))
                         {
                             KpiGeneralContentKpiPeriodMapping.Value = Q1;
                         }
-                        else if(decimal.TryParse(KpiGeneral_ImportDTO.Q2Value, out decimal Q2) &&
+                        else if (decimal.TryParse(KpiGeneral_ImportDTO.Q2Value, out decimal Q2) &&
                         KpiGeneralContentKpiPeriodMapping.KpiPeriodId == KpiPeriodEnum.PERIOD_QUATER02.Id &&
                         KpiPeriodIds.Contains(KpiPeriodEnum.PERIOD_QUATER02.Id))
                         {
                             KpiGeneralContentKpiPeriodMapping.Value = Q2;
                         }
-                        else if(decimal.TryParse(KpiGeneral_ImportDTO.Q4Value, out decimal Q4) &&
+                        else if (decimal.TryParse(KpiGeneral_ImportDTO.Q4Value, out decimal Q4) &&
                         KpiGeneralContentKpiPeriodMapping.KpiPeriodId == KpiPeriodEnum.PERIOD_QUATER04.Id &&
                         KpiPeriodIds.Contains(KpiPeriodEnum.PERIOD_QUATER04.Id))
                         {
                             KpiGeneralContentKpiPeriodMapping.Value = Q4;
                         }
-                        else if(decimal.TryParse(KpiGeneral_ImportDTO.YValue, out decimal Y) &&
+                        else if (decimal.TryParse(KpiGeneral_ImportDTO.YValue, out decimal Y) &&
                         KpiGeneralContentKpiPeriodMapping.KpiPeriodId == KpiPeriodEnum.PERIOD_YEAR01.Id &&
                         KpiPeriodIds.Contains(KpiPeriodEnum.PERIOD_YEAR01.Id))
                         {
@@ -617,7 +616,7 @@ namespace DMS.Rpc.kpi_general
                 }
                 KpiGeneral.CreatorId = AppUser.Id;
                 KpiGeneral.StatusId = StatusEnum.ACTIVE.Id;
-            }
+            });
 
             if (errorContent.Length > 0)
                 return BadRequest(errorContent.ToString());
