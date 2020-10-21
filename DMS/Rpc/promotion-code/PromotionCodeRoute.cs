@@ -8,6 +8,7 @@ namespace DMS.Rpc.promotion_code
     {
         public const string Master = Module + "/price-list-and-promotion/promotion-code/promotion-code-master";
         public const string Detail = Module + "/price-list-and-promotion/promotion-code/promotion-code-detail/*";
+        public const string Preview = Module + "price-list-and-promotion/promotion-code/promotion-code-preview/*";
         private const string Default = Rpc + Module + "/promotion-code";
         public const string Count = Default + "/count";
         public const string List = Default + "/list";
@@ -66,8 +67,8 @@ namespace DMS.Rpc.promotion_code
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
         {
             { "Tìm kiếm", new List<string> { 
-                Master, Count, List,
-                Get, GetPreview,
+                Master, Count, List, 
+                Get, GetPreview, Preview,
                 FilterListOrganization, FilterListPromotionDiscountType, FilterListPromotionProductAppliedType, FilterListPromotionType, FilterListStatus, FilterListProduct, FilterListStore, } },
             { "Thêm", new List<string> { 
                 Master, Count, List, Get, GetPreview,
