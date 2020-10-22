@@ -159,8 +159,4 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Rpc\reports\report-statistic\" />
-  </ItemGroup>
 </Project>
