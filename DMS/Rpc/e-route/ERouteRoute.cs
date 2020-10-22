@@ -9,6 +9,8 @@ namespace DMS.Rpc.e_route
         public const string Parent = Module + "/route";
         public const string Master = Module + "/route/e-route/e-route-master";
         public const string Detail = Module + "/route/e-route/e-route-detail/*";
+        public const string MasterOwner = Module + "/route/e-route-owner/e-route-owner-master";
+        public const string DetailOwner = Module + "/route/e-route-owner/e-route-owner-detail/*";
         private const string Default = Rpc + Module + "/e-route";
         public const string Count = Default + "/count";
         public const string List = Default + "/list";
@@ -69,7 +71,7 @@ namespace DMS.Rpc.e_route
                 FilterListAppUser, FilterListOrganization, FilterListERouteType, FilterListRequestState, FilterListStatus,  FilterListStore, } },
             { "Tìm kiếm của tôi", new List<string> {
                 Parent,
-                Master, Get,
+                Get, MasterOwner, DetailOwner,
                 CountNew, ListNew, CountPending, ListPending, CountCompleted, ListCompleted,
                 FilterListAppUser, FilterListOrganization, FilterListERouteType, FilterListRequestState, FilterListStatus,  FilterListStore, } },
 
