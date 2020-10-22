@@ -233,7 +233,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
                 }).ToListAsync();
 
             List<KpiGeneralPeriodReport_KpiGeneralPeriodReportDTO> KpiGeneralPeriodReport_KpiGeneralPeriodReportDTOs = new List<KpiGeneralPeriodReport_KpiGeneralPeriodReportDTO>();
-            foreach (var Organization in Organizations)
+            Parallel.ForEach(Organizations, Organization =>
             {
                 KpiGeneralPeriodReport_KpiGeneralPeriodReportDTO KpiGeneralPeriodReport_KpiGeneralPeriodReportDTO = new KpiGeneralPeriodReport_KpiGeneralPeriodReportDTO()
                 {
@@ -246,7 +246,17 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
                     SaleEmployeeId = x.EmployeeId
                 }).ToList();
                 KpiGeneralPeriodReport_KpiGeneralPeriodReportDTOs.Add(KpiGeneralPeriodReport_KpiGeneralPeriodReportDTO);
-            }
+
+                foreach (var SaleEmployee in KpiGeneralPeriodReport_KpiGeneralPeriodReportDTO.SaleEmployees)
+                {
+                    var Employee = AppUserDAOs.Where(x => x.Id == SaleEmployee.SaleEmployeeId).FirstOrDefault();
+                    if(Employee != null)
+                    {
+                        SaleEmployee.Username = Employee.Username;
+                        SaleEmployee.DisplayName = Employee.DisplayName;
+                    }
+                }
+            });
             // list toan bo mapping value and criteria
             var query_detail = from kcm in DataContext.KpiGeneralContentKpiPeriodMapping
                                join kc in DataContext.KpiGeneralContent on kcm.KpiGeneralContentId equals kc.Id

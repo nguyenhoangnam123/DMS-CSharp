@@ -50,7 +50,7 @@ namespace DMS.Repositories
                 query = query.Where(q => q.PromotionDiscountTypeId, filter.PromotionDiscountTypeId);
             if (filter.Value != null)
                 query = query.Where(q => q.Value, filter.Value);
-            if (filter.MaxValue != null)
+            if (filter.MaxValue != null && filter.MaxValue.HasValue)
                 query = query.Where(q => q.MaxValue.HasValue).Where(q => q.MaxValue, filter.MaxValue);
             if (filter.PromotionTypeId != null)
                 query = query.Where(q => q.PromotionTypeId, filter.PromotionTypeId);
