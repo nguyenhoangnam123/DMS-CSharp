@@ -22,6 +22,7 @@ namespace DMS.Rpc.e_route
         public const string CountCompleted = Default + "/count-completed";
         public const string ListCompleted = Default + "/list-completed";
 
+        public const string GetDetail = Default + "/get-detail";
         public const string Get = Default + "/get";
         public const string Create = Default + "/create";
         public const string Update = Default + "/update";
@@ -67,11 +68,11 @@ namespace DMS.Rpc.e_route
         {
             { "Tìm kiếm tất cả", new List<string> {
                 Parent,
-                Master, Count, List, Get, 
+                Master, Count, List, Get, GetDetail,
                 FilterListAppUser, FilterListOrganization, FilterListERouteType, FilterListRequestState, FilterListStatus,  FilterListStore, } },
             { "Tìm kiếm của tôi", new List<string> {
                 Parent,
-                Get, MasterOwner, DetailOwner,
+                Get, MasterOwner, DetailOwner, GetDetail,
                 CountNew, ListNew, CountPending, ListPending, CountCompleted, ListCompleted,
                 FilterListAppUser, FilterListOrganization, FilterListERouteType, FilterListRequestState, FilterListStatus,  FilterListStore, } },
 

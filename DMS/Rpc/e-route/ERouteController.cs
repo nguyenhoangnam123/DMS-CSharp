@@ -173,6 +173,17 @@ namespace DMS.Rpc.e_route
             return new ERoute_ERouteDTO(ERoute);
         }
 
+        [Route(ERouteRoute.GetDetail), HttpPost]
+        public async Task<ActionResult<ERoute_ERouteDTO>> GetDetail([FromBody] ERoute_ERouteDTO ERoute_ERouteDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            ERoute ERoute = await ERouteService.GetDetail(ERoute_ERouteDTO.Id);
+            ERoute_ERouteDTO = new ERoute_ERouteDTO(ERoute);
+            return ERoute_ERouteDTO;
+        }
+
         [Route(ERouteRoute.Create), HttpPost]
         public async Task<ActionResult<ERoute_ERouteDTO>> Create([FromBody] ERoute_ERouteDTO ERoute_ERouteDTO)
         {

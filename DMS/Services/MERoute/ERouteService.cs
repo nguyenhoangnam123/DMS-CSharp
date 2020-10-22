@@ -27,6 +27,7 @@ namespace DMS.Services.MERoute
         Task<int> CountCompleted(ERouteFilter ERouteFilter);
         Task<List<ERoute>> ListCompleted(ERouteFilter ERouteFilter);
         Task<ERoute> Get(long Id);
+        Task<ERoute> GetDetail(long Id);
         Task<ERoute> Create(ERoute ERoute);
         Task<ERoute> Update(ERoute ERoute);
         Task<ERoute> Send(ERoute ERoute);
@@ -258,6 +259,12 @@ namespace DMS.Services.MERoute
             ERoute ERoute = await UOW.ERouteRepository.Get(Id);
             if (ERoute == null)
                 return null;
+            return ERoute;
+        }
+
+        public async Task<ERoute> GetDetail(long Id)
+        {
+            ERoute ERoute = await Get(Id);
             return ERoute;
         }
 
