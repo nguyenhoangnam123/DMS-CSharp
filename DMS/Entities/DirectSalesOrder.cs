@@ -26,6 +26,8 @@ namespace DMS.Entities
         public decimal SubTotal { get; set; }
         public decimal? GeneralDiscountPercentage { get; set; }
         public decimal? GeneralDiscountAmount { get; set; }
+        public string PromotionCode { get; set; }
+        public decimal? PromotionValue { get; set; }
         public decimal TotalTaxAmount { get; set; }
         public decimal Total { get; set; }
         public decimal TotalDiscountAmount { get; set; }
@@ -66,6 +68,7 @@ namespace DMS.Entities
         public IdFilter RequestStateId { get; set; }
         public IdFilter EditedPriceStatusId { get; set; }
         public StringFilter Note { get; set; }
+        public StringFilter PromotionCode { get; set; }
         public DecimalFilter SubTotal { get; set; }
         public DecimalFilter GeneralDiscountPercentage { get; set; }
         public DecimalFilter GeneralDiscountAmount { get; set; }
@@ -125,5 +128,7 @@ namespace DMS.Entities
         TotalTaxAmount = E._16,
         Total = E._17,
         Organization = E._18,
+        PromotionCode = E._19,
+        PromotionValue = E._20,
     }
 }

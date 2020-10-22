@@ -60,7 +60,7 @@ namespace DMS.Repositories
                 query = query.Where(q => q.OrganizationId, filter.OrganizationId);
             if (filter.StartDate != null)
                 query = query.Where(q => q.StartDate, filter.StartDate);
-            if (filter.EndDate != null)
+            if (filter.EndDate != null && filter.EndDate.HasValue)
                 query = query.Where(q => q.EndDate == null).Union(query.Where(q => q.EndDate.HasValue).Where(q => q.EndDate, filter.EndDate));
             if (filter.StatusId != null)
                 query = query.Where(q => q.StatusId, filter.StatusId);

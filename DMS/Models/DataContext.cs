@@ -1,7 +1,6 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Thinktecture;
 
 namespace DMS.Models
 {
@@ -198,7 +197,6 @@ namespace DMS.Models
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.ConfigureTempTable<long>();
             modelBuilder.Entity<ActionDAO>(entity =>
             {
                 entity.ToTable("Action", "PER");
@@ -601,6 +599,10 @@ namespace DMS.Models
                 entity.Property(e => e.PhoneNumber)
                     .HasMaxLength(50)
                     .HasComment("Số điện thoại");
+
+                entity.Property(e => e.PromotionCode).HasMaxLength(50);
+
+                entity.Property(e => e.PromotionValue).HasColumnType("decimal(18, 4)");
 
                 entity.Property(e => e.RowId).HasComment("Id global cho phê duyệt");
 

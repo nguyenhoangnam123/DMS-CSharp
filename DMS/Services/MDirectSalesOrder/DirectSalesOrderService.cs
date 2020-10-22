@@ -28,6 +28,7 @@ namespace DMS.Services.MDirectSalesOrder
         Task<DirectSalesOrder> Get(long Id);
         Task<DirectSalesOrder> GetDetail(long Id);
         Task<List<Item>> ListItem(ItemFilter ItemFilter, long? SalesEmployeeId, long? StoreId);
+        Task<DirectSalesOrder> ApplyPromotionCode(DirectSalesOrder DirectSalesOrder);
         Task<DirectSalesOrder> Create(DirectSalesOrder DirectSalesOrder);
         Task<DirectSalesOrder> Update(DirectSalesOrder DirectSalesOrder);
         Task<DirectSalesOrder> Delete(DirectSalesOrder DirectSalesOrder);
@@ -356,6 +357,31 @@ namespace DMS.Services.MDirectSalesOrder
                 DirectSalesOrder.RequestWorkflowStepMappings = await WorkflowService.ListRequestWorkflowStepMapping(DirectSalesOrder.RowId);
             }
             return DirectSalesOrder;
+        }
+
+        public async Task<DirectSalesOrder> ApplyPromotionCode(DirectSalesOrder DirectSalesOrder)
+        {
+            if (!await DirectSalesOrderValidator.ApplyPromotionCode(DirectSalesOrder))
+                return DirectSalesOrder;
+
+            try
+            {
+                await Calculator(DirectSalesOrder);
+                return DirectSalesOrder;
+            }
+            catch (Exception ex)
+            {
+                if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(DirectSalesOrderService));
+                    throw new MessageException(ex);
+                }
+                else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(DirectSalesOrderService));
+                    throw new MessageException(ex.InnerException);
+                }
+            }
         }
 
         public async Task<DirectSalesOrder> Create(DirectSalesOrder DirectSalesOrder)

@@ -67,6 +67,8 @@ namespace DMS.Models
         /// Số tiền chiết khấu tổng
         /// </summary>
         public decimal? GeneralDiscountAmount { get; set; }
+        public string PromotionCode { get; set; }
+        public decimal? PromotionValue { get; set; }
         /// <summary>
         /// Tổng thuế
         /// </summary>
