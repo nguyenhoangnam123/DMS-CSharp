@@ -27,12 +27,10 @@ namespace DMS.Rpc
         //[HttpGet, Route("rpc/dms/setup/set-org")]
         //public async Task Count()
         //{
-        //    List<StoreUncheckingDAO> StoreUncheckingDAOs = await DataContext.StoreUnchecking.ToListAsync();
-        //    var AppUserIds = StoreUncheckingDAOs.Select(x => x.AppUserId).Distinct().ToList();
-        //    var AppUserDAOs = await DataContext.AppUser.Where(x => AppUserIds.Contains(x.Id)).ToListAsync();
-        //    foreach (var StoreUncheckingDAO in StoreUncheckingDAOs)
+        //    var Directs = await DataContext.DirectSalesOrder.ToListAsync();
+        //    foreach (var Direct in Directs)
         //    {
-        //        StoreUncheckingDAO.OrganizationId = AppUserDAOs.Where(x => x.Id == StoreUncheckingDAO.AppUserId).AsParallel().Select(x => x.OrganizationId).FirstOrDefault();
+        //        Direct.TotalAfterTax = Direct.Total;
         //    }
         //    await DataContext.SaveChangesAsync();
         //}

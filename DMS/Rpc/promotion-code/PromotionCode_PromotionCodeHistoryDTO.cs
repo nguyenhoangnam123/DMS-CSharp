@@ -12,7 +12,7 @@ namespace DMS.Rpc.promotion_code
         public long PromotionCodeId { get; set; }
         public DateTime AppliedAt { get; set; }
         public Guid RowId { get; set; }
-
+        public PromotionCode_DirectSalesOrderDTO DirectSalesOrder { get; set; }
         public PromotionCode_PromotionCodeHistoryDTO() {}
         public PromotionCode_PromotionCodeHistoryDTO(PromotionCodeHistory PromotionCodeHistory)
         {
@@ -21,6 +21,7 @@ namespace DMS.Rpc.promotion_code
             this.AppliedAt = PromotionCodeHistory.AppliedAt;
             this.RowId = PromotionCodeHistory.RowId;
             this.RowId = PromotionCodeHistory.RowId;
+            this.DirectSalesOrder = PromotionCodeHistory.DirectSalesOrder == null ? null : new PromotionCode_DirectSalesOrderDTO(PromotionCodeHistory.DirectSalesOrder);
             this.Errors = PromotionCodeHistory.Errors;
         }
     }

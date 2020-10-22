@@ -329,7 +329,7 @@ namespace DMS.Services.MDirectSalesOrder
                     Code = new StringFilter { Equal = DirectSalesOrder.PromotionCode },
                     Skip = 0,
                     Take = 1,
-                    Selects = PromotionCodeSelect.ALL
+                    Selects = PromotionCodeSelect.Id | PromotionCodeSelect.Quantity
                 };
                 var PromotionCodes = await UOW.PromotionCodeRepository.List(PromotionCodeFilter);
                 if (PromotionCodes.Count() == 0)
@@ -374,21 +374,16 @@ namespace DMS.Services.MDirectSalesOrder
                                 }
                             }
 
-                            var ProductIds = PromotionCode.PromotionCodeProductMappings.Select(x => x.ProductId).ToList();
-                            var ItemIds = DirectSalesOrder.DirectSalesOrderContents?.Select(x => x.ItemId).ToList();
-                            var ProductIdsInOrder = (await UOW.ItemRepository.List(new ItemFilter
+                            if(PromotionCode.PromotionProductAppliedTypeId == PromotionProductAppliedTypeEnum.PRODUCT.Id)
                             {
-                                Skip = 0,
-                                Take = int.MaxValue,
-                                Selects = ItemSelect.Id | ItemSelect.ProductId,
-                                StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id },
-                                Id = new IdFilter { In = ItemIds },
-                            })).Select(x => x.ProductId).Distinct().ToList();
+                                var ProductIds = PromotionCode.PromotionCodeProductMappings.Select(x => x.ProductId).ToList();
+                                var ProductIdsInOrder = DirectSalesOrder.DirectSalesOrderContents?.Select(x => x.Item.ProductId).Distinct().ToList();
 
-                            var Intersect = ProductIdsInOrder.Intersect(ProductIds).ToList();
-                            if(Intersect.Count() == 0)
-                            {
-                                DirectSalesOrder.AddError(nameof(DirectSalesOrderValidator), nameof(DirectSalesOrder.PromotionCode), ErrorCode.ItemInvalid);
+                                var Intersect = ProductIdsInOrder.Intersect(ProductIds).Count();
+                                if (Intersect == 0)
+                                {
+                                    DirectSalesOrder.AddError(nameof(DirectSalesOrderValidator), nameof(DirectSalesOrder.PromotionCode), ErrorCode.ItemInvalid);
+                                }
                             }
                         }
                     }

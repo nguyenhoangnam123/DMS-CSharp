@@ -92,6 +92,17 @@ namespace DMS.Services.MPromotionCode
             PromotionCode PromotionCode = await UOW.PromotionCodeRepository.Get(Id);
             if (PromotionCode == null)
                 return null;
+            DirectSalesOrderFilter DirectSalesOrderFilter = new DirectSalesOrderFilter()
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = DirectSalesOrderSelect.Id | DirectSalesOrderSelect.PromotionValue | DirectSalesOrderSelect.TotalAfterTax | DirectSalesOrderSelect.Total | DirectSalesOrderSelect.BuyerStore
+            };
+            var DirectSalesOrders = await UOW.DirectSalesOrderRepository.List(DirectSalesOrderFilter);
+            foreach (var PromotionCodeHistory in PromotionCode.PromotionCodeHistories)
+            {
+                PromotionCodeHistory.DirectSalesOrder = DirectSalesOrders.Where(x => x.RowId == PromotionCodeHistory.RowId).FirstOrDefault();
+            }
             return PromotionCode;
         }
        

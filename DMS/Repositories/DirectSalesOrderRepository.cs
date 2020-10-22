@@ -372,6 +372,7 @@ namespace DMS.Repositories
                 PromotionCode = filter.Selects.Contains(DirectSalesOrderSelect.PromotionCode) ? q.PromotionCode : default(string),
                 PromotionValue = filter.Selects.Contains(DirectSalesOrderSelect.PromotionValue) ? q.PromotionValue : default(decimal?),
                 TotalTaxAmount = filter.Selects.Contains(DirectSalesOrderSelect.TotalTaxAmount) ? q.TotalTaxAmount : default(decimal),
+                TotalAfterTax = filter.Selects.Contains(DirectSalesOrderSelect.TotalAfterTax) ? q.TotalAfterTax : default(decimal),
                 Total = filter.Selects.Contains(DirectSalesOrderSelect.Total) ? q.Total : default(decimal),
                 BuyerStore = filter.Selects.Contains(DirectSalesOrderSelect.BuyerStore) && q.BuyerStore != null ? new Store
                 {
@@ -641,6 +642,7 @@ namespace DMS.Repositories
                 PromotionCode = x.PromotionCode,
                 PromotionValue = x.PromotionValue,
                 TotalTaxAmount = x.TotalTaxAmount,
+                TotalAfterTax = x.TotalAfterTax,
                 Total = x.Total,
                 RowId = x.RowId,
                 StoreCheckingId = x.StoreCheckingId,
@@ -926,6 +928,7 @@ namespace DMS.Repositories
             DirectSalesOrderDAO.PromotionCode = DirectSalesOrder.PromotionCode;
             DirectSalesOrderDAO.PromotionValue = DirectSalesOrder.PromotionValue;
             DirectSalesOrderDAO.TotalTaxAmount = DirectSalesOrder.TotalTaxAmount;
+            DirectSalesOrderDAO.TotalAfterTax = DirectSalesOrder.TotalAfterTax;
             DirectSalesOrderDAO.Total = DirectSalesOrder.Total;
             DirectSalesOrderDAO.RowId = Guid.NewGuid();
             DirectSalesOrderDAO.StoreCheckingId = DirectSalesOrder.StoreCheckingId;
@@ -962,6 +965,7 @@ namespace DMS.Repositories
             DirectSalesOrderDAO.PromotionCode = DirectSalesOrder.PromotionCode;
             DirectSalesOrderDAO.PromotionValue = DirectSalesOrder.PromotionValue;
             DirectSalesOrderDAO.TotalTaxAmount = DirectSalesOrder.TotalTaxAmount;
+            DirectSalesOrderDAO.TotalAfterTax = DirectSalesOrder.TotalAfterTax;
             DirectSalesOrderDAO.Total = DirectSalesOrder.Total;
             DirectSalesOrderDAO.StoreCheckingId = DirectSalesOrder.StoreCheckingId;
             DirectSalesOrderDAO.UpdatedAt = StaticParams.DateTimeNow;
@@ -1004,6 +1008,7 @@ namespace DMS.Repositories
                 DirectSalesOrderDAO.PromotionCode = DirectSalesOrder.PromotionCode;
                 DirectSalesOrderDAO.PromotionValue = DirectSalesOrder.PromotionValue;
                 DirectSalesOrderDAO.TotalTaxAmount = DirectSalesOrder.TotalTaxAmount;
+                DirectSalesOrderDAO.TotalAfterTax = DirectSalesOrder.TotalAfterTax;
                 DirectSalesOrderDAO.Total = DirectSalesOrder.Total;
                 DirectSalesOrderDAO.StoreCheckingId = DirectSalesOrder.StoreCheckingId;
                 DirectSalesOrderDAOs.Add(DirectSalesOrderDAO);
