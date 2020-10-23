@@ -36,6 +36,7 @@ namespace DMS.Rpc.direct_sales_order
         public DirectSalesOrder_OrganizationDTO Organization { get; set; }
         public List<DirectSalesOrder_DirectSalesOrderContentDTO> DirectSalesOrderContents { get; set; }
         public List<DirectSalesOrder_DirectSalesOrderPromotionDTO> DirectSalesOrderPromotions { get; set; }
+        public List<DirectSalesOrder_RequestWorkflowStepMappingDTO> RequestWorkflowStepMappings { get; set; }
         public DirectSalesOrder_DirectSalesOrderDTO() { }
         public DirectSalesOrder_DirectSalesOrderDTO(DirectSalesOrder DirectSalesOrder)
         {
@@ -67,6 +68,7 @@ namespace DMS.Rpc.direct_sales_order
             this.Organization = DirectSalesOrder.Organization == null ? null : new DirectSalesOrder_OrganizationDTO(DirectSalesOrder.Organization);
             this.DirectSalesOrderContents = DirectSalesOrder.DirectSalesOrderContents?.Select(x => new DirectSalesOrder_DirectSalesOrderContentDTO(x)).ToList();
             this.DirectSalesOrderPromotions = DirectSalesOrder.DirectSalesOrderPromotions?.Select(x => new DirectSalesOrder_DirectSalesOrderPromotionDTO(x)).ToList();
+            this.RequestWorkflowStepMappings = DirectSalesOrder.RequestWorkflowStepMappings?.Select(x => new DirectSalesOrder_RequestWorkflowStepMappingDTO(x)).ToList();
             this.Errors = DirectSalesOrder.Errors;
         }
     }
