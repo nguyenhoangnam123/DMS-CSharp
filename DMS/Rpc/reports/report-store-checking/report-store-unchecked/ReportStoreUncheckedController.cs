@@ -259,10 +259,11 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_unchecked
                         };
 
             var Ids = await query
+                 .Distinct()
                  .OrderBy(x => x.OrganizationId)
                  .Skip(ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.Skip)
                  .Take(ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.Take)
-                 .Distinct().ToListAsync();
+                 .ToListAsync();
             AppUserIds = Ids.Select(x => x.AppUserId).Distinct().ToList();
 
             List<AppUserDAO> AppUserDAOs = await DataContext.AppUser

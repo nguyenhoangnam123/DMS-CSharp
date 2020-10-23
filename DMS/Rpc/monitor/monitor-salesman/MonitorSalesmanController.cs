@@ -213,7 +213,8 @@ namespace DMS.Rpc.monitor.monitor_salesman
                                   OrganizationIds.Contains(i.OrganizationId) &&
                                   (SaleEmployeeId == null || au.Id == SaleEmployeeId.Value) &&
                                   au.DeletedAt == null &&
-                                  Start <= i.OrderDate && i.OrderDate <= End
+                                  Start <= i.OrderDate && i.OrderDate <= End &&
+                                  i.RequestStateId == RequestStateEnum.APPROVED.Id
                                   select new IndirectSalesOrderDAO
                                   {
                                       Id = i.Id,
@@ -270,7 +271,8 @@ namespace DMS.Rpc.monitor.monitor_salesman
             List<IndirectSalesOrderDAO> IndirectSalesOrderDAOs = await salesOrderQuery.ToListAsync();
 
             List<ProblemDAO> ProblemDAOs = await DataContext.Problem
-                .Where(p => AppUserIds.Contains(p.CreatorId) && Start <= p.NoteAt && p.NoteAt <= End)
+                .Where(p => AppUserIds.Contains(p.CreatorId) && 
+                Start <= p.NoteAt && p.NoteAt <= End)
                 .ToListAsync();
 
             List<ERouteContentDAO> ERouteContentDAOs = await DataContext.ERouteContent
@@ -435,7 +437,9 @@ namespace DMS.Rpc.monitor.monitor_salesman
                 .ToListAsync();
 
             List<IndirectSalesOrderDAO> IndirectSalesOrderDAOs = await DataContext.IndirectSalesOrder
-                .Where(o => Start <= o.OrderDate && o.OrderDate <= End && o.SaleEmployeeId == SaleEmployeeId)
+                .Where(o => Start <= o.OrderDate && o.OrderDate <= End && 
+                o.SaleEmployeeId == SaleEmployeeId &&
+                o.RequestStateId == RequestStateEnum.APPROVED.Id)
                 .Select(x => new IndirectSalesOrderDAO
                 {
                     Id = x.Id,

@@ -8,7 +8,6 @@ namespace DMS.Rpc.monitor.monitor_store_checker
         public long SaleEmployeeId { get; set; }
         public string Username { get; set; }
         public string DisplayName { get; set; }
-        public string OrganizationName { get; set; }
         public List<MonitorStoreChecker_StoreCheckingDTO> StoreCheckings { get; set; }
     }
 }
