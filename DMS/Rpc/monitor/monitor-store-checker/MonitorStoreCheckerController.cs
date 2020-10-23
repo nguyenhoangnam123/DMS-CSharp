@@ -411,9 +411,14 @@ namespace DMS.Rpc.monitor.monitor_store_checker
                             SaleEmployee.StoreCheckings = SaleEmployee.StoreCheckings.Where(sc => sc.SalesOrderCounter > 0).ToList();
                     }
                 });
+
+                Parallel.ForEach(MonitorStoreChecker_MonitorStoreCheckerDTO.SaleEmployees, SaleEmployee =>
+                {
+                    SaleEmployee.StoreCheckings = SaleEmployee.StoreCheckings.Where(x => x.HasValue).ToList();
+                });
             }
 
-            return MonitorStoreChecker_MonitorStoreCheckerDTOs;
+            return MonitorStoreChecker_MonitorStoreCheckerDTOs.Where(x => x.SaleEmployees.Any()).ToList();
         }
 
         [Route(MonitorStoreCheckerRoute.Get), HttpPost]

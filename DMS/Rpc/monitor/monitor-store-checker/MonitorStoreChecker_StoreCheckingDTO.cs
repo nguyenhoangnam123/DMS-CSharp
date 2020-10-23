@@ -22,5 +22,12 @@ namespace DMS.Rpc.monitor.monitor_store_checker
         internal HashSet<long> Image { get; set; }
         internal HashSet<long> Internal { get; set; }
         internal HashSet<long> External { get; set; }
+        internal bool HasValue => PlanCounter != 0 &&
+            SalesOrderCounter != 0 &&
+            InternalCounter != 0 &&
+            ExternalCounter != 0 &&
+            ImageCounter != 0 &&
+            RevenueCounter != 0;
+
     }
 }
