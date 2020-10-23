@@ -29,6 +29,7 @@ namespace DMS.Rpc.direct_sales_order
         public decimal TotalTaxAmount { get; set; }
         public decimal TotalAfterTax { get; set; }
         public decimal Total { get; set; }
+        public Guid RowId { get; set; }
         public DirectSalesOrder_StoreDTO BuyerStore { get; set; }
         public DirectSalesOrder_EditedPriceStatusDTO EditedPriceStatus { get; set; }
         public DirectSalesOrder_RequestStateDTO RequestState { get; set; }
@@ -60,6 +61,7 @@ namespace DMS.Rpc.direct_sales_order
             this.PromotionValue = DirectSalesOrder.PromotionValue;
             this.TotalTaxAmount = DirectSalesOrder.TotalTaxAmount;
             this.TotalAfterTax = DirectSalesOrder.TotalAfterTax;
+            this.RowId = DirectSalesOrder.RowId;
             this.Total = Math.Round(DirectSalesOrder.Total, 0);
             this.BuyerStore = DirectSalesOrder.BuyerStore == null ? null : new DirectSalesOrder_StoreDTO(DirectSalesOrder.BuyerStore);
             this.EditedPriceStatus = DirectSalesOrder.EditedPriceStatus == null ? null : new DirectSalesOrder_EditedPriceStatusDTO(DirectSalesOrder.EditedPriceStatus);
