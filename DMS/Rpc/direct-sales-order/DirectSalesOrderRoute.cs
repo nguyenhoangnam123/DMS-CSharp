@@ -8,8 +8,9 @@ namespace DMS.Rpc.direct_sales_order
     {
         public const string Parent = Module + "/sale-order";
         public const string OwnerMaster = Module + "/sale-order/direct-sales-order-owner/direct-sales-order-owner-master";
+        public const string OwnerDetail = Module + "/sale-order/direct-sales-order-owner/direct-sales-order-owner-detail/*";
         public const string Master = Module + "/sale-order/direct-sales-order/direct-sales-order-master";
-        public const string Detail = Module + "/sale-order/direct-sales-order-owner/direct-sales-order-owner-detail/*";
+        public const string Detail = Module + "/sale-order/direct-sales-order-owner/direct-sales-order-detail/*";
         public const string Mobile = Module + ".direct-sales-order.*";
         private const string Default = Rpc + Module + "/direct-sales-order";
         public const string Count = Default + "/count";
@@ -80,13 +81,13 @@ namespace DMS.Rpc.direct_sales_order
 
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
         {
-           { "Tìm kiếm tất cả", new List<string> {
+            { "Tìm kiếm tất cả", new List<string> {
                 Parent,
                 Master, Count, List, Print, GetDetail,
                 FilterListStore,FilterListStoreStatus, FilterListEditedPriceStatus, FilterListRequestState, FilterListAppUser, FilterListItem, FilterListUnitOfMeasure, FilterListOrganization,
                 CountItem, ListItem,} },
 
-             { "Tìm kiếm của tôi", new List<string> {
+            { "Tìm kiếm của tôi", new List<string> {
                 Parent,
                 OwnerMaster, Get, Print, GetDetail,
                 CountNew, ListNew, CountPending, ListPending, CountCompleted, ListCompleted,
@@ -98,7 +99,7 @@ namespace DMS.Rpc.direct_sales_order
                 Master, Count, List, Get, Print,
                 CountNew, ListNew, CountPending, ListPending, CountCompleted, ListCompleted,
                 FilterListStore,FilterListStoreStatus, FilterListEditedPriceStatus, FilterListRequestState, FilterListAppUser, FilterListItem, FilterListUnitOfMeasure, FilterListOrganization,
-                Detail, Create, Send,
+                OwnerDetail, Detail, Create, Send,
                 SingleListOrganization, SingleListStore, SingleListEditedPriceStatus, SingleListRequestState, SingleListAppUser,  SingleListItem, SingleListUnitOfMeasure, SingleListStoreType,
                 SingleListStoreGrouping, SingleListSupplier, SingleListProductGrouping, SingleListProductType, SingleListTaxType,
                 CountItem, ListItem, CountStore, ListStore, CountBuyerStore, ListBuyerStore} },
@@ -108,7 +109,7 @@ namespace DMS.Rpc.direct_sales_order
                 Master, Count, List, Get, Print,
                 CountNew, ListNew, CountPending, ListPending, CountCompleted, ListCompleted,
                 FilterListStore,FilterListStoreStatus, FilterListEditedPriceStatus, FilterListRequestState, FilterListAppUser, FilterListItem, FilterListUnitOfMeasure, FilterListOrganization,
-                Detail, Update, Send,
+                OwnerDetail,Detail, Update, Send,
                 SingleListOrganization, SingleListStore, SingleListEditedPriceStatus, SingleListRequestState, SingleListAppUser,  SingleListItem, SingleListUnitOfMeasure, SingleListStoreType,
                 SingleListStoreGrouping, SingleListSupplier, SingleListProductGrouping, SingleListProductType, SingleListTaxType,
                 CountItem, ListItem, CountStore, ListStore, CountBuyerStore, ListBuyerStore} },
@@ -132,7 +133,7 @@ namespace DMS.Rpc.direct_sales_order
                 Master, Count, List, Get, Print,
                 CountNew, ListNew, CountPending, ListPending, CountCompleted, ListCompleted,
                 FilterListStore,FilterListStoreStatus, FilterListEditedPriceStatus, FilterListRequestState, FilterListAppUser, FilterListItem, FilterListUnitOfMeasure, FilterListOrganization,
-                Detail, Approve, Reject, Send,
+                OwnerDetail, Detail, Approve, Reject, Send,
                 SingleListOrganization, SingleListStore, SingleListEditedPriceStatus, SingleListRequestState, SingleListAppUser,  SingleListItem, SingleListUnitOfMeasure, SingleListStoreType,
                 SingleListStoreGrouping, SingleListSupplier, SingleListProductGrouping, SingleListProductType, SingleListTaxType,
                 CountItem, ListItem, CountStore, ListStore, CountBuyerStore, ListBuyerStore

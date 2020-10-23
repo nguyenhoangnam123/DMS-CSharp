@@ -8,8 +8,9 @@ namespace DMS.Rpc.indirect_sales_order
     {
         public const string Parent = Module + "/sale-order";
         public const string OwnerMaster = Module + "/sale-order/indirect-sales-order-owner/indirect-sales-order-owner-master";
+        public const string OwnerDetail = Module + "/sale-order/indirect-sales-order-owner/indirect-sales-order-owner-detail/*";
         public const string Master = Module + "/sale-order/indirect-sales-order/indirect-sales-order-master";
-        public const string Detail = Module + "/sale-order/indirect-sales-order-owner/indirect-sales-order-owner-detail/*";
+        public const string Detail = Module + "/sale-order/indirect-sales-order-owner/indirect-sales-order-detail/*";
         public const string Mobile = Module + ".indirect-sales-order.*";
         private const string Default = Rpc + Module + "/indirect-sales-order";
         public const string Count = Default + "/count";
@@ -99,7 +100,7 @@ namespace DMS.Rpc.indirect_sales_order
                 Master, Count, List, Get, Print,
                 CountNew, ListNew, CountPending, ListPending, CountCompleted, ListCompleted,
                 FilterListStore, FilterListStoreStatus, FilterListEditedPriceStatus, FilterListRequestState, FilterListAppUser, FilterListItem, FilterListUnitOfMeasure, FilterListOrganization,
-                Detail, Create, Send,
+                OwnerDetail, Detail, Create, Send,
                 SingleListOrganization, SingleListStore, SingleListEditedPriceStatus, SingleListRequestState, SingleListAppUser,  SingleListItem, SingleListUnitOfMeasure, SingleListStoreType,
                 SingleListStoreGrouping, SingleListSupplier, SingleListProductGrouping, SingleListProductType, SingleListTaxType,
                 CountItem, ListItem, CountStore, ListStore, CountBuyerStore, ListBuyerStore} },
@@ -109,7 +110,7 @@ namespace DMS.Rpc.indirect_sales_order
                 Master, Count, List, Get, Print,
                 CountNew, ListNew, CountPending, ListPending, CountCompleted, ListCompleted,
                 FilterListStore, FilterListStoreStatus, FilterListEditedPriceStatus, FilterListRequestState, FilterListAppUser, FilterListItem, FilterListUnitOfMeasure, FilterListOrganization,
-                Detail, Update, Send,
+                OwnerDetail, Detail, Update, Send,
                 SingleListOrganization, SingleListStore, SingleListEditedPriceStatus, SingleListRequestState, SingleListAppUser,  SingleListItem, SingleListUnitOfMeasure, SingleListStoreType,
                 SingleListStoreGrouping, SingleListSupplier, SingleListProductGrouping, SingleListProductType, SingleListTaxType,
                 CountItem, ListItem, CountStore, ListStore, CountBuyerStore, ListBuyerStore} },
@@ -133,7 +134,7 @@ namespace DMS.Rpc.indirect_sales_order
                 Master, Count, List, Get, Print,
                 CountNew, ListNew, CountPending, ListPending, CountCompleted, ListCompleted,
                 FilterListStore, FilterListStoreStatus, FilterListEditedPriceStatus, FilterListRequestState, FilterListAppUser, FilterListItem, FilterListUnitOfMeasure, FilterListOrganization,
-                Detail, Approve, Reject, Send,
+                OwnerDetail, Detail, Approve, Reject, Send,
                 SingleListOrganization, SingleListStore, SingleListEditedPriceStatus, SingleListRequestState, SingleListAppUser,  SingleListItem, SingleListUnitOfMeasure, SingleListStoreType,
                 SingleListStoreGrouping, SingleListSupplier, SingleListProductGrouping, SingleListProductType, SingleListTaxType,
                 CountItem, ListItem, CountStore, ListStore, CountBuyerStore, ListBuyerStore
