@@ -223,8 +223,8 @@ namespace DMS.Rpc.monitor.monitor_salesman
                                       Total = i.Total
                                   };
 
-            var Ids1 = await storeCheckingQuery.Select(x => new 
-            { 
+            var Ids1 = await storeCheckingQuery.Select(x => new
+            {
                 OrganizationId = x.OrganizationId,
                 SalesEmployeeId = x.SaleEmployeeId,
             }).ToListAsync();
@@ -248,7 +248,7 @@ namespace DMS.Rpc.monitor.monitor_salesman
             List<AppUserDAO> AppUserDAOs = await DataContext.AppUser
                 .Where(x => x.DeletedAt == null)
                 .OrderBy(su => su.OrganizationId).ThenBy(x => x.DisplayName)
-                .Select( x=> new AppUserDAO
+                .Select(x => new AppUserDAO
                 {
                     Id = x.Id,
                     DisplayName = x.DisplayName,
@@ -407,17 +407,14 @@ namespace DMS.Rpc.monitor.monitor_salesman
             Parallel.ForEach(AppUserDAOs, AppUserDAO =>
             {
                 MonitorSalesman_SaleEmployeeDTO MonitorSalesman_SaleEmployeeDTO = new MonitorSalesman_SaleEmployeeDTO();
-                var Employee = AppUserDAOs.Where(x => x.Id == MonitorSalesman_SaleEmployeeDTO.SaleEmployeeId).FirstOrDefault();
-                if (Employee != null)
-                {
-                    MonitorSalesman_SaleEmployeeDTO.Username = Employee.Username;
-                    MonitorSalesman_SaleEmployeeDTO.DisplayName = Employee.DisplayName;
-                }
+                MonitorSalesman_SaleEmployeeDTO.SaleEmployeeId = AppUserDAO.Id;
+                MonitorSalesman_SaleEmployeeDTO.Username = AppUserDAO.Username;
+                MonitorSalesman_SaleEmployeeDTO.DisplayName = AppUserDAO.DisplayName;
                 var MonitorSalesman_MonitorSalesmanDTO = MonitorSalesman_MonitorSalesmanDTOs.Where(x => x.OrganizationId == AppUserDAO.OrganizationId).FirstOrDefault();
                 MonitorSalesman_MonitorSalesmanDTO.SaleEmployees.Add(MonitorSalesman_SaleEmployeeDTO);
             });
-            
-            return MonitorSalesman_MonitorSalesmanDTOs;
+
+            return MonitorSalesman_MonitorSalesmanDTOs.Where(x =>x.SaleEmployees.Any()).ToList();
         }
 
         [Route(MonitorSalesmanRoute.Get), HttpPost]
@@ -428,7 +425,7 @@ namespace DMS.Rpc.monitor.monitor_salesman
             long SaleEmployeeId = MonitorSalesman_MonitorSalesmanDetailFilterDTO.SaleEmployeeId;
             DateTime Start = MonitorSalesman_MonitorSalesmanDetailFilterDTO.Date.AddHours(CurrentContext.TimeZone).Date.AddHours(0 - CurrentContext.TimeZone);
             DateTime End = Start.AddDays(1).AddSeconds(-1);
-            
+
             List<long> StoreCheckingStoreIds = await DataContext.StoreChecking
                 .Where(sc =>
                     sc.CheckOutAt.HasValue &&
@@ -436,7 +433,7 @@ namespace DMS.Rpc.monitor.monitor_salesman
                     Start <= sc.CheckOutAt.Value && sc.CheckOutAt.Value <= End)
                 .Select(x => x.StoreId)
                 .ToListAsync();
-            
+
             List<IndirectSalesOrderDAO> IndirectSalesOrderDAOs = await DataContext.IndirectSalesOrder
                 .Where(o => Start <= o.OrderDate && o.OrderDate <= End && o.SaleEmployeeId == SaleEmployeeId)
                 .Select(x => new IndirectSalesOrderDAO
@@ -457,7 +454,7 @@ namespace DMS.Rpc.monitor.monitor_salesman
                 .Where(x => x.SaleEmployeeId.HasValue && x.SaleEmployeeId == SaleEmployeeId &&
                 Start <= x.ShootingAt && x.ShootingAt <= End)
                 .ToListAsync();
-            
+
             List<long> StoreIds = new List<long>();
             StoreIds.AddRange(StoreCheckingStoreIds);
             List<long> SalesOrder_StoreIds = IndirectSalesOrderDAOs.Select(o => o.BuyerStoreId).ToList();
@@ -505,7 +502,7 @@ namespace DMS.Rpc.monitor.monitor_salesman
                 {
                     MonitorSalesman_MonitorSalesmanDetailInfoDTO Info = new MonitorSalesman_MonitorSalesmanDetailInfoDTO();
                     MonitorStoreChecker_MonitorStoreCheckerDetailDTO.Infoes.Add(Info);
-                    
+
                     if (SubStoreImageDAOs.Count > i)
                     {
                         Info.ImagePath = SubStoreImageDAOs[i].Url;
@@ -567,7 +564,7 @@ namespace DMS.Rpc.monitor.monitor_salesman
                                 Name = si.StoreName
                             }
                         };
-            
+
             return await query.ToListAsync();
         }
 
