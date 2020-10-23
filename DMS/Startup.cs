@@ -24,7 +24,6 @@ using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
 using OfficeOpenXml;
 using Portal.Handlers;
-using Prometheus;
 using RabbitMQ.Client;
 using System;
 using System.Collections.Generic;
@@ -34,6 +33,7 @@ using System.Threading.Tasks;
 using Winton.Extensions.Configuration.Consul;
 using Z.EntityFramework.Extensions;
 using Thinktecture;
+using Elastic.Apm.NetCoreAll;
 
 namespace DMS
 {
@@ -205,8 +205,8 @@ namespace DMS
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseAllElasticApm(Configuration);
             app.UseRouting();
-            app.UseHttpMetrics();
             app.UseMiddleware<ErrorHandlingMiddleware>();
             app.UseGleamTech();
             app.UseAuthentication();
@@ -214,7 +214,6 @@ namespace DMS
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
-                endpoints.MapMetrics("metrics");
             });
             app.UseSwagger(c =>
             {
