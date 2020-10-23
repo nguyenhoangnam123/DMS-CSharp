@@ -30,6 +30,7 @@ namespace DMS.Rpc.price_list
         public List<PriceList_PriceListStoreGroupingMappingDTO> PriceListStoreGroupingMappings { get; set; }
         public List<PriceList_PriceListStoreMappingDTO> PriceListStoreMappings { get; set; }
         public List<PriceList_PriceListStoreTypeMappingDTO> PriceListStoreTypeMappings { get; set; }
+        public List<PriceList_RequestWorkflowStepMappingDTO> RequestWorkflowStepMappings { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public PriceList_PriceListDTO() { }
@@ -57,6 +58,7 @@ namespace DMS.Rpc.price_list
             this.PriceListStoreGroupingMappings = PriceList.PriceListStoreGroupingMappings?.Select(x => new PriceList_PriceListStoreGroupingMappingDTO(x)).ToList();
             this.PriceListStoreMappings = PriceList.PriceListStoreMappings?.Select(x => new PriceList_PriceListStoreMappingDTO(x)).ToList();
             this.PriceListStoreTypeMappings = PriceList.PriceListStoreTypeMappings?.Select(x => new PriceList_PriceListStoreTypeMappingDTO(x)).ToList();
+            this.RequestWorkflowStepMappings = PriceList.RequestWorkflowStepMappings?.Select(x => new PriceList_RequestWorkflowStepMappingDTO(x)).ToList();
             this.CreatedAt = PriceList.CreatedAt;
             this.UpdatedAt = PriceList.UpdatedAt;
             this.Errors = PriceList.Errors;
