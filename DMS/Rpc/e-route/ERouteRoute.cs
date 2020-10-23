@@ -81,7 +81,7 @@ namespace DMS.Rpc.e_route
                 Master, Count, List, Get,
                 CountNew, ListNew, CountPending, ListPending, CountCompleted, ListCompleted,
                 FilterListAppUser, FilterListOrganization, FilterListERouteType, FilterListRequestState, FilterListStatus,  FilterListStore,
-                Detail, Create, Send,
+                DetailOwner, Detail, Create, Send,
                 SingleListAppUser, SingleListERouteType, SingleListRequestState, SingleListStatus,  SingleListStore, SingleListOrganization, SingleListStoreType,
                 CountStore, ListStore, } },
 
@@ -90,7 +90,7 @@ namespace DMS.Rpc.e_route
                 Master, Count, List, Get,
                 CountNew, ListNew, CountPending, ListPending, CountCompleted, ListCompleted,
                 FilterListAppUser, FilterListOrganization, FilterListERouteType, FilterListRequestState, FilterListStatus,  FilterListStore,
-                Detail, Update, Send,
+                DetailOwner, Detail, Update, Send,
                 SingleListAppUser, SingleListERouteType, SingleListRequestState, SingleListStatus,  SingleListStore,  SingleListOrganization, SingleListStoreType,
                 CountStore, ListStore, } },
 
@@ -112,7 +112,7 @@ namespace DMS.Rpc.e_route
                 Master, Count, List, Get,
                 CountNew, ListNew, CountPending, ListPending, CountCompleted, ListCompleted,
                 FilterListAppUser, FilterListOrganization, FilterListERouteType, FilterListRequestState, FilterListStatus,  FilterListStore,
-                Detail, Send, Approve, Reject,
+                DetailOwner, Detail, Send, Approve, Reject,
                 SingleListAppUser, SingleListERouteType, SingleListRequestState, SingleListStatus,  SingleListStore,  SingleListOrganization, SingleListStoreType,
                 CountStore, ListStore, } },
         };

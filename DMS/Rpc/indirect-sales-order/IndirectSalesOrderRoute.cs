@@ -10,7 +10,7 @@ namespace DMS.Rpc.indirect_sales_order
         public const string OwnerMaster = Module + "/sale-order/indirect-sales-order-owner/indirect-sales-order-owner-master";
         public const string OwnerDetail = Module + "/sale-order/indirect-sales-order-owner/indirect-sales-order-owner-detail/*";
         public const string Master = Module + "/sale-order/indirect-sales-order/indirect-sales-order-master";
-        public const string Detail = Module + "/sale-order/indirect-sales-order-owner/indirect-sales-order-detail/*";
+        public const string Detail = Module + "/sale-order/indirect-sales-order/indirect-sales-order-detail/*";
         public const string Mobile = Module + ".indirect-sales-order.*";
         private const string Default = Rpc + Module + "/indirect-sales-order";
         public const string Count = Default + "/count";

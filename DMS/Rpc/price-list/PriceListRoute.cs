@@ -102,11 +102,12 @@ namespace DMS.Rpc.price_list
                 FilterListItem, FilterListOrganization, FilterListPriceListType, FilterListSalesOrderType, FilterListStatus, FilterListStoreGrouping, FilterListStore, FilterListStoreType,
                 CountItem, ListItem, CountStore, ListStore, CountPriceListItemHistory, ListPriceListItemHistory
                 } },
+
             { "Thêm", new List<string> {
                 Parent, Master, Count, List, Get, 
                 CountNew, ListNew, CountPending, ListPending, CountCompleted, ListCompleted,
                 FilterListItem, FilterListOrganization, FilterListPriceListType, FilterListSalesOrderType, FilterListStatus, FilterListStoreGrouping, FilterListStore, FilterListStoreType,
-                Detail, Create, Send,
+                DetailOwner, Detail, Create, Send,
                 SingleListItem, SingleListOrganization, SingleListPriceListType, SingleListSalesOrderType, SingleListStatus, SingleListProductGrouping, SingleListProductType, SingleListStoreGrouping, SingleListStore, SingleListStoreType, SingleListProvince,
                 Count, List, Count, List, Count, List, Count, List,
                 CountItem, ListItem, CountStore, ListStore, CountPriceListItemHistory, ListPriceListItemHistory
@@ -116,7 +117,7 @@ namespace DMS.Rpc.price_list
                 Parent, Master, Count, List, Get, 
                 CountNew, ListNew, CountPending, ListPending, CountCompleted, ListCompleted,
                 FilterListItem, FilterListOrganization, FilterListPriceListType, FilterListSalesOrderType, FilterListStatus, FilterListStoreGrouping, FilterListStore, FilterListStoreType,
-                Detail, Update, Send,
+                DetailOwner, Detail, Update, Send,
                 SingleListItem, SingleListOrganization, SingleListPriceListType, SingleListSalesOrderType, SingleListStatus, SingleListProductGrouping, SingleListProductType, SingleListStoreGrouping, SingleListStore, SingleListStoreType, SingleListProvince,
                 Count, List, Count, List, Count, List, Count, List,
                 CountItem, ListItem, CountStore, ListStore, CountPriceListItemHistory, ListPriceListItemHistory
@@ -158,7 +159,7 @@ namespace DMS.Rpc.price_list
                 Parent, Master, Count, List, Get, 
                 CountNew, ListNew, CountPending, ListPending, CountCompleted, ListCompleted,
                 FilterListItem, FilterListOrganization, FilterListPriceListType, FilterListSalesOrderType, FilterListStatus, FilterListStoreGrouping, FilterListStore, FilterListStoreType,
-                Detail, Approve, Reject, Send,
+                DetailOwner, Detail, Approve, Reject, Send,
                 SingleListItem, SingleListOrganization, SingleListPriceListType, SingleListSalesOrderType, SingleListStatus, SingleListProductGrouping, SingleListProductType, SingleListStoreGrouping, SingleListStore, SingleListStoreType, SingleListProvince,
                 Count, List, Count, List, Count, List, Count, List,
                 CountItem, ListItem, CountStore, ListStore, CountPriceListItemHistory, ListPriceListItemHistory
