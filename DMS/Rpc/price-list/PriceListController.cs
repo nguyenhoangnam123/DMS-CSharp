@@ -200,6 +200,17 @@ namespace DMS.Rpc.price_list
             return new PriceList_PriceListDTO(PriceList);
         }
 
+        [Route(PriceListRoute.GetDetail), HttpPost]
+        public async Task<ActionResult<PriceList_PriceListDTO>> GetDetail([FromBody] PriceList_PriceListDTO PriceList_PriceListDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            PriceList PriceList = await PriceListService.GetDetail(PriceList_PriceListDTO.Id);
+            PriceList_PriceListDTO = new PriceList_PriceListDTO(PriceList);
+            return PriceList_PriceListDTO;
+        }
+
         [Route(PriceListRoute.Create), HttpPost]
         public async Task<ActionResult<PriceList_PriceListDTO>> Create([FromBody] PriceList_PriceListDTO PriceList_PriceListDTO)
         {
