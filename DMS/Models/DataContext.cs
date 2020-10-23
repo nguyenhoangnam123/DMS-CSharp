@@ -602,6 +602,10 @@ namespace DMS.Models
                     .HasMaxLength(50)
                     .HasComment("Số điện thoại");
 
+                entity.Property(e => e.PromotionCode).HasMaxLength(50);
+
+                entity.Property(e => e.PromotionValue).HasColumnType("decimal(18, 4)");
+
                 entity.Property(e => e.RowId).HasComment("Id global cho phê duyệt");
 
                 entity.Property(e => e.SaleEmployeeId).HasComment("Nhân viên kinh doanh");
@@ -615,6 +619,8 @@ namespace DMS.Models
                 entity.Property(e => e.Total)
                     .HasColumnType("decimal(18, 4)")
                     .HasComment("Tổng tiền sau thuế");
+
+                entity.Property(e => e.TotalAfterTax).HasColumnType("decimal(18, 4)");
 
                 entity.Property(e => e.TotalTaxAmount)
                     .HasColumnType("decimal(18, 4)")

@@ -32,6 +32,7 @@ namespace DMS.Rpc.promotion_code
         public List<PromotionCode_PromotionCodeStoreMappingDTO> PromotionCodeStoreMappings { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
+        public bool Used { get; set; }
         public PromotionCode_PromotionCodeDTO() {}
         public PromotionCode_PromotionCodeDTO(PromotionCode PromotionCode)
         {

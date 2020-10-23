@@ -25,6 +25,7 @@ namespace DMS.Rpc.direct_sales_order
 
         public const string GetDetail = Default + "/get-detail";
         public const string Get = Default + "/get";
+        public const string ApplyPromotionCode = Default + "/apply-promotion-code";
         public const string Create = Default + "/create";
         public const string Update = Default + "/update";
         public const string Delete = Default + "/delete";
@@ -99,7 +100,7 @@ namespace DMS.Rpc.direct_sales_order
                 Master, Count, List, Get, Print,
                 CountNew, ListNew, CountPending, ListPending, CountCompleted, ListCompleted,
                 FilterListStore,FilterListStoreStatus, FilterListEditedPriceStatus, FilterListRequestState, FilterListAppUser, FilterListItem, FilterListUnitOfMeasure, FilterListOrganization,
-                OwnerDetail, Detail, Create, Send,
+                OwnerDetail, Detail, Create, Send, ApplyPromotionCode,
                 SingleListOrganization, SingleListStore, SingleListEditedPriceStatus, SingleListRequestState, SingleListAppUser,  SingleListItem, SingleListUnitOfMeasure, SingleListStoreType,
                 SingleListStoreGrouping, SingleListSupplier, SingleListProductGrouping, SingleListProductType, SingleListTaxType,
                 CountItem, ListItem, CountStore, ListStore, CountBuyerStore, ListBuyerStore} },
@@ -109,7 +110,7 @@ namespace DMS.Rpc.direct_sales_order
                 Master, Count, List, Get, Print,
                 CountNew, ListNew, CountPending, ListPending, CountCompleted, ListCompleted,
                 FilterListStore,FilterListStoreStatus, FilterListEditedPriceStatus, FilterListRequestState, FilterListAppUser, FilterListItem, FilterListUnitOfMeasure, FilterListOrganization,
-                OwnerDetail,Detail, Update, Send,
+                OwnerDetail, Detail, Update, Send,
                 SingleListOrganization, SingleListStore, SingleListEditedPriceStatus, SingleListRequestState, SingleListAppUser,  SingleListItem, SingleListUnitOfMeasure, SingleListStoreType,
                 SingleListStoreGrouping, SingleListSupplier, SingleListProductGrouping, SingleListProductType, SingleListTaxType,
                 CountItem, ListItem, CountStore, ListStore, CountBuyerStore, ListBuyerStore} },

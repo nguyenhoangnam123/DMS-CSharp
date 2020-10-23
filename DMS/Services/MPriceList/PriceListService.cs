@@ -22,6 +22,7 @@ namespace DMS.Services.MPriceList
         Task<int> CountCompleted(PriceListFilter PriceListFilter);
         Task<List<PriceList>> ListCompleted(PriceListFilter PriceListFilter);
         Task<PriceList> Get(long Id);
+        Task<PriceList> GetDetail(long Id);
         Task<PriceList> Create(PriceList PriceList);
         Task<PriceList> Update(PriceList PriceList);
         Task<PriceList> Send(PriceList PriceList);
@@ -266,6 +267,12 @@ namespace DMS.Services.MPriceList
                 PriceList.RequestStateId = PriceList.RequestState.Id;
                 PriceList.RequestWorkflowStepMappings = await WorkflowService.ListRequestWorkflowStepMapping(PriceList.RowId);
             }
+            return PriceList;
+        }
+
+        public async Task<PriceList> GetDetail(long Id)
+        {
+            PriceList PriceList = await Get(Id);
             return PriceList;
         }
 

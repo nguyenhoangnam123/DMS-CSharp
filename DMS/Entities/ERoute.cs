@@ -31,7 +31,7 @@ namespace DMS.Entities
         public List<ERouteContent> ERouteContents { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
-
+        public List<RequestWorkflowStepMapping> RequestWorkflowStepMappings { get; set; }
         public bool Equals(ERoute other)
         {
             return other != null && Id == other.Id;

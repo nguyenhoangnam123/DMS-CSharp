@@ -28,6 +28,7 @@ namespace DMS.Services.MDirectSalesOrder
         Task<DirectSalesOrder> Get(long Id);
         Task<DirectSalesOrder> GetDetail(long Id);
         Task<List<Item>> ListItem(ItemFilter ItemFilter, long? SalesEmployeeId, long? StoreId);
+        Task<DirectSalesOrder> ApplyPromotionCode(DirectSalesOrder DirectSalesOrder);
         Task<DirectSalesOrder> Create(DirectSalesOrder DirectSalesOrder);
         Task<DirectSalesOrder> Update(DirectSalesOrder DirectSalesOrder);
         Task<DirectSalesOrder> Delete(DirectSalesOrder DirectSalesOrder);
@@ -358,6 +359,31 @@ namespace DMS.Services.MDirectSalesOrder
             return DirectSalesOrder;
         }
 
+        public async Task<DirectSalesOrder> ApplyPromotionCode(DirectSalesOrder DirectSalesOrder)
+        {
+            if (!await DirectSalesOrderValidator.ApplyPromotionCode(DirectSalesOrder))
+                return DirectSalesOrder;
+
+            try
+            {
+                await Calculator(DirectSalesOrder);
+                return DirectSalesOrder;
+            }
+            catch (Exception ex)
+            {
+                if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(DirectSalesOrderService));
+                    throw new MessageException(ex);
+                }
+                else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(DirectSalesOrderService));
+                    throw new MessageException(ex.InnerException);
+                }
+            }
+        }
+
         public async Task<DirectSalesOrder> Create(DirectSalesOrder DirectSalesOrder)
         {
             if (!await DirectSalesOrderValidator.Create(DirectSalesOrder))
@@ -375,6 +401,17 @@ namespace DMS.Services.MDirectSalesOrder
                 await UOW.DirectSalesOrderRepository.Create(DirectSalesOrder);
                 DirectSalesOrder.Code = DirectSalesOrder.Id.ToString();
                 await UOW.DirectSalesOrderRepository.Update(DirectSalesOrder);
+
+                if (DirectSalesOrder.PromotionCodeId.HasValue)
+                {
+                    PromotionCodeHistory PromotionCodeHistory = new PromotionCodeHistory()
+                    {
+                        PromotionCodeId = DirectSalesOrder.PromotionCodeId.Value,
+                        AppliedAt = StaticParams.DateTimeNow,
+                        RowId = DirectSalesOrder.RowId
+                    };
+                    await UOW.PromotionCodeHistoryRepository.Create(PromotionCodeHistory);
+                }
 
                 await UOW.Commit();
                 DirectSalesOrder = await UOW.DirectSalesOrderRepository.Get(DirectSalesOrder.Id);
@@ -784,7 +821,15 @@ namespace DMS.Services.MDirectSalesOrder
                 DirectSalesOrder.TotalTaxAmount = DirectSalesOrder.DirectSalesOrderContents.Where(x => x.TaxAmount.HasValue).Sum(x => x.TaxAmount.Value);
                 DirectSalesOrder.TotalTaxAmount = Math.Round(DirectSalesOrder.TotalTaxAmount, 0);
                 //tổng phải thanh toán
-                DirectSalesOrder.Total = DirectSalesOrder.SubTotal - (DirectSalesOrder.GeneralDiscountAmount.HasValue ? DirectSalesOrder.GeneralDiscountAmount.Value : 0) + DirectSalesOrder.TotalTaxAmount;
+                DirectSalesOrder.TotalAfterTax = DirectSalesOrder.SubTotal - (DirectSalesOrder.GeneralDiscountAmount.HasValue ? DirectSalesOrder.GeneralDiscountAmount.Value : 0) + DirectSalesOrder.TotalTaxAmount;
+                if (!string.IsNullOrWhiteSpace(DirectSalesOrder.PromotionCode))
+                {
+                    await CalculatePromotionCode(DirectSalesOrder);
+                }
+                else
+                {
+                    DirectSalesOrder.Total = DirectSalesOrder.TotalAfterTax;
+                }
             }
             else
             {
@@ -792,6 +837,7 @@ namespace DMS.Services.MDirectSalesOrder
                 DirectSalesOrder.GeneralDiscountPercentage = null;
                 DirectSalesOrder.GeneralDiscountAmount = null;
                 DirectSalesOrder.TotalTaxAmount = 0;
+                DirectSalesOrder.TotalAfterTax = 0;
                 DirectSalesOrder.Total = 0;
             }
 
@@ -833,6 +879,69 @@ namespace DMS.Services.MDirectSalesOrder
             }
 
             return DirectSalesOrder;
+        }
+
+        private async Task CalculatePromotionCode(DirectSalesOrder DirectSalesOrder)
+        {
+            PromotionCodeFilter PromotionCodeFilter = new PromotionCodeFilter()
+            {
+                Code = new StringFilter { Equal = DirectSalesOrder.PromotionCode },
+                Skip = 0,
+                Take = 1,
+                Selects = PromotionCodeSelect.Id
+            };
+            var PromotionCodes = await UOW.PromotionCodeRepository.List(PromotionCodeFilter);
+            var PromotionCodeId = PromotionCodes.Select(x => x.Id).FirstOrDefault();
+            var PromotionCode = await UOW.PromotionCodeRepository.Get(PromotionCodeId);
+
+            var ProductIds = PromotionCode.PromotionCodeProductMappings.Select(x => x.ProductId).ToList();
+            var ProductIdsInOrder = DirectSalesOrder.DirectSalesOrderContents?.Select(x => x.Item.ProductId).Distinct().ToList();
+
+            DirectSalesOrder.PromotionCodeId = PromotionCode.Id;
+            if (PromotionCode.PromotionDiscountTypeId == PromotionDiscountTypeEnum.AMOUNT.Id)
+            {
+                if(PromotionCode.PromotionProductAppliedTypeId == PromotionProductAppliedTypeEnum.ALL.Id)
+                {
+                    DirectSalesOrder.Total = DirectSalesOrder.TotalAfterTax - PromotionCode.Value;
+                }
+                else
+                {
+                    var Intersect = ProductIdsInOrder.Intersect(ProductIds).Count();
+                    if(Intersect > 0)
+                    {
+                        DirectSalesOrder.Total = DirectSalesOrder.TotalAfterTax - PromotionCode.Value;
+                    }
+                }
+            }
+            else if (PromotionCode.PromotionDiscountTypeId == PromotionDiscountTypeEnum.PERCENTAGE.Id)
+            {
+                decimal PromotionValue = 0;
+                if (PromotionCode.PromotionProductAppliedTypeId == PromotionProductAppliedTypeEnum.ALL.Id)
+                {
+                    foreach (var DirectSalesOrderContent in DirectSalesOrder.DirectSalesOrderContents)
+                    {
+                        PromotionValue += (DirectSalesOrderContent.Amount - DirectSalesOrderContent.GeneralDiscountAmount.GetValueOrDefault(0) + DirectSalesOrderContent.TaxAmount.GetValueOrDefault(0)) * PromotionCode.Value / 100;
+                    }
+                }
+                else
+                {
+                    var Intersect = ProductIdsInOrder.Intersect(ProductIds).ToList();
+                    foreach (var DirectSalesOrderContent in DirectSalesOrder.DirectSalesOrderContents)
+                    {
+                        if(Intersect.Contains(DirectSalesOrderContent.Item.ProductId))
+                            PromotionValue += (DirectSalesOrderContent.Amount - DirectSalesOrderContent.GeneralDiscountAmount.GetValueOrDefault(0) + DirectSalesOrderContent.TaxAmount.GetValueOrDefault(0)) * PromotionCode.Value / 100;
+                    }
+                }
+
+                if(PromotionCode.MaxValue.HasValue && PromotionCode.MaxValue.Value < PromotionValue)
+                {
+                    DirectSalesOrder.Total = DirectSalesOrder.TotalAfterTax - PromotionCode.MaxValue.Value;
+                }
+                else
+                {
+                    DirectSalesOrder.Total = DirectSalesOrder.TotalAfterTax - PromotionValue;
+                }
+            }
         }
 
         private async Task<List<Item>> ApplyPrice(List<Item> Items, long? SalesEmployeeId, long? StoreId)

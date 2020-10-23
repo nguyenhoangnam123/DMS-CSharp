@@ -249,6 +249,7 @@ namespace DMS.Repositories
                 ERouteTypeId = filter.Selects.Contains(ERouteSelect.ERouteType) ? q.ERouteTypeId : default(long),
                 StatusId = filter.Selects.Contains(ERouteSelect.Status) ? q.StatusId : default(long),
                 CreatorId = filter.Selects.Contains(ERouteSelect.Creator) ? q.CreatorId : default(long),
+                RequestStateId = filter.Selects.Contains(ERouteSelect.RequestState) ? q.RequestStateId : default(long),
                 Creator = filter.Selects.Contains(ERouteSelect.Creator) && q.Creator != null ? new AppUser
                 {
                     Id = q.Creator.Id,
@@ -277,7 +278,12 @@ namespace DMS.Repositories
                     Code = q.ERouteType.Code,
                     Name = q.ERouteType.Name,
                 } : null,
-                
+                RequestState = filter.Selects.Contains(ERouteSelect.RequestState) && q.RequestState != null ? new RequestState
+                {
+                    Id = q.RequestState.Id,
+                    Code = q.RequestState.Code,
+                    Name = q.RequestState.Name,
+                } : null,
                 SaleEmployee = filter.Selects.Contains(ERouteSelect.SaleEmployee) && q.SaleEmployee != null ? new AppUser
                 {
                     Id = q.SaleEmployee.Id,

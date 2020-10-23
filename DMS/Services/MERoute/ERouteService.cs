@@ -27,6 +27,7 @@ namespace DMS.Services.MERoute
         Task<int> CountCompleted(ERouteFilter ERouteFilter);
         Task<List<ERoute>> ListCompleted(ERouteFilter ERouteFilter);
         Task<ERoute> Get(long Id);
+        Task<ERoute> GetDetail(long Id);
         Task<ERoute> Create(ERoute ERoute);
         Task<ERoute> Update(ERoute ERoute);
         Task<ERoute> Send(ERoute ERoute);
@@ -258,6 +259,40 @@ namespace DMS.Services.MERoute
             ERoute ERoute = await UOW.ERouteRepository.Get(Id);
             if (ERoute == null)
                 return null;
+
+            ERoute.RequestState = await WorkflowService.GetRequestState(ERoute.RowId);
+            if (ERoute.RequestState == null)
+            {
+                ERoute.RequestWorkflowStepMappings = new List<RequestWorkflowStepMapping>();
+                RequestWorkflowStepMapping RequestWorkflowStepMapping = new RequestWorkflowStepMapping
+                {
+                    AppUserId = ERoute.SaleEmployeeId,
+                    CreatedAt = ERoute.CreatedAt,
+                    UpdatedAt = ERoute.UpdatedAt,
+                    RequestId = ERoute.RowId,
+                    AppUser = ERoute.SaleEmployee == null ? null : new AppUser
+                    {
+                        Id = ERoute.SaleEmployee.Id,
+                        Username = ERoute.SaleEmployee.Username,
+                        DisplayName = ERoute.SaleEmployee.DisplayName,
+                    },
+                };
+                ERoute.RequestWorkflowStepMappings.Add(RequestWorkflowStepMapping);
+                RequestWorkflowStepMapping.WorkflowStateId = ERoute.RequestStateId;
+                ERoute.RequestState = WorkflowService.GetRequestState(ERoute.RequestStateId);
+                RequestWorkflowStepMapping.WorkflowState = WorkflowService.GetWorkflowState(RequestWorkflowStepMapping.WorkflowStateId);
+            }
+            else
+            {
+                ERoute.RequestStateId = ERoute.RequestState.Id;
+                ERoute.RequestWorkflowStepMappings = await WorkflowService.ListRequestWorkflowStepMapping(ERoute.RowId);
+            }
+            return ERoute;
+        }
+
+        public async Task<ERoute> GetDetail(long Id)
+        {
+            ERoute ERoute = await Get(Id);
             return ERoute;
         }
 

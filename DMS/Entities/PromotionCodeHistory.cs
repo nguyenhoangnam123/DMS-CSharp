@@ -13,7 +13,7 @@ namespace DMS.Entities
         public DateTime AppliedAt { get; set; }
         public Guid RowId { get; set; }
         public PromotionCode PromotionCode { get; set; }
-        
+        public DirectSalesOrder DirectSalesOrder { get; set; }
         public bool Equals(PromotionCodeHistory other)
         {
             return other != null && Id == other.Id;

@@ -71,6 +71,9 @@ namespace DMS.Models
         /// Tổng thuế
         /// </summary>
         public decimal TotalTaxAmount { get; set; }
+        public decimal TotalAfterTax { get; set; }
+        public string PromotionCode { get; set; }
+        public decimal? PromotionValue { get; set; }
         /// <summary>
         /// Tổng tiền sau thuế
         /// </summary>
