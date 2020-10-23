@@ -199,10 +199,11 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_by_employ
                         };
 
             var Ids = await query
+                .Distinct()
                 .OrderBy(x => x.OrganizationId)
                 .Skip(ReportDirectSalesOrderByEmployeeAndItem_ReportDirectSalesOrderByEmployeeAndItemFilterDTO.Skip)
                 .Take(ReportDirectSalesOrderByEmployeeAndItem_ReportDirectSalesOrderByEmployeeAndItemFilterDTO.Take)
-                .Distinct().ToListAsync();
+                .ToListAsync();
             var AppUserIds = Ids.Select(x => x.SalesEmployeeId).Distinct().ToList();
 
             List<AppUserDAO> AppUserDAOs = await DataContext.AppUser
