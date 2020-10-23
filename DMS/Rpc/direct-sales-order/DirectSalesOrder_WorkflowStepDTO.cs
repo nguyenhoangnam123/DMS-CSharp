@@ -13,7 +13,7 @@ namespace DMS.Rpc.direct_sales_order
         public string Code { get; set; }
         public string Name { get; set; }
         public long RoleId { get; set; }
-        public IndirectSalesOrder_RoleDTO Role { get; set; }
+        public DirectSalesOrder_RoleDTO Role { get; set; }
         public DirectSalesOrder_WorkflowStepDTO() { }
         public DirectSalesOrder_WorkflowStepDTO(WorkflowStep WorkflowStep)
         {
@@ -21,7 +21,7 @@ namespace DMS.Rpc.direct_sales_order
             this.Code = WorkflowStep.Code;
             this.Name = WorkflowStep.Name;
             this.RoleId = WorkflowStep.RoleId;
-            this.Role = WorkflowStep.Role == null ? null : new IndirectSalesOrder_RoleDTO(WorkflowStep.Role);
+            this.Role = WorkflowStep.Role == null ? null : new DirectSalesOrder_RoleDTO(WorkflowStep.Role);
         }
     }
 }
