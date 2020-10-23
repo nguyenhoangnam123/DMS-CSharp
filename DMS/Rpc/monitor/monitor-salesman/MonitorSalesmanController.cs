@@ -403,24 +403,20 @@ namespace DMS.Rpc.monitor.monitor_salesman
                 }
             });
 
-            //var IdsExcept = AppUserDAOs.Select(x => new
-            //{
-            //    OrganizationId = x.OrganizationId,
-            //    SalesEmployeeId = x.Id,
-            //}).Except(Ids).ToList();
-            //Parallel.ForEach(MonitorSalesman_MonitorSalesmanDTOs, MonitorSalesman_MonitorSalesmanDTO =>
-            //{
-            //    MonitorSalesman_SaleEmployeeDTO MonitorSalesman_SaleEmployeeDTO = new MonitorSalesman_SaleEmployeeDTO();
-            //    var Employee = AppUserDAOs.Where(x => x.Id == MonitorSalesman_SaleEmployeeDTO.SaleEmployeeId).FirstOrDefault();
-            //    if (Employee != null)
-            //    {
-            //        MonitorSalesman_SaleEmployeeDTO.Username = Employee.Username;
-            //        MonitorSalesman_SaleEmployeeDTO.DisplayName = Employee.DisplayName;
-            //    }
-                
-            //    MonitorSalesman_SaleEmployeeDTO.us
-            //});
-
+            AppUserDAOs = AppUserDAOs.Where(x => !Ids.Select(x => x.SalesEmployeeId).Contains(x.Id)).ToList();
+            Parallel.ForEach(AppUserDAOs, AppUserDAO =>
+            {
+                MonitorSalesman_SaleEmployeeDTO MonitorSalesman_SaleEmployeeDTO = new MonitorSalesman_SaleEmployeeDTO();
+                var Employee = AppUserDAOs.Where(x => x.Id == MonitorSalesman_SaleEmployeeDTO.SaleEmployeeId).FirstOrDefault();
+                if (Employee != null)
+                {
+                    MonitorSalesman_SaleEmployeeDTO.Username = Employee.Username;
+                    MonitorSalesman_SaleEmployeeDTO.DisplayName = Employee.DisplayName;
+                }
+                var MonitorSalesman_MonitorSalesmanDTO = MonitorSalesman_MonitorSalesmanDTOs.Where(x => x.OrganizationId == AppUserDAO.OrganizationId).FirstOrDefault();
+                MonitorSalesman_MonitorSalesmanDTO.SaleEmployees.Add(MonitorSalesman_SaleEmployeeDTO);
+            });
+            
             return MonitorSalesman_MonitorSalesmanDTOs;
         }
 
