@@ -306,6 +306,7 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_unchecked
                                      CodeDraft = s.CodeDraft,
                                      Name = s.Name,
                                      Address = s.Address,
+                                     Telephone = s.Telephone,
                                      StoreStatusId = s.StoreStatusId,
                                      StoreTypeId = st.Id,
                                      StoreType = new StoreTypeDAO
@@ -356,7 +357,7 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_unchecked
                 {
                     for (DateTime index = Start; index <= End; index = index.AddDays(1))
                     {
-                        SaleEmployee.Stores = StoreUncheckingDAOs.Where(e => e.AppUserId == SaleEmployee.SaleEmployeeId && index <= e.Date && e.Date < index.AddDays(1))
+                        var StoreUncheckings = StoreUncheckingDAOs.Where(e => e.AppUserId == SaleEmployee.SaleEmployeeId && index <= e.Date && e.Date < index.AddDays(1))
                             .Select(x => new ReportStoreUnchecked_StoreDTO
                             {
                                 Date = x.Date.AddHours(CurrentContext.TimeZone),
@@ -366,11 +367,16 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_unchecked
                                 StoreCodeDraft = x.Store.CodeDraft,
                                 StoreName = x.Store.Name,
                                 StoreStatusName = x.Store.StoreStatus.Name,
-                                StorePhone = x.Store.OwnerPhone,
+                                StorePhone = x.Store.Telephone,
                                 StoreTypeName = x.Store.StoreType.Name,
                             })
                             .Distinct()
                             .ToList();
+                        if (SaleEmployee.Stores == null)
+                        {
+                            SaleEmployee.Stores = new List<ReportStoreUnchecked_StoreDTO>();
+                        }
+                        SaleEmployee.Stores.AddRange(StoreUncheckings);
                     }
                 });
             }

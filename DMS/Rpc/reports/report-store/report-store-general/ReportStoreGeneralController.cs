@@ -240,11 +240,11 @@ namespace DMS.Rpc.reports.report_store.report_store_general
                         where StoreTypeIds.Contains(s.StoreTypeId) &&
                         (
                             (
-                                StoreGroupingId.HasValue == false && 
+                                StoreGroupingId.HasValue == false &&
                                 (s.StoreGroupingId.HasValue == false || StoreGroupingIds.Contains(s.StoreGroupingId.Value))
                             ) ||
                             (
-                                StoreGroupingId.HasValue && 
+                                StoreGroupingId.HasValue &&
                                 StoreGroupingId.Value == s.StoreGroupingId.Value
                             )
                         ) &&
@@ -341,7 +341,7 @@ namespace DMS.Rpc.reports.report_store.report_store_general
                         (StoreStatusId.HasValue == false || StoreStatusId.Value == StoreStatusEnum.ALL.Id || s.StoreStatusId == StoreStatusId.Value) &&
                         OrganizationIds.Contains(s.OrganizationId) &&
                         s.DeletedAt == null
-                        select new StoreDAO 
+                        select new StoreDAO
                         {
                             Id = s.Id,
                             Code = s.Code,
@@ -382,6 +382,8 @@ namespace DMS.Rpc.reports.report_store.report_store_general
             OrganizationDAOs = await DataContext.Organization.Where(x => OrganizationIds.Contains(x.Id)).ToListAsync();
 
             StoreIds = ReportStoreGeneral_StoreDTOs.Select(x => x.Id).ToList();
+            tempTableQuery = await DataContext
+                    .BulkInsertValuesIntoTempTableAsync<long>(StoreIds);
             List<ReportStoreGeneral_ReportStoreGeneralDTO> ReportStoreGeneral_ReportStoreGeneralDTOs = OrganizationDAOs.Select(on => new ReportStoreGeneral_ReportStoreGeneralDTO
             {
                 OrganizationId = on.Id,
@@ -404,43 +406,67 @@ namespace DMS.Rpc.reports.report_store.report_store_general
             }
 
             ReportStoreGeneral_ReportStoreGeneralDTOs = ReportStoreGeneral_ReportStoreGeneralDTOs.Where(x => x.Stores.Any()).ToList();
-            List<StoreCheckingDAO> StoreCheckingDAOs = await DataContext.StoreChecking
-                .Include(x => x.SaleEmployee)
-                .Where(sc => sc.CheckOutAt.HasValue && Start <= sc.CheckOutAt.Value && sc.CheckOutAt.Value <= End &&
-                StoreIds.Contains(sc.StoreId) && 
-                AppUserIds.Contains(sc.SaleEmployeeId))
-                .ToListAsync();
-            List<IndirectSalesOrderDAO> IndirectSalesOrderDAOs = await DataContext.IndirectSalesOrder
-                .Where(x => StoreIds.Contains(x.BuyerStoreId) &&
-                x.OrderDate >= Start && x.OrderDate <= End &&
-                x.RequestStateId == RequestStateEnum.APPROVED.Id &&
-                AppUserIds.Contains(x.SaleEmployeeId))
-                .Select(x => new IndirectSalesOrderDAO
-                {
-                    Id = x.Id,
-                    Code = x.Code,
-                    OrderDate = x.OrderDate,
-                    BuyerStoreId = x.BuyerStoreId,
-                    SaleEmployeeId = x.SaleEmployeeId,
-                    SellerStoreId = x.SellerStoreId,
-                    Total = x.Total
-                }).ToListAsync();
 
-            List<IndirectSalesOrderContentDAO> IndirectSalesOrderContentDAOs = await DataContext.IndirectSalesOrderContent
-                .Where(x => StoreIds.Contains(x.IndirectSalesOrder.BuyerStoreId) &&
-                x.IndirectSalesOrder.OrderDate >= Start && x.IndirectSalesOrder.OrderDate <= End &&
-                AppUserIds.Contains(x.IndirectSalesOrder.SaleEmployeeId))
-                .Select(x => new IndirectSalesOrderContentDAO
-                {
-                    Id = x.Id,
-                    ItemId = x.ItemId,
-                    IndirectSalesOrderId = x.IndirectSalesOrderId,
-                    IndirectSalesOrder = x.IndirectSalesOrder == null ? null : new IndirectSalesOrderDAO
-                    {
-                        BuyerStoreId = x.IndirectSalesOrder.BuyerStoreId
-                    }
-                })
-                .ToListAsync();
+            var storeCheckingQuery = from sc in DataContext.StoreChecking
+                                     join au in DataContext.AppUser on sc.SaleEmployeeId equals au.Id
+                                     join s in DataContext.Store on sc.StoreId equals s.Id
+                                     join tt in tempTableQuery.Query on s.Id equals tt.Column1
+                                     where sc.CheckOutAt.HasValue && Start <= sc.CheckOutAt.Value && sc.CheckOutAt.Value <= End &&
+                                     AppUserIds.Contains(sc.SaleEmployeeId)
+                                     select new StoreCheckingDAO
+                                     {
+                                         Id = sc.Id,
+                                         CheckInAt = sc.CheckInAt,
+                                         CheckOutAt = sc.CheckOutAt,
+                                         Planned = sc.Planned,
+                                         StoreId = sc.StoreId,
+                                         SaleEmployeeId = sc.SaleEmployeeId,
+                                         SaleEmployee = new AppUserDAO
+                                         {
+                                             Username = au.Username,
+                                             DisplayName = au.DisplayName,
+                                         }
+                                     };
+            List<StoreCheckingDAO> StoreCheckingDAOs = await storeCheckingQuery.ToListAsync();
+
+            var indirectSalesOrderQuery = from i in DataContext.IndirectSalesOrder
+                                          join au in DataContext.AppUser on i.SaleEmployeeId equals au.Id
+                                          join s in DataContext.Store on i.BuyerStoreId equals s.Id
+                                          join tt in tempTableQuery.Query on s.Id equals tt.Column1
+                                          where Start <= i.OrderDate && i.OrderDate <= End &&
+                                          i.RequestStateId == RequestStateEnum.APPROVED.Id &&
+                                          AppUserIds.Contains(i.SaleEmployeeId) &&
+                                          au.DeletedAt == null &&
+                                          s.DeletedAt == null
+                                          select new IndirectSalesOrderDAO
+                                          {
+                                              Id = i.Id,
+                                              Code = i.Code,
+                                              OrderDate = i.OrderDate,
+                                              BuyerStoreId = i.BuyerStoreId,
+                                              SaleEmployeeId = i.SaleEmployeeId,
+                                              SellerStoreId = i.SellerStoreId,
+                                              Total = i.Total
+                                          };
+            List<IndirectSalesOrderDAO> IndirectSalesOrderDAOs = await indirectSalesOrderQuery.ToListAsync();
+
+            var IndirectSalesOrderIds = IndirectSalesOrderDAOs.Select(x => x.Id).ToList();
+            tempTableQuery = await DataContext
+                    .BulkInsertValuesIntoTempTableAsync<long>(IndirectSalesOrderIds);
+            var indirectSalesOrderContentQuery = from ic in DataContext.IndirectSalesOrderContent
+                                                 join i in DataContext.IndirectSalesOrder on ic.IndirectSalesOrderId equals i.Id
+                                                 join tt in tempTableQuery.Query on i.Id equals tt.Column1
+                                                 select new IndirectSalesOrderContentDAO
+                                                 {
+                                                     Id = ic.Id,
+                                                     ItemId = ic.ItemId,
+                                                     IndirectSalesOrderId = ic.IndirectSalesOrderId,
+                                                     IndirectSalesOrder = new IndirectSalesOrderDAO
+                                                     {
+                                                         BuyerStoreId = i.BuyerStoreId
+                                                     }
+                                                 };
+            List<IndirectSalesOrderContentDAO> IndirectSalesOrderContentDAOs = await indirectSalesOrderContentQuery.ToListAsync();
 
             // khởi tạo khung dữ liệu
             foreach (ReportStoreGeneral_ReportStoreGeneralDTO ReportStoreGeneral_ReportStoreGeneralDTO in ReportStoreGeneral_ReportStoreGeneralDTOs)
@@ -495,7 +521,7 @@ namespace DMS.Rpc.reports.report_store.report_store_general
 
                 foreach (var Store in ReportStoreGeneral_ReportStoreGeneralDTO.Stores)
                 {
-                    var IndirectSalesOrderIds = IndirectSalesOrderDAOs.Where(x => x.BuyerStoreId == Store.Id).Select(x => x.Id).ToList();
+                    var indirectSalesOrderIds = IndirectSalesOrderDAOs.Where(x => x.BuyerStoreId == Store.Id).Select(x => x.Id).ToList();
                     foreach (var Id in IndirectSalesOrderIds)
                     {
                         if (Store.IndirectSalesOrderIds == null)
