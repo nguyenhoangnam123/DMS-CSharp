@@ -433,6 +433,7 @@ namespace DMS.Rpc.workflow_definition
             WorkflowDefinition.Id = WorkflowDefinition_WorkflowDefinitionDTO.Id;
             WorkflowDefinition.Code = WorkflowDefinition_WorkflowDefinitionDTO.Code;
             WorkflowDefinition.Name = WorkflowDefinition_WorkflowDefinitionDTO.Name;
+            WorkflowDefinition.Used = WorkflowDefinition_WorkflowDefinitionDTO.Used;
             WorkflowDefinition.CreatorId = WorkflowDefinition_WorkflowDefinitionDTO.CreatorId;
             WorkflowDefinition.ModifierId = WorkflowDefinition_WorkflowDefinitionDTO.ModifierId;
             WorkflowDefinition.WorkflowTypeId = WorkflowDefinition_WorkflowDefinitionDTO.WorkflowTypeId;
