@@ -306,6 +306,7 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_unchecked
                                      CodeDraft = s.CodeDraft,
                                      Name = s.Name,
                                      Address = s.Address,
+                                     Telephone = s.Telephone,
                                      StoreStatusId = s.StoreStatusId,
                                      StoreTypeId = st.Id,
                                      StoreType = new StoreTypeDAO
@@ -366,7 +367,7 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_unchecked
                                 StoreCodeDraft = x.Store.CodeDraft,
                                 StoreName = x.Store.Name,
                                 StoreStatusName = x.Store.StoreStatus.Name,
-                                StorePhone = x.Store.OwnerPhone,
+                                StorePhone = x.Store.Telephone,
                                 StoreTypeName = x.Store.StoreType.Name,
                             })
                             .Distinct()
