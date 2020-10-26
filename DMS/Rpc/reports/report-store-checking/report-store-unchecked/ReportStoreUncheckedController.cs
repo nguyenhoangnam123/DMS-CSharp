@@ -248,11 +248,12 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_unchecked
                 AppUserIds = AppUserIds.Where(x => x == AppUserId.Value).ToList();
             var query = from su in DataContext.StoreUnchecking
                         join s in DataContext.Store on su.StoreId equals s.Id
+                        join au in DataContext.AppUser on su.AppUserId equals au.Id
                         where AppUserIds.Contains(su.AppUserId) &&
                         OrganizationIds.Contains(su.OrganizationId) &&
                         (StoreStatusId.HasValue == false || StoreStatusId.Value == StoreStatusEnum.ALL.Id || s.StoreStatusId == StoreStatusId.Value) &&
                         Start <= su.Date && su.Date <= End &&
-                        s.DeletedAt == null
+                        s.DeletedAt == null && au.DeletedAt == null
                         select new
                         {
                             AppUserId = su.AppUserId,
@@ -358,7 +359,7 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_unchecked
                         SaleEmployee.Stores = StoreUncheckingDAOs.Where(e => e.AppUserId == SaleEmployee.SaleEmployeeId && index <= e.Date && e.Date < index.AddDays(1))
                             .Select(x => new ReportStoreUnchecked_StoreDTO
                             {
-                                Date = x.Date,
+                                Date = x.Date.AddHours(CurrentContext.TimeZone),
                                 AppUserId = x.AppUserId,
                                 StoreAddress = x.Store.Address,
                                 StoreCode = x.Store.Code,

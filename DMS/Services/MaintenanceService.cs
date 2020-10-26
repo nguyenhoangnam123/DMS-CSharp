@@ -59,7 +59,7 @@ namespace DMS.Services
 
         public async Task CreateStoreUnchecking()
         {
-            DateTime End = StaticParams.DateTimeNow.Date;
+            DateTime End = StaticParams.DateTimeNow;
             DateTime Start = End.AddDays(-1);
             List<ERouteContentDAO> ERouteContentDAOs = await DataContext.ERouteContent
                 .Where(ec => (!ec.ERoute.EndDate.HasValue || Start <= ec.ERoute.EndDate) && ec.ERoute.StartDate <= End)
