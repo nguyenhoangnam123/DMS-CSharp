@@ -11,7 +11,7 @@ namespace DMS.Rpc.kpi_general
         public long Stt { get; set; }
         public string UsernameValue { get; set; }
         public string CriterialValue { get; set; }
-        public string M1Value    { get; set; }
+        public string M1Value { get; set; }
         public string M2Value { get; set; }
         public string M3Value { get; set; }
         public string M4Value { get; set; }
@@ -33,6 +33,32 @@ namespace DMS.Rpc.kpi_general
         public long KpiYearId { get; set; }
         public long OrganizationId { get; set; }
         public long KpiCriteriaGeneralId { get; set; }
+
+        public bool HasValue
+        {
+            get
+            {
+                if (!string.IsNullOrWhiteSpace(M1Value) ||
+                    !string.IsNullOrWhiteSpace(M2Value) ||
+                    !string.IsNullOrWhiteSpace(M3Value) ||
+                    !string.IsNullOrWhiteSpace(M4Value) ||
+                    !string.IsNullOrWhiteSpace(M5Value) ||
+                    !string.IsNullOrWhiteSpace(M6Value) ||
+                    !string.IsNullOrWhiteSpace(M7Value) ||
+                    !string.IsNullOrWhiteSpace(M8Value) ||
+                    !string.IsNullOrWhiteSpace(M9Value) ||
+                    !string.IsNullOrWhiteSpace(M10Value) ||
+                    !string.IsNullOrWhiteSpace(M11Value) ||
+                    !string.IsNullOrWhiteSpace(M12Value) ||
+                    !string.IsNullOrWhiteSpace(Q1Value) ||
+                    !string.IsNullOrWhiteSpace(Q2Value) ||
+                    !string.IsNullOrWhiteSpace(Q3Value) ||
+                    !string.IsNullOrWhiteSpace(Q4Value) ||
+                    !string.IsNullOrWhiteSpace(YValue))
+                    return true;
+                return false;
+            }
+        }
     }
 
     public class KpiGeneral_RowDTO : IEquatable<KpiGeneral_RowDTO>

@@ -379,7 +379,7 @@ namespace DMS.Rpc.kpi_general
 
                     if (string.IsNullOrWhiteSpace(UsernameValue) && i != worksheet.Dimension.End.Row)
                     {
-                        errorContent.AppendLine($"Lỗi dòng thứ {i + 1}: Chưa nhập mã nhân viên");
+                        errorContent.AppendLine($"Lỗi dòng thứ {i}: Chưa nhập mã nhân viên");
                         continue;
                     }
                     else if (string.IsNullOrWhiteSpace(UsernameValue) && i == worksheet.Dimension.End.Row)
@@ -389,7 +389,7 @@ namespace DMS.Rpc.kpi_general
                     AppUser Employee = Employees.Where(x => x.Username.ToLower() == UsernameValue.ToLower()).FirstOrDefault();
                     if (Employee == null)
                     {
-                        errorContent.AppendLine($"Lỗi dòng thứ {i + 1}: Nhân viên không tồn tại");
+                        errorContent.AppendLine($"Lỗi dòng thứ {i}: Nhân viên không tồn tại");
                         continue;
                     }
                     else
@@ -402,7 +402,7 @@ namespace DMS.Rpc.kpi_general
                         GenericEnum KpiCriteriaGeneral = KpiCriteriaGeneralEnum.KpiCriteriaGeneralEnumList.Where(x => x.Name == CriterialValue).FirstOrDefault();
                         if (KpiCriteriaGeneral == null)
                         {
-                            errorContent.AppendLine($"Lỗi dòng thứ {i + 1}: Tên chỉ tiêu không hợp lệ");
+                            errorContent.AppendLine($"Lỗi dòng thứ {i}: Tên chỉ tiêu không hợp lệ");
                             continue;
                         }
                         else
@@ -478,6 +478,11 @@ namespace DMS.Rpc.kpi_general
 
             foreach (var KpiGeneral_ImportDTO in KpiGeneral_ImportDTOs)
             {
+                if (KpiGeneral_ImportDTO.HasValue == false)
+                {
+                    Errors[KpiGeneral_ImportDTO.Stt].Append($"Lỗi dòng thứ {KpiGeneral_ImportDTO.Stt}: Chưa nhập chỉ tiêu");
+                    continue;
+                }
                 KpiGeneral_ImportDTO.KpiCriteriaGeneralId = KpiCriteriaGeneralEnum.KpiCriteriaGeneralEnumList.Where(x => x.Name.ToLower() == KpiGeneral_ImportDTO.CriterialValue.ToLower()).Select(x => x.Id).FirstOrDefault();
                 KpiGeneral KpiGeneral;
                 if (KpiGeneral_ImportDTO.IsNew)
@@ -605,15 +610,6 @@ namespace DMS.Rpc.kpi_general
                         {
                             KpiGeneralContentKpiPeriodMapping.Value = Y;
                         }
-                    }
-                    bool flag = false;
-                    foreach (var item in KpiGeneralContent.KpiGeneralContentKpiPeriodMappings)
-                    {
-                        if (item.Value != null) flag = true;
-                    }
-                    if (flag == false)
-                    {
-                        Errors[KpiGeneral_ImportDTO.Stt].AppendLine($"Lỗi dòng thứ {KpiGeneral_ImportDTO.Stt}: Chưa nhập chỉ tiêu");
                     }
                 }
                 KpiGeneral.CreatorId = AppUser.Id;
