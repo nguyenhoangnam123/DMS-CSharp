@@ -25,6 +25,7 @@ using NGS.Templater;
 using DMS.Services.MKpiGeneralContent;
 using System.Text;
 using DMS.Repositories;
+using OfficeOpenXml.ConditionalFormatting;
 
 namespace DMS.Rpc.kpi_general
 {
@@ -441,6 +442,15 @@ namespace DMS.Rpc.kpi_general
             {
                 Errors.Add(KpiGeneral_ImportDTO.Stt, new StringBuilder(""));
                 KpiGeneral_ImportDTO.IsNew = false;
+                if (!KpiGeneral_RowDTOs.Contains(new KpiGeneral_RowDTO { AppUserId = KpiGeneral_ImportDTO.EmployeeId, KpiYearId = KpiGeneral_ImportDTO.KpiYearId }))
+                {
+                    KpiGeneral_RowDTOs.Add(new KpiGeneral_RowDTO { AppUserId = KpiGeneral_ImportDTO.EmployeeId, KpiYearId = KpiGeneral_ImportDTO.KpiYearId });
+                    KpiGeneral_ImportDTO.IsNew = true;
+
+                    var Employee = Employees.Where(x => x.Username == KpiGeneral_ImportDTO.UsernameValue).FirstOrDefault();
+                    KpiGeneral_ImportDTO.OrganizationId = Employee.OrganizationId;
+                    KpiGeneral_ImportDTO.EmployeeId = Employee.Id;
+                }
             }
 
             HashSet<long> KpiPeriodIds = new HashSet<long>();
@@ -466,20 +476,12 @@ namespace DMS.Rpc.kpi_general
                     KpiPeriodIds.Add(KpiPeriod.Id);
             }
 
-            Parallel.ForEach(KpiGeneral_ImportDTOs, KpiGeneral_ImportDTO =>
+            foreach (var KpiGeneral_ImportDTO in KpiGeneral_ImportDTOs)
             {
-                if (!KpiGeneral_RowDTOs.Contains(new KpiGeneral_RowDTO { AppUserId = KpiGeneral_ImportDTO.EmployeeId, KpiYearId = KpiGeneral_ImportDTO.KpiYearId }))
-                {
-                    KpiGeneral_ImportDTO.IsNew = true;
-                    KpiGeneral_ImportDTO.OrganizationId = Employees.Where(x => x.Username == KpiGeneral_ImportDTO.UsernameValue).Select(x => x.OrganizationId).FirstOrDefault();
-                }
-
                 KpiGeneral_ImportDTO.KpiCriteriaGeneralId = KpiCriteriaGeneralEnum.KpiCriteriaGeneralEnumList.Where(x => x.Name.ToLower() == KpiGeneral_ImportDTO.CriterialValue.ToLower()).Select(x => x.Id).FirstOrDefault();
                 KpiGeneral KpiGeneral;
                 if (KpiGeneral_ImportDTO.IsNew)
                 {
-                    KpiGeneral_RowDTOs.Add(new KpiGeneral_RowDTO { AppUserId = KpiGeneral_ImportDTO.EmployeeId, KpiYearId = KpiGeneral_ImportDTO.KpiYearId });
-
                     KpiGeneral = new KpiGeneral();
                     KpiGenerals.Add(KpiGeneral);
                     KpiGeneral.EmployeeId = KpiGeneral_ImportDTO.EmployeeId;
@@ -616,7 +618,7 @@ namespace DMS.Rpc.kpi_general
                 }
                 KpiGeneral.CreatorId = AppUser.Id;
                 KpiGeneral.StatusId = StatusEnum.ACTIVE.Id;
-            });
+            }
 
             if (errorContent.Length > 0)
                 return BadRequest(errorContent.ToString());

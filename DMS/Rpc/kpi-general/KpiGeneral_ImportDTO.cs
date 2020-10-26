@@ -45,7 +45,7 @@ namespace DMS.Rpc.kpi_general
         }
         public override int GetHashCode()
         {
-            return (AppUserId + KpiYearId).GetHashCode();
+            return AppUserId.GetHashCode() ^ KpiYearId.GetHashCode();
         }
     }
 }

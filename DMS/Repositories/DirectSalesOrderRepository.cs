@@ -436,6 +436,7 @@ namespace DMS.Repositories
                     Email = q.SaleEmployee.Email,
                     Phone = q.SaleEmployee.Phone,
                 } : null,
+                RowId = q.RowId
             }).ToListAsync();
             return DirectSalesOrders;
         }
