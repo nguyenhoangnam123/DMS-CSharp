@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Common
+namespace DMS.Common
 {
     public static class ExcelExtension
     {

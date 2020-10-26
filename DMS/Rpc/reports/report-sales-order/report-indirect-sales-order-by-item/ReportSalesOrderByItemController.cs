@@ -1,4 +1,4 @@
-﻿using Common;
+﻿using DMS.Common;
 using DMS.Models;
 using DMS.Services.MProduct;
 using DMS.Services.MProductGrouping;
@@ -10,7 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using DMS.Enums;
-using Helpers;
+using DMS.Helpers;
 using DMS.Services.MIndirectSalesOrder;
 using DMS.Services.MOrganization;
 using Microsoft.EntityFrameworkCore;

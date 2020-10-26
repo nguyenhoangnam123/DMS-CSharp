@@ -1,8 +1,8 @@
-using Common;
+using DMS.Common;
 using DMS.Entities;
 using DMS.Enums;
 using DMS.Models;
-using Helpers;
+using DMS.Helpers;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -375,6 +375,7 @@ namespace DMS.Repositories
                 {
                     Id = q.BuyerStore.Id,
                     Code = q.BuyerStore.Code,
+                    CodeDraft = q.BuyerStore.CodeDraft,
                     Name = q.BuyerStore.Name,
                 } : null,
                 EditedPriceStatus = filter.Selects.Contains(IndirectSalesOrderSelect.EditedPriceStatus) && q.EditedPriceStatus != null ? new EditedPriceStatus
@@ -400,6 +401,7 @@ namespace DMS.Repositories
                 {
                     Id = q.SellerStore.Id,
                     Code = q.SellerStore.Code,
+                    CodeDraft = q.SellerStore.CodeDraft,
                     Name = q.SellerStore.Name,
                 } : null,
                 RequestState = filter.Selects.Contains(IndirectSalesOrderSelect.RequestState) && q.RequestState != null ? new RequestState
@@ -589,6 +591,7 @@ namespace DMS.Repositories
                 {
                     Id = x.BuyerStore.Id,
                     Code = x.BuyerStore.Code,
+                    CodeDraft = x.BuyerStore.CodeDraft,
                     Name = x.BuyerStore.Name,
                     ParentStoreId = x.BuyerStore.ParentStoreId,
                     OrganizationId = x.BuyerStore.OrganizationId,
@@ -644,6 +647,7 @@ namespace DMS.Repositories
                 {
                     Id = x.SellerStore.Id,
                     Code = x.SellerStore.Code,
+                    CodeDraft = x.SellerStore.CodeDraft,
                     Name = x.SellerStore.Name,
                     ParentStoreId = x.SellerStore.ParentStoreId,
                     OrganizationId = x.SellerStore.OrganizationId,

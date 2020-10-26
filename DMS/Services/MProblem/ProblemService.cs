@@ -1,4 +1,4 @@
-﻿using Common;
+﻿using DMS.Common;
 using DMS.Entities;
 using DMS.Enums;
 using DMS.Handlers;
@@ -7,7 +7,7 @@ using DMS.Rpc.monitor_store_problems;
 using DMS.Services.MImage;
 using DMS.Services.MNotification;
 using DMS.Services.MOrganization;
-using Helpers;
+using DMS.Helpers;
 using System;
 using System.Collections.Generic;
 using System.IO;

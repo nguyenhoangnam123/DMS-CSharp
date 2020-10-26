@@ -1,4 +1,4 @@
-﻿using Common;
+﻿using DMS.Common;
 using DMS.Entities;
 using DMS.Enums;
 using DMS.Models;
@@ -10,7 +10,7 @@ using DMS.Services.MStoreGrouping;
 using DMS.Services.MStoreStatus;
 using DMS.Services.MStoreType;
 using Hangfire.Annotations;
-using Helpers;
+using DMS.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NGS.Templater;
@@ -124,6 +124,7 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
             StoreFilter.Selects = StoreSelect.ALL;
             StoreFilter.Id = ReportStoreChecker_StoreFilterDTO.Id;
             StoreFilter.Code = ReportStoreChecker_StoreFilterDTO.Code;
+            StoreFilter.CodeDraft = ReportStoreChecker_StoreFilterDTO.CodeDraft;
             StoreFilter.Name = ReportStoreChecker_StoreFilterDTO.Name;
             StoreFilter.ParentStoreId = ReportStoreChecker_StoreFilterDTO.ParentStoreId;
             StoreFilter.OrganizationId = ReportStoreChecker_StoreFilterDTO.OrganizationId;
@@ -435,6 +436,7 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
                          {
                              Id = s.Id,
                              Code = s.Code,
+                             CodeDraft = s.CodeDraft,
                              Name = s.Name,
                              Address = s.Address,
                              StoreStatusId = s.StoreStatusId
@@ -464,6 +466,7 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
                     {
                         Id = Store.Id,
                         Code = Store.Code,
+                        CodeDraft = Store.CodeDraft,
                         Name = Store.Name,
                         Address = Store.Address,
                         StoreStatusId = Store.StoreStatusId,
@@ -530,6 +533,7 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
                                 StoreStatusName = x.Store.StoreStatus.Name,
                                 StoreName = x.Store.Name,
                                 StoreCode = x.Store.Code,
+                                StoreCodeDraft = x.Store.CodeDraft,
                                 StoreAddress = x.Store.Address,
                                 CheckInDistance = $"{x.CheckInDistance} m",
                                 CheckOutDistance = $"{x.CheckOutDistance} m",

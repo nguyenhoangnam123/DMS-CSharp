@@ -1,4 +1,4 @@
-using Common;
+using DMS.Common;
 using System.Collections.Generic;
 
 namespace DMS.Rpc.reseller_type

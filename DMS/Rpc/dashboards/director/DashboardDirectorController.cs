@@ -1,11 +1,11 @@
-﻿using Common;
+﻿using DMS.Common;
 using DMS.Entities;
 using DMS.Models;
 using DMS.Services.MAppUser;
 using DMS.Services.MIndirectSalesOrder;
 using DMS.Services.MOrganization;
 using DMS.Services.MStoreChecking;
-using Helpers;
+using DMS.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;

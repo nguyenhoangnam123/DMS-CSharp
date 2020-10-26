@@ -1,4 +1,4 @@
-﻿using Common;
+﻿using DMS.Common;
 using DMS.Entities;
 using DMS.Enums;
 using DMS.Models;
@@ -11,7 +11,7 @@ using DMS.Services.MStore;
 using DMS.Services.MStoreGrouping;
 using DMS.Services.MStoreType;
 using System;
-using Helpers;
+using DMS.Helpers;
 using Microsoft.EntityFrameworkCore;
 using DMS.Services.MProduct;
 using DMS.Services.MAppUser;
@@ -110,6 +110,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_indirect_sales_order_general
             StoreFilter.Selects = StoreSelect.ALL;
             StoreFilter.Id = ReportSalesOrderGeneral_StoreFilterDTO.Id;
             StoreFilter.Code = ReportSalesOrderGeneral_StoreFilterDTO.Code;
+            StoreFilter.CodeDraft = ReportSalesOrderGeneral_StoreFilterDTO.CodeDraft;
             StoreFilter.Name = ReportSalesOrderGeneral_StoreFilterDTO.Name;
             StoreFilter.OrganizationId = ReportSalesOrderGeneral_StoreFilterDTO.OrganizationId;
             StoreFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
@@ -292,6 +293,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_indirect_sales_order_general
                     {
                         Id = x.Id,
                         Code = x.Code,
+                        CodeDraft = x.CodeDraft,
                         Name = x.Name,
                     }).FirstOrDefault();
                 IndirectSalesOrderDAO.BuyerStore = Stores.Where(x => x.Id == IndirectSalesOrderDAO.BuyerStoreId)
@@ -299,6 +301,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_indirect_sales_order_general
                    {
                        Id = x.Id,
                        Code = x.Code,
+                       CodeDraft = x.CodeDraft,
                        Name = x.Name,
                        StoreStatus = x.StoreStatus == null ? null : new StoreStatusDAO
                        {

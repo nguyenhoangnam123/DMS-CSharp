@@ -1,4 +1,4 @@
-﻿using Common;
+﻿using DMS.Common;
 using DMS.Entities;
 using DMS.Enums;
 using DMS.Models;
@@ -11,7 +11,7 @@ using DMS.Services.MStore;
 using DMS.Services.MStoreGrouping;
 using DMS.Services.MStoreType;
 using System;
-using Helpers;
+using DMS.Helpers;
 using Microsoft.EntityFrameworkCore;
 using DMS.Services.MProduct;
 using System.IO;
@@ -90,6 +90,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_by_store_
             StoreFilter.Selects = StoreSelect.ALL;
             StoreFilter.Id = ReportDirectSalesOrderByStoreAndItem_StoreFilterDTO.Id;
             StoreFilter.Code = ReportDirectSalesOrderByStoreAndItem_StoreFilterDTO.Code;
+            StoreFilter.CodeDraft = ReportDirectSalesOrderByStoreAndItem_StoreFilterDTO.CodeDraft;
             StoreFilter.Name = ReportDirectSalesOrderByStoreAndItem_StoreFilterDTO.Name;
             StoreFilter.OrganizationId = ReportDirectSalesOrderByStoreAndItem_StoreFilterDTO.OrganizationId;
             StoreFilter.StoreTypeId = ReportDirectSalesOrderByStoreAndItem_StoreFilterDTO.StoreTypeId;
@@ -336,6 +337,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_by_store_
                         {
                             Id = s.Id,
                             Code = s.Code,
+                            CodeDraft = s.CodeDraft,
                             Name = s.Name,
                             Address = s.Address,
                             OrganizationId = s.OrganizationId,
@@ -363,6 +365,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_by_store_
                     {
                         Id = x.Id,
                         Code = x.Code,
+                        CodeDraft = x.CodeDraft,
                         Name = x.Name,
                         StoreStatusId = x.StoreStatusId,
                         Address = x.Address,
@@ -606,6 +609,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_by_store_
                         {
                             Id = s.Id,
                             Code = s.Code,
+                            CodeDraft = s.CodeDraft,
                             Name = s.Name,
                             Address = s.Address,
                             OrganizationId = s.OrganizationId,
@@ -632,6 +636,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_by_store_
                     {
                         Id = x.Id,
                         Code = x.Code,
+                        CodeDraft = x.CodeDraft,
                         Name = x.Name,
                     })
                     .ToList();

@@ -1,4 +1,4 @@
-﻿using Common;
+﻿using DMS.Common;
 using DMS.Entities;
 using DMS.Enums;
 using DMS.Models;
@@ -8,7 +8,7 @@ using DMS.Services.MStore;
 using DMS.Services.MStoreGrouping;
 using DMS.Services.MStoreStatus;
 using DMS.Services.MStoreType;
-using Helpers;
+using DMS.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -90,6 +90,7 @@ namespace DMS.Rpc.reports.report_store.report_store_general
             StoreFilter.Selects = StoreSelect.ALL;
             StoreFilter.Id = ReportStoreGeneral_StoreFilterDTO.Id;
             StoreFilter.Code = ReportStoreGeneral_StoreFilterDTO.Code;
+            StoreFilter.CodeDraft = ReportStoreGeneral_StoreFilterDTO.CodeDraft;
             StoreFilter.Name = ReportStoreGeneral_StoreFilterDTO.Name;
             StoreFilter.ParentStoreId = ReportStoreGeneral_StoreFilterDTO.ParentStoreId;
             StoreFilter.OrganizationId = ReportStoreGeneral_StoreFilterDTO.OrganizationId;
@@ -344,6 +345,7 @@ namespace DMS.Rpc.reports.report_store.report_store_general
                         {
                             Id = s.Id,
                             Code = s.Code,
+                            CodeDraft = s.CodeDraft,
                             Name = s.Name,
                             StoreStatusId = s.StoreStatusId,
                             Address = s.Address,
@@ -363,6 +365,7 @@ namespace DMS.Rpc.reports.report_store.report_store_general
                 ReportStoreGeneral_StoreDTO ReportStoreGeneral_StoreDTO = new ReportStoreGeneral_StoreDTO();
                 ReportStoreGeneral_StoreDTO.Id = Store.Id;
                 ReportStoreGeneral_StoreDTO.Code = Store.Code;
+                ReportStoreGeneral_StoreDTO.CodeDraft = Store.CodeDraft;
                 ReportStoreGeneral_StoreDTO.Name = Store.Name;
                 ReportStoreGeneral_StoreDTO.StoreStatusId = Store.StoreStatusId;
                 ReportStoreGeneral_StoreDTO.Address = Store.Address;
@@ -392,6 +395,7 @@ namespace DMS.Rpc.reports.report_store.report_store_general
                     {
                         Id = x.Id,
                         Code = x.Code,
+                        CodeDraft = x.CodeDraft,
                         Name = x.Name,
                         StoreStatusName = x.StoreStatus.Name,
                         Address = x.Address,

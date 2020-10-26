@@ -1,4 +1,4 @@
-namespace Common
+namespace DMS.Common
 {
     public class Root
     {

@@ -1,4 +1,4 @@
-using Common;
+using DMS.Common;
 using DMS.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -18,7 +18,7 @@ using DMS.Services.MStoreType;
 using DMS.Services.MProductGrouping;
 using DMS.Services.MProductType;
 using System.Globalization;
-using Helpers;
+using DMS.Helpers;
 using System;
 
 namespace DMS.Rpc

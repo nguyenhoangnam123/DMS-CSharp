@@ -1,8 +1,8 @@
-using Common;
+using DMS.Common;
 using DMS.Entities;
 using DMS.Repositories;
 using DMS.Services.MImage;
-using Helpers;
+using DMS.Helpers;
 using System;
 using System.Collections.Generic;
 using System.IO;

@@ -1,4 +1,4 @@
-﻿using Common;
+﻿using DMS.Common;
 using DMS.Entities;
 using System;
 using System.Collections.Generic;
@@ -11,6 +11,7 @@ namespace DMS.Rpc.reports.report_store.report_store_general
     {
         public long Id { get; set; }
         public string Code { get; set; }
+        public string CodeDraft { get; set; }
         public string Name { get; set; }
         public string Address { get; set; }
         public string Phone { get; set; }
@@ -26,6 +27,7 @@ namespace DMS.Rpc.reports.report_store.report_store_general
         {
             this.Id = Store.Id;
             this.Code = Store.Code;
+            this.CodeDraft = Store.CodeDraft;
             this.Name = Store.Name;
             this.Address = Store.Address;
             this.Phone = Store.Telephone;
@@ -44,6 +46,7 @@ namespace DMS.Rpc.reports.report_store.report_store_general
         public IdFilter Id { get; set; }
 
         public StringFilter Code { get; set; }
+        public StringFilter CodeDraft { get; set; }
 
         public StringFilter Name { get; set; }
 

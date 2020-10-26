@@ -1,4 +1,4 @@
-﻿using Common;
+﻿using DMS.Common;
 using DMS.Entities;
 using DMS.Enums;
 using DMS.Handlers;
@@ -7,7 +7,7 @@ using DMS.Rpc.direct_sales_order;
 using DMS.Services.MNotification;
 using DMS.Services.MOrganization;
 using DMS.Services.MWorkflow;
-using Helpers;
+using DMS.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -903,6 +903,7 @@ namespace DMS.Services.MDirectSalesOrder
                 if(PromotionCode.PromotionProductAppliedTypeId == PromotionProductAppliedTypeEnum.ALL.Id)
                 {
                     DirectSalesOrder.Total = DirectSalesOrder.TotalAfterTax - PromotionCode.Value;
+                    DirectSalesOrder.PromotionValue = PromotionCode.Value;
                 }
                 else
                 {
@@ -910,6 +911,7 @@ namespace DMS.Services.MDirectSalesOrder
                     if(Intersect > 0)
                     {
                         DirectSalesOrder.Total = DirectSalesOrder.TotalAfterTax - PromotionCode.Value;
+                        DirectSalesOrder.PromotionValue = PromotionCode.Value;
                     }
                 }
             }
@@ -935,12 +937,14 @@ namespace DMS.Services.MDirectSalesOrder
 
                 if(PromotionCode.MaxValue.HasValue && PromotionCode.MaxValue.Value < PromotionValue)
                 {
-                    DirectSalesOrder.Total = DirectSalesOrder.TotalAfterTax - PromotionCode.MaxValue.Value;
+                    PromotionValue = PromotionCode.MaxValue.Value;
+                    DirectSalesOrder.Total = DirectSalesOrder.TotalAfterTax - PromotionValue;
                 }
                 else
                 {
                     DirectSalesOrder.Total = DirectSalesOrder.TotalAfterTax - PromotionValue;
                 }
+                DirectSalesOrder.PromotionValue = PromotionValue;
             }
         }
 

@@ -1,9 +1,9 @@
-using Common;
+using DMS.Common;
 using DMS.Entities;
 using DMS.Enums;
 using DMS.Services.MProduct;
 using DMS.Services.MProductGrouping;
-using Helpers;
+using DMS.Helpers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;

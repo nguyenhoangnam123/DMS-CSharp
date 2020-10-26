@@ -1,4 +1,4 @@
-using Common;
+using DMS.Common;
 using DMS.Entities;
 using DMS.Models;
 using Microsoft.EntityFrameworkCore;
@@ -209,6 +209,7 @@ namespace DMS.Repositories
                 {
                     Id = q.Store.Id,
                     Code = q.Store.Code,
+                    CodeDraft = q.Store.CodeDraft,
                     Name = q.Store.Name,
                     ParentStoreId = q.Store.ParentStoreId,
                     OrganizationId = q.Store.OrganizationId,
@@ -302,6 +303,7 @@ namespace DMS.Repositories
                 {
                     Id = x.Store.Id,
                     Code = x.Store.Code,
+                    CodeDraft = x.Store.CodeDraft,
                     Name = x.Store.Name,
                     ParentStoreId = x.Store.ParentStoreId,
                     OrganizationId = x.Store.OrganizationId,

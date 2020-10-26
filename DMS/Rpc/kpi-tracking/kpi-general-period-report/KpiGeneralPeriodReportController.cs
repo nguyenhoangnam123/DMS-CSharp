@@ -1,4 +1,4 @@
-﻿using Common;
+﻿using DMS.Common;
 using DMS.Entities;
 using DMS.Enums;
 using DMS.Models;
@@ -7,7 +7,7 @@ using DMS.Services.MKpiPeriod;
 using DMS.Services.MKpiYear;
 using DMS.Services.MOrganization;
 using Hangfire.Annotations;
-using Helpers;
+using DMS.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;

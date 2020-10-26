@@ -1,8 +1,8 @@
-using Common;
+using DMS.Common;
 using DMS.Entities;
 using DMS.Enums;
 using DMS.Repositories;
-using Helpers;
+using DMS.Helpers;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
