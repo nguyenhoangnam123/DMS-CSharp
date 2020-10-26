@@ -903,6 +903,7 @@ namespace DMS.Services.MDirectSalesOrder
                 if(PromotionCode.PromotionProductAppliedTypeId == PromotionProductAppliedTypeEnum.ALL.Id)
                 {
                     DirectSalesOrder.Total = DirectSalesOrder.TotalAfterTax - PromotionCode.Value;
+                    DirectSalesOrder.PromotionValue = PromotionCode.Value;
                 }
                 else
                 {
@@ -910,6 +911,7 @@ namespace DMS.Services.MDirectSalesOrder
                     if(Intersect > 0)
                     {
                         DirectSalesOrder.Total = DirectSalesOrder.TotalAfterTax - PromotionCode.Value;
+                        DirectSalesOrder.PromotionValue = PromotionCode.Value;
                     }
                 }
             }
@@ -935,12 +937,14 @@ namespace DMS.Services.MDirectSalesOrder
 
                 if(PromotionCode.MaxValue.HasValue && PromotionCode.MaxValue.Value < PromotionValue)
                 {
-                    DirectSalesOrder.Total = DirectSalesOrder.TotalAfterTax - PromotionCode.MaxValue.Value;
+                    PromotionValue = PromotionCode.MaxValue.Value;
+                    DirectSalesOrder.Total = DirectSalesOrder.TotalAfterTax - PromotionValue;
                 }
                 else
                 {
                     DirectSalesOrder.Total = DirectSalesOrder.TotalAfterTax - PromotionValue;
                 }
+                DirectSalesOrder.PromotionValue = PromotionValue;
             }
         }
 
