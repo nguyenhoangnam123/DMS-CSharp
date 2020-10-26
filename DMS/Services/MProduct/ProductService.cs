@@ -1,10 +1,10 @@
-﻿using Common;
+﻿using DMS.Common;
 using DMS.Entities;
 using DMS.Enums;
 using DMS.Repositories;
 using DMS.Services.MImage;
 using DMS.Handlers;
-using Helpers;
+using DMS.Helpers;
 using OfficeOpenXml;
 using System;
 using System.Collections.Generic;

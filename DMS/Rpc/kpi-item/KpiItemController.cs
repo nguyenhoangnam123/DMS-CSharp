@@ -1,4 +1,4 @@
-using Common;
+using DMS.Common;
 using DMS.Entities;
 using DMS.Enums;
 using DMS.Services.MAppUser;
@@ -14,7 +14,7 @@ using DMS.Services.MProductGrouping;
 using DMS.Services.MProductType;
 using DMS.Services.MStatus;
 using DMS.Services.MSupplier;
-using Helpers;
+using DMS.Helpers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NGS.Templater;

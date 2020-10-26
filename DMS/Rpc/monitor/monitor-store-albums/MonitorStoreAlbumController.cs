@@ -1,4 +1,4 @@
-﻿using Common;
+﻿using DMS.Common;
 using DMS.Entities;
 using DMS.Enums;
 using DMS.Models;
@@ -9,7 +9,7 @@ using DMS.Services.MOrganization;
 using DMS.Services.MStore;
 using DMS.Services.MStoreChecking;
 using Hangfire.Storage;
-using Helpers;
+using DMS.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;

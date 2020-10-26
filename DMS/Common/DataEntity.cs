@@ -6,7 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 
-namespace Common
+namespace DMS.Common
 {
     public class DataEntity
     {

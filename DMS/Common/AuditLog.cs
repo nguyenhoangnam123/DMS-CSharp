@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Common
+namespace DMS.Common
 {
     public partial class AuditLog : DataEntity
     {

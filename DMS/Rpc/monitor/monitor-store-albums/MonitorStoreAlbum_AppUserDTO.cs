@@ -1,4 +1,4 @@
-﻿using Common;
+﻿using DMS.Common;
 using DMS.Entities;
 
 namespace DMS.Rpc.monitor.monitor_store_albums

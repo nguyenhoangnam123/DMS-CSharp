@@ -8,7 +8,7 @@ using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace Common
+namespace DMS.Common
 {
     public static class FilterBuilder
     {

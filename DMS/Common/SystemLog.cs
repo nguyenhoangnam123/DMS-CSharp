@@ -1,7 +1,7 @@
-﻿using Common;
+﻿using DMS.Common;
 using System;
 
-namespace Common
+namespace DMS.Common
 {
     public class SystemLog : DataEntity
     {

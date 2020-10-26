@@ -4,7 +4,7 @@ using System;
 using System.Net;
 using System.Threading.Tasks;
 
-namespace Common
+namespace DMS.Common
 {
     public class ErrorHandlingMiddleware
     {

@@ -1,10 +1,10 @@
-using Common;
+using DMS.Common;
 using DMS.Entities;
 using DMS.Enums;
 using DMS.Helpers;
 using DMS.Repositories;
 using DMS.Services.MOrganization;
-using Helpers;
+using DMS.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;

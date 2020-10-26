@@ -1,4 +1,4 @@
-﻿using Common;
+﻿using DMS.Common;
 using DMS.Entities;
 
 namespace DMS.Rpc.reports.report_store.report_store_general

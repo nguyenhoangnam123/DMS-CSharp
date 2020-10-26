@@ -1,6 +1,6 @@
 using System.IO;
 
-namespace Common
+namespace DMS.Common
 {
     public class DataFile
     {
