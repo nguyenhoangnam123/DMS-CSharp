@@ -90,6 +90,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_indirect_sales_order_by_stor
             StoreFilter.Selects = StoreSelect.ALL;
             StoreFilter.Id = ReportSalesOrderByStoreAndItem_StoreFilterDTO.Id;
             StoreFilter.Code = ReportSalesOrderByStoreAndItem_StoreFilterDTO.Code;
+            StoreFilter.CodeDraft = ReportSalesOrderByStoreAndItem_StoreFilterDTO.CodeDraft;
             StoreFilter.Name = ReportSalesOrderByStoreAndItem_StoreFilterDTO.Name;
             StoreFilter.OrganizationId = ReportSalesOrderByStoreAndItem_StoreFilterDTO.OrganizationId;
             StoreFilter.StoreTypeId = ReportSalesOrderByStoreAndItem_StoreFilterDTO.StoreTypeId;
@@ -337,6 +338,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_indirect_sales_order_by_stor
                         {
                             Id = s.Id,
                             Code = s.Code,
+                            CodeDraft = s.CodeDraft,
                             Name = s.Name,
                             Address = s.Address,
                             OrganizationId = s.OrganizationId,
@@ -364,6 +366,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_indirect_sales_order_by_stor
                     {
                         Id = x.Id,
                         Code = x.Code,
+                        CodeDraft = x.CodeDraft,
                         Name = x.Name,
                         StoreStatusId = x.StoreStatusId,
                         Address = x.Address,
@@ -607,6 +610,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_indirect_sales_order_by_stor
                         {
                             Id = s.Id,
                             Code = s.Code,
+                            CodeDraft = s.CodeDraft,
                             Name = s.Name,
                             Address = s.Address,
                             OrganizationId = s.OrganizationId,
@@ -633,6 +637,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_indirect_sales_order_by_stor
                     {
                         Id = x.Id,
                         Code = x.Code,
+                        CodeDraft = x.CodeDraft,
                         Name = x.Name,
                     })
                     .ToList();

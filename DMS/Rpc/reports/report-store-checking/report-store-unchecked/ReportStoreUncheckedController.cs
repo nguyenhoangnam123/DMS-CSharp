@@ -320,6 +320,7 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_unchecked
                                 AppUserId = x.AppUserId,
                                 StoreAddress = x.Store.Address,
                                 StoreCode = x.Store.Code,
+                                StoreCodeDraft = x.Store.CodeDraft,
                                 StoreName = x.Store.Name,
                                 StoreStatusName = x.Store.StoreStatus.Name,
                                 StorePhone = x.Store.OwnerPhone,
