@@ -1,5 +1,5 @@
-﻿using Common;
-using Helpers;
+﻿using DMS.Common;
+using DMS.Helpers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.ObjectPool;
 using Newtonsoft.Json;

@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Common
+namespace DMS.Common
 {
     public interface ICurrentContext : IServiceScoped
     {

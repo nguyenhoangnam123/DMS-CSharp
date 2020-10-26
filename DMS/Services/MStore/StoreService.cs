@@ -1,4 +1,4 @@
-﻿using Common;
+﻿using DMS.Common;
 using DMS.Entities;
 using DMS.Enums;
 using DMS.Handlers;
@@ -8,7 +8,7 @@ using DMS.Rpc.store_scouting;
 using DMS.Services.MImage;
 using DMS.Services.MNotification;
 using DMS.Services.MWorkflow;
-using Helpers;
+using DMS.Helpers;
 using System;
 using System.Collections.Generic;
 using System.IO;

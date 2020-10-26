@@ -1,8 +1,8 @@
-﻿using Common;
+﻿using DMS.Common;
 using DMS.Entities;
 using DMS.Helpers;
 using DMS.Repositories;
-using Helpers;
+using DMS.Helpers;
 using RestSharp;
 using SixLabors.ImageSharp.Processing;
 using System;

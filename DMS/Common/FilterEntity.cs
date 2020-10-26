@@ -1,7 +1,7 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
-namespace Common
+namespace DMS.Common
 {
     public class FilterEntity
     {

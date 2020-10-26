@@ -1,4 +1,4 @@
-﻿using Common;
+﻿using DMS.Common;
 using DMS.Models;
 using DMS.Services.MStoreChecking;
 using Microsoft.AspNetCore.Mvc;
@@ -7,7 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Helpers;
+using DMS.Helpers;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using DMS.Services.MIndirectSalesOrder;
 using Microsoft.EntityFrameworkCore;

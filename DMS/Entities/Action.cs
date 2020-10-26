@@ -1,4 +1,4 @@
-﻿using Common;
+﻿using DMS.Common;
 
 namespace DMS.Entities
 {
