@@ -611,6 +611,16 @@ namespace DMS.Rpc.kpi_general
                             KpiGeneralContentKpiPeriodMapping.Value = Y;
                         }
                     }
+                    bool flag = false;
+                    foreach (var item in KpiGeneralContent.KpiGeneralContentKpiPeriodMappings)
+                    {
+                        if (item.Value != null) flag = true;
+                    }
+                    if (flag == false)
+                    {
+                        Errors[KpiGeneral_ImportDTO.Stt].AppendLine($"Lỗi dòng thứ {KpiGeneral_ImportDTO.Stt}: Không thể nhập dữ liệu KPI cho các kỳ trong quá khứ");
+                        continue;
+                    }
                 }
                 KpiGeneral.CreatorId = AppUser.Id;
                 KpiGeneral.StatusId = StatusEnum.ACTIVE.Id;
