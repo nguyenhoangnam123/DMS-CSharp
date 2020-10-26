@@ -29,6 +29,7 @@ namespace DMS.Rpc.workflow_step
         public const string SingleListRole = Default + "/single-list-role";
         public const string SingleListStatus = Default + "/single-list-status";
         public const string SingleListWorkflowDefinition = Default + "/single-list-workflow-definition";
+        public const string SingleListWorkflowParameter = Default + "/single-list-workflow-parameter";
 
         public static Dictionary<string, long> Filters = new Dictionary<string, long>
         {
@@ -45,13 +46,13 @@ namespace DMS.Rpc.workflow_step
                 Master, Count, List, Get,
                 FilterListRole, FilterListWorkflowDefinition, FilterListStatus,
                 Detail, Create,
-                SingleListRole, SingleListWorkflowDefinition, SingleListAppUser, SingleListStatus,} },
+                SingleListRole, SingleListWorkflowDefinition, SingleListAppUser, SingleListStatus, SingleListWorkflowParameter} },
             { "Sửa", new List<string> {
                 Parent,
                 Master, Count, List, Get,
                 FilterListRole, FilterListWorkflowDefinition, FilterListStatus,
                 Detail, Update,
-                SingleListRole, SingleListWorkflowDefinition, SingleListAppUser, SingleListStatus,} },
+                SingleListRole, SingleListWorkflowDefinition, SingleListAppUser, SingleListStatus, SingleListWorkflowParameter} },
             { "Xoá", new List<string> {
                 Parent,
                 Master, Count, List, Get,
