@@ -575,6 +575,7 @@ namespace DMS.Rpc.app_user
                     {
                         Id = x.Store.Id,
                         Code = x.Store.Code,
+                        CodeDraft = x.Store.CodeDraft,
                         Name = x.Store.Name,
                         StatusId = x.Store.StatusId,
                     },

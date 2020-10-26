@@ -313,7 +313,7 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_unchecked
                 {
                     for (DateTime index = Start; index <= End; index = index.AddDays(1))
                     {
-                        var ReportStoreUnchecked_StoreDTOs = StoreUncheckingDAOs.Where(e => e.AppUserId == SaleEmployee.SaleEmployeeId && index <= e.Date && e.Date < index.AddDays(1))
+                        SaleEmployee.Stores = StoreUncheckingDAOs.Where(e => e.AppUserId == SaleEmployee.SaleEmployeeId && index <= e.Date && e.Date < index.AddDays(1))
                             .Select(x => new ReportStoreUnchecked_StoreDTO
                             {
                                 Date = x.Date,
@@ -328,7 +328,6 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_unchecked
                             })
                             .Distinct()
                             .ToList();
-                        SaleEmployee.Stores.AddRange(ReportStoreUnchecked_StoreDTOs);
                     }
                 });
             }

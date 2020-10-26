@@ -59,7 +59,9 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
         public string DayOfWeek { get; set; }
 
         public string StoreCode { get; set; }
+        public string StoreCodeDraft { get; set; }
         public string StoreName { get; set; }
+        public string StoreStatusName { get; set; }
         public string StoreAddress { get; set; }
         public string CheckIn { get; set; }
         public string CheckOut { get; set; }
@@ -74,7 +76,9 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
         public ReportStoreChecked_ExportContentDTO(ReportStoreChecked_StoreCheckingDTO ReportStoreChecked_StoreCheckingDTO)
         {
             this.StoreCode = ReportStoreChecked_StoreCheckingDTO.StoreCode;
+            this.StoreCodeDraft = ReportStoreChecked_StoreCheckingDTO.StoreCodeDraft;
             this.StoreName = ReportStoreChecked_StoreCheckingDTO.StoreName;
+            this.StoreStatusName = ReportStoreChecked_StoreCheckingDTO.StoreStatusName;
             this.StoreAddress = ReportStoreChecked_StoreCheckingDTO.StoreAddress;
             this.Device = ReportStoreChecked_StoreCheckingDTO.DeviceName;
             this.CheckIn = ReportStoreChecked_StoreCheckingDTO.eCheckIn;

@@ -497,6 +497,7 @@ namespace DMS.Repositories
             {
                 Id = x.Id,
                 Code = x.Code,
+                CodeDraft = x.CodeDraft,
                 Name = x.Name,
                 ParentStoreId = x.ParentStoreId,
                 OrganizationId = x.OrganizationId,
