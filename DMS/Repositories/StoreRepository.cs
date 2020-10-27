@@ -619,6 +619,7 @@ namespace DMS.Repositories
                 } : null,
                 Used = q.Used,
                 CreatedAt = q.CreatedAt,
+                RowId = q.RowId,
             }).ToListAsync();
 
             if (filter.Selects.Contains(StoreSelect.StoreImageMappings))

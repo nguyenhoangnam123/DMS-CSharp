@@ -487,26 +487,29 @@ namespace DMS.Services.MStore
                 var ListCounter = await UOW.IdGenerateRepository.ListCounter(createCounter);
                 for (int i = 0; i < ListCounter.Count; i++)
                 {
-                    Store Store = dbStores.Where(x => x.Id == Stores[i].Id)
+                    var newStores = Stores.Where(x => x.Id == 0).ToList();
+                    var counter = ListCounter[i];
+                    StoreCodeGenerate(newStores[i], counter);
+                }
+                foreach (var Store in Stores)
+                {
+                    Store.UnsignName = Store.Name.ChangeToEnglishChar();
+                    Store.UnsignAddress = Store.Address.ChangeToEnglishChar();
+
+                    var oldData = dbStores.Where(x => x.Id == Store.Id)
                                 .FirstOrDefault();
-
-                    Stores[i].UnsignName = Stores[i].Name.ChangeToEnglishChar();
-                    Stores[i].UnsignAddress = Stores[i].Address.ChangeToEnglishChar();
-
-                    if (Store != null)
+                    if(oldData != null)
                     {
-                        Stores[i].Id = Store.Id;
-                        Stores[i].RowId = Store.RowId;
-                        StoreCodeGenerate(Stores[i]);
+                        Store.RowId = oldData.RowId;
                     }
                     else
                     {
-                        Stores[i].Id = 0;
-                        Stores[i].RowId = Guid.NewGuid();
-                        var counter = ListCounter[i];
-                        StoreCodeGenerate(Stores[i], counter);
+                        Store.RowId = Guid.NewGuid();
                     }
+
+                    StoreCodeGenerate(Store);
                 }
+                
                 await UOW.StoreRepository.BulkMerge(Stores);
 
                 dbStores = await UOW.StoreRepository.List(StoreFilter);
