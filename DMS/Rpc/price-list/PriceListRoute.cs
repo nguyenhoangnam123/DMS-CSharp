@@ -60,7 +60,7 @@ namespace DMS.Rpc.price_list
         public const string FilterListPriceListType = Default + "/filter-list-price-list-type";
         public const string FilterListSalesOrderType = Default + "/filter-list-sales-order-type";
         public const string FilterListStatus = Default + "/filter-list-status";
-        public const string FilterListRequestState = Default + "/filter-list-request-status";
+        public const string FilterListRequestState = Default + "/filter-list-request-state";
         
         public const string SingleListAppUser = Default + "/single-list-app-user";
         public const string SingleListOrganization = Default + "/single-list-organization";
