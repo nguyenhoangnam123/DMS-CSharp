@@ -26,6 +26,7 @@ using DMS.Services.MProvince;
 using DMS.Services.MAppUser;
 using System.Text;
 using DMS.Services.MPriceListItemHistory;
+using DMS.Services.MWorkflow;
 
 namespace DMS.Rpc.price_list
 {
@@ -45,6 +46,7 @@ namespace DMS.Rpc.price_list
         private IProductTypeService ProductTypeService;
         private IProvinceService ProvinceService;
         private IProductGroupingService ProductGroupingService;
+        private IRequestStateService RequestStateService;
         private ICurrentContext CurrentContext;
         public PriceListController(
             IAppUserService AppUserService,
@@ -61,6 +63,7 @@ namespace DMS.Rpc.price_list
             IProvinceService ProvinceService,
             IProductTypeService ProductTypeService,
             IProductGroupingService ProductGroupingService,
+            IRequestStateService RequestStateService,
             ICurrentContext CurrentContext
         )
         {
@@ -78,6 +81,7 @@ namespace DMS.Rpc.price_list
             this.ProvinceService = ProvinceService;
             this.ProductTypeService = ProductTypeService;
             this.ProductGroupingService = ProductGroupingService;
+            this.RequestStateService = RequestStateService;
             this.CurrentContext = CurrentContext;
         }
 

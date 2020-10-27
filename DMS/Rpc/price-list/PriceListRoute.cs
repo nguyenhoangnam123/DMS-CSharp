@@ -60,6 +60,7 @@ namespace DMS.Rpc.price_list
         public const string FilterListPriceListType = Default + "/filter-list-price-list-type";
         public const string FilterListSalesOrderType = Default + "/filter-list-sales-order-type";
         public const string FilterListStatus = Default + "/filter-list-status";
+        public const string FilterListRequestState = Default + "/filter-list-request-status";
         
         public const string SingleListAppUser = Default + "/single-list-app-user";
         public const string SingleListOrganization = Default + "/single-list-organization";
@@ -73,6 +74,7 @@ namespace DMS.Rpc.price_list
         public const string SingleListPriceListType = Default + "/single-list-price-list-type";
         public const string SingleListSalesOrderType = Default + "/single-list-sales-order-type";
         public const string SingleListStatus = Default + "/single-list-status";
+        public const string SingleListRequestState = Default + "/single-list-request-state";
 
         public const string CountItem = Default + "/count-item";
         public const string ListItem = Default + "/list-item";
@@ -93,22 +95,22 @@ namespace DMS.Rpc.price_list
             { "Tìm kiếm tất cả", new List<string> {
                 Parent, Master, Count, List,
                 Get, GetDetail,
-                FilterListItem, FilterListOrganization, FilterListPriceListType, FilterListSalesOrderType, FilterListStatus, FilterListStoreGrouping, FilterListStore, FilterListStoreType,
+                FilterListItem, FilterListOrganization, FilterListPriceListType, FilterListSalesOrderType, FilterListStatus, FilterListStoreGrouping, FilterListStore, FilterListStoreType, FilterListRequestState,
                 CountItem, ListItem, CountStore, ListStore, CountPriceListItemHistory, ListPriceListItemHistory
                 } },
             { "Tìm kiếm của tôi", new List<string> {
                 Parent, MasterOwner, Get, GetDetail, DetailOwner,
                 CountNew, ListNew, CountPending, ListPending, CountCompleted, ListCompleted,
-                FilterListItem, FilterListOrganization, FilterListPriceListType, FilterListSalesOrderType, FilterListStatus, FilterListStoreGrouping, FilterListStore, FilterListStoreType,
+                FilterListItem, FilterListOrganization, FilterListPriceListType, FilterListSalesOrderType, FilterListStatus, FilterListStoreGrouping, FilterListStore, FilterListStoreType, FilterListRequestState,
                 CountItem, ListItem, CountStore, ListStore, CountPriceListItemHistory, ListPriceListItemHistory
                 } },
 
             { "Thêm", new List<string> {
                 Parent, Master, Count, List, Get, 
                 CountNew, ListNew, CountPending, ListPending, CountCompleted, ListCompleted,
-                FilterListItem, FilterListOrganization, FilterListPriceListType, FilterListSalesOrderType, FilterListStatus, FilterListStoreGrouping, FilterListStore, FilterListStoreType,
+                FilterListItem, FilterListOrganization, FilterListPriceListType, FilterListSalesOrderType, FilterListStatus, FilterListStoreGrouping, FilterListStore, FilterListStoreType, FilterListRequestState,
                 DetailOwner, Detail, Create, Send,
-                SingleListItem, SingleListOrganization, SingleListPriceListType, SingleListSalesOrderType, SingleListStatus, SingleListProductGrouping, SingleListProductType, SingleListStoreGrouping, SingleListStore, SingleListStoreType, SingleListProvince,
+                SingleListItem, SingleListOrganization, SingleListPriceListType, SingleListSalesOrderType, SingleListStatus, SingleListProductGrouping, SingleListProductType, SingleListStoreGrouping, SingleListStore, SingleListStoreType, SingleListProvince, SingleListRequestState,
                 Count, List, Count, List, Count, List, Count, List,
                 CountItem, ListItem, CountStore, ListStore, CountPriceListItemHistory, ListPriceListItemHistory
                 } },
@@ -116,9 +118,9 @@ namespace DMS.Rpc.price_list
             { "Sửa", new List<string> {
                 Parent, Master, Count, List, Get, 
                 CountNew, ListNew, CountPending, ListPending, CountCompleted, ListCompleted,
-                FilterListItem, FilterListOrganization, FilterListPriceListType, FilterListSalesOrderType, FilterListStatus, FilterListStoreGrouping, FilterListStore, FilterListStoreType,
+                FilterListItem, FilterListOrganization, FilterListPriceListType, FilterListSalesOrderType, FilterListStatus, FilterListStoreGrouping, FilterListStore, FilterListStoreType, FilterListRequestState,
                 DetailOwner, Detail, Update, Send,
-                SingleListItem, SingleListOrganization, SingleListPriceListType, SingleListSalesOrderType, SingleListStatus, SingleListProductGrouping, SingleListProductType, SingleListStoreGrouping, SingleListStore, SingleListStoreType, SingleListProvince,
+                SingleListItem, SingleListOrganization, SingleListPriceListType, SingleListSalesOrderType, SingleListStatus, SingleListProductGrouping, SingleListProductType, SingleListStoreGrouping, SingleListStore, SingleListStoreType, SingleListProvince, SingleListRequestState,
                 Count, List, Count, List, Count, List, Count, List,
                 CountItem, ListItem, CountStore, ListStore, CountPriceListItemHistory, ListPriceListItemHistory
                 }},
@@ -126,7 +128,7 @@ namespace DMS.Rpc.price_list
             { "Xoá", new List<string> {
                 Parent, Master, Count, List, Get, 
                 CountNew, ListNew, CountPending, ListPending, CountCompleted, ListCompleted,
-                FilterListItem, FilterListOrganization, FilterListPriceListType, FilterListSalesOrderType, FilterListStatus, FilterListStoreGrouping, FilterListStore, FilterListStoreType,
+                FilterListItem, FilterListOrganization, FilterListPriceListType, FilterListSalesOrderType, FilterListStatus, FilterListStoreGrouping, FilterListStore, FilterListStoreType, FilterListRequestState,
                 Delete,
                 SingleListItem, SingleListOrganization, SingleListPriceListType, SingleListSalesOrderType, SingleListStatus, SingleListProductGrouping, SingleListProductType, SingleListStoreGrouping, SingleListStore, SingleListStoreType, SingleListProvince,
                 CountItem, ListItem, CountStore, ListStore, CountPriceListItemHistory, ListPriceListItemHistory
@@ -135,7 +137,7 @@ namespace DMS.Rpc.price_list
             { "Xoá nhiều", new List<string> {
                 Parent, Master, Count, List, Get, 
                 CountNew, ListNew, CountPending, ListPending, CountCompleted, ListCompleted,
-                FilterListItem, FilterListOrganization, FilterListPriceListType, FilterListSalesOrderType, FilterListStatus, FilterListStoreGrouping, FilterListStore, FilterListStoreType,
+                FilterListItem, FilterListOrganization, FilterListPriceListType, FilterListSalesOrderType, FilterListStatus, FilterListStoreGrouping, FilterListStore, FilterListStoreType, FilterListRequestState,
                 BulkDelete,
                 CountItem, ListItem, CountStore, ListStore, CountPriceListItemHistory, ListPriceListItemHistory
                 } },
@@ -143,7 +145,7 @@ namespace DMS.Rpc.price_list
             { "Xuất excel", new List<string> {
                 Parent, Master, Count, List, Get, 
                 CountNew, ListNew, CountPending, ListPending, CountCompleted, ListCompleted,
-                FilterListItem, FilterListOrganization, FilterListPriceListType, FilterListSalesOrderType, FilterListStatus, FilterListStoreGrouping, FilterListStore, FilterListStoreType,
+                FilterListItem, FilterListOrganization, FilterListPriceListType, FilterListSalesOrderType, FilterListStatus, FilterListStoreGrouping, FilterListStore, FilterListStoreType, FilterListRequestState,
                 ExportItem, ExportStore,
                 CountItem, ListItem, CountStore, ListStore, CountPriceListItemHistory, ListPriceListItemHistory
                 } },
@@ -151,16 +153,16 @@ namespace DMS.Rpc.price_list
             { "Nhập excel", new List<string> {
                 Parent, Master, Count, List, Get, 
                 CountNew, ListNew, CountPending, ListPending, CountCompleted, ListCompleted,
-                FilterListItem, FilterListOrganization, FilterListPriceListType, FilterListSalesOrderType, FilterListStatus, FilterListStoreGrouping, FilterListStore, FilterListStoreType,
+                FilterListItem, FilterListOrganization, FilterListPriceListType, FilterListSalesOrderType, FilterListStatus, FilterListStoreGrouping, FilterListStore, FilterListStoreType, FilterListRequestState,
                 ExportTemplateItem, ExportTemplateStore, ImportItem, ImportStore,
                 CountItem, ListItem, CountStore, ListStore, CountPriceListItemHistory, ListPriceListItemHistory
                 } },
             { "Phê duyệt", new List<string> {
                 Parent, Master, Count, List, Get, 
                 CountNew, ListNew, CountPending, ListPending, CountCompleted, ListCompleted,
-                FilterListItem, FilterListOrganization, FilterListPriceListType, FilterListSalesOrderType, FilterListStatus, FilterListStoreGrouping, FilterListStore, FilterListStoreType,
+                FilterListItem, FilterListOrganization, FilterListPriceListType, FilterListSalesOrderType, FilterListStatus, FilterListStoreGrouping, FilterListStore, FilterListStoreType, FilterListRequestState,
                 DetailOwner, Detail, Approve, Reject, Send,
-                SingleListItem, SingleListOrganization, SingleListPriceListType, SingleListSalesOrderType, SingleListStatus, SingleListProductGrouping, SingleListProductType, SingleListStoreGrouping, SingleListStore, SingleListStoreType, SingleListProvince,
+                SingleListItem, SingleListOrganization, SingleListPriceListType, SingleListSalesOrderType, SingleListStatus, SingleListProductGrouping, SingleListProductType, SingleListStoreGrouping, SingleListStore, SingleListStoreType, SingleListProvince, SingleListRequestState,
                 Count, List, Count, List, Count, List, Count, List,
                 CountItem, ListItem, CountStore, ListStore, CountPriceListItemHistory, ListPriceListItemHistory
                 }},

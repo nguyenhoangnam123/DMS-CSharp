@@ -76,6 +76,29 @@ namespace DMS.Rpc.price_list
                 .Select(x => new PriceList_ItemDTO(x)).ToList();
             return PriceList_ItemDTOs;
         }
+
+        [Route(PriceListRoute.FilterListRequestState), HttpPost]
+        public async Task<List<PriceList_RequestStateDTO>> FilterListRequestState([FromBody] PriceList_RequestStateFilterDTO PriceList_RequestStateFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            RequestStateFilter RequestStateFilter = new RequestStateFilter();
+            RequestStateFilter.Skip = 0;
+            RequestStateFilter.Take = 20;
+            RequestStateFilter.OrderBy = RequestStateOrder.Id;
+            RequestStateFilter.OrderType = OrderType.ASC;
+            RequestStateFilter.Selects = RequestStateSelect.ALL;
+            RequestStateFilter.Id = PriceList_RequestStateFilterDTO.Id;
+            RequestStateFilter.Code = PriceList_RequestStateFilterDTO.Code;
+            RequestStateFilter.Name = PriceList_RequestStateFilterDTO.Name;
+
+            List<RequestState> RequestStatees = await RequestStateService.List(RequestStateFilter);
+            List<PriceList_RequestStateDTO> PriceList_RequestStateDTOs = RequestStatees
+                .Select(x => new PriceList_RequestStateDTO(x)).ToList();
+            return PriceList_RequestStateDTOs;
+        }
+
         [Route(PriceListRoute.FilterListStoreGrouping), HttpPost]
         public async Task<List<PriceList_StoreGroupingDTO>> FilterListStoreGrouping([FromBody] PriceList_StoreGroupingFilterDTO PriceList_StoreGroupingFilterDTO)
         {
@@ -519,6 +542,25 @@ namespace DMS.Rpc.price_list
             List<PriceList_ProductGroupingDTO> PriceList_ProductGroupingDTOs = ProductGroupings
                 .Select(x => new PriceList_ProductGroupingDTO(x)).ToList();
             return PriceList_ProductGroupingDTOs;
+        }
+
+        [Route(PriceListRoute.SingleListRequestState), HttpPost]
+        public async Task<List<PriceList_RequestStateDTO>> SingleListRequestState([FromBody] PriceList_RequestStateFilterDTO PriceList_RequestStateFilterDTO)
+        {
+            RequestStateFilter RequestStateFilter = new RequestStateFilter();
+            RequestStateFilter.Skip = 0;
+            RequestStateFilter.Take = 20;
+            RequestStateFilter.OrderBy = RequestStateOrder.Id;
+            RequestStateFilter.OrderType = OrderType.ASC;
+            RequestStateFilter.Selects = RequestStateSelect.ALL;
+            RequestStateFilter.Id = PriceList_RequestStateFilterDTO.Id;
+            RequestStateFilter.Code = PriceList_RequestStateFilterDTO.Code;
+            RequestStateFilter.Name = PriceList_RequestStateFilterDTO.Name;
+
+            List<RequestState> RequestStates = await RequestStateService.List(RequestStateFilter);
+            List<PriceList_RequestStateDTO> PriceList_RequestStateDTOs = RequestStates
+                .Select(x => new PriceList_RequestStateDTO(x)).ToList();
+            return PriceList_RequestStateDTOs;
         }
 
         [Route(PriceListRoute.CountItem), HttpPost]
