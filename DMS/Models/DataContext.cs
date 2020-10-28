@@ -4873,6 +4873,10 @@ namespace DMS.Models
                     .IsRequired()
                     .HasMaxLength(50);
 
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+
                 entity.Property(e => e.Name)
                     .IsRequired()
                     .HasMaxLength(500);

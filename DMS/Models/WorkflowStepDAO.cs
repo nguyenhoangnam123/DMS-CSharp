@@ -21,7 +21,9 @@ namespace DMS.Models
         public string SubjectMailForReject { get; set; }
         public string BodyMailForReject { get; set; }
         public long StatusId { get; set; }
+        public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
+        public DateTime? DeletedAt { get; set; }
 
         public virtual RoleDAO Role { get; set; }
         public virtual StatusDAO Status { get; set; }

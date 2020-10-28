@@ -500,7 +500,7 @@ namespace DMS.Repositories
         {
             await DataContext.WorkflowDirectionCondition.Where(x => x.WorkflowDirection.WorkflowDefinitionId == WorkflowDefinition.Id).DeleteFromQueryAsync();
             await DataContext.WorkflowDirection.Where(x => x.WorkflowDefinitionId == WorkflowDefinition.Id).DeleteFromQueryAsync();
-            await DataContext.WorkflowStep.Where(x => x.WorkflowDefinitionId == WorkflowDefinition.Id).DeleteFromQueryAsync();
+            await DataContext.WorkflowStep.Where(x => x.WorkflowDefinitionId == WorkflowDefinition.Id).UpdateFromQueryAsync(x => new WorkflowStepDAO { DeletedAt = StaticParams.DateTimeNow });
             await DataContext.WorkflowDefinition.Where(x => x.Id == WorkflowDefinition.Id).DeleteFromQueryAsync();
             return true;
         }

@@ -20,6 +20,7 @@ namespace DMS.Entities
         public bool Used { get; set; }
         public Role Role { get; set; }
         public Status Status { get; set; }
+        public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public WorkflowDefinition WorkflowDefinition { get; set; }
         public List<WorkflowParameter> WorkflowParameters { get; set; }
@@ -42,6 +43,7 @@ namespace DMS.Entities
         public StringFilter Name { get; set; }
         public IdFilter RoleId { get; set; }
         public IdFilter StatusId { get; set; }
+        public DateFilter CreatedAt { get; set; }
         public DateFilter UpdatedAt { get; set; }
         public List<WorkflowStepFilter> OrFilter { get; set; }
         public WorkflowStepOrder OrderBy { get; set; }
@@ -56,7 +58,8 @@ namespace DMS.Entities
         Code = 2,
         Name = 3,
         Role = 4,
-        UpdatedAt = 5,
+        CreatedAt = 5,
+        UpdatedAt = 6,
     }
 
     [Flags]
@@ -69,6 +72,7 @@ namespace DMS.Entities
         Name = E._3,
         Role = E._4,
         Status = E._5,
-        UpdatedAt = E._6,
+        CreatedAt = E._6,
+        UpdatedAt = E._7,
     }
 }

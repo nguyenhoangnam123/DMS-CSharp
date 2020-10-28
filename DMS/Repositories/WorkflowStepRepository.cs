@@ -94,6 +94,12 @@ namespace DMS.Repositories
                         case WorkflowStepOrder.Role:
                             query = query.OrderBy(q => q.Role.Name);
                             break;
+                        case WorkflowStepOrder.CreatedAt:
+                            query = query.OrderBy(q => q.CreatedAt);
+                            break;
+                        case WorkflowStepOrder.UpdatedAt:
+                            query = query.OrderBy(q => q.UpdatedAt);
+                            break;
                     }
                     break;
                 case OrderType.DESC:
@@ -114,6 +120,12 @@ namespace DMS.Repositories
                         case WorkflowStepOrder.Role:
                             query = query.OrderByDescending(q => q.Role.Name);
                             break;
+                        case WorkflowStepOrder.CreatedAt:
+                            query = query.OrderByDescending(q => q.CreatedAt);
+                            break;
+                        case WorkflowStepOrder.UpdatedAt:
+                            query = query.OrderByDescending(q => q.UpdatedAt);
+                            break;
                     }
                     break;
             }
@@ -131,6 +143,8 @@ namespace DMS.Repositories
                 Name = filter.Selects.Contains(WorkflowStepSelect.Name) ? q.Name : default(string),
                 RoleId = filter.Selects.Contains(WorkflowStepSelect.Role) ? q.RoleId : default(long),
                 StatusId = filter.Selects.Contains(WorkflowStepSelect.Status) ? q.StatusId : default(long),
+                CreatedAt = filter.Selects.Contains(WorkflowStepSelect.CreatedAt) ? q.CreatedAt : default(DateTime),
+                UpdatedAt = filter.Selects.Contains(WorkflowStepSelect.UpdatedAt) ? q.UpdatedAt : default(DateTime),
                 Role = filter.Selects.Contains(WorkflowStepSelect.Role) && q.Role != null ? new Role
                 {
                     Id = q.Role.Id,
@@ -188,6 +202,8 @@ namespace DMS.Repositories
                 StatusId = x.StatusId,
                 SubjectMailForReject = x.SubjectMailForReject,
                 BodyMailForReject = x.BodyMailForReject,
+                CreatedAt = x.CreatedAt,
+                UpdatedAt = x.UpdatedAt,
                 Status = x.Status == null ? null : new Status
                 {
                     Id = x.Status.Id,
@@ -239,6 +255,7 @@ namespace DMS.Repositories
                 WorkflowStepDAO.RoleId = WorkflowStep.RoleId;
                 WorkflowStepDAO.SubjectMailForReject = WorkflowStep.SubjectMailForReject;
                 WorkflowStepDAO.BodyMailForReject = WorkflowStep.BodyMailForReject;
+                WorkflowStepDAO.CreatedAt = StaticParams.DateTimeNow;
                 WorkflowStepDAO.UpdatedAt = StaticParams.DateTimeNow;
                 WorkflowStepDAO.StatusId = WorkflowStep.StatusId;
                 DataContext.WorkflowStep.Add(WorkflowStepDAO);
@@ -288,7 +305,7 @@ namespace DMS.Repositories
 
                 await DataContext.WorkflowDirection.Where(x => x.FromStepId == WorkflowStep.Id).DeleteFromQueryAsync();
                 await DataContext.WorkflowDirection.Where(x => x.ToStepId == WorkflowStep.Id).DeleteFromQueryAsync();
-                await DataContext.WorkflowStep.Where(x => x.Id == WorkflowStep.Id).DeleteFromQueryAsync();
+                await DataContext.WorkflowStep.Where(x => x.Id == WorkflowStep.Id).UpdateFromQueryAsync(x => new WorkflowStepDAO { DeletedAt = StaticParams.DateTimeNow });
                 return true;
             }
             return false;
@@ -307,6 +324,7 @@ namespace DMS.Repositories
                 WorkflowStepDAO.RoleId = WorkflowStep.RoleId;
                 WorkflowStepDAO.SubjectMailForReject = WorkflowStep.SubjectMailForReject;
                 WorkflowStepDAO.BodyMailForReject = WorkflowStep.BodyMailForReject;
+                WorkflowStepDAO.CreatedAt = StaticParams.DateTimeNow;
                 WorkflowStepDAO.UpdatedAt = StaticParams.DateTimeNow;
                 WorkflowStepDAOs.Add(WorkflowStepDAO);
             }
@@ -320,7 +338,7 @@ namespace DMS.Repositories
             await DataContext.WorkflowDirection.Where(x => Ids.Contains(x.FromStepId)).DeleteFromQueryAsync();
             await DataContext.WorkflowDirection.Where(x => Ids.Contains(x.ToStepId)).DeleteFromQueryAsync();
             await DataContext.WorkflowStep
-                .Where(x => Ids.Contains(x.Id)).DeleteFromQueryAsync();
+                .Where(x => Ids.Contains(x.Id)).UpdateFromQueryAsync(x => new WorkflowStepDAO { DeletedAt = StaticParams.DateTimeNow });
             return true;
         }
 
