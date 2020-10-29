@@ -361,16 +361,14 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_employee_report
                 if (Period.TotalIndirectQuantityPlanned.HasValue)
                 {
                     //thực hiện
+                    Period.TotalIndirectQuantity = 0;
                     foreach (var IndirectSalesOrder in IndirectSalesOrders)
                     {
                         foreach (var content in IndirectSalesOrder.IndirectSalesOrderContents)
                         {
-                            if (Period.TotalIndirectQuantity == null)
-                                Period.TotalIndirectQuantity = 0;
                             Period.TotalIndirectQuantity += content.RequestedQuantity;
                         }
                     }
-                    if (Period.TotalIndirectQuantityPlanned == null) Period.TotalIndirectQuantity = null;
                     //tỉ lệ
                     Period.TotalIndirectQuantityRatio = Period.TotalIndirectQuantityPlanned == null || Period.TotalIndirectQuantity == null || Period.TotalIndirectQuantityPlanned == 0 ? null :
                         (decimal?)
@@ -453,16 +451,14 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_employee_report
                 if (Period.TotalDirectQuantityPlanned.HasValue)
                 {
                     //thực hiện
+                    Period.TotalDirectQuantity = 0;
                     foreach (var DirectSalesOrder in DirectSalesOrders)
                     {
                         foreach (var content in DirectSalesOrder.DirectSalesOrderContents)
                         {
-                            if (Period.TotalDirectQuantity == null)
-                                Period.TotalDirectQuantity = 0;
                             Period.TotalDirectQuantity += content.RequestedQuantity;
                         }
                     }
-                    if (Period.TotalDirectQuantityPlanned == null) Period.TotalDirectQuantity = null;
                     //tỉ lệ
                     Period.TotalDirectQuantityRatio = Period.TotalDirectQuantityPlanned == null || Period.TotalDirectQuantity == null || Period.TotalDirectQuantityPlanned == 0 ? null :
                         (decimal?)
