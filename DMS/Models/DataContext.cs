@@ -1665,13 +1665,13 @@ namespace DMS.Models
                     .WithMany(p => p.KpiItemCreators)
                     .HasForeignKey(d => d.CreatorId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_ItemSpecificKpi_AppUser1");
+                    .HasConstraintName("FK_KpiItem_AppUser1");
 
                 entity.HasOne(d => d.Employee)
                     .WithMany(p => p.KpiItemEmployees)
                     .HasForeignKey(d => d.EmployeeId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_ItemSpecificKpi_AppUser");
+                    .HasConstraintName("FK_KpiItem_AppUser");
 
                 entity.HasOne(d => d.KpiPeriod)
                     .WithMany(p => p.KpiItems)
@@ -1689,13 +1689,13 @@ namespace DMS.Models
                     .WithMany(p => p.KpiItems)
                     .HasForeignKey(d => d.OrganizationId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_ItemSpecificKpi_Organization");
+                    .HasConstraintName("FK_KpiItem_Organization");
 
                 entity.HasOne(d => d.Status)
                     .WithMany(p => p.KpiItems)
                     .HasForeignKey(d => d.StatusId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_ItemSpecificKpi_Status");
+                    .HasConstraintName("FK_KpiItem_Status");
             });
 
             modelBuilder.Entity<KpiItemContentDAO>(entity =>

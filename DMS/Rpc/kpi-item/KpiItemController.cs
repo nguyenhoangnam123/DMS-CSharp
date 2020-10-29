@@ -254,7 +254,7 @@ namespace DMS.Rpc.kpi_item
             {
                 Skip = 0,
                 Take = int.MaxValue,
-                Selects = AppUserSelect.Id | AppUserSelect.Username | AppUserSelect.DisplayName,
+                Selects = AppUserSelect.Id | AppUserSelect.Username | AppUserSelect.DisplayName | AppUserSelect.Organization,
                 OrganizationId = new IdFilter { Equal = AppUser.OrganizationId }
             };
             List<AppUser> Employees = await AppUserService.List(EmployeeFilter);
