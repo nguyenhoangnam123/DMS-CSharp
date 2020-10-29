@@ -410,14 +410,10 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_employee_report
                         var itemIds = IndirectSalesOrder.IndirectSalesOrderContents.Select(x => x.ItemId).Distinct().ToList();
                         Period.SKUIndirectItems.AddRange(itemIds);
                     }
-                    Period.SkuIndirectOrder = IndirectSalesOrders.Count() == 0 || Period.SKUIndirectItems ==null ? null :
-                        (decimal?)
+                    Period.SkuIndirectOrder = IndirectSalesOrders.Count() == 0 || Period.SKUIndirectItems == null ? 0 :
                         Math.Round((decimal)Period.SKUIndirectItems.Count() / IndirectSalesOrders.Count(), 2);
-                    if (Period.SkuIndirectOrderPlanned == null)
-                        Period.SkuIndirectOrder = null;
                     //tỉ lệ
-                    Period.SkuIndirectOrderRatio = Period.SkuIndirectOrderPlanned == null || Period.SkuIndirectOrder == null || Period.SkuIndirectOrderPlanned == 0 ? null :
-                        (decimal?)
+                    Period.SkuIndirectOrderRatio = Period.SkuIndirectOrderPlanned == null || Period.SkuIndirectOrder == null || Period.SkuIndirectOrderPlanned == 0 ? 0 :
                         Math.Round((Period.SkuIndirectOrder.Value / Period.SkuIndirectOrderPlanned.Value) * 100, 2);
                 }
 
@@ -500,14 +496,10 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_employee_report
                         var itemIds = DirectSalesOrder.DirectSalesOrderContents.Select(x => x.ItemId).Distinct().ToList();
                         Period.SKUDirectItems.AddRange(itemIds);
                     }
-                    Period.SkuDirectOrder = IndirectSalesOrders.Count() == 0 || Period.SKUIndirectItems == null ? null :
-                        (decimal?)
+                    Period.SkuDirectOrder = IndirectSalesOrders.Count() == 0 || Period.SKUIndirectItems == null ? 0 :
                         Math.Round((decimal)Period.SKUIndirectItems.Count() / IndirectSalesOrders.Count(), 2);
-                    if (Period.SkuDirectOrderPlanned == null)
-                        Period.SkuDirectOrder = null;
                     //tỉ lệ
-                    Period.SkuDirectOrderRatio = Period.SkuDirectOrderPlanned == null || Period.SkuDirectOrder == null || Period.SkuDirectOrderPlanned == 0 ? null :
-                        (decimal?)
+                    Period.SkuDirectOrderRatio = Period.SkuDirectOrderPlanned == null || Period.SkuDirectOrder == null || Period.SkuDirectOrderPlanned == 0 ? 0 :
                         Math.Round((Period.SkuDirectOrder.Value / Period.SkuDirectOrderPlanned.Value) * 100, 2);
                 }
                 #endregion
