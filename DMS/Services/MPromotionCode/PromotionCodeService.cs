@@ -96,7 +96,7 @@ namespace DMS.Services.MPromotionCode
             {
                 Skip = 0,
                 Take = int.MaxValue,
-                Selects = DirectSalesOrderSelect.Id | DirectSalesOrderSelect.PromotionValue | DirectSalesOrderSelect.TotalAfterTax | DirectSalesOrderSelect.Total | DirectSalesOrderSelect.BuyerStore
+                Selects = DirectSalesOrderSelect.Id | DirectSalesOrderSelect.Code | DirectSalesOrderSelect.PromotionValue | DirectSalesOrderSelect.TotalAfterTax | DirectSalesOrderSelect.Total | DirectSalesOrderSelect.BuyerStore
             };
             var DirectSalesOrders = await UOW.DirectSalesOrderRepository.List(DirectSalesOrderFilter);
             foreach (var PromotionCodeHistory in PromotionCode.PromotionCodeHistories)
