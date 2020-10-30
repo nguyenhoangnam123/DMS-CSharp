@@ -301,7 +301,14 @@ namespace DMS.Rpc.kpi_general
 
                 string KpiYearValue = worksheet.Cells[2, 7].Value?.ToString();
                 if (long.TryParse(KpiYearValue, out long KpiYearId))
+                {
                     KpiYear = KpiYearEnum.KpiYearEnumList.Where(x => x.Id == KpiYearId).FirstOrDefault();
+                    if(KpiYear != null && KpiYear.Id < StaticParams.DateTimeNow.Year)
+                    {
+                        errorContent.AppendLine("Không thể nhập Kpi trong quá khứ");
+                        return BadRequest(errorContent.ToString());
+                    }
+                }
                 else
                 {
                     errorContent.AppendLine("Chưa chọn năm Kpi hoặc năm không hợp lệ");
@@ -605,8 +612,7 @@ namespace DMS.Rpc.kpi_general
                             KpiGeneralContentKpiPeriodMapping.Value = Q4;
                         }
                         else if (decimal.TryParse(KpiGeneral_ImportDTO.YValue, out decimal Y) &&
-                        KpiGeneralContentKpiPeriodMapping.KpiPeriodId == KpiPeriodEnum.PERIOD_YEAR01.Id &&
-                        KpiPeriodIds.Contains(KpiPeriodEnum.PERIOD_YEAR01.Id))
+                        KpiGeneralContentKpiPeriodMapping.KpiPeriodId == KpiPeriodEnum.PERIOD_YEAR01.Id)
                         {
                             KpiGeneralContentKpiPeriodMapping.Value = Y;
                         }
