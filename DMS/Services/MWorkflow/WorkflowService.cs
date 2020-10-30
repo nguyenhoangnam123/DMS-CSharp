@@ -54,7 +54,6 @@ namespace DMS.Services.MWorkflow
                 AppUserId = x.AppUserId,
                 CreatedAt = x.CreatedAt,
                 RequestId = x.RequestId,
-                RequestState = RequestWorkflowDefinitionMapping?.RequestState,
                 UpdatedAt = x.UpdatedAt,
                 WorkflowStateId = x.WorkflowStateId,
                 WorkflowStepId = x.WorkflowStepId,
@@ -85,19 +84,21 @@ namespace DMS.Services.MWorkflow
                 },
             }).ToList();
 
-            var RequestWorkflowStepApproved = RequestWorkflowStepMappings.Where(rq => rq.RequestState.Id == 3).OrderByDescending(x => x.CreatedAt).ToList(); // approved
-            var RequestWorkflowStepReject = RequestWorkflowStepMappings.Where(rq => rq.RequestState.Id == 4).OrderByDescending(x => x.CreatedAt).ToList(); // rejected
-            var RequestWorkflowStepPending = RequestWorkflowStepMappings.Where(rq => rq.RequestState.Id == 2).OrderByDescending(x => x.CreatedAt).ToList(); // pending
+            var RequestWorkflowStepApproved = RequestWorkflowStepMappings.Where(rq => rq.WorkflowState.Id == 3).OrderByDescending(x => x.CreatedAt).ToList(); // approved
+            var RequestWorkflowStepReject = RequestWorkflowStepMappings.Where(rq => rq.WorkflowState.Id == 4).OrderByDescending(x => x.CreatedAt).ToList(); // rejected
+            var RequestWorkflowStepPending = RequestWorkflowStepMappings.Where(rq => rq.WorkflowState.Id == 2).OrderByDescending(x => x.CreatedAt).ToList(); // pending
 
             if(RequestWorkflowStepApproved.Count > 0)
             {
                 if (RequestWorkflowStepReject.Count() > 0)
-                    RequestWorkflowStepMappings.AddRange(RequestWorkflowStepReject);
+                    RequestWorkflowStepMappings = RequestWorkflowStepApproved.Concat(RequestWorkflowStepReject).ToList();
 
                 if (RequestWorkflowStepReject.Count() == 0)
-                    RequestWorkflowStepMappings.AddRange(RequestWorkflowStepPending);
+                    RequestWorkflowStepMappings = RequestWorkflowStepApproved.Concat(RequestWorkflowStepPending).ToList();
             }
-            
+
+            if(RequestWorkflowStepApproved.Count == 0) RequestWorkflowStepMappings = RequestWorkflowStepPending; // if approved list is empty, return all pending
+
 
             foreach (RequestWorkflowStepMapping RequestWorkflowStepMapping in RequestWorkflowStepMappings)
             {
