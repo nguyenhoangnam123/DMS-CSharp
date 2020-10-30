@@ -21,6 +21,10 @@
     <None Remove="FileImport\**" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Remove="Templates\Report_Direct_Sales_Order_By_Store_And_Item.xlsx" />
+  </ItemGroup>
+
 <ItemGroup>
     <PackageReference Include="Elastic.Apm.NetCoreAll" Version="1.6.1" />
     <PackageReference Include="EntityFrameworkCore.Scaffolding.Handlebars" Version="3.8.3" />
@@ -48,6 +52,10 @@
     <PackageReference Include="Thinktecture.EntityFrameworkCore.SqlServer" Version="2.0.0" />
     <PackageReference Include="Winton.Extensions.Configuration.Consul" Version="3.1.0" />
     <PackageReference Include="Z.EntityFramework.Extensions.EFCore" Version="3.0.93" />
+</ItemGroup>
+
+<ItemGroup>
+  <Resource Include="Templates\Report_Direct_Sales_Order_By_Store_And_Item.xlsx" />
 </ItemGroup>
 
   <ItemGroup>
@@ -112,6 +120,21 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Templates\Product_Export.xlsx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Templates\Promotion_Item.xlsx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Templates\Promotion_Store.xlsx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Templates\Report_Direct_Sales_Order_By_Employee_And_Item.xlsx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Templates\Report_Direct_Sales_Order_By_Item.xlsx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Templates\Report_Direct_Sales_Order_General.xlsx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Templates\Report_Sales_Order_By_Employee_And_Item.xlsx">
