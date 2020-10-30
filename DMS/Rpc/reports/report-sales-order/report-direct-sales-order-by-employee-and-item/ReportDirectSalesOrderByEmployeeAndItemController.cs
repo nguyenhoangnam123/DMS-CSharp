@@ -481,9 +481,13 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_by_employ
             }
 
             var DirectSalesOrderContentQuery = DataContext.DirectSalesOrderContent
-                .Where(x => AppUserIds.Contains(x.DirectSalesOrder.SaleEmployeeId) && Start <= x.DirectSalesOrder.OrderDate && x.DirectSalesOrder.OrderDate <= End);
+                .Where(x => AppUserIds.Contains(x.DirectSalesOrder.SaleEmployeeId) && 
+                Start <= x.DirectSalesOrder.OrderDate && x.DirectSalesOrder.OrderDate <= End &&
+                x.DirectSalesOrder.RequestStateId == RequestStateEnum.APPROVED.Id);
             var DirectSalesOrderPromotionQuery = DataContext.DirectSalesOrderPromotion
-                .Where(x => AppUserIds.Contains(x.DirectSalesOrder.SaleEmployeeId) && Start <= x.DirectSalesOrder.OrderDate && x.DirectSalesOrder.OrderDate <= End);
+                .Where(x => AppUserIds.Contains(x.DirectSalesOrder.SaleEmployeeId) && 
+                Start <= x.DirectSalesOrder.OrderDate && x.DirectSalesOrder.OrderDate <= End &&
+                x.DirectSalesOrder.RequestStateId == RequestStateEnum.APPROVED.Id);
 
             ReportDirectSalesOrderByEmployeeAndItem_TotalDTO.TotalSalesStock = DirectSalesOrderContentQuery.Select(x => x.RequestedQuantity).Sum();
 
