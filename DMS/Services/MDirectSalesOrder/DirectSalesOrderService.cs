@@ -945,6 +945,8 @@ namespace DMS.Services.MDirectSalesOrder
                     DirectSalesOrder.Total = DirectSalesOrder.TotalAfterTax - PromotionValue;
                 }
                 DirectSalesOrder.PromotionValue = PromotionValue;
+                if (DirectSalesOrder.Total >= 0)
+                    DirectSalesOrder.Total = 0;
             }
         }
 

@@ -430,7 +430,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_indirect_sales_order_by_empl
             }
             OrganizationIds = OrganizationDAOs.Select(o => o.Id).ToList();
 
-            var query = from i in DataContext.DirectSalesOrder
+            var query = from i in DataContext.IndirectSalesOrder
                         where i.OrderDate >= Start && i.OrderDate <= End &&
                         (SaleEmployeeId.HasValue == false || i.SaleEmployeeId == SaleEmployeeId.Value) &&
                         OrganizationIds.Contains(i.OrganizationId) &&

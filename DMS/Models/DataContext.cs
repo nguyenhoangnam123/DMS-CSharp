@@ -510,8 +510,6 @@ namespace DMS.Models
                     .HasMaxLength(500)
                     .HasComment("Tên nhãn nhiệu");
 
-                entity.Property(e => e.RowId).HasDefaultValueSql("(newid())");
-
                 entity.Property(e => e.StatusId).HasComment("Trạng thái hoạt động");
 
                 entity.Property(e => e.UpdatedAt)
@@ -1080,8 +1078,6 @@ namespace DMS.Models
                     .IsRequired()
                     .HasMaxLength(4000)
                     .HasComment("Tên");
-
-                entity.Property(e => e.RowId).HasDefaultValueSql("(newid())");
 
                 entity.Property(e => e.ThumbnailUrl)
                     .HasMaxLength(4000)
@@ -2411,8 +2407,6 @@ namespace DMS.Models
                     .IsRequired()
                     .HasMaxLength(3000);
 
-                entity.Property(e => e.RowId).HasDefaultValueSql("(newid())");
-
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
                 entity.HasOne(d => d.Parent)
@@ -2477,8 +2471,6 @@ namespace DMS.Models
                 entity.Property(e => e.Name)
                     .IsRequired()
                     .HasMaxLength(255);
-
-                entity.Property(e => e.RowId).HasDefaultValueSql("(newid())");
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
@@ -3793,8 +3785,6 @@ namespace DMS.Models
 
                 entity.Property(e => e.Longitude).HasColumnType("decimal(18, 15)");
 
-                entity.Property(e => e.OrganizationId).HasDefaultValueSql("((1))");
-
                 entity.HasOne(d => d.Organization)
                     .WithMany(p => p.StoreCheckings)
                     .HasForeignKey(d => d.OrganizationId)
@@ -4143,8 +4133,6 @@ namespace DMS.Models
 
                 entity.Property(e => e.Phone).HasMaxLength(50);
 
-                entity.Property(e => e.RowId).HasDefaultValueSql("(newid())");
-
                 entity.Property(e => e.TaxCode).HasMaxLength(500);
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
@@ -4437,8 +4425,6 @@ namespace DMS.Models
                     .HasMaxLength(500);
 
                 entity.Property(e => e.Percentage).HasColumnType("decimal(18, 4)");
-
-                entity.Property(e => e.RowId).HasDefaultValueSql("(newid())");
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
