@@ -262,10 +262,23 @@ namespace DMS.Services.MStoreChecking
             // Lấy danh sách tất cả các cửa hàng ra
             // Tính khoảng cách
             // sắp xếp theo khoảng cách
+            int skip = StoreFilter.Skip;
+            int take = StoreFilter.Take;
+            StoreFilter.Skip = 0;
+            StoreFilter.Take = int.MaxValue;
+            StoreFilter.Selects = StoreSelect.Id | StoreSelect.Code | StoreSelect.Name |
+                StoreSelect.Address | StoreSelect.Telephone | StoreSelect.Latitude |
+                StoreSelect.Longitude | StoreSelect.HasChecking | StoreSelect.OwnerPhone | StoreSelect.StoreType;
             var AppUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
             StoreFilter.OrganizationId = new IdFilter { Equal = AppUser.OrganizationId };
             StoreFilter.TimeZone = CurrentContext.TimeZone;
             Stores = await UOW.StoreRepository.List(StoreFilter);
+            if (CurrentContext.Latitude.HasValue && CurrentContext.Longitude.HasValue)
+            {
+                Stores = await ListRecentStore(Stores, CurrentContext.Latitude.Value, CurrentContext.Longitude.Value);
+            }
+            Stores = Stores.OrderByDescending(x => x.CreatedAt).ThenBy(x => x.Distance).Skip(skip).Take(take).ToList();
+            Stores = await CheckStoreChecking(Stores);
             return Stores;
         }
 
@@ -312,13 +325,32 @@ namespace DMS.Services.MStoreChecking
             try
             {
                 List<Store> Stores;
+                int skip = StoreFilter.Skip;
+                int take = StoreFilter.Take;
+                // Lấy danh sách tất cả các cửa hàng trong tuyến ra
                 // Tính khoảng cách
                 // sắp xếp theo thứ tự ưu tiên trước rồi đến khoảng cách
                 Dictionary<long, long> StoreIds = await ListOnlineStoreIds(ERouteId);
                 StoreFilter.Id = new IdFilter { In = StoreIds.Select(x => x.Key).ToList() };
                 StoreFilter.SalesEmployeeId = new IdFilter { Equal = CurrentContext.UserId };
+                StoreFilter.Skip = 0;
+                StoreFilter.Take = int.MaxValue;
+                StoreFilter.Selects = StoreSelect.Id | StoreSelect.Code | StoreSelect.Name |
+                StoreSelect.Address | StoreSelect.Telephone | StoreSelect.Latitude |
+                StoreSelect.Longitude | StoreSelect.HasChecking | StoreSelect.OwnerPhone | StoreSelect.StoreType;
                 StoreFilter.TimeZone = CurrentContext.TimeZone;
                 Stores = await UOW.StoreRepository.List(StoreFilter);
+                if (CurrentContext.Latitude.HasValue && CurrentContext.Longitude.HasValue)
+                {
+                    Stores = await ListRecentStore(Stores, CurrentContext.Latitude.Value, CurrentContext.Longitude.Value);
+                }
+                Stores = (from s in Stores
+                          join id in StoreIds on s.Id equals id.Key
+                          orderby id.Value, s.Distance
+                          select s)
+                           .Skip(skip).Take(take).ToList();
+
+                Stores = await CheckStoreChecking(Stores);
                 return Stores;
             }
             catch (Exception ex)
@@ -384,11 +416,28 @@ namespace DMS.Services.MStoreChecking
                 // Lấy danh sách tất cả các cửa hàng ngoại tuyến ra
                 // Tính khoảng cách
                 // sắp xếp theo thứ tự ưu tiên trước rồi đến khoảng cách
+                int skip = StoreFilter.Skip;
+                int take = StoreFilter.Take;
                 Dictionary<long, long> StoreIds = await ListOfflineStoreIds(ERouteId);
                 StoreFilter.Id.In = StoreIds.Select(x => x.Key).ToList();
                 StoreFilter.SalesEmployeeId = new IdFilter { Equal = CurrentContext.UserId };
+                StoreFilter.Skip = 0;
+                StoreFilter.Take = int.MaxValue;
+                StoreFilter.Selects = StoreSelect.Id | StoreSelect.Code | StoreSelect.Name |
+                StoreSelect.Address | StoreSelect.Telephone | StoreSelect.Latitude |
+                StoreSelect.Longitude | StoreSelect.HasChecking | StoreSelect.OwnerPhone | StoreSelect.StoreType;
                 StoreFilter.TimeZone = CurrentContext.TimeZone;
                 Stores = await UOW.StoreRepository.List(StoreFilter);
+                if (CurrentContext.Latitude.HasValue && CurrentContext.Longitude.HasValue)
+                {
+                    Stores = await ListRecentStore(Stores, CurrentContext.Latitude.Value, CurrentContext.Longitude.Value);
+                }
+                Stores = (from s in Stores
+                          join id in StoreIds on s.Id equals id.Key
+                          orderby id.Value, s.Distance
+                          select s)
+                          .Skip(skip).Take(take).ToList();
+                Stores = await CheckStoreChecking(Stores);
                 return Stores;
             }
             catch (Exception ex)
@@ -446,7 +495,24 @@ namespace DMS.Services.MStoreChecking
         {
             try
             {
-                List<Store> Stores = await UOW.StoreRepository.ListInScoped(StoreFilter, CurrentContext.UserId);
+                AppUser AppUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
+                List<Store> Stores;
+                int skip = StoreFilter.Skip;
+                int take = StoreFilter.Take;
+                StoreFilter.Skip = 0;
+                StoreFilter.Take = int.MaxValue;
+                StoreFilter.Selects = StoreSelect.Id | StoreSelect.Code | StoreSelect.Name |
+                StoreSelect.Address | StoreSelect.Telephone | StoreSelect.Latitude |
+                StoreSelect.Longitude | StoreSelect.HasChecking | StoreSelect.OwnerPhone | StoreSelect.StoreType;
+                StoreFilter.SalesEmployeeId = new IdFilter { Equal = CurrentContext.UserId };
+                StoreFilter.TimeZone = CurrentContext.TimeZone;
+                Stores = await UOW.StoreRepository.ListInScoped(StoreFilter, CurrentContext.UserId);
+                if (CurrentContext.Latitude.HasValue && CurrentContext.Longitude.HasValue)
+                {
+                    Stores = await ListRecentStore(Stores, CurrentContext.Latitude.Value, CurrentContext.Longitude.Value);
+                }
+                Stores = Stores.OrderBy(s => s.Distance).Skip(skip).Take(take).ToList();
+                Stores = await CheckStoreChecking(Stores);
                 return Stores;
             }
             catch (Exception ex)
@@ -464,28 +530,28 @@ namespace DMS.Services.MStoreChecking
             }
         }
 
-        //private async Task<List<Store>> CheckStoreChecking(List<Store> Stores)
-        //{
-        //    List<long> StoreIds = Stores.Select(x => x.Id).ToList();
-        //    DateTime StartToday = StaticParams.DateTimeNow.AddHours(CurrentContext.TimeZone).Date.AddHours(0 - CurrentContext.TimeZone);
-        //    DateTime EndToday = StartToday.AddDays(1);
-        //    StoreCheckingFilter StoreCheckingFilter = new StoreCheckingFilter
-        //    {
-        //        Skip = 0,
-        //        Take = int.MaxValue,
-        //        Selects = StoreCheckingSelect.ALL,
-        //        StoreId = new IdFilter { In = StoreIds },
-        //        SaleEmployeeId = new IdFilter { Equal = CurrentContext.UserId },
-        //        CheckOutAt = new DateFilter { GreaterEqual = StartToday, Less = EndToday }
-        //    };
-        //    List<StoreChecking> StoreCheckings = await UOW.StoreCheckingRepository.List(StoreCheckingFilter);
-        //    foreach (var Store in Stores)
-        //    {
-        //        var count = StoreCheckings.Where(x => x.StoreId == Store.Id).Count();
-        //        Store.HasChecking = count != 0 ? true : false;
-        //    }
-        //    return Stores;
-        //}
+        private async Task<List<Store>> CheckStoreChecking(List<Store> Stores)
+        {
+            List<long> StoreIds = Stores.Select(x => x.Id).ToList();
+            DateTime StartToday = StaticParams.DateTimeNow.AddHours(CurrentContext.TimeZone).Date.AddHours(0 - CurrentContext.TimeZone);
+            DateTime EndToday = StartToday.AddDays(1);
+            StoreCheckingFilter StoreCheckingFilter = new StoreCheckingFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = StoreCheckingSelect.ALL,
+                StoreId = new IdFilter { In = StoreIds },
+                SaleEmployeeId = new IdFilter { Equal = CurrentContext.UserId },
+                CheckOutAt = new DateFilter { GreaterEqual = StartToday, Less = EndToday }
+            };
+            List<StoreChecking> StoreCheckings = await UOW.StoreCheckingRepository.List(StoreCheckingFilter);
+            foreach (var Store in Stores)
+            {
+                var count = StoreCheckings.Where(x => x.StoreId == Store.Id).Count();
+                Store.HasChecking = count != 0 ? true : false;
+            }
+            return Stores;
+        }
 
         public StoreCheckingFilter ToFilter(StoreCheckingFilter filter)
         {
