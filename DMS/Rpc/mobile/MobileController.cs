@@ -199,6 +199,21 @@ namespace DMS.Rpc.mobile
                 return BadRequest(Mobile_StoreCheckingDTO);
         }
 
+        [Route(MobileRoute.UpdateStoreCheckingImage), HttpPost]
+        public async Task<ActionResult<Mobile_StoreCheckingDTO>> UpdateStoreCheckingImage([FromBody] Mobile_StoreCheckingDTO Mobile_StoreCheckingDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            StoreChecking StoreChecking = ConvertDTOToEntity(Mobile_StoreCheckingDTO);
+            StoreChecking = await StoreCheckingService.UpdateStoreCheckingImage(StoreChecking);
+            Mobile_StoreCheckingDTO = new Mobile_StoreCheckingDTO(StoreChecking);
+            if (StoreChecking.IsValidated)
+                return Mobile_StoreCheckingDTO;
+            else
+                return BadRequest(Mobile_StoreCheckingDTO);
+        }
+
         [Route(MobileRoute.CheckOut), HttpPost]
         public async Task<ActionResult<Mobile_StoreCheckingDTO>> CheckOut([FromBody] Mobile_StoreCheckingDTO Mobile_StoreCheckingDTO)
         {

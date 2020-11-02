@@ -23,6 +23,7 @@ namespace DMS.Services.MStoreChecking
         Task<StoreChecking> Get(long Id);
         Task<StoreChecking> CheckIn(StoreChecking StoreChecking);
         Task<StoreChecking> Update(StoreChecking StoreChecking);
+        Task<StoreChecking> UpdateStoreCheckingImage(StoreChecking StoreChecking);
         Task<StoreChecking> CheckOut(StoreChecking StoreChecking);
         Task<Image> SaveImage(Image Image);
         Task<long> CountStore(StoreFilter StoreFilter, IdFilter ERouteId);
@@ -196,6 +197,39 @@ namespace DMS.Services.MStoreChecking
             }
         }
 
+        public async Task<StoreChecking> UpdateStoreCheckingImage(StoreChecking StoreChecking)
+        {
+            try
+            {
+                var oldData = await UOW.StoreCheckingRepository.Get(StoreChecking.Id);
+                StoreChecking.CheckOutAt = oldData.CheckOutAt;
+                StoreChecking.ImageCounter = StoreChecking.StoreCheckingImageMappings?.Count() ?? 0;
+                await UOW.Begin();
+                await UOW.StoreCheckingRepository.Update(StoreChecking);
+                await UOW.Commit();
+
+                StoreChecking = await UOW.StoreCheckingRepository.Get(StoreChecking.Id);
+                NotifyUsed(StoreChecking);
+                await Logging.CreateAuditLog(StoreChecking, oldData, nameof(StoreCheckingService));
+                return StoreChecking;
+            }
+            catch (Exception ex)
+            {
+                await UOW.Rollback();
+                if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(StoreCheckingService));
+
+                    throw new MessageException(ex);
+                }
+                else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(StoreCheckingService));
+
+                    throw new MessageException(ex.InnerException);
+                }
+            }
+        }
 
         public async Task<StoreChecking> CheckOut(StoreChecking StoreChecking)
         {
