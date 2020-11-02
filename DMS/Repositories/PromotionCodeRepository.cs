@@ -261,6 +261,7 @@ namespace DMS.Repositories
                 } : null,
                 CreatedAt = q.CreatedAt,
                 UpdatedAt = q.UpdatedAt,
+                Used = q.Used,
             }).ToListAsync();
             return PromotionCodes;
         }
@@ -302,6 +303,7 @@ namespace DMS.Repositories
                 StartDate = x.StartDate,
                 EndDate = x.EndDate,
                 StatusId = x.StatusId,
+                Used = x.Used,
                 Organization = x.Organization == null ? null : new Organization
                 {
                     Id = x.Organization.Id,
@@ -473,6 +475,7 @@ namespace DMS.Repositories
             PromotionCodeDAO.StatusId = PromotionCode.StatusId;
             PromotionCodeDAO.CreatedAt = StaticParams.DateTimeNow;
             PromotionCodeDAO.UpdatedAt = StaticParams.DateTimeNow;
+            PromotionCodeDAO.Used = false;
             DataContext.PromotionCode.Add(PromotionCodeDAO);
             await DataContext.SaveChangesAsync();
             PromotionCode.Id = PromotionCodeDAO.Id;
@@ -531,6 +534,7 @@ namespace DMS.Repositories
                 PromotionCodeDAO.StatusId = PromotionCode.StatusId;
                 PromotionCodeDAO.CreatedAt = StaticParams.DateTimeNow;
                 PromotionCodeDAO.UpdatedAt = StaticParams.DateTimeNow;
+                PromotionCodeDAO.Used = false;
                 PromotionCodeDAOs.Add(PromotionCodeDAO);
             }
             await DataContext.BulkMergeAsync(PromotionCodeDAOs);

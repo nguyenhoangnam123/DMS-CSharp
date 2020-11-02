@@ -61,6 +61,7 @@ namespace DMS.Rpc.promotion_code
             this.PromotionCodeStoreMappings = PromotionCode.PromotionCodeStoreMappings?.Select(x => new PromotionCode_PromotionCodeStoreMappingDTO(x)).ToList();
             this.CreatedAt = PromotionCode.CreatedAt;
             this.UpdatedAt = PromotionCode.UpdatedAt;
+            this.Used = PromotionCode.Used;
             this.Errors = PromotionCode.Errors;
         }
     }
