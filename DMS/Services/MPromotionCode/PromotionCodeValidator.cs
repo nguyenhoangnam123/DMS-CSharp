@@ -43,6 +43,7 @@ namespace DMS.Services.MPromotionCode
             ProductNotExisted,
             StoreNotExisted,
             StatusNotExisted,
+            PromotionCodeInUsed
         }
 
         private IUOW UOW;
@@ -309,6 +310,11 @@ namespace DMS.Services.MPromotionCode
         {
             if (await ValidateId(PromotionCode))
             {
+                var oldData = await UOW.PromotionCodeRepository.Get(PromotionCode.Id);
+                if (oldData.Used)
+                {
+                    PromotionCode.AddError(nameof(PromotionCodeValidator), nameof(PromotionCode.Id), ErrorCode.PromotionCodeInUsed);
+                }
             }
             return PromotionCode.IsValidated;
         }

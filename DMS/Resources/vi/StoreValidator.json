@@ -2,7 +2,7 @@
   "Store": {
     "Id": {
       "IdNotExisted": "Id không tồn tại",
-      "StoreInUsed": "Cửa hàng đã có đơn hàng không thể xoá"
+      "StoreInUsed": "Đại lý đã được sử dụng không thể xoá"
     },
     "Code": {
       "CodeEmpty": "Chưa nhập mã đại lý",
