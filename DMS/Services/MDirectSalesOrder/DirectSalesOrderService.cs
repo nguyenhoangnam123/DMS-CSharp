@@ -402,6 +402,7 @@ namespace DMS.Services.MDirectSalesOrder
                 DirectSalesOrder.Code = DirectSalesOrder.Id.ToString();
                 await UOW.DirectSalesOrderRepository.Update(DirectSalesOrder);
 
+                var PromotionCodeId = DirectSalesOrder.PromotionCodeId;
                 if (DirectSalesOrder.PromotionCodeId.HasValue)
                 {
                     PromotionCodeHistory PromotionCodeHistory = new PromotionCodeHistory()
@@ -415,7 +416,7 @@ namespace DMS.Services.MDirectSalesOrder
 
                 await UOW.Commit();
                 DirectSalesOrder = await UOW.DirectSalesOrderRepository.Get(DirectSalesOrder.Id);
-
+                DirectSalesOrder.PromotionCodeId = PromotionCodeId;
                 var RecipientIds = await ListReceipientId(SaleEmployee, DirectSalesOrderRoute.Approve);
                 RecipientIds.Add(DirectSalesOrder.SaleEmployeeId);
                 DateTime Now = StaticParams.DateTimeNow;
@@ -1214,7 +1215,6 @@ namespace DMS.Services.MDirectSalesOrder
                 }).ToList();
                 RabbitManager.PublishList(itemMessages, RoutingKeyEnum.ItemUsed);
             }
-
             {
                 List<long> PrimaryUOMIds = DirectSalesOrder.DirectSalesOrderContents.Select(i => i.PrimaryUnitOfMeasureId).ToList();
                 List<long> UOMIds = DirectSalesOrder.DirectSalesOrderContents.Select(i => i.UnitOfMeasureId).ToList();
@@ -1240,7 +1240,6 @@ namespace DMS.Services.MDirectSalesOrder
                 storeMessages.Add(BuyerStore);
                 RabbitManager.PublishList(storeMessages, RoutingKeyEnum.StoreUsed);
             }
-
             {
                 EventMessage<AppUser> AppUserMessage = new EventMessage<AppUser>
                 {
@@ -1250,6 +1249,24 @@ namespace DMS.Services.MDirectSalesOrder
                     Time = StaticParams.DateTimeNow,
                 };
                 RabbitManager.PublishSingle(AppUserMessage, RoutingKeyEnum.AppUserUsed);
+            }
+            {
+                if(DirectSalesOrder.PromotionCodeId.HasValue && DirectSalesOrder.PromotionCodeId.Value != 0)
+                {
+                    var PromotionCodeId = DirectSalesOrder.PromotionCodeId.Value;
+                    List<EventMessage<PromotionCode>> PromotionCodeMessages = new List<EventMessage<PromotionCode>>
+                    {
+                        new EventMessage<PromotionCode>
+                        {
+                            Content = new PromotionCode { Id = PromotionCodeId },
+                            EntityName = nameof(PromotionCode),
+                            RowId = Guid.NewGuid(),
+                            Time = StaticParams.DateTimeNow,
+                        }
+                    };
+                    RabbitManager.PublishList(PromotionCodeMessages, RoutingKeyEnum.PromotionCodeUsed);
+                }
+                
             }
         }
     }

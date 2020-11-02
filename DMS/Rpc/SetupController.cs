@@ -24,28 +24,33 @@ namespace DMS.Rpc
             this.DataContext = DataContext;
         }
 
-        //[HttpGet, Route("rpc/dms/setup/set-org")]
-        //public async Task Count()
-        //{
-        //    var Directs = await DataContext.DirectSalesOrder.ToListAsync();
-        //    foreach (var Direct in Directs)
-        //    {
-        //        Direct.TotalAfterTax = Direct.Total;
-        //    }
-        //    await DataContext.SaveChangesAsync();
-        //}
-
-        [HttpGet, Route("rpc/dms/setup/unsign")]
-        public bool Unsign(int year)
+        [HttpGet, Route("rpc/dms/setup/set-org")]
+        public async Task Count()
         {
-            List<StoreDAO> Stores = DataContext.Store.ToList();
+            List<StoreCheckingDAO> StoreCheckingDAOs = await DataContext.StoreChecking.ToListAsync();
+            var AppUserIds = StoreCheckingDAOs.Select(x => x.SaleEmployeeId).Distinct().ToList();
+            var AppUserDAOs = await DataContext.AppUser.Where(x => AppUserIds.Contains(x.Id)).ToListAsync();
+            foreach (var StoreCheckingDAO in StoreCheckingDAOs)
+            {
+                StoreCheckingDAO.OrganizationId = AppUserDAOs.Where(x => x.Id == StoreCheckingDAO.SaleEmployeeId).AsParallel().Select(x => x.OrganizationId).FirstOrDefault();
+            }
+            await DataContext.SaveChangesAsync();
+        }
+
+        [HttpGet, Route("rpc/dms/setup/store-gen-code")]
+        public async Task StoreGenCode()
+        {
+            List<StoreDAO> Stores = await DataContext.Store.OrderByDescending(x => x.CreatedAt).ToListAsync();
+            List<OrganizationDAO> Organizations = await DataContext.Organization.OrderByDescending(x => x.CreatedAt).ToListAsync();
+            List<StoreTypeDAO> StoreTypes = await DataContext.StoreType.OrderByDescending(x => x.CreatedAt).ToListAsync();
+            var counter = Stores.Count();
             foreach (var Store in Stores)
             {
-                Store.UnsignName = Store.Name?.ChangeToEnglishChar();
-                Store.UnsignAddress = Store.Address?.ChangeToEnglishChar();
+                var Organization = Organizations.Where(x => x.Id == Store.OrganizationId).Select(x => x.Code).FirstOrDefault();
+                var StoreType = StoreTypes.Where(x => x.Id == Store.StoreTypeId).Select(x => x.Code).FirstOrDefault();
+                Store.Code = $"{Organization}.{StoreType}.{(10000000 + counter--).ToString().Substring(1)}";
             }
-            DataContext.BulkMerge(Stores);
-            return true;
+            await DataContext.SaveChangesAsync();
         }
 
         [HttpGet, Route("rpc/dms/setup/year/{year}")]

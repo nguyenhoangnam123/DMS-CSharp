@@ -142,6 +142,22 @@ namespace DMS.Services.MPromotionCode
             try
             {
                 var oldData = await UOW.PromotionCodeRepository.Get(PromotionCode.Id);
+                if (oldData.Used)
+                {
+                    PromotionCode.Code = oldData.Code;
+                    PromotionCode.EndDate = oldData.EndDate;
+                    PromotionCode.MaxValue = oldData.MaxValue;
+                    PromotionCode.OrganizationId = oldData.OrganizationId;
+                    PromotionCode.PromotionDiscountTypeId = oldData.PromotionDiscountTypeId;
+                    PromotionCode.PromotionProductAppliedTypeId = oldData.PromotionProductAppliedTypeId;
+                    PromotionCode.PromotionTypeId = oldData.PromotionTypeId;
+                    PromotionCode.Quantity = oldData.Quantity;
+                    PromotionCode.StartDate = oldData.StartDate;
+                    PromotionCode.Value = oldData.Value;
+                    PromotionCode.PromotionCodeOrganizationMappings = oldData.PromotionCodeOrganizationMappings;
+                    PromotionCode.PromotionCodeProductMappings = oldData.PromotionCodeProductMappings;
+                    PromotionCode.PromotionCodeStoreMappings = oldData.PromotionCodeStoreMappings;
+                }
 
                 await UOW.Begin();
                 await UOW.PromotionCodeRepository.Update(PromotionCode);
