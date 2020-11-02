@@ -362,6 +362,13 @@ namespace DMS.Repositories
                     Name = x.Name,
                     RoleId = x.RoleId,
                     SubjectMailForReject = x.SubjectMailForReject,
+                    StatusId = x.StatusId,
+                    Status = x.Status == null ? null : new Status
+                    {
+                        Id = x.Status.Id,
+                        Code = x.Status.Code,
+                        Name = x.Status.Name,
+                    },
                     WorkflowDefinitionId = x.WorkflowDefinitionId,
                     Role = x.Role == null ? null : new Role
                     {
