@@ -616,8 +616,6 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_by_store_
                         };
 
             List<Store> Stores = await query.Distinct().OrderBy(x => x.OrganizationId).ThenBy(x => x.Name)
-                .Skip(ReportDirectSalesOrderByStoreAndItem_ReportDirectSalesOrderByStoreAndItemFilterDTO.Skip)
-                .Take(ReportDirectSalesOrderByStoreAndItem_ReportDirectSalesOrderByStoreAndItemFilterDTO.Take)
                 .ToListAsync();
 
             OrganizationIds = Stores.Select(x => x.OrganizationId).Distinct().ToList();
