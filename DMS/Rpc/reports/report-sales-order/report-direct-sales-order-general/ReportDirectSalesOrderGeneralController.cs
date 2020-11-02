@@ -308,9 +308,9 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_general
                         Discount = x.GeneralDiscountAmount ?? 0,
                         TaxValue = x.TotalTaxAmount,
                         SubTotal = x.SubTotal,
-                        TotalAfterTax = x.TotalAfterTax,
+                        Total = x.TotalAfterTax,
                         PromotionValue = x.PromotionValue.GetValueOrDefault(0),
-                        Total = x.Total
+                        TotalAfterPromotion = x.Total
                     })
                     .ToList();
             }
@@ -384,9 +384,9 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_general
                 .DefaultIfEmpty(0).Sum(),
                 TotalTax = DirectSalesOrderDAOs.Select(x => x.TotalTaxAmount).DefaultIfEmpty(0).Sum(),
                 SubTotal = DirectSalesOrderDAOs.Select(x => x.SubTotal).DefaultIfEmpty(0).Sum(),
-                TotalAfterTax = DirectSalesOrderDAOs.Select(x => x.TotalAfterTax).DefaultIfEmpty(0).Sum(),
+                Total = DirectSalesOrderDAOs.Select(x => x.TotalAfterTax).DefaultIfEmpty(0).Sum(),
                 PromotionValue = DirectSalesOrderDAOs.Select(x => x.PromotionValue.GetValueOrDefault(0)).DefaultIfEmpty(0).Sum(),
-                Total = DirectSalesOrderDAOs.Select(x => x.Total).DefaultIfEmpty(0).Sum(),
+                TotalAfterPromotion = DirectSalesOrderDAOs.Select(x => x.Total).DefaultIfEmpty(0).Sum(),
             };
 
             return ReportDirectSalesOrderGeneral_TotalDTO;
