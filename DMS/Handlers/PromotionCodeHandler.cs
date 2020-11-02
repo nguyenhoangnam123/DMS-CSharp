@@ -10,10 +10,10 @@ using System.Threading.Tasks;
 
 namespace DMS.Handlers
 {
-    public class ProductHandler : Handler
+    public class PromotionCodeHandler : Handler
     {
         private string UsedKey => Name + ".Used";
-        public override string Name => nameof(Product);
+        public override string Name => nameof(PromotionCode);
 
         public override void QueueBind(IModel channel, string queue, string exchange)
         {
@@ -27,9 +27,9 @@ namespace DMS.Handlers
 
         private async Task Used(DataContext context, string json)
         {
-            List<EventMessage<Product>> EventMessageReviced = JsonConvert.DeserializeObject<List<EventMessage<Product>>>(json);
-            List<long> ProductIds = EventMessageReviced.Select(em => em.Content.Id).ToList();
-            await context.Product.Where(a => ProductIds.Contains(a.Id)).UpdateFromQueryAsync(a => new ProductDAO { Used = true });
+            List<EventMessage<PromotionCode>> EventMessageReviced = JsonConvert.DeserializeObject<List<EventMessage<PromotionCode>>>(json);
+            List<long> PromotionCodeIds = EventMessageReviced.Select(em => em.Content.Id).ToList();
+            await context.PromotionCode.Where(a => PromotionCodeIds.Contains(a.Id)).UpdateFromQueryAsync(a => new PromotionCodeDAO { Used = true });
         }
     }
 }
