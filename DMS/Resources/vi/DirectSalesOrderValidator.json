@@ -48,6 +48,10 @@
         "QuantityEmpty": "Chưa nhập số lượng",
         "QuantityInvalid": "Số lượng không hợp lệ"
       }
+    },
+    "PromotionCode": {
+      "PromotionCodeNotExisted": "Mã giảm giá không tồn tại hoặc không thoả mã điều kiện áp dụng",
+      "PromotionCodeHasUsed": "Mã giảm giá đã hết lượt sử dụng"
     }
   }
 }
