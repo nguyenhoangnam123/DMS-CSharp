@@ -624,6 +624,7 @@ namespace DMS.Rpc
             InitPromotionProductAppliedTypeEnum();
             InitPromotionPolicyEnum();
             InitPromotionDiscountTypeEnum();
+            InitRewardStatusEnum();
             return Ok();
         }
 
@@ -679,6 +680,17 @@ namespace DMS.Rpc
                 Name = item.Name,
             }).ToList();
             DataContext.ERouteType.BulkSynchronize(ERouteTypeEnumList);
+        }
+
+        private void InitRewardStatusEnum()
+        {
+            List<RewardStatusDAO> RewardStatusEnumList = RewardStatusEnum.RewardStatusEnumList.Select(item => new RewardStatusDAO
+            {
+                Id = item.Id,
+                Code = item.Code,
+                Name = item.Name,
+            }).ToList();
+            DataContext.RewardStatus.BulkSynchronize(RewardStatusEnumList);
         }
 
         private void InitStoreScoutingStatusEnum()
