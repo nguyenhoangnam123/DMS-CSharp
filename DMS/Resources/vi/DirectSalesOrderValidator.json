@@ -51,7 +51,10 @@
     },
     "PromotionCode": {
       "PromotionCodeNotExisted": "Mã giảm giá không tồn tại hoặc không thoả mã điều kiện áp dụng",
-      "PromotionCodeHasUsed": "Mã giảm giá đã hết lượt sử dụng"
+      "PromotionCodeHasUsed": "Mã giảm giá đã hết lượt sử dụng",
+      "OrganizationInvalid": "Mã giảm giá không áp dụng cho đơn vị của đại lý này",
+      "StoreInvalid": "Mã giảm giá không áp dụng cho đại lý này",
+      "ItemInvalid": "Không có sản phẩm được giảm giá"
     }
   }
 }
