@@ -322,6 +322,7 @@ namespace DMS.Repositories
                 WorkflowStepDAO.Code = WorkflowStep.Code;
                 WorkflowStepDAO.Name = WorkflowStep.Name;
                 WorkflowStepDAO.RoleId = WorkflowStep.RoleId;
+                WorkflowStepDAO.StatusId = WorkflowStep.StatusId;
                 WorkflowStepDAO.SubjectMailForReject = WorkflowStep.SubjectMailForReject;
                 WorkflowStepDAO.BodyMailForReject = WorkflowStep.BodyMailForReject;
                 WorkflowStepDAO.CreatedAt = StaticParams.DateTimeNow;
