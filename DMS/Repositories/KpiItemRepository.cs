@@ -524,6 +524,14 @@ namespace DMS.Repositories
             }
             await DataContext.BulkMergeAsync(KpiItemDAOs);
 
+            var KpiItemIds = KpiItemDAOs.Select(x => x.Id).ToList();
+            await DataContext.KpiItemContentKpiCriteriaItemMapping
+                .Where(x => KpiItemIds.Contains(x.KpiItemContent.KpiItemId))
+                .DeleteFromQueryAsync();
+            await DataContext.KpiItemContent
+                .Where(x => KpiItemIds.Contains(x.KpiItemId))
+                .DeleteFromQueryAsync();
+
             var KpiItemContentDAOs = new List<KpiItemContentDAO>();
             foreach (var KpiItem in KpiItems)
             {
