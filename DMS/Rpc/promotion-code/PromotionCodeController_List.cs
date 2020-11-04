@@ -28,7 +28,7 @@ namespace DMS.Rpc.promotion_code
             OrganizationFilter.ParentId = PromotionCode_OrganizationFilterDTO.ParentId;
             OrganizationFilter.Path = PromotionCode_OrganizationFilterDTO.Path;
             OrganizationFilter.Level = PromotionCode_OrganizationFilterDTO.Level;
-            OrganizationFilter.StatusId = PromotionCode_OrganizationFilterDTO.StatusId;
+            OrganizationFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
             OrganizationFilter.Phone = PromotionCode_OrganizationFilterDTO.Phone;
             OrganizationFilter.Email = PromotionCode_OrganizationFilterDTO.Email;
             OrganizationFilter.Address = PromotionCode_OrganizationFilterDTO.Address;
@@ -190,7 +190,7 @@ namespace DMS.Rpc.promotion_code
             StoreFilter.OwnerPhone = PromotionCode_StoreFilterDTO.OwnerPhone;
             StoreFilter.OwnerEmail = PromotionCode_StoreFilterDTO.OwnerEmail;
             StoreFilter.AppUserId = PromotionCode_StoreFilterDTO.AppUserId;
-            StoreFilter.StatusId = PromotionCode_StoreFilterDTO.StatusId;
+            StoreFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
             StoreFilter.StoreStatusId = PromotionCode_StoreFilterDTO.StoreStatusId;
 
             List<Store> Stores = await StoreService.List(StoreFilter);
@@ -467,7 +467,7 @@ namespace DMS.Rpc.promotion_code
             OrganizationFilter.ParentId = PromotionCode_OrganizationFilterDTO.ParentId;
             OrganizationFilter.Path = PromotionCode_OrganizationFilterDTO.Path;
             OrganizationFilter.Level = PromotionCode_OrganizationFilterDTO.Level;
-            OrganizationFilter.StatusId = PromotionCode_OrganizationFilterDTO.StatusId;
+            OrganizationFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
             OrganizationFilter.Phone = PromotionCode_OrganizationFilterDTO.Phone;
             OrganizationFilter.Email = PromotionCode_OrganizationFilterDTO.Email;
             OrganizationFilter.Address = PromotionCode_OrganizationFilterDTO.Address;
@@ -493,7 +493,7 @@ namespace DMS.Rpc.promotion_code
             OrganizationFilter.ParentId = PromotionCode_OrganizationFilterDTO.ParentId;
             OrganizationFilter.Path = PromotionCode_OrganizationFilterDTO.Path;
             OrganizationFilter.Level = PromotionCode_OrganizationFilterDTO.Level;
-            OrganizationFilter.StatusId = PromotionCode_OrganizationFilterDTO.StatusId;
+            OrganizationFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
             OrganizationFilter.Phone = PromotionCode_OrganizationFilterDTO.Phone;
             OrganizationFilter.Email = PromotionCode_OrganizationFilterDTO.Email;
             OrganizationFilter.Address = PromotionCode_OrganizationFilterDTO.Address;
@@ -606,7 +606,7 @@ namespace DMS.Rpc.promotion_code
             StoreFilter.OwnerPhone = PromotionCode_StoreFilterDTO.OwnerPhone;
             StoreFilter.OwnerEmail = PromotionCode_StoreFilterDTO.OwnerEmail;
             StoreFilter.AppUserId = PromotionCode_StoreFilterDTO.AppUserId;
-            StoreFilter.StatusId = PromotionCode_StoreFilterDTO.StatusId;
+            StoreFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
             StoreFilter.StoreStatusId = PromotionCode_StoreFilterDTO.StoreStatusId;
 
             return await StoreService.Count(StoreFilter);
@@ -649,7 +649,7 @@ namespace DMS.Rpc.promotion_code
             StoreFilter.OwnerPhone = PromotionCode_StoreFilterDTO.OwnerPhone;
             StoreFilter.OwnerEmail = PromotionCode_StoreFilterDTO.OwnerEmail;
             StoreFilter.AppUserId = PromotionCode_StoreFilterDTO.AppUserId;
-            StoreFilter.StatusId = PromotionCode_StoreFilterDTO.StatusId;
+            StoreFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
             StoreFilter.StoreStatusId = PromotionCode_StoreFilterDTO.StoreStatusId;
 
             List<Store> Stores = await StoreService.List(StoreFilter);

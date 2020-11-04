@@ -73,7 +73,7 @@
       "OwnerEmailOverLength": "Email quá dài"
     },
     "TaxCode": {
-      "CodeHasSpecialCharacter": "Mã thuế chứa kí tự đặc biệt"
+      "TaxCodeHasSpecialCharacter": "Mã thuế chứa kí tự đặc biệt"
     },
     "Status": {
       "StatusNotExisted": "Trạng thái không tồn tại"
