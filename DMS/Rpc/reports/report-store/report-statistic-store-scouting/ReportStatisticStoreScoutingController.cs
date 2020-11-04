@@ -133,6 +133,9 @@ namespace DMS.Rpc.reports.report_store.report_statistic_store_scouting
                     LocalEndDay(CurrentContext) :
                     ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.Date.LessEqual.Value;
 
+            if (End.Subtract(Start).Days > 31)
+                return 0;
+
             long? ProvinceId = ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.ProvinceId?.Equal;
             long? DistrictId = ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.DistrictId?.Equal;
             long? WardId = ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.WardId?.Equal;
@@ -196,6 +199,9 @@ namespace DMS.Rpc.reports.report_store.report_statistic_store_scouting
             DateTime End = ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.Date?.LessEqual == null ?
                     LocalEndDay(CurrentContext) :
                     ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.Date.LessEqual.Value;
+
+            if (End.Subtract(Start).Days > 31)
+                return BadRequest(new { message = "Chỉ được phép xem tối đa trong vòng 31 ngày" });
 
             long? ProvinceId = ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.ProvinceId?.Equal;
             long? DistrictId = ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.DistrictId?.Equal;
@@ -358,6 +364,9 @@ namespace DMS.Rpc.reports.report_store.report_statistic_store_scouting
             DateTime End = ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.Date?.LessEqual == null ?
                     LocalEndDay(CurrentContext) :
                     ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.Date.LessEqual.Value;
+
+            if (End.Subtract(Start).Days > 31)
+                return new ReportStatisticStoreScouting_TotalDTO();
 
             long? ProvinceId = ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.ProvinceId?.Equal;
             long? DistrictId = ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.DistrictId?.Equal;
