@@ -500,35 +500,35 @@ namespace DMS.Rpc.kpi_item
                 {
                     foreach (var KpiItemContentKpiCriteriaItemMapping in KpiItemContent.KpiItemContentKpiCriteriaItemMappings)
                     {
-                        if (long.TryParse(KpiItem_ImportDTO.IndirectQuantity, out long IndirectQuantity))
+                        if (long.TryParse(KpiItem_ImportDTO.IndirectQuantity, out long IndirectQuantity) && KpiItemContentKpiCriteriaItemMapping.KpiCriteriaItemId == KpiCriteriaItemEnum.INDIRECT_QUANTITY.Id)
                         {
                             KpiItemContentKpiCriteriaItemMapping.Value = IndirectQuantity;
                         }
-                        else if (long.TryParse(KpiItem_ImportDTO.IndirectRevenue, out long IndirectRevenue))
+                        else if (long.TryParse(KpiItem_ImportDTO.IndirectRevenue, out long IndirectRevenue) && KpiItemContentKpiCriteriaItemMapping.KpiCriteriaItemId == KpiCriteriaItemEnum.INDIRECT_REVENUE.Id)
                         {
                             KpiItemContentKpiCriteriaItemMapping.Value = IndirectRevenue;
                         }
-                        else if (long.TryParse(KpiItem_ImportDTO.IndirectCounter, out long IndirectCounter))
+                        else if (long.TryParse(KpiItem_ImportDTO.IndirectCounter, out long IndirectCounter) && KpiItemContentKpiCriteriaItemMapping.KpiCriteriaItemId == KpiCriteriaItemEnum.INDIRECT_AMOUNT.Id)
                         {
                             KpiItemContentKpiCriteriaItemMapping.Value = IndirectCounter;
                         }
-                        else if (long.TryParse(KpiItem_ImportDTO.IndirectStoreCounter, out long IndirectStoreCounter))
+                        else if (long.TryParse(KpiItem_ImportDTO.IndirectStoreCounter, out long IndirectStoreCounter) && KpiItemContentKpiCriteriaItemMapping.KpiCriteriaItemId == KpiCriteriaItemEnum.INDIRECT_STORE.Id)
                         {
                             KpiItemContentKpiCriteriaItemMapping.Value = IndirectStoreCounter;
                         }
-                        else if (long.TryParse(KpiItem_ImportDTO.DirectQuantity, out long DirectQuantity))
+                        else if (long.TryParse(KpiItem_ImportDTO.DirectQuantity, out long DirectQuantity) && KpiItemContentKpiCriteriaItemMapping.KpiCriteriaItemId == KpiCriteriaItemEnum.DIRECT_QUANTITY.Id)
                         {
                             KpiItemContentKpiCriteriaItemMapping.Value = DirectQuantity;
                         }
-                        else if (long.TryParse(KpiItem_ImportDTO.DirectRevenue, out long DirectRevenue))
+                        else if (long.TryParse(KpiItem_ImportDTO.DirectRevenue, out long DirectRevenue) && KpiItemContentKpiCriteriaItemMapping.KpiCriteriaItemId == KpiCriteriaItemEnum.DIRECT_REVENUE.Id)
                         {
                             KpiItemContentKpiCriteriaItemMapping.Value = DirectRevenue;
                         }
-                        else if (long.TryParse(KpiItem_ImportDTO.DirectCounter, out long DirectCounter))
+                        else if (long.TryParse(KpiItem_ImportDTO.DirectCounter, out long DirectCounter) && KpiItemContentKpiCriteriaItemMapping.KpiCriteriaItemId == KpiCriteriaItemEnum.DIRECT_AMOUNT.Id)
                         {
                             KpiItemContentKpiCriteriaItemMapping.Value = DirectCounter;
                         }
-                        else if (long.TryParse(KpiItem_ImportDTO.DirectStoreCounter, out long DirectStoreCounter))
+                        else if (long.TryParse(KpiItem_ImportDTO.DirectStoreCounter, out long DirectStoreCounter) && KpiItemContentKpiCriteriaItemMapping.KpiCriteriaItemId == KpiCriteriaItemEnum.DIRECT_STORE.Id)
                         {
                             KpiItemContentKpiCriteriaItemMapping.Value = DirectStoreCounter;
                         }
