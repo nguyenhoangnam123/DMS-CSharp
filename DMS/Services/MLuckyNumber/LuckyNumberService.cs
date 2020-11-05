@@ -16,6 +16,7 @@ namespace DMS.Services.MLuckyNumber
     {
         Task<int> Count(LuckyNumberFilter LuckyNumberFilter);
         Task<List<LuckyNumber>> List(LuckyNumberFilter LuckyNumberFilter);
+        Task<List<LuckyNumber>> LuckyDraw(long StoreId, long TurnCounter);
         Task<LuckyNumber> Get(long Id);
         Task<LuckyNumber> Create(LuckyNumber LuckyNumber);
         Task<LuckyNumber> Update(LuckyNumber LuckyNumber);
@@ -95,6 +96,36 @@ namespace DMS.Services.MLuckyNumber
             return LuckyNumber;
         }
        
+        public async Task<List<LuckyNumber>> LuckyDraw(long StoreId, long TurnCounter)
+        {
+            var Store = await UOW.StoreRepository.Get(StoreId);
+            if(Store != null && TurnCounter > 0)
+            {
+                List<LuckyNumber> LuckyNumbers = await UOW.LuckyNumberRepository.List(new LuckyNumberFilter
+                {
+                    Skip = 0,
+                    Take = int.MaxValue,
+                    Selects = LuckyNumberSelect.ALL,
+                    RewardStatusId = new IdFilter { Equal = RewardStatusEnum.ACTIVE.Id }
+                });
+
+                if(LuckyNumbers.Count() >= TurnCounter)
+                {
+                    Random rnd = new Random();
+                    var RDList = LuckyNumbers.OrderBy(x => rnd.Next()).Take(5).ToList();
+
+                    foreach (var item in RDList)
+                    {
+                        item.RewardStatusId = RewardStatusEnum.INACTIVE.Id;
+                    }
+                    await UOW.LuckyNumberRepository.BulkMerge(RDList);
+
+                    return RDList;
+                }
+            }
+            return new List<LuckyNumber>();
+        }
+
         public async Task<LuckyNumber> Create(LuckyNumber LuckyNumber)
         {
             if (!await LuckyNumberValidator.Create(LuckyNumber))

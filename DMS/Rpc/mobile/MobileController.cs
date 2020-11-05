@@ -38,6 +38,8 @@ using DMS.Models;
 using GeoCoordinatePortable;
 using DMS.Services.MStoreScoutingType;
 using DMS.Services.MStoreStatus;
+using DMS.Services.MRewardHistory;
+using DMS.Services.MLuckyNumber;
 
 namespace DMS.Rpc.mobile
 {
@@ -51,6 +53,7 @@ namespace DMS.Rpc.mobile
         private IERouteService ERouteService;
         private IIndirectSalesOrderService IndirectSalesOrderService;
         private IItemService ItemService;
+        private ILuckyNumberService LuckyNumberService;
         private IStoreService StoreService;
         private IStoreScoutingService StoreScoutingService;
         private IStoreGroupingService StoreGroupingService;
@@ -69,6 +72,7 @@ namespace DMS.Rpc.mobile
         private ISupplierService SupplierService;
         private IProductGroupingService ProductGroupingService;
         private INotificationService NotificationService;
+        private IRewardHistoryService RewardHistoryService;
         private ICurrentContext CurrentContext;
         private DataContext DataContext;
         public MobileController(
@@ -80,6 +84,7 @@ namespace DMS.Rpc.mobile
             IERouteService ERouteService,
             IIndirectSalesOrderService IndirectSalesOrderService,
             IItemService ItemService,
+            ILuckyNumberService LuckyNumberService,
             IStoreScoutingService StoreScoutingService,
             IStoreService StoreService,
             IStoreGroupingService StoreGroupingService,
@@ -98,6 +103,7 @@ namespace DMS.Rpc.mobile
             ISupplierService SupplierService,
             IProductGroupingService ProductGroupingService,
             INotificationService NotificationService,
+            IRewardHistoryService RewardHistoryService,
             ICurrentContext CurrentContext,
             DataContext DataContext
         )
@@ -110,6 +116,7 @@ namespace DMS.Rpc.mobile
             this.ERouteService = ERouteService;
             this.IndirectSalesOrderService = IndirectSalesOrderService;
             this.ItemService = ItemService;
+            this.LuckyNumberService = LuckyNumberService;
             this.StoreService = StoreService;
             this.StoreScoutingService = StoreScoutingService;
             this.StoreGroupingService = StoreGroupingService;
@@ -128,6 +135,7 @@ namespace DMS.Rpc.mobile
             this.SupplierService = SupplierService;
             this.ProductGroupingService = ProductGroupingService;
             this.NotificationService = NotificationService;
+            this.RewardHistoryService = RewardHistoryService;
             this.CurrentContext = CurrentContext;
             this.DataContext = DataContext;
         }
