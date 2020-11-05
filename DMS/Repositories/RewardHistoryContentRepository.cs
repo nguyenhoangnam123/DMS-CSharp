@@ -106,13 +106,13 @@ namespace DMS.Repositories
                 Id = filter.Selects.Contains(RewardHistoryContentSelect.Id) ? q.Id : default(long),
                 RewardHistoryId = filter.Selects.Contains(RewardHistoryContentSelect.RewardHistory) ? q.RewardHistoryId : default(long),
                 LuckyNumberId = filter.Selects.Contains(RewardHistoryContentSelect.LuckyNumber) ? q.LuckyNumberId : default(long),
-                LuckyNumber = filter.Selects.Contains(RewardHistoryContentSelect.LuckyNumber) && q.LuckeyNumber != null ? new LuckyNumber
+                LuckyNumber = filter.Selects.Contains(RewardHistoryContentSelect.LuckyNumber) && q.LuckyNumber != null ? new LuckyNumber
                 {
-                    Id = q.LuckeyNumber.Id,
-                    Code = q.LuckeyNumber.Code,
-                    Name = q.LuckeyNumber.Name,
-                    RewardStatusId = q.LuckeyNumber.RewardStatusId,
-                    RowId = q.LuckeyNumber.RowId,
+                    Id = q.LuckyNumber.Id,
+                    Code = q.LuckyNumber.Code,
+                    Name = q.LuckyNumber.Name,
+                    RewardStatusId = q.LuckyNumber.RewardStatusId,
+                    RowId = q.LuckyNumber.RowId,
                 } : null,
                 RewardHistory = filter.Selects.Contains(RewardHistoryContentSelect.RewardHistory) && q.RewardHistory != null ? new RewardHistory
                 {
@@ -151,13 +151,13 @@ namespace DMS.Repositories
                 Id = x.Id,
                 RewardHistoryId = x.RewardHistoryId,
                 LuckyNumberId = x.LuckyNumberId,
-                LuckyNumber = x.LuckeyNumber == null ? null : new LuckyNumber
+                LuckyNumber = x.LuckyNumber == null ? null : new LuckyNumber
                 {
-                    Id = x.LuckeyNumber.Id,
-                    Code = x.LuckeyNumber.Code,
-                    Name = x.LuckeyNumber.Name,
-                    RewardStatusId = x.LuckeyNumber.RewardStatusId,
-                    RowId = x.LuckeyNumber.RowId,
+                    Id = x.LuckyNumber.Id,
+                    Code = x.LuckyNumber.Code,
+                    Name = x.LuckyNumber.Name,
+                    RewardStatusId = x.LuckyNumber.RewardStatusId,
+                    RowId = x.LuckyNumber.RowId,
                 },
                 RewardHistory = x.RewardHistory == null ? null : new RewardHistory
                 {
