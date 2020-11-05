@@ -114,6 +114,11 @@ namespace DMS.Services.MPromotionCode
             try
             {
                 await UOW.Begin();
+                PromotionCode.StartDate = PromotionCode.StartDate.AddHours(CurrentContext.TimeZone).Date.AddHours(0 - CurrentContext.TimeZone);
+                if (PromotionCode.EndDate.HasValue)
+                {
+                    PromotionCode.EndDate = PromotionCode.EndDate.Value.AddHours(CurrentContext.TimeZone).Date.AddHours(0 - CurrentContext.TimeZone);
+                }
                 await UOW.PromotionCodeRepository.Create(PromotionCode);
                 await UOW.Commit();
                 PromotionCode = await UOW.PromotionCodeRepository.Get(PromotionCode.Id);
