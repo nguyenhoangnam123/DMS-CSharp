@@ -112,7 +112,7 @@ namespace DMS.Services.MLuckyNumber
                 if(LuckyNumbers.Count() >= TurnCounter)
                 {
                     Random rnd = new Random();
-                    var RDList = LuckyNumbers.OrderBy(x => rnd.Next()).Take(5).ToList();
+                    var RDList = LuckyNumbers.OrderBy(x => rnd.Next()).Take((int)TurnCounter).ToList();
 
                     foreach (var item in RDList)
                     {
