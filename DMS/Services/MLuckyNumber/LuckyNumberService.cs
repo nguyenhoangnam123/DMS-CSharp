@@ -16,7 +16,7 @@ namespace DMS.Services.MLuckyNumber
     {
         Task<int> Count(LuckyNumberFilter LuckyNumberFilter);
         Task<List<LuckyNumber>> List(LuckyNumberFilter LuckyNumberFilter);
-        Task<List<LuckyNumber>> LuckyDraw(long StoreId, long TurnCounter);
+        Task<LuckyNumber> LuckyDraw(long RewardHistoryId);
         Task<LuckyNumber> Get(long Id);
         Task<LuckyNumber> Create(LuckyNumber LuckyNumber);
         Task<LuckyNumber> Update(LuckyNumber LuckyNumber);
@@ -96,10 +96,10 @@ namespace DMS.Services.MLuckyNumber
             return LuckyNumber;
         }
        
-        public async Task<List<LuckyNumber>> LuckyDraw(long StoreId, long TurnCounter)
+        public async Task<LuckyNumber> LuckyDraw(long RewardHistoryId)
         {
-            var Store = await UOW.StoreRepository.Get(StoreId);
-            if(Store != null && TurnCounter > 0)
+            RewardHistory RewardHistory = await UOW.RewardHistoryRepository.Get(RewardHistoryId);
+            if(RewardHistory != null && RewardHistory.TurnCounter > 0)
             {
                 List<LuckyNumber> LuckyNumbers = await UOW.LuckyNumberRepository.List(new LuckyNumberFilter
                 {
@@ -109,33 +109,29 @@ namespace DMS.Services.MLuckyNumber
                     RewardStatusId = new IdFilter { Equal = RewardStatusEnum.ACTIVE.Id }
                 });
 
-                if(LuckyNumbers.Count() >= TurnCounter)
+                if (LuckyNumbers.Count() >= RewardHistory.TurnCounter)
                 {
                     Random rnd = new Random();
-                    var RDList = LuckyNumbers.OrderBy(x => rnd.Next()).Take((int)TurnCounter).ToList();
+                    var RandomNumber = LuckyNumbers.OrderBy(x => rnd.Next()).FirstOrDefault();
 
-                    foreach (var item in RDList)
+                    RandomNumber.RewardStatusId = RewardStatusEnum.INACTIVE.Id;
+                    await UOW.LuckyNumberRepository.Update(RandomNumber);
+
+                    if(RewardHistory.RewardHistoryContents == null)
                     {
-                        item.RewardStatusId = RewardStatusEnum.INACTIVE.Id;
+                        RewardHistory.RewardHistoryContents = new List<RewardHistoryContent>();
                     }
-                    await UOW.LuckyNumberRepository.BulkMerge(RDList);
-
-                    RewardHistory RewardHistory = new RewardHistory
+                    RewardHistory.RewardHistoryContents.Add(new RewardHistoryContent 
                     {
-                        AppUserId = CurrentContext.UserId,
-                        StoreId = StoreId,
-                        TurnCounter = TurnCounter
-                    };
-                    RewardHistory.RewardHistoryContents = RDList.Select(x => new RewardHistoryContent
-                    {
-                        LuckyNumberId = x.Id
-                    }).ToList();
-                    await UOW.RewardHistoryRepository.Create(RewardHistory);
+                        LuckyNumberId = RandomNumber.Id,
+                        RewardHistoryId = RewardHistory.Id
+                    });
+                    await UOW.RewardHistoryRepository.Update(RewardHistory);
 
-                    return RDList;
+                    return RandomNumber;
                 }
             }
-            return new List<LuckyNumber>();
+            return null;
         }
 
         public async Task<LuckyNumber> Create(LuckyNumber LuckyNumber)
