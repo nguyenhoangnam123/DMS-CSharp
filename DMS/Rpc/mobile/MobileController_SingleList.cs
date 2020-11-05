@@ -1,4 +1,4 @@
-using DMS.Common;
+﻿using DMS.Common;
 using DMS.Entities;
 using DMS.Enums;
 using DMS.Models;
@@ -1305,12 +1305,27 @@ namespace DMS.Rpc.mobile
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
 
-            LuckyNumber LuckyNumber = await LuckyNumberService.LuckyDraw(Mobile_RewardHistoryDTO.Id);
-            if (LuckyNumber == null)
-                return BadRequest();
+            RewardHistory RewardHistory = await RewardHistoryService.Get(Mobile_RewardHistoryDTO.Id);
+            if(RewardHistory != null)
+            {
+                if(RewardHistory.TurnCounter <= RewardHistory.RewardHistoryContents.Count())
+                {
+                    return BadRequest("Đã hết số lần quay thưởng");
+                }
+                else
+                {
+                    LuckyNumber LuckyNumber = await LuckyNumberService.LuckyDraw(Mobile_RewardHistoryDTO.Id);
+                    if (LuckyNumber == null)
+                        return BadRequest();
+                    else
+                    {
+                        return Ok(new Mobile_LuckyNumberDTO(LuckyNumber));
+                    }
+                }
+            }
             else
             {
-                return Ok(new Mobile_LuckyNumberDTO(LuckyNumber));
+                return BadRequest();
             }
         }
 
