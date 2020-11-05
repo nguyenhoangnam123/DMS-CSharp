@@ -141,7 +141,7 @@ namespace DMS.Services.MPromotionCode
                 PromotionCode.AddError(nameof(PromotionCodeValidator), nameof(PromotionCode.StartDate), ErrorCode.StartDateEmpty);
             if (PromotionCode.EndDate.HasValue)
             {
-                if (PromotionCode.EndDate.Value.Date < StaticParams.DateTimeNow.Date)
+                if (PromotionCode.EndDate.Value.AddHours(CurrentContext.TimeZone).Date < StaticParams.DateTimeNow.AddHours(CurrentContext.TimeZone).Date)
                 {
                     PromotionCode.AddError(nameof(PromotionCodeValidator), nameof(PromotionCode.EndDate), ErrorCode.EndDateWrong);
                 }
