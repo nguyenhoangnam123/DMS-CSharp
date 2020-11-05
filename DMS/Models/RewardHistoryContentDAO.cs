@@ -7,9 +7,9 @@ namespace DMS.Models
     {
         public long Id { get; set; }
         public long RewardHistoryId { get; set; }
-        public long LuckeyNumberId { get; set; }
+        public long LuckyNumberId { get; set; }
 
-        public virtual LuckyNumberDAO LuckeyNumber { get; set; }
+        public virtual LuckyNumberDAO LuckyNumber { get; set; }
         public virtual RewardHistoryDAO RewardHistory { get; set; }
     }
 }

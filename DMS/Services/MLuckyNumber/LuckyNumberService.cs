@@ -120,6 +120,18 @@ namespace DMS.Services.MLuckyNumber
                     }
                     await UOW.LuckyNumberRepository.BulkMerge(RDList);
 
+                    RewardHistory RewardHistory = new RewardHistory
+                    {
+                        AppUserId = CurrentContext.UserId,
+                        StoreId = StoreId,
+                        TurnCounter = TurnCounter
+                    };
+                    RewardHistory.RewardHistoryContents = RDList.Select(x => new RewardHistoryContent
+                    {
+                        LuckyNumberId = x.Id
+                    }).ToList();
+                    await UOW.RewardHistoryRepository.Create(RewardHistory);
+
                     return RDList;
                 }
             }

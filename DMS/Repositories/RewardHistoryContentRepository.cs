@@ -37,8 +37,8 @@ namespace DMS.Repositories
                 query = query.Where(q => q.Id, filter.Id);
             if (filter.RewardHistoryId != null)
                 query = query.Where(q => q.RewardHistoryId, filter.RewardHistoryId);
-            if (filter.LuckeyNumberId != null)
-                query = query.Where(q => q.LuckeyNumberId, filter.LuckeyNumberId);
+            if (filter.LuckyNumberId != null)
+                query = query.Where(q => q.LuckyNumberId, filter.LuckyNumberId);
             query = OrFilter(query, filter);
             return query;
         }
@@ -55,8 +55,8 @@ namespace DMS.Repositories
                     queryable = queryable.Where(q => q.Id, RewardHistoryContentFilter.Id);
                 if (RewardHistoryContentFilter.RewardHistoryId != null)
                     queryable = queryable.Where(q => q.RewardHistoryId, RewardHistoryContentFilter.RewardHistoryId);
-                if (RewardHistoryContentFilter.LuckeyNumberId != null)
-                    queryable = queryable.Where(q => q.LuckeyNumberId, RewardHistoryContentFilter.LuckeyNumberId);
+                if (RewardHistoryContentFilter.LuckyNumberId != null)
+                    queryable = queryable.Where(q => q.LuckyNumberId, RewardHistoryContentFilter.LuckyNumberId);
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;
@@ -75,8 +75,8 @@ namespace DMS.Repositories
                         case RewardHistoryContentOrder.RewardHistory:
                             query = query.OrderBy(q => q.RewardHistoryId);
                             break;
-                        case RewardHistoryContentOrder.LuckeyNumber:
-                            query = query.OrderBy(q => q.LuckeyNumberId);
+                        case RewardHistoryContentOrder.LuckyNumber:
+                            query = query.OrderBy(q => q.LuckyNumberId);
                             break;
                     }
                     break;
@@ -89,8 +89,8 @@ namespace DMS.Repositories
                         case RewardHistoryContentOrder.RewardHistory:
                             query = query.OrderByDescending(q => q.RewardHistoryId);
                             break;
-                        case RewardHistoryContentOrder.LuckeyNumber:
-                            query = query.OrderByDescending(q => q.LuckeyNumberId);
+                        case RewardHistoryContentOrder.LuckyNumber:
+                            query = query.OrderByDescending(q => q.LuckyNumberId);
                             break;
                     }
                     break;
@@ -105,8 +105,8 @@ namespace DMS.Repositories
             {
                 Id = filter.Selects.Contains(RewardHistoryContentSelect.Id) ? q.Id : default(long),
                 RewardHistoryId = filter.Selects.Contains(RewardHistoryContentSelect.RewardHistory) ? q.RewardHistoryId : default(long),
-                LuckeyNumberId = filter.Selects.Contains(RewardHistoryContentSelect.LuckeyNumber) ? q.LuckeyNumberId : default(long),
-                LuckeyNumber = filter.Selects.Contains(RewardHistoryContentSelect.LuckeyNumber) && q.LuckeyNumber != null ? new LuckyNumber
+                LuckyNumberId = filter.Selects.Contains(RewardHistoryContentSelect.LuckyNumber) ? q.LuckyNumberId : default(long),
+                LuckyNumber = filter.Selects.Contains(RewardHistoryContentSelect.LuckyNumber) && q.LuckeyNumber != null ? new LuckyNumber
                 {
                     Id = q.LuckeyNumber.Id,
                     Code = q.LuckeyNumber.Code,
@@ -150,8 +150,8 @@ namespace DMS.Repositories
             {
                 Id = x.Id,
                 RewardHistoryId = x.RewardHistoryId,
-                LuckeyNumberId = x.LuckeyNumberId,
-                LuckeyNumber = x.LuckeyNumber == null ? null : new LuckyNumber
+                LuckyNumberId = x.LuckyNumberId,
+                LuckyNumber = x.LuckeyNumber == null ? null : new LuckyNumber
                 {
                     Id = x.LuckeyNumber.Id,
                     Code = x.LuckeyNumber.Code,
@@ -179,7 +179,7 @@ namespace DMS.Repositories
             RewardHistoryContentDAO RewardHistoryContentDAO = new RewardHistoryContentDAO();
             RewardHistoryContentDAO.Id = RewardHistoryContent.Id;
             RewardHistoryContentDAO.RewardHistoryId = RewardHistoryContent.RewardHistoryId;
-            RewardHistoryContentDAO.LuckeyNumberId = RewardHistoryContent.LuckeyNumberId;
+            RewardHistoryContentDAO.LuckyNumberId = RewardHistoryContent.LuckyNumberId;
             DataContext.RewardHistoryContent.Add(RewardHistoryContentDAO);
             await DataContext.SaveChangesAsync();
             RewardHistoryContent.Id = RewardHistoryContentDAO.Id;
@@ -194,7 +194,7 @@ namespace DMS.Repositories
                 return false;
             RewardHistoryContentDAO.Id = RewardHistoryContent.Id;
             RewardHistoryContentDAO.RewardHistoryId = RewardHistoryContent.RewardHistoryId;
-            RewardHistoryContentDAO.LuckeyNumberId = RewardHistoryContent.LuckeyNumberId;
+            RewardHistoryContentDAO.LuckyNumberId = RewardHistoryContent.LuckyNumberId;
             await DataContext.SaveChangesAsync();
             await SaveReference(RewardHistoryContent);
             return true;
@@ -214,7 +214,7 @@ namespace DMS.Repositories
                 RewardHistoryContentDAO RewardHistoryContentDAO = new RewardHistoryContentDAO();
                 RewardHistoryContentDAO.Id = RewardHistoryContent.Id;
                 RewardHistoryContentDAO.RewardHistoryId = RewardHistoryContent.RewardHistoryId;
-                RewardHistoryContentDAO.LuckeyNumberId = RewardHistoryContent.LuckeyNumberId;
+                RewardHistoryContentDAO.LuckyNumberId = RewardHistoryContent.LuckyNumberId;
                 RewardHistoryContentDAOs.Add(RewardHistoryContentDAO);
             }
             await DataContext.BulkMergeAsync(RewardHistoryContentDAOs);

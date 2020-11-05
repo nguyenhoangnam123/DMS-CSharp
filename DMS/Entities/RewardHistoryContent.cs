@@ -10,8 +10,8 @@ namespace DMS.Entities
     {
         public long Id { get; set; }
         public long RewardHistoryId { get; set; }
-        public long LuckeyNumberId { get; set; }
-        public LuckyNumber LuckeyNumber { get; set; }
+        public long LuckyNumberId { get; set; }
+        public LuckyNumber LuckyNumber { get; set; }
         public RewardHistory RewardHistory { get; set; }
         
         public bool Equals(RewardHistoryContent other)
@@ -28,7 +28,7 @@ namespace DMS.Entities
     {
         public IdFilter Id { get; set; }
         public IdFilter RewardHistoryId { get; set; }
-        public IdFilter LuckeyNumberId { get; set; }
+        public IdFilter LuckyNumberId { get; set; }
         public List<RewardHistoryContentFilter> OrFilter { get; set; }
         public RewardHistoryContentOrder OrderBy {get; set;}
         public RewardHistoryContentSelect Selects {get; set;}
@@ -39,7 +39,7 @@ namespace DMS.Entities
     {
         Id = 0,
         RewardHistory = 1,
-        LuckeyNumber = 2,
+        LuckyNumber = 2,
     }
 
     [Flags]
@@ -48,6 +48,6 @@ namespace DMS.Entities
         ALL = E.ALL,
         Id = E._0,
         RewardHistory = E._1,
-        LuckeyNumber = E._2,
+        LuckyNumber = E._2,
     }
 }

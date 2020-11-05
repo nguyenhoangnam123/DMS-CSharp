@@ -288,14 +288,14 @@ namespace DMS.Repositories
                 {
                     Id = x.Id,
                     RewardHistoryId = x.RewardHistoryId,
-                    LuckeyNumberId = x.LuckeyNumberId,
-                    LuckeyNumber = new LuckyNumber
+                    LuckyNumberId = x.LuckyNumberId,
+                    LuckyNumber = new LuckyNumber
                     {
-                        Id = x.LuckeyNumber.Id,
-                        Code = x.LuckeyNumber.Code,
-                        Name = x.LuckeyNumber.Name,
-                        RewardStatusId = x.LuckeyNumber.RewardStatusId,
-                        RowId = x.LuckeyNumber.RowId,
+                        Id = x.LuckyNumber.Id,
+                        Code = x.LuckyNumber.Code,
+                        Name = x.LuckyNumber.Name,
+                        RewardStatusId = x.LuckyNumber.RewardStatusId,
+                        RowId = x.LuckyNumber.RowId,
                     },
                 }).ToListAsync();
 
@@ -308,7 +308,7 @@ namespace DMS.Repositories
             RewardHistoryDAO.AppUserId = RewardHistory.AppUserId;
             RewardHistoryDAO.StoreId = RewardHistory.StoreId;
             RewardHistoryDAO.TurnCounter = RewardHistory.TurnCounter;
-            RewardHistoryDAO.RowId = RewardHistory.RowId;
+            RewardHistoryDAO.RowId = Guid.NewGuid();
             RewardHistoryDAO.CreatedAt = StaticParams.DateTimeNow;
             RewardHistoryDAO.UpdatedAt = StaticParams.DateTimeNow;
             DataContext.RewardHistory.Add(RewardHistoryDAO);
@@ -381,7 +381,7 @@ namespace DMS.Repositories
                     RewardHistoryContentDAO RewardHistoryContentDAO = new RewardHistoryContentDAO();
                     RewardHistoryContentDAO.Id = RewardHistoryContent.Id;
                     RewardHistoryContentDAO.RewardHistoryId = RewardHistory.Id;
-                    RewardHistoryContentDAO.LuckeyNumberId = RewardHistoryContent.LuckeyNumberId;
+                    RewardHistoryContentDAO.LuckyNumberId = RewardHistoryContent.LuckyNumberId;
                     RewardHistoryContentDAOs.Add(RewardHistoryContentDAO);
                 }
                 await DataContext.RewardHistoryContent.BulkMergeAsync(RewardHistoryContentDAOs);

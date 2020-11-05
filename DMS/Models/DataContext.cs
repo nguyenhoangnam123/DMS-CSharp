@@ -3580,9 +3580,9 @@ namespace DMS.Models
 
             modelBuilder.Entity<RewardHistoryContentDAO>(entity =>
             {
-                entity.HasOne(d => d.LuckeyNumber)
+                entity.HasOne(d => d.LuckyNumber)
                     .WithMany(p => p.RewardHistoryContents)
-                    .HasForeignKey(d => d.LuckeyNumberId)
+                    .HasForeignKey(d => d.LuckyNumberId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_RewardHistoryContent_LuckyNumber");
 
