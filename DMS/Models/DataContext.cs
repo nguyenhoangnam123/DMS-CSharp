@@ -1,7 +1,6 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Thinktecture;
 
 namespace DMS.Models
 {
@@ -63,6 +62,7 @@ namespace DMS.Models
         public virtual DbSet<KpiPeriodDAO> KpiPeriod { get; set; }
         public virtual DbSet<KpiYearDAO> KpiYear { get; set; }
         public virtual DbSet<ListDAO> List { get; set; }
+        public virtual DbSet<LuckyNumberDAO> LuckyNumber { get; set; }
         public virtual DbSet<MenuDAO> Menu { get; set; }
         public virtual DbSet<NotificationDAO> Notification { get; set; }
         public virtual DbSet<NotificationStatusDAO> NotificationStatus { get; set; }
@@ -131,6 +131,9 @@ namespace DMS.Models
         public virtual DbSet<ResellerDAO> Reseller { get; set; }
         public virtual DbSet<ResellerStatusDAO> ResellerStatus { get; set; }
         public virtual DbSet<ResellerTypeDAO> ResellerType { get; set; }
+        public virtual DbSet<RewardHistoryDAO> RewardHistory { get; set; }
+        public virtual DbSet<RewardHistoryContentDAO> RewardHistoryContent { get; set; }
+        public virtual DbSet<RewardStatusDAO> RewardStatus { get; set; }
         public virtual DbSet<RoleDAO> Role { get; set; }
         public virtual DbSet<SalesOrderTypeDAO> SalesOrderType { get; set; }
         public virtual DbSet<SchemaDAO> Schema { get; set; }
@@ -198,7 +201,6 @@ namespace DMS.Models
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.ConfigureTempTable<long>();
             modelBuilder.Entity<ActionDAO>(entity =>
             {
                 entity.ToTable("Action", "PER");
@@ -509,8 +511,6 @@ namespace DMS.Models
                     .IsRequired()
                     .HasMaxLength(500)
                     .HasComment("Tên nhãn nhiệu");
-
-                entity.Property(e => e.RowId).HasDefaultValueSql("(newid())");
 
                 entity.Property(e => e.StatusId).HasComment("Trạng thái hoạt động");
 
@@ -1080,8 +1080,6 @@ namespace DMS.Models
                     .IsRequired()
                     .HasMaxLength(4000)
                     .HasComment("Tên");
-
-                entity.Property(e => e.RowId).HasDefaultValueSql("(newid())");
 
                 entity.Property(e => e.ThumbnailUrl)
                     .HasMaxLength(4000)
@@ -1665,13 +1663,13 @@ namespace DMS.Models
                     .WithMany(p => p.KpiItemCreators)
                     .HasForeignKey(d => d.CreatorId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_ItemSpecificKpi_AppUser1");
+                    .HasConstraintName("FK_KpiItem_AppUser1");
 
                 entity.HasOne(d => d.Employee)
                     .WithMany(p => p.KpiItemEmployees)
                     .HasForeignKey(d => d.EmployeeId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_ItemSpecificKpi_AppUser");
+                    .HasConstraintName("FK_KpiItem_AppUser");
 
                 entity.HasOne(d => d.KpiPeriod)
                     .WithMany(p => p.KpiItems)
@@ -1689,13 +1687,13 @@ namespace DMS.Models
                     .WithMany(p => p.KpiItems)
                     .HasForeignKey(d => d.OrganizationId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_ItemSpecificKpi_Organization");
+                    .HasConstraintName("FK_KpiItem_Organization");
 
                 entity.HasOne(d => d.Status)
                     .WithMany(p => p.KpiItems)
                     .HasForeignKey(d => d.StatusId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_ItemSpecificKpi_Status");
+                    .HasConstraintName("FK_KpiItem_Status");
             });
 
             modelBuilder.Entity<KpiItemContentDAO>(entity =>
@@ -1791,6 +1789,29 @@ namespace DMS.Models
                 entity.Property(e => e.Id).ValueGeneratedOnAdd();
 
                 entity.Property(e => e.ExpireAt).HasColumnType("datetime");
+            });
+
+            modelBuilder.Entity<LuckyNumberDAO>(entity =>
+            {
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.HasOne(d => d.RewardStatus)
+                    .WithMany(p => p.LuckyNumbers)
+                    .HasForeignKey(d => d.RewardStatusId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_LuckyNumber_RewardStatus");
             });
 
             modelBuilder.Entity<MenuDAO>(entity =>
@@ -2411,8 +2432,6 @@ namespace DMS.Models
                     .IsRequired()
                     .HasMaxLength(3000);
 
-                entity.Property(e => e.RowId).HasDefaultValueSql("(newid())");
-
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
                 entity.HasOne(d => d.Parent)
@@ -2477,8 +2496,6 @@ namespace DMS.Models
                 entity.Property(e => e.Name)
                     .IsRequired()
                     .HasMaxLength(255);
-
-                entity.Property(e => e.RowId).HasDefaultValueSql("(newid())");
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
@@ -3538,6 +3555,57 @@ namespace DMS.Models
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
             });
 
+            modelBuilder.Entity<RewardHistoryDAO>(entity =>
+            {
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.HasOne(d => d.AppUser)
+                    .WithMany(p => p.RewardHistories)
+                    .HasForeignKey(d => d.AppUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_RewardHistory_AppUser");
+
+                entity.HasOne(d => d.Store)
+                    .WithMany(p => p.RewardHistories)
+                    .HasForeignKey(d => d.StoreId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_RewardHistory_Store");
+            });
+
+            modelBuilder.Entity<RewardHistoryContentDAO>(entity =>
+            {
+                entity.HasOne(d => d.LuckyNumber)
+                    .WithMany(p => p.RewardHistoryContents)
+                    .HasForeignKey(d => d.LuckyNumberId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_RewardHistoryContent_LuckyNumber");
+
+                entity.HasOne(d => d.RewardHistory)
+                    .WithMany(p => p.RewardHistoryContents)
+                    .HasForeignKey(d => d.RewardHistoryId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_RewardHistoryContent_RewardHistory");
+            });
+
+            modelBuilder.Entity<RewardStatusDAO>(entity =>
+            {
+                entity.ToTable("RewardStatus", "ENUM");
+
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(50);
+            });
+
             modelBuilder.Entity<RoleDAO>(entity =>
             {
                 entity.ToTable("Role", "PER");
@@ -3792,8 +3860,6 @@ namespace DMS.Models
                 entity.Property(e => e.Latitude).HasColumnType("decimal(18, 15)");
 
                 entity.Property(e => e.Longitude).HasColumnType("decimal(18, 15)");
-
-                entity.Property(e => e.OrganizationId).HasDefaultValueSql("((1))");
 
                 entity.HasOne(d => d.Organization)
                     .WithMany(p => p.StoreCheckings)
@@ -4143,8 +4209,6 @@ namespace DMS.Models
 
                 entity.Property(e => e.Phone).HasMaxLength(50);
 
-                entity.Property(e => e.RowId).HasDefaultValueSql("(newid())");
-
                 entity.Property(e => e.TaxCode).HasMaxLength(500);
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
@@ -4437,8 +4501,6 @@ namespace DMS.Models
                     .HasMaxLength(500);
 
                 entity.Property(e => e.Percentage).HasColumnType("decimal(18, 4)");
-
-                entity.Property(e => e.RowId).HasDefaultValueSql("(newid())");
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
@@ -4873,11 +4935,13 @@ namespace DMS.Models
                     .IsRequired()
                     .HasMaxLength(50);
 
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+
                 entity.Property(e => e.Name)
                     .IsRequired()
                     .HasMaxLength(500);
-
-                entity.Property(e => e.StatusId).HasDefaultValueSql("((1))");
 
                 entity.Property(e => e.SubjectMailForReject).HasMaxLength(4000);
 

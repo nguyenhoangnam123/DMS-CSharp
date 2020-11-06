@@ -160,6 +160,7 @@ namespace DMS.Repositories
             ImageDAO.Name = Image.Name;
             ImageDAO.Url = Image.Url;
             ImageDAO.ThumbnailUrl = Image.ThumbnailUrl;
+            ImageDAO.RowId = Image.RowId;
             ImageDAO.CreatedAt = StaticParams.DateTimeNow;
             ImageDAO.UpdatedAt = StaticParams.DateTimeNow;
             await DataContext.BulkMergeAsync<ImageDAO>(new List<ImageDAO> { ImageDAO });
