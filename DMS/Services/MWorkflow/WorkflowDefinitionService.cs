@@ -103,7 +103,7 @@ namespace DMS.Services.MWorkflow
             try
             {
                 WorkflowDefinition.HasConflict = false;
-                if (WorkflowDefinition.StatusId == StatusEnum.ACTIVE.Id)
+                if (WorkflowDefinition.StatusId == StatusEnum.ACTIVE.Id && WorkflowDefinition.Used == true)
                 {
                     WorkflowDefinitionFilter WorkflowDefinitionFilter = new WorkflowDefinitionFilter
                     {
@@ -233,7 +233,7 @@ namespace DMS.Services.MWorkflow
                     else
                         counter++;
                 }
-                await UOW.Begin();
+               
                 WorkflowDefinition WorkflowDefinition = oldData.Clone();
                 WorkflowDefinition.CreatorId = CurrentContext.UserId;
                 WorkflowDefinition.ModifierId = CurrentContext.UserId;
@@ -245,7 +245,6 @@ namespace DMS.Services.MWorkflow
                 WorkflowDefinition.WorkflowDirections = new List<WorkflowDirection>();
                 WorkflowDefinition.WorkflowSteps = new List<WorkflowStep>();
 
-                await UOW.WorkflowDefinitionRepository.Create(WorkflowDefinition);
                 foreach (var WorkflowStep in oldData.WorkflowSteps)
                 {
                     WorkflowStep.Id = 0;
@@ -255,15 +254,22 @@ namespace DMS.Services.MWorkflow
                     WorkflowStep.StatusId = WorkflowStep.StatusId;
                     WorkflowDefinition.WorkflowSteps.Add(WorkflowStep);
                 }
-                await UOW.WorkflowStepRepository.BulkMerge(WorkflowDefinition.WorkflowSteps);
 
+                if (!await WorkflowDefinitionValidator.Clone(WorkflowDefinition))
+                    return WorkflowDefinition; // validate Cloned WorkflowDefinition
+                if (!await WorkflowDefinitionValidator.CloneStep(oldData))
+                    return oldData; // validate Cloned WorkflowDefinition
+
+                await UOW.Begin(); // begin Transactions
+                await UOW.WorkflowDefinitionRepository.Create(WorkflowDefinition);
+                await UOW.WorkflowStepRepository.BulkMerge(WorkflowDefinition.WorkflowSteps); // clone steps
                 var WorkflowSteps = await UOW.WorkflowStepRepository.List(new WorkflowStepFilter
                 {
                     Skip = 0,
                     Take = int.MaxValue,
                     Selects = WorkflowStepSelect.ALL,
                     WorkflowDefinitionId = new IdFilter { Equal = WorkflowDefinition.Id }
-                });
+                }); // list lastest steps
                 foreach (var WorkflowDirection in oldData.WorkflowDirections)
                 {
                     WorkflowDirection.Id = 0;
@@ -273,7 +279,7 @@ namespace DMS.Services.MWorkflow
                     WorkflowDefinition.WorkflowDirections.Add(WorkflowDirection);
                 }
                 await UOW.WorkflowDirectionRepository.BulkMerge(WorkflowDefinition.WorkflowDirections);
-                await UOW.Commit();
+                await UOW.Commit(); // end Transactions
 
                 var newData = await UOW.WorkflowDefinitionRepository.Get(WorkflowDefinition.Id);
                 await Logging.CreateAuditLog(newData, oldData, nameof(WorkflowDefinitionService));

@@ -11,6 +11,7 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
     {
         public long Id { get; set; }
         public string Code { get; set; }
+        public string CodeDraft { get; set; }
         public string Name { get; set; }
         public long? ParentStoreId { get; set; }
         public long OrganizationId { get; set; }
@@ -22,6 +23,7 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
         {
             this.Id = Store.Id;
             this.Code = Store.Code;
+            this.CodeDraft = Store.CodeDraft;
             this.Name = Store.Name;
             this.ParentStoreId = Store.ParentStoreId;
             this.OrganizationId = Store.OrganizationId;
@@ -36,6 +38,7 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
         public IdFilter Id { get; set; }
 
         public StringFilter Code { get; set; }
+        public StringFilter CodeDraft { get; set; }
 
         public StringFilter Name { get; set; }
 

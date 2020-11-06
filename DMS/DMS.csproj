@@ -114,6 +114,24 @@
     <None Update="Templates\Product_Export.xlsx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Templates\Promotion_Item.xlsx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Templates\Promotion_Store.xlsx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Templates\Report_Direct_Sales_Order_By_Employee_And_Item.xlsx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Templates\Report_Direct_Sales_Order_By_Item.xlsx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Templates\Report_Direct_Sales_Order_By_Store_And_Item.xlsx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Templates\Report_Direct_Sales_Order_General.xlsx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Templates\Report_Sales_Order_By_Employee_And_Item.xlsx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

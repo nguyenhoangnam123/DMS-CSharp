@@ -33,6 +33,7 @@ namespace DMS.Rpc.promotion_code
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public bool Used { get; set; }
+        public long SalesOrderApplied => PromotionCodeHistories == null ? 0 : PromotionCodeHistories.Count();
         public PromotionCode_PromotionCodeDTO() {}
         public PromotionCode_PromotionCodeDTO(PromotionCode PromotionCode)
         {
@@ -60,6 +61,7 @@ namespace DMS.Rpc.promotion_code
             this.PromotionCodeStoreMappings = PromotionCode.PromotionCodeStoreMappings?.Select(x => new PromotionCode_PromotionCodeStoreMappingDTO(x)).ToList();
             this.CreatedAt = PromotionCode.CreatedAt;
             this.UpdatedAt = PromotionCode.UpdatedAt;
+            this.Used = PromotionCode.Used;
             this.Errors = PromotionCode.Errors;
         }
     }

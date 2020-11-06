@@ -12,6 +12,7 @@ namespace DMS.Rpc.mobile
         public const string ListStoreChecking = Default + "/list-store-checking";
         public const string GetStoreChecking = Default + "/get-store-checking";
         public const string UpdateStoreChecking = Default + "/update-store-checking";
+        public const string UpdateStoreCheckingImage = Default + "/update-store-checking-image";
         public const string CheckIn = Default + "/check-in";
         public const string CheckOut = Default + "/check-out";
         public const string CountCompletedIndirectSalesOrder = Default + "/count-completed-indirect-sales-order";
@@ -84,7 +85,11 @@ namespace DMS.Rpc.mobile
         public const string UpdateStoreScouting = Default + "/update-store-scouting";
         public const string DeleteStoreScouting = Default + "/delete-store-scouting";
 
-      
+        public const string ListRewardHistory = Default + "/list-reward";
+        public const string CountRewardHistory = Default + "/count-reward";
+        public const string GetRewardHistory = Default + "/get-reward";
+        public const string CreateRewardHistory = Default + "/create-reward";
+        public const string LuckyDraw = Default + "/lucky-draw";
         public static Dictionary<string, long> Filters = new Dictionary<string, long>
         {
         };
@@ -96,8 +101,13 @@ namespace DMS.Rpc.mobile
                 } },
             { "Checkin", new List<string> {
                 Master, CountStoreChecking, ListStoreChecking, GetStoreChecking,
-                Detail, CheckIn,  UpdateStoreChecking, CheckOut,
+                Detail, CheckIn,  UpdateStoreChecking, UpdateStoreCheckingImage, CheckOut,
                 CreateIndirectSalesOrder, CreateProblem, SaveImage, GetSurveyForm, SaveSurveyForm,
+                CountItem, ListItem, CountStorePlanned, ListStorePlanned, CountStoreUnPlanned, ListStoreUnPlanned, CountStoreInScope, ListStoreInScope, CountProblem, ListProblem, CountSurvey, ListSurvey, CountStoreScouting, ListStoreScouting,
+                SingleListAlbum, SingleListAppUser, SingleListStore, SingleListStoreStatus, SingleListTaxType, SingleListUnitOfMeasure, SingleListProblemType, SingleListStoreScoutingType, SingleListProvince, SingleListDistrict, SingleListWard, } },
+            { "Quay thưởng", new List<string>{
+                Master, CountStoreChecking, ListStoreChecking, GetStoreChecking,
+                Detail, ListRewardHistory,  CountRewardHistory, GetRewardHistory, LuckyDraw, CreateRewardHistory,
                 CountItem, ListItem, CountStorePlanned, ListStorePlanned, CountStoreUnPlanned, ListStoreUnPlanned, CountStoreInScope, ListStoreInScope, CountProblem, ListProblem, CountSurvey, ListSurvey, CountStoreScouting, ListStoreScouting,
                 SingleListAlbum, SingleListAppUser, SingleListStore, SingleListStoreStatus, SingleListTaxType, SingleListUnitOfMeasure, SingleListProblemType, SingleListStoreScoutingType, SingleListProvince, SingleListDistrict, SingleListWard, } },
         };

@@ -9,6 +9,7 @@ namespace DMS.Rpc.promotion_code
     public class PromotionCode_DirectSalesOrderDTO : DataDTO
     {
         public long Id { get; set; }
+        public string Code { get; set; }
         public long BuyerStoreId { get; set; }
         public decimal? PromotionValue { get; set; }
         public decimal TotalAfterTax { get; set; }
@@ -18,6 +19,7 @@ namespace DMS.Rpc.promotion_code
         public PromotionCode_DirectSalesOrderDTO(DirectSalesOrder DirectSalesOrder)
         {
             this.Id = DirectSalesOrder.Id;
+            this.Code = DirectSalesOrder.Code;
             this.BuyerStoreId = DirectSalesOrder.BuyerStoreId;
             this.PromotionValue = DirectSalesOrder.PromotionValue;
             this.TotalAfterTax = DirectSalesOrder.TotalAfterTax;

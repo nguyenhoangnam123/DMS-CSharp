@@ -25,6 +25,7 @@ using NGS.Templater;
 using DMS.Services.MKpiGeneralContent;
 using System.Text;
 using DMS.Repositories;
+using OfficeOpenXml.ConditionalFormatting;
 
 namespace DMS.Rpc.kpi_general
 {
@@ -300,7 +301,14 @@ namespace DMS.Rpc.kpi_general
 
                 string KpiYearValue = worksheet.Cells[2, 7].Value?.ToString();
                 if (long.TryParse(KpiYearValue, out long KpiYearId))
+                {
                     KpiYear = KpiYearEnum.KpiYearEnumList.Where(x => x.Id == KpiYearId).FirstOrDefault();
+                    if(KpiYear != null && KpiYear.Id < StaticParams.DateTimeNow.Year)
+                    {
+                        errorContent.AppendLine("Không thể nhập Kpi trong quá khứ");
+                        return BadRequest(errorContent.ToString());
+                    }
+                }
                 else
                 {
                     errorContent.AppendLine("Chưa chọn năm Kpi hoặc năm không hợp lệ");
@@ -378,7 +386,7 @@ namespace DMS.Rpc.kpi_general
 
                     if (string.IsNullOrWhiteSpace(UsernameValue) && i != worksheet.Dimension.End.Row)
                     {
-                        errorContent.AppendLine($"Lỗi dòng thứ {i + 1}: Chưa nhập mã nhân viên");
+                        errorContent.AppendLine($"Lỗi dòng thứ {i}: Chưa nhập mã nhân viên");
                         continue;
                     }
                     else if (string.IsNullOrWhiteSpace(UsernameValue) && i == worksheet.Dimension.End.Row)
@@ -388,7 +396,7 @@ namespace DMS.Rpc.kpi_general
                     AppUser Employee = Employees.Where(x => x.Username.ToLower() == UsernameValue.ToLower()).FirstOrDefault();
                     if (Employee == null)
                     {
-                        errorContent.AppendLine($"Lỗi dòng thứ {i + 1}: Nhân viên không tồn tại");
+                        errorContent.AppendLine($"Lỗi dòng thứ {i}: Nhân viên không tồn tại");
                         continue;
                     }
                     else
@@ -401,7 +409,7 @@ namespace DMS.Rpc.kpi_general
                         GenericEnum KpiCriteriaGeneral = KpiCriteriaGeneralEnum.KpiCriteriaGeneralEnumList.Where(x => x.Name == CriterialValue).FirstOrDefault();
                         if (KpiCriteriaGeneral == null)
                         {
-                            errorContent.AppendLine($"Lỗi dòng thứ {i + 1}: Tên chỉ tiêu không hợp lệ");
+                            errorContent.AppendLine($"Lỗi dòng thứ {i}: Tên chỉ tiêu không hợp lệ");
                             continue;
                         }
                         else
@@ -441,6 +449,15 @@ namespace DMS.Rpc.kpi_general
             {
                 Errors.Add(KpiGeneral_ImportDTO.Stt, new StringBuilder(""));
                 KpiGeneral_ImportDTO.IsNew = false;
+                if (!KpiGeneral_RowDTOs.Contains(new KpiGeneral_RowDTO { AppUserId = KpiGeneral_ImportDTO.EmployeeId, KpiYearId = KpiGeneral_ImportDTO.KpiYearId }))
+                {
+                    KpiGeneral_RowDTOs.Add(new KpiGeneral_RowDTO { AppUserId = KpiGeneral_ImportDTO.EmployeeId, KpiYearId = KpiGeneral_ImportDTO.KpiYearId });
+                    KpiGeneral_ImportDTO.IsNew = true;
+
+                    var Employee = Employees.Where(x => x.Username == KpiGeneral_ImportDTO.UsernameValue).FirstOrDefault();
+                    KpiGeneral_ImportDTO.OrganizationId = Employee.OrganizationId;
+                    KpiGeneral_ImportDTO.EmployeeId = Employee.Id;
+                }
             }
 
             HashSet<long> KpiPeriodIds = new HashSet<long>();
@@ -466,20 +483,17 @@ namespace DMS.Rpc.kpi_general
                     KpiPeriodIds.Add(KpiPeriod.Id);
             }
 
-            Parallel.ForEach(KpiGeneral_ImportDTOs, KpiGeneral_ImportDTO =>
+            foreach (var KpiGeneral_ImportDTO in KpiGeneral_ImportDTOs)
             {
-                if (!KpiGeneral_RowDTOs.Contains(new KpiGeneral_RowDTO { AppUserId = KpiGeneral_ImportDTO.EmployeeId, KpiYearId = KpiGeneral_ImportDTO.KpiYearId }))
+                if (KpiGeneral_ImportDTO.HasValue == false)
                 {
-                    KpiGeneral_ImportDTO.IsNew = true;
-                    KpiGeneral_ImportDTO.OrganizationId = Employees.Where(x => x.Username == KpiGeneral_ImportDTO.UsernameValue).Select(x => x.OrganizationId).FirstOrDefault();
+                    Errors[KpiGeneral_ImportDTO.Stt].Append($"Lỗi dòng thứ {KpiGeneral_ImportDTO.Stt}: Chưa nhập chỉ tiêu");
+                    continue;
                 }
-
                 KpiGeneral_ImportDTO.KpiCriteriaGeneralId = KpiCriteriaGeneralEnum.KpiCriteriaGeneralEnumList.Where(x => x.Name.ToLower() == KpiGeneral_ImportDTO.CriterialValue.ToLower()).Select(x => x.Id).FirstOrDefault();
                 KpiGeneral KpiGeneral;
                 if (KpiGeneral_ImportDTO.IsNew)
                 {
-                    KpiGeneral_RowDTOs.Add(new KpiGeneral_RowDTO { AppUserId = KpiGeneral_ImportDTO.EmployeeId, KpiYearId = KpiGeneral_ImportDTO.KpiYearId });
-
                     KpiGeneral = new KpiGeneral();
                     KpiGenerals.Add(KpiGeneral);
                     KpiGeneral.EmployeeId = KpiGeneral_ImportDTO.EmployeeId;
@@ -598,8 +612,7 @@ namespace DMS.Rpc.kpi_general
                             KpiGeneralContentKpiPeriodMapping.Value = Q4;
                         }
                         else if (decimal.TryParse(KpiGeneral_ImportDTO.YValue, out decimal Y) &&
-                        KpiGeneralContentKpiPeriodMapping.KpiPeriodId == KpiPeriodEnum.PERIOD_YEAR01.Id &&
-                        KpiPeriodIds.Contains(KpiPeriodEnum.PERIOD_YEAR01.Id))
+                        KpiGeneralContentKpiPeriodMapping.KpiPeriodId == KpiPeriodEnum.PERIOD_YEAR01.Id)
                         {
                             KpiGeneralContentKpiPeriodMapping.Value = Y;
                         }
@@ -611,12 +624,13 @@ namespace DMS.Rpc.kpi_general
                     }
                     if (flag == false)
                     {
-                        Errors[KpiGeneral_ImportDTO.Stt].AppendLine($"Lỗi dòng thứ {KpiGeneral_ImportDTO.Stt}: Chưa nhập chỉ tiêu");
+                        Errors[KpiGeneral_ImportDTO.Stt].AppendLine($"Lỗi dòng thứ {KpiGeneral_ImportDTO.Stt}: Không thể nhập dữ liệu KPI cho các kỳ trong quá khứ");
+                        continue;
                     }
                 }
                 KpiGeneral.CreatorId = AppUser.Id;
                 KpiGeneral.StatusId = StatusEnum.ACTIVE.Id;
-            });
+            }
 
             if (errorContent.Length > 0)
                 return BadRequest(errorContent.ToString());

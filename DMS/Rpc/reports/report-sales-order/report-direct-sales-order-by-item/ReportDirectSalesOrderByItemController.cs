@@ -560,7 +560,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_by_item
                 }
             }
 
-            string path = "Templates/Report_Sales_Order_By_Item.xlsx";
+            string path = "Templates/Report_Direct_Sales_Order_By_Item.xlsx";
             byte[] arr = System.IO.File.ReadAllBytes(path);
             MemoryStream input = new MemoryStream(arr);
             MemoryStream output = new MemoryStream();

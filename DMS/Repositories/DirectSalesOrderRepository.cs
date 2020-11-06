@@ -378,6 +378,7 @@ namespace DMS.Repositories
                 {
                     Id = q.BuyerStore.Id,
                     Code = q.BuyerStore.Code,
+                    CodeDraft = q.BuyerStore.CodeDraft,
                     Name = q.BuyerStore.Name,
                     ParentStoreId = q.BuyerStore.ParentStoreId,
                     OrganizationId = q.BuyerStore.OrganizationId,
@@ -435,6 +436,7 @@ namespace DMS.Repositories
                     Email = q.SaleEmployee.Email,
                     Phone = q.SaleEmployee.Phone,
                 } : null,
+                RowId = q.RowId
             }).ToListAsync();
             return DirectSalesOrders;
         }
@@ -650,6 +652,7 @@ namespace DMS.Repositories
                 {
                     Id = x.BuyerStore.Id,
                     Code = x.BuyerStore.Code,
+                    CodeDraft = x.BuyerStore.CodeDraft,
                     Name = x.BuyerStore.Name,
                     ParentStoreId = x.BuyerStore.ParentStoreId,
                     OrganizationId = x.BuyerStore.OrganizationId,

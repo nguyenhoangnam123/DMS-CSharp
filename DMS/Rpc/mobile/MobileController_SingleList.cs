@@ -1,4 +1,4 @@
-using DMS.Common;
+﻿using DMS.Common;
 using DMS.Entities;
 using DMS.Enums;
 using DMS.Models;
@@ -484,7 +484,7 @@ namespace DMS.Rpc.mobile
             {
                 StoreId = new IdFilter { Equal = Mobile_StoreDTO.Id },
                 Selects = AlbumSelect.ALL,
-                ShootingAt = new DateFilter { GreaterEqual = Start, LessEqual = End},
+                ShootingAt = new DateFilter { GreaterEqual = Start, LessEqual = End },
                 Skip = 0,
                 Take = int.MaxValue,
             });
@@ -1132,7 +1132,7 @@ namespace DMS.Rpc.mobile
                 throw new BindException(ModelState);
             DateTime Now = StaticParams.DateTimeNow;
             AppUser appUser = await AppUserService.Get(CurrentContext.UserId);
-            
+
             SurveyFilter SurveyFilter = new SurveyFilter();
             SurveyFilter.Selects = SurveySelect.ALL;
             SurveyFilter.Skip = Mobile_SurveyFilterDTO.Skip;
@@ -1147,7 +1147,7 @@ namespace DMS.Rpc.mobile
             SurveyFilter.EndAt = new DateFilter { GreaterEqual = Now };
             SurveyFilter.CreatorId = Mobile_SurveyFilterDTO.CreatorId;
             SurveyFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
-            
+
             List<Survey> Surveys = await SurveyService.List(SurveyFilter);
             List<Mobile_SurveyDTO> Mobile_SurveyDTOs = Surveys
                 .Select(x => new Mobile_SurveyDTO(x)).ToList();
@@ -1215,6 +1215,118 @@ namespace DMS.Rpc.mobile
             List<Mobile_StoreScoutingDTO> Mobile_StoreScoutingDTOs = StoreScoutings
                 .Select(x => new Mobile_StoreScoutingDTO(x)).ToList();
             return Mobile_StoreScoutingDTOs;
+        }
+
+        [Route(MobileRoute.CountRewardHistory), HttpPost]
+        public async Task<long> CountRewardHistory([FromBody] Mobile_RewardHistoryFilterDTO Mobile_RewardHistoryFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            AppUser appUser = await AppUserService.Get(CurrentContext.UserId);
+
+            RewardHistoryFilter RewardHistoryFilter = new RewardHistoryFilter();
+            RewardHistoryFilter.Selects = RewardHistorySelect.ALL;
+            RewardHistoryFilter.Skip = Mobile_RewardHistoryFilterDTO.Skip;
+            RewardHistoryFilter.Take = Mobile_RewardHistoryFilterDTO.Take;
+            RewardHistoryFilter.OrderBy = Mobile_RewardHistoryFilterDTO.OrderBy;
+            RewardHistoryFilter.OrderType = Mobile_RewardHistoryFilterDTO.OrderType;
+
+            RewardHistoryFilter.Id = Mobile_RewardHistoryFilterDTO.Id;
+            RewardHistoryFilter.CreatedAt = Mobile_RewardHistoryFilterDTO.CreatedAt;
+            RewardHistoryFilter.StoreId = Mobile_RewardHistoryFilterDTO.StoreId;
+            RewardHistoryFilter.AppUserId = new IdFilter { Equal = appUser.Id };
+
+            return await RewardHistoryService.Count(RewardHistoryFilter);
+        }
+
+        [Route(MobileRoute.ListRewardHistory), HttpPost]
+        public async Task<List<Mobile_RewardHistoryDTO>> ListRewardHistory([FromBody] Mobile_RewardHistoryFilterDTO Mobile_RewardHistoryFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            AppUser appUser = await AppUserService.Get(CurrentContext.UserId);
+
+            RewardHistoryFilter RewardHistoryFilter = new RewardHistoryFilter();
+            RewardHistoryFilter.Selects = RewardHistorySelect.ALL;
+            RewardHistoryFilter.Skip = Mobile_RewardHistoryFilterDTO.Skip;
+            RewardHistoryFilter.Take = Mobile_RewardHistoryFilterDTO.Take;
+            RewardHistoryFilter.OrderBy = Mobile_RewardHistoryFilterDTO.OrderBy;
+            RewardHistoryFilter.OrderType = Mobile_RewardHistoryFilterDTO.OrderType;
+
+            RewardHistoryFilter.Id = Mobile_RewardHistoryFilterDTO.Id;
+            RewardHistoryFilter.CreatedAt = Mobile_RewardHistoryFilterDTO.CreatedAt;
+            RewardHistoryFilter.StoreId = Mobile_RewardHistoryFilterDTO.StoreId;
+            RewardHistoryFilter.AppUserId = new IdFilter { Equal = appUser.Id };
+
+            List<RewardHistory> RewardHistorys = await RewardHistoryService.List(RewardHistoryFilter);
+            List<Mobile_RewardHistoryDTO> Mobile_RewardHistoryDTOs = RewardHistorys
+                .Select(x => new Mobile_RewardHistoryDTO(x)).ToList();
+            return Mobile_RewardHistoryDTOs;
+        }
+
+        [Route(MobileRoute.GetRewardHistory), HttpPost]
+        public async Task<ActionResult<Mobile_RewardHistoryDTO>> GetRewardHistory([FromBody] Mobile_RewardHistoryDTO Mobile_RewardHistoryDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            RewardHistory RewardHistory = await RewardHistoryService.Get(Mobile_RewardHistoryDTO.Id);
+            return new Mobile_RewardHistoryDTO(RewardHistory);
+        }
+
+        [Route(MobileRoute.CreateRewardHistory), HttpPost]
+        public async Task<ActionResult<Mobile_RewardHistoryDTO>> CreateRewardHistory([FromBody] Mobile_RewardHistoryDTO Mobile_RewardHistoryDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            RewardHistory RewardHistory = new RewardHistory
+            {
+                Id = Mobile_RewardHistoryDTO.Id,
+                AppUserId = CurrentContext.UserId,
+                TurnCounter = Mobile_RewardHistoryDTO.TurnCounter,
+                StoreId = Mobile_RewardHistoryDTO.StoreId
+            };
+            RewardHistory = await RewardHistoryService.Create(RewardHistory);
+            if (RewardHistory.IsValidated)
+            {
+                Mobile_RewardHistoryDTO = new Mobile_RewardHistoryDTO(RewardHistory);
+                return Mobile_RewardHistoryDTO;
+            }
+            else
+                return BadRequest(Mobile_RewardHistoryDTO);
+        }
+
+        [Route(MobileRoute.LuckyDraw), HttpPost]
+        public async Task<ActionResult<Mobile_LuckyNumberDTO>> LuckyNumber([FromBody] Mobile_RewardHistoryDTO Mobile_RewardHistoryDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            RewardHistory RewardHistory = await RewardHistoryService.Get(Mobile_RewardHistoryDTO.Id);
+            if(RewardHistory != null)
+            {
+                if(RewardHistory.TurnCounter <= RewardHistory.RewardHistoryContents.Count())
+                {
+                    return BadRequest("Đã hết số lần quay thưởng");
+                }
+                else
+                {
+                    LuckyNumber LuckyNumber = await LuckyNumberService.LuckyDraw(Mobile_RewardHistoryDTO.Id);
+                    if (LuckyNumber == null)
+                        return BadRequest();
+                    else
+                    {
+                        return Ok(new Mobile_LuckyNumberDTO(LuckyNumber));
+                    }
+                }
+            }
+            else
+            {
+                return BadRequest();
+            }
         }
 
         [Route(MobileRoute.CountCompletedIndirectSalesOrder), HttpPost]

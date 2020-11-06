@@ -93,6 +93,7 @@ namespace DMS.Rpc.reports.report_store.report_statistic_problem
             StoreFilter.Id = ReportStatisticProblem_StoreFilterDTO.Id;
             StoreFilter.Code = ReportStatisticProblem_StoreFilterDTO.Code;
             StoreFilter.Name = ReportStatisticProblem_StoreFilterDTO.Name;
+            StoreFilter.CodeDraft = ReportStatisticProblem_StoreFilterDTO.CodeDraft;
             StoreFilter.OrganizationId = ReportStatisticProblem_StoreFilterDTO.OrganizationId;
             StoreFilter.StoreTypeId = ReportStatisticProblem_StoreFilterDTO.StoreTypeId;
             StoreFilter.StoreGroupingId = ReportStatisticProblem_StoreFilterDTO.StoreGroupingId;
@@ -338,6 +339,7 @@ namespace DMS.Rpc.reports.report_store.report_statistic_problem
                         {
                             Id = s.Id,
                             Code = s.Code,
+                            CodeDraft = s.CodeDraft,
                             Name = s.Name,
                             Address = s.Address,
                             Telephone = s.Telephone,
@@ -366,6 +368,7 @@ namespace DMS.Rpc.reports.report_store.report_statistic_problem
                     {
                         Id = x.Id,
                         Code = x.Code,
+                        CodeDraft = x.CodeDraft,
                         Name = x.Name,
                         Address = x.Address,
                         Phone = x.Telephone,
@@ -507,6 +510,7 @@ namespace DMS.Rpc.reports.report_store.report_statistic_problem
                         {
                             Id = s.Id,
                             Code = s.Code,
+                            CodeDraft = s.CodeDraft,
                             Name = s.Name,
                             Address = s.Address,
                             OrganizationId = s.OrganizationId,

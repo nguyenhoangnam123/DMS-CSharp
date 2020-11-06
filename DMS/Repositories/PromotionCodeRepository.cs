@@ -57,7 +57,38 @@ namespace DMS.Repositories
             if (filter.PromotionProductAppliedTypeId != null)
                 query = query.Where(q => q.PromotionProductAppliedTypeId, filter.PromotionProductAppliedTypeId);
             if (filter.OrganizationId != null)
-                query = query.Where(q => q.OrganizationId, filter.OrganizationId);
+            {
+                if (filter.OrganizationId.Equal != null)
+                {
+                    OrganizationDAO OrganizationDAO = DataContext.Organization
+                        .Where(o => o.Id == filter.OrganizationId.Equal.Value).FirstOrDefault();
+                    query = query.Where(q => q.Organization.Path.StartsWith(OrganizationDAO.Path));
+                }
+                if (filter.OrganizationId.NotEqual != null)
+                {
+                    OrganizationDAO OrganizationDAO = DataContext.Organization
+                        .Where(o => o.Id == filter.OrganizationId.NotEqual.Value).FirstOrDefault();
+                    query = query.Where(q => !q.Organization.Path.StartsWith(OrganizationDAO.Path));
+                }
+                if (filter.OrganizationId.In != null)
+                {
+                    List<OrganizationDAO> OrganizationDAOs = DataContext.Organization
+                        .Where(o => o.DeletedAt == null && o.StatusId == 1).ToList();
+                    List<OrganizationDAO> Parents = OrganizationDAOs.Where(o => filter.OrganizationId.In.Contains(o.Id)).ToList();
+                    List<OrganizationDAO> Branches = OrganizationDAOs.Where(o => Parents.Any(p => o.Path.StartsWith(p.Path))).ToList();
+                    List<long> Ids = Branches.Select(o => o.Id).ToList();
+                    query = query.Where(q => Ids.Contains(q.OrganizationId));
+                }
+                if (filter.OrganizationId.NotIn != null)
+                {
+                    List<OrganizationDAO> OrganizationDAOs = DataContext.Organization
+                        .Where(o => o.DeletedAt == null && o.StatusId == 1).ToList();
+                    List<OrganizationDAO> Parents = OrganizationDAOs.Where(o => filter.OrganizationId.NotIn.Contains(o.Id)).ToList();
+                    List<OrganizationDAO> Branches = OrganizationDAOs.Where(o => Parents.Any(p => o.Path.StartsWith(p.Path))).ToList();
+                    List<long> Ids = Branches.Select(o => o.Id).ToList();
+                    query = query.Where(q => !Ids.Contains(q.OrganizationId));
+                }
+            }
             if (filter.StartDate != null)
                 query = query.Where(q => q.StartDate, filter.StartDate);
             if (filter.EndDate != null && filter.EndDate.HasValue)
@@ -261,6 +292,7 @@ namespace DMS.Repositories
                 } : null,
                 CreatedAt = q.CreatedAt,
                 UpdatedAt = q.UpdatedAt,
+                Used = q.Used,
             }).ToListAsync();
             return PromotionCodes;
         }
@@ -302,6 +334,7 @@ namespace DMS.Repositories
                 StartDate = x.StartDate,
                 EndDate = x.EndDate,
                 StatusId = x.StatusId,
+                Used = x.Used,
                 Organization = x.Organization == null ? null : new Organization
                 {
                     Id = x.Organization.Id,
@@ -473,6 +506,7 @@ namespace DMS.Repositories
             PromotionCodeDAO.StatusId = PromotionCode.StatusId;
             PromotionCodeDAO.CreatedAt = StaticParams.DateTimeNow;
             PromotionCodeDAO.UpdatedAt = StaticParams.DateTimeNow;
+            PromotionCodeDAO.Used = false;
             DataContext.PromotionCode.Add(PromotionCodeDAO);
             await DataContext.SaveChangesAsync();
             PromotionCode.Id = PromotionCodeDAO.Id;
@@ -531,6 +565,7 @@ namespace DMS.Repositories
                 PromotionCodeDAO.StatusId = PromotionCode.StatusId;
                 PromotionCodeDAO.CreatedAt = StaticParams.DateTimeNow;
                 PromotionCodeDAO.UpdatedAt = StaticParams.DateTimeNow;
+                PromotionCodeDAO.Used = false;
                 PromotionCodeDAOs.Add(PromotionCodeDAO);
             }
             await DataContext.BulkMergeAsync(PromotionCodeDAOs);

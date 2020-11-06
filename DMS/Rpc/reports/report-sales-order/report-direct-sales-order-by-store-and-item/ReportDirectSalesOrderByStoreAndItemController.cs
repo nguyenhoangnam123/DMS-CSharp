@@ -90,6 +90,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_by_store_
             StoreFilter.Selects = StoreSelect.ALL;
             StoreFilter.Id = ReportDirectSalesOrderByStoreAndItem_StoreFilterDTO.Id;
             StoreFilter.Code = ReportDirectSalesOrderByStoreAndItem_StoreFilterDTO.Code;
+            StoreFilter.CodeDraft = ReportDirectSalesOrderByStoreAndItem_StoreFilterDTO.CodeDraft;
             StoreFilter.Name = ReportDirectSalesOrderByStoreAndItem_StoreFilterDTO.Name;
             StoreFilter.OrganizationId = ReportDirectSalesOrderByStoreAndItem_StoreFilterDTO.OrganizationId;
             StoreFilter.StoreTypeId = ReportDirectSalesOrderByStoreAndItem_StoreFilterDTO.StoreTypeId;
@@ -336,6 +337,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_by_store_
                         {
                             Id = s.Id,
                             Code = s.Code,
+                            CodeDraft = s.CodeDraft,
                             Name = s.Name,
                             Address = s.Address,
                             OrganizationId = s.OrganizationId,
@@ -363,6 +365,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_by_store_
                     {
                         Id = x.Id,
                         Code = x.Code,
+                        CodeDraft = x.CodeDraft,
                         Name = x.Name,
                         StoreStatusId = x.StoreStatusId,
                         Address = x.Address,
@@ -606,14 +609,13 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_by_store_
                         {
                             Id = s.Id,
                             Code = s.Code,
+                            CodeDraft = s.CodeDraft,
                             Name = s.Name,
                             Address = s.Address,
                             OrganizationId = s.OrganizationId,
                         };
 
             List<Store> Stores = await query.Distinct().OrderBy(x => x.OrganizationId).ThenBy(x => x.Name)
-                .Skip(ReportDirectSalesOrderByStoreAndItem_ReportDirectSalesOrderByStoreAndItemFilterDTO.Skip)
-                .Take(ReportDirectSalesOrderByStoreAndItem_ReportDirectSalesOrderByStoreAndItemFilterDTO.Take)
                 .ToListAsync();
 
             OrganizationIds = Stores.Select(x => x.OrganizationId).Distinct().ToList();
@@ -632,6 +634,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_by_store_
                     {
                         Id = x.Id,
                         Code = x.Code,
+                        CodeDraft = x.CodeDraft,
                         Name = x.Name,
                     })
                     .ToList();
@@ -685,7 +688,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_by_store_
                 }
             }
 
-            string path = "Templates/Report_Sales_Order_By_Store_And_Item.xlsx";
+            string path = "Templates/Report_Direct_Sales_Order_By_Store_And_Item.xlsx";
             byte[] arr = System.IO.File.ReadAllBytes(path);
             MemoryStream input = new MemoryStream(arr);
             MemoryStream output = new MemoryStream();

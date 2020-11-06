@@ -623,6 +623,28 @@ namespace DMS.Rpc.e_route
             return ERoute_OrganizationDTOs;
         }
 
+        [Route(ERouteRoute.FilterListRequestState), HttpPost]
+        public async Task<List<ERoute_RequestStateDTO>> FilterListRequestState([FromBody] ERoute_RequestStateFilterDTO ERoute_RequestStateFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            RequestStateFilter RequestStateFilter = new RequestStateFilter();
+            RequestStateFilter.Skip = 0;
+            RequestStateFilter.Take = 20;
+            RequestStateFilter.OrderBy = RequestStateOrder.Id;
+            RequestStateFilter.OrderType = OrderType.ASC;
+            RequestStateFilter.Selects = RequestStateSelect.ALL;
+            RequestStateFilter.Id = ERoute_RequestStateFilterDTO.Id;
+            RequestStateFilter.Code = ERoute_RequestStateFilterDTO.Code;
+            RequestStateFilter.Name = ERoute_RequestStateFilterDTO.Name;
+
+            List<RequestState> RequestStatees = await RequestStateService.List(RequestStateFilter);
+            List<ERoute_RequestStateDTO> ERoute_RequestStateDTOs = RequestStatees
+                .Select(x => new ERoute_RequestStateDTO(x)).ToList();
+            return ERoute_RequestStateDTOs;
+        }
+
         [Route(ERouteRoute.SingleListAppUser), HttpPost]
         public async Task<List<ERoute_AppUserDTO>> SingleListAppUser([FromBody] ERoute_AppUserFilterDTO ERoute_AppUserFilterDTO)
         {

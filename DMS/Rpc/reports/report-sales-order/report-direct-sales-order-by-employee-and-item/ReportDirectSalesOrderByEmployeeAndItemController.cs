@@ -481,9 +481,13 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_by_employ
             }
 
             var DirectSalesOrderContentQuery = DataContext.DirectSalesOrderContent
-                .Where(x => AppUserIds.Contains(x.DirectSalesOrder.SaleEmployeeId) && Start <= x.DirectSalesOrder.OrderDate && x.DirectSalesOrder.OrderDate <= End);
+                .Where(x => AppUserIds.Contains(x.DirectSalesOrder.SaleEmployeeId) && 
+                Start <= x.DirectSalesOrder.OrderDate && x.DirectSalesOrder.OrderDate <= End &&
+                x.DirectSalesOrder.RequestStateId == RequestStateEnum.APPROVED.Id);
             var DirectSalesOrderPromotionQuery = DataContext.DirectSalesOrderPromotion
-                .Where(x => AppUserIds.Contains(x.DirectSalesOrder.SaleEmployeeId) && Start <= x.DirectSalesOrder.OrderDate && x.DirectSalesOrder.OrderDate <= End);
+                .Where(x => AppUserIds.Contains(x.DirectSalesOrder.SaleEmployeeId) && 
+                Start <= x.DirectSalesOrder.OrderDate && x.DirectSalesOrder.OrderDate <= End &&
+                x.DirectSalesOrder.RequestStateId == RequestStateEnum.APPROVED.Id);
 
             ReportDirectSalesOrderByEmployeeAndItem_TotalDTO.TotalSalesStock = DirectSalesOrderContentQuery.Select(x => x.RequestedQuantity).Sum();
 
@@ -529,7 +533,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_by_employ
             }
 
 
-            string path = "Templates/Report_Sales_Order_By_Employee_And_Item.xlsx";
+            string path = "Templates/Report_Direct_Sales_Order_By_Employee_And_Item.xlsx";
             byte[] arr = System.IO.File.ReadAllBytes(path);
             MemoryStream input = new MemoryStream(arr);
             MemoryStream output = new MemoryStream();

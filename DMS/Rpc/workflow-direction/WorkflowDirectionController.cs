@@ -500,6 +500,7 @@ namespace DMS.Rpc.workflow_direction
             WorkflowStepFilter.Code = WorkflowDirection_WorkflowStepFilterDTO.Code;
             WorkflowStepFilter.Name = WorkflowDirection_WorkflowStepFilterDTO.Name;
             WorkflowStepFilter.RoleId = WorkflowDirection_WorkflowStepFilterDTO.RoleId;
+            WorkflowStepFilter.StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id };
 
             List<WorkflowStep> WorkflowSteps = await WorkflowStepService.List(WorkflowStepFilter);
             List<WorkflowDirection_WorkflowStepDTO> WorkflowDirection_WorkflowStepDTOs = WorkflowSteps

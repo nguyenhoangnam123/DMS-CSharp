@@ -47,8 +47,9 @@ namespace DMS.Services.MWorkflow
 
         public async Task<List<RequestWorkflowStepMapping>> ListRequestWorkflowStepMapping(Guid RequestId)
         {
+            RequestWorkflowDefinitionMapping RequestWorkflowDefinitionMapping = await UOW.RequestWorkflowDefinitionMappingRepository.Get(RequestId);
             List<RequestWorkflowHistory> RequestWorkflowHistories = await UOW.RequestWorkflowHistoryRepository.List(RequestId);
-            List<RequestWorkflowStepMapping> RequestWorkflowStepMappings = RequestWorkflowHistories.Select(x => new RequestWorkflowStepMapping
+            List<RequestWorkflowStepMapping> RequestWorkflowStepMappings =  RequestWorkflowHistories.Select(x => new RequestWorkflowStepMapping
             {
                 AppUserId = x.AppUserId,
                 CreatedAt = x.CreatedAt,
@@ -82,7 +83,23 @@ namespace DMS.Services.MWorkflow
                     }
                 },
             }).ToList();
-            RequestWorkflowStepMappings = RequestWorkflowStepMappings.OrderByDescending(x => x.WorkflowStateId).ToList();
+
+            var RequestWorkflowStepApproved = RequestWorkflowStepMappings.Where(rq => rq.WorkflowState.Id == 3).OrderByDescending(x => x.CreatedAt).ToList(); // approved
+            var RequestWorkflowStepReject = RequestWorkflowStepMappings.Where(rq => rq.WorkflowState.Id == 4).OrderByDescending(x => x.CreatedAt).ToList(); // rejected
+            var RequestWorkflowStepPending = RequestWorkflowStepMappings.Where(rq => rq.WorkflowState.Id == 2).OrderByDescending(x => x.CreatedAt).ToList(); // pending
+
+            if(RequestWorkflowStepApproved.Count > 0)
+            {
+                if (RequestWorkflowStepReject.Count() > 0)
+                    RequestWorkflowStepMappings = RequestWorkflowStepApproved.Concat(RequestWorkflowStepReject).ToList();
+
+                if (RequestWorkflowStepReject.Count() == 0)
+                    RequestWorkflowStepMappings = RequestWorkflowStepApproved.Concat(RequestWorkflowStepPending).ToList();
+            }
+
+            if(RequestWorkflowStepApproved.Count == 0) RequestWorkflowStepMappings = RequestWorkflowStepPending; // if approved list is empty, return all pending
+
+
             foreach (RequestWorkflowStepMapping RequestWorkflowStepMapping in RequestWorkflowStepMappings)
             {
                 if (RequestWorkflowStepMapping.WorkflowStateId == WorkflowStateEnum.PENDING.Id)

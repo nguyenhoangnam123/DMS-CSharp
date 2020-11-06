@@ -20,5 +20,8 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_general
         public decimal TaxValue { get; set; }
         public decimal SubTotal { get; set; }
         public decimal Total { get; set; }
+        public decimal PromotionValue { get; set; }
+        public decimal TotalAfterPromotion { get; set; }
+
     }
 }

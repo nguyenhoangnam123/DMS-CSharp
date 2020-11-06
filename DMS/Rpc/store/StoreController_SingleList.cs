@@ -188,6 +188,25 @@ namespace DMS.Rpc.store
             return Store_StatusDTOs;
         }
 
+        [Route(StoreRoute.FilterListStoreGrouping), HttpPost]
+        public async Task<List<Store_StoreGroupingDTO>> FilterListStoreGrouping([FromBody] Store_StoreGroupingFilterDTO Store_StoreGroupingFilterDTO)
+        {
+            StoreGroupingFilter StoreGroupingFilter = new StoreGroupingFilter();
+            StoreGroupingFilter.Skip = 0;
+            StoreGroupingFilter.Take = 99999;
+            StoreGroupingFilter.OrderBy = StoreGroupingOrder.Id;
+            StoreGroupingFilter.OrderType = OrderType.ASC;
+            StoreGroupingFilter.Selects = StoreGroupingSelect.ALL;
+            StoreGroupingFilter.Code = Store_StoreGroupingFilterDTO.Code;
+            StoreGroupingFilter.Name = Store_StoreGroupingFilterDTO.Name;
+            StoreGroupingFilter.Level = Store_StoreGroupingFilterDTO.Level;
+            StoreGroupingFilter.Path = Store_StoreGroupingFilterDTO.Path;
+            List<StoreGrouping> StoreGroupings = await StoreGroupingService.List(StoreGroupingFilter);
+            List<Store_StoreGroupingDTO> Store_StoreGroupingDTOs = StoreGroupings
+                .Select(x => new Store_StoreGroupingDTO(x)).ToList();
+            return Store_StoreGroupingDTOs;
+        }
+
         [Route(StoreRoute.FilterListStoreType), HttpPost]
         public async Task<List<Store_StoreTypeDTO>> FilterListStoreType([FromBody] Store_StoreTypeFilterDTO Store_StoreTypeFilterDTO)
         {

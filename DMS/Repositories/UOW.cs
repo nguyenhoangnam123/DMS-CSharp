@@ -45,6 +45,7 @@ namespace DMS.Repositories
         IKpiItemRepository KpiItemRepository { get; }
         IKpiPeriodRepository KpiPeriodRepository { get; }
         IKpiYearRepository KpiYearRepository { get; }
+        ILuckyNumberRepository LuckyNumberRepository { get; }
         IInventoryRepository InventoryRepository { get; }
         IInventoryHistoryRepository InventoryHistoryRepository { get; }
         IMenuRepository MenuRepository { get; }
@@ -90,6 +91,9 @@ namespace DMS.Repositories
         IResellerRepository ResellerRepository { get; }
         IResellerStatusRepository ResellerStatusRepository { get; }
         IResellerTypeRepository ResellerTypeRepository { get; }
+        IRewardHistoryContentRepository RewardHistoryContentRepository { get; }
+        IRewardHistoryRepository RewardHistoryRepository { get; }
+        IRewardStatusRepository RewardStatusRepository { get; }
         IRoleRepository RoleRepository { get; }
         ISalesOrderTypeRepository SalesOrderTypeRepository { get; }
         ISexRepository SexRepository { get; }
@@ -168,6 +172,7 @@ namespace DMS.Repositories
         public IKpiItemRepository KpiItemRepository { get; private set; }
         public IKpiPeriodRepository KpiPeriodRepository { get; private set; }
         public IKpiYearRepository KpiYearRepository { get; private set; }
+        public ILuckyNumberRepository LuckyNumberRepository { get; private set; }
         public IMenuRepository MenuRepository { get; private set; }
         public INotificationRepository NotificationRepository { get; private set; }
         public INotificationStatusRepository NotificationStatusRepository { get; private set; }
@@ -194,7 +199,9 @@ namespace DMS.Repositories
         public IPromotionDiscountTypeRepository PromotionDiscountTypeRepository { get; private set; }
         public IPromotionProductTypeRepository PromotionProductTypeRepository { get; private set; }
         public IPromotionPolicyRepository PromotionPolicyRepository { get; private set; }
-        
+        public IRewardHistoryContentRepository RewardHistoryContentRepository { get; private set; }
+        public IRewardHistoryRepository RewardHistoryRepository { get; private set; }
+        public IRewardStatusRepository RewardStatusRepository { get; private set; }
         public IPromotionProductAppliedTypeRepository PromotionProductAppliedTypeRepository { get; private set; }
         public IPromotionProductRepository PromotionProductRepository { get; private set; }
         public IPromotionProductGroupingRepository PromotionProductGroupingRepository { get; private set; }
@@ -212,6 +219,7 @@ namespace DMS.Repositories
         public IResellerRepository ResellerRepository { get; private set; }
         public IResellerStatusRepository ResellerStatusRepository { get; private set; }
         public IResellerTypeRepository ResellerTypeRepository { get; private set; }
+
         public IRoleRepository RoleRepository { get; private set; }
         public ISalesOrderTypeRepository SalesOrderTypeRepository { get; private set; }
         public ISexRepository SexRepository { get; private set; }
@@ -289,6 +297,7 @@ namespace DMS.Repositories
             KpiItemRepository = new KpiItemRepository(DataContext);
             KpiPeriodRepository = new KpiPeriodRepository(DataContext);
             KpiYearRepository = new KpiYearRepository(DataContext);
+            LuckyNumberRepository = new LuckyNumberRepository(DataContext);
             MenuRepository = new MenuRepository(DataContext);
             NotificationRepository = new NotificationRepository(DataContext);
             NotificationStatusRepository = new NotificationStatusRepository(DataContext);
@@ -332,6 +341,9 @@ namespace DMS.Repositories
             ResellerRepository = new ResellerRepository(DataContext);
             ResellerStatusRepository = new ResellerStatusRepository(DataContext);
             ResellerTypeRepository = new ResellerTypeRepository(DataContext);
+            RewardHistoryContentRepository = new RewardHistoryContentRepository(DataContext);
+            RewardHistoryRepository = new RewardHistoryRepository(DataContext);
+            RewardStatusRepository = new RewardStatusRepository(DataContext);
             RoleRepository = new RoleRepository(DataContext);
             SalesOrderTypeRepository = new SalesOrderTypeRepository(DataContext);
             SexRepository = new SexRepository(DataContext);

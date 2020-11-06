@@ -212,6 +212,12 @@ namespace DMS.Repositories
                         case PriceListOrder.RequestState:
                             query = query.OrderBy(q => q.RequestStateId);
                             break;
+                        case PriceListOrder.CreatedAt:
+                            query = query.OrderBy(q => q.CreatedAt);
+                            break;
+                        case PriceListOrder.UpdatedAt:
+                            query = query.OrderBy(q => q.UpdatedAt);
+                            break;
                     }
                     break;
                 case OrderType.DESC:
@@ -249,6 +255,12 @@ namespace DMS.Repositories
                             break;
                         case PriceListOrder.RequestState:
                             query = query.OrderByDescending(q => q.RequestStateId);
+                            break;
+                        case PriceListOrder.CreatedAt:
+                            query = query.OrderByDescending(q => q.CreatedAt);
+                            break;
+                        case PriceListOrder.UpdatedAt:
+                            query = query.OrderByDescending(q => q.UpdatedAt);
                             break;
                     }
                     break;
@@ -611,6 +623,7 @@ namespace DMS.Repositories
                     {
                         Id = x.Store.Id,
                         Code = x.Store.Code,
+                        CodeDraft = x.Store.CodeDraft,
                         Name = x.Store.Name,
                         ParentStoreId = x.Store.ParentStoreId,
                         OrganizationId = x.Store.OrganizationId,

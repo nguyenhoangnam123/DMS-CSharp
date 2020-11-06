@@ -96,7 +96,7 @@ namespace DMS.Services.MPromotionCode
             {
                 Skip = 0,
                 Take = int.MaxValue,
-                Selects = DirectSalesOrderSelect.Id | DirectSalesOrderSelect.PromotionValue | DirectSalesOrderSelect.TotalAfterTax | DirectSalesOrderSelect.Total | DirectSalesOrderSelect.BuyerStore
+                Selects = DirectSalesOrderSelect.Id | DirectSalesOrderSelect.Code | DirectSalesOrderSelect.PromotionValue | DirectSalesOrderSelect.TotalAfterTax | DirectSalesOrderSelect.Total | DirectSalesOrderSelect.BuyerStore
             };
             var DirectSalesOrders = await UOW.DirectSalesOrderRepository.List(DirectSalesOrderFilter);
             foreach (var PromotionCodeHistory in PromotionCode.PromotionCodeHistories)
@@ -114,6 +114,11 @@ namespace DMS.Services.MPromotionCode
             try
             {
                 await UOW.Begin();
+                PromotionCode.StartDate = PromotionCode.StartDate.AddHours(CurrentContext.TimeZone).Date.AddHours(0 - CurrentContext.TimeZone);
+                if (PromotionCode.EndDate.HasValue)
+                {
+                    PromotionCode.EndDate = PromotionCode.EndDate.Value.AddHours(CurrentContext.TimeZone).Date.AddHours(0 - CurrentContext.TimeZone).AddDays(1).AddSeconds(-1);
+                }
                 await UOW.PromotionCodeRepository.Create(PromotionCode);
                 await UOW.Commit();
                 PromotionCode = await UOW.PromotionCodeRepository.Get(PromotionCode.Id);
@@ -142,6 +147,22 @@ namespace DMS.Services.MPromotionCode
             try
             {
                 var oldData = await UOW.PromotionCodeRepository.Get(PromotionCode.Id);
+                if (oldData.Used)
+                {
+                    PromotionCode.Code = oldData.Code;
+                    PromotionCode.EndDate = oldData.EndDate;
+                    PromotionCode.MaxValue = oldData.MaxValue;
+                    PromotionCode.OrganizationId = oldData.OrganizationId;
+                    PromotionCode.PromotionDiscountTypeId = oldData.PromotionDiscountTypeId;
+                    PromotionCode.PromotionProductAppliedTypeId = oldData.PromotionProductAppliedTypeId;
+                    PromotionCode.PromotionTypeId = oldData.PromotionTypeId;
+                    PromotionCode.Quantity = oldData.Quantity;
+                    PromotionCode.StartDate = oldData.StartDate;
+                    PromotionCode.Value = oldData.Value;
+                    PromotionCode.PromotionCodeOrganizationMappings = oldData.PromotionCodeOrganizationMappings;
+                    PromotionCode.PromotionCodeProductMappings = oldData.PromotionCodeProductMappings;
+                    PromotionCode.PromotionCodeStoreMappings = oldData.PromotionCodeStoreMappings;
+                }
 
                 await UOW.Begin();
                 await UOW.PromotionCodeRepository.Update(PromotionCode);

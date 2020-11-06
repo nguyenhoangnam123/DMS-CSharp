@@ -100,6 +100,8 @@ namespace DMS.Repositories
                 query = query.Where(q => q.StatusId, filter.StatusId);
             if (filter.CreatorId != null)
                 query = query.Where(q => q.CreatorId, filter.CreatorId);
+            if (filter.RequestStateId != null)
+                query = query.Where(q => q.RequestStateId, filter.RequestStateId);
             if (filter.StoreId != null)
             {
                 if (filter.StoreId.Equal.HasValue)
@@ -560,6 +562,7 @@ namespace DMS.Repositories
                 {
                     Id = x.Store.Id,
                     Code = x.Store.Code,
+                    CodeDraft = x.Store.CodeDraft,
                     Name = x.Store.Name,
                     ParentStoreId = x.Store.ParentStoreId,
                     OrganizationId = x.Store.OrganizationId,

@@ -110,6 +110,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_indirect_sales_order_general
             StoreFilter.Selects = StoreSelect.ALL;
             StoreFilter.Id = ReportSalesOrderGeneral_StoreFilterDTO.Id;
             StoreFilter.Code = ReportSalesOrderGeneral_StoreFilterDTO.Code;
+            StoreFilter.CodeDraft = ReportSalesOrderGeneral_StoreFilterDTO.CodeDraft;
             StoreFilter.Name = ReportSalesOrderGeneral_StoreFilterDTO.Name;
             StoreFilter.OrganizationId = ReportSalesOrderGeneral_StoreFilterDTO.OrganizationId;
             StoreFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
@@ -292,6 +293,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_indirect_sales_order_general
                     {
                         Id = x.Id,
                         Code = x.Code,
+                        CodeDraft = x.CodeDraft,
                         Name = x.Name,
                     }).FirstOrDefault();
                 IndirectSalesOrderDAO.BuyerStore = Stores.Where(x => x.Id == IndirectSalesOrderDAO.BuyerStoreId)
@@ -299,6 +301,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_indirect_sales_order_general
                    {
                        Id = x.Id,
                        Code = x.Code,
+                       CodeDraft = x.CodeDraft,
                        Name = x.Name,
                        StoreStatus = x.StoreStatus == null ? null : new StoreStatusDAO
                        {

@@ -323,8 +323,8 @@ namespace DMS.Services.MDirectSalesOrder
                 PromotionCodeFilter PromotionCodeFilter = new PromotionCodeFilter()
                 {
                     StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id },
-                    StartDate = new DateFilter { LessEqual = StaticParams.DateTimeNow },
-                    EndDate = new DateFilter { GreaterEqual = StaticParams.DateTimeNow },
+                    StartDate = new DateFilter { LessEqual = DirectSalesOrder.OrderDate },
+                    EndDate = new DateFilter { GreaterEqual = DirectSalesOrder.OrderDate },
                     OrganizationId = new IdFilter { Equal = appUser.OrganizationId },
                     Code = new StringFilter { Equal = DirectSalesOrder.PromotionCode },
                     Skip = 0,

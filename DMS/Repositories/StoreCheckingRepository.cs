@@ -396,6 +396,7 @@ namespace DMS.Repositories
                 {
                     Id = x.Store.Id,
                     Code = x.Store.Code,
+                    CodeDraft = x.Store.CodeDraft,
                     Name = x.Store.Name,
                     ParentStoreId = x.Store.ParentStoreId,
                     OrganizationId = x.Store.OrganizationId,

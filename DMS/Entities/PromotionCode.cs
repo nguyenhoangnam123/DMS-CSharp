@@ -32,7 +32,9 @@ namespace DMS.Entities
         public List<PromotionCodeStoreMapping> PromotionCodeStoreMappings { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
-        
+        public bool Used { get; set; }
+
+
         public bool Equals(PromotionCode other)
         {
             return other != null && Id == other.Id;

@@ -398,10 +398,6 @@ namespace DMS.Rpc.store
                         Errors[Store_ImportDTO.Stt].AppendLine($"Lỗi dòng thứ {Store_ImportDTO.Stt}: Mã đại lý không tồn tại");
                         return;
                     }
-                    else
-                    {
-                        Store_ImportDTO.IsNew = true;
-                    }
                 }
                 else
                 {

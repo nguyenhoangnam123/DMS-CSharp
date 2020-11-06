@@ -2,7 +2,7 @@
   "Store": {
     "Id": {
       "IdNotExisted": "Id không tồn tại",
-      "StoreInUsed": "Cửa hàng đã có đơn hàng không thể xoá"
+      "StoreInUsed": "Đại lý đã được sử dụng không thể xoá"
     },
     "Code": {
       "CodeEmpty": "Chưa nhập mã đại lý",
@@ -73,7 +73,7 @@
       "OwnerEmailOverLength": "Email quá dài"
     },
     "TaxCode": {
-      "CodeHasSpecialCharacter": "Mã thuế chứa kí tự đặc biệt"
+      "TaxCodeHasSpecialCharacter": "Mã thuế chứa kí tự đặc biệt"
     },
     "Status": {
       "StatusNotExisted": "Trạng thái không tồn tại"
