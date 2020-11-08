@@ -1099,6 +1099,19 @@ namespace DMS.Models
 
             modelBuilder.Entity<IndirectSalesOrderDAO>(entity =>
             {
+                entity.HasIndex(e => e.BuyerStoreId);
+
+                entity.HasIndex(e => e.Id)
+                    .HasName("IX_IndirectSalesOrder");
+
+                entity.HasIndex(e => e.OrganizationId);
+
+                entity.HasIndex(e => e.RequestStateId);
+
+                entity.HasIndex(e => e.SaleEmployeeId);
+
+                entity.HasIndex(e => e.SellerStoreId);
+
                 entity.Property(e => e.Id).HasComment("Id");
 
                 entity.Property(e => e.BuyerStoreId).HasComment("Cửa hàng mua");
@@ -1203,6 +1216,14 @@ namespace DMS.Models
 
             modelBuilder.Entity<IndirectSalesOrderContentDAO>(entity =>
             {
+                entity.HasIndex(e => e.IndirectSalesOrderId);
+
+                entity.HasIndex(e => e.ItemId);
+
+                entity.HasIndex(e => e.PrimaryUnitOfMeasureId);
+
+                entity.HasIndex(e => e.UnitOfMeasureId);
+
                 entity.Property(e => e.Id).HasComment("Id");
 
                 entity.Property(e => e.Amount)
@@ -1286,6 +1307,14 @@ namespace DMS.Models
 
             modelBuilder.Entity<IndirectSalesOrderPromotionDAO>(entity =>
             {
+                entity.HasIndex(e => e.IndirectSalesOrderId);
+
+                entity.HasIndex(e => e.ItemId);
+
+                entity.HasIndex(e => e.PrimaryUnitOfMeasureId);
+
+                entity.HasIndex(e => e.UnitOfMeasureId);
+
                 entity.Property(e => e.Id).HasComment("Primary Key");
 
                 entity.Property(e => e.IndirectSalesOrderId).HasComment("Id đơn hàng gián tiếp");
@@ -1331,6 +1360,14 @@ namespace DMS.Models
 
             modelBuilder.Entity<IndirectSalesOrderTransactionDAO>(entity =>
             {
+                entity.HasIndex(e => e.IndirectSalesOrderId);
+
+                entity.HasIndex(e => e.ItemId);
+
+                entity.HasIndex(e => e.OrganizationId);
+
+                entity.HasIndex(e => e.UnitOfMeasureId);
+
                 entity.Property(e => e.Discount).HasColumnType("decimal(18, 4)");
 
                 entity.Property(e => e.Revenue).HasColumnType("decimal(18, 4)");
@@ -3368,6 +3405,12 @@ namespace DMS.Models
 
                 entity.ToTable("RequestWorkflowDefinitionMapping", "WF");
 
+                entity.HasIndex(e => e.CreatorId);
+
+                entity.HasIndex(e => e.RequestStateId);
+
+                entity.HasIndex(e => e.WorkflowDefinitionId);
+
                 entity.Property(e => e.RequestId).ValueGeneratedNever();
 
                 entity.HasOne(d => d.RequestState)
@@ -3431,6 +3474,8 @@ namespace DMS.Models
                 entity.HasKey(e => new { e.RequestId, e.WorkflowStepId });
 
                 entity.ToTable("RequestWorkflowStepMapping", "WF");
+
+                entity.HasIndex(e => e.AppUserId);
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
@@ -3737,6 +3782,9 @@ namespace DMS.Models
             modelBuilder.Entity<StoreDAO>(entity =>
             {
                 entity.ToTable("Store", "MDM");
+
+                entity.HasIndex(e => e.OrganizationId)
+                    .HasName("IX_Store_Organization");
 
                 entity.Property(e => e.Address).HasMaxLength(3000);
 
