@@ -1,10 +1,11 @@
 using DMS.Common;
 using DMS.Models;
+using System;
 using System.Threading.Tasks;
 
 namespace DMS.Repositories
 {
-    public interface IUOW : IServiceScoped
+    public interface IUOW : IServiceScoped, IDisposable
     {
         Task Begin();
         Task Commit();
@@ -398,6 +399,28 @@ namespace DMS.Repositories
             return Task.CompletedTask;
             DataContext.Database.RollbackTransaction();
             return Task.CompletedTask;
+        }
+
+        public void Dispose()
+        {
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposing)
+            {
+                return;
+            }
+
+            if (this.DataContext == null)
+            {
+                return;
+            }
+
+            this.DataContext.Dispose();
+            this.DataContext = null;
         }
     }
 }
