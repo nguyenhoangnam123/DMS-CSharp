@@ -48,8 +48,8 @@ namespace DMS.Repositories
                 query = query.Where(q => q.WorkflowTypeId, filter.WorkflowTypeId);
             if (filter.StartDate != null)
                 query = query.Where(q => q.StartDate, filter.StartDate);
-            if (filter.EndDate != null)
-                query = query.Where(q => q.EndDate, filter.EndDate);
+            if (filter.EndDate != null && filter.EndDate.HasValue)
+                query = query.Where(x => x.EndDate.HasValue == false).Union(query.Where(x => x.EndDate.HasValue).Where(q => q.EndDate, filter.EndDate));
             if (filter.StatusId != null)
                 query = query.Where(q => q.StatusId, filter.StatusId);
             if (filter.CreatedAt != null)
