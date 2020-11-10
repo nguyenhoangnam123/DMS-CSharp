@@ -493,6 +493,19 @@ namespace DMS.Rpc.kpi_item
                 else
                 {
                     KpiItem = KpiItems.Where(x => x.EmployeeId == KpiItem_ImportDTO.EmployeeId && x.KpiPeriodId == KpiItem_ImportDTO.KpiPeriodId && x.KpiYearId == KpiItem_ImportDTO.KpiYearId).FirstOrDefault();
+                    var content = KpiItem.KpiItemContents.Where(x => x.ItemId == KpiItem_ImportDTO.ItemId).FirstOrDefault();
+                    if(content == null)
+                    {
+                        KpiItem.KpiItemContents.Add(new KpiItemContent
+                        {
+                            ItemId = KpiItem_ImportDTO.ItemId,
+                            RowId = Guid.NewGuid(),
+                            KpiItemContentKpiCriteriaItemMappings = KpiCriteriaItemEnum.KpiCriteriaItemEnumList.Select(x => new KpiItemContentKpiCriteriaItemMapping
+                            {
+                                KpiCriteriaItemId = x.Id,
+                            }).ToList()
+                        });
+                    }
                 }
 
                 KpiItemContent KpiItemContent = KpiItem.KpiItemContents.Where(x => x.ItemId == KpiItem_ImportDTO.ItemId).FirstOrDefault();
