@@ -103,7 +103,7 @@ namespace DMS.Services.MWorkflow
             try
             {
                 WorkflowDefinition.HasConflict = false;
-                if (WorkflowDefinition.StatusId == StatusEnum.ACTIVE.Id && WorkflowDefinition.Used == true)
+                if (WorkflowDefinition.StatusId == StatusEnum.ACTIVE.Id)
                 {
                     WorkflowDefinitionFilter WorkflowDefinitionFilter = new WorkflowDefinitionFilter
                     {
