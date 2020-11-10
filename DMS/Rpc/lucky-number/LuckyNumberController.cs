@@ -12,6 +12,9 @@ using OfficeOpenXml;
 using DMS.Entities;
 using DMS.Services.MLuckyNumber;
 using DMS.Services.MRewardStatus;
+using System.Dynamic;
+using System.Text;
+using DMS.Enums;
 
 namespace DMS.Rpc.lucky_number
 {
@@ -149,74 +152,86 @@ namespace DMS.Rpc.lucky_number
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            RewardStatusFilter RewardStatusFilter = new RewardStatusFilter
+
+            FileInfo FileInfo = new FileInfo(file.FileName);
+            StringBuilder errorContent = new StringBuilder();
+            if (!FileInfo.Extension.Equals(".xlsx"))
+            {
+                errorContent.AppendLine("Định dạng file không hợp lệ");
+                return BadRequest(errorContent.ToString());
+            }
+
+            List<LuckyNumber> OldDatas = await LuckyNumberService.List(new LuckyNumberFilter
             {
                 Skip = 0,
                 Take = int.MaxValue,
-                Selects = RewardStatusSelect.ALL
-            };
-            List<RewardStatus> RewardStatuses = await RewardStatusService.List(RewardStatusFilter);
+                Selects = LuckyNumberSelect.ALL,
+            });
+            HashSet<string> Codes = OldDatas.Select(x => x.Code).ToHashSet();
+
             List<LuckyNumber> LuckyNumbers = new List<LuckyNumber>();
             using (ExcelPackage excelPackage = new ExcelPackage(file.OpenReadStream()))
             {
-                ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets.FirstOrDefault();
+                ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets["LuckyNumber"];
+
                 if (worksheet == null)
-                    return Ok(LuckyNumbers);
+                {
+                    errorContent.AppendLine("File không đúng biểu mẫu import");
+                    return BadRequest(errorContent.ToString());
+                }
+
                 int StartColumn = 1;
-                int StartRow = 1;
-                int IdColumn = 0 + StartColumn;
+                int StartRow = 2;
                 int CodeColumn = 1 + StartColumn;
                 int NameColumn = 2 + StartColumn;
-                int RewardStatusIdColumn = 3 + StartColumn;
-                int RowIdColumn = 7 + StartColumn;
+                int ValueColumn = 3 + StartColumn;
 
                 for (int i = StartRow; i <= worksheet.Dimension.End.Row; i++)
                 {
-                    if (string.IsNullOrEmpty(worksheet.Cells[i + StartRow, StartColumn].Value?.ToString()))
+                    string CodeValue = worksheet.Cells[i, CodeColumn].Value?.ToString().Trim();
+                    if (string.IsNullOrWhiteSpace(CodeValue) && i != worksheet.Dimension.End.Row)
+                    {
+                        errorContent.AppendLine($"Lỗi dòng thứ {i}: Chưa nhập mã quay thưởng");
+                        continue;
+                    }
+                    else if (string.IsNullOrWhiteSpace(CodeValue) && i == worksheet.Dimension.End.Row)
                         break;
-                    string IdValue = worksheet.Cells[i + StartRow, IdColumn].Value?.ToString();
-                    string CodeValue = worksheet.Cells[i + StartRow, CodeColumn].Value?.ToString();
-                    string NameValue = worksheet.Cells[i + StartRow, NameColumn].Value?.ToString();
-                    string RewardStatusIdValue = worksheet.Cells[i + StartRow, RewardStatusIdColumn].Value?.ToString();
-                    string RowIdValue = worksheet.Cells[i + StartRow, RowIdColumn].Value?.ToString();
+                    else if (Codes.Contains(CodeValue))
+                    {
+                        errorContent.AppendLine($"Lỗi dòng thứ {i}: Mã quay thưởng đã tồn tại");
+                        continue;
+                    }
+
+                    Codes.Add(CodeValue);
+                    string NameValue = worksheet.Cells[i, NameColumn].Value?.ToString();
+                    string ValueValue = worksheet.Cells[i, ValueColumn].Value?.ToString();
                     
                     LuckyNumber LuckyNumber = new LuckyNumber();
                     LuckyNumber.Code = CodeValue;
                     LuckyNumber.Name = NameValue;
-                    RewardStatus RewardStatus = RewardStatuses.Where(x => x.Id.ToString() == RewardStatusIdValue).FirstOrDefault();
-                    LuckyNumber.RewardStatusId = RewardStatus == null ? 0 : RewardStatus.Id;
-                    LuckyNumber.RewardStatus = RewardStatus;
-                    
+                    LuckyNumber.RewardStatusId = RewardStatusEnum.ACTIVE.Id;
+                    LuckyNumber.RowId = Guid.NewGuid();
+                    if (decimal.TryParse(ValueValue, out decimal Value))
+                    {
+                        LuckyNumber.Value = Value;
+                    }
+                    else
+                    {
+                        errorContent.AppendLine($"Lỗi dòng thứ {i}: Giá trị nhập không hợp lệ");
+                        continue;
+                    }
+
                     LuckyNumbers.Add(LuckyNumber);
                 }
             }
+
+            if (errorContent.Length > 0)
+                return BadRequest(errorContent.ToString());
+            
             LuckyNumbers = await LuckyNumberService.Import(LuckyNumbers);
-            if (LuckyNumbers.All(x => x.IsValidated))
-                return Ok(true);
-            else
-            {
-                List<string> Errors = new List<string>();
-                for (int i = 0; i < LuckyNumbers.Count; i++)
-                {
-                    LuckyNumber LuckyNumber = LuckyNumbers[i];
-                    if (!LuckyNumber.IsValidated)
-                    {
-                        string Error = $"Dòng {i + 2} có lỗi:";
-                        if (LuckyNumber.Errors.ContainsKey(nameof(LuckyNumber.Id)))
-                            Error += LuckyNumber.Errors[nameof(LuckyNumber.Id)];
-                        if (LuckyNumber.Errors.ContainsKey(nameof(LuckyNumber.Code)))
-                            Error += LuckyNumber.Errors[nameof(LuckyNumber.Code)];
-                        if (LuckyNumber.Errors.ContainsKey(nameof(LuckyNumber.Name)))
-                            Error += LuckyNumber.Errors[nameof(LuckyNumber.Name)];
-                        if (LuckyNumber.Errors.ContainsKey(nameof(LuckyNumber.RewardStatusId)))
-                            Error += LuckyNumber.Errors[nameof(LuckyNumber.RewardStatusId)];
-                        if (LuckyNumber.Errors.ContainsKey(nameof(LuckyNumber.RowId)))
-                            Error += LuckyNumber.Errors[nameof(LuckyNumber.RowId)];
-                        Errors.Add(Error);
-                    }
-                }
-                return BadRequest(Errors);
-            }
+            List<LuckyNumber_LuckyNumberDTO> LuckyNumber_LuckyNumberDTOs = LuckyNumbers
+                .Select(c => new LuckyNumber_LuckyNumberDTO(c)).ToList();
+            return Ok(LuckyNumber_LuckyNumberDTOs);
         }
         
         [Route(LuckyNumberRoute.Export), HttpPost]
@@ -301,58 +316,17 @@ namespace DMS.Rpc.lucky_number
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
-            MemoryStream memoryStream = new MemoryStream();
-            using (ExcelPackage excel = new ExcelPackage(memoryStream))
-            {
-                #region LuckyNumber
-                var LuckyNumberHeaders = new List<string[]>()
-                {
-                    new string[] { 
-                        "Id",
-                        "Code",
-                        "Name",
-                        "RewardStatusId",
-                        "RowId",
-                    }
-                };
-                List<object[]> LuckyNumberData = new List<object[]>();
-                excel.GenerateWorksheet("LuckyNumber", LuckyNumberHeaders, LuckyNumberData);
-                #endregion
-                
-                #region RewardStatus
-                var RewardStatusFilter = new RewardStatusFilter();
-                RewardStatusFilter.Selects = RewardStatusSelect.ALL;
-                RewardStatusFilter.OrderBy = RewardStatusOrder.Id;
-                RewardStatusFilter.OrderType = OrderType.ASC;
-                RewardStatusFilter.Skip = 0;
-                RewardStatusFilter.Take = int.MaxValue;
-                List<RewardStatus> RewardStatuses = await RewardStatusService.List(RewardStatusFilter);
 
-                var RewardStatusHeaders = new List<string[]>()
-                {
-                    new string[] { 
-                        "Id",
-                        "Code",
-                        "Name",
-                    }
-                };
-                List<object[]> RewardStatusData = new List<object[]>();
-                for (int i = 0; i < RewardStatuses.Count; i++)
-                {
-                    var RewardStatus = RewardStatuses[i];
-                    RewardStatusData.Add(new Object[]
-                    {
-                        RewardStatus.Id,
-                        RewardStatus.Code,
-                        RewardStatus.Name,
-                    });
-                }
-                excel.GenerateWorksheet("RewardStatus", RewardStatusHeaders, RewardStatusData);
-                #endregion
-                excel.Save();
-            }
-            return File(memoryStream.ToArray(), "application/octet-stream", "LuckyNumber.xlsx");
+            string path = "Templates/Lucky_Number.xlsx";
+            byte[] arr = System.IO.File.ReadAllBytes(path);
+            MemoryStream input = new MemoryStream(arr);
+            MemoryStream output = new MemoryStream();
+            dynamic Data = new ExpandoObject();
+            using (var document = StaticParams.DocumentFactory.Open(input, output, "xlsx"))
+            {
+                document.Process(Data);
+            };
+            return File(output.ToArray(), "application/octet-stream", "LuckyNumberTemplate.xlsx");
         }
 
         private async Task<bool> HasPermission(long Id)

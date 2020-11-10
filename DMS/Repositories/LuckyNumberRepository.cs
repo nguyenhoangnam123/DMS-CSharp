@@ -44,6 +44,8 @@ namespace DMS.Repositories
                 query = query.Where(q => q.Code, filter.Code);
             if (filter.Name != null)
                 query = query.Where(q => q.Name, filter.Name);
+            if (filter.Value != null)
+                query = query.Where(q => q.Value, filter.Value);
             if (filter.RewardStatusId != null)
                 query = query.Where(q => q.RewardStatusId, filter.RewardStatusId);
             if (filter.RowId != null)
@@ -91,6 +93,9 @@ namespace DMS.Repositories
                         case LuckyNumberOrder.Name:
                             query = query.OrderBy(q => q.Name);
                             break;
+                        case LuckyNumberOrder.Value:
+                            query = query.OrderBy(q => q.Value);
+                            break;
                         case LuckyNumberOrder.RewardStatus:
                             query = query.OrderBy(q => q.RewardStatusId);
                             break;
@@ -110,6 +115,9 @@ namespace DMS.Repositories
                             break;
                         case LuckyNumberOrder.Name:
                             query = query.OrderByDescending(q => q.Name);
+                            break;
+                        case LuckyNumberOrder.Value:
+                            query = query.OrderByDescending(q => q.Value);
                             break;
                         case LuckyNumberOrder.RewardStatus:
                             query = query.OrderByDescending(q => q.RewardStatusId);
@@ -131,6 +139,7 @@ namespace DMS.Repositories
                 Id = filter.Selects.Contains(LuckyNumberSelect.Id) ? q.Id : default(long),
                 Code = filter.Selects.Contains(LuckyNumberSelect.Code) ? q.Code : default(string),
                 Name = filter.Selects.Contains(LuckyNumberSelect.Name) ? q.Name : default(string),
+                Value = filter.Selects.Contains(LuckyNumberSelect.Value) ? q.Value : default(decimal),
                 RewardStatusId = filter.Selects.Contains(LuckyNumberSelect.RewardStatus) ? q.RewardStatusId : default(long),
                 RowId = filter.Selects.Contains(LuckyNumberSelect.Row) ? q.RowId : default(Guid),
                 RewardStatus = filter.Selects.Contains(LuckyNumberSelect.RewardStatus) && q.RewardStatus != null ? new RewardStatus
@@ -172,6 +181,7 @@ namespace DMS.Repositories
                 Id = x.Id,
                 Code = x.Code,
                 Name = x.Name,
+                Value = x.Value,
                 RewardStatusId = x.RewardStatusId,
                 RowId = x.RowId,
                 RewardStatus = x.RewardStatus == null ? null : new RewardStatus
@@ -193,6 +203,7 @@ namespace DMS.Repositories
             LuckyNumberDAO.Id = LuckyNumber.Id;
             LuckyNumberDAO.Code = LuckyNumber.Code;
             LuckyNumberDAO.Name = LuckyNumber.Name;
+            LuckyNumberDAO.Value = LuckyNumber.Value;
             LuckyNumberDAO.RewardStatusId = LuckyNumber.RewardStatusId;
             LuckyNumberDAO.RowId = LuckyNumber.RowId;
             LuckyNumberDAO.CreatedAt = StaticParams.DateTimeNow;
@@ -212,6 +223,7 @@ namespace DMS.Repositories
             LuckyNumberDAO.Id = LuckyNumber.Id;
             LuckyNumberDAO.Code = LuckyNumber.Code;
             LuckyNumberDAO.Name = LuckyNumber.Name;
+            LuckyNumberDAO.Value = LuckyNumber.Value;
             LuckyNumberDAO.RewardStatusId = LuckyNumber.RewardStatusId;
             LuckyNumberDAO.RowId = LuckyNumber.RowId;
             LuckyNumberDAO.UpdatedAt = StaticParams.DateTimeNow;
@@ -235,6 +247,7 @@ namespace DMS.Repositories
                 LuckyNumberDAO.Id = LuckyNumber.Id;
                 LuckyNumberDAO.Code = LuckyNumber.Code;
                 LuckyNumberDAO.Name = LuckyNumber.Name;
+                LuckyNumberDAO.Value = LuckyNumber.Value;
                 LuckyNumberDAO.RewardStatusId = LuckyNumber.RewardStatusId;
                 LuckyNumberDAO.RowId = LuckyNumber.RowId;
                 LuckyNumberDAO.CreatedAt = StaticParams.DateTimeNow;

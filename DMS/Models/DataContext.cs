@@ -1846,6 +1846,8 @@ namespace DMS.Models
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
+                entity.Property(e => e.Value).HasColumnType("decimal(18, 4)");
+
                 entity.HasOne(d => d.RewardStatus)
                     .WithMany(p => p.LuckyNumbers)
                     .HasForeignKey(d => d.RewardStatusId)
