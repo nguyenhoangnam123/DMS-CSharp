@@ -15,22 +15,48 @@ using DMS.Services.MRewardStatus;
 using System.Dynamic;
 using System.Text;
 using DMS.Enums;
+using DMS.Services.MOrganization;
+using DMS.Services.MAppUser;
+using DMS.Models;
+using DMS.Services.MStore;
+using Microsoft.EntityFrameworkCore;
+using Thinktecture.EntityFrameworkCore.TempTables;
+using Thinktecture;
+using DMS.Services.MRewardHistory;
+using DMS.Services.MRewardHistoryContent;
+using OfficeOpenXml.ConditionalFormatting;
 
 namespace DMS.Rpc.lucky_number
 {
     public partial class LuckyNumberController : RpcController
     {
+        private IAppUserService AppUserService;
+        private IOrganizationService OrganizationService;
         private IRewardStatusService RewardStatusService;
         private ILuckyNumberService LuckyNumberService;
+        private IRewardHistoryService RewardHistoryService;
+        private IRewardHistoryContentService RewardHistoryContentService;
+        private IStoreService StoreService;
+        private DataContext DataContext;
         private ICurrentContext CurrentContext;
         public LuckyNumberController(
+            IAppUserService AppUserService,
+            IOrganizationService OrganizationService,
             IRewardStatusService RewardStatusService,
             ILuckyNumberService LuckyNumberService,
+            IRewardHistoryService RewardHistoryService,
+            IStoreService StoreService,
+            DataContext DataContext,
             ICurrentContext CurrentContext
         )
         {
+            this.AppUserService = AppUserService;
+            this.OrganizationService = OrganizationService;
             this.RewardStatusService = RewardStatusService;
             this.LuckyNumberService = LuckyNumberService;
+            this.RewardHistoryService = RewardHistoryService;
+            this.StoreService = StoreService;
+            this.DataContext = DataContext;
             this.CurrentContext = CurrentContext;
         }
 
@@ -61,7 +87,7 @@ namespace DMS.Rpc.lucky_number
         }
 
         [Route(LuckyNumberRoute.Get), HttpPost]
-        public async Task<ActionResult<LuckyNumber_LuckyNumberDTO>> Get([FromBody]LuckyNumber_LuckyNumberDTO LuckyNumber_LuckyNumberDTO)
+        public async Task<ActionResult<LuckyNumber_LuckyNumberDTO>> Get([FromBody] LuckyNumber_LuckyNumberDTO LuckyNumber_LuckyNumberDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
@@ -78,7 +104,7 @@ namespace DMS.Rpc.lucky_number
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
             if (!await HasPermission(LuckyNumber_LuckyNumberDTO.Id))
                 return Forbid();
 
@@ -96,7 +122,7 @@ namespace DMS.Rpc.lucky_number
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
             if (!await HasPermission(LuckyNumber_LuckyNumberDTO.Id))
                 return Forbid();
 
@@ -126,7 +152,7 @@ namespace DMS.Rpc.lucky_number
             else
                 return BadRequest(LuckyNumber_LuckyNumberDTO);
         }
-        
+
         [Route(LuckyNumberRoute.BulkDelete), HttpPost]
         public async Task<ActionResult<bool>> BulkDelete([FromBody] List<long> Ids)
         {
@@ -146,7 +172,7 @@ namespace DMS.Rpc.lucky_number
                 return BadRequest(LuckyNumbers.Where(x => !x.IsValidated));
             return true;
         }
-        
+
         [Route(LuckyNumberRoute.Import), HttpPost]
         public async Task<ActionResult> Import(IFormFile file)
         {
@@ -205,7 +231,7 @@ namespace DMS.Rpc.lucky_number
                     Codes.Add(CodeValue);
                     string NameValue = worksheet.Cells[i, NameColumn].Value?.ToString();
                     string ValueValue = worksheet.Cells[i, ValueColumn].Value?.ToString();
-                    
+
                     LuckyNumber LuckyNumber = new LuckyNumber();
                     LuckyNumber.Code = CodeValue;
                     LuckyNumber.Name = NameValue;
@@ -227,88 +253,118 @@ namespace DMS.Rpc.lucky_number
 
             if (errorContent.Length > 0)
                 return BadRequest(errorContent.ToString());
-            
+
             LuckyNumbers = await LuckyNumberService.Import(LuckyNumbers);
             List<LuckyNumber_LuckyNumberDTO> LuckyNumber_LuckyNumberDTOs = LuckyNumbers
                 .Select(c => new LuckyNumber_LuckyNumberDTO(c)).ToList();
             return Ok(LuckyNumber_LuckyNumberDTOs);
         }
-        
+
         [Route(LuckyNumberRoute.Export), HttpPost]
-        public async Task<FileResult> Export([FromBody] LuckyNumber_LuckyNumberFilterDTO LuckyNumber_LuckyNumberFilterDTO)
+        public async Task<ActionResult> Export([FromBody] LuckyNumber_LuckyNumberFilterDTO LuckyNumber_LuckyNumberFilterDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
-            MemoryStream memoryStream = new MemoryStream();
-            using (ExcelPackage excel = new ExcelPackage(memoryStream))
+
+            LuckyNumber_LuckyNumberFilterDTO.Skip = 0;
+            LuckyNumber_LuckyNumberFilterDTO.Take = int.MaxValue;
+            List<LuckyNumber_LuckyNumberDTO> LuckyNumber_LuckyNumberDTOs = (await List(LuckyNumber_LuckyNumberFilterDTO)).Value;
+            long STT = 1;
+            List<LuckyNumber_LuckyNumberExportDTO> LuckyNumber_LuckyNumberExportDTOs = LuckyNumber_LuckyNumberDTOs.Select(x => new LuckyNumber_LuckyNumberExportDTO
             {
-                #region LuckyNumber
-                var LuckyNumberFilter = ConvertFilterDTOToFilterEntity(LuckyNumber_LuckyNumberFilterDTO);
-                LuckyNumberFilter.Skip = 0;
-                LuckyNumberFilter.Take = int.MaxValue;
-                LuckyNumberFilter = await LuckyNumberService.ToFilter(LuckyNumberFilter);
-                List<LuckyNumber> LuckyNumbers = await LuckyNumberService.List(LuckyNumberFilter);
+                STT = STT++,
+                Code = x.Code,
+                Name = x.Name,
+                Value = x.Value,
+                RewardStatus = x.RewardStatus?.Name
+            }).ToList();
+            string path = "Templates/Lucky_Number_Report.xlsx";
+            byte[] arr = System.IO.File.ReadAllBytes(path);
+            MemoryStream input = new MemoryStream(arr);
+            MemoryStream output = new MemoryStream();
+            dynamic Data = new ExpandoObject();
+            Data.Exports = LuckyNumber_LuckyNumberExportDTOs;
+            using (var document = StaticParams.DocumentFactory.Open(input, output, "xlsx"))
+            {
+                document.Process(Data);
+            };
 
-                var LuckyNumberHeaders = new List<string[]>()
-                {
-                    new string[] { 
-                        "Id",
-                        "Code",
-                        "Name",
-                        "RewardStatusId",
-                        "RowId",
-                    }
-                };
-                List<object[]> LuckyNumberData = new List<object[]>();
-                for (int i = 0; i < LuckyNumbers.Count; i++)
-                {
-                    var LuckyNumber = LuckyNumbers[i];
-                    LuckyNumberData.Add(new Object[]
-                    {
-                        LuckyNumber.Id,
-                        LuckyNumber.Code,
-                        LuckyNumber.Name,
-                        LuckyNumber.RewardStatusId,
-                        LuckyNumber.RowId,
-                    });
-                }
-                excel.GenerateWorksheet("LuckyNumber", LuckyNumberHeaders, LuckyNumberData);
-                #endregion
-                
-                #region RewardStatus
-                var RewardStatusFilter = new RewardStatusFilter();
-                RewardStatusFilter.Selects = RewardStatusSelect.ALL;
-                RewardStatusFilter.OrderBy = RewardStatusOrder.Id;
-                RewardStatusFilter.OrderType = OrderType.ASC;
-                RewardStatusFilter.Skip = 0;
-                RewardStatusFilter.Take = int.MaxValue;
-                List<RewardStatus> RewardStatuses = await RewardStatusService.List(RewardStatusFilter);
+            return File(output.ToArray(), "application/octet-stream", "LuckyNumberReport.xlsx");
+        }
 
-                var RewardStatusHeaders = new List<string[]>()
-                {
-                    new string[] { 
-                        "Id",
-                        "Code",
-                        "Name",
-                    }
-                };
-                List<object[]> RewardStatusData = new List<object[]>();
-                for (int i = 0; i < RewardStatuses.Count; i++)
-                {
-                    var RewardStatus = RewardStatuses[i];
-                    RewardStatusData.Add(new Object[]
-                    {
-                        RewardStatus.Id,
-                        RewardStatus.Code,
-                        RewardStatus.Name,
-                    });
-                }
-                excel.GenerateWorksheet("RewardStatus", RewardStatusHeaders, RewardStatusData);
-                #endregion
-                excel.Save();
+        [Route(LuckyNumberRoute.ExportStore), HttpPost]
+        public async Task<ActionResult> ExportStore([FromBody] LuckyNumber_LuckyNumberFilterDTO LuckyNumber_LuckyNumberFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            List<long> OrganizationIds = await FilterOrganization(OrganizationService, CurrentContext);
+            List<OrganizationDAO> OrganizationDAOs = await DataContext.Organization.Where(o => o.DeletedAt == null && (OrganizationIds.Count == 0 || OrganizationIds.Contains(o.Id))).ToListAsync();
+            OrganizationIds = OrganizationDAOs.Select(o => o.Id).ToList();
+
+            AppUserFilter AppUserFilter = new AppUserFilter
+            {
+                OrganizationId = new IdFilter { In = OrganizationIds },
+                Id = new IdFilter { },
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = AppUserSelect.Id | AppUserSelect.DisplayName | AppUserSelect.Organization
+            };
+            AppUserFilter.Id.In = await FilterAppUser(AppUserService, OrganizationService, CurrentContext);
+            var AppUsers = await AppUserService.List(AppUserFilter);
+            var AppUserIds = AppUsers.Select(x => x.Id).ToList();
+
+            List<long> StoreIds = await FilterStore(StoreService, OrganizationService, CurrentContext);
+            ITempTableQuery<TempTable<long>> tempTableQuery = await DataContext
+                    .BulkInsertValuesIntoTempTableAsync<long>(StoreIds);
+
+            var query = from rh in DataContext.RewardHistory
+                        join tt in tempTableQuery.Query on rh.StoreId equals tt.Column1
+                        where AppUserIds.Contains(rh.AppUserId)
+                        select rh.Id;
+
+            var RewardHistoryIds = await query.ToListAsync();
+            RewardHistoryFilter RewardHistoryFilter = new RewardHistoryFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = RewardHistorySelect.ALL,
+                Id = new IdFilter { In = RewardHistoryIds }
+            };
+            List<RewardHistory> RewardHistories = await RewardHistoryService.List(RewardHistoryFilter);
+            RewardHistoryContentFilter RewardHistoryContentFilter = new RewardHistoryContentFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = RewardHistoryContentSelect.ALL,
+                RewardHistoryId = new IdFilter { In = RewardHistoryIds }
+            };
+            List<RewardHistoryContent> RewardHistoryContents = await RewardHistoryContentService.List(RewardHistoryContentFilter);
+
+            foreach (var RewardHistory in RewardHistories)
+            {
+                RewardHistory.RewardHistoryContents = RewardHistoryContents.Where(x => x.RewardHistoryId == RewardHistory.Id).ToList();
             }
-            return File(memoryStream.ToArray(), "application/octet-stream", "LuckyNumber.xlsx");
+
+            var LuckyNumber_RewardHistoryDTOs = RewardHistories.Select(x => new LuckyNumber_RewardHistoryDTO(x)).ToList();
+
+            var STT = 1;
+            foreach (var LuckyNumber_RewardHistoryDTO in LuckyNumber_RewardHistoryDTOs)
+            {
+                LuckyNumber_RewardHistoryDTO.STT = STT++;
+            }
+            string path = "Templates/Lucky_Number_Store_Report.xlsx";
+            byte[] arr = System.IO.File.ReadAllBytes(path);
+            MemoryStream input = new MemoryStream(arr);
+            MemoryStream output = new MemoryStream();
+            dynamic Data = new ExpandoObject();
+            Data.Exports = LuckyNumber_RewardHistoryDTOs;
+            using (var document = StaticParams.DocumentFactory.Open(input, output, "xlsx"))
+            {
+                document.Process(Data);
+            };
+
+            return File(output.ToArray(), "application/octet-stream", "LuckyNumberStoreReport.xlsx");
         }
 
         [Route(LuckyNumberRoute.ExportTemplate), HttpPost]

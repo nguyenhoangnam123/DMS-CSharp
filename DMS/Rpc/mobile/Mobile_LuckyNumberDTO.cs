@@ -14,6 +14,7 @@ namespace DMS.Rpc.mobile
         public string Code { get; set; }
         
         public string Name { get; set; }
+        public decimal Value { get; set; }
         
         public long RewardStatusId { get; set; }
         
@@ -29,6 +30,7 @@ namespace DMS.Rpc.mobile
             this.Code = LuckyNumber.Code;
             
             this.Name = LuckyNumber.Name;
+            this.Value = LuckyNumber.Value;
             
             this.RewardStatusId = LuckyNumber.RewardStatusId;
             
@@ -46,6 +48,7 @@ namespace DMS.Rpc.mobile
         public StringFilter Code { get; set; }
         
         public StringFilter Name { get; set; }
+        public DecimalFilter Value { get; set; }
         
         public IdFilter RewardStatusId { get; set; }
         

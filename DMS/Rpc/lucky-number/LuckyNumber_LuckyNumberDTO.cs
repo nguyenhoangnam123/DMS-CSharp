@@ -11,6 +11,7 @@ namespace DMS.Rpc.lucky_number
         public long Id { get; set; }
         public string Code { get; set; }
         public string Name { get; set; }
+        public decimal Value { get; set; }
         public long RewardStatusId { get; set; }
         public Guid RowId { get; set; }
         public LuckyNumber_RewardStatusDTO RewardStatus { get; set; }
@@ -22,6 +23,7 @@ namespace DMS.Rpc.lucky_number
             this.Id = LuckyNumber.Id;
             this.Code = LuckyNumber.Code;
             this.Name = LuckyNumber.Name;
+            this.Value = LuckyNumber.Value;
             this.RewardStatusId = LuckyNumber.RewardStatusId;
             this.RowId = LuckyNumber.RowId;
             this.RewardStatus = LuckyNumber.RewardStatus == null ? null : new LuckyNumber_RewardStatusDTO(LuckyNumber.RewardStatus);

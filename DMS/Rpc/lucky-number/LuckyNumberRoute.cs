@@ -29,6 +29,7 @@ namespace DMS.Rpc.lucky_number
         public const string Delete = Default + "/delete";
         public const string Import = Default + "/import";
         public const string Export = Default + "/export";
+        public const string ExportStore = Default + "/export-store";
         public const string ExportTemplate = Default + "/export-template";
         public const string BulkDelete = Default + "/bulk-delete";
         
@@ -83,7 +84,7 @@ namespace DMS.Rpc.lucky_number
             { "Xuất excel", new List<string> { 
                 Master, Count, List, Get, GetPreview,
                 FilterListRewardStatus,  
-                Export } },
+                Export, ExportStore } },
 
             { "Nhập excel", new List<string> { 
                 Master, Count, List, Get, GetPreview,
