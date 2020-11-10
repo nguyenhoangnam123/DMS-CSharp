@@ -1152,11 +1152,14 @@ namespace DMS.Services.MDirectSalesOrder
 
         private async Task<Dictionary<string, string>> MapParameters(DirectSalesOrder DirectSalesOrder)
         {
+            var AppUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
             Dictionary<string, string> Parameters = new Dictionary<string, string>();
             Parameters.Add(nameof(DirectSalesOrder.Id), DirectSalesOrder.Id.ToString());
             Parameters.Add(nameof(DirectSalesOrder.Code), DirectSalesOrder.Code);
             Parameters.Add(nameof(DirectSalesOrder.SaleEmployeeId), DirectSalesOrder.SaleEmployeeId.ToString());
             Parameters.Add(nameof(DirectSalesOrder.BuyerStoreId), DirectSalesOrder.BuyerStoreId.ToString());
+            Parameters.Add(nameof(AppUser.DisplayName), AppUser.DisplayName);
+            Parameters.Add(nameof(DirectSalesOrder.RequestStateId), DirectSalesOrder.RequestStateId.ToString());
 
             Parameters.Add(nameof(DirectSalesOrder.Total), DirectSalesOrder.Total.ToString());
             Parameters.Add(nameof(DirectSalesOrder.TotalDiscountAmount), DirectSalesOrder.TotalDiscountAmount.ToString());

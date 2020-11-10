@@ -510,12 +510,15 @@ namespace DMS.Services.MPriceList
 
         private async Task<Dictionary<string, string>> MapParameters(PriceList PriceList)
         {
+            var AppUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
             Dictionary<string, string> Parameters = new Dictionary<string, string>();
             Parameters.Add(nameof(PriceList.Id), PriceList.Id.ToString());
             Parameters.Add(nameof(PriceList.Code), PriceList.Code);
             Parameters.Add(nameof(PriceList.CreatorId), PriceList.CreatorId.ToString());
             Parameters.Add(nameof(PriceList.SalesOrderTypeId), PriceList.SalesOrderTypeId.ToString());
             Parameters.Add(nameof(PriceList.OrganizationId), PriceList.OrganizationId.ToString());
+            Parameters.Add(nameof(AppUser.DisplayName), AppUser.DisplayName);
+            Parameters.Add(nameof(PriceList.RequestStateId), PriceList.RequestStateId.ToString());
 
             RequestWorkflowDefinitionMapping RequestWorkflowDefinitionMapping = await UOW.RequestWorkflowDefinitionMappingRepository.Get(PriceList.RowId);
             if (RequestWorkflowDefinitionMapping == null)

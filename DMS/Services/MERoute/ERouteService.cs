@@ -637,11 +637,14 @@ namespace DMS.Services.MERoute
 
         private async Task<Dictionary<string, string>> MapParameters(ERoute ERoute)
         {
+            var AppUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
             Dictionary<string, string> Parameters = new Dictionary<string, string>();
             Parameters.Add(nameof(ERoute.Id), ERoute.Id.ToString());
             Parameters.Add(nameof(ERoute.Code), ERoute.Code);
             Parameters.Add(nameof(ERoute.SaleEmployeeId), ERoute.SaleEmployeeId.ToString());
             Parameters.Add(nameof(ERoute.TotalStoreCounter), ERoute.TotalStoreCounter.ToString());
+            Parameters.Add(nameof(AppUser.DisplayName), AppUser.DisplayName);
+            Parameters.Add(nameof(ERoute.RequestStateId), ERoute.RequestStateId.ToString());
 
             Parameters.Add(nameof(ERoute.ERouteTypeId), ERoute.ERouteTypeId.ToString());
             Parameters.Add(nameof(ERoute.OrganizationId), ERoute.OrganizationId.ToString());
