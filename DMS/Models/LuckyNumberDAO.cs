@@ -13,6 +13,7 @@ namespace DMS.Models
         public long Id { get; set; }
         public string Code { get; set; }
         public string Name { get; set; }
+        public decimal Value { get; set; }
         public long RewardStatusId { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
