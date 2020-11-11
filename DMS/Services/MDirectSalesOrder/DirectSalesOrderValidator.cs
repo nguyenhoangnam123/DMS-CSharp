@@ -320,12 +320,25 @@ namespace DMS.Services.MDirectSalesOrder
             if (!string.IsNullOrWhiteSpace(DirectSalesOrder.PromotionCode))
             {
                 var appUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
+                OrganizationFilter OrganizationFilter = new OrganizationFilter
+                {
+                    Skip = 0,
+                    Take = int.MaxValue,
+                    Selects = OrganizationSelect.ALL,
+                    StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id }
+                };
+
+                var Organizations = await UOW.OrganizationRepository.List(OrganizationFilter);
+                var OrganizationIds = Organizations
+                    .Where(x => x.Path.StartsWith(appUser.Organization.Path) || appUser.Organization.Path.StartsWith(x.Path))
+                    .Select(x => x.Id)
+                    .ToList();
                 PromotionCodeFilter PromotionCodeFilter = new PromotionCodeFilter()
                 {
                     StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id },
                     StartDate = new DateFilter { LessEqual = DirectSalesOrder.OrderDate },
                     EndDate = new DateFilter { GreaterEqual = DirectSalesOrder.OrderDate },
-                    OrganizationId = new IdFilter { Equal = appUser.OrganizationId },
+                    OrganizationId = new IdFilter { In = OrganizationIds },
                     Code = new StringFilter { Equal = DirectSalesOrder.PromotionCode },
                     Skip = 0,
                     Take = 1,
@@ -357,8 +370,8 @@ namespace DMS.Services.MDirectSalesOrder
                         {
                             if (PromotionCode.PromotionTypeId == PromotionTypeEnum.ORGANIZATION.Id)
                             {
-                                var OrganizationIds = PromotionCode.PromotionCodeOrganizationMappings?.Select(x => x.OrganizationId).ToList();
-                                if (!OrganizationIds.Contains(BuyerStore.OrganizationId))
+                                var organizationIds = PromotionCode.PromotionCodeOrganizationMappings?.Select(x => x.OrganizationId).ToList();
+                                if (!organizationIds.Contains(BuyerStore.OrganizationId))
                                 {
                                     DirectSalesOrder.AddError(nameof(DirectSalesOrderValidator), nameof(DirectSalesOrder.PromotionCode), ErrorCode.OrganizationInvalid);
                                     return DirectSalesOrder.IsValidated;

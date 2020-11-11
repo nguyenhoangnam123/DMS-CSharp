@@ -38,6 +38,7 @@ namespace DMS.Services.MPromotionCode
             PromotionTypeNotExisted,
             PromotionDiscountTypeEmpty,
             PromotionDiscountTypeNotExisted,
+            ValueEmpty,
             PromotionProductAppliedTypeEmpty,
             PromotionProductAppliedTypeNotExisted,
             ProductNotExisted,
@@ -182,6 +183,13 @@ namespace DMS.Services.MPromotionCode
                 if (!PromotionCodeTypeIds.Contains(PromotionCode.PromotionDiscountTypeId))
                 {
                     PromotionCode.AddError(nameof(PromotionCodeValidator), nameof(PromotionCode.PromotionDiscountType), ErrorCode.PromotionDiscountTypeNotExisted);
+                }
+                else
+                {
+                    if(PromotionCode.Value <= 0)
+                    {
+                        PromotionCode.AddError(nameof(PromotionCodeValidator), nameof(PromotionCode.Value), ErrorCode.ValueEmpty);
+                    }
                 }
             }
             return PromotionCode.IsValidated;

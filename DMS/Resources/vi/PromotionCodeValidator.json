@@ -31,6 +31,9 @@
       "PromotionDiscountTypeNotExisted": "Loại giảm giá không tồn tại",
       "PromotionDiscountTypeEmpty": "Chưa chọn loại giảm giá"
     },
+    "Value": {
+      "ValueEmpty": "Chưa nhập giá trị"
+    }
     "PromotionProductAppliedType": {
       "PromotionProductAppliedTypeNotExisted": "Sản phẩm áp dụng không tồn tại",
       "PromotionProductAppliedTypeEmpty": "Chưa chọn sản phẩm áp dụng"
