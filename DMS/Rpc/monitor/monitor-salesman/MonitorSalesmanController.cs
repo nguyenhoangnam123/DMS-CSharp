@@ -248,6 +248,7 @@ namespace DMS.Rpc.monitor.monitor_salesman
 
             List<AppUserDAO> AppUserDAOs = await DataContext.AppUser
                 .Where(x => x.DeletedAt == null)
+                .Where(x => AppUserIds.Contains(x.Id))
                 .OrderBy(su => su.OrganizationId).ThenBy(x => x.DisplayName)
                 .Select(x => new AppUserDAO
                 {
