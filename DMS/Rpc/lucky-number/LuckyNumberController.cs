@@ -237,13 +237,13 @@ namespace DMS.Rpc.lucky_number
                     LuckyNumber.Name = NameValue;
                     LuckyNumber.RewardStatusId = RewardStatusEnum.ACTIVE.Id;
                     LuckyNumber.RowId = Guid.NewGuid();
-                    if (decimal.TryParse(ValueValue, out decimal Value))
+                    if (!string.IsNullOrWhiteSpace(ValueValue))
                     {
-                        LuckyNumber.Value = Value;
+                        LuckyNumber.Value = ValueValue;
                     }
                     else
                     {
-                        errorContent.AppendLine($"Lỗi dòng thứ {i}: Giá trị nhập không hợp lệ");
+                        errorContent.AppendLine($"Lỗi dòng thứ {i}: Chưa nhập giá trị giải thưởng");
                         continue;
                     }
 

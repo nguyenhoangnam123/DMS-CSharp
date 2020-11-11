@@ -1289,6 +1289,7 @@ namespace DMS.Rpc.mobile
                 Id = Mobile_RewardHistoryDTO.Id,
                 AppUserId = CurrentContext.UserId,
                 TurnCounter = Mobile_RewardHistoryDTO.TurnCounter,
+                Revenue = Mobile_RewardHistoryDTO.Revenue,
                 StoreId = Mobile_RewardHistoryDTO.StoreId
             };
             RewardHistory = await RewardHistoryService.Create(RewardHistory);

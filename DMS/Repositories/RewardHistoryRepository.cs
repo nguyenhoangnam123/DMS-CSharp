@@ -46,6 +46,8 @@ namespace DMS.Repositories
                 query = query.Where(q => q.StoreId, filter.StoreId);
             if (filter.TurnCounter != null)
                 query = query.Where(q => q.TurnCounter, filter.TurnCounter);
+            if (filter.Revenue != null)
+                query = query.Where(q => q.Revenue, filter.Revenue);
             if (filter.RowId != null)
                 query = query.Where(q => q.RowId, filter.RowId);
             if (!string.IsNullOrWhiteSpace(filter.Search))
@@ -102,6 +104,9 @@ namespace DMS.Repositories
                         case RewardHistoryOrder.TurnCounter:
                             query = query.OrderBy(q => q.TurnCounter);
                             break;
+                        case RewardHistoryOrder.Revenue:
+                            query = query.OrderBy(q => q.Revenue);
+                            break;
                         case RewardHistoryOrder.Row:
                             query = query.OrderBy(q => q.RowId);
                             break;
@@ -122,6 +127,9 @@ namespace DMS.Repositories
                         case RewardHistoryOrder.TurnCounter:
                             query = query.OrderByDescending(q => q.TurnCounter);
                             break;
+                        case RewardHistoryOrder.Revenue:
+                            query = query.OrderByDescending(q => q.Revenue);
+                            break;
                         case RewardHistoryOrder.Row:
                             query = query.OrderByDescending(q => q.RowId);
                             break;
@@ -140,6 +148,7 @@ namespace DMS.Repositories
                 AppUserId = filter.Selects.Contains(RewardHistorySelect.AppUser) ? q.AppUserId : default(long),
                 StoreId = filter.Selects.Contains(RewardHistorySelect.Store) ? q.StoreId : default(long),
                 TurnCounter = filter.Selects.Contains(RewardHistorySelect.TurnCounter) ? q.TurnCounter : default(long),
+                Revenue = filter.Selects.Contains(RewardHistorySelect.Revenue) ? q.Revenue : default(decimal),
                 RowId = filter.Selects.Contains(RewardHistorySelect.Row) ? q.RowId : default(Guid),
                 AppUser = filter.Selects.Contains(RewardHistorySelect.AppUser) && q.AppUser != null ? new AppUser
                 {
@@ -248,6 +257,7 @@ namespace DMS.Repositories
                 AppUserId = x.AppUserId,
                 StoreId = x.StoreId,
                 TurnCounter = x.TurnCounter,
+                Revenue = x.Revenue,
                 RowId = x.RowId,
                 AppUser = x.AppUser == null ? null : new AppUser
                 {
@@ -353,6 +363,7 @@ namespace DMS.Repositories
             RewardHistoryDAO.AppUserId = RewardHistory.AppUserId;
             RewardHistoryDAO.StoreId = RewardHistory.StoreId;
             RewardHistoryDAO.TurnCounter = RewardHistory.TurnCounter;
+            RewardHistoryDAO.Revenue = RewardHistory.Revenue;
             RewardHistoryDAO.RowId = Guid.NewGuid();
             RewardHistoryDAO.CreatedAt = StaticParams.DateTimeNow;
             RewardHistoryDAO.UpdatedAt = StaticParams.DateTimeNow;
@@ -372,6 +383,7 @@ namespace DMS.Repositories
             RewardHistoryDAO.AppUserId = RewardHistory.AppUserId;
             RewardHistoryDAO.StoreId = RewardHistory.StoreId;
             RewardHistoryDAO.TurnCounter = RewardHistory.TurnCounter;
+            RewardHistoryDAO.Revenue = RewardHistory.Revenue;
             RewardHistoryDAO.RowId = RewardHistory.RowId;
             RewardHistoryDAO.UpdatedAt = StaticParams.DateTimeNow;
             await DataContext.SaveChangesAsync();
@@ -395,6 +407,7 @@ namespace DMS.Repositories
                 RewardHistoryDAO.AppUserId = RewardHistory.AppUserId;
                 RewardHistoryDAO.StoreId = RewardHistory.StoreId;
                 RewardHistoryDAO.TurnCounter = RewardHistory.TurnCounter;
+                RewardHistoryDAO.Revenue = RewardHistory.Revenue;
                 RewardHistoryDAO.RowId = RewardHistory.RowId;
                 RewardHistoryDAO.CreatedAt = StaticParams.DateTimeNow;
                 RewardHistoryDAO.UpdatedAt = StaticParams.DateTimeNow;

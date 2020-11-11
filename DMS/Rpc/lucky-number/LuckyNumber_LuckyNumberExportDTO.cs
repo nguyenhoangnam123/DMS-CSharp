@@ -11,7 +11,7 @@ namespace DMS.Rpc.lucky_number
         public long STT { get; set; }
         public string Code { get; set; }
         public string Name { get; set; }
-        public decimal Value { get; set; }
+        public string Value { get; set; }
         public string RewardStatus { get; set; }
     }
 }

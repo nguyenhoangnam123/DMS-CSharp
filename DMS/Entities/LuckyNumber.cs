@@ -11,7 +11,7 @@ namespace DMS.Entities
         public long Id { get; set; }
         public string Code { get; set; }
         public string Name { get; set; }
-        public decimal Value { get; set; }
+        public string Value { get; set; }
         public long RewardStatusId { get; set; }
         public Guid RowId { get; set; }
         public RewardStatus RewardStatus { get; set; }
@@ -33,7 +33,7 @@ namespace DMS.Entities
         public IdFilter Id { get; set; }
         public StringFilter Code { get; set; }
         public StringFilter Name { get; set; }
-        public DecimalFilter Value { get; set; }
+        public StringFilter Value { get; set; }
         public IdFilter RewardStatusId { get; set; }
         public GuidFilter RowId { get; set; }
         public DateFilter CreatedAt { get; set; }

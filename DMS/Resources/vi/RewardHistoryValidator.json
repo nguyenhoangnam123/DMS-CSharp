@@ -1,0 +1,10 @@
+﻿{
+  "RewardHistory": {
+    "Id": {
+      "IdNotExisted": "Id không tồn tại"
+    },
+    "Revenue": {
+      "RevenueEmpty": "Chưa nhập doanh thu"
+    }
+  }
+}

@@ -12,6 +12,7 @@ namespace DMS.Entities
         public long AppUserId { get; set; }
         public long StoreId { get; set; }
         public long TurnCounter { get; set; }
+        public decimal Revenue { get; set; }
         public Guid RowId { get; set; }
         public AppUser AppUser { get; set; }
         public Store Store { get; set; }
@@ -35,6 +36,7 @@ namespace DMS.Entities
         public IdFilter AppUserId { get; set; }
         public IdFilter StoreId { get; set; }
         public LongFilter TurnCounter { get; set; }
+        public DecimalFilter Revenue { get; set; }
         public GuidFilter RowId { get; set; }
         public DateFilter CreatedAt { get; set; }
         public DateFilter UpdatedAt { get; set; }
@@ -51,6 +53,7 @@ namespace DMS.Entities
         AppUser = 1,
         Store = 2,
         TurnCounter = 3,
+        Revenue = 4,
         Row = 7,
         CreatedAt = 50,
         UpdatedAt = 51,
@@ -64,6 +67,7 @@ namespace DMS.Entities
         AppUser = E._1,
         Store = E._2,
         TurnCounter = E._3,
+        Revenue = E._4,
         Row = E._7,
     }
 }

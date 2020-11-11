@@ -139,7 +139,7 @@ namespace DMS.Repositories
                 Id = filter.Selects.Contains(LuckyNumberSelect.Id) ? q.Id : default(long),
                 Code = filter.Selects.Contains(LuckyNumberSelect.Code) ? q.Code : default(string),
                 Name = filter.Selects.Contains(LuckyNumberSelect.Name) ? q.Name : default(string),
-                Value = filter.Selects.Contains(LuckyNumberSelect.Value) ? q.Value : default(decimal),
+                Value = filter.Selects.Contains(LuckyNumberSelect.Value) ? q.Value : default(string),
                 RewardStatusId = filter.Selects.Contains(LuckyNumberSelect.RewardStatus) ? q.RewardStatusId : default(long),
                 RowId = filter.Selects.Contains(LuckyNumberSelect.Row) ? q.RowId : default(Guid),
                 RewardStatus = filter.Selects.Contains(LuckyNumberSelect.RewardStatus) && q.RewardStatus != null ? new RewardStatus

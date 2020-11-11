@@ -22,6 +22,7 @@ namespace DMS.Services.MRewardHistory
         public enum ErrorCode
         {
             IdNotExisted,
+            RevenueEmpty
         }
 
         private IUOW UOW;
@@ -49,8 +50,18 @@ namespace DMS.Services.MRewardHistory
             return count == 1;
         }
 
+        private async Task<bool> ValidateRevenue(RewardHistory RewardHistory)
+        {
+            if(RewardHistory.Revenue <= 0)
+            {
+                RewardHistory.AddError(nameof(RewardHistoryValidator), nameof(RewardHistory.Revenue), ErrorCode.RevenueEmpty);
+            }
+            return RewardHistory.IsValidated;
+        }
+
         public async Task<bool>Create(RewardHistory RewardHistory)
         {
+            await ValidateRevenue(RewardHistory);
             return RewardHistory.IsValidated;
         }
 

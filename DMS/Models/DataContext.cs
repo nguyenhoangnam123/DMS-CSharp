@@ -1846,7 +1846,9 @@ namespace DMS.Models
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
-                entity.Property(e => e.Value).HasColumnType("decimal(18, 4)");
+                entity.Property(e => e.Value)
+                    .IsRequired()
+                    .HasMaxLength(500);
 
                 entity.HasOne(d => d.RewardStatus)
                     .WithMany(p => p.LuckyNumbers)
@@ -3609,6 +3611,8 @@ namespace DMS.Models
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.Revenue).HasColumnType("decimal(18, 4)");
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 

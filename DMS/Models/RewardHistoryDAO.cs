@@ -14,6 +14,7 @@ namespace DMS.Models
         public long AppUserId { get; set; }
         public long StoreId { get; set; }
         public long TurnCounter { get; set; }
+        public decimal Revenue { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public DateTime? DeletedAt { get; set; }

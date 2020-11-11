@@ -12,6 +12,7 @@ namespace DMS.Rpc.mobile
         public long AppUserId { get; set; }
         public long StoreId { get; set; }
         public long TurnCounter { get; set; }
+        public decimal Revenue { get; set; }
         public Guid RowId { get; set; }
         public Mobile_AppUserDTO AppUser { get; set; }
         public Mobile_StoreDTO Store { get; set; }
@@ -25,6 +26,7 @@ namespace DMS.Rpc.mobile
             this.AppUserId = RewardHistory.AppUserId;
             this.StoreId = RewardHistory.StoreId;
             this.TurnCounter = RewardHistory.TurnCounter;
+            this.Revenue = RewardHistory.Revenue;
             this.RowId = RewardHistory.RowId;
             this.AppUser = RewardHistory.AppUser == null ? null : new Mobile_AppUserDTO(RewardHistory.AppUser);
             this.Store = RewardHistory.Store == null ? null : new Mobile_StoreDTO(RewardHistory.Store);
@@ -41,6 +43,7 @@ namespace DMS.Rpc.mobile
         public IdFilter AppUserId { get; set; }
         public IdFilter StoreId { get; set; }
         public LongFilter TurnCounter { get; set; }
+        public DecimalFilter Revenue { get; set; }
         public GuidFilter RowId { get; set; }
         public DateFilter CreatedAt { get; set; }
         public DateFilter UpdatedAt { get; set; }
