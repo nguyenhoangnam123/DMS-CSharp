@@ -45,6 +45,7 @@ namespace DMS.Rpc.lucky_number
             IRewardStatusService RewardStatusService,
             ILuckyNumberService LuckyNumberService,
             IRewardHistoryService RewardHistoryService,
+            IRewardHistoryContentService RewardHistoryContentService,
             IStoreService StoreService,
             DataContext DataContext,
             ICurrentContext CurrentContext
@@ -55,6 +56,7 @@ namespace DMS.Rpc.lucky_number
             this.RewardStatusService = RewardStatusService;
             this.LuckyNumberService = LuckyNumberService;
             this.RewardHistoryService = RewardHistoryService;
+            this.RewardHistoryContentService = RewardHistoryContentService;
             this.StoreService = StoreService;
             this.DataContext = DataContext;
             this.CurrentContext = CurrentContext;

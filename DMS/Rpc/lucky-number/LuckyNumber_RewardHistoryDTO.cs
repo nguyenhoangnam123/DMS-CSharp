@@ -13,6 +13,7 @@ namespace DMS.Rpc.lucky_number
         public long AppUserId { get; set; }
         public long StoreId { get; set; }
         public long TurnCounter { get; set; }
+        public decimal Revenue { get; set; }
         public Guid RowId { get; set; }
         public LuckyNumber_AppUserDTO AppUser { get; set; }
         public LuckyNumber_StoreDTO Store { get; set; }
@@ -26,6 +27,7 @@ namespace DMS.Rpc.lucky_number
             this.AppUserId = RewardHistory.AppUserId;
             this.StoreId = RewardHistory.StoreId;
             this.TurnCounter = RewardHistory.TurnCounter;
+            this.Revenue = RewardHistory.Revenue;
             this.RowId = RewardHistory.RowId;
             this.AppUser = RewardHistory.AppUser == null ? null : new LuckyNumber_AppUserDTO(RewardHistory.AppUser);
             this.Store = RewardHistory.Store == null ? null : new LuckyNumber_StoreDTO(RewardHistory.Store);
