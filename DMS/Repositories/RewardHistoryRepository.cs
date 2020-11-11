@@ -294,6 +294,7 @@ namespace DMS.Repositories
                         Id = x.LuckyNumber.Id,
                         Code = x.LuckyNumber.Code,
                         Name = x.LuckyNumber.Name,
+                        Value = x.LuckyNumber.Value,
                         RewardStatusId = x.LuckyNumber.RewardStatusId,
                         RowId = x.LuckyNumber.RowId,
                     },
