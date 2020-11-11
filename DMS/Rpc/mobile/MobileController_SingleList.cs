@@ -1235,6 +1235,7 @@ namespace DMS.Rpc.mobile
             RewardHistoryFilter.Id = Mobile_RewardHistoryFilterDTO.Id;
             RewardHistoryFilter.CreatedAt = Mobile_RewardHistoryFilterDTO.CreatedAt;
             RewardHistoryFilter.StoreId = Mobile_RewardHistoryFilterDTO.StoreId;
+            RewardHistoryFilter.Search = Mobile_RewardHistoryFilterDTO.Search;
             RewardHistoryFilter.AppUserId = new IdFilter { Equal = appUser.Id };
 
             return await RewardHistoryService.Count(RewardHistoryFilter);
@@ -1258,6 +1259,7 @@ namespace DMS.Rpc.mobile
             RewardHistoryFilter.Id = Mobile_RewardHistoryFilterDTO.Id;
             RewardHistoryFilter.CreatedAt = Mobile_RewardHistoryFilterDTO.CreatedAt;
             RewardHistoryFilter.StoreId = Mobile_RewardHistoryFilterDTO.StoreId;
+            RewardHistoryFilter.Search = Mobile_RewardHistoryFilterDTO.Search;
             RewardHistoryFilter.AppUserId = new IdFilter { Equal = appUser.Id };
 
             List<RewardHistory> RewardHistorys = await RewardHistoryService.List(RewardHistoryFilter);

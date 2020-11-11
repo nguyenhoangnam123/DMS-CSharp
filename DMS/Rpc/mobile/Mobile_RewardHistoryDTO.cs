@@ -44,6 +44,7 @@ namespace DMS.Rpc.mobile
         public GuidFilter RowId { get; set; }
         public DateFilter CreatedAt { get; set; }
         public DateFilter UpdatedAt { get; set; }
+        public string Search { get; set; }
         public RewardHistoryOrder OrderBy { get; set; }
     }
 }

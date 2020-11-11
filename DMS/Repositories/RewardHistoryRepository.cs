@@ -48,6 +48,14 @@ namespace DMS.Repositories
                 query = query.Where(q => q.TurnCounter, filter.TurnCounter);
             if (filter.RowId != null)
                 query = query.Where(q => q.RowId, filter.RowId);
+            if (string.IsNullOrWhiteSpace(filter.Search))
+                query = query.Where(q =>
+                q.Store.CodeDraft.ToLower().Contains(filter.Search.ToLower()) ||
+                q.Store.Code.ToLower().Contains(filter.Search.ToLower()) ||
+                q.Store.Address.ToLower().Contains(filter.Search.ToLower()) ||
+                q.Store.UnsignAddress.ToLower().Contains(filter.Search.ToLower()) ||
+                q.Store.UnsignName.ToLower().Contains(filter.Search.ToLower()) ||
+                q.Store.Name.ToLower().Contains(filter.Search.ToLower()));
             query = OrFilter(query, filter);
             return query;
         }
