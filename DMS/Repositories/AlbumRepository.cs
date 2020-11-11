@@ -151,6 +151,7 @@ namespace DMS.Repositories
                         {
                             AlbumId = x.AlbumId,
                             ImageId = x.ImageId,
+                            OrganizationId = x.OrganizationId,
                             StoreId = x.StoreId,
                             ShootingAt = x.ShootingAt,
                             SaleEmployeeId = x.SaleEmployeeId,
@@ -211,6 +212,7 @@ namespace DMS.Repositories
                 {
                     AlbumId = x.AlbumId,
                     ImageId = x.ImageId,
+                    OrganizationId = x.OrganizationId,
                     ShootingAt = x.ShootingAt,
                     Distance = x.Distance,
                     SaleEmployeeId = x.SaleEmployeeId,
@@ -301,6 +303,7 @@ namespace DMS.Repositories
                         AlbumImageMappingDAO = new AlbumImageMappingDAO();
                         AlbumImageMappingDAO.AlbumId = Album.Id;
                         AlbumImageMappingDAO.ImageId = AlbumImageMapping.ImageId;
+                        AlbumImageMappingDAO.OrganizationId = AlbumImageMapping.OrganizationId;
                         AlbumImageMappingDAO.StoreId = AlbumImageMapping.StoreId;
                         AlbumImageMappingDAO.Distance = AlbumImageMapping.Distance;
                         AlbumImageMappingDAO.SaleEmployeeId = AlbumImageMapping.SaleEmployeeId;

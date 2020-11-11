@@ -516,6 +516,7 @@ namespace DMS.Rpc.mobile
                     AlbumId = x.AlbumId,
                     ImageId = x.ImageId,
                     StoreId = x.StoreId,
+                    OrganizationId = x.OrganizationId,
                     SaleEmployeeId = CurrentContext.UserId,
                     ShootingAt = x.ShootingAt,
                 }).ToList()

@@ -162,8 +162,14 @@ namespace DMS.Services.MAlbum
                 return Album;
             try
             {
+                var appUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
                 var oldData = await UOW.AlbumRepository.Get(Album.Id);
+                foreach (var AlbumImageMapping in Album.AlbumImageMappings)
+                {
+                    AlbumImageMapping.OrganizationId = appUser.OrganizationId;
+                }
                 Album.AlbumImageMappings.AddRange(oldData.AlbumImageMappings);
+                
                 await UOW.Begin();
                 await UOW.AlbumRepository.Update(Album);
                 await UOW.Commit();

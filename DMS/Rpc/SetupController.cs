@@ -26,10 +26,10 @@ namespace DMS.Rpc
         [HttpGet, Route("rpc/dms/setup/set-org")]
         public async Task Count()
         {
-            List<StoreCheckingDAO> StoreCheckingDAOs = await DataContext.StoreChecking.ToListAsync();
-            var AppUserIds = StoreCheckingDAOs.Select(x => x.SaleEmployeeId).Distinct().ToList();
+            List<AlbumImageMappingDAO> AlbumImageMappingDAOs = await DataContext.AlbumImageMapping.ToListAsync();
+            var AppUserIds = AlbumImageMappingDAOs.Select(x => x.SaleEmployeeId).Distinct().ToList();
             var AppUserDAOs = await DataContext.AppUser.Where(x => AppUserIds.Contains(x.Id)).ToListAsync();
-            foreach (var StoreCheckingDAO in StoreCheckingDAOs)
+            foreach (var StoreCheckingDAO in AlbumImageMappingDAOs)
             {
                 StoreCheckingDAO.OrganizationId = AppUserDAOs.Where(x => x.Id == StoreCheckingDAO.SaleEmployeeId).AsParallel().Select(x => x.OrganizationId).FirstOrDefault();
             }

@@ -9,6 +9,7 @@ namespace DMS.Models
         public long AlbumId { get; set; }
         public long StoreId { get; set; }
         public DateTime ShootingAt { get; set; }
+        public long OrganizationId { get; set; }
         public long? SaleEmployeeId { get; set; }
         public long? Distance { get; set; }
         public DateTime? DeletedAt { get; set; }
