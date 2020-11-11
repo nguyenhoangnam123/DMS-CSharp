@@ -238,6 +238,7 @@ namespace DMS.Rpc.monitor.monitor_store_checker
                                       OrganizationId = i.OrganizationId,
                                       SaleEmployeeId = i.SaleEmployeeId,
                                       BuyerStoreId = i.BuyerStoreId,
+                                      OrderDate = i.OrderDate,
                                       Total = i.Total
                                   };
 
