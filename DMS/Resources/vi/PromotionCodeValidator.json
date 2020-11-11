@@ -33,7 +33,7 @@
     },
     "Value": {
       "ValueEmpty": "Chưa nhập giá trị"
-    }
+    },
     "PromotionProductAppliedType": {
       "PromotionProductAppliedTypeNotExisted": "Sản phẩm áp dụng không tồn tại",
       "PromotionProductAppliedTypeEmpty": "Chưa chọn sản phẩm áp dụng"
