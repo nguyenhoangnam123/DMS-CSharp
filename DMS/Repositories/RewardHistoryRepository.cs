@@ -187,6 +187,24 @@ namespace DMS.Repositories
                     Used = q.Store.Used,
                     StoreScoutingId = q.Store.StoreScoutingId,
                     StoreStatusId = q.Store.StoreStatusId,
+                    Province = q.Store.Province == null ? null : new Province
+                    {
+                        Id = q.Store.Province.Id,
+                        Code = q.Store.Province.Code,
+                        Name = q.Store.Province.Name,
+                    },
+                    District = q.Store.District == null ? null : new District
+                    {
+                        Id = q.Store.District.Id,
+                        Code = q.Store.District.Code,
+                        Name = q.Store.District.Name,
+                    },
+                    Ward = q.Store.Ward == null ? null : new Ward
+                    {
+                        Id = q.Store.Ward.Id,
+                        Code = q.Store.Ward.Code,
+                        Name = q.Store.Ward.Name,
+                    }
                 } : null,
                 CreatedAt = q.CreatedAt,
                 UpdatedAt = q.UpdatedAt,
@@ -277,6 +295,24 @@ namespace DMS.Repositories
                     Used = x.Store.Used,
                     StoreScoutingId = x.Store.StoreScoutingId,
                     StoreStatusId = x.Store.StoreStatusId,
+                    Province = x.Store.Province == null ? null : new Province
+                    {
+                        Id = x.Store.Province.Id,
+                        Code = x.Store.Province.Code,
+                        Name = x.Store.Province.Name,
+                    },
+                    District = x.Store.District == null ? null : new District
+                    {
+                        Id = x.Store.District.Id,
+                        Code = x.Store.District.Code,
+                        Name = x.Store.District.Name,
+                    },
+                    Ward = x.Store.Ward == null ? null : new Ward
+                    {
+                        Id = x.Store.Ward.Id,
+                        Code = x.Store.Ward.Code,
+                        Name = x.Store.Ward.Name,
+                    }
                 },
             }).FirstOrDefaultAsync();
 

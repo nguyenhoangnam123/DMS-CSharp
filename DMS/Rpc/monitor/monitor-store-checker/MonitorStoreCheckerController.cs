@@ -289,6 +289,8 @@ namespace DMS.Rpc.monitor.monitor_store_checker
               .Where(ec => ec.ERoute.RealStartDate <= End &&
                     (ec.ERoute.EndDate == null || ec.ERoute.EndDate.Value >= Start) &&
                     AppUserIds.Contains(ec.ERoute.SaleEmployeeId))
+              .Where(x => x.ERoute.StatusId == StatusEnum.ACTIVE.Id && 
+              x.ERoute.RequestStateId == RequestStateEnum.APPROVED.Id)
               .Include(ec => ec.ERouteContentDays)
               .Include(ec => ec.ERoute)
               .ToListAsync();

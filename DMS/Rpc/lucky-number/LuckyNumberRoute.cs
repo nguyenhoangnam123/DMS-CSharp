@@ -17,8 +17,8 @@ namespace DMS.Rpc.lucky_number
 {
     public class LuckyNumberRoute : Root
     {
-        public const string Master = Module + "/lucky-number/lucky-number-master";
-        public const string Detail = Module + "/lucky-number/lucky-number-detail";
+        public const string Master = Module + "/price-list-and-promotion/lucky-number/lucky-number-master";
+        public const string Detail = Module + "/price-list-and-promotion/lucky-number/lucky-number-detail";
         private const string Default = Rpc + Module + "/lucky-number";
         public const string Count = Default + "/count";
         public const string List = Default + "/list";
