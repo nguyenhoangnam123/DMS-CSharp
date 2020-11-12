@@ -1025,35 +1025,6 @@ namespace DMS.Rpc
 
         private void InitWorkflowEnum()
         {
-            List<WorkflowTypeDAO> WorkflowTypeEnumList = WorkflowTypeEnum.WorkflowTypeEnumList.Select(item => new WorkflowTypeDAO
-            {
-                Id = item.Id,
-                Code = item.Code,
-                Name = item.Name,
-            }).ToList();
-            DataContext.WorkflowType.BulkSynchronize(WorkflowTypeEnumList);
-            List<WorkflowStateDAO> WorkflowStateEnumList = WorkflowStateEnum.WorkflowStateEnumList.Select(item => new WorkflowStateDAO
-            {
-                Id = item.Id,
-                Code = item.Code,
-                Name = item.Name,
-            }).ToList();
-            DataContext.WorkflowState.BulkSynchronize(WorkflowStateEnumList);
-            List<RequestStateDAO> RequestStateEnumList = RequestStateEnum.RequestStateEnumList.Select(item => new RequestStateDAO
-            {
-                Id = item.Id,
-                Code = item.Code,
-                Name = item.Name,
-            }).ToList();
-            DataContext.RequestState.BulkSynchronize(RequestStateEnumList);
-            List<WorkflowParameterTypeDAO> WorkflowParameterTypeDAOs = WorkflowParameterTypeEnum.List.Select(item => new WorkflowParameterTypeDAO
-            {
-                Id = item.Id,
-                Code = item.Code,
-                Name = item.Name,
-            }).ToList();
-            DataContext.WorkflowParameterType.BulkSynchronize(WorkflowParameterTypeDAOs);
-
             List<WorkflowOperatorDAO> WorkflowOperatorDAOs = new List<WorkflowOperatorDAO>();
             List<WorkflowOperatorDAO> ID = WorkflowOperatorEnum.WorkflowOperatorEnumForID.Select(item => new WorkflowOperatorDAO
             {
@@ -1145,6 +1116,35 @@ namespace DMS.Rpc
             WorkflowParameterDAOs.AddRange(PRICE_LIST_PARAMETER);
 
             DataContext.WorkflowParameter.BulkMerge(WorkflowParameterDAOs);
+
+            List<WorkflowTypeDAO> WorkflowTypeEnumList = WorkflowTypeEnum.WorkflowTypeEnumList.Select(item => new WorkflowTypeDAO
+            {
+                Id = item.Id,
+                Code = item.Code,
+                Name = item.Name,
+            }).ToList();
+            DataContext.WorkflowType.BulkSynchronize(WorkflowTypeEnumList);
+            List<WorkflowStateDAO> WorkflowStateEnumList = WorkflowStateEnum.WorkflowStateEnumList.Select(item => new WorkflowStateDAO
+            {
+                Id = item.Id,
+                Code = item.Code,
+                Name = item.Name,
+            }).ToList();
+            DataContext.WorkflowState.BulkSynchronize(WorkflowStateEnumList);
+            List<RequestStateDAO> RequestStateEnumList = RequestStateEnum.RequestStateEnumList.Select(item => new RequestStateDAO
+            {
+                Id = item.Id,
+                Code = item.Code,
+                Name = item.Name,
+            }).ToList();
+            DataContext.RequestState.BulkSynchronize(RequestStateEnumList);
+            List<WorkflowParameterTypeDAO> WorkflowParameterTypeDAOs = WorkflowParameterTypeEnum.List.Select(item => new WorkflowParameterTypeDAO
+            {
+                Id = item.Id,
+                Code = item.Code,
+                Name = item.Name,
+            }).ToList();
+            DataContext.WorkflowParameterType.BulkSynchronize(WorkflowParameterTypeDAOs);
         }
 
         private void InitColorEnum()
