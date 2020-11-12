@@ -3,11 +3,13 @@ using DMS.Entities;
 using DMS.Enums;
 using DMS.Helpers;
 using DMS.Models;
+using DMS.Services.MProduct;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RestSharp;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -18,9 +20,52 @@ namespace DMS.Rpc
     public class SetupController : ControllerBase
     {
         private DataContext DataContext;
-        public SetupController(DataContext DataContext)
+        private IItemService ItemService;
+        public SetupController(DataContext DataContext, IItemService ItemService)
         {
+            this.ItemService = ItemService;
             this.DataContext = DataContext;
+        }
+
+        [HttpGet, Route("rpc/dms/setup/save-image")]
+        public async Task SaveImage()
+        {
+            string folderPath = @"E:\Downloads\Ma SP - Dong Luc";
+            List<FileInfo> FileInfos = new List<FileInfo>();
+            foreach (string file in Directory.EnumerateFiles(folderPath, "*.jpg"))
+            {
+                FileInfo FileInfo = new FileInfo(file);
+                FileInfos.Add(FileInfo);
+            }
+
+            var FileNames = FileInfos.Select(x => x.Name.Replace(".jpg", string.Empty)).ToList();
+            var Items = await DataContext.Item.Where(x => FileNames.Contains(x.Code)).ToListAsync();
+
+            List<ItemImageMappingDAO> ItemImageMappingDAOs = new List<ItemImageMappingDAO>();
+            foreach (var FileInfo in FileInfos)
+            {
+                var contents = await System.IO.File.ReadAllBytesAsync(FileInfo.FullName);
+
+                Image Image = new Image()
+                {
+                    Name = FileInfo.Name,
+                    Content = contents
+                };
+                var Item = Items.Where(x => x.Code == FileInfo.Name).FirstOrDefault();
+                if (Item != null)
+                {
+                    Image = await ItemService.SaveImage(Image);
+
+                    ItemImageMappingDAO ItemImageMappingDAO = new ItemImageMappingDAO()
+                    {
+                        ItemId = Item.Id,
+                        ImageId = Image.Id
+                    };
+                    ItemImageMappingDAOs.Add(ItemImageMappingDAO);
+                    
+                }
+            }
+            await DataContext.ItemImageMapping.BulkMergeAsync(ItemImageMappingDAOs);
         }
 
         [HttpGet, Route("rpc/dms/setup/set-org")]
