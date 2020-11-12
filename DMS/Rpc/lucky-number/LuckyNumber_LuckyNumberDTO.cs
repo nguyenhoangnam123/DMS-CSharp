@@ -17,6 +17,7 @@ namespace DMS.Rpc.lucky_number
         public LuckyNumber_RewardStatusDTO RewardStatus { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
+        public bool Used { get; set; }
         public LuckyNumber_LuckyNumberDTO() {}
         public LuckyNumber_LuckyNumberDTO(LuckyNumber LuckyNumber)
         {
@@ -26,6 +27,7 @@ namespace DMS.Rpc.lucky_number
             this.Value = LuckyNumber.Value;
             this.RewardStatusId = LuckyNumber.RewardStatusId;
             this.RowId = LuckyNumber.RowId;
+            this.Used = LuckyNumber.Used;
             this.RewardStatus = LuckyNumber.RewardStatus == null ? null : new LuckyNumber_RewardStatusDTO(LuckyNumber.RewardStatus);
             this.CreatedAt = LuckyNumber.CreatedAt;
             this.UpdatedAt = LuckyNumber.UpdatedAt;

@@ -22,6 +22,7 @@ namespace DMS.Services.MLuckyNumber
         public enum ErrorCode
         {
             IdNotExisted,
+            LuckyNumberInUsed
         }
 
         private IUOW UOW;
@@ -66,6 +67,10 @@ namespace DMS.Services.MLuckyNumber
         {
             if (await ValidateId(LuckyNumber))
             {
+                if (LuckyNumber.Used)
+                {
+                    LuckyNumber.AddError(nameof(LuckyNumberValidator), nameof(LuckyNumber.Id), ErrorCode.LuckyNumberInUsed);
+                }
             }
             return LuckyNumber.IsValidated;
         }

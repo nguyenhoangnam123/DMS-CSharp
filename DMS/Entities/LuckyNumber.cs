@@ -14,6 +14,7 @@ namespace DMS.Entities
         public string Value { get; set; }
         public long RewardStatusId { get; set; }
         public Guid RowId { get; set; }
+        public bool Used { get; set; }
         public RewardStatus RewardStatus { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }

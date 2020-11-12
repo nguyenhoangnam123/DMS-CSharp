@@ -115,6 +115,7 @@ namespace DMS.Services.MLuckyNumber
                     var RandomNumber = LuckyNumbers.OrderBy(x => rnd.Next()).FirstOrDefault();
 
                     RandomNumber.RewardStatusId = RewardStatusEnum.INACTIVE.Id;
+                    RandomNumber.Used = true;
                     await UOW.LuckyNumberRepository.Update(RandomNumber);
 
                     if(RewardHistory.RewardHistoryContents == null)

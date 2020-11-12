@@ -150,6 +150,7 @@ namespace DMS.Repositories
                 } : null,
                 CreatedAt = q.CreatedAt,
                 UpdatedAt = q.UpdatedAt,
+                Used = q.Used,
             }).ToListAsync();
             return LuckyNumbers;
         }
@@ -184,6 +185,7 @@ namespace DMS.Repositories
                 Value = x.Value,
                 RewardStatusId = x.RewardStatusId,
                 RowId = x.RowId,
+                Used = x.Used,
                 RewardStatus = x.RewardStatus == null ? null : new RewardStatus
                 {
                     Id = x.RewardStatus.Id,
@@ -208,6 +210,7 @@ namespace DMS.Repositories
             LuckyNumberDAO.RowId = LuckyNumber.RowId;
             LuckyNumberDAO.CreatedAt = StaticParams.DateTimeNow;
             LuckyNumberDAO.UpdatedAt = StaticParams.DateTimeNow;
+            LuckyNumberDAO.Used = false;
             DataContext.LuckyNumber.Add(LuckyNumberDAO);
             await DataContext.SaveChangesAsync();
             LuckyNumber.Id = LuckyNumberDAO.Id;
@@ -226,6 +229,7 @@ namespace DMS.Repositories
             LuckyNumberDAO.Value = LuckyNumber.Value;
             LuckyNumberDAO.RewardStatusId = LuckyNumber.RewardStatusId;
             LuckyNumberDAO.RowId = LuckyNumber.RowId;
+            LuckyNumberDAO.Used = LuckyNumber.Used;
             LuckyNumberDAO.UpdatedAt = StaticParams.DateTimeNow;
             await DataContext.SaveChangesAsync();
             await SaveReference(LuckyNumber);
@@ -250,6 +254,7 @@ namespace DMS.Repositories
                 LuckyNumberDAO.Value = LuckyNumber.Value;
                 LuckyNumberDAO.RewardStatusId = LuckyNumber.RewardStatusId;
                 LuckyNumberDAO.RowId = LuckyNumber.RowId;
+                LuckyNumberDAO.Used = LuckyNumber.Used;
                 LuckyNumberDAO.CreatedAt = StaticParams.DateTimeNow;
                 LuckyNumberDAO.UpdatedAt = StaticParams.DateTimeNow;
                 LuckyNumberDAOs.Add(LuckyNumberDAO);
