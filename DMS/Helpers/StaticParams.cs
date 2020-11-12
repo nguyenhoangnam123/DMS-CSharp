@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Antiforgery;
 using NGS.Templater;
 using System;
 
-namespace Helpers
+namespace DMS.Helpers
 {
     public class StaticParams
     {

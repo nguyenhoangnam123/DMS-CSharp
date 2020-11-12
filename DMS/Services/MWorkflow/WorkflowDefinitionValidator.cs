@@ -1,8 +1,8 @@
-using Common;
+using DMS.Common;
 using DMS.Entities;
 using DMS.Enums;
 using DMS.Repositories;
-using Helpers;
+using DMS.Helpers;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -13,6 +13,8 @@ namespace DMS.Services.MWorkflow
     {
         Task<bool> Create(WorkflowDefinition WorkflowDefinition);
         Task<bool> Update(WorkflowDefinition WorkflowDefinition);
+        Task<bool> Clone(WorkflowDefinition WorkflowDefinition);
+        Task<bool> CloneStep(WorkflowDefinition WorkflowDefinition);
         Task<bool> Delete(WorkflowDefinition WorkflowDefinition);
         Task<bool> BulkDelete(List<WorkflowDefinition> WorkflowDefinitions);
         Task<bool> Import(List<WorkflowDefinition> WorkflowDefinitions);
@@ -25,6 +27,8 @@ namespace DMS.Services.MWorkflow
             IdNotExisted,
             WorkflowDefinitionInUsed,
             CodeEmpty,
+            CodeOverLength,
+            ContainStepCodeOrNameOverLength,
             CodeHasSpecialCharacter,
             CodeExisted,
             NameEmpty,
@@ -34,6 +38,7 @@ namespace DMS.Services.MWorkflow
             StatusNotExisted,
             EndDateInvalid,
             OrganizationNotExisted,
+            StartDateEmpty,
         }
 
         private IUOW UOW;
@@ -67,6 +72,10 @@ namespace DMS.Services.MWorkflow
             {
                 WorkflowDefinition.AddError(nameof(WorkflowDefinitionValidator), nameof(WorkflowDefinition.Code), ErrorCode.CodeEmpty);
             }
+            if (WorkflowDefinition.Code.Length > 50)
+            {
+                WorkflowDefinition.AddError(nameof(WorkflowDefinitionValidator), nameof(WorkflowDefinition.Code), ErrorCode.CodeOverLength);
+            }
             else
             {
                 var Code = WorkflowDefinition.Code;
@@ -98,19 +107,19 @@ namespace DMS.Services.MWorkflow
             {
                 WorkflowDefinition.AddError(nameof(WorkflowDefinitionValidator), nameof(WorkflowDefinition.Name), ErrorCode.NameEmpty);
             }
-            else if (WorkflowDefinition.Name.Length > 255)
+            else if (WorkflowDefinition.Name.Length > 500)
             {
                 WorkflowDefinition.AddError(nameof(WorkflowDefinitionValidator), nameof(WorkflowDefinition.Name), ErrorCode.NameOverLength);
             }
             return WorkflowDefinition.IsValidated;
         }
 
+
         private async Task<bool> ValidateWorkflowType(WorkflowDefinition WorkflowDefinition)
         {
             if (WorkflowDefinition.WorkflowTypeId == 0)
                 WorkflowDefinition.AddError(nameof(WorkflowDefinitionValidator), nameof(WorkflowDefinition.WorkflowType), ErrorCode.WorkflowTypeEmpty);
-            else if (WorkflowDefinition.WorkflowTypeId != WorkflowTypeEnum.INDIRECT_SALES_ORDER.Id && WorkflowDefinition.WorkflowTypeId != WorkflowTypeEnum.PRICE_LIST.Id &&
-                WorkflowDefinition.WorkflowTypeId != WorkflowTypeEnum.EROUTE.Id && WorkflowDefinition.WorkflowTypeId != WorkflowTypeEnum.STORE.Id)
+            else if (!WorkflowTypeEnum.WorkflowTypeEnumList.Any(x => x.Id == WorkflowDefinition.WorkflowTypeId))
                 WorkflowDefinition.AddError(nameof(WorkflowDefinitionValidator), nameof(WorkflowDefinition.WorkflowType), ErrorCode.WorkflowTypeNotExisted);
             return WorkflowDefinition.IsValidated;
         }
@@ -157,6 +166,21 @@ namespace DMS.Services.MWorkflow
                     }
                 }
             }
+            if (!WorkflowDefinition.StartDate.HasValue)
+            {
+                WorkflowDefinition.AddError(nameof(WorkflowDefinitionValidator), nameof(WorkflowDefinition.StartDate), ErrorCode.StartDateEmpty);
+            }
+            return WorkflowDefinition.IsValidated;
+        }
+
+        private async Task<bool> ValidateWorkflowStep(WorkflowDefinition WorkflowDefinition)
+        {
+            var hasError = false;
+            foreach(var step in WorkflowDefinition.WorkflowSteps)
+            {
+                if (step.Name.Length > 500 || step.Code.Length > 50) hasError = true;
+            }
+            if (hasError) WorkflowDefinition.AddError(nameof(WorkflowDefinitionValidator), nameof(WorkflowDefinition.WorkflowSteps), ErrorCode.ContainStepCodeOrNameOverLength);
             return WorkflowDefinition.IsValidated;
         }
 
@@ -181,6 +205,22 @@ namespace DMS.Services.MWorkflow
                 await ValidateDate(WorkflowDefinition);
                 await ValidateStatusId(WorkflowDefinition);
                 await ValidateOrganizationId(WorkflowDefinition);
+            }
+            return WorkflowDefinition.IsValidated;
+        }
+
+        public async Task<bool> Clone(WorkflowDefinition WorkflowDefinition)
+        {
+            await ValidateCode(WorkflowDefinition);
+            await ValidateName(WorkflowDefinition);
+            return WorkflowDefinition.IsValidated;
+        }
+
+        public async Task<bool> CloneStep(WorkflowDefinition WorkflowDefinition)
+        {
+            if (await ValidateId(WorkflowDefinition))
+            {
+                await ValidateWorkflowStep(WorkflowDefinition); // validate Step Name, Code
             }
             return WorkflowDefinition.IsValidated;
         }

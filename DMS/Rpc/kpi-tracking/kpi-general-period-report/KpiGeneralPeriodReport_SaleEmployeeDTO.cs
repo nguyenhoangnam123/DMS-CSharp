@@ -1,4 +1,4 @@
-﻿using Common;
+﻿using DMS.Common;
 using System.Collections.Generic;
 
 namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
@@ -10,7 +10,6 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
         public string Username { get; set; }
         public string DisplayName { get; set; }
         public string OrganizationName { get; set; }
-        public long? OrganizationId { get; set; }
 
         //Số đơn hàng gián tiếp
         public decimal? TotalIndirectOrdersPLanned { get; set; }

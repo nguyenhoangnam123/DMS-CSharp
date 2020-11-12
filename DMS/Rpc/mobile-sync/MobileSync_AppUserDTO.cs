@@ -1,5 +1,6 @@
-using Common;
+using DMS.Common;
 using DMS.Entities;
+using DMS.Models;
 using System;
 
 namespace DMS.Rpc.mobile_sync
@@ -66,8 +67,6 @@ namespace DMS.Rpc.mobile_sync
             this.Birthday = AppUser.Birthday;
 
             this.ProvinceId = AppUser.ProvinceId;
-
-            this.Errors = AppUser.Errors;
         }
     }
 }

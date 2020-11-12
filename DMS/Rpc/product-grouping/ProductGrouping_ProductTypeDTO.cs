@@ -1,4 +1,4 @@
-﻿using Common;
+﻿using DMS.Common;
 using DMS.Entities;
 using System;
 
@@ -20,7 +20,7 @@ namespace DMS.Rpc.product_grouping
             this.Name = ProductType.Name;
             this.Description = ProductType.Description;
             this.StatusId = ProductType.StatusId;
-            this.UpdatedTime = ProductType.UpdatedTime;
+            this.UpdatedTime = ProductType.UpdatedAt;
             this.Errors = ProductType.Errors;
         }
     }

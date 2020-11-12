@@ -1,9 +1,9 @@
-﻿using Common;
+﻿using DMS.Common;
 using DMS.Entities;
 using DMS.Helpers;
 using DMS.Repositories;
 using DMS.Rpc.notification;
-using Helpers;
+using DMS.Helpers;
 using HtmlAgilityPack;
 using RestSharp;
 using System;

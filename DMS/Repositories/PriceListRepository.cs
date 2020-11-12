@@ -1,7 +1,7 @@
-using Common;
+using DMS.Common;
 using DMS.Entities;
 using DMS.Models;
-using Helpers;
+using DMS.Helpers;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -14,9 +14,20 @@ namespace DMS.Repositories
     {
         Task<int> Count(PriceListFilter PriceListFilter);
         Task<List<PriceList>> List(PriceListFilter PriceListFilter);
+
+        Task<int> CountNew(PriceListFilter PriceListFilter);
+        Task<List<PriceList>> ListNew(PriceListFilter PriceListFilter);
+
+        Task<int> CountPending(PriceListFilter PriceListFilter);
+        Task<List<PriceList>> ListPending(PriceListFilter PriceListFilter);
+
+        Task<int> CountCompleted(PriceListFilter PriceListFilter);
+        Task<List<PriceList>> ListCompleted(PriceListFilter PriceListFilter);
+
         Task<PriceList> Get(long Id);
         Task<bool> Create(PriceList PriceList);
         Task<bool> Update(PriceList PriceList);
+        Task<bool> UpdateState(PriceList PriceList);
         Task<bool> Delete(PriceList PriceList);
         Task<bool> BulkMerge(List<PriceList> PriceLists);
         Task<bool> BulkDelete(List<PriceList> PriceLists);
@@ -44,6 +55,8 @@ namespace DMS.Repositories
                 query = query.Where(q => q.Code, filter.Code);
             if (filter.Name != null)
                 query = query.Where(q => q.Name, filter.Name);
+            if (filter.CreatorId != null)
+                query = query.Where(q => q.CreatorId, filter.CreatorId);
             if (filter.StartDate != null)
                 query = query.Where(q => q.StartDate, filter.StartDate);
             if (filter.EndDate != null)
@@ -87,6 +100,8 @@ namespace DMS.Repositories
                 query = query.Where(q => q.PriceListTypeId, filter.PriceListTypeId);
             if (filter.SalesOrderTypeId != null)
                 query = query.Where(q => q.SalesOrderTypeId, filter.SalesOrderTypeId);
+            if (filter.RequestStateId != null)
+                query = query.Where(q => q.RequestStateId, filter.RequestStateId);
             query = OrFilter(query, filter);
             return query;
         }
@@ -105,6 +120,8 @@ namespace DMS.Repositories
                     queryable = queryable.Where(q => q.Code, PriceListFilter.Code);
                 if (PriceListFilter.Name != null)
                     queryable = queryable.Where(q => q.Name, PriceListFilter.Name);
+                if (PriceListFilter.CreatorId != null)
+                    queryable = queryable.Where(q => q.CreatorId, PriceListFilter.CreatorId);
                 if (PriceListFilter.StartDate != null)
                     queryable = queryable.Where(q => q.StartDate, PriceListFilter.StartDate);
                 if (PriceListFilter.EndDate != null)
@@ -148,6 +165,8 @@ namespace DMS.Repositories
                     queryable = queryable.Where(q => q.PriceListTypeId, PriceListFilter.PriceListTypeId);
                 if (PriceListFilter.SalesOrderTypeId != null)
                     queryable = queryable.Where(q => q.SalesOrderTypeId, PriceListFilter.SalesOrderTypeId);
+                if (PriceListFilter.RequestStateId != null)
+                    queryable = queryable.Where(q => q.RequestStateId, PriceListFilter.RequestStateId);
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;
@@ -169,6 +188,9 @@ namespace DMS.Repositories
                         case PriceListOrder.Name:
                             query = query.OrderBy(q => q.Name);
                             break;
+                        case PriceListOrder.Creator:
+                            query = query.OrderBy(q => q.CreatorId);
+                            break;
                         case PriceListOrder.StartDate:
                             query = query.OrderBy(q => q.StartDate);
                             break;
@@ -187,6 +209,15 @@ namespace DMS.Repositories
                         case PriceListOrder.SalesOrderType:
                             query = query.OrderBy(q => q.SalesOrderTypeId);
                             break;
+                        case PriceListOrder.RequestState:
+                            query = query.OrderBy(q => q.RequestStateId);
+                            break;
+                        case PriceListOrder.CreatedAt:
+                            query = query.OrderBy(q => q.CreatedAt);
+                            break;
+                        case PriceListOrder.UpdatedAt:
+                            query = query.OrderBy(q => q.UpdatedAt);
+                            break;
                     }
                     break;
                 case OrderType.DESC:
@@ -197,6 +228,9 @@ namespace DMS.Repositories
                             break;
                         case PriceListOrder.Code:
                             query = query.OrderByDescending(q => q.Code);
+                            break;
+                        case PriceListOrder.Creator:
+                            query = query.OrderByDescending(q => q.CreatorId);
                             break;
                         case PriceListOrder.Name:
                             query = query.OrderByDescending(q => q.Name);
@@ -219,6 +253,15 @@ namespace DMS.Repositories
                         case PriceListOrder.SalesOrderType:
                             query = query.OrderByDescending(q => q.SalesOrderTypeId);
                             break;
+                        case PriceListOrder.RequestState:
+                            query = query.OrderByDescending(q => q.RequestStateId);
+                            break;
+                        case PriceListOrder.CreatedAt:
+                            query = query.OrderByDescending(q => q.CreatedAt);
+                            break;
+                        case PriceListOrder.UpdatedAt:
+                            query = query.OrderByDescending(q => q.UpdatedAt);
+                            break;
                     }
                     break;
             }
@@ -233,12 +276,20 @@ namespace DMS.Repositories
                 Id = filter.Selects.Contains(PriceListSelect.Id) ? q.Id : default(long),
                 Code = filter.Selects.Contains(PriceListSelect.Code) ? q.Code : default(string),
                 Name = filter.Selects.Contains(PriceListSelect.Name) ? q.Name : default(string),
+                CreatorId = filter.Selects.Contains(PriceListSelect.Creator) ? q.CreatorId : default(long),
                 StartDate = filter.Selects.Contains(PriceListSelect.StartDate) ? q.StartDate : default(DateTime?),
                 EndDate = filter.Selects.Contains(PriceListSelect.EndDate) ? q.EndDate : default(DateTime?),
                 StatusId = filter.Selects.Contains(PriceListSelect.Status) ? q.StatusId : default(long),
                 OrganizationId = filter.Selects.Contains(PriceListSelect.Organization) ? q.OrganizationId : default(long),
                 PriceListTypeId = filter.Selects.Contains(PriceListSelect.PriceListType) ? q.PriceListTypeId : default(long),
                 SalesOrderTypeId = filter.Selects.Contains(PriceListSelect.SalesOrderType) ? q.SalesOrderTypeId : default(long),
+                RequestStateId = filter.Selects.Contains(PriceListSelect.RequestState) ? q.RequestStateId : default(long),
+                Creator = filter.Selects.Contains(PriceListSelect.Creator) && q.Creator != null ? new AppUser
+                {
+                    Id = q.Creator.Id,
+                    Username = q.Creator.Username,
+                    DisplayName = q.Creator.DisplayName,
+                } : null,
                 PriceListType = filter.Selects.Contains(PriceListSelect.PriceListType) && q.PriceListType != null ? new PriceListType
                 {
                     Id = q.PriceListType.Id,
@@ -270,6 +321,13 @@ namespace DMS.Repositories
                     Code = q.Status.Code,
                     Name = q.Status.Name,
                 } : null,
+                RequestState = filter.Selects.Contains(PriceListSelect.RequestState) && q.RequestState != null ? new RequestState
+                {
+                    Id = q.RequestState.Id,
+                    Code = q.RequestState.Code,
+                    Name = q.RequestState.Name,
+                } : null,
+                RowId = q.RowId,
                 CreatedAt = q.CreatedAt,
                 UpdatedAt = q.UpdatedAt,
             }).ToListAsync();
@@ -293,6 +351,123 @@ namespace DMS.Repositories
             return PriceLists;
         }
 
+        public async Task<int> CountNew(PriceListFilter filter)
+        {
+            IQueryable<PriceListDAO> PriceListDAOs = DataContext.PriceList.AsNoTracking();
+            PriceListDAOs = DynamicFilter(PriceListDAOs, filter);
+            PriceListDAOs = from q in PriceListDAOs
+                                     where q.RequestStateId == RequestStateEnum.NEW.Id &&
+                                     q.CreatorId == filter.ApproverId.Equal
+                                     select q;
+
+            return await PriceListDAOs.Distinct().CountAsync();
+        }
+
+        public async Task<List<PriceList>> ListNew(PriceListFilter filter)
+        {
+            if (filter == null) return new List<PriceList>();
+            IQueryable<PriceListDAO> PriceListDAOs = DataContext.PriceList.AsNoTracking();
+            PriceListDAOs = DynamicFilter(PriceListDAOs, filter);
+            PriceListDAOs = from q in PriceListDAOs
+                                     where q.RequestStateId == RequestStateEnum.NEW.Id &&
+                                     q.CreatorId == filter.ApproverId.Equal
+                                     select q;
+
+            PriceListDAOs = DynamicOrder(PriceListDAOs, filter);
+            List<PriceList> PriceLists = await DynamicSelect(PriceListDAOs, filter);
+            return PriceLists;
+        }
+
+        public async Task<int> CountPending(PriceListFilter filter)
+        {
+            IQueryable<PriceListDAO> PriceListDAOs = DataContext.PriceList.AsNoTracking();
+            PriceListDAOs = DynamicFilter(PriceListDAOs, filter);
+            if (filter.ApproverId.Equal.HasValue)
+            {
+                PriceListDAOs = from q in PriceListDAOs
+                                         join r in DataContext.RequestWorkflowDefinitionMapping.Where(x => x.RequestStateId == RequestStateEnum.PENDING.Id) on q.RowId equals r.RequestId
+                                         join step in DataContext.WorkflowStep on r.WorkflowDefinitionId equals step.WorkflowDefinitionId
+                                         join rstep in DataContext.RequestWorkflowStepMapping.Where(x => x.WorkflowStateId == WorkflowStateEnum.PENDING.Id) on step.Id equals rstep.WorkflowStepId
+                                         join ra in DataContext.AppUserRoleMapping on step.RoleId equals ra.RoleId
+                                         where ra.AppUserId == filter.ApproverId.Equal && q.RowId == rstep.RequestId
+                                         select q;
+            }
+            return await PriceListDAOs.Distinct().CountAsync();
+        }
+
+        public async Task<List<PriceList>> ListPending(PriceListFilter filter)
+        {
+            if (filter == null) return new List<PriceList>();
+            IQueryable<PriceListDAO> PriceListDAOs = DataContext.PriceList.AsNoTracking();
+            PriceListDAOs = DynamicFilter(PriceListDAOs, filter);
+            if (filter.ApproverId.Equal.HasValue)
+            {
+                PriceListDAOs = from q in PriceListDAOs
+                                         join r in DataContext.RequestWorkflowDefinitionMapping.Where(x => x.RequestStateId == RequestStateEnum.PENDING.Id) on q.RowId equals r.RequestId
+                                         join step in DataContext.WorkflowStep on r.WorkflowDefinitionId equals step.WorkflowDefinitionId
+                                         join rstep in DataContext.RequestWorkflowStepMapping.Where(x => x.WorkflowStateId == WorkflowStateEnum.PENDING.Id) on step.Id equals rstep.WorkflowStepId
+                                         join ra in DataContext.AppUserRoleMapping on step.RoleId equals ra.RoleId
+                                         where ra.AppUserId == filter.ApproverId.Equal && q.RowId == rstep.RequestId
+                                         select q;
+            }
+            PriceListDAOs = DynamicOrder(PriceListDAOs, filter);
+            List<PriceList> PriceLists = await DynamicSelect(PriceListDAOs, filter);
+            return PriceLists;
+        }
+
+        public async Task<int> CountCompleted(PriceListFilter filter)
+        {
+            IQueryable<PriceListDAO> PriceListDAOs = DataContext.PriceList.AsNoTracking();
+            PriceListDAOs = DynamicFilter(PriceListDAOs, filter);
+            if (filter.ApproverId.Equal.HasValue)
+            {
+                var query1 = from q in PriceListDAOs
+                             join r in DataContext.RequestWorkflowDefinitionMapping on q.RowId equals r.RequestId
+                             join step in DataContext.WorkflowStep on r.WorkflowDefinitionId equals step.WorkflowDefinitionId
+                             join rstep in DataContext.RequestWorkflowStepMapping on step.Id equals rstep.WorkflowStepId
+                             where
+                             (q.RequestStateId != RequestStateEnum.NEW.Id) &&
+                             (rstep.WorkflowStateId == WorkflowStateEnum.APPROVED.Id || rstep.WorkflowStateId == WorkflowStateEnum.REJECTED.Id) &&
+                             rstep.AppUserId == filter.ApproverId.Equal
+                             select q;
+                var query2 = from q in PriceListDAOs
+                             join r in DataContext.RequestWorkflowDefinitionMapping on q.RowId equals r.RequestId into result
+                             from r in result.DefaultIfEmpty()
+                             where r == null && q.RequestStateId != RequestStateEnum.NEW.Id && q.CreatorId == filter.ApproverId.Equal
+                             select q;
+                PriceListDAOs = query1.Union(query2);
+            }
+            return await PriceListDAOs.Distinct().CountAsync();
+        }
+
+        public async Task<List<PriceList>> ListCompleted(PriceListFilter filter)
+        {
+            if (filter == null) return new List<PriceList>();
+            IQueryable<PriceListDAO> PriceListDAOs = DataContext.PriceList.AsNoTracking();
+            PriceListDAOs = DynamicFilter(PriceListDAOs, filter);
+            if (filter.ApproverId.Equal.HasValue)
+            {
+                var query1 = from q in PriceListDAOs
+                             join r in DataContext.RequestWorkflowDefinitionMapping on q.RowId equals r.RequestId
+                             join step in DataContext.WorkflowStep on r.WorkflowDefinitionId equals step.WorkflowDefinitionId
+                             join rstep in DataContext.RequestWorkflowStepMapping on step.Id equals rstep.WorkflowStepId
+                             where
+                             (q.RequestStateId != RequestStateEnum.NEW.Id) &&
+                             (rstep.WorkflowStateId == WorkflowStateEnum.APPROVED.Id || rstep.WorkflowStateId == WorkflowStateEnum.REJECTED.Id) &&
+                             rstep.AppUserId == filter.ApproverId.Equal
+                             select q;
+                var query2 = from q in PriceListDAOs
+                             join r in DataContext.RequestWorkflowDefinitionMapping on q.RowId equals r.RequestId into result
+                             from r in result.DefaultIfEmpty()
+                             where r == null && q.RequestStateId != RequestStateEnum.NEW.Id && q.CreatorId == filter.ApproverId.Equal
+                             select q;
+                PriceListDAOs = query1.Union(query2);
+            }
+            PriceListDAOs = DynamicOrder(PriceListDAOs, filter);
+            List<PriceList> PriceLists = await DynamicSelect(PriceListDAOs, filter);
+            return PriceLists;
+        }
+
         public async Task<PriceList> Get(long Id)
         {
             PriceList PriceList = await DataContext.PriceList.AsNoTracking()
@@ -305,16 +480,34 @@ namespace DMS.Repositories
                 Code = x.Code,
                 Name = x.Name,
                 StartDate = x.StartDate,
+                CreatorId = x.CreatorId,
                 EndDate = x.EndDate,
                 StatusId = x.StatusId,
                 OrganizationId = x.OrganizationId,
                 PriceListTypeId = x.PriceListTypeId,
                 SalesOrderTypeId = x.SalesOrderTypeId,
+                RequestStateId = x.RequestStateId,
+                RowId = x.RowId,
+                Creator = x.Creator == null ? null : new AppUser
+                {
+                    Id = x.Creator.Id,
+                    Username = x.Creator.Username,
+                    DisplayName = x.Creator.DisplayName,
+                    Address = x.Creator.Address,
+                    Email = x.Creator.Email,
+                    Phone = x.Creator.Phone,
+                },
                 PriceListType = x.PriceListType == null ? null : new PriceListType
                 {
                     Id = x.PriceListType.Id,
                     Code = x.PriceListType.Code,
                     Name = x.PriceListType.Name,
+                },
+                RequestState = x.RequestState == null ? null : new RequestState
+                {
+                    Id = x.RequestState.Id,
+                    Code = x.RequestState.Code,
+                    Name = x.RequestState.Name,
                 },
                 SalesOrderType = x.SalesOrderType == null ? null : new SalesOrderType
                 {
@@ -345,6 +538,23 @@ namespace DMS.Repositories
 
             if (PriceList == null)
                 return null;
+
+            RequestWorkflowDefinitionMappingDAO RequestWorkflowDefinitionMappingDAO = await DataContext.RequestWorkflowDefinitionMapping
+               .Where(x => PriceList.RowId == x.RequestId)
+               .Include(x => x.RequestState)
+               .AsNoTracking()
+               .FirstOrDefaultAsync();
+            if (RequestWorkflowDefinitionMappingDAO != null)
+            {
+                PriceList.RequestStateId = RequestWorkflowDefinitionMappingDAO.RequestStateId;
+                PriceList.RequestState = new RequestState
+                {
+                    Id = RequestWorkflowDefinitionMappingDAO.RequestState.Id,
+                    Code = RequestWorkflowDefinitionMappingDAO.RequestState.Code,
+                    Name = RequestWorkflowDefinitionMappingDAO.RequestState.Name,
+                };
+            }
+
             PriceList.PriceListItemMappings = await DataContext.PriceListItemMapping.AsNoTracking()
                 .Where(x => x.PriceListId == PriceList.Id)
                 .Where(x => x.Item.DeletedAt == null)
@@ -413,6 +623,7 @@ namespace DMS.Repositories
                     {
                         Id = x.Store.Id,
                         Code = x.Store.Code,
+                        CodeDraft = x.Store.CodeDraft,
                         Name = x.Store.Name,
                         ParentStoreId = x.Store.ParentStoreId,
                         OrganizationId = x.Store.OrganizationId,
@@ -513,11 +724,14 @@ namespace DMS.Repositories
             PriceListDAO.Code = PriceList.Code;
             PriceListDAO.Name = PriceList.Name;
             PriceListDAO.StartDate = PriceList.StartDate;
+            PriceListDAO.CreatorId = PriceList.CreatorId;
             PriceListDAO.EndDate = PriceList.EndDate;
             PriceListDAO.StatusId = PriceList.StatusId;
             PriceListDAO.OrganizationId = PriceList.OrganizationId;
             PriceListDAO.PriceListTypeId = PriceList.PriceListTypeId;
             PriceListDAO.SalesOrderTypeId = PriceList.SalesOrderTypeId;
+            PriceListDAO.RowId = Guid.NewGuid();
+            PriceListDAO.RequestStateId = PriceList.RequestStateId;
             PriceListDAO.CreatedAt = StaticParams.DateTimeNow;
             PriceListDAO.UpdatedAt = StaticParams.DateTimeNow;
             DataContext.PriceList.Add(PriceListDAO);
@@ -536,6 +750,7 @@ namespace DMS.Repositories
             PriceListDAO.Code = PriceList.Code;
             PriceListDAO.Name = PriceList.Name;
             PriceListDAO.StartDate = PriceList.StartDate;
+            PriceListDAO.CreatorId = PriceList.CreatorId;
             PriceListDAO.EndDate = PriceList.EndDate;
             PriceListDAO.StatusId = PriceList.StatusId;
             PriceListDAO.OrganizationId = PriceList.OrganizationId;
@@ -563,6 +778,7 @@ namespace DMS.Repositories
                 PriceListDAO.Code = PriceList.Code;
                 PriceListDAO.Name = PriceList.Name;
                 PriceListDAO.StartDate = PriceList.StartDate;
+                PriceListDAO.CreatorId = PriceList.CreatorId;
                 PriceListDAO.EndDate = PriceList.EndDate;
                 PriceListDAO.StatusId = PriceList.StatusId;
                 PriceListDAO.OrganizationId = PriceList.OrganizationId;
@@ -683,6 +899,17 @@ namespace DMS.Repositories
                 }
                 await DataContext.PriceListStoreTypeMapping.BulkMergeAsync(PriceListStoreTypeMappingDAOs);
             }
+        }
+
+        public async Task<bool> UpdateState(PriceList PriceList)
+        {
+            await DataContext.PriceList.Where(x => x.Id == PriceList.Id)
+                .UpdateFromQueryAsync(x => new PriceListDAO
+                {
+                    RequestStateId = PriceList.RequestStateId,
+                    UpdatedAt = StaticParams.DateTimeNow
+                });
+            return true;
         }
 
     }

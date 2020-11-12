@@ -1,4 +1,4 @@
-﻿using Common;
+﻿using DMS.Common;
 using DMS.Entities;
 using DMS.Enums;
 using DMS.Models;
@@ -11,7 +11,7 @@ using DMS.Services.MStore;
 using DMS.Services.MStoreGrouping;
 using DMS.Services.MStoreType;
 using System;
-using Helpers;
+using DMS.Helpers;
 using Microsoft.EntityFrameworkCore;
 using DMS.Services.MProduct;
 using DMS.Services.MAppUser;
@@ -110,6 +110,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_general
             StoreFilter.Selects = StoreSelect.ALL;
             StoreFilter.Id = ReportDirectSalesOrderGeneral_StoreFilterDTO.Id;
             StoreFilter.Code = ReportDirectSalesOrderGeneral_StoreFilterDTO.Code;
+            StoreFilter.CodeDraft = ReportDirectSalesOrderGeneral_StoreFilterDTO.CodeDraft;
             StoreFilter.Name = ReportDirectSalesOrderGeneral_StoreFilterDTO.Name;
             StoreFilter.OrganizationId = ReportDirectSalesOrderGeneral_StoreFilterDTO.OrganizationId;
             StoreFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
@@ -186,7 +187,8 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_general
                         (BuyerStoreId.HasValue == false || i.BuyerStoreId == BuyerStoreId.Value) &&
                         (StoreStatusId.HasValue == false || StoreStatusId.Value == StoreStatusEnum.ALL.Id || s.StoreStatusId == StoreStatusId.Value) &&
                         OrganizationIds.Contains(i.OrganizationId) &&
-                        i.RequestStateId == RequestStateEnum.APPROVED.Id
+                        i.RequestStateId == RequestStateEnum.APPROVED.Id &&
+                        s.DeletedAt == null
                         select i;
 
             int count = await query.Distinct().CountAsync();
@@ -246,13 +248,12 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_general
                         (BuyerStoreId.HasValue == false || i.BuyerStoreId == BuyerStoreId.Value) &&
                         (StoreStatusId.HasValue == false || StoreStatusId.Value == StoreStatusEnum.ALL.Id || s.StoreStatusId == StoreStatusId.Value) &&
                         OrganizationIds.Contains(i.OrganizationId) &&
-                        i.RequestStateId == RequestStateEnum.APPROVED.Id
+                        i.RequestStateId == RequestStateEnum.APPROVED.Id &&
+                        s.DeletedAt == null
                         select i;
 
             List<DirectSalesOrderDAO> DirectSalesOrderDAOs = await query
                 .OrderBy(x => x.OrganizationId).ThenBy(x => x.OrderDate)
-                .Skip(ReportDirectSalesOrderGeneral_ReportDirectSalesOrderGeneralFilterDTO.Skip)
-                .Take(ReportDirectSalesOrderGeneral_ReportDirectSalesOrderGeneralFilterDTO.Take)
                 .ToListAsync();
             var StoreIds = DirectSalesOrderDAOs.Select(x => x.BuyerStoreId).Distinct().ToList();
             List<Store> Stores = await StoreService.List(new StoreFilter
@@ -283,6 +284,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_general
                    {
                        Id = x.Id,
                        Code = x.Code,
+                       CodeDraft = x.CodeDraft,
                        Name = x.Name,
                        StoreStatus = x.StoreStatus == null ? null : new StoreStatusDAO
                        {
@@ -306,7 +308,9 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_general
                         Discount = x.GeneralDiscountAmount ?? 0,
                         TaxValue = x.TotalTaxAmount,
                         SubTotal = x.SubTotal,
-                        Total = x.Total,
+                        Total = x.TotalAfterTax,
+                        PromotionValue = x.PromotionValue.GetValueOrDefault(0),
+                        TotalAfterPromotion = x.Total
                     })
                     .ToList();
             }
@@ -368,7 +372,8 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_general
                         (StoreStatusId.HasValue == false || StoreStatusId.Value == StoreStatusEnum.ALL.Id || s.StoreStatusId == StoreStatusId.Value) &&
                         (AppUserIds.Contains(i.SaleEmployeeId)) &&
                         OrganizationIds.Contains(i.OrganizationId) &&
-                        i.RequestStateId == RequestStateEnum.APPROVED.Id
+                        i.RequestStateId == RequestStateEnum.APPROVED.Id &&
+                        s.DeletedAt == null
                         select i;
 
             List<DirectSalesOrderDAO> DirectSalesOrderDAOs = await query.ToListAsync();
@@ -379,7 +384,9 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_general
                 .DefaultIfEmpty(0).Sum(),
                 TotalTax = DirectSalesOrderDAOs.Select(x => x.TotalTaxAmount).DefaultIfEmpty(0).Sum(),
                 SubTotal = DirectSalesOrderDAOs.Select(x => x.SubTotal).DefaultIfEmpty(0).Sum(),
-                TotalRevenue = DirectSalesOrderDAOs.Select(x => x.Total).DefaultIfEmpty(0).Sum(),
+                Total = DirectSalesOrderDAOs.Select(x => x.TotalAfterTax).DefaultIfEmpty(0).Sum(),
+                PromotionValue = DirectSalesOrderDAOs.Select(x => x.PromotionValue.GetValueOrDefault(0)).DefaultIfEmpty(0).Sum(),
+                TotalAfterPromotion = DirectSalesOrderDAOs.Select(x => x.Total).DefaultIfEmpty(0).Sum(),
             };
 
             return ReportDirectSalesOrderGeneral_TotalDTO;
@@ -415,7 +422,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_general
                 }
             }
 
-            string path = "Templates/Report_Sales_Order_General.xlsx";
+            string path = "Templates/Report_Direct_Sales_Order_General.xlsx";
             byte[] arr = System.IO.File.ReadAllBytes(path);
             MemoryStream input = new MemoryStream(arr);
             MemoryStream output = new MemoryStream();

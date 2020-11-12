@@ -1,4 +1,4 @@
-﻿using Common;
+﻿using DMS.Common;
 using DMS.Entities;
 using DMS.Enums;
 using DMS.Repositories;
@@ -331,6 +331,13 @@ namespace DMS.Services.MProduct
 
                 if(Product.Items == null || !Product.Items.Any())
                     Product.AddError(nameof(ProductValidator), nameof(Product.Items), ErrorCode.ItemsEmpty);
+                foreach (var item in Product.Items)
+                {
+                    if(item.SalePrice == 0)
+                    {
+                        item.AddError(nameof(ProductValidator), nameof(item.SalePrice), ErrorCode.SalePriceEmpty);
+                    }
+                }
             }
                 
             return Product.IsValidated;

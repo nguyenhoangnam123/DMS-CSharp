@@ -1,4 +1,4 @@
-using Common;
+using DMS.Common;
 using DMS.Entities;
 using DMS.Services.MAppUser;
 using DMS.Services.MRole;
@@ -21,6 +21,7 @@ namespace DMS.Rpc.workflow_step
         private IRoleService RoleService;
         private IWorkflowDefinitionService WorkflowDefinitionService;
         private IWorkflowStepService WorkflowStepService;
+        private IWorkflowParameterService WorkflowParameterService;
         private ICurrentContext CurrentContext;
         private IStatusService StatusService;
         public WorkflowStepController(
@@ -28,6 +29,7 @@ namespace DMS.Rpc.workflow_step
             IRoleService RoleService,
             IWorkflowDefinitionService WorkflowDefinitionService,
             IWorkflowStepService WorkflowStepService,
+            IWorkflowParameterService WorkflowParameterService,
             IStatusService StatusService,
             ICurrentContext CurrentContext
         )
@@ -37,6 +39,7 @@ namespace DMS.Rpc.workflow_step
             this.StatusService = StatusService;
             this.WorkflowDefinitionService = WorkflowDefinitionService;
             this.WorkflowStepService = WorkflowStepService;
+            this.WorkflowParameterService = WorkflowParameterService;
             this.CurrentContext = CurrentContext;
         }
 
@@ -706,7 +709,7 @@ namespace DMS.Rpc.workflow_step
             WorkflowDefinitionFilter.WorkflowTypeId = WorkflowStep_WorkflowDefinitionFilterDTO.WorkflowTypeId;
             WorkflowDefinitionFilter.StartDate = WorkflowStep_WorkflowDefinitionFilterDTO.StartDate;
             WorkflowDefinitionFilter.EndDate = WorkflowStep_WorkflowDefinitionFilterDTO.EndDate;
-            WorkflowDefinitionFilter.StatusId = WorkflowStep_WorkflowDefinitionFilterDTO.StatusId;
+            //WorkflowDefinitionFilter.StatusId = WorkflowStep_WorkflowDefinitionFilterDTO.StatusId;
             WorkflowDefinitionFilter.UpdatedAt = WorkflowStep_WorkflowDefinitionFilterDTO.UpdatedAt;
             WorkflowDefinitionFilter.Used = false;
             List<WorkflowDefinition> WorkflowDefinitions = await WorkflowDefinitionService.List(WorkflowDefinitionFilter);
@@ -729,6 +732,30 @@ namespace DMS.Rpc.workflow_step
             List<WorkflowStep_StatusDTO> WorkflowStep_StatusDTOs = Statuses
                 .Select(x => new WorkflowStep_StatusDTO(x)).ToList();
             return WorkflowStep_StatusDTOs;
+        }
+
+        [Route(WorkflowStepRoute.SingleListWorkflowParameter), HttpPost]
+        public async Task<List<WorkflowStep_WorkflowParameterDTO>> SingleListWorkflowParameter([FromBody] WorkflowStep_WorkflowParameterFilterDTO WorkflowStep_WorkflowParameterFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            WorkflowParameterFilter WorkflowParameterFilter = new WorkflowParameterFilter();
+            WorkflowParameterFilter.Skip = 0;
+            WorkflowParameterFilter.Take = 20;
+            WorkflowParameterFilter.OrderBy = WorkflowParameterOrder.Id;
+            WorkflowParameterFilter.OrderType = OrderType.ASC;
+            WorkflowParameterFilter.Selects = WorkflowParameterSelect.ALL;
+            WorkflowParameterFilter.Id = WorkflowStep_WorkflowParameterFilterDTO.Id;
+            WorkflowParameterFilter.Code = WorkflowStep_WorkflowParameterFilterDTO.Code;
+            WorkflowParameterFilter.Name = WorkflowStep_WorkflowParameterFilterDTO.Name;
+            WorkflowParameterFilter.WorkflowTypeId = WorkflowStep_WorkflowParameterFilterDTO.WorkflowTypeId;
+            WorkflowParameterFilter.WorkflowParameterTypeId = WorkflowStep_WorkflowParameterFilterDTO.WorkflowParameterTypeId;
+
+            List<WorkflowParameter> WorkflowParameters = await WorkflowParameterService.List(WorkflowParameterFilter);
+            List<WorkflowStep_WorkflowParameterDTO> WorkflowStep_WorkflowParameterDTOs = WorkflowParameters
+                .Select(x => new WorkflowStep_WorkflowParameterDTO(x)).ToList();
+            return WorkflowStep_WorkflowParameterDTOs;
         }
     }
 }

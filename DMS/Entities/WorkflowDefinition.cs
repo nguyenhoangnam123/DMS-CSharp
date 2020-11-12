@@ -1,4 +1,4 @@
-using Common;
+using DMS.Common;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System;
@@ -19,6 +19,7 @@ namespace DMS.Entities
         public DateTime? EndDate { get; set; }
         public long StatusId { get; set; }
         public bool Used { get; set; }
+        public bool HasConflict { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public AppUser Creator { get; set; }

@@ -1,4 +1,4 @@
-﻿using Common;
+﻿using DMS.Common;
 using System;
 using System.Collections.Generic;
 
@@ -6,6 +6,7 @@ namespace DMS.Rpc.monitor.monitor_salesman
 {
     public class MonitorSalesman_MonitorSalesmanDTO : DataDTO
     {
+        public long OrganizationId { get; set; }
         public string OrganizationName { get; set; }
         public List<MonitorSalesman_SaleEmployeeDTO> SaleEmployees { get; set; }
     }
@@ -17,14 +18,12 @@ namespace DMS.Rpc.monitor.monitor_salesman
         public long SaleEmployeeId { get; set; }
         public string Username { get; set; }
         public string DisplayName { get; set; }
-        public string OrganizationName { get; set; }
         public long PlanCounter { get; set; }
         public long InternalCounter { get { return Internal == null ? 0 : Internal.Count; } }
         public long ExternalCounter { get { return External == null ? 0 : External.Count; } }
         public long ImageCounter { get; set; }
         public long SalesOrderCounter { get; set; }
         public decimal Revenue { get; set; }
-        internal long OrganizationId { get; set; }
         internal HashSet<long> Internal { get; set; }
         internal HashSet<long> External { get; set; }
         public List<MonitorSalesman_StoreCheckingDTO> StoreCheckings { get; set; }

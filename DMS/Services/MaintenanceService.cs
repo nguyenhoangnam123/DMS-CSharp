@@ -1,6 +1,6 @@
-﻿using Common;
+﻿using DMS.Common;
 using DMS.Models;
-using Helpers;
+using DMS.Helpers;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -59,7 +59,7 @@ namespace DMS.Services
 
         public async Task CreateStoreUnchecking()
         {
-            DateTime End = StaticParams.DateTimeNow.Date;
+            DateTime End = StaticParams.DateTimeNow;
             DateTime Start = End.AddDays(-1);
             List<ERouteContentDAO> ERouteContentDAOs = await DataContext.ERouteContent
                 .Where(ec => (!ec.ERoute.EndDate.HasValue || Start <= ec.ERoute.EndDate) && ec.ERoute.StartDate <= End)
@@ -87,6 +87,7 @@ namespace DMS.Services
                                 AppUserId = ERouteContentDAO.ERoute.SaleEmployeeId,
                                 Date = Start,
                                 StoreId = ERouteContentDAO.StoreId,
+                                OrganizationId = ERouteContentDAO.ERoute.OrganizationId
                             };
                             PlannedStoreUncheckingDAOs.Add(StoreUncheckingDAO);
                         }

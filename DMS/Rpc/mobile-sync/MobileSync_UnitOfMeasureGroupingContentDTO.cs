@@ -1,5 +1,6 @@
-﻿using Common;
+﻿using DMS.Common;
 using DMS.Entities;
+using DMS.Models;
 
 namespace DMS.Rpc.mobile_sync
 {
@@ -20,7 +21,6 @@ namespace DMS.Rpc.mobile_sync
             this.Factor = UnitOfMeasureGroupingContent.Factor;
             this.UnitOfMeasure = UnitOfMeasureGroupingContent.UnitOfMeasure == null ? null : new MobileSync_UnitOfMeasureDTO(UnitOfMeasureGroupingContent.UnitOfMeasure);
             this.UnitOfMeasureGrouping = UnitOfMeasureGroupingContent.UnitOfMeasureGrouping == null ? null : new MobileSync_UnitOfMeasureGroupingDTO(UnitOfMeasureGroupingContent.UnitOfMeasureGrouping);
-            this.Errors = UnitOfMeasureGroupingContent.Errors;
         }
     }
 }

@@ -1,5 +1,6 @@
-﻿using Common;
+﻿using DMS.Common;
 using DMS.Entities;
+using DMS.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,7 +27,6 @@ namespace DMS.Rpc.mobile_sync
             this.ProblemStatusId = ProblemHistory.ProblemStatusId;
             this.Modifier = ProblemHistory.Modifier == null ? null : new MobileSync_AppUserDTO(ProblemHistory.Modifier);
             this.ProblemStatus = ProblemHistory.ProblemStatus == null ? null : new MobileSync_ProblemStatusDTO(ProblemHistory.ProblemStatus);
-            this.Errors = ProblemHistory.Errors;
         }
     }
 

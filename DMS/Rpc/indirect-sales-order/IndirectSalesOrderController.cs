@@ -1,4 +1,4 @@
-﻿using Common;
+﻿using DMS.Common;
 using DMS.Entities;
 using DMS.Enums;
 using DMS.Helpers;
@@ -11,6 +11,7 @@ using DMS.Services.MProductGrouping;
 using DMS.Services.MProductType;
 using DMS.Services.MStore;
 using DMS.Services.MStoreGrouping;
+using DMS.Services.MStoreStatus;
 using DMS.Services.MStoreType;
 using DMS.Services.MSupplier;
 using DMS.Services.MTaxType;
@@ -18,7 +19,7 @@ using DMS.Services.MUnitOfMeasure;
 using DMS.Services.MUnitOfMeasureGrouping;
 using DMS.Services.MWorkflow;
 using GleamTech.DocumentUltimate;
-using Helpers;
+using DMS.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Dynamic;
@@ -45,6 +46,7 @@ namespace DMS.Rpc.indirect_sales_order
         private IRequestStateService RequestStateService;
         private ISupplierService SupplierService;
         private IStoreGroupingService StoreGroupingService;
+        private IStoreStatusService StoreStatusService;
         private IStoreTypeService StoreTypeService;
         private ITaxTypeService TaxTypeService;
         private ICurrentContext CurrentContext;
@@ -63,6 +65,7 @@ namespace DMS.Rpc.indirect_sales_order
             IRequestStateService RequestStateService,
             ISupplierService SupplierService,
             IStoreGroupingService StoreGroupingService,
+            IStoreStatusService StoreStatusService,
             IStoreTypeService StoreTypeService,
             ITaxTypeService TaxTypeService,
             ICurrentContext CurrentContext
@@ -82,6 +85,7 @@ namespace DMS.Rpc.indirect_sales_order
             this.RequestStateService = RequestStateService;
             this.SupplierService = SupplierService;
             this.StoreGroupingService = StoreGroupingService;
+            this.StoreStatusService = StoreStatusService;
             this.StoreTypeService = StoreTypeService;
             this.TaxTypeService = TaxTypeService;
             this.CurrentContext = CurrentContext;
@@ -733,6 +737,7 @@ namespace DMS.Rpc.indirect_sales_order
             IndirectSalesOrderFilter.GeneralDiscountAmount = IndirectSalesOrder_IndirectSalesOrderFilterDTO.GeneralDiscountAmount;
             IndirectSalesOrderFilter.TotalTaxAmount = IndirectSalesOrder_IndirectSalesOrderFilterDTO.TotalTaxAmount;
             IndirectSalesOrderFilter.Total = IndirectSalesOrder_IndirectSalesOrderFilterDTO.Total;
+            IndirectSalesOrderFilter.StoreStatusId = IndirectSalesOrder_IndirectSalesOrderFilterDTO.StoreStatusId;
             return IndirectSalesOrderFilter;
         }
     }

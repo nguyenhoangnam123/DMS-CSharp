@@ -1,4 +1,4 @@
-﻿using Common;
+﻿using DMS.Common;
 using DMS.Models;
 using DMS.Services.MStoreChecking;
 using Microsoft.AspNetCore.Mvc;
@@ -7,7 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Helpers;
+using DMS.Helpers;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using DMS.Services.MIndirectSalesOrder;
 using Microsoft.EntityFrameworkCore;
@@ -78,6 +78,14 @@ namespace DMS.Rpc.dashboards.monitor
 
             if (OrganizationFilter.Id == null) OrganizationFilter.Id = new IdFilter();
             OrganizationFilter.Id.In = await FilterOrganization(OrganizationService, CurrentContext);
+            List<OrganizationDAO> OrganizationDAOs = await DataContext.Organization.Where(o => o.DeletedAt == null && OrganizationFilter.Id.In.Contains(o.Id)).ToListAsync();
+            OrganizationDAO OrganizationDAO = null;
+            if (DashboardMonitor_OrganizationFilterDTO.Id?.Equal != null)
+            {
+                OrganizationDAO = await DataContext.Organization.Where(o => o.Id == DashboardMonitor_OrganizationFilterDTO.Id.Equal.Value).FirstOrDefaultAsync();
+                OrganizationDAOs = OrganizationDAOs.Where(o => o.Path.StartsWith(OrganizationDAO.Path)).ToList();
+            }
+            OrganizationFilter.Id.In = OrganizationDAOs.Select(o => o.Id).ToList();
 
             List<Organization> Organizations = await OrganizationService.List(OrganizationFilter);
             List<DashboardMonitor_OrganizationDTO> DashboardMonitor_OrganizationDTOs = Organizations
@@ -89,11 +97,12 @@ namespace DMS.Rpc.dashboards.monitor
         public async Task<DashboardMonitor_StoreCheckingDTO> StoreChecking()
         {
             DateTime Now = StaticParams.DateTimeNow.Date;
-            DateTime Start = new DateTime(Now.Year, Now.Month, Now.Day);
-            DateTime End = Start.AddDays(1).AddSeconds(-1);
+            DateTime Start = LocalStartDay(CurrentContext);
+            DateTime End = LocalEndDay(CurrentContext);
 
             var CurrentUser = await AppUserService.Get(CurrentContext.UserId);
             var AppUserIds = await DataContext.AppUser
+                .Where(x => x.DeletedAt == null)
                 .Where(x => x.Organization.Path.StartsWith(CurrentUser.Organization.Path))
                 .Select(x => x.Id)
                 .ToListAsync();
@@ -108,8 +117,8 @@ namespace DMS.Rpc.dashboards.monitor
             };
 
             List<StoreChecking> StoreCheckings = await StoreCheckingService.List(StoreCheckingFilter);
-            List<DashboardMonitor_StoreCheckingHourDTO> NumberCheckingHours = StoreCheckings.GroupBy(x => x.CheckOutAt.Value.Hour)
-                .Select(x => new DashboardMonitor_StoreCheckingHourDTO { Hour = x.Key.ToString(), Counter = x.Count() }).ToList();
+            List<DashboardMonitor_StoreCheckingHourDTO> NumberCheckingHours = StoreCheckings.GroupBy(x => x.CheckOutAt.Value.AddHours(CurrentContext.TimeZone).Hour)
+                .Select(x => new DashboardMonitor_StoreCheckingHourDTO { Hour = (x.Key).ToString(), Counter = x.Count() }).ToList();
 
             DashboardMonitor_StoreCheckingDTO DashboardMonitor_StoreCheckingDTO = new DashboardMonitor_StoreCheckingDTO();
             DashboardMonitor_StoreCheckingDTO.StoreCheckingHours = new List<DashboardMonitor_StoreCheckingHourDTO>();
@@ -140,8 +149,9 @@ namespace DMS.Rpc.dashboards.monitor
                         join o in DataContext.Organization on au.OrganizationId equals o.Id
                         where au.DeletedAt.HasValue == false && au.StatusId == Enums.StatusEnum.ACTIVE.Id &&
                         o.Path.StartsWith(AppUser.Organization.Path) &&
-                        au.UpdatedAt > OnlineTime
-                        group au by au.UpdatedAt.Hour into x
+                        au.UpdatedAt > OnlineTime &&
+                        o.DeletedAt == null && au.DeletedAt == null
+                        group au by au.GPSUpdatedAt.AddHours(CurrentContext.TimeZone).Hour into x
                         select new DashboardMonitor_SaleEmployeeOnlineHourDTO
                         {
                             Hour = x.Key.ToString(),
@@ -172,11 +182,12 @@ namespace DMS.Rpc.dashboards.monitor
         public async Task<DashboardMonitor_StatisticIndirectSalesOrderDTO> StatisticIndirectSalesOrder()
         {
             DateTime Now = StaticParams.DateTimeNow.Date;
-            DateTime Start = new DateTime(Now.Year, Now.Month, Now.Day);
-            DateTime End = Start.AddDays(1).AddSeconds(-1);
+            DateTime Start = LocalStartDay(CurrentContext);
+            DateTime End = LocalEndDay(CurrentContext);
 
             var CurrentUser = await AppUserService.Get(CurrentContext.UserId);
             var AppUserIds = await DataContext.AppUser
+                .Where(x => x.DeletedAt == null)
                 .Where(x => x.Organization.Path.StartsWith(CurrentUser.Organization.Path))
                 .Select(x => x.Id)
                 .ToListAsync();
@@ -192,7 +203,7 @@ namespace DMS.Rpc.dashboards.monitor
             };
 
             List<IndirectSalesOrder> IndirectSalesOrders = await IndirectSalesOrderService.List(IndirectSalesOrderFilter);
-            List<DashboardMonitor_StatisticIndirectSalesOrderHourDTO> DashboardMonitor_StatisticIndirectSalesOrderHourDTOs = IndirectSalesOrders.GroupBy(x => x.OrderDate.Hour)
+            List<DashboardMonitor_StatisticIndirectSalesOrderHourDTO> DashboardMonitor_StatisticIndirectSalesOrderHourDTOs = IndirectSalesOrders.GroupBy(x => x.OrderDate.AddHours(CurrentContext.TimeZone).Hour)
                 .Select(x => new DashboardMonitor_StatisticIndirectSalesOrderHourDTO { Hour = x.Key.ToString(), Counter = x.Count() }).ToList();
 
             DashboardMonitor_StatisticIndirectSalesOrderDTO DashboardMonitor_StatisticIndirectSalesOrderDTO = new DashboardMonitor_StatisticIndirectSalesOrderDTO();
@@ -218,11 +229,12 @@ namespace DMS.Rpc.dashboards.monitor
         public async Task<DashboardMonitor_StoreCheckingImageMappingDTO> ImageStoreCheking()
         {
             DateTime Now = StaticParams.DateTimeNow.Date;
-            DateTime Start = new DateTime(Now.Year, Now.Month, Now.Day);
-            DateTime End = Start.AddDays(1).AddSeconds(-1);
+            DateTime Start = LocalStartDay(CurrentContext);
+            DateTime End = LocalEndDay(CurrentContext);
 
             var CurrentUser = await AppUserService.Get(CurrentContext.UserId);
             var AppUserIds = await DataContext.AppUser
+                .Where(x => x.DeletedAt == null)
                 .Where(x => x.Organization.Path.StartsWith(CurrentUser.Organization.Path))
                 .Select(x => x.Id)
                 .ToListAsync();
@@ -230,7 +242,7 @@ namespace DMS.Rpc.dashboards.monitor
             var query = from si in DataContext.StoreImage
                         where si.SaleEmployeeId.HasValue && AppUserIds.Contains(si.SaleEmployeeId.Value) &&
                         Now <= si.ShootingAt && si.ShootingAt <= End
-                        group si by si.ShootingAt.Hour into i
+                        group si by si.ShootingAt.AddHours(CurrentContext.TimeZone).Hour into i
                         select new DashboardMonitor_StoreCheckingImageMappingHourDTO
                         {
                             Hour = i.Key.ToString(),
@@ -270,7 +282,8 @@ namespace DMS.Rpc.dashboards.monitor
             OrganizationIds = OrganizationDAOs.Select(o => o.Id).ToList();
 
             var query = from s in DataContext.Store
-                        where OrganizationIds.Contains(s.OrganizationId)
+                        where OrganizationIds.Contains(s.OrganizationId) &&
+                        s.DeletedAt == null
                         select new DashboardMonitor_StoreDTO
                         {
                             Id = s.Id,
@@ -284,7 +297,8 @@ namespace DMS.Rpc.dashboards.monitor
 
             var query_Scouting = from ss in DataContext.StoreScouting
                                  join au in DataContext.AppUser on ss.CreatorId equals au.Id
-                                 where (OrganizationIds.Contains(au.OrganizationId))
+                                 where (OrganizationIds.Contains(au.OrganizationId)) &&
+                                 ss.DeletedAt == null
                                  select new DashboardMonitor_StoreDTO
                                  {
                                      Id = ss.Id,
@@ -299,10 +313,11 @@ namespace DMS.Rpc.dashboards.monitor
             return DashboardMonitor_StoreDTOs;
         }
 
-
         [Route(DashboardMonitorRoute.SaleEmployeeLocation), HttpPost]
         public async Task<List<DashboardMonitor_AppUserDTO>> SaleEmployeeLocation([FromBody] DashboardMonitor_AppUserFilterDTO DashboardMonitor_AppUserFilterDTO)
         {
+            DateTime Start = LocalStartDay(CurrentContext);
+            DateTime End = LocalEndDay(CurrentContext);
             List<long> OrganizationIds = await FilterOrganization(OrganizationService, CurrentContext);
             List<OrganizationDAO> OrganizationDAOs = await DataContext.Organization.Where(o => o.DeletedAt == null && (OrganizationIds.Count == 0 || OrganizationIds.Contains(o.Id))).ToListAsync();
             OrganizationDAO OrganizationDAO = null;
@@ -314,7 +329,9 @@ namespace DMS.Rpc.dashboards.monitor
             OrganizationIds = OrganizationDAOs.Select(o => o.Id).ToList();
 
             var query = from au in DataContext.AppUser
-                        where au.DeletedAt.HasValue == false && au.StatusId == Enums.StatusEnum.ACTIVE.Id &&
+                        where au.StatusId == Enums.StatusEnum.ACTIVE.Id &&
+                        au.DeletedAt == null &&
+                        Start <= au.GPSUpdatedAt && au.GPSUpdatedAt <= End &&
                         OrganizationIds.Contains(au.OrganizationId)
                         select new DashboardMonitor_AppUserDTO
                         {
@@ -338,7 +355,8 @@ namespace DMS.Rpc.dashboards.monitor
                         join au in DataContext.AppUser on i.SaleEmployeeId equals au.Id
                         join o in DataContext.Organization on au.OrganizationId equals o.Id
                         where o.Path.StartsWith(appUser.Organization.Path) &&
-                        i.RequestStateId != RequestStateEnum.NEW.Id
+                        i.RequestStateId != RequestStateEnum.NEW.Id &&
+                        au.DeletedAt == null && o.DeletedAt == null
                         orderby i.OrderDate descending
                         select new DashboardMonitor_IndirectSalesOrderDTO
                         {
@@ -375,33 +393,34 @@ namespace DMS.Rpc.dashboards.monitor
             if (DashboardMonitor_TopSaleEmployeeStoreCheckingFilterDTO.Time.Equal.HasValue == false)
             {
                 DashboardMonitor_TopSaleEmployeeStoreCheckingFilterDTO.Time.Equal = 0;
-                Start = new DateTime(Now.Year, Now.Month, Now.Day);
-                End = Start.AddDays(1).AddSeconds(-1);
+                Start = LocalStartDay(CurrentContext);
+                End = LocalEndDay(CurrentContext);
             }
             else if (DashboardMonitor_TopSaleEmployeeStoreCheckingFilterDTO.Time.Equal.Value == TODAY)
             {
-                Start = new DateTime(Now.Year, Now.Month, Now.Day);
-                End = Start.AddDays(1).AddSeconds(-1);
+                Start = LocalStartDay(CurrentContext);
+                End = LocalEndDay(CurrentContext);
             }
             else if (DashboardMonitor_TopSaleEmployeeStoreCheckingFilterDTO.Time.Equal.Value == THIS_WEEK)
             {
                 int diff = (7 + (Now.DayOfWeek - DayOfWeek.Monday)) % 7;
-                Start = Now.AddDays(-1 * diff);
+                Start = LocalStartDay(CurrentContext).AddDays(-1 * diff);
                 End = Start.AddDays(7).AddSeconds(-1);
             }
             else if (DashboardMonitor_TopSaleEmployeeStoreCheckingFilterDTO.Time.Equal.Value == THIS_MONTH)
             {
-                Start = new DateTime(Now.Year, Now.Month, 1);
+                Start = new DateTime(Now.Year, Now.Month, 1).AddHours(0 - CurrentContext.TimeZone);
                 End = Start.AddMonths(1).AddSeconds(-1);
             }
             else if (DashboardMonitor_TopSaleEmployeeStoreCheckingFilterDTO.Time.Equal.Value == LAST_MONTH)
             {
-                Start = new DateTime(Now.Year, Now.Month, 1).AddMonths(-1);
+                Start = new DateTime(Now.Year, Now.Month, 1).AddMonths(-1).AddHours(0 - CurrentContext.TimeZone);
                 End = Start.AddMonths(1).AddSeconds(-1);
             }
 
             var CurrentUser = await AppUserService.Get(CurrentContext.UserId);
             var AppUserIds = await DataContext.AppUser
+                .Where(x => x.DeletedAt == null)
                 .Where(x => x.Organization.Path.StartsWith(CurrentUser.Organization.Path))
                 .Select(x => x.Id)
                 .ToListAsync();

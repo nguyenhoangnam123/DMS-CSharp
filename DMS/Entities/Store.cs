@@ -1,4 +1,4 @@
-using Common;
+using DMS.Common;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System;
@@ -75,6 +75,7 @@ namespace DMS.Entities
     public class StoreFilter : FilterEntity
     {
         public string Search { get; set; }
+        public long TimeZone { get; set; }
         public IdFilter Id { get; set; }
         public StringFilter Code { get; set; }
         public StringFilter CodeDraft { get; set; }

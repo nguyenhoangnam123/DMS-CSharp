@@ -1,4 +1,4 @@
-﻿using Common;
+﻿using DMS.Common;
 using DMS.Entities;
 using DMS.Enums;
 using DMS.Repositories;
@@ -7,7 +7,8 @@ using DMS.Services.MAppUser;
 using DMS.Services.MNotification;
 using DMS.Services.MOrganization;
 using DMS.Services.MStore;
-using Helpers;
+using DMS.Services.MWorkflow;
+using DMS.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,9 +20,19 @@ namespace DMS.Services.MERoute
     {
         Task<int> Count(ERouteFilter ERouteFilter);
         Task<List<ERoute>> List(ERouteFilter ERouteFilter);
+        Task<int> CountNew(ERouteFilter ERouteFilter);
+        Task<List<ERoute>> ListNew(ERouteFilter ERouteFilter);
+        Task<int> CountPending(ERouteFilter ERouteFilter);
+        Task<List<ERoute>> ListPending(ERouteFilter ERouteFilter);
+        Task<int> CountCompleted(ERouteFilter ERouteFilter);
+        Task<List<ERoute>> ListCompleted(ERouteFilter ERouteFilter);
         Task<ERoute> Get(long Id);
+        Task<ERoute> GetDetail(long Id);
         Task<ERoute> Create(ERoute ERoute);
         Task<ERoute> Update(ERoute ERoute);
+        Task<ERoute> Send(ERoute ERoute);
+        Task<ERoute> Approve(ERoute ERoute);
+        Task<ERoute> Reject(ERoute ERoute);
         Task<ERoute> Delete(ERoute ERoute);
         Task<List<ERoute>> BulkDelete(List<ERoute> ERoutes);
         Task<List<ERoute>> Import(List<ERoute> ERoutes);
@@ -40,6 +51,7 @@ namespace DMS.Services.MERoute
         private IStoreService StoreService;
         private IOrganizationService OrganizationService;
         private IAppUserService AppUserService;
+        private IWorkflowService WorkflowService;
 
         public ERouteService(
             IUOW UOW,
@@ -49,6 +61,7 @@ namespace DMS.Services.MERoute
             IStoreService StoreService,
             IOrganizationService OrganizationService,
             IAppUserService AppUserService,
+            IWorkflowService WorkflowService,
             IERouteValidator ERouteValidator
         )
         {
@@ -59,6 +72,7 @@ namespace DMS.Services.MERoute
             this.StoreService = StoreService;
             this.OrganizationService = OrganizationService;
             this.AppUserService = AppUserService;
+            this.WorkflowService = WorkflowService;
             this.ERouteValidator = ERouteValidator;
         }
         public async Task<int> Count(ERouteFilter ERouteFilter)
@@ -104,11 +118,181 @@ namespace DMS.Services.MERoute
                 }
             }
         }
+
+        public async Task<int> CountNew(ERouteFilter ERouteFilter)
+        {
+            try
+            {
+                ERouteFilter.ApproverId = new IdFilter { Equal = CurrentContext.UserId };
+                int result = await UOW.ERouteRepository.CountNew(ERouteFilter);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(ERouteService));
+                    throw new MessageException(ex);
+                }
+                else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(ERouteService));
+                    throw new MessageException(ex.InnerException);
+                }
+            }
+        }
+        public async Task<List<ERoute>> ListNew(ERouteFilter ERouteFilter)
+        {
+            try
+            {
+                ERouteFilter.ApproverId = new IdFilter { Equal = CurrentContext.UserId };
+                List<ERoute> ERoutes = await UOW.ERouteRepository.ListNew(ERouteFilter);
+                return ERoutes;
+            }
+            catch (Exception ex)
+            {
+                if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(ERouteService));
+                    throw new MessageException(ex);
+                }
+                else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(ERouteService));
+                    throw new MessageException(ex.InnerException);
+                }
+            }
+        }
+
+        public async Task<int> CountPending(ERouteFilter ERouteFilter)
+        {
+            try
+            {
+                ERouteFilter.ApproverId = new IdFilter { Equal = CurrentContext.UserId };
+                int result = await UOW.ERouteRepository.CountPending(ERouteFilter);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(ERouteService));
+                    throw new MessageException(ex);
+                }
+                else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(ERouteService));
+                    throw new MessageException(ex.InnerException);
+                }
+            }
+        }
+        public async Task<List<ERoute>> ListPending(ERouteFilter ERouteFilter)
+        {
+            try
+            {
+                ERouteFilter.ApproverId = new IdFilter { Equal = CurrentContext.UserId };
+                List<ERoute> ERoutes = await UOW.ERouteRepository.ListPending(ERouteFilter);
+                return ERoutes;
+            }
+            catch (Exception ex)
+            {
+                if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(ERouteService));
+                    throw new MessageException(ex);
+                }
+                else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(ERouteService));
+                    throw new MessageException(ex.InnerException);
+                }
+            }
+        }
+
+        public async Task<int> CountCompleted(ERouteFilter ERouteFilter)
+        {
+            try
+            {
+                ERouteFilter.ApproverId = new IdFilter { Equal = CurrentContext.UserId };
+                int result = await UOW.ERouteRepository.CountCompleted(ERouteFilter);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(ERouteService));
+                    throw new MessageException(ex);
+                }
+                else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(ERouteService));
+                    throw new MessageException(ex.InnerException);
+                }
+            }
+        }
+        public async Task<List<ERoute>> ListCompleted(ERouteFilter ERouteFilter)
+        {
+            try
+            {
+                ERouteFilter.ApproverId = new IdFilter { Equal = CurrentContext.UserId };
+                List<ERoute> ERoutes = await UOW.ERouteRepository.ListCompleted(ERouteFilter);
+                return ERoutes;
+            }
+            catch (Exception ex)
+            {
+                if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(ERouteService));
+                    throw new MessageException(ex);
+                }
+                else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(ERouteService));
+                    throw new MessageException(ex.InnerException);
+                }
+            }
+        }
+
         public async Task<ERoute> Get(long Id)
         {
             ERoute ERoute = await UOW.ERouteRepository.Get(Id);
             if (ERoute == null)
                 return null;
+
+            ERoute.RequestState = await WorkflowService.GetRequestState(ERoute.RowId);
+            if (ERoute.RequestState == null)
+            {
+                ERoute.RequestWorkflowStepMappings = new List<RequestWorkflowStepMapping>();
+                RequestWorkflowStepMapping RequestWorkflowStepMapping = new RequestWorkflowStepMapping
+                {
+                    AppUserId = ERoute.SaleEmployeeId,
+                    CreatedAt = ERoute.CreatedAt,
+                    UpdatedAt = ERoute.UpdatedAt,
+                    RequestId = ERoute.RowId,
+                    AppUser = ERoute.SaleEmployee == null ? null : new AppUser
+                    {
+                        Id = ERoute.SaleEmployee.Id,
+                        Username = ERoute.SaleEmployee.Username,
+                        DisplayName = ERoute.SaleEmployee.DisplayName,
+                    },
+                };
+                ERoute.RequestWorkflowStepMappings.Add(RequestWorkflowStepMapping);
+                RequestWorkflowStepMapping.WorkflowStateId = ERoute.RequestStateId;
+                ERoute.RequestState = WorkflowService.GetRequestState(ERoute.RequestStateId);
+                RequestWorkflowStepMapping.WorkflowState = WorkflowService.GetWorkflowState(RequestWorkflowStepMapping.WorkflowStateId);
+            }
+            else
+            {
+                ERoute.RequestStateId = ERoute.RequestState.Id;
+                ERoute.RequestWorkflowStepMappings = await WorkflowService.ListRequestWorkflowStepMapping(ERoute.RowId);
+            }
+            return ERoute;
+        }
+
+        public async Task<ERoute> GetDetail(long Id)
+        {
+            ERoute ERoute = await Get(Id);
             return ERoute;
         }
 
@@ -134,7 +318,7 @@ namespace DMS.Services.MERoute
                 {
                     TitleWeb = $"Thông báo từ DMS",
                     ContentWeb = $"Tuyên {ERoute.Code} - {ERoute.Name} đã được thêm mới cho anh/chị bởi {CurrentUser.DisplayName}",
-                    LinkWebsite = $"{ERouteRoute.Master}/?id=*".Replace("*", ERoute.Id.ToString()),
+                    LinkWebsite = $"{ERouteRoute.Master}#*".Replace("*", ERoute.Id.ToString()),
                     LinkMobile = $"{ERouteRoute.Detail}".Replace("*", ERoute.Id.ToString()),
                     Time = Now,
                     Unread = true,
@@ -186,7 +370,7 @@ namespace DMS.Services.MERoute
                 {
                     TitleWeb = $"Thông báo từ DMS",
                     ContentWeb = $"Tuyên {ERoute.Code} - {ERoute.Name} đã được cập nhật cho anh/chị bởi {CurrentUser.DisplayName}",
-                    LinkWebsite = $"{ERouteRoute.Master}/?id=*".Replace("*", ERoute.Id.ToString()),
+                    LinkWebsite = $"{ERouteRoute.Master}#*".Replace("*", ERoute.Id.ToString()),
                     LinkMobile = $"{ERouteRoute.Detail}".Replace("*", ERoute.Id.ToString()),
                     Time = Now,
                     Unread = true,
@@ -408,6 +592,70 @@ namespace DMS.Services.MERoute
                 Store.HasEroute = ERouteContents.Where(e => e.StoreId == Store.Id).Count() > 0;
             }
             return Stores;
+        }
+
+        public async Task<ERoute> Send(ERoute ERoute)
+        {
+            if (ERoute.Id == 0)
+                ERoute = await Create(ERoute);
+            else
+                ERoute = await Update(ERoute);
+            if (ERoute.IsValidated == false)
+                return ERoute;
+            ERoute = await UOW.ERouteRepository.Get(ERoute.Id);
+            Dictionary<string, string> Parameters = await MapParameters(ERoute);
+            GenericEnum RequestState = await WorkflowService.Send(ERoute.RowId, WorkflowTypeEnum.EROUTE.Id, ERoute.OrganizationId, Parameters);
+            ERoute.RequestStateId = RequestState.Id;
+            await UOW.ERouteRepository.UpdateState(ERoute);
+            return await Get(ERoute.Id);
+        }
+
+        public async Task<ERoute> Approve(ERoute ERoute)
+        {
+            ERoute = await Update(ERoute);
+            if (ERoute.IsValidated == false)
+                return ERoute;
+            ERoute = await UOW.ERouteRepository.Get(ERoute.Id);
+            Dictionary<string, string> Parameters = await MapParameters(ERoute);
+            await WorkflowService.Approve(ERoute.RowId, WorkflowTypeEnum.EROUTE.Id, Parameters);
+            RequestState RequestState = await WorkflowService.GetRequestState(ERoute.RowId);
+            ERoute.RequestStateId = RequestState.Id;
+            await UOW.ERouteRepository.UpdateState(ERoute);
+            return await Get(ERoute.Id);
+        }
+
+        public async Task<ERoute> Reject(ERoute ERoute)
+        {
+            ERoute = await UOW.ERouteRepository.Get(ERoute.Id);
+            Dictionary<string, string> Parameters = await MapParameters(ERoute);
+            GenericEnum Action = await WorkflowService.Reject(ERoute.RowId, WorkflowTypeEnum.EROUTE.Id, Parameters);
+            RequestState RequestState = await WorkflowService.GetRequestState(ERoute.RowId);
+            ERoute.RequestStateId = RequestState.Id;
+            await UOW.ERouteRepository.UpdateState(ERoute);
+            return await Get(ERoute.Id);
+        }
+
+        private async Task<Dictionary<string, string>> MapParameters(ERoute ERoute)
+        {
+            var AppUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
+            Dictionary<string, string> Parameters = new Dictionary<string, string>();
+            Parameters.Add(nameof(ERoute.Id), ERoute.Id.ToString());
+            Parameters.Add(nameof(ERoute.Code), ERoute.Code);
+            Parameters.Add(nameof(ERoute.SaleEmployeeId), ERoute.SaleEmployeeId.ToString());
+            Parameters.Add(nameof(ERoute.TotalStoreCounter), ERoute.TotalStoreCounter.ToString());
+            Parameters.Add(nameof(AppUser.DisplayName), AppUser.DisplayName);
+            Parameters.Add(nameof(ERoute.RequestStateId), ERoute.RequestStateId.ToString());
+
+            Parameters.Add(nameof(ERoute.ERouteTypeId), ERoute.ERouteTypeId.ToString());
+            Parameters.Add(nameof(ERoute.OrganizationId), ERoute.OrganizationId.ToString());
+
+            RequestWorkflowDefinitionMapping RequestWorkflowDefinitionMapping = await UOW.RequestWorkflowDefinitionMappingRepository.Get(ERoute.RowId);
+            if (RequestWorkflowDefinitionMapping == null)
+                Parameters.Add(nameof(RequestState), RequestStateEnum.NEW.Id.ToString());
+            else
+                Parameters.Add(nameof(RequestState), RequestWorkflowDefinitionMapping.RequestStateId.ToString());
+            Parameters.Add("Username", CurrentContext.UserName);
+            return Parameters;
         }
 
         private async Task<ERoute> CalculateTime(ERoute ERoute)

@@ -1,9 +1,9 @@
-using Common;
+using DMS.Common;
 using DMS.Entities;
 using DMS.Enums;
 using DMS.Handlers;
 using DMS.Repositories;
-using Helpers;
+using DMS.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -147,7 +147,17 @@ namespace DMS.Services.MWorkflow
                 var oldData = await UOW.WorkflowStepRepository.Get(WorkflowStep.Id);
                 WorkflowStep.ModifierId = CurrentContext.UserId;
                 await UOW.Begin();
-                await UOW.WorkflowStepRepository.Update(WorkflowStep);
+                if (oldData.Used)
+                {
+                    oldData.SubjectMailForReject = WorkflowStep.SubjectMailForReject;
+                    oldData.BodyMailForReject = WorkflowStep.BodyMailForReject;
+                    oldData.ModifierId = WorkflowStep.ModifierId;
+                    await UOW.WorkflowStepRepository.Update(oldData);
+                }
+                else
+                {
+                    await UOW.WorkflowStepRepository.Update(WorkflowStep);
+                }
                 await UOW.Commit();
                 NotifyUsed(WorkflowStep);
 

@@ -1,4 +1,4 @@
-using Common;
+using DMS.Common;
 using System.Collections.Generic;
 
 namespace DMS.Rpc.mobile
@@ -12,6 +12,7 @@ namespace DMS.Rpc.mobile
         public const string ListStoreChecking = Default + "/list-store-checking";
         public const string GetStoreChecking = Default + "/get-store-checking";
         public const string UpdateStoreChecking = Default + "/update-store-checking";
+        public const string UpdateStoreCheckingImage = Default + "/update-store-checking-image";
         public const string CheckIn = Default + "/check-in";
         public const string CheckOut = Default + "/check-out";
         public const string CountCompletedIndirectSalesOrder = Default + "/count-completed-indirect-sales-order";
@@ -34,6 +35,7 @@ namespace DMS.Rpc.mobile
         public const string SingleListEroute = Default + "/single-list-e-route";
         public const string SingleListStore = Default + "/single-list-store";
         public const string SingleListStoreGrouping = Default + "/single-list-store-grouping";
+        public const string SingleListStoreStatus = Default + "/single-list-store-status";
         public const string SingleListStoreType = Default + "/single-list-store-type";
         public const string SingleListTaxType = Default + "/single-list-tax-type";
         public const string SingleListUnitOfMeasure = Default + "/single-list-unit-of-measure";
@@ -83,7 +85,11 @@ namespace DMS.Rpc.mobile
         public const string UpdateStoreScouting = Default + "/update-store-scouting";
         public const string DeleteStoreScouting = Default + "/delete-store-scouting";
 
-      
+        public const string ListRewardHistory = Default + "/list-reward";
+        public const string CountRewardHistory = Default + "/count-reward";
+        public const string GetRewardHistory = Default + "/get-reward";
+        public const string CreateRewardHistory = Default + "/create-reward";
+        public const string LuckyDraw = Default + "/lucky-draw";
         public static Dictionary<string, long> Filters = new Dictionary<string, long>
         {
         };
@@ -95,10 +101,15 @@ namespace DMS.Rpc.mobile
                 } },
             { "Checkin", new List<string> {
                 Master, CountStoreChecking, ListStoreChecking, GetStoreChecking,
-                Detail, CheckIn,  UpdateStoreChecking, CheckOut,
+                Detail, CheckIn,  UpdateStoreChecking, UpdateStoreCheckingImage, CheckOut,
                 CreateIndirectSalesOrder, CreateProblem, SaveImage, GetSurveyForm, SaveSurveyForm,
                 CountItem, ListItem, CountStorePlanned, ListStorePlanned, CountStoreUnPlanned, ListStoreUnPlanned, CountStoreInScope, ListStoreInScope, CountProblem, ListProblem, CountSurvey, ListSurvey, CountStoreScouting, ListStoreScouting,
-                SingleListAlbum, SingleListAppUser, SingleListStore, SingleListTaxType, SingleListUnitOfMeasure, SingleListProblemType, SingleListStoreScoutingType, SingleListProvince, SingleListDistrict, SingleListWard, } },
+                SingleListAlbum, SingleListAppUser, SingleListStore, SingleListStoreStatus, SingleListTaxType, SingleListUnitOfMeasure, SingleListProblemType, SingleListStoreScoutingType, SingleListProvince, SingleListDistrict, SingleListWard, } },
+            { "Quay thưởng", new List<string>{
+                Master, CountStoreChecking, ListStoreChecking, GetStoreChecking,
+                Detail, ListRewardHistory,  CountRewardHistory, GetRewardHistory, LuckyDraw, CreateRewardHistory,
+                CountItem, ListItem, CountStorePlanned, ListStorePlanned, CountStoreUnPlanned, ListStoreUnPlanned, CountStoreInScope, ListStoreInScope, CountProblem, ListProblem, CountSurvey, ListSurvey, CountStoreScouting, ListStoreScouting,
+                SingleListAlbum, SingleListAppUser, SingleListStore, SingleListStoreStatus, SingleListTaxType, SingleListUnitOfMeasure, SingleListProblemType, SingleListStoreScoutingType, SingleListProvince, SingleListDistrict, SingleListWard, } },
         };
     }
 }

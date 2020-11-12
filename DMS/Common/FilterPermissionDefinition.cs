@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Common
+namespace DMS.Common
 {
     public class FilterPermissionDefinition
     {

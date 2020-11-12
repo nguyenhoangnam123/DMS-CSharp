@@ -1,4 +1,4 @@
-﻿using Common;
+﻿using DMS.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,28 +8,28 @@ namespace DMS.Enums
 {
     public class ColorEnum
     {
-        public static GenericEnum WHITE = new GenericEnum { Id = 1, Code = "#FFFFFF", Name = "WHITE" };
-        public static GenericEnum SILVER = new GenericEnum { Id = 2, Code = "#C0C0C0", Name = "SILVER" };
-        public static GenericEnum GRAY = new GenericEnum { Id = 3, Code = "#808080", Name = "GRAY" };
-        public static GenericEnum BLACK = new GenericEnum { Id = 4, Code = "#000000", Name = "BLACK" };
-        public static GenericEnum RED = new GenericEnum { Id = 5, Code = "#FF0000", Name = "RED" };
-        public static GenericEnum MAROON = new GenericEnum { Id = 6, Code = "#800000", Name = "MAROON" };
-        public static GenericEnum YELLOW = new GenericEnum { Id = 7, Code = "#FFFF00", Name = "YELLOW" };
-        public static GenericEnum OLIVE = new GenericEnum { Id = 8, Code = "#808000", Name = "OLIVE" };
-        public static GenericEnum LIME = new GenericEnum { Id = 9, Code = "#00FF00", Name = "LIME" };
-        public static GenericEnum GREEN = new GenericEnum { Id = 10, Code = "#008000", Name = "GREEN" };
-        public static GenericEnum AQUA = new GenericEnum { Id = 11, Code = "#00FFFF", Name = "AQUA" };
-        public static GenericEnum TEAL = new GenericEnum { Id = 12, Code = "#008080", Name = "TEAL" };
-        public static GenericEnum BLUE = new GenericEnum { Id = 13, Code = "#0000FF", Name = "BLUE" };
-        public static GenericEnum NAVY = new GenericEnum { Id = 14, Code = "#000080", Name = "NAVY" };
-        public static GenericEnum FUCHSIA = new GenericEnum { Id = 15, Code = "#FF00FF", Name = "FUCHSIA" };
-        public static GenericEnum PURPLE = new GenericEnum { Id = 16, Code = "#800080", Name = "PURPLE" };
+        public static GenericEnum MIDNIGHT_BLUE = new GenericEnum { Id = 1, Code = "#223263", Name = "MIDNIGHT_BLUE" };
+        public static GenericEnum ROSE_RED = new GenericEnum { Id = 2, Code = "#BC2C3D", Name = "ROSE_RED" };
+        public static GenericEnum LIGHT_PURPLE = new GenericEnum { Id = 3, Code = "#5C78FF", Name = "LIGHT_PURPLE" };
+        public static GenericEnum LIGHT_ORANGE = new GenericEnum { Id = 4, Code = "#FFB531", Name = "LIGHT_ORANGE" };
+        public static GenericEnum MID_GREEN = new GenericEnum { Id = 5, Code = "#23AF63", Name = "MID_GREEN" };
+        public static GenericEnum LOW_COBAN = new GenericEnum { Id = 6, Code = "#53D1B6", Name = "LOW_COBAN" };
+        public static GenericEnum DARK_COBAN = new GenericEnum { Id = 7, Code = "#23B0B0", Name = "DARK_COBAN" };
+        public static GenericEnum LOW_BROWN = new GenericEnum { Id = 8, Code = "#A0616A", Name = "LOW_BROWN" };
+        public static GenericEnum ORANGE = new GenericEnum { Id = 9, Code = "#FF3D00", Name = "ORANGE" };
+        public static GenericEnum PINK_PASTEL = new GenericEnum { Id = 10, Code = "#FF8D8D", Name = "PINK_PASTEL" };
+        public static GenericEnum BABY_RED = new GenericEnum { Id = 11, Code = "#FF414D", Name = "BABY_RED" };
+        public static GenericEnum NEON = new GenericEnum { Id = 12, Code = "#D2E603", Name = "NEON" };
+        public static GenericEnum BABY_GREEN = new GenericEnum { Id = 13, Code = "#81B214", Name = "BABY_GREEN" };
+        public static GenericEnum LOTUS_PINK = new GenericEnum { Id = 14, Code = "#FA26A0", Name = "LOTUS_PINK" };
+        public static GenericEnum DUCK_GREEN = new GenericEnum { Id = 15, Code = "#17706E", Name = "DUCK_GREEN" };
+        public static GenericEnum COBAN_BLUES = new GenericEnum { Id = 16, Code = "#40BFFF", Name = "COBAN_BLUES" };
         public static List<GenericEnum> ColorEnumList = new List<GenericEnum>
         {
-            WHITE, SILVER, GRAY, BLACK, 
-            RED,MAROON, YELLOW, OLIVE, 
-            LIME,GREEN, AQUA, TEAL, 
-            BLUE, NAVY, FUCHSIA, PURPLE,
+            MIDNIGHT_BLUE, ROSE_RED, LIGHT_PURPLE, LIGHT_ORANGE, 
+            MID_GREEN,LOW_COBAN, DARK_COBAN, LOW_BROWN, 
+            ORANGE,PINK_PASTEL, BABY_RED, NEON, 
+            BABY_GREEN, LOTUS_PINK, DUCK_GREEN, COBAN_BLUES,
         };
     }
 }

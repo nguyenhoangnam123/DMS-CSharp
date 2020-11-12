@@ -1,4 +1,4 @@
-using Common;
+using DMS.Common;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System;
@@ -17,6 +17,8 @@ namespace DMS.Entities
         public string DeliveryAddress { get; set; }
         public long SaleEmployeeId { get; set; }
         public DateTime OrderDate { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; }
         public DateTime? DeliveryDate { get; set; }
         public long RequestStateId { get; set; }
         public long EditedPriceStatusId { get; set; }
@@ -25,7 +27,13 @@ namespace DMS.Entities
         public decimal? GeneralDiscountPercentage { get; set; }
         public decimal? GeneralDiscountAmount { get; set; }
         public decimal TotalTaxAmount { get; set; }
+        public decimal TotalAfterTax { get; set; }
+        public long? PromotionCodeId { get; set; }
+        public string PromotionCode { get; set; }
+        public decimal? PromotionValue { get; set; }
         public decimal Total { get; set; }
+        public decimal TotalDiscountAmount { get; set; }
+        public long TotalRequestedQuantity { get; set; }
         public Store BuyerStore { get; set; }
         public EditedPriceStatus EditedPriceStatus { get; set; }
         public Organization Organization { get; set; }
@@ -49,6 +57,7 @@ namespace DMS.Entities
     public class DirectSalesOrderFilter : FilterEntity
     {
         public IdFilter Id { get; set; }
+        public IdFilter ApproverId { get; set; }
         public IdFilter OrganizationId { get; set; }
         public StringFilter Code { get; set; }
         public IdFilter BuyerStoreId { get; set; }
@@ -61,12 +70,14 @@ namespace DMS.Entities
         public IdFilter RequestStateId { get; set; }
         public IdFilter EditedPriceStatusId { get; set; }
         public StringFilter Note { get; set; }
+        public StringFilter PromotionCode { get; set; }
         public DecimalFilter SubTotal { get; set; }
         public DecimalFilter GeneralDiscountPercentage { get; set; }
         public DecimalFilter GeneralDiscountAmount { get; set; }
         public DecimalFilter TotalTaxAmount { get; set; }
         public DecimalFilter Total { get; set; }
         public IdFilter StoreCheckingId { get; set; }
+        public IdFilter StoreStatusId { get; set; }
         public List<DirectSalesOrderFilter> OrFilter { get; set; }
         public DirectSalesOrderOrder OrderBy { get; set; }
         public DirectSalesOrderSelect Selects { get; set; }
@@ -93,6 +104,8 @@ namespace DMS.Entities
         TotalTaxAmount = 16,
         Total = 17,
         Organization = 18,
+        CreatedAt = 19,
+        UpdatedAt = 20,
     }
 
     [Flags]
@@ -117,5 +130,8 @@ namespace DMS.Entities
         TotalTaxAmount = E._16,
         Total = E._17,
         Organization = E._18,
+        PromotionCode = E._19,
+        PromotionValue = E._20,
+        TotalAfterTax = E._21,
     }
 }

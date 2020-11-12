@@ -1,4 +1,4 @@
-﻿using Common;
+﻿using DMS.Common;
 using DMS.Entities;
 using System;
 using System.Collections.Generic;
@@ -11,6 +11,7 @@ namespace DMS.Rpc.store
     {
         public long Stt { get; set; }
         public string CodeValue { get; set; }
+        public string CodeDraftValue { get; set; }
         public string NameValue { get; set; }
         public string OrganizationCodeValue { get; set; }
         public string ParentStoreCodeValue { get; set; }
@@ -40,7 +41,7 @@ namespace DMS.Rpc.store
         public decimal DeliveryLongitude { get; set; }
         public decimal DeliveryLatitude { get; set; }
         public long StoreTypeId { get; set; }
-        public long StoreGroupingId { get; set; }
+        public long? StoreGroupingId { get; set; }
         public long? ProvinceId { get; set; }
         public long? DistrictId { get; set; }
         public long? WardId { get; set; }

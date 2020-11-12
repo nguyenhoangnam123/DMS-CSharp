@@ -1,4 +1,4 @@
-using Common;
+using DMS.Common;
 using DMS.Entities;
 using System;
 using System.Collections.Generic;
@@ -17,6 +17,7 @@ namespace DMS.Rpc.e_route
         public DateTime? EndDate { get; set; }
         public long ERouteTypeId { get; set; }
         public long RequestStateId { get; set; }
+        public Guid RowId { get; set; }
         public long StatusId { get; set; }
         public long CreatorId { get; set; }
         public ERoute_AppUserDTO Creator { get; set; }
@@ -28,6 +29,7 @@ namespace DMS.Rpc.e_route
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public List<ERoute_ERouteContentDTO> ERouteContents { get; set; }
+        public List<ERoute_RequestWorkflowStepMappingDTO> RequestWorkflowStepMappings { get; set; }
         public ERoute_ERouteDTO() { }
         public ERoute_ERouteDTO(ERoute ERoute)
         {
@@ -42,6 +44,7 @@ namespace DMS.Rpc.e_route
             this.RequestStateId = ERoute.RequestStateId;
             this.StatusId = ERoute.StatusId;
             this.CreatorId = ERoute.CreatorId;
+            this.RowId = ERoute.RowId;
             this.Creator = ERoute.Creator == null ? null : new ERoute_AppUserDTO(ERoute.Creator);
             this.ERouteType = ERoute.ERouteType == null ? null : new ERoute_ERouteTypeDTO(ERoute.ERouteType);
             this.RequestState = ERoute.RequestState == null ? null : new ERoute_RequestStateDTO(ERoute.RequestState);
@@ -51,6 +54,7 @@ namespace DMS.Rpc.e_route
             this.CreatedAt = ERoute.CreatedAt;
             this.UpdatedAt = ERoute.UpdatedAt;
             this.ERouteContents = ERoute.ERouteContents?.Select(x => new ERoute_ERouteContentDTO(x)).ToList();
+            this.RequestWorkflowStepMappings = ERoute.RequestWorkflowStepMappings?.Select(x => new ERoute_RequestWorkflowStepMappingDTO(x)).ToList();
             this.Errors = ERoute.Errors;
         }
     }

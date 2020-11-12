@@ -1,4 +1,4 @@
-﻿using Common;
+﻿using DMS.Common;
 using DMS.Entities;
 using DMS.Enums;
 using Microsoft.AspNetCore.Mvc;
@@ -186,6 +186,45 @@ namespace DMS.Rpc.store
             List<Store_StatusDTO> Store_StatusDTOs = Statuses
                 .Select(x => new Store_StatusDTO(x)).ToList();
             return Store_StatusDTOs;
+        }
+
+        [Route(StoreRoute.FilterListStoreGrouping), HttpPost]
+        public async Task<List<Store_StoreGroupingDTO>> FilterListStoreGrouping([FromBody] Store_StoreGroupingFilterDTO Store_StoreGroupingFilterDTO)
+        {
+            StoreGroupingFilter StoreGroupingFilter = new StoreGroupingFilter();
+            StoreGroupingFilter.Skip = 0;
+            StoreGroupingFilter.Take = 99999;
+            StoreGroupingFilter.OrderBy = StoreGroupingOrder.Id;
+            StoreGroupingFilter.OrderType = OrderType.ASC;
+            StoreGroupingFilter.Selects = StoreGroupingSelect.ALL;
+            StoreGroupingFilter.Code = Store_StoreGroupingFilterDTO.Code;
+            StoreGroupingFilter.Name = Store_StoreGroupingFilterDTO.Name;
+            StoreGroupingFilter.Level = Store_StoreGroupingFilterDTO.Level;
+            StoreGroupingFilter.Path = Store_StoreGroupingFilterDTO.Path;
+            List<StoreGrouping> StoreGroupings = await StoreGroupingService.List(StoreGroupingFilter);
+            List<Store_StoreGroupingDTO> Store_StoreGroupingDTOs = StoreGroupings
+                .Select(x => new Store_StoreGroupingDTO(x)).ToList();
+            return Store_StoreGroupingDTOs;
+        }
+
+        [Route(StoreRoute.FilterListStoreType), HttpPost]
+        public async Task<List<Store_StoreTypeDTO>> FilterListStoreType([FromBody] Store_StoreTypeFilterDTO Store_StoreTypeFilterDTO)
+        {
+            StoreTypeFilter StoreTypeFilter = new StoreTypeFilter();
+            StoreTypeFilter.Skip = 0;
+            StoreTypeFilter.Take = 20;
+            StoreTypeFilter.OrderBy = StoreTypeOrder.Id;
+            StoreTypeFilter.OrderType = OrderType.ASC;
+            StoreTypeFilter.Selects = StoreTypeSelect.ALL;
+            StoreTypeFilter.Id = Store_StoreTypeFilterDTO.Id;
+            StoreTypeFilter.Code = Store_StoreTypeFilterDTO.Code;
+            StoreTypeFilter.Name = Store_StoreTypeFilterDTO.Name;
+            StoreTypeFilter.StatusId = null;
+
+            List<StoreType> StoreTypes = await StoreTypeService.List(StoreTypeFilter);
+            List<Store_StoreTypeDTO> Store_StoreTypeDTOs = StoreTypes
+                .Select(x => new Store_StoreTypeDTO(x)).ToList();
+            return Store_StoreTypeDTOs;
         }
 
         [Route(StoreRoute.SingleListAppUser), HttpPost]

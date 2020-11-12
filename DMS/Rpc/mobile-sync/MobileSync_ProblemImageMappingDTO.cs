@@ -1,5 +1,6 @@
-using Common;
+using DMS.Common;
 using DMS.Entities;
+using DMS.Models;
 
 namespace DMS.Rpc.mobile_sync
 {
@@ -15,7 +16,6 @@ namespace DMS.Rpc.mobile_sync
             this.ProblemId = ProblemImageMapping.ProblemId;
             this.ImageId = ProblemImageMapping.ImageId;
             this.Image = ProblemImageMapping.Image == null ? null : new MobileSync_ImageDTO(ProblemImageMapping.Image);
-            this.Errors = ProblemImageMapping.Errors;
         }
     }
 

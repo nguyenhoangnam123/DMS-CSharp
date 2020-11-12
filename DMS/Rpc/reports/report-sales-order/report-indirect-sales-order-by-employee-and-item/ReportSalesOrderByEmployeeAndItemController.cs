@@ -1,4 +1,4 @@
-﻿using Common;
+﻿using DMS.Common;
 using DMS.Entities;
 using DMS.Enums;
 using DMS.Models;
@@ -11,7 +11,7 @@ using DMS.Services.MStore;
 using DMS.Services.MStoreGrouping;
 using DMS.Services.MStoreType;
 using System;
-using Helpers;
+using DMS.Helpers;
 using Microsoft.EntityFrameworkCore;
 using DMS.Services.MProduct;
 using DMS.Services.MAppUser;
@@ -141,12 +141,15 @@ namespace DMS.Rpc.reports.report_sales_order.report_indirect_sales_order_by_empl
             OrganizationIds = OrganizationDAOs.Select(o => o.Id).ToList();
 
             var query = from i in DataContext.IndirectSalesOrder
-                        join au in DataContext.AppUser on i.SaleEmployeeId equals au.Id
                         where i.OrderDate >= Start && i.OrderDate <= End &&
                         (SaleEmployeeId.HasValue == false || i.SaleEmployeeId == SaleEmployeeId.Value) &&
-                        OrganizationIds.Contains(au.OrganizationId) &&
+                        OrganizationIds.Contains(i.OrganizationId) &&
                         i.RequestStateId == RequestStateEnum.APPROVED.Id
-                        select au;
+                        select new
+                        {
+                            OrganizationId = i.OrganizationId,
+                            SalesEmployeeId = i.SaleEmployeeId
+                        };
 
             int count = await query.Distinct().CountAsync();
             return count;
@@ -185,54 +188,46 @@ namespace DMS.Rpc.reports.report_sales_order.report_indirect_sales_order_by_empl
             OrganizationIds = OrganizationDAOs.Select(o => o.Id).ToList();
 
             var query = from i in DataContext.IndirectSalesOrder
-                        join au in DataContext.AppUser on i.SaleEmployeeId equals au.Id
                         where i.OrderDate >= Start && i.OrderDate <= End &&
                         (SaleEmployeeId.HasValue == false || i.SaleEmployeeId == SaleEmployeeId.Value) &&
-                        OrganizationIds.Contains(au.OrganizationId) &&
+                        OrganizationIds.Contains(i.OrganizationId) &&
                         i.RequestStateId == RequestStateEnum.APPROVED.Id
-                        select au;
+                        select new
+                        {
+                            OrganizationId = i.OrganizationId,
+                            SalesEmployeeId = i.SaleEmployeeId
+                        };
 
-            var AppUserIds = await query.Select(x => x.Id).Distinct().ToListAsync();
+            var Ids = await query
+                .Distinct()
+                .OrderBy(x => x.OrganizationId)
+                .Skip(ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO.Skip)
+                .Take(ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO.Take)
+                .ToListAsync();
+            var AppUserIds = Ids.Select(x => x.SalesEmployeeId).Distinct().ToList();
 
-            AppUserFilter AppUserFilter = new AppUserFilter
-            {
-                Id = new IdFilter { In = AppUserIds },
-                OrganizationId = new IdFilter { In = OrganizationIds },
-                Skip = ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO.Skip,
-                Take = ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO.Take,
-                OrderBy = AppUserOrder.DisplayName,
-                Selects = AppUserSelect.Id | AppUserSelect.Username | AppUserSelect.DisplayName | AppUserSelect.Organization
-            };
-            List<AppUser> AppUsers = await AppUserService.List(AppUserFilter);
-
-            List<string> OrganizationNames = AppUsers.OrderBy(x => x.OrganizationId).Select(s => s.Organization.Name).Distinct().ToList();
-            List<ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTO>
-                ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTOs = OrganizationNames
-                .Select(on => new ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTO
+            List<AppUserDAO> AppUserDAOs = await DataContext.AppUser
+                .Where(x => x.DeletedAt == null)
+                .Where(au => AppUserIds.Contains(au.Id))
+                .OrderBy(su => su.OrganizationId).ThenBy(x => x.DisplayName)
+                .ToListAsync();
+            OrganizationIds = Ids.Select(x => x.OrganizationId).Distinct().ToList();
+            var Organizations = await DataContext.Organization
+                .Where(x => OrganizationIds.Contains(x.Id))
+                .OrderBy(x => x.Id)
+                .Select(x => new OrganizationDAO
                 {
-                    OrganizationName = on,
-                }).ToList();
-            foreach (ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTO ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTO in ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTOs)
-            {
-                ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTO.SaleEmployees = AppUsers
-                    .Where(x => x.Organization.Name == ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTO.OrganizationName)
-                    .Select(x => new ReportSalesOrderByEmployeeAndItem_SaleEmployeeDTO
-                    {
-                        SaleEmployeeId = x.Id,
-                        Username = x.Username,
-                        DisplayName = x.DisplayName,
-                    })
-                    .ToList();
-            }
-            ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTOs = ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTOs.Where(x => x.SaleEmployees.Any()).ToList();
+                    Id = x.Id,
+                    Name = x.Name
+                }).ToListAsync();
 
-            List<long> SaleEmployeeIds = AppUsers.Select(s => s.Id).ToList();
             List<IndirectSalesOrderDAO> IndirectSalesOrderDAOs = await DataContext.IndirectSalesOrder
-                .Where(x => SaleEmployeeIds.Contains(x.SaleEmployeeId) && Start <= x.OrderDate && x.OrderDate <= End)
+                .Where(x => AppUserIds.Contains(x.SaleEmployeeId) && Start <= x.OrderDate && x.OrderDate <= End &&
+                x.RequestStateId == RequestStateEnum.APPROVED.Id)
                 .ToListAsync();
             List<long> IndirectSalesOrderIds = IndirectSalesOrderDAOs.Select(x => x.Id).ToList();
             List<IndirectSalesOrderContentDAO> IndirectSalesOrderContentDAOs = await DataContext.IndirectSalesOrderContent
-                .Where(x => SaleEmployeeIds.Contains(x.IndirectSalesOrder.SaleEmployeeId) && Start <= x.IndirectSalesOrder.OrderDate && x.IndirectSalesOrder.OrderDate <= End)
+                .Where(x => AppUserIds.Contains(x.IndirectSalesOrder.SaleEmployeeId) && Start <= x.IndirectSalesOrder.OrderDate && x.IndirectSalesOrder.OrderDate <= End)
                 .Select(x => new IndirectSalesOrderContentDAO
                 {
                     Id = x.Id,
@@ -254,7 +249,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_indirect_sales_order_by_empl
                 })
                 .ToListAsync();
             List<IndirectSalesOrderPromotionDAO> IndirectSalesOrderPromotionDAOs = await DataContext.IndirectSalesOrderPromotion
-                .Where(x => SaleEmployeeIds.Contains(x.IndirectSalesOrder.SaleEmployeeId) && Start <= x.IndirectSalesOrder.OrderDate && x.IndirectSalesOrder.OrderDate <= End)
+                .Where(x => AppUserIds.Contains(x.IndirectSalesOrder.SaleEmployeeId) && Start <= x.IndirectSalesOrder.OrderDate && x.IndirectSalesOrder.OrderDate <= End)
                 .Select(x => new IndirectSalesOrderPromotionDAO
                 {
                     Id = x.Id,
@@ -283,21 +278,45 @@ namespace DMS.Rpc.reports.report_sales_order.report_indirect_sales_order_by_empl
             });
 
             List<UnitOfMeasureDAO> UnitOfMeasureDAOs = await DataContext.UnitOfMeasure.ToListAsync();
-            // khởi tạo khung dữ liệu
-            foreach (ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTO ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTO in ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTOs)
+            List<ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTO> ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTOs = new List<ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTO>();
+            foreach (var Organization in Organizations)
             {
-                foreach (var SaleEmployee in ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTO.SaleEmployees)
+                ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTO ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTO = new ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTO()
                 {
+                    OrganizationId = Organization.Id,
+                    OrganizationName = Organization.Name,
+                    SaleEmployees = new List<ReportSalesOrderByEmployeeAndItem_SaleEmployeeDTO>()
+                };
+                ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTO.SaleEmployees = Ids
+                        .Where(x => x.OrganizationId == Organization.Id)
+                        .Select(x => new ReportSalesOrderByEmployeeAndItem_SaleEmployeeDTO
+                        {
+                            SaleEmployeeId = x.SalesEmployeeId
+                        }).ToList();
+                ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTOs.Add(ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTO);
+            }
+            // khởi tạo khung dữ liệu
+            Parallel.ForEach(ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTOs, ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTO =>
+            {
+                foreach (var SalesEmployee in ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTO.SaleEmployees)
+                {
+                    var Employee = AppUserDAOs.Where(x => x.Id == SalesEmployee.SaleEmployeeId).FirstOrDefault();
+                    if (Employee != null)
+                    {
+                        SalesEmployee.Username = Employee.Username;
+                        SalesEmployee.DisplayName = Employee.DisplayName;
+                    }
+
                     //lấy tất cả đơn hàng được thực hiện bởi nhân viên đang xét
-                    var IndirectSalesOrders = IndirectSalesOrderDAOs.Where(x => x.SaleEmployeeId == SaleEmployee.SaleEmployeeId).ToList();
+                    var IndirectSalesOrders = IndirectSalesOrderDAOs.Where(x => x.SaleEmployeeId == SalesEmployee.SaleEmployeeId).ToList();
                     var SalesOrderIds = IndirectSalesOrders.Select(x => x.Id).ToList();
 
-                    SaleEmployee.Items = new List<ReportSalesOrderByEmployeeAndItem_ItemDTO>();
+                    SalesEmployee.Items = new List<ReportSalesOrderByEmployeeAndItem_ItemDTO>();
                     foreach (IndirectSalesOrderContentDAO IndirectSalesOrderContentDAO in IndirectSalesOrderContentDAOs)
                     {
                         if (SalesOrderIds.Contains(IndirectSalesOrderContentDAO.IndirectSalesOrderId))
                         {
-                            ReportSalesOrderByEmployeeAndItem_ItemDTO ReportSalesOrderByEmployeeAndItem_ItemDTO = SaleEmployee.Items.Where(i => i.Id == IndirectSalesOrderContentDAO.ItemId).FirstOrDefault();
+                            ReportSalesOrderByEmployeeAndItem_ItemDTO ReportSalesOrderByEmployeeAndItem_ItemDTO = SalesEmployee.Items.Where(i => i.Id == IndirectSalesOrderContentDAO.ItemId).FirstOrDefault();
                             if (ReportSalesOrderByEmployeeAndItem_ItemDTO == null)
                             {
                                 var item = Items.Where(x => x.Id == IndirectSalesOrderContentDAO.ItemId).FirstOrDefault();
@@ -313,7 +332,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_indirect_sales_order_by_empl
                                     StoreIds = new HashSet<long>(),
                                     IndirectSalesOrderIds = new HashSet<long>(),
                                 };
-                                SaleEmployee.Items.Add(ReportSalesOrderByEmployeeAndItem_ItemDTO);
+                                SalesEmployee.Items.Add(ReportSalesOrderByEmployeeAndItem_ItemDTO);
                             }
                             var BuyerStoreId = IndirectSalesOrderContentDAO.IndirectSalesOrder.BuyerStoreId;
                             ReportSalesOrderByEmployeeAndItem_ItemDTO.StoreIds.Add(BuyerStoreId);
@@ -325,7 +344,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_indirect_sales_order_by_empl
                         }
                     }
 
-                    foreach (var item in SaleEmployee.Items)
+                    foreach (var item in SalesEmployee.Items)
                     {
                         item.SalePriceAverage = item.SalePriceAverage / item.SaleStock;
                     }
@@ -334,7 +353,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_indirect_sales_order_by_empl
                     {
                         if (SalesOrderIds.Contains(IndirectSalesOrderPromotionDAO.IndirectSalesOrderId))
                         {
-                            ReportSalesOrderByEmployeeAndItem_ItemDTO ReportSalesOrderByEmployeeAndItem_ItemDTO = SaleEmployee.Items.Where(i => i.Id == IndirectSalesOrderPromotionDAO.ItemId).FirstOrDefault();
+                            ReportSalesOrderByEmployeeAndItem_ItemDTO ReportSalesOrderByEmployeeAndItem_ItemDTO = SalesEmployee.Items.Where(i => i.Id == IndirectSalesOrderPromotionDAO.ItemId).FirstOrDefault();
                             if (ReportSalesOrderByEmployeeAndItem_ItemDTO == null)
                             {
                                 var item = Items.Where(x => x.Id == IndirectSalesOrderPromotionDAO.ItemId).FirstOrDefault();
@@ -350,7 +369,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_indirect_sales_order_by_empl
                                     StoreIds = new HashSet<long>(),
                                     IndirectSalesOrderIds = new HashSet<long>(),
                                 };
-                                SaleEmployee.Items.Add(ReportSalesOrderByEmployeeAndItem_ItemDTO);
+                                SalesEmployee.Items.Add(ReportSalesOrderByEmployeeAndItem_ItemDTO);
                             }
                             var BuyerStoreId = IndirectSalesOrderPromotionDAO.IndirectSalesOrder.BuyerStoreId;
                             ReportSalesOrderByEmployeeAndItem_ItemDTO.StoreIds.Add(BuyerStoreId);
@@ -359,15 +378,10 @@ namespace DMS.Rpc.reports.report_sales_order.report_indirect_sales_order_by_empl
                         }
                     }
                 }
-            }
-
-            foreach (var ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTO in ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTOs)
-            {
-                ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTO.SaleEmployees = ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTO.SaleEmployees.Where(x => x.Items.Any()).ToList();
-            }
+            });
 
             //làm tròn số
-            foreach (var ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTO in ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTOs)
+            Parallel.ForEach(ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTOs, ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTO =>
             {
                 foreach (var SaleEmployee in ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTO.SaleEmployees)
                 {
@@ -378,9 +392,9 @@ namespace DMS.Rpc.reports.report_sales_order.report_indirect_sales_order_by_empl
                         item.SalePriceAverage = Math.Round(item.SalePriceAverage, 0);
                     }
                 }
-            }
+            });
 
-            return ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTOs.Where(x => x.SaleEmployees.Any()).ToList();
+            return ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTOs;
         }
 
         [Route(ReportSalesOrderByEmployeeAndItemRoute.Total), HttpPost]
@@ -417,50 +431,62 @@ namespace DMS.Rpc.reports.report_sales_order.report_indirect_sales_order_by_empl
             OrganizationIds = OrganizationDAOs.Select(o => o.Id).ToList();
 
             var query = from i in DataContext.IndirectSalesOrder
-                        join au in DataContext.AppUser on i.SaleEmployeeId equals au.Id
                         where i.OrderDate >= Start && i.OrderDate <= End &&
                         (SaleEmployeeId.HasValue == false || i.SaleEmployeeId == SaleEmployeeId.Value) &&
-                        OrganizationIds.Contains(au.OrganizationId) &&
+                        OrganizationIds.Contains(i.OrganizationId) &&
                         i.RequestStateId == RequestStateEnum.APPROVED.Id
-                        select au;
+                        select new
+                        {
+                            OrganizationId = i.OrganizationId,
+                            SalesEmployeeId = i.SaleEmployeeId
+                        };
 
-            var AppUserIds = await query.Select(x => x.Id).Distinct().ToListAsync();
+            var Ids = await query
+                .OrderBy(x => x.OrganizationId)
+                .Distinct().ToListAsync();
+            var AppUserIds = Ids.Select(x => x.SalesEmployeeId).Distinct().ToList();
 
-            AppUserFilter AppUserFilter = new AppUserFilter
-            {
-                Id = new IdFilter { In = AppUserIds },
-                OrganizationId = new IdFilter { In = OrganizationIds },
-                Skip = ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO.Skip,
-                Take = ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO.Take,
-                OrderBy = AppUserOrder.DisplayName,
-                Selects = AppUserSelect.Id | AppUserSelect.Username | AppUserSelect.DisplayName | AppUserSelect.Organization
-            };
-            List<AppUser> AppUsers = await AppUserService.List(AppUserFilter);
+            List<AppUserDAO> AppUserDAOs = await DataContext.AppUser
+                .Where(x => x.DeletedAt == null)
+                .Where(au => AppUserIds.Contains(au.Id))
+                .OrderBy(su => su.OrganizationId).ThenBy(x => x.DisplayName)
+                .ToListAsync();
+            OrganizationIds = Ids.Select(x => x.OrganizationId).Distinct().ToList();
+            var Organizations = await DataContext.Organization
+                .Where(x => OrganizationIds.Contains(x.Id))
+                .OrderBy(x => x.Id)
+                .Select(x => new OrganizationDAO
+                {
+                    Id = x.Id,
+                    Name = x.Name
+                }).ToListAsync();
 
-            List<string> OrganizationNames = AppUsers.Select(s => s.Organization.Name).Distinct().ToList();
-            List<ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTO> ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTOs = OrganizationNames.Select(on => new ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTO
+            List<ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTO> ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTOs = new List<ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTO>();
+            foreach (var Organization in Organizations)
             {
-                OrganizationName = on,
-            }).ToList();
-            foreach (ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTO ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTO in ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTOs)
-            {
-                ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTO.SaleEmployees = AppUsers
-                    .Where(x => x.Organization.Name == ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTO.OrganizationName)
-                    .Select(x => new ReportSalesOrderByEmployeeAndItem_SaleEmployeeDTO
-                    {
-                        SaleEmployeeId = x.Id,
-                        Username = x.Username,
-                        DisplayName = x.DisplayName,
-                    })
-                    .ToList();
+                ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTO ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTO = new ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTO()
+                {
+                    OrganizationId = Organization.Id,
+                    OrganizationName = Organization.Name,
+                    SaleEmployees = new List<ReportSalesOrderByEmployeeAndItem_SaleEmployeeDTO>()
+                };
+                ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTO.SaleEmployees = Ids
+                        .Where(x => x.OrganizationId == Organization.Id)
+                        .Select(x => new ReportSalesOrderByEmployeeAndItem_SaleEmployeeDTO
+                        {
+                            SaleEmployeeId = x.SalesEmployeeId
+                        }).ToList();
+                ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTOs.Add(ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTO);
             }
 
-            List<long> SaleEmployeeIds = AppUsers.Select(s => s.Id).ToList();
-
             var IndirectSalesOrderContentQuery = DataContext.IndirectSalesOrderContent
-                .Where(x => SaleEmployeeIds.Contains(x.IndirectSalesOrder.SaleEmployeeId) && Start <= x.IndirectSalesOrder.OrderDate && x.IndirectSalesOrder.OrderDate <= End);
+                .Where(x => AppUserIds.Contains(x.IndirectSalesOrder.SaleEmployeeId) && 
+                Start <= x.IndirectSalesOrder.OrderDate && x.IndirectSalesOrder.OrderDate <= End &&
+                x.IndirectSalesOrder.RequestStateId == RequestStateEnum.APPROVED.Id);
             var IndirectSalesOrderPromotionQuery = DataContext.IndirectSalesOrderPromotion
-                .Where(x => SaleEmployeeIds.Contains(x.IndirectSalesOrder.SaleEmployeeId) && Start <= x.IndirectSalesOrder.OrderDate && x.IndirectSalesOrder.OrderDate <= End);
+                .Where(x => AppUserIds.Contains(x.IndirectSalesOrder.SaleEmployeeId) && 
+                Start <= x.IndirectSalesOrder.OrderDate && x.IndirectSalesOrder.OrderDate <= End &&
+                x.IndirectSalesOrder.RequestStateId == RequestStateEnum.APPROVED.Id);
 
             ReportSalesOrderByEmployeeAndItem_TotalDTO.TotalSalesStock = IndirectSalesOrderContentQuery.Select(x => x.RequestedQuantity).Sum();
 

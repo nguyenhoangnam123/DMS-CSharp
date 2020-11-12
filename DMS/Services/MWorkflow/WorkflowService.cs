@@ -1,10 +1,10 @@
-﻿using Common;
+﻿using DMS.Common;
 using DMS.Entities;
 using DMS.Enums;
 using DMS.Handlers;
 using DMS.Repositories;
 using HandlebarsDotNet;
-using Helpers;
+using DMS.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -47,8 +47,9 @@ namespace DMS.Services.MWorkflow
 
         public async Task<List<RequestWorkflowStepMapping>> ListRequestWorkflowStepMapping(Guid RequestId)
         {
+            RequestWorkflowDefinitionMapping RequestWorkflowDefinitionMapping = await UOW.RequestWorkflowDefinitionMappingRepository.Get(RequestId);
             List<RequestWorkflowHistory> RequestWorkflowHistories = await UOW.RequestWorkflowHistoryRepository.List(RequestId);
-            List<RequestWorkflowStepMapping> RequestWorkflowStepMappings = RequestWorkflowHistories.Select(x => new RequestWorkflowStepMapping
+            List<RequestWorkflowStepMapping> RequestWorkflowStepMappings =  RequestWorkflowHistories.Select(x => new RequestWorkflowStepMapping
             {
                 AppUserId = x.AppUserId,
                 CreatedAt = x.CreatedAt,
@@ -82,6 +83,22 @@ namespace DMS.Services.MWorkflow
                     }
                 },
             }).ToList();
+
+            var RequestWorkflowStepApproved = RequestWorkflowStepMappings.Where(rq => rq.WorkflowState.Id == 3).OrderByDescending(x => x.CreatedAt).ToList(); // approved
+            var RequestWorkflowStepReject = RequestWorkflowStepMappings.Where(rq => rq.WorkflowState.Id == 4).OrderByDescending(x => x.CreatedAt).ToList(); // rejected
+            var RequestWorkflowStepPending = RequestWorkflowStepMappings.Where(rq => rq.WorkflowState.Id == 2).OrderByDescending(x => x.CreatedAt).ToList(); // pending
+
+            if(RequestWorkflowStepApproved.Count > 0)
+            {
+                if (RequestWorkflowStepReject.Count() > 0)
+                    RequestWorkflowStepMappings = RequestWorkflowStepApproved.Concat(RequestWorkflowStepReject).ToList();
+
+                if (RequestWorkflowStepReject.Count() == 0)
+                    RequestWorkflowStepMappings = RequestWorkflowStepApproved.Concat(RequestWorkflowStepPending).ToList();
+            }
+
+            if(RequestWorkflowStepApproved.Count == 0) RequestWorkflowStepMappings = RequestWorkflowStepPending; // if approved list is empty, return all pending
+
 
             foreach (RequestWorkflowStepMapping RequestWorkflowStepMapping in RequestWorkflowStepMappings)
             {
@@ -179,7 +196,7 @@ namespace DMS.Services.MWorkflow
                 bool ShouldInit = false;
                 foreach (WorkflowStep WorkflowStep in WorkflowDefinition.WorkflowSteps)
                 {
-                    if (WorkflowDefinition.WorkflowDirections.Any(d => d.FromStepId == WorkflowStep.Id) && 
+                    if (WorkflowDefinition.WorkflowDirections.Any(d => d.FromStepId == WorkflowStep.Id) &&
                         !WorkflowDefinition.WorkflowDirections.Any(d => d.ToStepId == WorkflowStep.Id))
                     {
                         if (CurrentContext.RoleIds.Contains(WorkflowStep.RoleId))
@@ -276,6 +293,18 @@ namespace DMS.Services.MWorkflow
         {
             RequestWorkflowDefinitionMapping RequestWorkflowDefinitionMapping = await UOW.RequestWorkflowDefinitionMappingRepository.Get(RequestId);
             WorkflowDefinition WorkflowDefinition = await UOW.WorkflowDefinitionRepository.Get(RequestWorkflowDefinitionMapping.WorkflowDefinitionId);
+            {
+                List<WorkflowDirection> WorkflowDirections = new List<WorkflowDirection>();
+                foreach (WorkflowDirection WorkflowDirection in WorkflowDefinition.WorkflowDirections)
+                {
+                    bool result = await ApplyCondition(RequestId, WorkflowDirection);
+                    if (result)
+                    {
+                        WorkflowDirections.Add(WorkflowDirection);
+                    }
+                }
+                WorkflowDefinition.WorkflowDirections = WorkflowDirections;
+            }
             // tìm điểm bắt đầu
             // tìm điểm nhảy tiếp theo
             // chuyển trạng thái điểm nhảy
@@ -319,13 +348,22 @@ namespace DMS.Services.MWorkflow
                 // tìm điểm bắt đầu cho những điểm đích tìm được
                 foreach (WorkflowStep WorkflowStep in ToSteps)
                 {
-                    var FromSteps = WorkflowDefinition.WorkflowDirections.Where(d => d.ToStepId == WorkflowStep.Id).Select(x => x.FromStep).ToList() ?? new List<WorkflowStep>();
+                    // Xác định các direction đang trỏ đến đích
+                    var ActiveDirections = WorkflowDefinition.WorkflowDirections.Where(d => d.ToStepId == WorkflowStep.Id).ToList();
                     var ApprovedFromRequestSteps = new List<RequestWorkflowStepMapping>();
-                    foreach (var FromStep in FromSteps)
+                    foreach (var Direction in ActiveDirections)
                     {
-                        var FromRequestStep = RequestWorkflowStepMappings.Where(x => x.WorkflowStepId == FromStep.Id).FirstOrDefault();
-                        ApprovedFromRequestSteps.Add(FromRequestStep);
-                        PreviousStepIds.Add(FromStep.Id);
+                        // Với các direction 
+                        bool result = await ApplyCondition(RequestId, Direction);
+                        if (result)
+                        {
+                            var FromRequestStep = RequestWorkflowStepMappings
+                            .Where(x =>
+                                x.WorkflowStepId == Direction.FromStepId)
+                            .FirstOrDefault();
+                            ApprovedFromRequestSteps.Add(FromRequestStep);
+                            PreviousStepIds.Add(Direction.FromStepId);
+                        }
                     }
 
                     // Nếu tất cả các điểm bắt đầu của điểm đích đang xét đều là APPROVED thì điểm đích sẽ là PENDING
@@ -519,6 +557,9 @@ namespace DMS.Services.MWorkflow
             {
                 List<WorkflowDirectionCondition> WorkflowDirectionConditions = WorkflowDirection.WorkflowDirectionConditions
                     .Where(x => x.WorkflowParameterId == RequestWorkflowParameterMapping.WorkflowParameterId).ToList();
+                if (WorkflowDirectionConditions.Count == 0)
+                    continue;
+
                 if (RequestWorkflowParameterMapping.WorkflowParameterTypeId == WorkflowParameterTypeEnum.ID.Id && RequestWorkflowParameterMapping.IdValue.HasValue)
                 {
                     List<long> In = new List<long>();

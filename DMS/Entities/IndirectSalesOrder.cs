@@ -1,4 +1,4 @@
-using Common;
+using DMS.Common;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System;
@@ -75,6 +75,7 @@ namespace DMS.Entities
         public DecimalFilter TotalTaxAmount { get; set; }
         public DecimalFilter Total { get; set; }
         public IdFilter StoreCheckingId { get; set; }
+        public IdFilter StoreStatusId { get; set; }
         public List<IndirectSalesOrderFilter> OrFilter { get; set; }
         public IndirectSalesOrderOrder OrderBy { get; set; }
         public IndirectSalesOrderSelect Selects { get; set; }

@@ -7,6 +7,7 @@ namespace DMS.Models
     {
         public PromotionTypeDAO()
         {
+            PromotionCodes = new HashSet<PromotionCodeDAO>();
             Promotions = new HashSet<PromotionDAO>();
         }
 
@@ -14,6 +15,7 @@ namespace DMS.Models
         public string Code { get; set; }
         public string Name { get; set; }
 
+        public virtual ICollection<PromotionCodeDAO> PromotionCodes { get; set; }
         public virtual ICollection<PromotionDAO> Promotions { get; set; }
     }
 }

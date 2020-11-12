@@ -1,4 +1,4 @@
-﻿using Common;
+﻿using DMS.Common;
 using DMS.Entities;
 using DMS.Enums;
 using DMS.Services.MAppUser;
@@ -395,7 +395,6 @@ namespace DMS.Rpc.survey
                                 {
                                     optionResults.Add(SurveyResultText.Content);
                                 }
-                                optionResults.Add(surveyQuestion.TextResult);
                             }
                         }
                 }

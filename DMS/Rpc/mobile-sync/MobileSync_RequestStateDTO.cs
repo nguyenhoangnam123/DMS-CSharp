@@ -1,5 +1,6 @@
-﻿using Common;
+﻿using DMS.Common;
 using DMS.Entities;
+using DMS.Models;
 
 namespace DMS.Rpc.mobile_sync
 {
@@ -14,7 +15,6 @@ namespace DMS.Rpc.mobile_sync
             this.Id = RequestState.Id;
             this.Code = RequestState.Code;
             this.Name = RequestState.Name;
-            this.Errors = RequestState.Errors;
         }
     }
 }

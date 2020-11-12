@@ -1,4 +1,4 @@
-﻿using Common;
+﻿using DMS.Common;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System.Collections.Generic;
@@ -7,8 +7,8 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_unchecked
 {
     public class ReportStoreUnchecked_ReportStoreUncheckedDTO : DataDTO
     {
+        public long OrganizationId { get; set; }
         public string OrganizationName { get; set; }
-        public string OrganizationPath { get; set; }
         public List<ReportStoreUnchecked_SaleEmployeeDTO> SaleEmployees { get; set; }
     }
 

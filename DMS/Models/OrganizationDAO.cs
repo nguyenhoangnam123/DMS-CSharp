@@ -18,9 +18,13 @@ namespace DMS.Models
             KpiItems = new HashSet<KpiItemDAO>();
             Notifications = new HashSet<NotificationDAO>();
             PriceLists = new HashSet<PriceListDAO>();
+            PromotionCodeOrganizationMappings = new HashSet<PromotionCodeOrganizationMappingDAO>();
+            PromotionCodes = new HashSet<PromotionCodeDAO>();
             Promotions = new HashSet<PromotionDAO>();
             Resellers = new HashSet<ResellerDAO>();
+            StoreCheckings = new HashSet<StoreCheckingDAO>();
             StoreScoutings = new HashSet<StoreScoutingDAO>();
+            StoreUncheckings = new HashSet<StoreUncheckingDAO>();
             Stores = new HashSet<StoreDAO>();
             SurveyResults = new HashSet<SurveyResultDAO>();
             Warehouses = new HashSet<WarehouseDAO>();
@@ -55,9 +59,13 @@ namespace DMS.Models
         public virtual ICollection<KpiItemDAO> KpiItems { get; set; }
         public virtual ICollection<NotificationDAO> Notifications { get; set; }
         public virtual ICollection<PriceListDAO> PriceLists { get; set; }
+        public virtual ICollection<PromotionCodeOrganizationMappingDAO> PromotionCodeOrganizationMappings { get; set; }
+        public virtual ICollection<PromotionCodeDAO> PromotionCodes { get; set; }
         public virtual ICollection<PromotionDAO> Promotions { get; set; }
         public virtual ICollection<ResellerDAO> Resellers { get; set; }
+        public virtual ICollection<StoreCheckingDAO> StoreCheckings { get; set; }
         public virtual ICollection<StoreScoutingDAO> StoreScoutings { get; set; }
+        public virtual ICollection<StoreUncheckingDAO> StoreUncheckings { get; set; }
         public virtual ICollection<StoreDAO> Stores { get; set; }
         public virtual ICollection<SurveyResultDAO> SurveyResults { get; set; }
         public virtual ICollection<WarehouseDAO> Warehouses { get; set; }

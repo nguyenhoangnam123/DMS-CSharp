@@ -1,5 +1,6 @@
-﻿using Common;
+﻿using DMS.Common;
 using DMS.Entities;
+using DMS.Models;
 using System;
 
 namespace DMS.Rpc.mobile_sync
@@ -11,7 +12,7 @@ namespace DMS.Rpc.mobile_sync
         public string Name { get; set; }
         public string Description { get; set; }
         public long StatusId { get; set; }
-        public DateTime UpdatedTime { get; set; }
+        public DateTime UpdatedAt { get; set; }
         public MobileSync_ProductTypeDTO() { }
         public MobileSync_ProductTypeDTO(ProductType ProductType)
         {
@@ -25,7 +26,7 @@ namespace DMS.Rpc.mobile_sync
             this.Description = ProductType.Description;
 
             this.StatusId = ProductType.StatusId;
-            this.UpdatedTime = ProductType.UpdatedTime;
+            this.UpdatedAt = ProductType.UpdatedAt;
         }
     }
 

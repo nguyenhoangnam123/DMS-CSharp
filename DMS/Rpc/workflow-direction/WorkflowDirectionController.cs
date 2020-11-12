@@ -1,4 +1,4 @@
-using Common;
+using DMS.Common;
 using DMS.Entities;
 using DMS.Enums;
 using DMS.Services.MAppUser;
@@ -500,6 +500,7 @@ namespace DMS.Rpc.workflow_direction
             WorkflowStepFilter.Code = WorkflowDirection_WorkflowStepFilterDTO.Code;
             WorkflowStepFilter.Name = WorkflowDirection_WorkflowStepFilterDTO.Name;
             WorkflowStepFilter.RoleId = WorkflowDirection_WorkflowStepFilterDTO.RoleId;
+            WorkflowStepFilter.StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id };
 
             List<WorkflowStep> WorkflowSteps = await WorkflowStepService.List(WorkflowStepFilter);
             List<WorkflowDirection_WorkflowStepDTO> WorkflowDirection_WorkflowStepDTOs = WorkflowSteps
@@ -525,7 +526,7 @@ namespace DMS.Rpc.workflow_direction
             WorkflowDefinitionFilter.WorkflowTypeId = WorkflowDirection_WorkflowDefinitionFilterDTO.WorkflowTypeId;
             WorkflowDefinitionFilter.StartDate = WorkflowDirection_WorkflowDefinitionFilterDTO.StartDate;
             WorkflowDefinitionFilter.EndDate = WorkflowDirection_WorkflowDefinitionFilterDTO.EndDate;
-            WorkflowDefinitionFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+            // WorkflowDefinitionFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
             WorkflowDefinitionFilter.Used = false;
             WorkflowDefinitionFilter.UpdatedAt = WorkflowDirection_WorkflowDefinitionFilterDTO.UpdatedAt;
 

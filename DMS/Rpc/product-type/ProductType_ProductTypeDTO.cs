@@ -1,4 +1,4 @@
-using Common;
+using DMS.Common;
 using DMS.Entities;
 using System;
 
@@ -23,7 +23,7 @@ namespace DMS.Rpc.product_type
             this.Description = ProductType.Description;
             this.StatusId = ProductType.StatusId;
             this.Used = ProductType.Used;
-            this.UpdateTime = ProductType.UpdatedTime;
+            this.UpdateTime = ProductType.UpdatedAt;
             this.Status = ProductType.Status == null ? null : new ProductType_StatusDTO(ProductType.Status);
             this.Errors = ProductType.Errors;
         }

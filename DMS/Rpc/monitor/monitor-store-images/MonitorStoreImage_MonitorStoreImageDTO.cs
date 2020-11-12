@@ -1,4 +1,4 @@
-﻿using Common;
+﻿using DMS.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,6 +8,7 @@ namespace DMS.Rpc.monitor.monitor_store_images
 {
     public class MonitorStoreImage_MonitorStoreImageDTO : DataDTO
     {
+        public long OrganizationId { get; set; }
         public string OrganizationName { get; set; }
         public List<MonitorStoreImage_SaleEmployeeDTO> SaleEmployees { get; set; }
     }
@@ -18,8 +19,6 @@ namespace DMS.Rpc.monitor.monitor_store_images
         public long SaleEmployeeId { get; set; }
         public string Username { get; set; }
         public string DisplayName { get; set; }
-        public string OrganizationName { get; set; }
-        public string OrganizationPath { get; set; }
         public List<MonitorStoreImage_DetailDTO> StoreCheckings { get; set; }
     }
 
@@ -41,8 +40,6 @@ namespace DMS.Rpc.monitor.monitor_store_images
         public IdFilter AppUserId { get; set; }
         public DateFilter CheckIn { get; set; }
         public IdFilter StoreId { get; set; }
-        public IdFilter HasImage { get; set; }
-        public IdFilter HasOrder { get; set; }
         public List<MonitorStoreImage_MonitorStoreImageFilterDTO> OrFilters { get; set; }
     }
 }

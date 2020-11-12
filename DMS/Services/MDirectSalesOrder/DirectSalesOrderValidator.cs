@@ -1,7 +1,8 @@
-﻿using Common;
+﻿using DMS.Common;
 using DMS.Entities;
 using DMS.Enums;
 using DMS.Repositories;
+using DMS.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,6 +12,7 @@ namespace DMS.Services.MDirectSalesOrder
 {
     public interface IDirectSalesOrderValidator : IServiceScoped
     {
+        Task<bool> ApplyPromotionCode(DirectSalesOrder DirectSalesOrder);
         Task<bool> Create(DirectSalesOrder DirectSalesOrder);
         Task<bool> Update(DirectSalesOrder DirectSalesOrder);
         Task<bool> Delete(DirectSalesOrder DirectSalesOrder);
@@ -41,7 +43,12 @@ namespace DMS.Services.MDirectSalesOrder
             ContentEmpty,
             DeliveryDateInvalid,
             BuyerStoreNotInERouteScope,
-            SaleEmployeeNotInOrg
+            SaleEmployeeNotInOrg,
+            PromotionCodeNotExisted,
+            PromotionCodeHasUsed,
+            OrganizationInvalid,
+            StoreInvalid,
+            ItemInvalid
         }
 
         private IUOW UOW;
@@ -305,6 +312,97 @@ namespace DMS.Services.MDirectSalesOrder
         {
             if (EditedPriceStatusEnum.ACTIVE.Id != DirectSalesOrder.EditedPriceStatusId && EditedPriceStatusEnum.INACTIVE.Id != DirectSalesOrder.EditedPriceStatusId)
                 DirectSalesOrder.AddError(nameof(DirectSalesOrderValidator), nameof(DirectSalesOrder.EditedPriceStatus), ErrorCode.EditedPriceStatusNotExisted);
+            return DirectSalesOrder.IsValidated;
+        }
+
+        public async Task<bool> ApplyPromotionCode(DirectSalesOrder DirectSalesOrder)
+        {
+            if (!string.IsNullOrWhiteSpace(DirectSalesOrder.PromotionCode))
+            {
+                var appUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
+                OrganizationFilter OrganizationFilter = new OrganizationFilter
+                {
+                    Skip = 0,
+                    Take = int.MaxValue,
+                    Selects = OrganizationSelect.ALL,
+                    StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id }
+                };
+
+                var Organizations = await UOW.OrganizationRepository.List(OrganizationFilter);
+                var OrganizationIds = Organizations
+                    .Where(x => x.Path.StartsWith(appUser.Organization.Path) || appUser.Organization.Path.StartsWith(x.Path))
+                    .Select(x => x.Id)
+                    .ToList();
+                PromotionCodeFilter PromotionCodeFilter = new PromotionCodeFilter()
+                {
+                    StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id },
+                    StartDate = new DateFilter { LessEqual = DirectSalesOrder.OrderDate },
+                    EndDate = new DateFilter { GreaterEqual = DirectSalesOrder.OrderDate },
+                    OrganizationId = new IdFilter { In = OrganizationIds },
+                    Code = new StringFilter { Equal = DirectSalesOrder.PromotionCode },
+                    Skip = 0,
+                    Take = 1,
+                    Selects = PromotionCodeSelect.Id | PromotionCodeSelect.Quantity
+                };
+                var PromotionCodes = await UOW.PromotionCodeRepository.List(PromotionCodeFilter);
+                if (PromotionCodes.Count() == 0)
+                {
+                    DirectSalesOrder.AddError(nameof(DirectSalesOrderValidator), nameof(DirectSalesOrder.PromotionCode), ErrorCode.PromotionCodeNotExisted);
+                }
+                else
+                {
+                    var PromotionCode = PromotionCodes.FirstOrDefault();
+                    PromotionCodeHistoryFilter PromotionCodeHistoryFilter = new PromotionCodeHistoryFilter
+                    {
+                        PromotionCodeId = new IdFilter { Equal = PromotionCode.Id }
+                    };
+
+                    var countHistory = await UOW.PromotionCodeHistoryRepository.Count(PromotionCodeHistoryFilter);
+                    if(countHistory >= PromotionCode.Quantity)
+                    {
+                        DirectSalesOrder.AddError(nameof(DirectSalesOrderValidator), nameof(DirectSalesOrder.PromotionCode), ErrorCode.PromotionCodeHasUsed);
+                    }
+                    else
+                    {
+                        PromotionCode = await UOW.PromotionCodeRepository.Get(PromotionCode.Id);
+                        var BuyerStore = await UOW.StoreRepository.Get(DirectSalesOrder.BuyerStoreId);
+                        if(BuyerStore!= null)
+                        {
+                            if (PromotionCode.PromotionTypeId == PromotionTypeEnum.ORGANIZATION.Id)
+                            {
+                                var organizationIds = PromotionCode.PromotionCodeOrganizationMappings?.Select(x => x.OrganizationId).ToList();
+                                if (!organizationIds.Contains(BuyerStore.OrganizationId))
+                                {
+                                    DirectSalesOrder.AddError(nameof(DirectSalesOrderValidator), nameof(DirectSalesOrder.PromotionCode), ErrorCode.OrganizationInvalid);
+                                    return DirectSalesOrder.IsValidated;
+                                }
+                            }
+                            else if(PromotionCode.PromotionTypeId == PromotionTypeEnum.STORE.Id)
+                            {
+                                var StoreIds = PromotionCode.PromotionCodeStoreMappings?.Select(x => x.StoreId).ToList();
+                                if (!StoreIds.Contains(BuyerStore.Id))
+                                {
+                                    DirectSalesOrder.AddError(nameof(DirectSalesOrderValidator), nameof(DirectSalesOrder.PromotionCode), ErrorCode.StoreInvalid);
+                                    return DirectSalesOrder.IsValidated;
+                                }
+                            }
+
+                            if(PromotionCode.PromotionProductAppliedTypeId == PromotionProductAppliedTypeEnum.PRODUCT.Id)
+                            {
+                                var ProductIds = PromotionCode.PromotionCodeProductMappings.Select(x => x.ProductId).ToList();
+                                var ProductIdsInOrder = DirectSalesOrder.DirectSalesOrderContents?.Select(x => x.Item.ProductId).Distinct().ToList();
+
+                                var Intersect = ProductIdsInOrder.Intersect(ProductIds).Count();
+                                if (Intersect == 0)
+                                {
+                                    DirectSalesOrder.AddError(nameof(DirectSalesOrderValidator), nameof(DirectSalesOrder.PromotionCode), ErrorCode.ItemInvalid);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
             return DirectSalesOrder.IsValidated;
         }
 

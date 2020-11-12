@@ -20,15 +20,23 @@ namespace DMS.Models
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
         public long StatusId { get; set; }
+        public long CreatorId { get; set; }
         public long OrganizationId { get; set; }
         public long PriceListTypeId { get; set; }
         public long SalesOrderTypeId { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public DateTime? DeletedAt { get; set; }
+        /// <summary>
+        /// Id global cho phê duyệt
+        /// </summary>
+        public Guid RowId { get; set; }
+        public long RequestStateId { get; set; }
 
+        public virtual AppUserDAO Creator { get; set; }
         public virtual OrganizationDAO Organization { get; set; }
         public virtual PriceListTypeDAO PriceListType { get; set; }
+        public virtual RequestStateDAO RequestState { get; set; }
         public virtual SalesOrderTypeDAO SalesOrderType { get; set; }
         public virtual StatusDAO Status { get; set; }
         public virtual ICollection<PriceListItemHistoryDAO> PriceListItemHistories { get; set; }

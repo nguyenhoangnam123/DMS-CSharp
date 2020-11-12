@@ -1,5 +1,6 @@
-using Common;
+using DMS.Common;
 using DMS.Entities;
+using DMS.Models;
 using System;
 
 namespace DMS.Rpc.mobile_sync
@@ -29,22 +30,13 @@ namespace DMS.Rpc.mobile_sync
         public MobileSync_StoreCheckingDTO() { }
         public MobileSync_StoreCheckingDTO(StoreChecking StoreChecking)
         {
-
             this.Id = StoreChecking.Id;
-
             this.StoreId = StoreChecking.StoreId;
-
             this.SaleEmployeeId = StoreChecking.SaleEmployeeId;
-
             this.Longitude = StoreChecking.Longitude;
-
             this.Latitude = StoreChecking.Latitude;
-
             this.CheckInAt = StoreChecking.CheckInAt;
-
             this.CheckOutAt = StoreChecking.CheckOutAt;
-
-            this.Errors = StoreChecking.Errors;
         }
     }
 

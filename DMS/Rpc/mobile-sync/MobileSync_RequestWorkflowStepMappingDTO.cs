@@ -1,5 +1,6 @@
-﻿using Common;
+﻿using DMS.Common;
 using DMS.Entities;
+using DMS.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,7 +33,6 @@ namespace DMS.Rpc.mobile_sync
             this.AppUser = RequestWorkflowStepMapping.AppUser == null ? null : new MobileSync_AppUserDTO(RequestWorkflowStepMapping.AppUser);
             this.WorkflowState = RequestWorkflowStepMapping.WorkflowState == null ? null : new MobileSync_WorkflowStateDTO(RequestWorkflowStepMapping.WorkflowState);
             this.WorkflowStep = RequestWorkflowStepMapping.WorkflowStep == null ? null : new MobileSync_WorkflowStepDTO(RequestWorkflowStepMapping.WorkflowStep);
-            this.NextApprovers = RequestWorkflowStepMapping.NextApprovers?.Select(x => new MobileSync_AppUserDTO(x)).ToList();
         }
     }
 }

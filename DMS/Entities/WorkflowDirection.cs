@@ -1,4 +1,4 @@
-using Common;
+using DMS.Common;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System;
@@ -23,6 +23,7 @@ namespace DMS.Entities
         public long StatusId { get; set; }
         public long ModifierId { get; set; }
         public bool Used { get; set; }
+        public Guid RowId { get; set; }
         public DateTime UpdatedAt { get; set; }
         public Status Status { get; set; }
         public WorkflowDefinition WorkflowDefinition { get; set; }

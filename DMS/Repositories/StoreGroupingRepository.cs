@@ -1,7 +1,7 @@
-using Common;
+using DMS.Common;
 using DMS.Entities;
 using DMS.Models;
-using Helpers;
+using DMS.Helpers;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -172,6 +172,7 @@ namespace DMS.Repositories
                 {
                     Id = s.Id,
                     Code = s.Code,
+                    CodeDraft = s.CodeDraft,
                     Name = s.Name,
                     ParentStoreId = s.ParentStoreId,
                     OrganizationId = s.OrganizationId,
@@ -253,6 +254,7 @@ namespace DMS.Repositories
                 {
                     Id = x.Id,
                     Code = x.Code,
+                    CodeDraft = x.CodeDraft,
                     Name = x.Name,
                     ParentStoreId = x.ParentStoreId,
                     OrganizationId = x.OrganizationId,

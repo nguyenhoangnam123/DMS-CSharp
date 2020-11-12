@@ -1,4 +1,4 @@
-﻿using Common;
+﻿using DMS.Common;
 using DMS.Entities;
 using DMS.Enums;
 using DMS.Services.MAppUser;
@@ -22,10 +22,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Dynamic;
 using DMS.Helpers;
-using Helpers;
+using DMS.Helpers;
 using System.IO;
 using GleamTech.DocumentUltimate;
 using System.Net.Mime;
+using DMS.Services.MStoreStatus;
 
 namespace DMS.Rpc.direct_sales_order
 {
@@ -45,6 +46,7 @@ namespace DMS.Rpc.direct_sales_order
         private IRequestStateService RequestStateService;
         private ISupplierService SupplierService;
         private IStoreGroupingService StoreGroupingService;
+        private IStoreStatusService StoreStatusService;
         private IStoreTypeService StoreTypeService;
         private ITaxTypeService TaxTypeService;
         private ICurrentContext CurrentContext;
@@ -63,6 +65,7 @@ namespace DMS.Rpc.direct_sales_order
             IRequestStateService RequestStateService,
             ISupplierService SupplierService,
             IStoreGroupingService StoreGroupingService,
+            IStoreStatusService StoreStatusService,
             IStoreTypeService StoreTypeService,
             ITaxTypeService TaxTypeService,
             ICurrentContext CurrentContext
@@ -82,6 +85,7 @@ namespace DMS.Rpc.direct_sales_order
             this.RequestStateService = RequestStateService;
             this.SupplierService = SupplierService;
             this.StoreGroupingService = StoreGroupingService;
+            this.StoreStatusService = StoreStatusService;
             this.StoreTypeService = StoreTypeService;
             this.TaxTypeService = TaxTypeService;
             this.CurrentContext = CurrentContext;
@@ -113,6 +117,113 @@ namespace DMS.Rpc.direct_sales_order
             return DirectSalesOrder_DirectSalesOrderDTOs;
         }
 
+
+        [Route(DirectSalesOrderRoute.CountNew), HttpPost]
+        public async Task<ActionResult<int>> CountNew([FromBody] DirectSalesOrder_DirectSalesOrderFilterDTO DirectSalesOrder_DirectSalesOrderFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            DirectSalesOrderFilter DirectSalesOrderFilter = ConvertFilterDTOToFilterEntity(DirectSalesOrder_DirectSalesOrderFilterDTO);
+            DirectSalesOrderFilter = await DirectSalesOrderService.ToFilter(DirectSalesOrderFilter);
+            int count = await DirectSalesOrderService.CountNew(DirectSalesOrderFilter);
+            return count;
+        }
+
+        [Route(DirectSalesOrderRoute.ListNew), HttpPost]
+        public async Task<ActionResult<List<DirectSalesOrder_DirectSalesOrderDTO>>> ListNew([FromBody] DirectSalesOrder_DirectSalesOrderFilterDTO DirectSalesOrder_DirectSalesOrderFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            DirectSalesOrderFilter DirectSalesOrderFilter = ConvertFilterDTOToFilterEntity(DirectSalesOrder_DirectSalesOrderFilterDTO);
+            DirectSalesOrderFilter = await DirectSalesOrderService.ToFilter(DirectSalesOrderFilter);
+            List<DirectSalesOrder> DirectSalesOrders = await DirectSalesOrderService.ListNew(DirectSalesOrderFilter);
+            List<DirectSalesOrder_DirectSalesOrderDTO> DirectSalesOrder_DirectSalesOrderDTOs = DirectSalesOrders
+                .Select(c => new DirectSalesOrder_DirectSalesOrderDTO(c)).ToList();
+            return DirectSalesOrder_DirectSalesOrderDTOs;
+        }
+
+
+        [Route(DirectSalesOrderRoute.CountPending), HttpPost]
+        public async Task<ActionResult<int>> CountPending([FromBody] DirectSalesOrder_DirectSalesOrderFilterDTO DirectSalesOrder_DirectSalesOrderFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            DirectSalesOrderFilter DirectSalesOrderFilter = ConvertFilterDTOToFilterEntity(DirectSalesOrder_DirectSalesOrderFilterDTO);
+            DirectSalesOrderFilter = await DirectSalesOrderService.ToFilter(DirectSalesOrderFilter);
+            int count = await DirectSalesOrderService.CountPending(DirectSalesOrderFilter);
+            return count;
+        }
+
+        [Route(DirectSalesOrderRoute.ListPending), HttpPost]
+        public async Task<ActionResult<List<DirectSalesOrder_DirectSalesOrderDTO>>> ListPending([FromBody] DirectSalesOrder_DirectSalesOrderFilterDTO DirectSalesOrder_DirectSalesOrderFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            DirectSalesOrderFilter DirectSalesOrderFilter = ConvertFilterDTOToFilterEntity(DirectSalesOrder_DirectSalesOrderFilterDTO);
+            DirectSalesOrderFilter = await DirectSalesOrderService.ToFilter(DirectSalesOrderFilter);
+            List<DirectSalesOrder> DirectSalesOrders = await DirectSalesOrderService.ListPending(DirectSalesOrderFilter);
+            List<DirectSalesOrder_DirectSalesOrderDTO> DirectSalesOrder_DirectSalesOrderDTOs = DirectSalesOrders
+                .Select(c => new DirectSalesOrder_DirectSalesOrderDTO(c)).ToList();
+            return DirectSalesOrder_DirectSalesOrderDTOs;
+        }
+
+
+        [Route(DirectSalesOrderRoute.CountCompleted), HttpPost]
+        public async Task<ActionResult<int>> CountCompleted([FromBody] DirectSalesOrder_DirectSalesOrderFilterDTO DirectSalesOrder_DirectSalesOrderFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            DirectSalesOrderFilter DirectSalesOrderFilter = ConvertFilterDTOToFilterEntity(DirectSalesOrder_DirectSalesOrderFilterDTO);
+            DirectSalesOrderFilter = await DirectSalesOrderService.ToFilter(DirectSalesOrderFilter);
+            int count = await DirectSalesOrderService.CountCompleted(DirectSalesOrderFilter);
+            return count;
+        }
+
+        [Route(DirectSalesOrderRoute.ListCompleted), HttpPost]
+        public async Task<ActionResult<List<DirectSalesOrder_DirectSalesOrderDTO>>> ListCompleted([FromBody] DirectSalesOrder_DirectSalesOrderFilterDTO DirectSalesOrder_DirectSalesOrderFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            DirectSalesOrderFilter DirectSalesOrderFilter = ConvertFilterDTOToFilterEntity(DirectSalesOrder_DirectSalesOrderFilterDTO);
+            DirectSalesOrderFilter = await DirectSalesOrderService.ToFilter(DirectSalesOrderFilter);
+            List<DirectSalesOrder> DirectSalesOrders = await DirectSalesOrderService.ListCompleted(DirectSalesOrderFilter);
+            List<DirectSalesOrder_DirectSalesOrderDTO> DirectSalesOrder_DirectSalesOrderDTOs = DirectSalesOrders
+                .Select(c => new DirectSalesOrder_DirectSalesOrderDTO(c)).ToList();
+            return DirectSalesOrder_DirectSalesOrderDTOs;
+        }
+
+        [Route(DirectSalesOrderRoute.GetDetail), HttpPost]
+        public async Task<ActionResult<DirectSalesOrder_DirectSalesOrderDTO>> GetDetail([FromBody] DirectSalesOrder_DirectSalesOrderDTO DirectSalesOrder_DirectSalesOrderDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            if (!await HasPermission(DirectSalesOrder_DirectSalesOrderDTO.Id))
+                return Forbid();
+
+            DirectSalesOrder DirectSalesOrder = await DirectSalesOrderService.GetDetail(DirectSalesOrder_DirectSalesOrderDTO.Id);
+            List<TaxType> TaxTypes = await TaxTypeService.List(new TaxTypeFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = TaxTypeSelect.ALL
+            });
+            DirectSalesOrder_DirectSalesOrderDTO = new DirectSalesOrder_DirectSalesOrderDTO(DirectSalesOrder);
+            foreach (var DirectSalesOrderContent in DirectSalesOrder_DirectSalesOrderDTO.DirectSalesOrderContents)
+            {
+                TaxType TaxType = TaxTypes.Where(x => x.Percentage == DirectSalesOrderContent.TaxPercentage).FirstOrDefault();
+                DirectSalesOrderContent.TaxType = new DirectSalesOrder_TaxTypeDTO(TaxType);
+            }
+            return DirectSalesOrder_DirectSalesOrderDTO;
+        }
+
+
         [Route(DirectSalesOrderRoute.Get), HttpPost]
         public async Task<ActionResult<DirectSalesOrder_DirectSalesOrderDTO>> Get([FromBody]DirectSalesOrder_DirectSalesOrderDTO DirectSalesOrder_DirectSalesOrderDTO)
         {
@@ -136,6 +247,24 @@ namespace DMS.Rpc.direct_sales_order
                 DirectSalesOrderContent.TaxType = new DirectSalesOrder_TaxTypeDTO(TaxType);
             }
             return DirectSalesOrder_DirectSalesOrderDTO;
+        }
+
+        [Route(DirectSalesOrderRoute.ApplyPromotionCode), HttpPost]
+        public async Task<ActionResult<DirectSalesOrder_DirectSalesOrderDTO>> ApplyPromotionCode([FromBody] DirectSalesOrder_DirectSalesOrderDTO DirectSalesOrder_DirectSalesOrderDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            if (!await HasPermission(DirectSalesOrder_DirectSalesOrderDTO.Id))
+                return Forbid();
+
+            DirectSalesOrder DirectSalesOrder = ConvertDTOToEntity(DirectSalesOrder_DirectSalesOrderDTO);
+            DirectSalesOrder = await DirectSalesOrderService.ApplyPromotionCode(DirectSalesOrder);
+            DirectSalesOrder_DirectSalesOrderDTO = new DirectSalesOrder_DirectSalesOrderDTO(DirectSalesOrder);
+            if (DirectSalesOrder.IsValidated)
+                return DirectSalesOrder_DirectSalesOrderDTO;
+            else
+                return BadRequest(DirectSalesOrder_DirectSalesOrderDTO);
         }
 
         [Route(DirectSalesOrderRoute.Create), HttpPost]
@@ -191,7 +320,6 @@ namespace DMS.Rpc.direct_sales_order
             else
                 return BadRequest(DirectSalesOrder_DirectSalesOrderDTO);
         }
-
 
         [Route(DirectSalesOrderRoute.Approve), HttpPost]
         public async Task<ActionResult<DirectSalesOrder_DirectSalesOrderDTO>> Approve([FromBody] DirectSalesOrder_DirectSalesOrderDTO DirectSalesOrder_DirectSalesOrderDTO)
@@ -340,6 +468,9 @@ namespace DMS.Rpc.direct_sales_order
             DirectSalesOrder.GeneralDiscountPercentage = DirectSalesOrder_DirectSalesOrderDTO.GeneralDiscountPercentage;
             DirectSalesOrder.GeneralDiscountAmount = DirectSalesOrder_DirectSalesOrderDTO.GeneralDiscountAmount;
             DirectSalesOrder.TotalTaxAmount = DirectSalesOrder_DirectSalesOrderDTO.TotalTaxAmount;
+            DirectSalesOrder.TotalAfterTax = DirectSalesOrder_DirectSalesOrderDTO.TotalAfterTax;
+            DirectSalesOrder.PromotionCode = DirectSalesOrder_DirectSalesOrderDTO.PromotionCode;
+            DirectSalesOrder.PromotionValue = DirectSalesOrder_DirectSalesOrderDTO.PromotionValue;
             DirectSalesOrder.Total = DirectSalesOrder_DirectSalesOrderDTO.Total;
             DirectSalesOrder.BuyerStore = DirectSalesOrder_DirectSalesOrderDTO.BuyerStore == null ? null : new Store
             {
@@ -622,6 +753,7 @@ namespace DMS.Rpc.direct_sales_order
             DirectSalesOrderFilter.GeneralDiscountAmount = DirectSalesOrder_DirectSalesOrderFilterDTO.GeneralDiscountAmount;
             DirectSalesOrderFilter.TotalTaxAmount = DirectSalesOrder_DirectSalesOrderFilterDTO.TotalTaxAmount;
             DirectSalesOrderFilter.Total = DirectSalesOrder_DirectSalesOrderFilterDTO.Total;
+            DirectSalesOrderFilter.StoreStatusId = DirectSalesOrder_DirectSalesOrderFilterDTO.StoreStatusId;
             return DirectSalesOrderFilter;
         }
     }

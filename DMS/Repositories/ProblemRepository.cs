@@ -1,7 +1,7 @@
-using Common;
+using DMS.Common;
 using DMS.Entities;
 using DMS.Models;
-using Helpers;
+using DMS.Helpers;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -300,6 +300,7 @@ namespace DMS.Repositories
                 {
                     Id = q.Store.Id,
                     Code = q.Store.Code,
+                    CodeDraft = q.Store.CodeDraft,
                     Name = q.Store.Name,
                     ParentStoreId = q.Store.ParentStoreId,
                     OrganizationId = q.Store.OrganizationId,
@@ -416,6 +417,7 @@ namespace DMS.Repositories
                 {
                     Id = x.Store.Id,
                     Code = x.Store.Code,
+                    CodeDraft = x.Store.CodeDraft,
                     Name = x.Store.Name,
                     ParentStoreId = x.Store.ParentStoreId,
                     OrganizationId = x.Store.OrganizationId,
@@ -468,7 +470,7 @@ namespace DMS.Repositories
                         ThumbnailUrl = x.Image.ThumbnailUrl,
                     },
                 }).ToListAsync();
-            Problem.ProblemHistorys = await DataContext.ProblemHistory.AsNoTracking()
+            Problem.ProblemHistories = await DataContext.ProblemHistory.AsNoTracking()
                 .Where(x => x.ProblemId == Problem.Id)
                 .Select(x => new ProblemHistory
                 {
@@ -593,9 +595,9 @@ namespace DMS.Repositories
             await DataContext.ProblemHistory.Where(x => x.ProblemId == Problem.Id).DeleteFromQueryAsync();
 
             List<ProblemHistoryDAO> ProblemHistoryDAOs = new List<ProblemHistoryDAO>();
-            if (Problem.ProblemHistorys != null)
+            if (Problem.ProblemHistories != null)
             {
-                foreach (ProblemHistory ProblemHistory in Problem.ProblemHistorys)
+                foreach (ProblemHistory ProblemHistory in Problem.ProblemHistories)
                 {
                     ProblemHistoryDAO ProblemHistoryDAO = new ProblemHistoryDAO();
                     ProblemHistoryDAO.ProblemId = Problem.Id;

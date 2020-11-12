@@ -1,5 +1,6 @@
-﻿using Common;
+﻿using DMS.Common;
 using DMS.Entities;
+using DMS.Models;
 
 namespace DMS.Rpc.mobile_sync
 {
@@ -21,19 +22,12 @@ namespace DMS.Rpc.mobile_sync
         public MobileSync_ProductGroupingDTO() { }
         public MobileSync_ProductGroupingDTO(ProductGrouping ProductGrouping)
         {
-
             this.Id = ProductGrouping.Id;
-
             this.Code = ProductGrouping.Code;
-
             this.Name = ProductGrouping.Name;
-
             this.ParentId = ProductGrouping.ParentId;
-
             this.Path = ProductGrouping.Path;
-
             this.Description = ProductGrouping.Description;
-
         }
     }
 

@@ -1,4 +1,5 @@
 ﻿using DMS.Entities;
+using DMS.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,9 +20,7 @@ namespace DMS.Rpc.mobile_sync
         public MobileSync_ImageDTO(Image Image)
         {
             this.Id = Image.Id;
-
             this.Name = Image.Name;
-
             this.Url = Image.Url;
         }
     }

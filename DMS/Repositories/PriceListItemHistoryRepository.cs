@@ -1,4 +1,4 @@
-using Common;
+using DMS.Common;
 using DMS.Entities;
 using DMS.Models;
 using Microsoft.EntityFrameworkCore;
@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Helpers;
+using DMS.Helpers;
 
 namespace DMS.Repositories
 {
@@ -138,8 +138,8 @@ namespace DMS.Repositories
                 Id = filter.Selects.Contains(PriceListItemHistorySelect.Id) ? q.Id : default(long),
                 PriceListId = filter.Selects.Contains(PriceListItemHistorySelect.PriceList) ? q.PriceListId : default(long),
                 ItemId = filter.Selects.Contains(PriceListItemHistorySelect.Item) ? q.ItemId : default(long),
-                OldPrice = filter.Selects.Contains(PriceListItemHistorySelect.OldPrice) ? q.OldPrice : default(long),
-                NewPrice = filter.Selects.Contains(PriceListItemHistorySelect.NewPrice) ? q.NewPrice : default(long),
+                OldPrice = filter.Selects.Contains(PriceListItemHistorySelect.OldPrice) ? q.OldPrice : default(decimal),
+                NewPrice = filter.Selects.Contains(PriceListItemHistorySelect.NewPrice) ? q.NewPrice : default(decimal),
                 ModifierId = filter.Selects.Contains(PriceListItemHistorySelect.Modifier) ? q.ModifierId : default(long),
                 Item = filter.Selects.Contains(PriceListItemHistorySelect.Item) && q.Item != null ? new Item
                 {

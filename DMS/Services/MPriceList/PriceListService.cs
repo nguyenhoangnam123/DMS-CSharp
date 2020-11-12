@@ -1,8 +1,9 @@
-using Common;
+using DMS.Common;
 using DMS.Entities;
 using DMS.Enums;
 using DMS.Repositories;
-using Helpers;
+using DMS.Services.MWorkflow;
+using DMS.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,9 +15,19 @@ namespace DMS.Services.MPriceList
     {
         Task<int> Count(PriceListFilter PriceListFilter);
         Task<List<PriceList>> List(PriceListFilter PriceListFilter);
+        Task<int> CountNew(PriceListFilter PriceListFilter);
+        Task<List<PriceList>> ListNew(PriceListFilter PriceListFilter);
+        Task<int> CountPending(PriceListFilter PriceListFilter);
+        Task<List<PriceList>> ListPending(PriceListFilter PriceListFilter);
+        Task<int> CountCompleted(PriceListFilter PriceListFilter);
+        Task<List<PriceList>> ListCompleted(PriceListFilter PriceListFilter);
         Task<PriceList> Get(long Id);
+        Task<PriceList> GetDetail(long Id);
         Task<PriceList> Create(PriceList PriceList);
         Task<PriceList> Update(PriceList PriceList);
+        Task<PriceList> Send(PriceList PriceList);
+        Task<PriceList> Approve(PriceList PriceList);
+        Task<PriceList> Reject(PriceList PriceList);
         Task<PriceList> Delete(PriceList PriceList);
         Task<List<PriceList>> BulkDelete(List<PriceList> PriceLists);
         Task<List<PriceList>> Import(List<PriceList> PriceLists);
@@ -29,18 +40,21 @@ namespace DMS.Services.MPriceList
         private ILogging Logging;
         private ICurrentContext CurrentContext;
         private IPriceListValidator PriceListValidator;
+        private IWorkflowService WorkflowService;
 
         public PriceListService(
             IUOW UOW,
             ILogging Logging,
             ICurrentContext CurrentContext,
-            IPriceListValidator PriceListValidator
+            IPriceListValidator PriceListValidator,
+            IWorkflowService WorkflowService
         )
         {
             this.UOW = UOW;
             this.Logging = Logging;
             this.CurrentContext = CurrentContext;
             this.PriceListValidator = PriceListValidator;
+            this.WorkflowService = WorkflowService;
         }
         public async Task<int> Count(PriceListFilter PriceListFilter)
         {
@@ -85,11 +99,180 @@ namespace DMS.Services.MPriceList
                 }
             }
         }
+
+        public async Task<int> CountNew(PriceListFilter PriceListFilter)
+        {
+            try
+            {
+                PriceListFilter.ApproverId = new IdFilter { Equal = CurrentContext.UserId };
+                int result = await UOW.PriceListRepository.CountNew(PriceListFilter);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(PriceListService));
+                    throw new MessageException(ex);
+                }
+                else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(PriceListService));
+                    throw new MessageException(ex.InnerException);
+                }
+            }
+        }
+        public async Task<List<PriceList>> ListNew(PriceListFilter PriceListFilter)
+        {
+            try
+            {
+                PriceListFilter.ApproverId = new IdFilter { Equal = CurrentContext.UserId };
+                List<PriceList> PriceLists = await UOW.PriceListRepository.ListNew(PriceListFilter);
+                return PriceLists;
+            }
+            catch (Exception ex)
+            {
+                if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(PriceListService));
+                    throw new MessageException(ex);
+                }
+                else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(PriceListService));
+                    throw new MessageException(ex.InnerException);
+                }
+            }
+        }
+
+        public async Task<int> CountPending(PriceListFilter PriceListFilter)
+        {
+            try
+            {
+                PriceListFilter.ApproverId = new IdFilter { Equal = CurrentContext.UserId };
+                int result = await UOW.PriceListRepository.CountPending(PriceListFilter);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(PriceListService));
+                    throw new MessageException(ex);
+                }
+                else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(PriceListService));
+                    throw new MessageException(ex.InnerException);
+                }
+            }
+        }
+        public async Task<List<PriceList>> ListPending(PriceListFilter PriceListFilter)
+        {
+            try
+            {
+                PriceListFilter.ApproverId = new IdFilter { Equal = CurrentContext.UserId };
+                List<PriceList> PriceLists = await UOW.PriceListRepository.ListPending(PriceListFilter);
+                return PriceLists;
+            }
+            catch (Exception ex)
+            {
+                if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(PriceListService));
+                    throw new MessageException(ex);
+                }
+                else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(PriceListService));
+                    throw new MessageException(ex.InnerException);
+                }
+            }
+        }
+
+        public async Task<int> CountCompleted(PriceListFilter PriceListFilter)
+        {
+            try
+            {
+                PriceListFilter.ApproverId = new IdFilter { Equal = CurrentContext.UserId };
+                int result = await UOW.PriceListRepository.CountCompleted(PriceListFilter);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(PriceListService));
+                    throw new MessageException(ex);
+                }
+                else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(PriceListService));
+                    throw new MessageException(ex.InnerException);
+                }
+            }
+        }
+        public async Task<List<PriceList>> ListCompleted(PriceListFilter PriceListFilter)
+        {
+            try
+            {
+                PriceListFilter.ApproverId = new IdFilter { Equal = CurrentContext.UserId };
+                List<PriceList> PriceLists = await UOW.PriceListRepository.ListCompleted(PriceListFilter);
+                return PriceLists;
+            }
+            catch (Exception ex)
+            {
+                if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(PriceListService));
+                    throw new MessageException(ex);
+                }
+                else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(PriceListService));
+                    throw new MessageException(ex.InnerException);
+                }
+            }
+        }
+
         public async Task<PriceList> Get(long Id)
         {
             PriceList PriceList = await UOW.PriceListRepository.Get(Id);
             if (PriceList == null)
                 return null;
+            PriceList.RequestState = await WorkflowService.GetRequestState(PriceList.RowId);
+            if (PriceList.RequestState == null)
+            {
+                PriceList.RequestWorkflowStepMappings = new List<RequestWorkflowStepMapping>();
+                RequestWorkflowStepMapping RequestWorkflowStepMapping = new RequestWorkflowStepMapping
+                {
+                    AppUserId = PriceList.CreatorId,
+                    CreatedAt = PriceList.CreatedAt,
+                    UpdatedAt = PriceList.UpdatedAt,
+                    RequestId = PriceList.RowId,
+                    AppUser = PriceList.Creator == null ? null : new AppUser
+                    {
+                        Id = PriceList.Creator.Id,
+                        Username = PriceList.Creator.Username,
+                        DisplayName = PriceList.Creator.DisplayName,
+                    },
+                };
+                PriceList.RequestWorkflowStepMappings.Add(RequestWorkflowStepMapping);
+                RequestWorkflowStepMapping.WorkflowStateId = PriceList.RequestStateId;
+                PriceList.RequestState = WorkflowService.GetRequestState(PriceList.RequestStateId);
+                RequestWorkflowStepMapping.WorkflowState = WorkflowService.GetWorkflowState(RequestWorkflowStepMapping.WorkflowStateId);
+            }
+            else
+            {
+                PriceList.RequestStateId = PriceList.RequestState.Id;
+                PriceList.RequestWorkflowStepMappings = await WorkflowService.ListRequestWorkflowStepMapping(PriceList.RowId);
+            }
+            return PriceList;
+        }
+
+        public async Task<PriceList> GetDetail(long Id)
+        {
+            PriceList PriceList = await Get(Id);
             return PriceList;
         }
 
@@ -100,6 +283,8 @@ namespace DMS.Services.MPriceList
 
             try
             {
+                PriceList.RequestStateId = RequestStateEnum.NEW.Id;
+                PriceList.CreatorId = CurrentContext.UserId;
                 await UOW.Begin();
                 await UOW.PriceListRepository.Create(PriceList);
                 await UOW.Commit();
@@ -130,6 +315,7 @@ namespace DMS.Services.MPriceList
             try
             {
                 var oldData = await UOW.PriceListRepository.Get(PriceList.Id);
+                PriceList.RequestStateId = oldData.RequestStateId;
                 await BuildData(PriceList);
 
                 await UOW.Begin();
@@ -279,6 +465,68 @@ namespace DMS.Services.MPriceList
                 }
             }
             return filter;
+        }
+
+        public async Task<PriceList> Send(PriceList PriceList)
+        {
+            if (PriceList.Id == 0)
+                PriceList = await Create(PriceList);
+            else
+                PriceList = await Update(PriceList);
+            if (PriceList.IsValidated == false)
+                return PriceList;
+            PriceList = await UOW.PriceListRepository.Get(PriceList.Id);
+            Dictionary<string, string> Parameters = await MapParameters(PriceList);
+            GenericEnum RequestState = await WorkflowService.Send(PriceList.RowId, WorkflowTypeEnum.PRICE_LIST.Id, PriceList.OrganizationId, Parameters);
+            PriceList.RequestStateId = RequestState.Id;
+            await UOW.PriceListRepository.UpdateState(PriceList);
+            return await Get(PriceList.Id);
+        }
+
+        public async Task<PriceList> Approve(PriceList PriceList)
+        {
+            PriceList = await Update(PriceList);
+            if (PriceList.IsValidated == false)
+                return PriceList;
+            PriceList = await UOW.PriceListRepository.Get(PriceList.Id);
+            Dictionary<string, string> Parameters = await MapParameters(PriceList);
+            await WorkflowService.Approve(PriceList.RowId, WorkflowTypeEnum.PRICE_LIST.Id, Parameters);
+            RequestState RequestState = await WorkflowService.GetRequestState(PriceList.RowId);
+            PriceList.RequestStateId = RequestState.Id;
+            await UOW.PriceListRepository.UpdateState(PriceList);
+            return await Get(PriceList.Id);
+        }
+
+        public async Task<PriceList> Reject(PriceList PriceList)
+        {
+            PriceList = await UOW.PriceListRepository.Get(PriceList.Id);
+            Dictionary<string, string> Parameters = await MapParameters(PriceList);
+            GenericEnum Action = await WorkflowService.Reject(PriceList.RowId, WorkflowTypeEnum.PRICE_LIST.Id, Parameters);
+            RequestState RequestState = await WorkflowService.GetRequestState(PriceList.RowId);
+            PriceList.RequestStateId = RequestState.Id;
+            await UOW.PriceListRepository.UpdateState(PriceList);
+            return await Get(PriceList.Id);
+        }
+
+        private async Task<Dictionary<string, string>> MapParameters(PriceList PriceList)
+        {
+            var AppUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
+            Dictionary<string, string> Parameters = new Dictionary<string, string>();
+            Parameters.Add(nameof(PriceList.Id), PriceList.Id.ToString());
+            Parameters.Add(nameof(PriceList.Code), PriceList.Code);
+            Parameters.Add(nameof(PriceList.CreatorId), PriceList.CreatorId.ToString());
+            Parameters.Add(nameof(PriceList.SalesOrderTypeId), PriceList.SalesOrderTypeId.ToString());
+            Parameters.Add(nameof(PriceList.OrganizationId), PriceList.OrganizationId.ToString());
+            Parameters.Add(nameof(AppUser.DisplayName), AppUser.DisplayName);
+            Parameters.Add(nameof(PriceList.RequestStateId), PriceList.RequestStateId.ToString());
+
+            RequestWorkflowDefinitionMapping RequestWorkflowDefinitionMapping = await UOW.RequestWorkflowDefinitionMappingRepository.Get(PriceList.RowId);
+            if (RequestWorkflowDefinitionMapping == null)
+                Parameters.Add(nameof(RequestState), RequestStateEnum.NEW.Id.ToString());
+            else
+                Parameters.Add(nameof(RequestState), RequestWorkflowDefinitionMapping.RequestStateId.ToString());
+            Parameters.Add("Username", CurrentContext.UserName);
+            return Parameters;
         }
 
         private async Task<PriceList> BuildData(PriceList PriceList)

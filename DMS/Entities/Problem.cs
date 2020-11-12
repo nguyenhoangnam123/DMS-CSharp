@@ -1,4 +1,4 @@
-using Common;
+using DMS.Common;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System;
@@ -25,7 +25,7 @@ namespace DMS.Entities
         public Store Store { get; set; }
         public StoreChecking StoreChecking { get; set; }
         public List<ProblemImageMapping> ProblemImageMappings { get; set; }
-        public List<ProblemHistory> ProblemHistorys { get; set; }
+        public List<ProblemHistory> ProblemHistories { get; set; }
         public bool Equals(Problem other)
         {
             return other != null && Id == other.Id;

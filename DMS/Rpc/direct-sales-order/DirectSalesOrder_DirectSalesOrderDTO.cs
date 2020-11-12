@@ -1,4 +1,4 @@
-using Common;
+using DMS.Common;
 using DMS.Entities;
 using System;
 using System.Collections.Generic;
@@ -24,8 +24,12 @@ namespace DMS.Rpc.direct_sales_order
         public decimal SubTotal { get; set; }
         public decimal? GeneralDiscountPercentage { get; set; }
         public decimal? GeneralDiscountAmount { get; set; }
+        public string PromotionCode { get; set; }
+        public decimal? PromotionValue { get; set; }
         public decimal TotalTaxAmount { get; set; }
+        public decimal TotalAfterTax { get; set; }
         public decimal Total { get; set; }
+        public Guid RowId { get; set; }
         public DirectSalesOrder_StoreDTO BuyerStore { get; set; }
         public DirectSalesOrder_EditedPriceStatusDTO EditedPriceStatus { get; set; }
         public DirectSalesOrder_RequestStateDTO RequestState { get; set; }
@@ -33,6 +37,7 @@ namespace DMS.Rpc.direct_sales_order
         public DirectSalesOrder_OrganizationDTO Organization { get; set; }
         public List<DirectSalesOrder_DirectSalesOrderContentDTO> DirectSalesOrderContents { get; set; }
         public List<DirectSalesOrder_DirectSalesOrderPromotionDTO> DirectSalesOrderPromotions { get; set; }
+        public List<DirectSalesOrder_RequestWorkflowStepMappingDTO> RequestWorkflowStepMappings { get; set; }
         public DirectSalesOrder_DirectSalesOrderDTO() { }
         public DirectSalesOrder_DirectSalesOrderDTO(DirectSalesOrder DirectSalesOrder)
         {
@@ -52,7 +57,11 @@ namespace DMS.Rpc.direct_sales_order
             this.SubTotal = DirectSalesOrder.SubTotal;
             this.GeneralDiscountPercentage = DirectSalesOrder.GeneralDiscountPercentage;
             this.GeneralDiscountAmount = DirectSalesOrder.GeneralDiscountAmount;
+            this.PromotionCode = DirectSalesOrder.PromotionCode;
+            this.PromotionValue = DirectSalesOrder.PromotionValue;
             this.TotalTaxAmount = DirectSalesOrder.TotalTaxAmount;
+            this.TotalAfterTax = DirectSalesOrder.TotalAfterTax;
+            this.RowId = DirectSalesOrder.RowId;
             this.Total = Math.Round(DirectSalesOrder.Total, 0);
             this.BuyerStore = DirectSalesOrder.BuyerStore == null ? null : new DirectSalesOrder_StoreDTO(DirectSalesOrder.BuyerStore);
             this.EditedPriceStatus = DirectSalesOrder.EditedPriceStatus == null ? null : new DirectSalesOrder_EditedPriceStatusDTO(DirectSalesOrder.EditedPriceStatus);
@@ -61,6 +70,7 @@ namespace DMS.Rpc.direct_sales_order
             this.Organization = DirectSalesOrder.Organization == null ? null : new DirectSalesOrder_OrganizationDTO(DirectSalesOrder.Organization);
             this.DirectSalesOrderContents = DirectSalesOrder.DirectSalesOrderContents?.Select(x => new DirectSalesOrder_DirectSalesOrderContentDTO(x)).ToList();
             this.DirectSalesOrderPromotions = DirectSalesOrder.DirectSalesOrderPromotions?.Select(x => new DirectSalesOrder_DirectSalesOrderPromotionDTO(x)).ToList();
+            this.RequestWorkflowStepMappings = DirectSalesOrder.RequestWorkflowStepMappings?.Select(x => new DirectSalesOrder_RequestWorkflowStepMappingDTO(x)).ToList();
             this.Errors = DirectSalesOrder.Errors;
         }
     }
@@ -85,6 +95,7 @@ namespace DMS.Rpc.direct_sales_order
         public DecimalFilter GeneralDiscountAmount { get; set; }
         public DecimalFilter TotalTaxAmount { get; set; }
         public DecimalFilter Total { get; set; }
+        public IdFilter StoreStatusId { get; set; }
         public DirectSalesOrderOrder OrderBy { get; set; }
     }
 }

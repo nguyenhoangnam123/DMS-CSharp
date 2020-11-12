@@ -1,4 +1,4 @@
-using Common;
+using DMS.Common;
 using DMS.Entities;
 using System;
 using System.Collections.Generic;
@@ -41,7 +41,7 @@ namespace DMS.Rpc.workflow_definition
             this.Status = WorkflowDirection.Status == null ? null : new WorkflowDefinition_StatusDTO(WorkflowDirection.Status);
             this.FromStep = WorkflowDirection.FromStep == null ? null : new WorkflowDefinition_WorkflowStepDTO(WorkflowDirection.FromStep);
             this.ToStep = WorkflowDirection.ToStep == null ? null : new WorkflowDefinition_WorkflowStepDTO(WorkflowDirection.ToStep);
-            this.WorkflowDirectionConditions = WorkflowDirection.WorkflowDirectionConditions.Select(x => new WorkflowDefinition_WorkflowDirectionConditionDTO(x)).ToList();
+            this.WorkflowDirectionConditions = WorkflowDirection.WorkflowDirectionConditions?.Select(x => new WorkflowDefinition_WorkflowDirectionConditionDTO(x)).ToList();
             this.Errors = WorkflowDirection.Errors;
         }
     }

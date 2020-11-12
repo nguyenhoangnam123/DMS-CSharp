@@ -1,8 +1,8 @@
-﻿using Common;
+﻿using DMS.Common;
 using DMS.Entities;
 using DMS.Helpers;
 using DMS.Repositories;
-using Helpers;
+using DMS.Helpers;
 using RestSharp;
 using SixLabors.ImageSharp.Processing;
 using System;
@@ -138,6 +138,7 @@ namespace DMS.Services.MImage
                 {
                     Image.Id = response.Data.Id;
                     Image.Url = "/rpc/utils/file/download" + response.Data.Path;
+                    Image.RowId = response.Data.RowId;
                 }
                 await UOW.Begin();
                 await UOW.ImageRepository.Create(Image);
@@ -170,6 +171,7 @@ namespace DMS.Services.MImage
                 {
                     Image.Id = response.Data.Id;
                     Image.Url = "/rpc/utils/file/download" + response.Data.Path;
+                    Image.RowId = response.Data.RowId;
                 }
             }
             catch
@@ -219,6 +221,7 @@ namespace DMS.Services.MImage
         {
             public long Id { get; set; }
             public string Path { get; set; }
+            public Guid RowId { get; set; }
         }
     }
 }

@@ -1,4 +1,4 @@
-using Common;
+using DMS.Common;
 using DMS.Entities;
 using DMS.Enums;
 using DMS.Rpc.monitor;
@@ -9,7 +9,7 @@ using DMS.Services.MProblem;
 using DMS.Services.MProblemType;
 using DMS.Services.MStore;
 using DMS.Services.MStoreChecking;
-using Helpers;
+using DMS.Helpers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NGS.Templater;
@@ -320,7 +320,7 @@ namespace DMS.Rpc.monitor_store_problems
                         ThumbnailUrl = x.Image.ThumbnailUrl,
                     },
                 }).ToList();
-            Problem.ProblemHistorys = MonitorStoreProblem_ProblemDTO.ProblemHistorys?
+            Problem.ProblemHistories = MonitorStoreProblem_ProblemDTO.ProblemHistorys?
                 .Select(x => new ProblemHistory
                 {
                     Id = x.Id,

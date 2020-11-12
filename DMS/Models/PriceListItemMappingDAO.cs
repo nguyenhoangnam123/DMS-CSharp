@@ -7,7 +7,7 @@ namespace DMS.Models
     {
         public long PriceListId { get; set; }
         public long ItemId { get; set; }
-        public long Price { get; set; }
+        public decimal Price { get; set; }
 
         public virtual ItemDAO Item { get; set; }
         public virtual PriceListDAO PriceList { get; set; }

@@ -1,14 +1,15 @@
-﻿using Common;
+﻿using DMS.Common;
 using DMS.Entities;
 using DMS.Enums;
 using DMS.Helpers;
 using DMS.Models;
-using Helpers;
+using DMS.Services.MProduct;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RestSharp;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -19,38 +20,81 @@ namespace DMS.Rpc
     public class SetupController : ControllerBase
     {
         private DataContext DataContext;
-        public SetupController(DataContext DataContext)
+        private IItemService ItemService;
+        public SetupController(DataContext DataContext, IItemService ItemService)
         {
+            this.ItemService = ItemService;
             this.DataContext = DataContext;
         }
 
-        //[HttpGet, Route("rpc/dms/setup/count")]
-        //public async Task Count()
-        //{
-        //    List<StoreDAO> Stores = await DataContext.Store.OrderByDescending(x => x.CreatedAt).ToListAsync();
-        //    List<OrganizationDAO> Organizations = await DataContext.Organization.OrderByDescending(x => x.CreatedAt).ToListAsync();
-        //    List<StoreTypeDAO> StoreTypes = await DataContext.StoreType.OrderByDescending(x => x.CreatedAt).ToListAsync();
-        //    var counter = Stores.Count();
-        //    foreach (var Store in Stores)
-        //    {
-        //        var Organization = Organizations.Where(x => x.Id == Store.OrganizationId).Select(x => x.Code).FirstOrDefault();
-        //        var StoreType = StoreTypes.Where(x => x.Id == Store.StoreTypeId).Select(x => x.Code).FirstOrDefault();
-        //        Store.Code = $"{Organization}.{StoreType}.{(10000000 + counter--).ToString().Substring(1)}";
-        //    }
-        //    await DataContext.SaveChangesAsync();
-        //}
-
-        [HttpGet, Route("rpc/dms/setup/unsign")]
-        public bool Unsign(int year)
+        [HttpGet, Route("rpc/dms/setup/save-image")]
+        public async Task SaveImage()
         {
-            List<StoreDAO> Stores = DataContext.Store.ToList();
+            string folderPath = @"E:\Downloads\Ma SP - Dong Luc";
+            List<FileInfo> FileInfos = new List<FileInfo>();
+            foreach (string file in Directory.EnumerateFiles(folderPath, "*.jpg"))
+            {
+                FileInfo FileInfo = new FileInfo(file);
+                FileInfos.Add(FileInfo);
+            }
+
+            var FileNames = FileInfos.Select(x => x.Name.Replace(".jpg", string.Empty)).ToList();
+            var Items = await DataContext.Item.Where(x => FileNames.Contains(x.Code)).ToListAsync();
+
+            List<ItemImageMappingDAO> ItemImageMappingDAOs = new List<ItemImageMappingDAO>();
+            foreach (var FileInfo in FileInfos)
+            {
+                var contents = await System.IO.File.ReadAllBytesAsync(FileInfo.FullName);
+
+                Image Image = new Image()
+                {
+                    Name = FileInfo.Name,
+                    Content = contents
+                };
+                var Item = Items.Where(x => x.Code == FileInfo.Name).FirstOrDefault();
+                if (Item != null)
+                {
+                    Image = await ItemService.SaveImage(Image);
+
+                    ItemImageMappingDAO ItemImageMappingDAO = new ItemImageMappingDAO()
+                    {
+                        ItemId = Item.Id,
+                        ImageId = Image.Id
+                    };
+                    ItemImageMappingDAOs.Add(ItemImageMappingDAO);
+                    
+                }
+            }
+            await DataContext.ItemImageMapping.BulkMergeAsync(ItemImageMappingDAOs);
+        }
+
+        [HttpGet, Route("rpc/dms/setup/set-org")]
+        public async Task Count()
+        {
+            List<AlbumImageMappingDAO> AlbumImageMappingDAOs = await DataContext.AlbumImageMapping.ToListAsync();
+            var AppUserIds = AlbumImageMappingDAOs.Select(x => x.SaleEmployeeId).Distinct().ToList();
+            var AppUserDAOs = await DataContext.AppUser.Where(x => AppUserIds.Contains(x.Id)).ToListAsync();
+            foreach (var StoreCheckingDAO in AlbumImageMappingDAOs)
+            {
+                StoreCheckingDAO.OrganizationId = AppUserDAOs.Where(x => x.Id == StoreCheckingDAO.SaleEmployeeId).AsParallel().Select(x => x.OrganizationId).FirstOrDefault();
+            }
+            await DataContext.SaveChangesAsync();
+        }
+
+        [HttpGet, Route("rpc/dms/setup/store-gen-code")]
+        public async Task StoreGenCode()
+        {
+            List<StoreDAO> Stores = await DataContext.Store.OrderByDescending(x => x.CreatedAt).ToListAsync();
+            List<OrganizationDAO> Organizations = await DataContext.Organization.OrderByDescending(x => x.CreatedAt).ToListAsync();
+            List<StoreTypeDAO> StoreTypes = await DataContext.StoreType.OrderByDescending(x => x.CreatedAt).ToListAsync();
+            var counter = Stores.Count();
             foreach (var Store in Stores)
             {
-                Store.UnsignName = Store.Name?.ChangeToEnglishChar();
-                Store.UnsignAddress = Store.Address?.ChangeToEnglishChar();
+                var Organization = Organizations.Where(x => x.Id == Store.OrganizationId).Select(x => x.Code).FirstOrDefault();
+                var StoreType = StoreTypes.Where(x => x.Id == Store.StoreTypeId).Select(x => x.Code).FirstOrDefault();
+                Store.Code = $"{Organization}.{StoreType}.{(10000000 + counter--).ToString().Substring(1)}";
             }
-            DataContext.BulkMerge(Stores);
-            return true;
+            await DataContext.SaveChangesAsync();
         }
 
         [HttpGet, Route("rpc/dms/setup/year/{year}")]
@@ -621,8 +665,10 @@ namespace DMS.Rpc
             InitColorEnum();
             InitIdGenerate();
             InitPromotionTypeEnum();
+            InitPromotionProductAppliedTypeEnum();
             InitPromotionPolicyEnum();
             InitPromotionDiscountTypeEnum();
+            InitRewardStatusEnum();
             return Ok();
         }
 
@@ -678,6 +724,17 @@ namespace DMS.Rpc
                 Name = item.Name,
             }).ToList();
             DataContext.ERouteType.BulkSynchronize(ERouteTypeEnumList);
+        }
+
+        private void InitRewardStatusEnum()
+        {
+            List<RewardStatusDAO> RewardStatusEnumList = RewardStatusEnum.RewardStatusEnumList.Select(item => new RewardStatusDAO
+            {
+                Id = item.Id,
+                Code = item.Code,
+                Name = item.Name,
+            }).ToList();
+            DataContext.RewardStatus.BulkSynchronize(RewardStatusEnumList);
         }
 
         private void InitStoreScoutingStatusEnum()
@@ -796,6 +853,17 @@ namespace DMS.Rpc
                 Name = item.Name,
             }).ToList();
             DataContext.PromotionType.BulkSynchronize(PromotionTypeEnumList);
+        }
+
+        private void InitPromotionProductAppliedTypeEnum()
+        {
+            List<PromotionProductAppliedTypeDAO> PromotionProductAppliedTypeDAOs = PromotionProductAppliedTypeEnum.PromotionProductAppliedTypeEnumList.Select(item => new PromotionProductAppliedTypeDAO
+            {
+                Id = item.Id,
+                Code = item.Code,
+                Name = item.Name,
+            }).ToList();
+            DataContext.PromotionProductAppliedType.BulkSynchronize(PromotionProductAppliedTypeDAOs);
         }
 
         private void InitPromotionPolicyEnum()
@@ -957,35 +1025,6 @@ namespace DMS.Rpc
 
         private void InitWorkflowEnum()
         {
-            List<WorkflowTypeDAO> WorkflowTypeEnumList = WorkflowTypeEnum.WorkflowTypeEnumList.Select(item => new WorkflowTypeDAO
-            {
-                Id = item.Id,
-                Code = item.Code,
-                Name = item.Name,
-            }).ToList();
-            DataContext.WorkflowType.BulkSynchronize(WorkflowTypeEnumList);
-            List<WorkflowStateDAO> WorkflowStateEnumList = WorkflowStateEnum.WorkflowStateEnumList.Select(item => new WorkflowStateDAO
-            {
-                Id = item.Id,
-                Code = item.Code,
-                Name = item.Name,
-            }).ToList();
-            DataContext.WorkflowState.BulkSynchronize(WorkflowStateEnumList);
-            List<RequestStateDAO> RequestStateEnumList = RequestStateEnum.RequestStateEnumList.Select(item => new RequestStateDAO
-            {
-                Id = item.Id,
-                Code = item.Code,
-                Name = item.Name,
-            }).ToList();
-            DataContext.RequestState.BulkSynchronize(RequestStateEnumList);
-            List<WorkflowParameterTypeDAO> WorkflowParameterTypeDAOs = WorkflowParameterTypeEnum.List.Select(item => new WorkflowParameterTypeDAO
-            {
-                Id = item.Id,
-                Code = item.Code,
-                Name = item.Name,
-            }).ToList();
-            DataContext.WorkflowParameterType.BulkSynchronize(WorkflowParameterTypeDAOs);
-
             List<WorkflowOperatorDAO> WorkflowOperatorDAOs = new List<WorkflowOperatorDAO>();
             List<WorkflowOperatorDAO> ID = WorkflowOperatorEnum.WorkflowOperatorEnumForID.Select(item => new WorkflowOperatorDAO
             {
@@ -1035,15 +1074,6 @@ namespace DMS.Rpc
             DataContext.WorkflowOperator.BulkSynchronize(WorkflowOperatorDAOs);
 
             List<WorkflowParameterDAO> WorkflowParameterDAOs = new List<WorkflowParameterDAO>();
-            List<WorkflowParameterDAO> STORE_PARAMETER = WorkflowParameterEnum.StoreEnumList.Select(item => new WorkflowParameterDAO
-            {
-                Id = item.Id,
-                Code = item.Code,
-                Name = item.Name,
-                WorkflowParameterTypeId = long.Parse(item.Value),
-                WorkflowTypeId = WorkflowTypeEnum.STORE.Id,
-            }).ToList();
-            WorkflowParameterDAOs.AddRange(STORE_PARAMETER);
 
             List<WorkflowParameterDAO> EROUTE_PARAMETER = WorkflowParameterEnum.ERouteEnumList.Select(item => new WorkflowParameterDAO
             {
@@ -1086,6 +1116,35 @@ namespace DMS.Rpc
             WorkflowParameterDAOs.AddRange(PRICE_LIST_PARAMETER);
 
             DataContext.WorkflowParameter.BulkMerge(WorkflowParameterDAOs);
+
+            List<WorkflowTypeDAO> WorkflowTypeEnumList = WorkflowTypeEnum.WorkflowTypeEnumList.Select(item => new WorkflowTypeDAO
+            {
+                Id = item.Id,
+                Code = item.Code,
+                Name = item.Name,
+            }).ToList();
+            DataContext.WorkflowType.BulkSynchronize(WorkflowTypeEnumList);
+            List<WorkflowStateDAO> WorkflowStateEnumList = WorkflowStateEnum.WorkflowStateEnumList.Select(item => new WorkflowStateDAO
+            {
+                Id = item.Id,
+                Code = item.Code,
+                Name = item.Name,
+            }).ToList();
+            DataContext.WorkflowState.BulkSynchronize(WorkflowStateEnumList);
+            List<RequestStateDAO> RequestStateEnumList = RequestStateEnum.RequestStateEnumList.Select(item => new RequestStateDAO
+            {
+                Id = item.Id,
+                Code = item.Code,
+                Name = item.Name,
+            }).ToList();
+            DataContext.RequestState.BulkSynchronize(RequestStateEnumList);
+            List<WorkflowParameterTypeDAO> WorkflowParameterTypeDAOs = WorkflowParameterTypeEnum.List.Select(item => new WorkflowParameterTypeDAO
+            {
+                Id = item.Id,
+                Code = item.Code,
+                Name = item.Name,
+            }).ToList();
+            DataContext.WorkflowParameterType.BulkSynchronize(WorkflowParameterTypeDAOs);
         }
 
         private void InitColorEnum()

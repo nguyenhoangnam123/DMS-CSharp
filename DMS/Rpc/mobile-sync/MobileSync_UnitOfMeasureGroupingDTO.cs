@@ -1,5 +1,6 @@
-﻿using Common;
+﻿using DMS.Common;
 using DMS.Entities;
+using DMS.Models;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -24,7 +25,6 @@ namespace DMS.Rpc.mobile_sync
             this.UnitOfMeasureId = UnitOfMeasureGrouping.UnitOfMeasureId;
             this.UnitOfMeasure = UnitOfMeasureGrouping.UnitOfMeasure == null ? null : new MobileSync_UnitOfMeasureDTO(UnitOfMeasureGrouping.UnitOfMeasure);
             this.UnitOfMeasureGroupingContents = UnitOfMeasureGrouping.UnitOfMeasureGroupingContents?.Select(x => new MobileSync_UnitOfMeasureGroupingContentDTO(x)).ToList();
-            this.Errors = UnitOfMeasureGrouping.Errors;
         }
     }
 }

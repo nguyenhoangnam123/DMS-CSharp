@@ -1,4 +1,4 @@
-﻿using Common;
+﻿using DMS.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -37,7 +37,8 @@ namespace DMS.Rpc.monitor.monitor_store_images
             { "Tìm kiếm", new List<string> {
                 Parent,
                 Master, Count, List, Get,
-                FilterListOrganization, FilterListAppUser, FilterListStore, FilterListHasImage, FilterListHasOrder } },
+                FilterListOrganization, FilterListAppUser, FilterListStore, FilterListHasImage, FilterListHasOrder,
+                SingleListAlbum} },
             { "Cập nhật Album", new List<string> {
                 Parent,
                 Master, Count, List, Get,

@@ -1,4 +1,4 @@
-using Common;
+using DMS.Common;
 using DMS.Entities;
 using DMS.Enums;
 using DMS.Repositories;
@@ -26,6 +26,7 @@ namespace DMS.Services.MStore
             CodeEmpty,
             CodeHasSpecialCharacter,
             CodeDraftHasSpecialCharacter,
+            TaxCodeHasSpecialCharacter,
             CodeDraftExisted,
             NameEmpty,
             NameOverLength,
@@ -429,7 +430,7 @@ namespace DMS.Services.MStore
                 var TaxCode = Store.TaxCode;
                 if (Store.TaxCode.Contains(" ") || !FilterExtension.ChangeToEnglishChar(TaxCode).Equals(Store.TaxCode))
                 {
-                    Store.AddError(nameof(StoreValidator), nameof(Store.TaxCode), ErrorCode.CodeHasSpecialCharacter);
+                    Store.AddError(nameof(StoreValidator), nameof(Store.TaxCode), ErrorCode.TaxCodeHasSpecialCharacter);
                 }
             }
             return Store.IsValidated;

@@ -1,4 +1,4 @@
-﻿using Common;
+﻿using DMS.Common;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System.Collections.Generic;
@@ -7,6 +7,7 @@ namespace DMS.Rpc.monitor.monitor_store_checker
 {
     public class MonitorStoreChecker_MonitorStoreCheckerDTO : DataDTO
     {
+        public long OrganizationId { get; set; }
         public string OrganizationName { get; set; }
         public List<MonitorStoreChecker_SaleEmployeeDTO> SaleEmployees { get; set; }
     }

@@ -1,9 +1,9 @@
-using Common;
+using DMS.Common;
 using DMS.Entities;
 using DMS.Enums;
 using DMS.Handlers;
 using DMS.Repositories;
-using Helpers;
+using DMS.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -162,8 +162,14 @@ namespace DMS.Services.MAlbum
                 return Album;
             try
             {
+                var appUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
                 var oldData = await UOW.AlbumRepository.Get(Album.Id);
+                foreach (var AlbumImageMapping in Album.AlbumImageMappings)
+                {
+                    AlbumImageMapping.OrganizationId = appUser.OrganizationId;
+                }
                 Album.AlbumImageMappings.AddRange(oldData.AlbumImageMappings);
+                
                 await UOW.Begin();
                 await UOW.AlbumRepository.Update(Album);
                 await UOW.Commit();

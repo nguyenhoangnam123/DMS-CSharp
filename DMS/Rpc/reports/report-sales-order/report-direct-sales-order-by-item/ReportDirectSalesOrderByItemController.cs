@@ -1,4 +1,4 @@
-﻿using Common;
+﻿using DMS.Common;
 using DMS.Models;
 using DMS.Services.MProduct;
 using DMS.Services.MProductGrouping;
@@ -10,7 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using DMS.Enums;
-using Helpers;
+using DMS.Helpers;
 using DMS.Services.MDirectSalesOrder;
 using DMS.Services.MOrganization;
 using Microsoft.EntityFrameworkCore;
@@ -560,7 +560,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_by_item
                 }
             }
 
-            string path = "Templates/Report_Sales_Order_By_Item.xlsx";
+            string path = "Templates/Report_Direct_Sales_Order_By_Item.xlsx";
             byte[] arr = System.IO.File.ReadAllBytes(path);
             MemoryStream input = new MemoryStream(arr);
             MemoryStream output = new MemoryStream();

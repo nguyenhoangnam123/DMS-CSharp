@@ -1,4 +1,4 @@
-﻿using Common;
+﻿using DMS.Common;
 using DMS.Entities;
 
 namespace DMS.Rpc.reports.report_store_checking.report_store_checked

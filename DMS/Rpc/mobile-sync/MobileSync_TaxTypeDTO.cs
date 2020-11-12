@@ -1,5 +1,6 @@
-﻿using Common;
+﻿using DMS.Common;
 using DMS.Entities;
+using DMS.Models;
 
 namespace DMS.Rpc.mobile_sync
 {
@@ -18,7 +19,6 @@ namespace DMS.Rpc.mobile_sync
             this.Name = TaxType.Name;
             this.Percentage = TaxType.Percentage;
             this.StatusId = TaxType.StatusId;
-            this.Errors = TaxType.Errors;
         }
     }
 }

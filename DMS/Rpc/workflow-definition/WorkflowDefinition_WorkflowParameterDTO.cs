@@ -1,5 +1,6 @@
-using Common;
+using DMS.Common;
 using DMS.Entities;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace DMS.Rpc.workflow_definition
 {
@@ -7,6 +8,7 @@ namespace DMS.Rpc.workflow_definition
     {
         public long Id { get; set; }
         public long WorkflowDefinitionId { get; set; }
+        public long WorkflowParameterTypeId { get; set; }
         public string Code { get; set; }
         public string Name { get; set; }
 
@@ -15,6 +17,7 @@ namespace DMS.Rpc.workflow_definition
         {
             this.Id = WorkflowParameter.Id;
             this.WorkflowDefinitionId = WorkflowParameter.WorkflowTypeId;
+            this.WorkflowParameterTypeId = WorkflowParameter.WorkflowParameterTypeId;
             this.Code = WorkflowParameter.Code;
             this.Name = WorkflowParameter.Name;
             this.Errors = WorkflowParameter.Errors;

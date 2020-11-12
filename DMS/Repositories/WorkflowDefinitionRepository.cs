@@ -1,7 +1,7 @@
-using Common;
+using DMS.Common;
 using DMS.Entities;
 using DMS.Models;
-using Helpers;
+using DMS.Helpers;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -48,8 +48,8 @@ namespace DMS.Repositories
                 query = query.Where(q => q.WorkflowTypeId, filter.WorkflowTypeId);
             if (filter.StartDate != null)
                 query = query.Where(q => q.StartDate, filter.StartDate);
-            if (filter.EndDate != null)
-                query = query.Where(q => q.EndDate, filter.EndDate);
+            if (filter.EndDate != null && filter.EndDate.HasValue)
+                query = query.Where(x => x.EndDate.HasValue == false).Union(query.Where(x => x.EndDate.HasValue).Where(q => q.EndDate, filter.EndDate));
             if (filter.StatusId != null)
                 query = query.Where(q => q.StatusId, filter.StatusId);
             if (filter.CreatedAt != null)
@@ -362,6 +362,13 @@ namespace DMS.Repositories
                     Name = x.Name,
                     RoleId = x.RoleId,
                     SubjectMailForReject = x.SubjectMailForReject,
+                    StatusId = x.StatusId,
+                    Status = x.Status == null ? null : new Status
+                    {
+                        Id = x.Status.Id,
+                        Code = x.Status.Code,
+                        Name = x.Status.Name,
+                    },
                     WorkflowDefinitionId = x.WorkflowDefinitionId,
                     Role = x.Role == null ? null : new Role
                     {
@@ -517,9 +524,11 @@ namespace DMS.Repositories
                 WorkflowDefinitionDAO.CreatorId = WorkflowDefinition.CreatorId;
                 WorkflowDefinitionDAO.ModifierId = WorkflowDefinition.ModifierId;
                 WorkflowDefinitionDAO.WorkflowTypeId = WorkflowDefinition.WorkflowTypeId;
+                WorkflowDefinitionDAO.OrganizationId = WorkflowDefinition.OrganizationId;
                 WorkflowDefinitionDAO.StartDate = WorkflowDefinition.StartDate;
                 WorkflowDefinitionDAO.EndDate = WorkflowDefinition.EndDate;
                 WorkflowDefinitionDAO.StatusId = WorkflowDefinition.StatusId;
+                WorkflowDefinitionDAO.Used = WorkflowDefinition.Used;
                 WorkflowDefinitionDAO.CreatedAt = StaticParams.DateTimeNow;
                 WorkflowDefinitionDAO.UpdatedAt = StaticParams.DateTimeNow;
                 WorkflowDefinitionDAOs.Add(WorkflowDefinitionDAO);

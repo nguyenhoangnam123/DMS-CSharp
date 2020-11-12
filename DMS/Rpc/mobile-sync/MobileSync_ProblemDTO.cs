@@ -1,5 +1,6 @@
-using Common;
+using DMS.Common;
 using DMS.Entities;
+using DMS.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,29 +32,28 @@ namespace DMS.Rpc.mobile_sync
         public List<MobileSync_ProblemImageMappingDTO> ProblemImageMappings { get; set; }
         public List<MobileSync_ProblemHistoryDTO> ProblemHistorys { get; set; }
         public MobileSync_ProblemDTO() { }
-        public MobileSync_ProblemDTO(Problem Problem)
+        public MobileSync_ProblemDTO(Problem ItemImageMapping)
         {
-            this.Id = Problem.Id;
-            this.Code = Problem.Code;
-            this.StoreCheckingId = Problem.StoreCheckingId;
-            this.StoreId = Problem.StoreId;
-            this.CreatorId = Problem.CreatorId;
-            this.OrganizationId = Problem.Creator.OrganizationId;
-            this.ProblemTypeId = Problem.ProblemTypeId;
-            this.NoteAt = Problem.NoteAt;
-            this.CompletedAt = Problem.CompletedAt;
-            this.Content = Problem.Content;
-            this.ProblemStatusId = Problem.ProblemStatusId;
-            this.RowId = Problem.RowId;
-            this.Creator = Problem.Creator == null ? null : new MobileSync_AppUserDTO(Problem.Creator);
-            this.Organization = Problem.Creator.Organization == null ? null : new MobileSync_OrganizationDTO(Problem.Creator.Organization);
-            this.ProblemStatus = Problem.ProblemStatus == null ? null : new MobileSync_ProblemStatusDTO(Problem.ProblemStatus);
-            this.ProblemType = Problem.ProblemType == null ? null : new MobileSync_ProblemTypeDTO(Problem.ProblemType);
-            this.Store = Problem.Store == null ? null : new MobileSync_StoreDTO(Problem.Store);
-            this.StoreChecking = Problem.StoreChecking == null ? null : new MobileSync_StoreCheckingDTO(Problem.StoreChecking);
-            this.ProblemImageMappings = Problem.ProblemImageMappings?.Select(x => new MobileSync_ProblemImageMappingDTO(x)).ToList();
-            this.ProblemHistorys = Problem.ProblemHistorys?.Select(x => new MobileSync_ProblemHistoryDTO(x)).ToList();
-            this.Errors = Problem.Errors;
+            this.Id = ItemImageMapping.Id;
+            this.Code = ItemImageMapping.Code;
+            this.StoreCheckingId = ItemImageMapping.StoreCheckingId;
+            this.StoreId = ItemImageMapping.StoreId;
+            this.CreatorId = ItemImageMapping.CreatorId;
+            this.OrganizationId = ItemImageMapping.Creator.OrganizationId;
+            this.ProblemTypeId = ItemImageMapping.ProblemTypeId;
+            this.NoteAt = ItemImageMapping.NoteAt;
+            this.CompletedAt = ItemImageMapping.CompletedAt;
+            this.Content = ItemImageMapping.Content;
+            this.ProblemStatusId = ItemImageMapping.ProblemStatusId;
+            this.RowId = ItemImageMapping.RowId;
+            this.Creator = ItemImageMapping.Creator == null ? null : new MobileSync_AppUserDTO(ItemImageMapping.Creator);
+            this.Organization = ItemImageMapping.Creator.Organization == null ? null : new MobileSync_OrganizationDTO(ItemImageMapping.Creator.Organization);
+            this.ProblemStatus = ItemImageMapping.ProblemStatus == null ? null : new MobileSync_ProblemStatusDTO(ItemImageMapping.ProblemStatus);
+            this.ProblemType = ItemImageMapping.ProblemType == null ? null : new MobileSync_ProblemTypeDTO(ItemImageMapping.ProblemType);
+            this.Store = ItemImageMapping.Store == null ? null : new MobileSync_StoreDTO(ItemImageMapping.Store);
+            this.StoreChecking = ItemImageMapping.StoreChecking == null ? null : new MobileSync_StoreCheckingDTO(ItemImageMapping.StoreChecking);
+            this.ProblemImageMappings = ItemImageMapping.ProblemImageMappings?.Select(x => new MobileSync_ProblemImageMappingDTO(x)).ToList();
+            this.ProblemHistorys = ItemImageMapping.ProblemHistories?.Select(x => new MobileSync_ProblemHistoryDTO(x)).ToList();
         }
     }
 

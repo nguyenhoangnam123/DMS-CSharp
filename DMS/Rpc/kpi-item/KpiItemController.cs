@@ -1,4 +1,4 @@
-using Common;
+using DMS.Common;
 using DMS.Entities;
 using DMS.Enums;
 using DMS.Services.MAppUser;
@@ -14,7 +14,7 @@ using DMS.Services.MProductGrouping;
 using DMS.Services.MProductType;
 using DMS.Services.MStatus;
 using DMS.Services.MSupplier;
-using Helpers;
+using DMS.Helpers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NGS.Templater;
@@ -244,20 +244,107 @@ namespace DMS.Rpc.kpi_item
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
+
+            StringBuilder errorContent = new StringBuilder();
             FileInfo FileInfo = new FileInfo(file.FileName);
             if (!FileInfo.Extension.Equals(".xlsx"))
-                return BadRequest(new { message = "Định dạng file không hợp lệ" });
+            {
+                errorContent.AppendLine("Định dạng file không hợp lệ");
+                return BadRequest(errorContent.ToString());
+            }
+
+            GenericEnum KpiYear;
+            GenericEnum KpiPeriod;
+            using (ExcelPackage excelPackage = new ExcelPackage(file.OpenReadStream()))
+            {
+                ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets["KPI san pham"];
+                if (worksheet == null)
+                {
+                    errorContent.AppendLine("File không đúng biểu mẫu import");
+                    return BadRequest(errorContent.ToString());
+                }
+
+                string KpiPeriodValue = worksheet.Cells[2, 4].Value?.ToString();
+                
+                if (!string.IsNullOrWhiteSpace(KpiPeriodValue))
+                    KpiPeriod = KpiPeriodEnum.KpiPeriodEnumList.Where(x => x.Name == KpiPeriodValue).FirstOrDefault();
+                else
+                {
+                    errorContent.AppendLine("Chưa chọn kỳ Kpi hoặc kỳ Kpi không hợp lệ");
+                    return BadRequest(errorContent.ToString());
+                }
+
+                string KpiYearValue = worksheet.Cells[2, 6].Value?.ToString();
+                
+                if (!string.IsNullOrWhiteSpace(KpiYearValue))
+                    KpiYear = KpiYearEnum.KpiYearEnumList.Where(x => x.Name == KpiYearValue).FirstOrDefault();
+                else
+                {
+                    errorContent.AppendLine("Chưa chọn măm Kpi hoặc năm Kpi không hợp lệ");
+                    return BadRequest(errorContent.ToString());
+                }
+            }
+
+            HashSet<long> KpiPeriodIds = new HashSet<long>();
+            long CurrentMonth = 100 + StaticParams.DateTimeNow.Month;
+            long CurrentQuater = 0;
+            if (Enums.KpiPeriodEnum.PERIOD_MONTH01.Id <= CurrentMonth && CurrentMonth <= Enums.KpiPeriodEnum.PERIOD_MONTH03.Id)
+                CurrentQuater = Enums.KpiPeriodEnum.PERIOD_QUATER01.Id;
+            if (Enums.KpiPeriodEnum.PERIOD_MONTH04.Id <= CurrentMonth && CurrentMonth <= Enums.KpiPeriodEnum.PERIOD_MONTH06.Id)
+                CurrentQuater = Enums.KpiPeriodEnum.PERIOD_QUATER02.Id;
+            if (Enums.KpiPeriodEnum.PERIOD_MONTH07.Id <= CurrentMonth && CurrentMonth <= Enums.KpiPeriodEnum.PERIOD_MONTH09.Id)
+                CurrentQuater = Enums.KpiPeriodEnum.PERIOD_QUATER03.Id;
+            if (Enums.KpiPeriodEnum.PERIOD_MONTH10.Id <= CurrentMonth && CurrentMonth <= Enums.KpiPeriodEnum.PERIOD_MONTH12.Id)
+                CurrentQuater = Enums.KpiPeriodEnum.PERIOD_QUATER04.Id;
+            if (KpiYear.Id >= StaticParams.DateTimeNow.Year)
+            {
+                KpiPeriodIds.Add(KpiYear.Id);
+            }
+            foreach (var kpiPeriod in KpiPeriodEnum.KpiPeriodEnumList)
+            {
+                if (CurrentMonth <= kpiPeriod.Id && kpiPeriod.Id <= Enums.KpiPeriodEnum.PERIOD_MONTH12.Id)
+                    KpiPeriodIds.Add(kpiPeriod.Id);
+                if (CurrentQuater <= kpiPeriod.Id && kpiPeriod.Id <= Enums.KpiPeriodEnum.PERIOD_QUATER04.Id)
+                    KpiPeriodIds.Add(kpiPeriod.Id);
+            }
+
+            if (!KpiPeriodIds.Contains(KpiPeriod.Id))
+            {
+                errorContent.AppendLine("Không thể nhập Kpi cho các kỳ trong quá khứ");
+                return BadRequest(errorContent.ToString());
+            }
 
             var AppUser = await AppUserService.Get(CurrentContext.UserId);
-
             AppUserFilter EmployeeFilter = new AppUserFilter
             {
                 Skip = 0,
                 Take = int.MaxValue,
-                Selects = AppUserSelect.Id | AppUserSelect.Username | AppUserSelect.DisplayName,
+                Selects = AppUserSelect.Id | AppUserSelect.Username | AppUserSelect.DisplayName | AppUserSelect.Organization,
                 OrganizationId = new IdFilter { Equal = AppUser.OrganizationId }
             };
             List<AppUser> Employees = await AppUserService.List(EmployeeFilter);
+            var AppUserIds = Employees.Select(x => x.Id).ToList();
+            List<KpiItem> KpiItems = await KpiItemService.List(new KpiItemFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                AppUserId = new IdFilter { In = AppUserIds },
+                KpiYearId = new IdFilter { Equal = KpiYear.Id },
+                KpiPeriodId = new IdFilter { Equal = KpiPeriod.Id },
+                Selects = KpiItemSelect.ALL
+            });
+            var KpiItemIds = KpiItems.Select(x => x.Id).ToList();
+            List<KpiItemContent> KpiItemContents = await KpiItemContentService.List(new KpiItemContentFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = KpiItemContentSelect.ALL,
+                KpiItemId = new IdFilter { In = KpiItemIds },
+            });
+            Parallel.ForEach(KpiItems, KpiItem =>
+            {
+                KpiItem.KpiItemContents = KpiItemContents.Where(x => x.KpiItemId == KpiItem.Id).ToList();
+            });
 
             List<Item> Items = await ItemService.List(new ItemFilter
             {
@@ -268,42 +355,30 @@ namespace DMS.Rpc.kpi_item
                 OrderType = OrderType.ASC
             });
 
-            List<KpiItem> KpiItems = new List<KpiItem>();
-            StringBuilder errorContent = new StringBuilder();
+            List<KpiItem_ImportDTO> KpiItem_ImportDTOs = new List<KpiItem_ImportDTO>();
             using (ExcelPackage excelPackage = new ExcelPackage(file.OpenReadStream()))
             {
                 ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets["KPI san pham"];
-                if (worksheet == null)
-                    return BadRequest(new { message = "File không đúng biểu mẫu import" });
 
                 int StartColumn = 1;
                 int StartRow = 5;
                 int UsernameColumn = 0 + StartColumn;
-                int DisplayNameColumn = 1 + StartColumn;
                 int ItemCodeColumn = 2 + StartColumn;
+
                 int QuantityColumn = 3 + StartColumn;
                 int RevenueColumn = 4 + StartColumn;
                 int SaleOrderColumn = 5 + StartColumn;
                 int StoreColumn = 6 + StartColumn;
 
-                string KpiPeriodValue = worksheet.Cells[2, 4].Value?.ToString();
-                GenericEnum KpiPeriod;
-                if (long.TryParse(KpiPeriodValue, out long KpiPeriodId))
-                    KpiPeriod = KpiPeriodEnum.KpiPeriodEnumList.Where(x => x.Id == KpiPeriodId).FirstOrDefault();
-                else
-                    return BadRequest(new { message = "Kỳ Kpi không hợp lệ" });
-
-                string KpiYearValue = worksheet.Cells[2, 6].Value?.ToString();
-                GenericEnum KpiYear;
-                if (long.TryParse(KpiYearValue, out long KpiYearId))
-                    KpiYear = KpiYearEnum.KpiYearEnumList.Where(x => x.Id == KpiYearId).FirstOrDefault();
-                else
-                    return BadRequest(new { message = "Năm Kpi không hợp lệ" });
+                int DirectQuantityColumn = 7 + StartColumn;
+                int DirectRevenueColumn = 8 + StartColumn;
+                int DirectSaleOrderColumn = 9 + StartColumn;
+                int DirectStoreColumn = 10 + StartColumn;
 
                 for (int i = StartRow; i <= worksheet.Dimension.End.Row; i++)
                 {
-                    string UsernameValue = worksheet.Cells[i + StartRow, UsernameColumn].Value?.ToString();
-                    string ItemCodeValue = worksheet.Cells[i + StartRow, ItemCodeColumn].Value?.ToString();
+                    string UsernameValue = worksheet.Cells[i, UsernameColumn].Value?.ToString();
+                    string ItemCodeValue = worksheet.Cells[i, ItemCodeColumn].Value?.ToString();
                     if (UsernameValue != null && UsernameValue.ToLower() == "END".ToLower())
                         break;
                     else if (!string.IsNullOrWhiteSpace(UsernameValue) && string.IsNullOrWhiteSpace(ItemCodeValue))
@@ -313,11 +388,23 @@ namespace DMS.Rpc.kpi_item
 
                     if (string.IsNullOrWhiteSpace(UsernameValue) && i != worksheet.Dimension.End.Row)
                     {
-                        errorContent.AppendLine($"Lỗi dòng thứ {i + 1}: Chưa nhập mã nhân viên");
+                        errorContent.AppendLine($"Lỗi dòng thứ {i}: Chưa nhập mã nhân viên");
                         continue;
                     }
                     else if (string.IsNullOrWhiteSpace(UsernameValue) && i == worksheet.Dimension.End.Row)
                         break;
+
+                    KpiItem_ImportDTO KpiItem_ImportDTO = new KpiItem_ImportDTO();
+                    AppUser Employee = Employees.Where(x => x.Username.ToLower() == UsernameValue.ToLower()).FirstOrDefault();
+                    if (Employee == null)
+                    {
+                        errorContent.AppendLine($"Lỗi dòng thứ {i}: Nhân viên không tồn tại");
+                        continue;
+                    }
+                    else
+                    {
+                        KpiItem_ImportDTO.EmployeeId = Employee.Id;
+                    }
 
                     Item Item;
                     if (!string.IsNullOrWhiteSpace(ItemCodeValue))
@@ -328,201 +415,151 @@ namespace DMS.Rpc.kpi_item
                             errorContent.AppendLine($"Lỗi dòng thứ {i + 1}: Sản phẩm không tồn tại");
                             continue;
                         }
+                        else
+                        {
+                            KpiItem_ImportDTO.ItemId = Item.Id;
+                        }
                     }
 
-                    string QuantityValue = worksheet.Cells[i + StartRow, QuantityColumn].Value?.ToString();
-                    string RevenueValue = worksheet.Cells[i + StartRow, RevenueColumn].Value?.ToString();
-                    string SalesOrderValue = worksheet.Cells[i + StartRow, SaleOrderColumn].Value?.ToString();
-                    string StoreValue = worksheet.Cells[i + StartRow, StoreColumn].Value?.ToString();
-
-                    AppUser Employee = Employees.Where(x => x.Username == UsernameValue).FirstOrDefault();
-                    if (Employee == null)
-                    {
-                        errorContent.AppendLine($"Lỗi dòng thứ {i + 1}: Nhân viên không tồn tại");
-                        continue;
-                    }
-                    KpiItem KpiItem = KpiItems.Where(x => x.EmployeeId == Employee.Id).FirstOrDefault();
-                    if(KpiItem == null)
-                    {
-                        KpiItem = new KpiItem();
-                        KpiItem.KpiItemContents = new List<KpiItemContent>();
-                        KpiItem.CreatorId = AppUser == null ? 0 : AppUser.Id;
-                        KpiItem.Creator = AppUser;
-                        KpiItem.OrganizationId = AppUser.OrganizationId;
-                        KpiItem.EmployeeId = Employee == null ? 0 : Employee.Id;
-                        KpiItem.Employee = Employee;
-                        KpiItem.KpiYearId = KpiYear == null ? 0 : KpiYear.Id;
-                        KpiItem.KpiPeriodId = KpiPeriod == null ? 0 : KpiPeriod.Id;
-                        KpiItem.StatusId = StatusEnum.ACTIVE.Id;
-                        KpiItems.Add(KpiItem);
-                    }
-                    Item = Items.Where(x => x.Code == ItemCodeValue.Trim()).FirstOrDefault();
-                    KpiItemContent KpiItemContent = KpiItem.KpiItemContents.Where(x => x.ItemId == Item.Id).FirstOrDefault();
-                    if (KpiItemContent == null)
-                    {
-                        KpiItemContent = new KpiItemContent();
-                        KpiItemContent.ItemId = Item.Id;
-                        KpiItemContent.KpiItemContentKpiCriteriaItemMappings = new List<KpiItemContentKpiCriteriaItemMapping>();
-                        KpiItem.KpiItemContents.Add(KpiItemContent);
-                    }
-
-                    #region Sản lượng theo đơn hàng gián tiếp
-                    KpiItemContentKpiCriteriaItemMapping
-                            IndirectQuantityCriterial = KpiItemContent.KpiItemContentKpiCriteriaItemMappings
-                            .Where(x => x.KpiCriteriaItemId == KpiCriteriaItemEnum.INDIRECT_QUANTITY.Id)
-                            .FirstOrDefault();
-                    if (IndirectQuantityCriterial == null)
-                    {
-                        IndirectQuantityCriterial = new KpiItemContentKpiCriteriaItemMapping();
-                        IndirectQuantityCriterial.KpiCriteriaItemId = KpiCriteriaItemEnum.INDIRECT_QUANTITY.Id;
-                        KpiItemContent.KpiItemContentKpiCriteriaItemMappings.Add(IndirectQuantityCriterial);
-                    }
-                    if (long.TryParse(QuantityValue, out long Quantity))
-                        IndirectQuantityCriterial.Value = Quantity;
-                    else
-                        IndirectQuantityCriterial.Value = null;
-                    #endregion
-
-                    #region Doanh thu theo đơn hàng gián tiếp
-                    KpiItemContentKpiCriteriaItemMapping
-                            IndirectRevenueCriterial = KpiItemContent.KpiItemContentKpiCriteriaItemMappings
-                            .Where(x => x.KpiCriteriaItemId == KpiCriteriaItemEnum.INDIRECT_REVENUE.Id)
-                            .FirstOrDefault();
-                    if (IndirectRevenueCriterial == null)
-                    {
-                        IndirectRevenueCriterial = new KpiItemContentKpiCriteriaItemMapping();
-                        IndirectRevenueCriterial.KpiCriteriaItemId = KpiCriteriaItemEnum.INDIRECT_REVENUE.Id;
-                        KpiItemContent.KpiItemContentKpiCriteriaItemMappings.Add(IndirectRevenueCriterial);
-                    }
-                    if (long.TryParse(RevenueValue, out long Revenue))
-                        IndirectRevenueCriterial.Value = Revenue;
-                    else
-                        IndirectRevenueCriterial.Value = null;
-                    #endregion
-
-                    #region Số đơn hàng gián tiếp
-                    KpiItemContentKpiCriteriaItemMapping
-                            IndirectCounterCriterial = KpiItemContent.KpiItemContentKpiCriteriaItemMappings
-                            .Where(x => x.KpiCriteriaItemId == KpiCriteriaItemEnum.INDIRECT_AMOUNT.Id)
-                            .FirstOrDefault();
-                    if (IndirectCounterCriterial == null)
-                    {
-                        IndirectCounterCriterial = new KpiItemContentKpiCriteriaItemMapping();
-                        IndirectCounterCriterial.KpiCriteriaItemId = KpiCriteriaItemEnum.INDIRECT_AMOUNT.Id;
-                        KpiItemContent.KpiItemContentKpiCriteriaItemMappings.Add(IndirectCounterCriterial);
-                    }
-                    if (long.TryParse(RevenueValue, out long SalesOrder))
-                        IndirectCounterCriterial.Value = SalesOrder;
-                    else
-                        IndirectCounterCriterial.Value = null;
-                    #endregion
-
-                    #region Số đại lý theo đơn gián tiếp
-                    KpiItemContentKpiCriteriaItemMapping
-                            IndirectStoreCriterial = KpiItemContent.KpiItemContentKpiCriteriaItemMappings
-                            .Where(x => x.KpiCriteriaItemId == KpiCriteriaItemEnum.INDIRECT_STORE.Id)
-                            .FirstOrDefault();
-                    if (IndirectStoreCriterial == null)
-                    {
-                        IndirectStoreCriterial = new KpiItemContentKpiCriteriaItemMapping();
-                        IndirectStoreCriterial.KpiCriteriaItemId = KpiCriteriaItemEnum.INDIRECT_STORE.Id;
-                        KpiItemContent.KpiItemContentKpiCriteriaItemMappings.Add(IndirectStoreCriterial);
-                    }
-                    if (long.TryParse(RevenueValue, out long Store))
-                        IndirectStoreCriterial.Value = Store;
-                    else
-                        IndirectStoreCriterial.Value = null;
-                    #endregion
-
-                    #region Sản lượng theo đơn hàng trực tiếp
-                    KpiItemContentKpiCriteriaItemMapping
-                            DirectQuantityCriterial = KpiItemContent.KpiItemContentKpiCriteriaItemMappings
-                            .Where(x => x.KpiCriteriaItemId == KpiCriteriaItemEnum.DIRECT_QUANTITY.Id)
-                            .FirstOrDefault();
-                    if (DirectQuantityCriterial == null)
-                    {
-                        DirectQuantityCriterial = new KpiItemContentKpiCriteriaItemMapping();
-                        DirectQuantityCriterial.KpiCriteriaItemId = KpiCriteriaItemEnum.DIRECT_QUANTITY.Id;
-                        KpiItemContent.KpiItemContentKpiCriteriaItemMappings.Add(DirectQuantityCriterial);
-                    }
-                    if (long.TryParse(QuantityValue, out long DirectQuantity))
-                        DirectQuantityCriterial.Value = DirectQuantity;
-                    else
-                        DirectQuantityCriterial.Value = null;
-                    #endregion
-
-                    #region Doanh thu theo đơn hàng trực tiếp
-                    KpiItemContentKpiCriteriaItemMapping
-                            DirectRevenueCriterial = KpiItemContent.KpiItemContentKpiCriteriaItemMappings
-                            .Where(x => x.KpiCriteriaItemId == KpiCriteriaItemEnum.DIRECT_REVENUE.Id)
-                            .FirstOrDefault();
-                    if (DirectRevenueCriterial == null)
-                    {
-                        DirectRevenueCriterial = new KpiItemContentKpiCriteriaItemMapping();
-                        DirectRevenueCriterial.KpiCriteriaItemId = KpiCriteriaItemEnum.DIRECT_REVENUE.Id;
-                        KpiItemContent.KpiItemContentKpiCriteriaItemMappings.Add(DirectRevenueCriterial);
-                    }
-                    if (long.TryParse(RevenueValue, out long DirectRevenue))
-                        DirectRevenueCriterial.Value = DirectRevenue;
-                    else
-                        DirectRevenueCriterial.Value = null;
-                    #endregion
-
-                    #region Số đơn hàng trực tiếp
-                    KpiItemContentKpiCriteriaItemMapping
-                            DirectCounterCriterial = KpiItemContent.KpiItemContentKpiCriteriaItemMappings
-                            .Where(x => x.KpiCriteriaItemId == KpiCriteriaItemEnum.DIRECT_AMOUNT.Id)
-                            .FirstOrDefault();
-                    if (DirectCounterCriterial == null)
-                    {
-                        DirectCounterCriterial = new KpiItemContentKpiCriteriaItemMapping();
-                        DirectCounterCriterial.KpiCriteriaItemId = KpiCriteriaItemEnum.DIRECT_AMOUNT.Id;
-                        KpiItemContent.KpiItemContentKpiCriteriaItemMappings.Add(DirectCounterCriterial);
-                    }
-                    if (long.TryParse(RevenueValue, out long DirectCounter))
-                        DirectCounterCriterial.Value = DirectCounter;
-                    else
-                        DirectCounterCriterial.Value = null;
-                    #endregion
-
-                    #region Số đại lý theo đơn trực tiếp
-                    KpiItemContentKpiCriteriaItemMapping
-                            DirectStoreCriterial = KpiItemContent.KpiItemContentKpiCriteriaItemMappings
-                            .Where(x => x.KpiCriteriaItemId == KpiCriteriaItemEnum.DIRECT_STORE.Id)
-                            .FirstOrDefault();
-                    if (DirectStoreCriterial == null)
-                    {
-                        DirectStoreCriterial = new KpiItemContentKpiCriteriaItemMapping();
-                        DirectStoreCriterial.KpiCriteriaItemId = KpiCriteriaItemEnum.DIRECT_STORE.Id;
-                        KpiItemContent.KpiItemContentKpiCriteriaItemMappings.Add(DirectStoreCriterial);
-                    }
-                    if (long.TryParse(RevenueValue, out long DirectStore))
-                        DirectStoreCriterial.Value = DirectStore;
-                    else
-                        DirectStoreCriterial.Value = null;
-                    #endregion
+                    KpiItem_ImportDTO.Stt = i;
+                    KpiItem_ImportDTO.UsernameValue = UsernameValue;
+                    KpiItem_ImportDTO.ItemCodeValue = ItemCodeValue;
+                    KpiItem_ImportDTO.IndirectQuantity = worksheet.Cells[i, QuantityColumn].Value?.ToString();
+                    KpiItem_ImportDTO.IndirectRevenue = worksheet.Cells[i, RevenueColumn].Value?.ToString();
+                    KpiItem_ImportDTO.IndirectCounter = worksheet.Cells[i, SaleOrderColumn].Value?.ToString();
+                    KpiItem_ImportDTO.IndirectStoreCounter = worksheet.Cells[i, StoreColumn].Value?.ToString();
+                    KpiItem_ImportDTO.DirectQuantity = worksheet.Cells[i, DirectQuantityColumn].Value?.ToString();
+                    KpiItem_ImportDTO.DirectRevenue = worksheet.Cells[i, DirectRevenueColumn].Value?.ToString();
+                    KpiItem_ImportDTO.DirectCounter = worksheet.Cells[i, DirectSaleOrderColumn].Value?.ToString();
+                    KpiItem_ImportDTO.DirectStoreCounter = worksheet.Cells[i, DirectStoreColumn].Value?.ToString();
+                    KpiItem_ImportDTO.KpiPeriodId = KpiPeriod.Id;
+                    KpiItem_ImportDTO.KpiYearId = KpiYear.Id;
+                    KpiItem_ImportDTOs.Add(KpiItem_ImportDTO);
                 }
-                if (errorContent.Length > 0)
-                    return BadRequest(errorContent.ToString());
             }
+
+            Dictionary<long, StringBuilder> Errors = new Dictionary<long, StringBuilder>();
+            HashSet<KpiItem_RowDTO> KpiItem_RowDTOs = new HashSet<KpiItem_RowDTO>(KpiItems.Select(x => new KpiItem_RowDTO 
+            { 
+                AppUserId = x.EmployeeId, 
+                KpiPeriodId = x.KpiPeriodId, 
+                KpiYearId = x.KpiYearId 
+            }).ToList());
+            foreach (KpiItem_ImportDTO KpiItem_ImportDTO in KpiItem_ImportDTOs)
+            {
+                Errors.Add(KpiItem_ImportDTO.Stt, new StringBuilder(""));
+                KpiItem_ImportDTO.IsNew = false;
+                if (!KpiItem_RowDTOs.Contains(new KpiItem_RowDTO { AppUserId = KpiItem_ImportDTO.EmployeeId, KpiPeriodId = KpiItem_ImportDTO.KpiPeriodId, KpiYearId = KpiItem_ImportDTO.KpiYearId }))
+                {
+                    KpiItem_RowDTOs.Add(new KpiItem_RowDTO { AppUserId = KpiItem_ImportDTO.EmployeeId, KpiPeriodId = KpiItem_ImportDTO.KpiPeriodId, KpiYearId = KpiItem_ImportDTO.KpiYearId });
+                    KpiItem_ImportDTO.IsNew = true;
+
+                    var Employee = Employees.Where(x => x.Username == KpiItem_ImportDTO.UsernameValue).FirstOrDefault();
+                    KpiItem_ImportDTO.OrganizationId = Employee.OrganizationId;
+                    KpiItem_ImportDTO.EmployeeId = Employee.Id;
+                }
+            }
+
+            
+
+            foreach (var KpiItem_ImportDTO in KpiItem_ImportDTOs)
+            {
+                if (KpiItem_ImportDTO.HasValue == false)
+                {
+                    Errors[KpiItem_ImportDTO.Stt].Append($"Lỗi dòng thứ {KpiItem_ImportDTO.Stt}: Chưa nhập chỉ tiêu");
+                    continue;
+                }
+                KpiItem KpiItem;
+                if (KpiItem_ImportDTO.IsNew)
+                {
+                    KpiItem = new KpiItem();
+                    KpiItems.Add(KpiItem);
+                    KpiItem.EmployeeId = KpiItem_ImportDTO.EmployeeId;
+                    KpiItem.OrganizationId = KpiItem_ImportDTO.OrganizationId;
+                    KpiItem.KpiPeriodId = KpiItem_ImportDTO.KpiPeriodId;
+                    KpiItem.KpiYearId = KpiItem_ImportDTO.KpiYearId;
+                    KpiItem.RowId = Guid.NewGuid();
+                    KpiItem.KpiItemContents = new List<KpiItemContent>();
+                    KpiItem.KpiItemContents.Add(new KpiItemContent
+                    {
+                        ItemId = KpiItem_ImportDTO.ItemId,
+                        RowId = Guid.NewGuid(),
+                        KpiItemContentKpiCriteriaItemMappings = KpiCriteriaItemEnum.KpiCriteriaItemEnumList.Select(x => new KpiItemContentKpiCriteriaItemMapping
+                        {
+                            KpiCriteriaItemId = x.Id,
+                        }).ToList()
+                    });
+                }
+                else
+                {
+                    KpiItem = KpiItems.Where(x => x.EmployeeId == KpiItem_ImportDTO.EmployeeId && x.KpiPeriodId == KpiItem_ImportDTO.KpiPeriodId && x.KpiYearId == KpiItem_ImportDTO.KpiYearId).FirstOrDefault();
+                    var content = KpiItem.KpiItemContents.Where(x => x.ItemId == KpiItem_ImportDTO.ItemId).FirstOrDefault();
+                    if(content == null)
+                    {
+                        KpiItem.KpiItemContents.Add(new KpiItemContent
+                        {
+                            ItemId = KpiItem_ImportDTO.ItemId,
+                            RowId = Guid.NewGuid(),
+                            KpiItemContentKpiCriteriaItemMappings = KpiCriteriaItemEnum.KpiCriteriaItemEnumList.Select(x => new KpiItemContentKpiCriteriaItemMapping
+                            {
+                                KpiCriteriaItemId = x.Id,
+                            }).ToList()
+                        });
+                    }
+                }
+
+                KpiItemContent KpiItemContent = KpiItem.KpiItemContents.Where(x => x.ItemId == KpiItem_ImportDTO.ItemId).FirstOrDefault();
+                if (KpiItemContent != null)
+                {
+                    foreach (var KpiItemContentKpiCriteriaItemMapping in KpiItemContent.KpiItemContentKpiCriteriaItemMappings)
+                    {
+                        if (long.TryParse(KpiItem_ImportDTO.IndirectQuantity, out long IndirectQuantity) && KpiItemContentKpiCriteriaItemMapping.KpiCriteriaItemId == KpiCriteriaItemEnum.INDIRECT_QUANTITY.Id)
+                        {
+                            KpiItemContentKpiCriteriaItemMapping.Value = IndirectQuantity;
+                        }
+                        else if (long.TryParse(KpiItem_ImportDTO.IndirectRevenue, out long IndirectRevenue) && KpiItemContentKpiCriteriaItemMapping.KpiCriteriaItemId == KpiCriteriaItemEnum.INDIRECT_REVENUE.Id)
+                        {
+                            KpiItemContentKpiCriteriaItemMapping.Value = IndirectRevenue;
+                        }
+                        else if (long.TryParse(KpiItem_ImportDTO.IndirectCounter, out long IndirectCounter) && KpiItemContentKpiCriteriaItemMapping.KpiCriteriaItemId == KpiCriteriaItemEnum.INDIRECT_AMOUNT.Id)
+                        {
+                            KpiItemContentKpiCriteriaItemMapping.Value = IndirectCounter;
+                        }
+                        else if (long.TryParse(KpiItem_ImportDTO.IndirectStoreCounter, out long IndirectStoreCounter) && KpiItemContentKpiCriteriaItemMapping.KpiCriteriaItemId == KpiCriteriaItemEnum.INDIRECT_STORE.Id)
+                        {
+                            KpiItemContentKpiCriteriaItemMapping.Value = IndirectStoreCounter;
+                        }
+                        else if (long.TryParse(KpiItem_ImportDTO.DirectQuantity, out long DirectQuantity) && KpiItemContentKpiCriteriaItemMapping.KpiCriteriaItemId == KpiCriteriaItemEnum.DIRECT_QUANTITY.Id)
+                        {
+                            KpiItemContentKpiCriteriaItemMapping.Value = DirectQuantity;
+                        }
+                        else if (long.TryParse(KpiItem_ImportDTO.DirectRevenue, out long DirectRevenue) && KpiItemContentKpiCriteriaItemMapping.KpiCriteriaItemId == KpiCriteriaItemEnum.DIRECT_REVENUE.Id)
+                        {
+                            KpiItemContentKpiCriteriaItemMapping.Value = DirectRevenue;
+                        }
+                        else if (long.TryParse(KpiItem_ImportDTO.DirectCounter, out long DirectCounter) && KpiItemContentKpiCriteriaItemMapping.KpiCriteriaItemId == KpiCriteriaItemEnum.DIRECT_AMOUNT.Id)
+                        {
+                            KpiItemContentKpiCriteriaItemMapping.Value = DirectCounter;
+                        }
+                        else if (long.TryParse(KpiItem_ImportDTO.DirectStoreCounter, out long DirectStoreCounter) && KpiItemContentKpiCriteriaItemMapping.KpiCriteriaItemId == KpiCriteriaItemEnum.DIRECT_STORE.Id)
+                        {
+                            KpiItemContentKpiCriteriaItemMapping.Value = DirectStoreCounter;
+                        }
+                    }
+                }
+
+                KpiItem.CreatorId = AppUser.Id;
+                KpiItem.StatusId = StatusEnum.ACTIVE.Id;
+            }
+            if (errorContent.Length > 0)
+                return BadRequest(errorContent.ToString());
+            string error = string.Join("\n", Errors.Where(x => !string.IsNullOrWhiteSpace(x.Value.ToString())).Select(x => x.Value.ToString()).ToList());
+            if (!string.IsNullOrWhiteSpace(error))
+                return BadRequest(error);
 
             KpiItems = await KpiItemService.Import(KpiItems);
             List<KpiItem_KpiItemDTO> KpiItem_KpiItemDTOs = KpiItems
                 .Select(c => new KpiItem_KpiItemDTO(c)).ToList();
-            for (int i = 0; i < KpiItems.Count; i++)
-            {
-                if (!KpiItems[i].IsValidated)
-                {
-                    errorContent.Append($"Lỗi dòng thứ {i + 2}:");
-                    foreach (var Error in KpiItems[i].Errors)
-                    {
-                        errorContent.Append($" {Error.Value},");
-                    }
-                    errorContent.AppendLine("");
-                }
-            }
-            if (KpiItems.Any(s => !s.IsValidated))
-                return BadRequest(errorContent.ToString());
             return Ok(KpiItem_KpiItemDTOs);
         }
 

@@ -1,4 +1,4 @@
-using Common;
+using DMS.Common;
 using DMS.Entities;
 using System.Collections.Generic;
 
@@ -9,12 +9,26 @@ namespace DMS.Rpc.e_route
         public const string Parent = Module + "/route";
         public const string Master = Module + "/route/e-route/e-route-master";
         public const string Detail = Module + "/route/e-route/e-route-detail/*";
+        public const string MasterOwner = Module + "/route/e-route-owner/e-route-owner-master";
+        public const string DetailOwner = Module + "/route/e-route-owner/e-route-owner-detail/*";
         private const string Default = Rpc + Module + "/e-route";
         public const string Count = Default + "/count";
         public const string List = Default + "/list";
+
+        public const string CountNew = Default + "/count-new";
+        public const string ListNew = Default + "/list-new";
+        public const string CountPending = Default + "/count-pending";
+        public const string ListPending = Default + "/list-pending";
+        public const string CountCompleted = Default + "/count-completed";
+        public const string ListCompleted = Default + "/list-completed";
+
+        public const string GetDetail = Default + "/get-detail";
         public const string Get = Default + "/get";
         public const string Create = Default + "/create";
         public const string Update = Default + "/update";
+        public const string Send = Default + "/send";
+        public const string Approve = Default + "/approve";
+        public const string Reject = Default + "/reject";
         public const string Delete = Default + "/delete";
         public const string BulkDelete = Default + "/bulk-delete";
 
@@ -52,39 +66,55 @@ namespace DMS.Rpc.e_route
 
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
         {
-            { "Tìm kiếm", new List<string> {
+            { "Tìm kiếm tất cả", new List<string> {
                 Parent,
-                Master, Count, List, Get, 
+                Master, Count, List, Get, GetDetail,
+                FilterListAppUser, FilterListOrganization, FilterListERouteType, FilterListRequestState, FilterListStatus,  FilterListStore, } },
+            { "Tìm kiếm của tôi", new List<string> {
+                Parent,
+                Get, MasterOwner, DetailOwner, GetDetail,
+                CountNew, ListNew, CountPending, ListPending, CountCompleted, ListCompleted,
                 FilterListAppUser, FilterListOrganization, FilterListERouteType, FilterListRequestState, FilterListStatus,  FilterListStore, } },
 
             { "Thêm", new List<string> {
                 Parent,
-                Master, Count, List, Get, 
+                Master, Count, List, Get,
+                CountNew, ListNew, CountPending, ListPending, CountCompleted, ListCompleted,
                 FilterListAppUser, FilterListOrganization, FilterListERouteType, FilterListRequestState, FilterListStatus,  FilterListStore,
-                Detail, Create,
+                DetailOwner, Detail, Create, Send,
                 SingleListAppUser, SingleListERouteType, SingleListRequestState, SingleListStatus,  SingleListStore, SingleListOrganization, SingleListStoreType,
                 CountStore, ListStore, } },
 
             { "Sửa", new List<string> {
                 Parent,
-                Master, Count, List, Get, 
+                Master, Count, List, Get,
+                CountNew, ListNew, CountPending, ListPending, CountCompleted, ListCompleted,
                 FilterListAppUser, FilterListOrganization, FilterListERouteType, FilterListRequestState, FilterListStatus,  FilterListStore,
-                Detail, Update,
+                DetailOwner, Detail, Update, Send,
                 SingleListAppUser, SingleListERouteType, SingleListRequestState, SingleListStatus,  SingleListStore,  SingleListOrganization, SingleListStoreType,
                 CountStore, ListStore, } },
 
             { "Xoá", new List<string> {
                 Parent,
-                Master, Count, List, Get, 
+                Master, Count, List, Get,
+                CountNew, ListNew, CountPending, ListPending, CountCompleted, ListCompleted,
                 FilterListAppUser, FilterListOrganization, FilterListERouteType, FilterListRequestState, FilterListStatus,  FilterListStore,
                 Detail, Delete,  } },
 
             { "Xoá nhiều", new List<string> {
                 Parent,
                 Master, Count, List, Get,
+                CountNew, ListNew, CountPending, ListPending, CountCompleted, ListCompleted,
                 FilterListAppUser, FilterListOrganization, FilterListERouteType, FilterListRequestState, FilterListStatus,  FilterListStore,
                 BulkDelete } },
-
+            { "Phê duyệt", new List<string> {
+                Parent,
+                Master, Count, List, Get,
+                CountNew, ListNew, CountPending, ListPending, CountCompleted, ListCompleted,
+                FilterListAppUser, FilterListOrganization, FilterListERouteType, FilterListRequestState, FilterListStatus,  FilterListStore,
+                DetailOwner, Detail, Send, Approve, Reject,
+                SingleListAppUser, SingleListERouteType, SingleListRequestState, SingleListStatus,  SingleListStore,  SingleListOrganization, SingleListStoreType,
+                CountStore, ListStore, } },
         };
     }
 }

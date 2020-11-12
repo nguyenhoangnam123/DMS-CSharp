@@ -1,4 +1,4 @@
-﻿using Common;
+﻿using DMS.Common;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -20,6 +20,7 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_unchecked
         public string DateDisplay { get { return Date.ToString("dd-MM-yyyy"); } }
         public long AppUserId { get; set; }
         public string StoreCode { get; set; }
+        public string StoreCodeDraft { get; set; }
         public string StoreName { get; set; }
         public string StoreStatusName { get; set; }
         public string StoreTypeName { get; set; }
@@ -33,6 +34,11 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_unchecked
             return Date == other.Date &&
                  AppUserId == other.AppUserId &&
                  StoreCode == other.StoreCode;
+        }
+
+        public override int GetHashCode()
+        {
+            return Date.GetHashCode() ^ AppUserId.GetHashCode() ^ StoreCode.GetHashCode();
         }
     }
 }

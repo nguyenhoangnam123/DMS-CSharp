@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Common;
+using DMS.Common;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
@@ -8,7 +8,6 @@ namespace DMS.Entities
 {
     public class KpiGeneralContent : DataEntity,  IEquatable<KpiGeneralContent>
     {
-        internal long STT { get; set; }
         public long Id { get; set; }
         public long KpiGeneralId { get; set; }
         public long KpiCriteriaGeneralId { get; set; }
@@ -17,7 +16,6 @@ namespace DMS.Entities
         public KpiGeneral KpiGeneral { get; set; }
         public Status Status { get; set; }
         public Guid RowId { get; set; }
-
         public List<KpiGeneralContentKpiPeriodMapping> KpiGeneralContentKpiPeriodMappings { get; set; }
 
 

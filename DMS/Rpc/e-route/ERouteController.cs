@@ -1,4 +1,4 @@
-using Common;
+using DMS.Common;
 using DMS.Entities;
 using DMS.Enums;
 using DMS.Services.MAppUser;
@@ -80,6 +80,86 @@ namespace DMS.Rpc.e_route
             return ERoute_ERouteDTOs;
         }
 
+        [Route(ERouteRoute.CountNew), HttpPost]
+        public async Task<ActionResult<int>> CountNew([FromBody] ERoute_ERouteFilterDTO ERoute_ERouteFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            ERouteFilter ERouteFilter = ConvertFilterDTOToFilterEntity(ERoute_ERouteFilterDTO);
+            ERouteFilter = await ERouteService.ToFilter(ERouteFilter);
+            int count = await ERouteService.CountNew(ERouteFilter);
+            return count;
+        }
+
+        [Route(ERouteRoute.ListNew), HttpPost]
+        public async Task<ActionResult<List<ERoute_ERouteDTO>>> ListNew([FromBody] ERoute_ERouteFilterDTO ERoute_ERouteFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            ERouteFilter ERouteFilter = ConvertFilterDTOToFilterEntity(ERoute_ERouteFilterDTO);
+            ERouteFilter = await ERouteService.ToFilter(ERouteFilter);
+            List<ERoute> ERoutes = await ERouteService.ListNew(ERouteFilter);
+            List<ERoute_ERouteDTO> ERoute_ERouteDTOs = ERoutes
+                .Select(c => new ERoute_ERouteDTO(c)).ToList();
+            return ERoute_ERouteDTOs;
+        }
+
+
+        [Route(ERouteRoute.CountPending), HttpPost]
+        public async Task<ActionResult<int>> CountPending([FromBody] ERoute_ERouteFilterDTO ERoute_ERouteFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            ERouteFilter ERouteFilter = ConvertFilterDTOToFilterEntity(ERoute_ERouteFilterDTO);
+            ERouteFilter = await ERouteService.ToFilter(ERouteFilter);
+            int count = await ERouteService.CountPending(ERouteFilter);
+            return count;
+        }
+
+        [Route(ERouteRoute.ListPending), HttpPost]
+        public async Task<ActionResult<List<ERoute_ERouteDTO>>> ListPending([FromBody] ERoute_ERouteFilterDTO ERoute_ERouteFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            ERouteFilter ERouteFilter = ConvertFilterDTOToFilterEntity(ERoute_ERouteFilterDTO);
+            ERouteFilter = await ERouteService.ToFilter(ERouteFilter);
+            List<ERoute> ERoutes = await ERouteService.ListPending(ERouteFilter);
+            List<ERoute_ERouteDTO> ERoute_ERouteDTOs = ERoutes
+                .Select(c => new ERoute_ERouteDTO(c)).ToList();
+            return ERoute_ERouteDTOs;
+        }
+
+
+        [Route(ERouteRoute.CountCompleted), HttpPost]
+        public async Task<ActionResult<int>> CountCompleted([FromBody] ERoute_ERouteFilterDTO ERoute_ERouteFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            ERouteFilter ERouteFilter = ConvertFilterDTOToFilterEntity(ERoute_ERouteFilterDTO);
+            ERouteFilter = await ERouteService.ToFilter(ERouteFilter);
+            int count = await ERouteService.CountCompleted(ERouteFilter);
+            return count;
+        }
+
+        [Route(ERouteRoute.ListCompleted), HttpPost]
+        public async Task<ActionResult<List<ERoute_ERouteDTO>>> ListCompleted([FromBody] ERoute_ERouteFilterDTO ERoute_ERouteFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            ERouteFilter ERouteFilter = ConvertFilterDTOToFilterEntity(ERoute_ERouteFilterDTO);
+            ERouteFilter = await ERouteService.ToFilter(ERouteFilter);
+            List<ERoute> ERoutes = await ERouteService.ListCompleted(ERouteFilter);
+            List<ERoute_ERouteDTO> ERoute_ERouteDTOs = ERoutes
+                .Select(c => new ERoute_ERouteDTO(c)).ToList();
+            return ERoute_ERouteDTOs;
+        }
+
         [Route(ERouteRoute.Get), HttpPost]
         public async Task<ActionResult<ERoute_ERouteDTO>> Get([FromBody] ERoute_ERouteDTO ERoute_ERouteDTO)
         {
@@ -91,6 +171,17 @@ namespace DMS.Rpc.e_route
 
             ERoute ERoute = await ERouteService.Get(ERoute_ERouteDTO.Id);
             return new ERoute_ERouteDTO(ERoute);
+        }
+
+        [Route(ERouteRoute.GetDetail), HttpPost]
+        public async Task<ActionResult<ERoute_ERouteDTO>> GetDetail([FromBody] ERoute_ERouteDTO ERoute_ERouteDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            ERoute ERoute = await ERouteService.GetDetail(ERoute_ERouteDTO.Id);
+            ERoute_ERouteDTO = new ERoute_ERouteDTO(ERoute);
+            return ERoute_ERouteDTO;
         }
 
         [Route(ERouteRoute.Create), HttpPost]
@@ -122,6 +213,60 @@ namespace DMS.Rpc.e_route
 
             ERoute ERoute = ConvertDTOToEntity(ERoute_ERouteDTO);
             ERoute = await ERouteService.Update(ERoute);
+            ERoute_ERouteDTO = new ERoute_ERouteDTO(ERoute);
+            if (ERoute.IsValidated)
+                return ERoute_ERouteDTO;
+            else
+                return BadRequest(ERoute_ERouteDTO);
+        }
+
+        [Route(ERouteRoute.Send), HttpPost]
+        public async Task<ActionResult<ERoute_ERouteDTO>> Send([FromBody] ERoute_ERouteDTO ERoute_ERouteDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            if (!await HasPermission(ERoute_ERouteDTO.Id))
+                return Forbid();
+
+            ERoute ERoute = ConvertDTOToEntity(ERoute_ERouteDTO);
+            ERoute = await ERouteService.Send(ERoute);
+            ERoute_ERouteDTO = new ERoute_ERouteDTO(ERoute);
+            if (ERoute.IsValidated)
+                return ERoute_ERouteDTO;
+            else
+                return BadRequest(ERoute_ERouteDTO);
+        }
+
+        [Route(ERouteRoute.Approve), HttpPost]
+        public async Task<ActionResult<ERoute_ERouteDTO>> Approve([FromBody] ERoute_ERouteDTO ERoute_ERouteDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            if (!await HasPermission(ERoute_ERouteDTO.Id))
+                return Forbid();
+
+            ERoute ERoute = ConvertDTOToEntity(ERoute_ERouteDTO);
+            ERoute = await ERouteService.Approve(ERoute);
+            ERoute_ERouteDTO = new ERoute_ERouteDTO(ERoute);
+            if (ERoute.IsValidated)
+                return ERoute_ERouteDTO;
+            else
+                return BadRequest(ERoute_ERouteDTO);
+        }
+
+        [Route(ERouteRoute.Reject), HttpPost]
+        public async Task<ActionResult<ERoute_ERouteDTO>> Reject([FromBody] ERoute_ERouteDTO ERoute_ERouteDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            if (!await HasPermission(ERoute_ERouteDTO.Id))
+                return Forbid();
+
+            ERoute ERoute = ConvertDTOToEntity(ERoute_ERouteDTO);
+            ERoute = await ERouteService.Reject(ERoute);
             ERoute_ERouteDTO = new ERoute_ERouteDTO(ERoute);
             if (ERoute.IsValidated)
                 return ERoute_ERouteDTO;
@@ -476,6 +621,28 @@ namespace DMS.Rpc.e_route
             List<ERoute_OrganizationDTO> ERoute_OrganizationDTOs = Organizations
                 .Select(x => new ERoute_OrganizationDTO(x)).ToList();
             return ERoute_OrganizationDTOs;
+        }
+
+        [Route(ERouteRoute.FilterListRequestState), HttpPost]
+        public async Task<List<ERoute_RequestStateDTO>> FilterListRequestState([FromBody] ERoute_RequestStateFilterDTO ERoute_RequestStateFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            RequestStateFilter RequestStateFilter = new RequestStateFilter();
+            RequestStateFilter.Skip = 0;
+            RequestStateFilter.Take = 20;
+            RequestStateFilter.OrderBy = RequestStateOrder.Id;
+            RequestStateFilter.OrderType = OrderType.ASC;
+            RequestStateFilter.Selects = RequestStateSelect.ALL;
+            RequestStateFilter.Id = ERoute_RequestStateFilterDTO.Id;
+            RequestStateFilter.Code = ERoute_RequestStateFilterDTO.Code;
+            RequestStateFilter.Name = ERoute_RequestStateFilterDTO.Name;
+
+            List<RequestState> RequestStatees = await RequestStateService.List(RequestStateFilter);
+            List<ERoute_RequestStateDTO> ERoute_RequestStateDTOs = RequestStatees
+                .Select(x => new ERoute_RequestStateDTO(x)).ToList();
+            return ERoute_RequestStateDTOs;
         }
 
         [Route(ERouteRoute.SingleListAppUser), HttpPost]

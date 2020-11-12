@@ -1,4 +1,4 @@
-﻿using Common;
+﻿using DMS.Common;
 using DMS.Entities;
 using System;
 
@@ -19,7 +19,7 @@ namespace DMS.Rpc.role
         public long? OrganizationId { get; set; }
         public long? SexId { get; set; }
         public long StatusId { get; set; }
-
+        public Role_OrganizationDTO Organization { get; set; }
 
         public Role_AppUserDTO() { }
         public Role_AppUserDTO(AppUser AppUser)
@@ -32,6 +32,7 @@ namespace DMS.Rpc.role
             this.Phone = AppUser.Phone;
             this.StatusId = AppUser.StatusId;
             this.OrganizationId = AppUser.OrganizationId;
+            this.Organization = AppUser.Organization == null ? null : new Role_OrganizationDTO(AppUser.Organization);
             this.Errors = AppUser.Errors;
         }
     }

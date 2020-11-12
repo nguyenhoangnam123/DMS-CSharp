@@ -1,4 +1,4 @@
-﻿using Common;
+﻿using DMS.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,6 +8,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_by_employ
 {
     public class ReportDirectSalesOrderByEmployeeAndItem_ReportDirectSalesOrderByEmployeeAndItemDTO : DataDTO
     {
+        public long OrganizationId { get; set; }
         public string OrganizationName { get; set; }
         public List<ReportDirectSalesOrderByEmployeeAndItem_SaleEmployeeDTO> SaleEmployees { get; set; }
     }

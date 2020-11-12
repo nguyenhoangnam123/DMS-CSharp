@@ -1,4 +1,4 @@
-﻿using Common;
+﻿using DMS.Common;
 using System.Collections.Generic;
 
 namespace DMS.Enums
@@ -36,5 +36,6 @@ namespace DMS.Enums
         public static GenericEnum UnitOfMeasureUsed = new GenericEnum { Id = 112, Code = "UnitOfMeasure.Used", Name = "UnitOfMeasure Used" };
         public static GenericEnum WorkflowDefinitionUsed = new GenericEnum { Id = 113, Code = "WorkflowDefinition.Used", Name = "WorkflowDefinition Used" };
         public static GenericEnum RoleUsed = new GenericEnum { Id = 114, Code = "Role.Used", Name = "Role Used" };
+        public static GenericEnum PromotionCodeUsed = new GenericEnum { Id = 115, Code = "PromotionCode.Used", Name = "PromotionCode Used" };
     }
 }

@@ -22,11 +22,13 @@ namespace DMS.Models
             KpiItemCreators = new HashSet<KpiItemDAO>();
             KpiItemEmployees = new HashSet<KpiItemDAO>();
             PriceListItemHistories = new HashSet<PriceListItemHistoryDAO>();
+            PriceLists = new HashSet<PriceListDAO>();
             ProblemHistories = new HashSet<ProblemHistoryDAO>();
             Problems = new HashSet<ProblemDAO>();
             RequestWorkflowHistories = new HashSet<RequestWorkflowHistoryDAO>();
             RequestWorkflowStepMappings = new HashSet<RequestWorkflowStepMappingDAO>();
             Resellers = new HashSet<ResellerDAO>();
+            RewardHistories = new HashSet<RewardHistoryDAO>();
             StoreCheckingImageMappings = new HashSet<StoreCheckingImageMappingDAO>();
             StoreCheckings = new HashSet<StoreCheckingDAO>();
             StoreScoutings = new HashSet<StoreScoutingDAO>();
@@ -106,6 +108,7 @@ namespace DMS.Models
         /// Ngày xoá
         /// </summary>
         public DateTime? DeletedAt { get; set; }
+        public DateTime GPSUpdatedAt { get; set; }
         /// <summary>
         /// Trường để đồng bộ
         /// </summary>
@@ -131,11 +134,13 @@ namespace DMS.Models
         public virtual ICollection<KpiItemDAO> KpiItemCreators { get; set; }
         public virtual ICollection<KpiItemDAO> KpiItemEmployees { get; set; }
         public virtual ICollection<PriceListItemHistoryDAO> PriceListItemHistories { get; set; }
+        public virtual ICollection<PriceListDAO> PriceLists { get; set; }
         public virtual ICollection<ProblemHistoryDAO> ProblemHistories { get; set; }
         public virtual ICollection<ProblemDAO> Problems { get; set; }
         public virtual ICollection<RequestWorkflowHistoryDAO> RequestWorkflowHistories { get; set; }
         public virtual ICollection<RequestWorkflowStepMappingDAO> RequestWorkflowStepMappings { get; set; }
         public virtual ICollection<ResellerDAO> Resellers { get; set; }
+        public virtual ICollection<RewardHistoryDAO> RewardHistories { get; set; }
         public virtual ICollection<StoreCheckingImageMappingDAO> StoreCheckingImageMappings { get; set; }
         public virtual ICollection<StoreCheckingDAO> StoreCheckings { get; set; }
         public virtual ICollection<StoreScoutingDAO> StoreScoutings { get; set; }

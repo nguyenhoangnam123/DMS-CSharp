@@ -1,4 +1,4 @@
-﻿using Common;
+﻿using DMS.Common;
 using DMS.Entities;
 using DMS.Enums;
 using DMS.Handlers;
@@ -8,7 +8,7 @@ using DMS.Rpc.store_scouting;
 using DMS.Services.MImage;
 using DMS.Services.MNotification;
 using DMS.Services.MWorkflow;
-using Helpers;
+using DMS.Helpers;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -192,13 +192,17 @@ namespace DMS.Services.MStore
             try
             {
                 var CurrentUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
-
+                Store.AppUserId = CurrentContext.UserId;
                 Store.UnsignName = Store.Name.ChangeToEnglishChar();
                 Store.UnsignAddress = Store.Address.ChangeToEnglishChar();
                 var Counter = await UOW.IdGenerateRepository.GetCounter();
                 StoreCodeGenerate(Store, Counter);
                 await UOW.Begin();
                 await UOW.StoreRepository.Create(Store);
+
+                if (Store.AppUserId.HasValue)
+                    await UOW.AppUserStoreMappingRepository.Update(Store.AppUserId.Value, Store.Id);
+
                 List<UserNotification> UserNotifications = new List<UserNotification>();
                 if (Store.StoreScoutingId.HasValue)
                 {
@@ -213,7 +217,7 @@ namespace DMS.Services.MStore
                     {
                         TitleWeb = $"Thông báo từ DMS",
                         ContentWeb = $"Đại lý cắm cờ {StoreScouting.Code} - {StoreScouting.Name} đã được mở đại lý bởi {CurrentUser.DisplayName}.",
-                        LinkWebsite = $"{StoreRoute.Master}/?id=*".Replace("*", Store.Id.ToString()),
+                        LinkWebsite = $"{StoreRoute.Master}/#*".Replace("*", Store.Id.ToString()),
                         LinkMobile = $"{StoreRoute.Mobile}".Replace("*", Store.Id.ToString()),
                         RecipientId = StoreScouting.CreatorId,
                         SenderId = CurrentContext.UserId,
@@ -246,7 +250,7 @@ namespace DMS.Services.MStore
                     {
                         TitleWeb = $"Thông báo từ DMS",
                         ContentWeb = $"Đại lý {Store.Code} - {Store.Name} vừa được thêm mới vào hệ thống bởi {CurrentUser.DisplayName}.",
-                        LinkWebsite = $"{StoreRoute.Master}/?id=*".Replace("*", Store.Id.ToString()),
+                        LinkWebsite = $"{StoreRoute.Master}/#*".Replace("*", Store.Id.ToString()),
                         LinkMobile = $"{StoreRoute.Mobile}".Replace("*", Store.Id.ToString()),
                         RecipientId = Id,
                         SenderId = CurrentContext.UserId,
@@ -290,6 +294,13 @@ namespace DMS.Services.MStore
                 StoreCodeGenerate(Store);
                 await UOW.Begin();
                 await UOW.StoreRepository.Update(Store);
+                if (Store.StoreStatusId == StoreStatusEnum.OFFICIAL.Id)
+                {
+                    if (oldData.AppUserId.HasValue)
+                        await UOW.AppUserStoreMappingRepository.Delete(oldData.AppUserId.Value, oldData.Id);
+                    if (Store.AppUserId.HasValue)
+                        await UOW.AppUserStoreMappingRepository.Update(Store.AppUserId.Value, Store.Id);
+                }
                 await UOW.Commit();
 
                 NotifyUsed(Store);
@@ -303,7 +314,7 @@ namespace DMS.Services.MStore
                     {
                         TitleWeb = $"Thông báo từ DMS",
                         ContentWeb = $"Đại lý {Store.Code} - {Store.Name} vừa được cập nhật thông tin bởi {CurrentUser.DisplayName}.",
-                        LinkWebsite = $"{StoreRoute.Master}/?id=*".Replace("*", Store.Id.ToString()),
+                        LinkWebsite = $"{StoreRoute.Master}/#*".Replace("*", Store.Id.ToString()),
                         LinkMobile = $"{StoreRoute.Mobile}".Replace("*", Store.Id.ToString()),
                         RecipientId = Id,
                         SenderId = CurrentContext.UserId,
@@ -311,6 +322,24 @@ namespace DMS.Services.MStore
                         Unread = false
                     };
                     UserNotifications.Add(UserNotification);
+                }
+                if (Store.StoreStatusId == StoreStatusEnum.OFFICIAL.Id && oldData.StoreStatusId != Store.StoreStatusId)
+                {
+                    foreach (var Id in RecipientIds)
+                    {
+                        UserNotification UserNotification = new UserNotification
+                        {
+                            TitleWeb = $"Thông báo từ DMS",
+                            ContentWeb = $"Đại lý dự thảo {Store.Code} - {Store.Name} vừa được phê duyệt thành đại lý chính thức bởi {CurrentUser.DisplayName}.",
+                            LinkWebsite = $"{StoreRoute.Master}/#*".Replace("*", Store.Id.ToString()),
+                            LinkMobile = $"{StoreRoute.Mobile}".Replace("*", Store.Id.ToString()),
+                            RecipientId = Id,
+                            SenderId = CurrentContext.UserId,
+                            Time = StaticParams.DateTimeNow,
+                            Unread = false
+                        };
+                        UserNotifications.Add(UserNotification);
+                    }
                 }
 
                 await NotificationService.BulkSend(UserNotifications);
@@ -343,7 +372,14 @@ namespace DMS.Services.MStore
 
             try
             {
+                var oldData = await UOW.StoreRepository.Get(Store.Id);
                 await UOW.Begin();
+                if (oldData.StoreStatusId == StoreStatusEnum.OFFICIAL.Id)
+                {
+                    if (oldData.AppUserId.HasValue)
+                        await UOW.AppUserStoreMappingRepository.Update(oldData.AppUserId.Value, oldData.Id);
+                }
+
                 await UOW.StoreRepository.Delete(Store);
                 await UOW.Commit();
 
@@ -448,33 +484,36 @@ namespace DMS.Services.MStore
                 {
                     Skip = 0,
                     Take = int.MaxValue,
-                    Selects = StoreSelect.Id | StoreSelect.Code | StoreSelect.Name | StoreSelect.ParentStore ,
+                    Selects = StoreSelect.Id | StoreSelect.Code | StoreSelect.Name | StoreSelect.ParentStore,
                 };
                 List<Store> dbStores = await UOW.StoreRepository.List(StoreFilter);
                 var createCounter = Stores.Where(x => x.Id == 0).Count();
                 var ListCounter = await UOW.IdGenerateRepository.ListCounter(createCounter);
                 for (int i = 0; i < ListCounter.Count; i++)
                 {
-                    Store Store = dbStores.Where(x => x.Id == Stores[i].Id)
+                    var newStores = Stores.Where(x => x.Id == 0).ToList();
+                    var counter = ListCounter[i];
+                    StoreCodeGenerate(newStores[i], counter);
+                }
+                foreach (var Store in Stores)
+                {
+                    Store.UnsignName = Store.Name.ChangeToEnglishChar();
+                    Store.UnsignAddress = Store.Address.ChangeToEnglishChar();
+
+                    var oldData = dbStores.Where(x => x.Id == Store.Id)
                                 .FirstOrDefault();
-
-                    Stores[i].UnsignName = Stores[i].Name.ChangeToEnglishChar();
-                    Stores[i].UnsignAddress = Stores[i].Address.ChangeToEnglishChar();
-
-                    if (Store != null)
+                    if(oldData != null)
                     {
-                        Stores[i].Id = Store.Id;
-                        Stores[i].RowId = Store.RowId;
-                        StoreCodeGenerate(Stores[i]);
+                        Store.RowId = oldData.RowId;
                     }
                     else
                     {
-                        Stores[i].Id = 0;
-                        Stores[i].RowId = Guid.NewGuid();
-                        var counter = ListCounter[i];
-                        StoreCodeGenerate(Stores[i], counter);
+                        Store.RowId = Guid.NewGuid();
                     }
+
+                    StoreCodeGenerate(Store);
                 }
+                
                 await UOW.StoreRepository.BulkMerge(Stores);
 
                 dbStores = await UOW.StoreRepository.List(StoreFilter);

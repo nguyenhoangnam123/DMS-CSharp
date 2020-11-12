@@ -1,10 +1,11 @@
-using Common;
+using DMS.Common;
 using DMS.Models;
+using System;
 using System.Threading.Tasks;
 
 namespace DMS.Repositories
 {
-    public interface IUOW : IServiceScoped
+    public interface IUOW : IServiceScoped, IDisposable
     {
         Task Begin();
         Task Commit();
@@ -12,6 +13,7 @@ namespace DMS.Repositories
 
         IAlbumRepository AlbumRepository { get; }
         IAppUserRepository AppUserRepository { get; }
+        IAppUserStoreMappingRepository AppUserStoreMappingRepository { get; }
         IBannerRepository BannerRepository { get; }
         IBrandRepository BrandRepository { get; }
         IColorRepository ColorRepository { get; }
@@ -44,6 +46,7 @@ namespace DMS.Repositories
         IKpiItemRepository KpiItemRepository { get; }
         IKpiPeriodRepository KpiPeriodRepository { get; }
         IKpiYearRepository KpiYearRepository { get; }
+        ILuckyNumberRepository LuckyNumberRepository { get; }
         IInventoryRepository InventoryRepository { get; }
         IInventoryHistoryRepository InventoryHistoryRepository { get; }
         IMenuRepository MenuRepository { get; }
@@ -66,12 +69,15 @@ namespace DMS.Repositories
         IProductTypeRepository ProductTypeRepository { get; }
         IPromotionComboRepository PromotionComboRepository { get; }
         IPromotionRepository PromotionRepository { get; }
+        IPromotionCodeRepository PromotionCodeRepository { get; }
+        IPromotionCodeHistoryRepository PromotionCodeHistoryRepository { get; }
         IPromotionDirectSalesOrderRepository PromotionDirectSalesOrderRepository { get; }
         IPromotionDiscountTypeRepository PromotionDiscountTypeRepository { get; }
+        IPromotionProductTypeRepository PromotionProductTypeRepository { get; }
         IPromotionPolicyRepository PromotionPolicyRepository { get; }
+        IPromotionProductAppliedTypeRepository PromotionProductAppliedTypeRepository { get; }
         IPromotionProductRepository PromotionProductRepository { get; }
         IPromotionProductGroupingRepository PromotionProductGroupingRepository { get; }
-        IPromotionProductTypeRepository PromotionProductTypeRepository { get; }
         IPromotionSamePriceRepository PromotionSamePriceRepository { get; }
         IPromotionStoreRepository PromotionStoreRepository { get; }
         IPromotionStoreGroupingRepository PromotionStoreGroupingRepository { get; }
@@ -86,6 +92,9 @@ namespace DMS.Repositories
         IResellerRepository ResellerRepository { get; }
         IResellerStatusRepository ResellerStatusRepository { get; }
         IResellerTypeRepository ResellerTypeRepository { get; }
+        IRewardHistoryContentRepository RewardHistoryContentRepository { get; }
+        IRewardHistoryRepository RewardHistoryRepository { get; }
+        IRewardStatusRepository RewardStatusRepository { get; }
         IRoleRepository RoleRepository { get; }
         ISalesOrderTypeRepository SalesOrderTypeRepository { get; }
         ISexRepository SexRepository { get; }
@@ -129,6 +138,7 @@ namespace DMS.Repositories
 
         public IAlbumRepository AlbumRepository { get; private set; }
         public IAppUserRepository AppUserRepository { get; private set; }
+        public IAppUserStoreMappingRepository AppUserStoreMappingRepository { get; private set; }
         public IBannerRepository BannerRepository { get; private set; }
         public IBrandRepository BrandRepository { get; private set; }
         public IColorRepository ColorRepository { get; private set; }
@@ -163,6 +173,7 @@ namespace DMS.Repositories
         public IKpiItemRepository KpiItemRepository { get; private set; }
         public IKpiPeriodRepository KpiPeriodRepository { get; private set; }
         public IKpiYearRepository KpiYearRepository { get; private set; }
+        public ILuckyNumberRepository LuckyNumberRepository { get; private set; }
         public IMenuRepository MenuRepository { get; private set; }
         public INotificationRepository NotificationRepository { get; private set; }
         public INotificationStatusRepository NotificationStatusRepository { get; private set; }
@@ -181,14 +192,20 @@ namespace DMS.Repositories
         public IProductRepository ProductRepository { get; private set; }
         public IProductGroupingRepository ProductGroupingRepository { get; private set; }
         public IProductTypeRepository ProductTypeRepository { get; private set; }
+        public IPromotionCodeRepository PromotionCodeRepository { get; private set; }
+        public IPromotionCodeHistoryRepository PromotionCodeHistoryRepository { get; private set; }
         public IPromotionComboRepository PromotionComboRepository { get; private set; }
         public IPromotionRepository PromotionRepository { get; private set; }
         public IPromotionDirectSalesOrderRepository PromotionDirectSalesOrderRepository { get; private set; }
         public IPromotionDiscountTypeRepository PromotionDiscountTypeRepository { get; private set; }
+        public IPromotionProductTypeRepository PromotionProductTypeRepository { get; private set; }
         public IPromotionPolicyRepository PromotionPolicyRepository { get; private set; }
+        public IRewardHistoryContentRepository RewardHistoryContentRepository { get; private set; }
+        public IRewardHistoryRepository RewardHistoryRepository { get; private set; }
+        public IRewardStatusRepository RewardStatusRepository { get; private set; }
+        public IPromotionProductAppliedTypeRepository PromotionProductAppliedTypeRepository { get; private set; }
         public IPromotionProductRepository PromotionProductRepository { get; private set; }
         public IPromotionProductGroupingRepository PromotionProductGroupingRepository { get; private set; }
-        public IPromotionProductTypeRepository PromotionProductTypeRepository { get; private set; }
         public IPromotionSamePriceRepository PromotionSamePriceRepository { get; private set; }
         public IPromotionStoreRepository PromotionStoreRepository { get; private set; }
         public IPromotionStoreGroupingRepository PromotionStoreGroupingRepository { get; private set; }
@@ -203,6 +220,7 @@ namespace DMS.Repositories
         public IResellerRepository ResellerRepository { get; private set; }
         public IResellerStatusRepository ResellerStatusRepository { get; private set; }
         public IResellerTypeRepository ResellerTypeRepository { get; private set; }
+
         public IRoleRepository RoleRepository { get; private set; }
         public ISalesOrderTypeRepository SalesOrderTypeRepository { get; private set; }
         public ISexRepository SexRepository { get; private set; }
@@ -245,6 +263,7 @@ namespace DMS.Repositories
 
             AlbumRepository = new AlbumRepository(DataContext);
             AppUserRepository = new AppUserRepository(DataContext);
+            AppUserStoreMappingRepository = new AppUserStoreMappingRepository(DataContext);
             BrandRepository = new BrandRepository(DataContext);
             BannerRepository = new BannerRepository(DataContext);
             ColorRepository = new ColorRepository(DataContext);
@@ -279,6 +298,7 @@ namespace DMS.Repositories
             KpiItemRepository = new KpiItemRepository(DataContext);
             KpiPeriodRepository = new KpiPeriodRepository(DataContext);
             KpiYearRepository = new KpiYearRepository(DataContext);
+            LuckyNumberRepository = new LuckyNumberRepository(DataContext);
             MenuRepository = new MenuRepository(DataContext);
             NotificationRepository = new NotificationRepository(DataContext);
             NotificationStatusRepository = new NotificationStatusRepository(DataContext);
@@ -299,8 +319,11 @@ namespace DMS.Repositories
             ProductTypeRepository = new ProductTypeRepository(DataContext);
             PromotionComboRepository = new PromotionComboRepository(DataContext);
             PromotionRepository = new PromotionRepository(DataContext);
+            PromotionCodeRepository = new PromotionCodeRepository(DataContext);
+            PromotionCodeHistoryRepository = new PromotionCodeHistoryRepository(DataContext);
             PromotionDirectSalesOrderRepository = new PromotionDirectSalesOrderRepository(DataContext);
             PromotionDiscountTypeRepository = new PromotionDiscountTypeRepository(DataContext);
+            PromotionProductAppliedTypeRepository = new PromotionProductAppliedTypeRepository(DataContext);
             PromotionPolicyRepository = new PromotionPolicyRepository(DataContext);
             PromotionProductRepository = new PromotionProductRepository(DataContext);
             PromotionProductGroupingRepository = new PromotionProductGroupingRepository(DataContext);
@@ -319,6 +342,9 @@ namespace DMS.Repositories
             ResellerRepository = new ResellerRepository(DataContext);
             ResellerStatusRepository = new ResellerStatusRepository(DataContext);
             ResellerTypeRepository = new ResellerTypeRepository(DataContext);
+            RewardHistoryContentRepository = new RewardHistoryContentRepository(DataContext);
+            RewardHistoryRepository = new RewardHistoryRepository(DataContext);
+            RewardStatusRepository = new RewardStatusRepository(DataContext);
             RoleRepository = new RoleRepository(DataContext);
             SalesOrderTypeRepository = new SalesOrderTypeRepository(DataContext);
             SexRepository = new SexRepository(DataContext);
@@ -373,6 +399,28 @@ namespace DMS.Repositories
             return Task.CompletedTask;
             DataContext.Database.RollbackTransaction();
             return Task.CompletedTask;
+        }
+
+        public void Dispose()
+        {
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposing)
+            {
+                return;
+            }
+
+            if (this.DataContext == null)
+            {
+                return;
+            }
+
+            this.DataContext.Dispose();
+            this.DataContext = null;
         }
     }
 }

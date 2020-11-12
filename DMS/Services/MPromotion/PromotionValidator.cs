@@ -2,12 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Common;
+using DMS.Common;
 using DMS.Entities;
 using DMS;
 using DMS.Repositories;
 using DMS.Enums;
-using Helpers;
+using DMS.Helpers;
 
 namespace DMS.Services.MPromotion
 {
@@ -183,59 +183,59 @@ namespace DMS.Services.MPromotion
                         }
                     }
 
-                    if (Promotion.PromotionTypeId == PromotionTypeEnum.STORE_GROUPING.Id)
-                    {
-                        if (Promotion.PromotionStoreGroupingMappings == null || Promotion.PromotionStoreGroupingMappings.Any() == false)
-                        {
-                            Promotion.AddError(nameof(PromotionValidator), nameof(Promotion.PromotionType), ErrorCode.StoreGroupingEmpty);
-                        }
-                        else
-                        {
-                            var StoreGroupingIds = Promotion.PromotionStoreGroupingMappings.Select(x => x.StoreGroupingId).ToList();
-                            var ListStoreGroupingInDB = await UOW.StoreGroupingRepository.List(new StoreGroupingFilter
-                            {
-                                Skip = 0,
-                                Take = int.MaxValue,
-                                Selects = StoreGroupingSelect.Id,
-                                Id = new IdFilter { In = StoreGroupingIds },
-                                StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id }
-                            });
-                            var Ids = ListStoreGroupingInDB.Select(x => x.Id).ToList();
-                            var ExceptIds = StoreGroupingIds.Except(Ids).ToList();
-                            foreach (var PromotionStoreGroupingMapping in Promotion.PromotionStoreGroupingMappings)
-                            {
-                                if (ExceptIds.Contains(PromotionStoreGroupingMapping.StoreGroupingId))
-                                    PromotionStoreGroupingMapping.AddError(nameof(PromotionValidator), nameof(PromotionStoreGroupingMapping.StoreGrouping), ErrorCode.StoreGroupingNotExisted);
-                            }
-                        }
-                    }
+                    //if (Promotion.PromotionTypeId == PromotionTypeEnum.STORE_GROUPING.Id)
+                    //{
+                    //    if (Promotion.PromotionStoreGroupingMappings == null || Promotion.PromotionStoreGroupingMappings.Any() == false)
+                    //    {
+                    //        Promotion.AddError(nameof(PromotionValidator), nameof(Promotion.PromotionType), ErrorCode.StoreGroupingEmpty);
+                    //    }
+                    //    else
+                    //    {
+                    //        var StoreGroupingIds = Promotion.PromotionStoreGroupingMappings.Select(x => x.StoreGroupingId).ToList();
+                    //        var ListStoreGroupingInDB = await UOW.StoreGroupingRepository.List(new StoreGroupingFilter
+                    //        {
+                    //            Skip = 0,
+                    //            Take = int.MaxValue,
+                    //            Selects = StoreGroupingSelect.Id,
+                    //            Id = new IdFilter { In = StoreGroupingIds },
+                    //            StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id }
+                    //        });
+                    //        var Ids = ListStoreGroupingInDB.Select(x => x.Id).ToList();
+                    //        var ExceptIds = StoreGroupingIds.Except(Ids).ToList();
+                    //        foreach (var PromotionStoreGroupingMapping in Promotion.PromotionStoreGroupingMappings)
+                    //        {
+                    //            if (ExceptIds.Contains(PromotionStoreGroupingMapping.StoreGroupingId))
+                    //                PromotionStoreGroupingMapping.AddError(nameof(PromotionValidator), nameof(PromotionStoreGroupingMapping.StoreGrouping), ErrorCode.StoreGroupingNotExisted);
+                    //        }
+                    //    }
+                    //}
 
-                    if (Promotion.PromotionTypeId == PromotionTypeEnum.STORE_TYPE.Id)
-                    {
-                        if (Promotion.PromotionStoreTypeMappings == null || Promotion.PromotionStoreTypeMappings.Any() == false)
-                        {
-                            Promotion.AddError(nameof(PromotionValidator), nameof(Promotion.PromotionType), ErrorCode.StoreTypeEmpty);
-                        }
-                        else
-                        {
-                            var StoreTypeIds = Promotion.PromotionStoreTypeMappings.Select(x => x.StoreTypeId).ToList();
-                            var ListStoreTypeInDB = await UOW.StoreTypeRepository.List(new StoreTypeFilter
-                            {
-                                Skip = 0,
-                                Take = int.MaxValue,
-                                Selects = StoreTypeSelect.Id,
-                                Id = new IdFilter { In = StoreTypeIds },
-                                StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id }
-                            });
-                            var Ids = ListStoreTypeInDB.Select(x => x.Id).ToList();
-                            var ExceptIds = StoreTypeIds.Except(Ids).ToList();
-                            foreach (var PromotionStoreTypeMapping in Promotion.PromotionStoreTypeMappings)
-                            {
-                                if (ExceptIds.Contains(PromotionStoreTypeMapping.StoreTypeId))
-                                    PromotionStoreTypeMapping.AddError(nameof(PromotionValidator), nameof(PromotionStoreTypeMapping.StoreType), ErrorCode.StoreTypeNotExisted);
-                            }
-                        }
-                    }
+                    //if (Promotion.PromotionTypeId == PromotionTypeEnum.STORE_TYPE.Id)
+                    //{
+                    //    if (Promotion.PromotionStoreTypeMappings == null || Promotion.PromotionStoreTypeMappings.Any() == false)
+                    //    {
+                    //        Promotion.AddError(nameof(PromotionValidator), nameof(Promotion.PromotionType), ErrorCode.StoreTypeEmpty);
+                    //    }
+                    //    else
+                    //    {
+                    //        var StoreTypeIds = Promotion.PromotionStoreTypeMappings.Select(x => x.StoreTypeId).ToList();
+                    //        var ListStoreTypeInDB = await UOW.StoreTypeRepository.List(new StoreTypeFilter
+                    //        {
+                    //            Skip = 0,
+                    //            Take = int.MaxValue,
+                    //            Selects = StoreTypeSelect.Id,
+                    //            Id = new IdFilter { In = StoreTypeIds },
+                    //            StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id }
+                    //        });
+                    //        var Ids = ListStoreTypeInDB.Select(x => x.Id).ToList();
+                    //        var ExceptIds = StoreTypeIds.Except(Ids).ToList();
+                    //        foreach (var PromotionStoreTypeMapping in Promotion.PromotionStoreTypeMappings)
+                    //        {
+                    //            if (ExceptIds.Contains(PromotionStoreTypeMapping.StoreTypeId))
+                    //                PromotionStoreTypeMapping.AddError(nameof(PromotionValidator), nameof(PromotionStoreTypeMapping.StoreType), ErrorCode.StoreTypeNotExisted);
+                    //        }
+                    //    }
+                    //}
                 }
             }
             return Promotion.IsValidated;

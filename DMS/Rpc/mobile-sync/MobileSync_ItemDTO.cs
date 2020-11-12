@@ -1,5 +1,6 @@
-using Common;
+using DMS.Common;
 using DMS.Entities;
+using DMS.Models;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -17,6 +18,7 @@ namespace DMS.Rpc.mobile_sync
         public decimal? RetailPrice { get; set; }
         public long SaleStock { get; set; }
         public long StatusId { get; set; }
+        public MobileSync_StatusDTO Status { get; set; }
         public MobileSync_ProductDTO Product { get; set; }
         public List<MobileSync_ItemImageMappingDTO> ItemImageMappings { get; set; }
         public MobileSync_ItemDTO() { }
@@ -33,7 +35,6 @@ namespace DMS.Rpc.mobile_sync
             this.StatusId = Item.StatusId;
             this.Product = Item.Product == null ? null : new MobileSync_ProductDTO(Item.Product);
             this.ItemImageMappings = Item.ItemImageMappings?.Select(x => new MobileSync_ItemImageMappingDTO(x)).ToList();
-            this.Errors = Item.Errors;
         }
     }
 

@@ -1,5 +1,6 @@
-﻿using Common;
+﻿using DMS.Common;
 using DMS.Entities;
+using DMS.Models;
 
 namespace DMS.Rpc.mobile_sync
 {
@@ -18,15 +19,10 @@ namespace DMS.Rpc.mobile_sync
         public MobileSync_StoreTypeDTO() { }
         public MobileSync_StoreTypeDTO(StoreType StoreType)
         {
-
             this.Id = StoreType.Id;
-
             this.Code = StoreType.Code;
-
             this.Name = StoreType.Name;
-
             this.StatusId = StoreType.StatusId;
-
         }
     }
 

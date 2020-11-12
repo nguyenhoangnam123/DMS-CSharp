@@ -1,5 +1,6 @@
-using Common;
+using DMS.Common;
 using DMS.Entities;
+using DMS.Models;
 
 namespace DMS.Rpc.mobile_sync
 {
@@ -33,7 +34,6 @@ namespace DMS.Rpc.mobile_sync
             this.Item = IndirectSalesOrderPromotion.Item == null ? null : new MobileSync_ItemDTO(IndirectSalesOrderPromotion.Item);
             this.PrimaryUnitOfMeasure = IndirectSalesOrderPromotion.PrimaryUnitOfMeasure == null ? null : new MobileSync_UnitOfMeasureDTO(IndirectSalesOrderPromotion.PrimaryUnitOfMeasure);
             this.UnitOfMeasure = IndirectSalesOrderPromotion.UnitOfMeasure == null ? null : new MobileSync_UnitOfMeasureDTO(IndirectSalesOrderPromotion.UnitOfMeasure);
-            this.Errors = IndirectSalesOrderPromotion.Errors;
         }
     }
 

@@ -1,6 +1,7 @@
-﻿using Common;
+﻿using DMS.Common;
 using DMS.Entities;
 using DMS.Models;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
 using System;
@@ -41,29 +42,40 @@ namespace DMS.Handlers
             }
             try
             {
-                List<AppUserDAO> AppUserDAOs = AppUsers.Select(au => new AppUserDAO
+                List<long> Ids = AppUsers.Select(x => x.Id).ToList();
+                List<AppUserDAO> AppUserDAOs = await context.AppUser.Where(x => Ids.Contains(x.Id)).ToListAsync();
+                foreach(AppUser AppUser in AppUsers)
                 {
-                    Address = au.Address,
-                    Avatar = au.Avatar,
-                    CreatedAt = au.CreatedAt,
-                    UpdatedAt = au.UpdatedAt,
-                    DeletedAt = au.DeletedAt,
-                    Department = au.Department,
-                    DisplayName = au.DisplayName,
-                    Email = au.Email,
-                    Id = au.Id,
-                    OrganizationId = au.OrganizationId,
-                    Phone = au.Phone,
-                    PositionId = au.PositionId,
-                    ProvinceId = au.ProvinceId,
-                    RowId = au.RowId,
-                    StatusId = au.StatusId,
-                    Username = au.Username,
-                    SexId = au.SexId,
-                    Birthday = au.Birthday,
-                    Longitude = au.Longitude,
-                    Latitude = au.Latitude,
-                }).ToList();
+                    AppUserDAO AppUserDAO = AppUserDAOs.Where(x => x.Id == AppUser.Id).FirstOrDefault();
+                    if(AppUserDAO == null)
+                    {
+                        AppUserDAO = new AppUserDAO
+                        {
+                            GPSUpdatedAt = DateTime.Now,
+                        };
+                        AppUserDAOs.Add(AppUserDAO);
+                    }
+                    AppUserDAO.Address = AppUser.Address;
+                    AppUserDAO.Avatar = AppUser.Avatar;
+                    AppUserDAO.CreatedAt = AppUser.CreatedAt;
+                    AppUserDAO.UpdatedAt = AppUser.UpdatedAt;
+                    AppUserDAO.DeletedAt = AppUser.DeletedAt;
+                    AppUserDAO.Department = AppUser.Department;
+                    AppUserDAO.DisplayName = AppUser.DisplayName;
+                    AppUserDAO.Email = AppUser.Email;
+                    AppUserDAO.Id = AppUser.Id;
+                    AppUserDAO.OrganizationId = AppUser.OrganizationId;
+                    AppUserDAO.Phone = AppUser.Phone;
+                    AppUserDAO.PositionId = AppUser.PositionId;
+                    AppUserDAO.ProvinceId = AppUser.ProvinceId;
+                    AppUserDAO.RowId = AppUser.RowId;
+                    AppUserDAO.StatusId = AppUser.StatusId;
+                    AppUserDAO.Username = AppUser.Username;
+                    AppUserDAO.SexId = AppUser.SexId;
+                    AppUserDAO.Birthday = AppUser.Birthday;
+                    AppUserDAO.Longitude = AppUser.Longitude;
+                    AppUserDAO.Latitude = AppUser.Latitude;
+                }    
                 await context.BulkMergeAsync(AppUserDAOs);
             }
             catch (Exception ex)

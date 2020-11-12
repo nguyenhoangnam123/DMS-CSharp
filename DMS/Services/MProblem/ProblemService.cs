@@ -1,4 +1,4 @@
-﻿using Common;
+﻿using DMS.Common;
 using DMS.Entities;
 using DMS.Enums;
 using DMS.Handlers;
@@ -7,7 +7,7 @@ using DMS.Rpc.monitor_store_problems;
 using DMS.Services.MImage;
 using DMS.Services.MNotification;
 using DMS.Services.MOrganization;
-using Helpers;
+using DMS.Helpers;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -127,7 +127,7 @@ namespace DMS.Services.MProblem
                 var Year = StaticParams.DateTimeNow.Year.ToString().Substring(2);
                 var Id = (1000000 + Problem.Id).ToString().Substring(1);
                 Problem.Code = $"VD{Year}.{Id}";
-                Problem.ProblemHistorys = new List<ProblemHistory>
+                Problem.ProblemHistories = new List<ProblemHistory>
                 {
                     new ProblemHistory
                     {
@@ -153,7 +153,7 @@ namespace DMS.Services.MProblem
                     {
                         TitleWeb = $"Thông báo từ DMS",
                         ContentWeb = $"Vấn đề {Problem.Code} của đại lý {Problem.Store.Code} - {Problem.Store.Name} đã được thêm mới lên hệ thống bởi {CurrentUser.DisplayName}",
-                        LinkWebsite = $"{MonitorStoreProblemRoute.Master}/?id=*".Replace("*", Problem.Id.ToString()),
+                        LinkWebsite = $"{MonitorStoreProblemRoute.Master}#*".Replace("*", Problem.Id.ToString()),
                         LinkMobile = $"{MonitorStoreProblemRoute.Mobile}".Replace("*", Problem.Id.ToString()),
                         Time = Now,
                         Unread = true,
@@ -194,7 +194,7 @@ namespace DMS.Services.MProblem
                 Problem.Code = oldData.Code;
                 if (Problem.ProblemStatusId != oldData.ProblemStatusId)
                 {
-                    Problem.ProblemHistorys = oldData.ProblemHistorys;
+                    Problem.ProblemHistories = oldData.ProblemHistories;
                     ProblemHistory ProblemHistory = new ProblemHistory
                     {
                         ProblemId = Problem.Id,
@@ -218,7 +218,7 @@ namespace DMS.Services.MProblem
                         {
                             TitleWeb = $"Thông báo từ DMS",
                             ContentWeb = $"Vấn đề {Problem.Code} của đại lý {Problem.Store.Code} - {Problem.Store.Name} đã chuyển trạng thái {status} bởi {CurrentUser.DisplayName}",
-                            LinkWebsite = $"{MonitorStoreProblemRoute.Master}/?id=*".Replace("*", Problem.Id.ToString()),
+                            LinkWebsite = $"{MonitorStoreProblemRoute.Master}#*".Replace("*", Problem.Id.ToString()),
                             LinkMobile = $"{MonitorStoreProblemRoute.Mobile}".Replace("*", Problem.Id.ToString()),
                             Time = Now,
                             Unread = true,
@@ -236,7 +236,7 @@ namespace DMS.Services.MProblem
                         {
                             TitleWeb = $"Thông báo từ DMS",
                             ContentWeb = $"Vấn đề {Problem.Code} của đại lý {Problem.Store.Code} - {Problem.Store.Name} đã chuyển trạng thái {status} bởi {CurrentUser.DisplayName}",
-                            LinkWebsite = $"{MonitorStoreProblemRoute.Master}/?id=*".Replace("*", Problem.Id.ToString()),
+                            LinkWebsite = $"{MonitorStoreProblemRoute.Master}#*".Replace("*", Problem.Id.ToString()),
                             LinkMobile = $"{MonitorStoreProblemRoute.Mobile}".Replace("*", Problem.Id.ToString()),
                             Time = Now,
                             Unread = true,
@@ -245,9 +245,9 @@ namespace DMS.Services.MProblem
                         };
                         UserNotifications.Add(UserNotification);
                     }
-                    if (Problem.ProblemHistorys == null)
-                        Problem.ProblemHistorys = new List<ProblemHistory>();
-                    Problem.ProblemHistorys.Add(ProblemHistory);
+                    if (Problem.ProblemHistories == null)
+                        Problem.ProblemHistories = new List<ProblemHistory>();
+                    Problem.ProblemHistories.Add(ProblemHistory);
 
                     await NotificationService.BulkSend(UserNotifications);
                 }

@@ -1,10 +1,10 @@
-﻿using Common;
+﻿using DMS.Common;
 using DMS.Entities;
 using DMS.Enums;
 using DMS.Repositories;
 using DMS.Rpc.survey;
 using DMS.Services.MNotification;
-using Helpers;
+using DMS.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -132,7 +132,7 @@ namespace DMS.Services.MSurvey
                     {
                         TitleWeb = $"Thông báo từ DMS",
                         ContentWeb = $"Khảo sát {Survey.Title} đã được thêm mới lên hệ thống bởi {CurrentUser.DisplayName}, có hiệu lực từ {Survey.StartAt} - {Survey.EndAt}",
-                        LinkWebsite = $"{SurveyRoute.Master}/?id=*".Replace("*", Survey.Id.ToString()),
+                        LinkWebsite = $"{SurveyRoute.Master}#*".Replace("*", Survey.Id.ToString()),
                         LinkMobile = $"{SurveyRoute.Mobile}".Replace("*", Survey.Id.ToString()),
                         RecipientId = Id,
                         SenderId = CurrentContext.UserId,
@@ -190,7 +190,7 @@ namespace DMS.Services.MSurvey
                     {
                         TitleWeb = $"Thông báo từ DMS",
                         ContentWeb = $"Khảo sát {Survey.Title} đã được cập nhật thông tin bởi {CurrentUser.DisplayName}, có hiệu lực từ {Survey.StartAt} - {Survey.EndAt}",
-                        LinkWebsite = $"{SurveyRoute.Master}/?id=*".Replace("*", Survey.Id.ToString()),
+                        LinkWebsite = $"{SurveyRoute.Master}#*".Replace("*", Survey.Id.ToString()),
                         LinkMobile = $"{SurveyRoute.Mobile}".Replace("*", Survey.Id.ToString()),
                         RecipientId = Id,
                         SenderId = CurrentContext.UserId,

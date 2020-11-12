@@ -1,4 +1,4 @@
-using Common;
+using DMS.Common;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System;
@@ -14,6 +14,7 @@ namespace DMS.Entities
         public long? AppUserId { get; set; }
         public AppUser AppUser { get; set; }
         public WorkflowState WorkflowState { get; set; }
+        public RequestState RequestState { get; set; }
         public WorkflowStep WorkflowStep { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }

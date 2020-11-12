@@ -1,5 +1,6 @@
-﻿using Common;
+﻿using DMS.Common;
 using DMS.Entities;
+using DMS.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -71,9 +72,7 @@ namespace DMS.Rpc.mobile_sync
             this.SellerStore = IndirectSalesOrder.SellerStore == null ? null : new MobileSync_StoreDTO(IndirectSalesOrder.SellerStore);
             this.IndirectSalesOrderContents = IndirectSalesOrder.IndirectSalesOrderContents?.Select(x => new MobileSync_IndirectSalesOrderContentDTO(x)).ToList();
             this.IndirectSalesOrderPromotions = IndirectSalesOrder.IndirectSalesOrderPromotions?.Select(x => new MobileSync_IndirectSalesOrderPromotionDTO(x)).ToList();
-            this.RequestWorkflowStepMappings = IndirectSalesOrder.RequestWorkflowStepMappings?
-                .Where(x => x.WorkflowStateId != WorkflowStateEnum.NEW.Id)
-                .Select(x => new MobileSync_RequestWorkflowStepMappingDTO(x)).ToList();
+            
         }
     }
 }

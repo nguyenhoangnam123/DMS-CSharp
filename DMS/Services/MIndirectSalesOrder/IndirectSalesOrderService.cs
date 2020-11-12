@@ -1,4 +1,4 @@
-﻿using Common;
+﻿using DMS.Common;
 using DMS.Entities;
 using DMS.Enums;
 using DMS.Handlers;
@@ -8,7 +8,7 @@ using DMS.Services.MNotification;
 using DMS.Services.MOrganization;
 using DMS.Services.MProduct;
 using DMS.Services.MWorkflow;
-using Helpers;
+using DMS.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -74,6 +74,7 @@ namespace DMS.Services.MIndirectSalesOrder
             this.ItemService = ItemService;
             this.WorkflowService = WorkflowService;
         }
+
         public async Task<int> Count(IndirectSalesOrderFilter IndirectSalesOrderFilter)
         {
             try
@@ -96,7 +97,6 @@ namespace DMS.Services.MIndirectSalesOrder
                 }
             }
         }
-
         public async Task<List<IndirectSalesOrder>> List(IndirectSalesOrderFilter IndirectSalesOrderFilter)
         {
             try
@@ -142,7 +142,6 @@ namespace DMS.Services.MIndirectSalesOrder
                 }
             }
         }
-
         public async Task<List<IndirectSalesOrder>> ListNew(IndirectSalesOrderFilter IndirectSalesOrderFilter)
         {
             try
@@ -165,6 +164,7 @@ namespace DMS.Services.MIndirectSalesOrder
                 }
             }
         }
+        
         public async Task<int> CountPending(IndirectSalesOrderFilter IndirectSalesOrderFilter)
         {
             try
@@ -187,7 +187,6 @@ namespace DMS.Services.MIndirectSalesOrder
                 }
             }
         }
-
         public async Task<List<IndirectSalesOrder>> ListPending(IndirectSalesOrderFilter IndirectSalesOrderFilter)
         {
             try
@@ -210,6 +209,7 @@ namespace DMS.Services.MIndirectSalesOrder
                 }
             }
         }
+        
         public async Task<int> CountCompleted(IndirectSalesOrderFilter IndirectSalesOrderFilter)
         {
             try
@@ -232,7 +232,6 @@ namespace DMS.Services.MIndirectSalesOrder
                 }
             }
         }
-
         public async Task<List<IndirectSalesOrder>> ListCompleted(IndirectSalesOrderFilter IndirectSalesOrderFilter)
         {
             try
@@ -255,6 +254,7 @@ namespace DMS.Services.MIndirectSalesOrder
                 }
             }
         }
+       
         public async Task<List<Item>> ListItem(ItemFilter ItemFilter, long? SalesEmployeeId, long? StoreId)
         {
             try
@@ -351,7 +351,7 @@ namespace DMS.Services.MIndirectSalesOrder
                     {
                         TitleWeb = $"Thông báo từ DMS",
                         ContentWeb = $"Đơn hàng {IndirectSalesOrder.Code} đã được thêm mới lên hệ thống bởi {CurrentUser.DisplayName}",
-                        LinkWebsite = $"{IndirectSalesOrderRoute.Master}/?id=*".Replace("*", IndirectSalesOrder.Id.ToString()),
+                        LinkWebsite = $"{IndirectSalesOrderRoute.Master}#*".Replace("*", IndirectSalesOrder.Id.ToString()),
                         LinkMobile = $"{IndirectSalesOrderRoute.Mobile}".Replace("*", IndirectSalesOrder.Id.ToString()),
                         Time = Now,
                         Unread = true,
@@ -410,7 +410,7 @@ namespace DMS.Services.MIndirectSalesOrder
                 {
                     TitleWeb = $"Thông báo từ DMS",
                     ContentWeb = $"Đơn hàng {IndirectSalesOrder.Code} đã được cập nhật thông tin bởi {CurrentUser.DisplayName}",
-                    LinkWebsite = $"{IndirectSalesOrderRoute.Master}/?id=*".Replace("*", IndirectSalesOrder.Id.ToString()),
+                    LinkWebsite = $"{IndirectSalesOrderRoute.Master}#*".Replace("*", IndirectSalesOrder.Id.ToString()),
                     LinkMobile = $"{IndirectSalesOrderRoute.Mobile}".Replace("*", IndirectSalesOrder.Id.ToString()),
                     Time = Now,
                     Unread = true,
@@ -898,7 +898,7 @@ namespace DMS.Services.MIndirectSalesOrder
                     {
                         decimal targetPrice = decimal.MaxValue;
                         targetPrice = PriceListItemMappings.Where(x => x.ItemId == ItemId && x.PriceList.OrganizationId == OrganizationId)
-                            .Select(x => (decimal)x.Price)
+                            .Select(x => x.Price)
                             .DefaultIfEmpty(decimal.MaxValue)
                             .Min();
                         if (targetPrice < result[ItemId])
@@ -929,7 +929,7 @@ namespace DMS.Services.MIndirectSalesOrder
                     {
                         decimal targetPrice = decimal.MinValue;
                         targetPrice = PriceListItemMappings.Where(x => x.ItemId == ItemId && x.PriceList.OrganizationId == OrganizationId)
-                            .Select(x => (decimal)x.Price)
+                            .Select(x => x.Price)
                             .DefaultIfEmpty(decimal.MinValue)
                             .Max();
                         if (targetPrice > result[ItemId])
@@ -964,6 +964,7 @@ namespace DMS.Services.MIndirectSalesOrder
                 IndirectSalesOrder = await Update(IndirectSalesOrder);
             if (IndirectSalesOrder.IsValidated == false)
                 return IndirectSalesOrder;
+            IndirectSalesOrder = await UOW.IndirectSalesOrderRepository.Get(IndirectSalesOrder.Id);
             Dictionary<string, string> Parameters = await MapParameters(IndirectSalesOrder);
             GenericEnum RequestState = await WorkflowService.Send(IndirectSalesOrder.RowId, WorkflowTypeEnum.INDIRECT_SALES_ORDER.Id, IndirectSalesOrder.OrganizationId, Parameters);
             IndirectSalesOrder.RequestStateId = RequestState.Id;
@@ -973,10 +974,10 @@ namespace DMS.Services.MIndirectSalesOrder
 
         public async Task<IndirectSalesOrder> Approve(IndirectSalesOrder IndirectSalesOrder)
         {
-
             IndirectSalesOrder = await Update(IndirectSalesOrder);
             if (IndirectSalesOrder.IsValidated == false)
                 return IndirectSalesOrder;
+            IndirectSalesOrder = await UOW.IndirectSalesOrderRepository.Get(IndirectSalesOrder.Id);
             Dictionary<string, string> Parameters = await MapParameters(IndirectSalesOrder);
             await WorkflowService.Approve(IndirectSalesOrder.RowId, WorkflowTypeEnum.INDIRECT_SALES_ORDER.Id, Parameters);
             RequestState RequestState = await WorkflowService.GetRequestState(IndirectSalesOrder.RowId);
@@ -998,11 +999,14 @@ namespace DMS.Services.MIndirectSalesOrder
 
         private async Task<Dictionary<string, string>> MapParameters(IndirectSalesOrder IndirectSalesOrder)
         {
+            var AppUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
             Dictionary<string, string> Parameters = new Dictionary<string, string>();
             Parameters.Add(nameof(IndirectSalesOrder.Id), IndirectSalesOrder.Id.ToString());
             Parameters.Add(nameof(IndirectSalesOrder.Code), IndirectSalesOrder.Code);
             Parameters.Add(nameof(IndirectSalesOrder.SaleEmployeeId), IndirectSalesOrder.SaleEmployeeId.ToString());
             Parameters.Add(nameof(IndirectSalesOrder.BuyerStoreId), IndirectSalesOrder.BuyerStoreId.ToString());
+            Parameters.Add(nameof(AppUser.DisplayName), AppUser.DisplayName);
+            Parameters.Add(nameof(IndirectSalesOrder.RequestStateId), IndirectSalesOrder.RequestStateId.ToString());
 
             Parameters.Add(nameof(IndirectSalesOrder.Total), IndirectSalesOrder.Total.ToString());
             Parameters.Add(nameof(IndirectSalesOrder.TotalDiscountAmount), IndirectSalesOrder.TotalDiscountAmount.ToString());

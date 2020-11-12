@@ -22,6 +22,7 @@ namespace DMS.Models
         public string BodyMailForNextStep { get; set; }
         public long StatusId { get; set; }
         public DateTime UpdatedAt { get; set; }
+        public Guid RowId { get; set; }
 
         public virtual WorkflowStepDAO FromStep { get; set; }
         public virtual StatusDAO Status { get; set; }

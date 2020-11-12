@@ -1,5 +1,6 @@
-using Common;
+using DMS.Common;
 using DMS.Entities;
+using DMS.Models;
 using System;
 using System.Diagnostics.CodeAnalysis;
 
@@ -20,18 +21,11 @@ namespace DMS.Rpc.mobile_sync
         public MobileSync_UnitOfMeasureDTO() { }
         public MobileSync_UnitOfMeasureDTO(UnitOfMeasure UnitOfMeasure)
         {
-
             this.Id = UnitOfMeasure.Id;
-
             this.Code = UnitOfMeasure.Code;
-
             this.Name = UnitOfMeasure.Name;
-
             this.Description = UnitOfMeasure.Description;
-
             this.StatusId = UnitOfMeasure.StatusId;
-
-            this.Errors = UnitOfMeasure.Errors;
         }
         public MobileSync_UnitOfMeasureDTO(UnitOfMeasureGroupingContent UnitOfMeasureGroupingContent)
         {
