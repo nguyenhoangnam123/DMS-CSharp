@@ -1319,7 +1319,7 @@ namespace DMS.Rpc.mobile
                 {
                     LuckyNumber LuckyNumber = await LuckyNumberService.LuckyDraw(Mobile_RewardHistoryDTO.Id);
                     if (LuckyNumber == null)
-                        return BadRequest();
+                        return BadRequest("Đã hết giải thưởng");
                     else
                     {
                         return Ok(new Mobile_LuckyNumberDTO(LuckyNumber));
