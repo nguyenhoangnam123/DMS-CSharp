@@ -302,7 +302,7 @@ namespace DMS.Services.MStoreChecking
             StoreFilter.Take = int.MaxValue;
             StoreFilter.Selects = StoreSelect.Id | StoreSelect.Code | StoreSelect.Name |
                 StoreSelect.Address | StoreSelect.Telephone | StoreSelect.Latitude |
-                StoreSelect.Longitude | StoreSelect.HasChecking | StoreSelect.OwnerPhone | StoreSelect.StoreType | StoreSelect.StoreStatus;
+                StoreSelect.Longitude | StoreSelect.HasChecking | StoreSelect.OwnerPhone | StoreSelect.StoreType | StoreSelect.StoreStatus | StoreSelect.Province | StoreSelect.District | StoreSelect.Ward;
             var AppUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
             StoreFilter.OrganizationId = new IdFilter { Equal = AppUser.OrganizationId };
             StoreFilter.TimeZone = CurrentContext.TimeZone;
@@ -371,7 +371,7 @@ namespace DMS.Services.MStoreChecking
                 StoreFilter.Take = int.MaxValue;
                 StoreFilter.Selects = StoreSelect.Id | StoreSelect.Code | StoreSelect.Name |
                 StoreSelect.Address | StoreSelect.Telephone | StoreSelect.Latitude |
-                StoreSelect.Longitude | StoreSelect.HasChecking | StoreSelect.OwnerPhone | StoreSelect.StoreType | StoreSelect.StoreStatus;
+                StoreSelect.Longitude | StoreSelect.HasChecking | StoreSelect.OwnerPhone | StoreSelect.StoreType | StoreSelect.StoreStatus | StoreSelect.Province | StoreSelect.District | StoreSelect.Ward;
                 StoreFilter.TimeZone = CurrentContext.TimeZone;
                 Stores = await UOW.StoreRepository.List(StoreFilter);
                 if (CurrentContext.Latitude.HasValue && CurrentContext.Longitude.HasValue)
@@ -459,7 +459,7 @@ namespace DMS.Services.MStoreChecking
                 StoreFilter.Take = int.MaxValue;
                 StoreFilter.Selects = StoreSelect.Id | StoreSelect.Code | StoreSelect.Name |
                 StoreSelect.Address | StoreSelect.Telephone | StoreSelect.Latitude |
-                StoreSelect.Longitude | StoreSelect.HasChecking | StoreSelect.OwnerPhone | StoreSelect.StoreType | StoreSelect.StoreStatus;
+                StoreSelect.Longitude | StoreSelect.HasChecking | StoreSelect.OwnerPhone | StoreSelect.StoreType | StoreSelect.StoreStatus | StoreSelect.Province | StoreSelect.District | StoreSelect.Ward;
                 StoreFilter.TimeZone = CurrentContext.TimeZone;
                 Stores = await UOW.StoreRepository.List(StoreFilter);
                 if (CurrentContext.Latitude.HasValue && CurrentContext.Longitude.HasValue)
@@ -537,7 +537,7 @@ namespace DMS.Services.MStoreChecking
                 StoreFilter.Take = int.MaxValue;
                 StoreFilter.Selects = StoreSelect.Id | StoreSelect.Code | StoreSelect.Name |
                 StoreSelect.Address | StoreSelect.Telephone | StoreSelect.Latitude |
-                StoreSelect.Longitude | StoreSelect.HasChecking | StoreSelect.OwnerPhone | StoreSelect.StoreType | StoreSelect.StoreStatus;
+                StoreSelect.Longitude | StoreSelect.HasChecking | StoreSelect.OwnerPhone | StoreSelect.StoreType | StoreSelect.StoreStatus | StoreSelect.Province | StoreSelect.District | StoreSelect.Ward;
                 StoreFilter.SalesEmployeeId = new IdFilter { Equal = CurrentContext.UserId };
                 StoreFilter.TimeZone = CurrentContext.TimeZone;
                 Stores = await UOW.StoreRepository.ListInScoped(StoreFilter, CurrentContext.UserId);
@@ -624,6 +624,7 @@ namespace DMS.Services.MStoreChecking
                 Id = ERouteId,
                 AppUserId = new IdFilter { Equal = CurrentContext.UserId },
                 StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id },
+                RequestStateId = new IdFilter { Equal = RequestStateEnum.APPROVED.Id },
                 Selects = ERouteSelect.Id
             })).Select(x => x.Id).ToList();
 
@@ -674,6 +675,7 @@ namespace DMS.Services.MStoreChecking
                 Id = ERouteId,
                 AppUserId = new IdFilter { Equal = CurrentContext.UserId },
                 StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id },
+                RequestStateId = new IdFilter { Equal = RequestStateEnum.APPROVED.Id },
                 Selects = ERouteSelect.Id
             })).Select(x => x.Id).ToList();
 
