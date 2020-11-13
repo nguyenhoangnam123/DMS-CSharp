@@ -28,9 +28,10 @@ namespace DMS.Handlers
         private async Task Sync(DataContext context, string json)
         {
             List<EventMessage<Province>> EventMessageReviced = JsonConvert.DeserializeObject<List<EventMessage<Province>>>(json);
-            await SaveEventMessage(context, EventMessageReviced);
+            await SaveEventMessage(context, SyncKey, EventMessageReviced);
+
             List<Guid> RowIds = EventMessageReviced.Select(a => a.RowId).Distinct().ToList();
-            List<EventMessage<Province>> ProvinceEventMessages = await ListEventMessage<Province>(context, RowIds);
+            List<EventMessage<Province>> ProvinceEventMessages = await ListEventMessage<Province>(context, SyncKey, RowIds);
             List<Province> Provinces = new List<Province>();
             foreach (var RowId in RowIds)
             {

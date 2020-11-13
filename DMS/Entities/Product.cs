@@ -16,6 +16,7 @@ namespace DMS.Entities
         public string Description { get; set; }
         public string ScanCode { get; set; }
         public string ERPCode { get; set; }
+        public long CategoryId { get; set; }
         public long ProductTypeId { get; set; }
         public long? SupplierId { get; set; }
         public long? BrandId { get; set; }
@@ -35,8 +36,9 @@ namespace DMS.Entities
         public bool Used { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
-        public DateTime DeletedAt { get; set; }
+        public DateTime? DeletedAt { get; set; }
         public Brand Brand { get; set; }
+        public Category Category { get; set; }
         public ProductType ProductType { get; set; }
         public Status Status { get; set; }
         public Supplier Supplier { get; set; }
@@ -68,6 +70,7 @@ namespace DMS.Entities
         public StringFilter Description { get; set; }
         public StringFilter ScanCode { get; set; }
         public StringFilter ERPCode { get; set; }
+        public IdFilter CategoryId { get; set; }
         public IdFilter ProductTypeId { get; set; }
         public IdFilter SupplierId { get; set; }
         public IdFilter BrandId { get; set; }
@@ -113,6 +116,7 @@ namespace DMS.Entities
         Note = 17,
         IsNew = 18,
         UsedVariation = 19,
+        Category = 20,
     }
 
     [Flags]
@@ -142,5 +146,6 @@ namespace DMS.Entities
         IsNew = E._20,
         UsedVariation = E._21,
         VariationGrouping = E._22,
+        Category = E._23,
     }
 }

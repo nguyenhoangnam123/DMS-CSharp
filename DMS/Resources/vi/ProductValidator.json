@@ -14,6 +14,10 @@
       "NameOverLength": "Tên sản phẩm quá dài",
       "NameExisted": "Tên sản phẩm đã tồn tại"
     },
+    "Category": {
+      "CategoryEmpty": "Chưa chọn danh mục sản phẩm",
+      "CategoryNotExisted": "Danh mục sản phẩm không tồn tại"
+    },
     "ProductType": {
       "ProductTypeEmpty": "Chưa chọn loại sản phẩm",
       "ProductTypeNotExisted": "Loại sản phẩm không tồn tại"

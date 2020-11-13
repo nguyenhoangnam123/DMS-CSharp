@@ -32,6 +32,25 @@ namespace DMS.Rpc.product
                 .Select(x => new Product_BrandDTO(x)).ToList();
             return Product_BrandDTOs;
         }
+        [Route(ProductRoute.SingleListCategory), HttpPost]
+        public async Task<List<Product_CategoryDTO>> SingleListCategory([FromBody] Product_CategoryFilterDTO Product_CategoryFilterDTO)
+        {
+            CategoryFilter CategoryFilter = new CategoryFilter();
+            CategoryFilter.Skip = 0;
+            CategoryFilter.Take = 20;
+            CategoryFilter.OrderBy = CategoryOrder.Id;
+            CategoryFilter.OrderType = OrderType.ASC;
+            CategoryFilter.Selects = CategorySelect.ALL;
+            CategoryFilter.Id = Product_CategoryFilterDTO.Id;
+            CategoryFilter.Code = Product_CategoryFilterDTO.Code;
+            CategoryFilter.Name = Product_CategoryFilterDTO.Name;
+            CategoryFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+
+            List<Category> Categorys = await CategoryService.List(CategoryFilter);
+            List<Product_CategoryDTO> Product_CategoryDTOs = Categorys
+                .Select(x => new Product_CategoryDTO(x)).ToList();
+            return Product_CategoryDTOs;
+        }
         [Route(ProductRoute.SingleListProductType), HttpPost]
         public async Task<List<Product_ProductTypeDTO>> SingleListProductType([FromBody] Product_ProductTypeFilterDTO Product_ProductTypeFilterDTO)
         {

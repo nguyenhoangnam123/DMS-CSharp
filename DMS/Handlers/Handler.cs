@@ -29,7 +29,7 @@ namespace DMS.Handlers
         public abstract Task Handle(DataContext context, string routingKey, string content);
 
         public abstract void QueueBind(IModel channel, string queue, string exchange);
-        protected async Task<bool> SaveEventMessage<T>(DataContext DataContext, List<EventMessage<T>> EventMessages)
+        protected async Task<bool> SaveEventMessage<T>(DataContext DataContext, string RoutingKey, List<EventMessage<T>> EventMessages)
         {
             List<EventMessageDAO> EventMessageDAOs = new List<EventMessageDAO>();
             foreach (var EventMessage in EventMessages)
@@ -38,6 +38,7 @@ namespace DMS.Handlers
                 {
                     Id = EventMessage.Id,
                     Time = EventMessage.Time,
+                    RoutingKey = RoutingKey,
                     RowId = EventMessage.RowId,
                     EntityName = typeof(T).Name,
                     Content = JsonConvert.SerializeObject(EventMessage.Content)
@@ -47,11 +48,11 @@ namespace DMS.Handlers
             await DataContext.EventMessage.BulkMergeAsync(EventMessageDAOs);
             return true;
         }
-        protected async Task<List<EventMessage<T>>> ListEventMessage<T>(DataContext DataContext, List<Guid> RowIds)
+        protected async Task<List<EventMessage<T>>> ListEventMessage<T>(DataContext DataContext, string RoutingKey, List<Guid> RowIds)
         {
             string typeName = typeof(T).Name;
             List<EventMessageDAO> EventMessageDAOs = await DataContext.EventMessage
-                .Where(e => RowIds.Contains(e.RowId) && e.EntityName == typeName)
+                .Where(e => RowIds.Contains(e.RowId) && e.RoutingKey == RoutingKey && e.EntityName == typeName)
                 .OrderBy(e => e.Id)
                 .Skip(0).Take(int.MaxValue)
                 .ToListAsync();

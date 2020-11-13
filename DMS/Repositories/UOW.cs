@@ -16,6 +16,7 @@ namespace DMS.Repositories
         IAppUserStoreMappingRepository AppUserStoreMappingRepository { get; }
         IBannerRepository BannerRepository { get; }
         IBrandRepository BrandRepository { get; }
+        ICategoryRepository CategoryRepository { get; }
         IColorRepository ColorRepository { get; }
         IDirectSalesOrderContentRepository DirectSalesOrderContentRepository { get; }
         IDirectSalesOrderRepository DirectSalesOrderRepository { get; }
@@ -141,6 +142,7 @@ namespace DMS.Repositories
         public IAppUserStoreMappingRepository AppUserStoreMappingRepository { get; private set; }
         public IBannerRepository BannerRepository { get; private set; }
         public IBrandRepository BrandRepository { get; private set; }
+        public ICategoryRepository CategoryRepository { get; private set; }
         public IColorRepository ColorRepository { get; private set; }
         public IDirectSalesOrderContentRepository DirectSalesOrderContentRepository { get; private set; }
         public IDirectSalesOrderRepository DirectSalesOrderRepository { get; private set; }
@@ -266,6 +268,7 @@ namespace DMS.Repositories
             AppUserStoreMappingRepository = new AppUserStoreMappingRepository(DataContext);
             BrandRepository = new BrandRepository(DataContext);
             BannerRepository = new BannerRepository(DataContext);
+            CategoryRepository = new CategoryRepository(DataContext);
             ColorRepository = new ColorRepository(DataContext);
             DirectSalesOrderContentRepository = new DirectSalesOrderContentRepository(DataContext);
             DirectSalesOrderRepository = new DirectSalesOrderRepository(DataContext);

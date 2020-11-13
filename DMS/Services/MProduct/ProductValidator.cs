@@ -50,8 +50,9 @@ namespace DMS.Services.MProduct
             ItemsEmpty,
             ProductInUsed,
             UsedVariationNotExisted,
-            
-            
+            CategoryNotExisted,
+            CategoryEmpty,
+
         }
 
         private IUOW UOW;
@@ -135,6 +136,28 @@ namespace DMS.Services.MProduct
                     if (count != 0)
                         Product.AddError(nameof(ProductValidator), nameof(Product.Code), ErrorCode.CodeExisted);
                 }
+            }
+
+            return Product.IsValidated;
+        }
+
+        private async Task<bool> ValidateCategory(Product Product)
+        {
+            if (Product.CategoryId == 0)
+                Product.AddError(nameof(ProductValidator), nameof(Product.Category), ErrorCode.CategoryEmpty);
+            else
+            {
+                CategoryFilter CategoryFilter = new CategoryFilter
+                {
+                    Skip = 0,
+                    Take = 10,
+                    Id = new IdFilter { Equal = Product.CategoryId },
+                    Selects = CategorySelect.Id
+                };
+
+                int count = await UOW.CategoryRepository.Count(CategoryFilter);
+                if (count == 0)
+                    Product.AddError(nameof(ProductValidator), nameof(Product.Category), ErrorCode.CategoryNotExisted);
             }
 
             return Product.IsValidated;
@@ -462,6 +485,7 @@ namespace DMS.Services.MProduct
         {
             await ValidateCode(Product);
             await ValidateName(Product);
+            await ValidateCategory(Product);
             await ValidateProductType(Product);
             await ValidateSupplier(Product);
             await ValidateBrand(Product);
@@ -493,6 +517,7 @@ namespace DMS.Services.MProduct
             {
                 await ValidateCode(Product);
                 await ValidateName(Product);
+                await ValidateCategory(Product);
                 await ValidateProductType(Product);
                 await ValidateSupplier(Product);
                 await ValidateBrand(Product);
@@ -536,6 +561,12 @@ namespace DMS.Services.MProduct
                 Skip = 0,
                 Take = int.MaxValue,
                 Selects = ProductSelect.Code
+            })).Select(e => e.Code);
+            var listCategoryCodeInDB = (await UOW.CategoryRepository.List(new CategoryFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = CategorySelect.Code
             })).Select(e => e.Code);
             var listProductTypeCodeInDB = (await UOW.ProductTypeRepository.List(new ProductTypeFilter
             {
@@ -592,6 +623,10 @@ namespace DMS.Services.MProduct
                 else if (listCodeInDB.Contains(Product.Code))
                 {
                     Product.AddError(nameof(ProductValidator), nameof(Product.Code), ErrorCode.CodeExisted);
+                }
+                if (!listCategoryCodeInDB.Contains(Product.Category.Code))
+                {
+                    Product.AddError(nameof(ProductValidator), nameof(Product.Category), ErrorCode.CategoryNotExisted);
                 }
                 if (!listProductTypeCodeInDB.Contains(Product.ProductType.Code))
                 {

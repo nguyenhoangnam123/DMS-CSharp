@@ -10,6 +10,24 @@ namespace DMS.Rpc.product
 {
     public partial class ProductController : RpcController
     {
+        [Route(ProductRoute.FilterListCategory), HttpPost]
+        public async Task<List<Product_CategoryDTO>> FilterListCategory([FromBody] Product_CategoryFilterDTO Product_CategoryFilterDTO)
+        {
+            CategoryFilter CategoryFilter = new CategoryFilter();
+            CategoryFilter.Skip = 0;
+            CategoryFilter.Take = 20;
+            CategoryFilter.OrderBy = CategoryOrder.Id;
+            CategoryFilter.OrderType = OrderType.ASC;
+            CategoryFilter.Selects = CategorySelect.ALL;
+            CategoryFilter.Id = Product_CategoryFilterDTO.Id;
+            CategoryFilter.Code = Product_CategoryFilterDTO.Code;
+            CategoryFilter.Name = Product_CategoryFilterDTO.Name;
+
+            List<Category> Categorys = await CategoryService.List(CategoryFilter);
+            List<Product_CategoryDTO> Product_CategoryDTOs = Categorys
+                .Select(x => new Product_CategoryDTO(x)).ToList();
+            return Product_CategoryDTOs;
+        }
         [Route(ProductRoute.FilterListStatus), HttpPost]
         public async Task<List<Product_StatusDTO>> FilterListStatus([FromBody] Product_StatusFilterDTO Product_StatusFilterDTO)
         {

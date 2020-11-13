@@ -32,9 +32,9 @@ namespace DMS.Handlers
         private async Task Sync(DataContext context, string json)
         {
             List<EventMessage<Role>> EventMessageReviced = JsonConvert.DeserializeObject<List<EventMessage<Role>>>(json);
-            await SaveEventMessage(context, EventMessageReviced);
+            await SaveEventMessage(context, SyncKey, EventMessageReviced);
             List<Guid> RowIds = EventMessageReviced.Select(a => a.RowId).Distinct().ToList();
-            List<EventMessage<Role>> RoleEventMessages = await ListEventMessage<Role>(context, RowIds);
+            List<EventMessage<Role>> RoleEventMessages = await ListEventMessage<Role>(context, SyncKey, RowIds);
 
             List<Role> Roles = new List<Role>();
             foreach (var RowId in RowIds)

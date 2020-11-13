@@ -10,14 +10,16 @@ using System.Threading.Tasks;
 
 namespace DMS.Handlers
 {
-    public class DistrictHandler : Handler
+    public class CategoryHandler : Handler
     {
-        private string SyncKey => Name + ".Sync";
-        public override string Name => nameof(District);
+        private string SyncKey => $"{Name}.Sync" ;
+        private string UsedKey => $"DMS.{Name}.Used";
+        public override string Name => nameof(Category);
 
         public override void QueueBind(IModel channel, string queue, string exchange)
         {
             channel.QueueBind(queue, exchange, $"{Name}.*", null);
+            channel.QueueBind(queue, exchange, $"DMS.{Name}.*", null);
         }
         public override async Task Handle(DataContext context, string routingKey, string content)
         {
@@ -27,31 +29,34 @@ namespace DMS.Handlers
 
         private async Task Sync(DataContext context, string json)
         {
-            List<EventMessage<District>> EventMessageReviced = JsonConvert.DeserializeObject<List<EventMessage<District>>>(json);
+            List<EventMessage<Category>> EventMessageReviced = JsonConvert.DeserializeObject<List<EventMessage<Category>>>(json);
             await SaveEventMessage(context, SyncKey, EventMessageReviced);
             List<Guid> RowIds = EventMessageReviced.Select(a => a.RowId).Distinct().ToList();
-            List<EventMessage<District>> DistrictEventMessages = await ListEventMessage<District>(context, SyncKey, RowIds);
-            List<District> Districts = new List<District>();
+            List<EventMessage<Category>> CategoryEventMessages = await ListEventMessage<Category>(context, SyncKey, RowIds);
+
+            List<Category> Categorys = new List<Category>();
             foreach (var RowId in RowIds)
             {
-                EventMessage<District> EventMessage = DistrictEventMessages.Where(e => e.RowId == RowId).OrderByDescending(e => e.Time).FirstOrDefault();
+                EventMessage<Category> EventMessage = CategoryEventMessages.Where(e => e.RowId == RowId).OrderByDescending(e => e.Time).FirstOrDefault();
                 if (EventMessage != null)
-                    Districts.Add(EventMessage.Content);
+                    Categorys.Add(EventMessage.Content);
             }
-            List<DistrictDAO> DistrictDAOs = Districts.Select(x => new DistrictDAO
+            List<CategoryDAO> CategoryDAOs = Categorys.Select(x => new CategoryDAO
             {
                 Code = x.Code,
                 CreatedAt = x.CreatedAt,
                 UpdatedAt = x.UpdatedAt,
                 DeletedAt = x.DeletedAt,
-                ProvinceId = x.ProvinceId,
                 Id = x.Id,
                 Name = x.Name,
-                Priority = x.Priority,
                 RowId = x.RowId,
                 StatusId = x.StatusId,
+                ImageId = x.ImageId,
+                Level = x.Level,
+                ParentId = x.ParentId,
+                Path = x.Path,
             }).ToList();
-            await context.BulkMergeAsync(DistrictDAOs);
+            await context.BulkMergeAsync(CategoryDAOs);
         }
     }
 }
