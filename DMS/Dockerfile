@@ -19,11 +19,6 @@ FROM base AS final
 
 WORKDIR /app
 
-COPY --from=truesight.asia:8443/consul:stable /bin/consul /usr/local/bin/consul
-COPY --from=truesight.asia:8443/envoy:stable /usr/local/bin/envoy /usr/local/bin/envoy
-
-COPY /consul /consul/config 
-
 COPY --from=publish /app/publish .
 
 COPY ["docker-entrypoint.sh", "."]
