@@ -187,7 +187,7 @@ namespace DMS.Services.MProduct
 
         private async Task<bool> ValidateSupplier(Product Product)
         {
-            if (Product.SupplierId != 0)
+            if (Product.SupplierId.HasValue)
             {
                 SupplierFilter SupplierFilter = new SupplierFilter
                 {
@@ -207,7 +207,7 @@ namespace DMS.Services.MProduct
 
         private async Task<bool> ValidateBrand(Product Product)
         {
-            if (Product.BrandId != 0)
+            if (Product.BrandId.HasValue)
             {
                 BrandFilter BrandFilter = new BrandFilter
                 {

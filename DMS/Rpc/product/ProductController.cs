@@ -326,7 +326,7 @@ namespace DMS.Rpc.product
                     string CodeValue = ProductSheet.Cells[i, CodeColumn].Value?.ToString();
                     if (string.IsNullOrWhiteSpace(CodeValue) && i != ProductSheet.Dimension.End.Row)
                     {
-                        errorContent.AppendLine($"Lỗi dòng thứ {i}: Chưa nhập mã đơn vị");
+                        errorContent.AppendLine($"Lỗi dòng thứ {i}: Chưa nhập mã sản phẩm");
                     }
                     else if(!string.IsNullOrWhiteSpace(CodeValue) && ListProductCode.Contains(CodeValue))
                     {
