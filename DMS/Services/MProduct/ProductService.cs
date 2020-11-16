@@ -28,7 +28,6 @@ namespace DMS.Services.MProduct
         Task<List<Product>> BulkDeleteNewProduct(List<Product> Products);
         Task<List<Product>> BulkDelete(List<Product> Products);
         Task<List<Product>> Import(List<Product> Products);
-        Task<DataFile> Export(ProductFilter ProductFilter);
         ProductFilter ToFilter(ProductFilter ProductFilter);
 
         Task<Image> SaveImage(Image Image);
@@ -432,6 +431,9 @@ namespace DMS.Services.MProduct
                 await UOW.Begin();
                 await UOW.ProductRepository.BulkMerge(Products);
                 await UOW.Commit();
+
+                NotifyUsed(Products);
+
                 await Logging.CreateAuditLog(Products, new { }, nameof(ProductService));
                 return Products;
             }
@@ -450,83 +452,6 @@ namespace DMS.Services.MProduct
                     throw new MessageException(ex.InnerException);
                 }
             }
-        }
-
-        public async Task<DataFile> Export(ProductFilter ProductFilter)
-        {
-            List<Product> Products = await UOW.ProductRepository.List(ProductFilter);
-            MemoryStream MemoryStream = new MemoryStream();
-            using (ExcelPackage excelPackage = new ExcelPackage(MemoryStream))
-            {
-                //Set some properties of the Excel document
-                excelPackage.Workbook.Properties.Author = CurrentContext.UserName;
-                excelPackage.Workbook.Properties.Title = nameof(Product);
-                excelPackage.Workbook.Properties.Created = StaticParams.DateTimeNow;
-
-                //Create the WorkSheet
-                ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets.Add("Sheet 1");
-                int StartColumn = 1;
-                int StartRow = 2;
-                int IdColumn = 0 + StartColumn;
-                int CodeColumn = 1 + StartColumn;
-                int SupplierCodeColumn = 2 + StartColumn;
-                int NameColumn = 3 + StartColumn;
-                int DescriptionColumn = 4 + StartColumn;
-                int ScanCodeColumn = 5 + StartColumn;
-                int ProductTypeIdColumn = 6 + StartColumn;
-                int SupplierIdColumn = 7 + StartColumn;
-                int BrandIdColumn = 8 + StartColumn;
-                int UnitOfMeasureIdColumn = 9 + StartColumn;
-                int UnitOfMeasureGroupingIdColumn = 10 + StartColumn;
-                int SalePriceColumn = 11 + StartColumn;
-                int RetailPriceColumn = 12 + StartColumn;
-                int TaxTypeIdColumn = 13 + StartColumn;
-                int StatusIdColumn = 14 + StartColumn;
-
-                worksheet.Cells[1, IdColumn].Value = nameof(Product.Id);
-                worksheet.Cells[1, CodeColumn].Value = nameof(Product.Code);
-                worksheet.Cells[1, SupplierCodeColumn].Value = nameof(Product.SupplierCode);
-                worksheet.Cells[1, NameColumn].Value = nameof(Product.Name);
-                worksheet.Cells[1, DescriptionColumn].Value = nameof(Product.Description);
-                worksheet.Cells[1, ScanCodeColumn].Value = nameof(Product.ScanCode);
-                worksheet.Cells[1, ProductTypeIdColumn].Value = nameof(Product.ProductTypeId);
-                worksheet.Cells[1, SupplierIdColumn].Value = nameof(Product.SupplierId);
-                worksheet.Cells[1, BrandIdColumn].Value = nameof(Product.BrandId);
-                worksheet.Cells[1, UnitOfMeasureIdColumn].Value = nameof(Product.UnitOfMeasureId);
-                worksheet.Cells[1, UnitOfMeasureGroupingIdColumn].Value = nameof(Product.UnitOfMeasureGroupingId);
-                worksheet.Cells[1, SalePriceColumn].Value = nameof(Product.SalePrice);
-                worksheet.Cells[1, RetailPriceColumn].Value = nameof(Product.RetailPrice);
-                worksheet.Cells[1, TaxTypeIdColumn].Value = nameof(Product.TaxTypeId);
-                worksheet.Cells[1, StatusIdColumn].Value = nameof(Product.StatusId);
-
-                for (int i = 0; i < Products.Count; i++)
-                {
-                    Product Product = Products[i];
-                    worksheet.Cells[i + StartRow, IdColumn].Value = Product.Id;
-                    worksheet.Cells[i + StartRow, CodeColumn].Value = Product.Code;
-                    worksheet.Cells[i + StartRow, SupplierCodeColumn].Value = Product.SupplierCode;
-                    worksheet.Cells[i + StartRow, NameColumn].Value = Product.Name;
-                    worksheet.Cells[i + StartRow, DescriptionColumn].Value = Product.Description;
-                    worksheet.Cells[i + StartRow, ScanCodeColumn].Value = Product.ScanCode;
-                    worksheet.Cells[i + StartRow, ProductTypeIdColumn].Value = Product.ProductTypeId;
-                    worksheet.Cells[i + StartRow, SupplierIdColumn].Value = Product.SupplierId;
-                    worksheet.Cells[i + StartRow, BrandIdColumn].Value = Product.BrandId;
-                    worksheet.Cells[i + StartRow, UnitOfMeasureIdColumn].Value = Product.UnitOfMeasureId;
-                    worksheet.Cells[i + StartRow, UnitOfMeasureGroupingIdColumn].Value = Product.UnitOfMeasureGroupingId;
-                    worksheet.Cells[i + StartRow, SalePriceColumn].Value = Product.SalePrice;
-                    worksheet.Cells[i + StartRow, RetailPriceColumn].Value = Product.RetailPrice;
-                    worksheet.Cells[i + StartRow, TaxTypeIdColumn].Value = Product.TaxTypeId;
-                    worksheet.Cells[i + StartRow, StatusIdColumn].Value = Product.StatusId;
-                }
-                excelPackage.Save();
-            }
-
-            DataFile DataFile = new DataFile
-            {
-                Name = nameof(Product),
-                Content = MemoryStream,
-            };
-            return DataFile;
         }
 
         public ProductFilter ToFilter(ProductFilter filter)
@@ -619,6 +544,42 @@ namespace DMS.Services.MProduct
                     new TaxType { Id = Product.TaxTypeId },
                     Guid.NewGuid());
                 RabbitManager.PublishSingle(TaxTypeMessage, RoutingKeyEnum.TaxTypeUsed);
+            }
+        }
+
+        private void NotifyUsed(List<Product> Products)
+        {
+            {
+                List<EventMessage<ProductType>> ProductTypeMessages = new List<EventMessage<ProductType>>();
+                foreach (var Product in Products)
+                {
+                    EventMessage<ProductType> ProductTypeMessage = new EventMessage<ProductType>(
+                     new ProductType { Id = Product.ProductTypeId },
+                     Guid.NewGuid());
+                }
+                RabbitManager.PublishList(ProductTypeMessages, RoutingKeyEnum.ProductTypeUsed);
+            }
+
+            {
+                List<EventMessage<UnitOfMeasure>> UnitOfMeasureMessages = new List<EventMessage<UnitOfMeasure>>();
+                foreach (var Product in Products)
+                {
+                    EventMessage<UnitOfMeasure> UnitOfMeasureMessage = new EventMessage<UnitOfMeasure>(
+                    new UnitOfMeasure { Id = Product.UnitOfMeasureId },
+                    Guid.NewGuid());
+                }
+                RabbitManager.PublishList(UnitOfMeasureMessages, RoutingKeyEnum.UnitOfMeasureUsed);
+            }
+
+            {
+                List<EventMessage<TaxType>> TaxTypeMessages = new List<EventMessage<TaxType>>();
+                foreach (var Product in Products)
+                {
+                    EventMessage<TaxType> TaxTypeMessage = new EventMessage<TaxType>(
+                    new TaxType { Id = Product.TaxTypeId },
+                    Guid.NewGuid());
+                }
+                RabbitManager.PublishList(TaxTypeMessages, RoutingKeyEnum.TaxTypeUsed);
             }
         }
     }

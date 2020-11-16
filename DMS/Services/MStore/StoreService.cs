@@ -499,7 +499,7 @@ namespace DMS.Services.MStore
 
                     var oldData = dbStores.Where(x => x.Id == Store.Id)
                                 .FirstOrDefault();
-                    if(oldData != null)
+                    if (oldData != null)
                     {
                         Store.RowId = oldData.RowId;
                     }
@@ -510,7 +510,7 @@ namespace DMS.Services.MStore
 
                     StoreCodeGenerate(Store);
                 }
-                
+
                 await UOW.StoreRepository.BulkMerge(Stores);
 
                 dbStores = await UOW.StoreRepository.List(StoreFilter);
@@ -531,6 +531,8 @@ namespace DMS.Services.MStore
                 }
                 await UOW.StoreRepository.BulkMerge(Stores);
                 await UOW.Commit();
+
+                NotifyUsed(Stores);
 
                 Stores = await UOW.StoreRepository.List(new StoreFilter
                 {
@@ -666,6 +668,21 @@ namespace DMS.Services.MStore
 
         private void NotifyUsed(Store Store)
         {
+            EventMessage<StoreType> StoreTypeMessage = new EventMessage<StoreType>
+            {
+                Content = new StoreType { Id = Store.StoreTypeId },
+                EntityName = nameof(StoreType),
+                RowId = Guid.NewGuid(),
+                Time = StaticParams.DateTimeNow,
+            };
+            RabbitManager.PublishSingle(StoreTypeMessage, RoutingKeyEnum.StoreTypeUsed);
+
+        }
+
+        private void NotifyUsed(List<Store> Stores)
+        {
+            List<EventMessage<StoreType>> StoreTypeMessages = new List<EventMessage<StoreType>>();
+            foreach (var Store in Stores)
             {
                 EventMessage<StoreType> StoreTypeMessage = new EventMessage<StoreType>
                 {
@@ -674,8 +691,8 @@ namespace DMS.Services.MStore
                     RowId = Guid.NewGuid(),
                     Time = StaticParams.DateTimeNow,
                 };
-                RabbitManager.PublishSingle(StoreTypeMessage, RoutingKeyEnum.StoreTypeUsed);
             }
+            RabbitManager.PublishList(StoreTypeMessages, RoutingKeyEnum.StoreTypeUsed);
         }
 
         private void StoreCodeGenerate(Store Store, long? Counter = null)
