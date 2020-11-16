@@ -902,7 +902,7 @@ namespace DMS.Repositories
                     Product.VariationGroupings.ForEach(vg => vg.ProductId = ProductId);
             }
             #region merge product grouping mapping
-            List<ProductProductGroupingMapping> ProductProductGroupingMappings = Products.SelectMany(p => p.ProductProductGroupingMappings).ToList();
+            List<ProductProductGroupingMapping> ProductProductGroupingMappings = Products.Where(x => x.ProductProductGroupingMappings != null).SelectMany(p => p.ProductProductGroupingMappings).ToList();
             List<ProductProductGroupingMappingDAO> ProductProductGroupingMappingDAOs = new List<ProductProductGroupingMappingDAO>();
             foreach (ProductProductGroupingMapping ProductProductGroupingMapping in ProductProductGroupingMappings)
             {
@@ -950,6 +950,7 @@ namespace DMS.Repositories
                     Name = VariationGrouping.Name,
                     ProductId = VariationGrouping.ProductId,
                     RowId = Guid.NewGuid(),
+                    Used = true,
                     CreatedAt = StaticParams.DateTimeNow,
                     UpdatedAt = StaticParams.DateTimeNow
                 };
