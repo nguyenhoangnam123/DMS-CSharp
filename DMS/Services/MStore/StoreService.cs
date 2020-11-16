@@ -200,9 +200,6 @@ namespace DMS.Services.MStore
                 await UOW.Begin();
                 await UOW.StoreRepository.Create(Store);
 
-                if (Store.AppUserId.HasValue)
-                    await UOW.AppUserStoreMappingRepository.Update(Store.AppUserId.Value, Store.Id);
-
                 List<UserNotification> UserNotifications = new List<UserNotification>();
                 if (Store.StoreScoutingId.HasValue)
                 {
