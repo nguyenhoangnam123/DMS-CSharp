@@ -377,7 +377,7 @@ namespace DMS.Rpc.product
                         var ProductGroupCodes = ProductGroupCodeValue.Split(';');
                         foreach (var ProductGroupCode in ProductGroupCodes)
                         {
-                            ProductGrouping ProductGrouping = ProductGroupings.Where(pg => pg.Code.Equals(ProductGroupCode.Trim())).FirstOrDefault();
+                            ProductGrouping ProductGrouping = ProductGroupings.Where(pg => pg.Code.ToLower()== ProductGroupCode.Trim().ToLower()).FirstOrDefault();
                             if (ProductGrouping != null)
                             {
                                 ProductProductGroupingMapping ProductProductGroupingMapping = new ProductProductGroupingMapping();
@@ -398,19 +398,19 @@ namespace DMS.Rpc.product
                     {
                         Code = CategoryCodeValue
                     };
-                    Product.CategoryId = Categorys.Where(x => x.Code.Equals(CategoryCodeValue)).Select(x => x.Id).FirstOrDefault();
+                    Product.CategoryId = Categorys.Where(x => x.Code.ToLower()==CategoryCodeValue.Trim().ToLower()).Select(x => x.Id).FirstOrDefault();
 
                     Product.ProductType = new ProductType()
                     {
                         Code = ProductTypeCodeValue
                     };
-                    Product.ProductTypeId = ProductTypes.Where(x => x.Code.Equals(ProductTypeCodeValue)).Select(x => x.Id).FirstOrDefault();
+                    Product.ProductTypeId = ProductTypes.Where(x => x.Code.ToLower()==ProductTypeCodeValue.Trim().ToLower()).Select(x => x.Id).FirstOrDefault();
 
                     Product.UnitOfMeasure = new UnitOfMeasure()
                     {
                         Code = UoMCodeValue
                     };
-                    Product.UnitOfMeasureId = UnitOfMeasures.Where(x => x.Code.Equals(UoMCodeValue)).Select(x => x.Id).FirstOrDefault();
+                    Product.UnitOfMeasureId = UnitOfMeasures.Where(x => x.Code.ToLower()==UoMCodeValue.Trim().ToLower()).Select(x => x.Id).FirstOrDefault();
 
                     if (!string.IsNullOrWhiteSpace(BrandCodeValue))
                     {
@@ -418,7 +418,7 @@ namespace DMS.Rpc.product
                         {
                             Code = BrandCodeValue
                         };
-                        Product.BrandId = Brands.Where(x => x.Code.Equals(BrandCodeValue)).Select(x => x.Id).FirstOrDefault();
+                        Product.BrandId = Brands.Where(x => x.Code.ToLower() == BrandCodeValue.Trim().ToLower()).Select(x => x.Id).FirstOrDefault();
                     }
                     if (!string.IsNullOrWhiteSpace(UoMGroupCodeValue))
                     {
@@ -426,7 +426,7 @@ namespace DMS.Rpc.product
                         {
                             Code = UoMGroupCodeValue
                         };
-                        Product.UnitOfMeasureGroupingId = UnitOfMeasureGroupings.Where(x => x.Code.Equals(UoMGroupCodeValue)).Select(x => x.Id).FirstOrDefault();
+                        Product.UnitOfMeasureGroupingId = UnitOfMeasureGroupings.Where(x => x.Code.Trim() == UoMGroupCodeValue.Trim().Trim()).Select(x => x.Id).FirstOrDefault();
                     }
                     if (!string.IsNullOrWhiteSpace(SupplierCodeValue))
                     {
@@ -434,7 +434,7 @@ namespace DMS.Rpc.product
                         {
                             Code = SupplierCodeValue
                         };
-                        Product.SupplierId = Suppliers.Where(x => x.Code.Equals(SupplierCodeValue)).Select(x => x.Id).FirstOrDefault();
+                        Product.SupplierId = Suppliers.Where(x => x.Code.ToLower() == SupplierCodeValue.Trim().ToLower()).Select(x => x.Id).FirstOrDefault();
                     }
                     Product.TaxType = new TaxType()
                     {

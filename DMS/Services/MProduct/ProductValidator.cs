@@ -561,57 +561,57 @@ namespace DMS.Services.MProduct
                 Skip = 0,
                 Take = int.MaxValue,
                 Selects = ProductSelect.Code
-            })).Select(e => e.Code);
+            })).Select(e => e.Code.ToLower()).ToList();
             var listCategoryCodeInDB = (await UOW.CategoryRepository.List(new CategoryFilter
             {
                 Skip = 0,
                 Take = int.MaxValue,
                 Selects = CategorySelect.Code
-            })).Select(e => e.Code);
+            })).Select(e => e.Code.ToLower()).ToList();
             var listProductTypeCodeInDB = (await UOW.ProductTypeRepository.List(new ProductTypeFilter
             {
                 Skip = 0,
                 Take = int.MaxValue,
                 Selects = ProductTypeSelect.Code
-            })).Select(e => e.Code);
+            })).Select(e => e.Code.ToLower()).ToList();
             var listSupplierCodeInDB = (await UOW.SupplierRepository.List(new SupplierFilter
             {
                 Skip = 0,
                 Take = int.MaxValue,
                 Selects = SupplierSelect.Code
-            })).Select(e => e.Code);
+            })).Select(e => e.Code.ToLower()).ToList();
             var listBrandCodeInDB = (await UOW.BrandRepository.List(new BrandFilter
             {
                 Skip = 0,
                 Take = int.MaxValue,
                 Selects = BrandSelect.Code
-            })).Select(e => e.Code);
+            })).Select(e => e.Code.ToLower()).ToList();
             var listTaxTypeCodeInDB = (await UOW.TaxTypeRepository.List(new TaxTypeFilter
             {
                 Skip = 0,
                 Take = int.MaxValue,
                 Selects = TaxTypeSelect.Code
-            })).Select(e => e.Code);
+            })).Select(e => e.Code.ToLower()).ToList();
             var listUsedVariationCodeInDB = (await UOW.UsedVariationRepository.List(new UsedVariationFilter
             {
                 Skip = 0,
                 Take = int.MaxValue,
                 Selects = UsedVariationSelect.Code
-            })).Select(e => e.Code);
+            })).Select(e => e.Code.ToLower()).ToList();
             var UOMs = await UOW.UnitOfMeasureRepository.List(new UnitOfMeasureFilter
             {
                 Skip = 0,
                 Take = int.MaxValue,
                 Selects = UnitOfMeasureSelect.Code | UnitOfMeasureSelect.Id
             });
-            var listUOMCodeInDB = UOMs.Select(e => e.Code);
+            var listUOMCodeInDB = UOMs.Select(e => e.Code.ToLower()).ToList();
             var UOMGs = await UOW.UnitOfMeasureGroupingRepository.List(new UnitOfMeasureGroupingFilter
             {
                 Skip = 0,
                 Take = int.MaxValue,
                 Selects = UnitOfMeasureGroupingSelect.Code | UnitOfMeasureGroupingSelect.Id | UnitOfMeasureGroupingSelect.UnitOfMeasure
             });
-            var listUOMGroupingCodeInDB = UOMGs.Select(e => e.Code);
+            var listUOMGroupingCodeInDB = UOMGs.Select(e => e.Code.ToLower()).ToList();
 
             foreach (var Product in Products)
             {
@@ -624,39 +624,39 @@ namespace DMS.Services.MProduct
                 {
                     Product.AddError(nameof(ProductValidator), nameof(Product.Code), ErrorCode.CodeExisted);
                 }
-                if (!listCategoryCodeInDB.Contains(Product.Category.Code))
+                if (!listCategoryCodeInDB.Contains(Product.Category.Code.ToLower()))
                 {
                     Product.AddError(nameof(ProductValidator), nameof(Product.Category), ErrorCode.CategoryNotExisted);
                 }
-                if (!listProductTypeCodeInDB.Contains(Product.ProductType.Code))
+                if (!listProductTypeCodeInDB.Contains(Product.ProductType.Code.ToLower()))
                 {
                     Product.AddError(nameof(ProductValidator), nameof(Product.ProductType), ErrorCode.ProductTypeNotExisted);
                 }
                 if (Product.Supplier != null)
                 {
-                    if (!listSupplierCodeInDB.Contains(Product.Supplier.Code))
+                    if (!listSupplierCodeInDB.Contains(Product.Supplier.Code.ToLower()))
                     {
                         Product.AddError(nameof(ProductValidator), nameof(Product.Supplier), ErrorCode.SupplierNotExisted);
                     }
                 }
                 if(Product.Brand != null)
                 {
-                    if (!listBrandCodeInDB.Contains(Product.Brand.Code))
+                    if (!listBrandCodeInDB.Contains(Product.Brand.Code.ToLower()))
                     {
                         Product.AddError(nameof(ProductValidator), nameof(Product.Brand), ErrorCode.BrandNotExisted);
                     }
                 }
-                if (!listTaxTypeCodeInDB.Contains(Product.TaxType.Code))
+                if (!listTaxTypeCodeInDB.Contains(Product.TaxType.Code.ToLower()))
                 {
                     Product.AddError(nameof(ProductValidator), nameof(Product.TaxType), ErrorCode.TaxTypeNotExisted);
                 }
-                if (!listUOMCodeInDB.Contains(Product.UnitOfMeasure.Code))
+                if (!listUOMCodeInDB.Contains(Product.UnitOfMeasure.Code.ToLower()))
                 {
                     Product.AddError(nameof(ProductValidator), nameof(Product.UnitOfMeasure), ErrorCode.UnitOfMeasureNotExisted);
                 }
                 if(Product.UnitOfMeasureGrouping != null)
                 {
-                    if (!listUOMGroupingCodeInDB.Contains(Product.UnitOfMeasureGrouping.Code))
+                    if (!listUOMGroupingCodeInDB.Contains(Product.UnitOfMeasureGrouping.Code.ToLower()))
                     {
                         Product.AddError(nameof(ProductValidator), nameof(Product.UnitOfMeasureGrouping), ErrorCode.UnitOfMeasureGroupingNotExisted);
                     }
