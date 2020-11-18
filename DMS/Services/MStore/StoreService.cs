@@ -192,7 +192,6 @@ namespace DMS.Services.MStore
             try
             {
                 var CurrentUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
-                Store.AppUserId = CurrentContext.UserId;
                 Store.UnsignName = Store.Name.ChangeToEnglishChar();
                 Store.UnsignAddress = Store.Address.ChangeToEnglishChar();
                 var Counter = await UOW.IdGenerateRepository.GetCounter();
