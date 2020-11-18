@@ -27,9 +27,9 @@ namespace DMS.Services.MStore
         Task<Store> Create(Store Store);
         Task<Store> Update(Store Store);
         Task<Store> Delete(Store Store);
-        Task<Store> Send(Store Store);
-        Task<Store> Approve(Store Store);
-        Task<Store> Reject(Store Store);
+        //Task<Store> Send(Store Store);
+        //Task<Store> Approve(Store Store);
+        //Task<Store> Reject(Store Store);
         Task<List<Store>> BulkDelete(List<Store> Stores);
         Task<List<Store>> Import(List<Store> Stores);
         StoreFilter ToFilter(StoreFilter StoreFilter);
@@ -601,44 +601,44 @@ namespace DMS.Services.MStore
             return Image;
         }
 
-        public async Task<Store> Send(Store Store)
-        {
-            if (Store.Id == 0)
-                Store = await Create(Store);
-            else
-                Store = await Update(Store);
-            Dictionary<string, string> Parameters = MapParameters(Store);
-            GenericEnum Action = await WorkflowService.Send(Store.RowId, WorkflowTypeEnum.STORE.Id, Store.OrganizationId, Parameters);
-            if (Action != WorkflowActionEnum.OK)
-                return null;
-            return await Get(Store.Id);
-        }
-        public async Task<Store> Approve(Store Store)
-        {
-            Store = await Update(Store);
-            Dictionary<string, string> Parameters = MapParameters(Store);
-            GenericEnum Action = await WorkflowService.Approve(Store.RowId, WorkflowTypeEnum.STORE.Id, Parameters);
-            if (Action != WorkflowActionEnum.OK)
-                return null;
-            return await Get(Store.Id);
-        }
+        //public async Task<Store> Send(Store Store)
+        //{
+        //    if (Store.Id == 0)
+        //        Store = await Create(Store);
+        //    else
+        //        Store = await Update(Store);
+        //    Dictionary<string, string> Parameters = MapParameters(Store);
+        //    GenericEnum Action = await WorkflowService.Send(Store.RowId, WorkflowTypeEnum.STORE.Id, Store.OrganizationId, Parameters);
+        //    if (Action != WorkflowActionEnum.OK)
+        //        return null;
+        //    return await Get(Store.Id);
+        //}
+        //public async Task<Store> Approve(Store Store)
+        //{
+        //    Store = await Update(Store);
+        //    Dictionary<string, string> Parameters = MapParameters(Store);
+        //    GenericEnum Action = await WorkflowService.Approve(Store.RowId, WorkflowTypeEnum.STORE.Id, Parameters);
+        //    if (Action != WorkflowActionEnum.OK)
+        //        return null;
+        //    return await Get(Store.Id);
+        //}
 
-        public async Task<Store> Reject(Store Store)
-        {
-            Store = await UOW.StoreRepository.Get(Store.Id);
-            Dictionary<string, string> Parameters = MapParameters(Store);
-            GenericEnum Action = await WorkflowService.Reject(Store.RowId, WorkflowTypeEnum.STORE.Id, Parameters);
-            if (Action != WorkflowActionEnum.OK)
-                return null;
-            return await Get(Store.Id);
-        }
+        //public async Task<Store> Reject(Store Store)
+        //{
+        //    Store = await UOW.StoreRepository.Get(Store.Id);
+        //    Dictionary<string, string> Parameters = MapParameters(Store);
+        //    GenericEnum Action = await WorkflowService.Reject(Store.RowId, WorkflowTypeEnum.STORE.Id, Parameters);
+        //    if (Action != WorkflowActionEnum.OK)
+        //        return null;
+        //    return await Get(Store.Id);
+        //}
 
-        private Dictionary<string, string> MapParameters(Store Store)
-        {
-            Dictionary<string, string> Parameters = new Dictionary<string, string>();
-            Parameters.Add(WorkflowParameterEnum.STORE_ORGANIZATION.Code, Store.OrganizationId.ToString());
-            return Parameters;
-        }
+        //private Dictionary<string, string> MapParameters(Store Store)
+        //{
+        //    Dictionary<string, string> Parameters = new Dictionary<string, string>();
+        //    Parameters.Add(WorkflowParameterEnum.STORE_ORGANIZATION.Code, Store.OrganizationId.ToString());
+        //    return Parameters;
+        //}
 
         private async Task<List<long>> ListAppUserInOrgs(Store Store)
         {
