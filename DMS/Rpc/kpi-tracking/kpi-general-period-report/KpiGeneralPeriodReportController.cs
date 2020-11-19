@@ -204,10 +204,11 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
                             OrganizationId = k.OrganizationId
                         };
             var Ids = await query
+                .Distinct()
                 .OrderBy(x => x.OrganizationId)
                 .Skip(KpiGeneralPeriodReport_KpiGeneralPeriodReportFilterDTO.Skip)
                 .Take(KpiGeneralPeriodReport_KpiGeneralPeriodReportFilterDTO.Take)
-                .Distinct().ToListAsync();
+                .ToListAsync();
             AppUserIds = Ids.Select(x => x.EmployeeId).Distinct().ToList();
 
             List<AppUserDAO> AppUserDAOs = await DataContext.AppUser
