@@ -290,6 +290,10 @@ namespace DMS.Services.MStore
                 StoreCodeGenerate(Store);
                 await UOW.Begin();
                 await UOW.StoreRepository.Update(Store);
+                if(Store.StatusId == StatusEnum.INACTIVE.Id)
+                {
+                    await UOW.AppUserStoreMappingRepository.Delete(null, oldData.Id);
+                }
                 if (Store.StoreStatusId == StoreStatusEnum.OFFICIAL.Id)
                 {
                     if (oldData.AppUserId.HasValue)
