@@ -460,6 +460,16 @@ namespace DMS.Repositories
                         StatusId = x.Product.ProductType.StatusId,
                         UpdatedAt = x.Product.ProductType.UpdatedAt,
                     },
+                    Category = x.Product.Category == null ? null : new Category
+                    {
+                        Id = x.Product.Category.Id,
+                        Code = x.Product.Category.Code,
+                        Name = x.Product.Category.Name,
+                        Path = x.Product.Category.Path,
+                        ParentId = x.Product.Category.ParentId,
+                        StatusId = x.Product.Category.StatusId,
+                        Level = x.Product.Category.Level
+                    },
                     TaxType = x.Product.TaxType == null ? null : new TaxType
                     {
                         Id = x.Product.TaxType.Id,
