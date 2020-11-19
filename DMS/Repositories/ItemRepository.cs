@@ -276,6 +276,16 @@ namespace DMS.Repositories
                     RetailPrice = q.Product.RetailPrice,
                     TaxTypeId = q.Product.TaxTypeId,
                     StatusId = q.Product.StatusId,
+                    Category =  new Category
+                    {
+                        Id = q.Product.Category.Id,
+                        Code = q.Product.Category.Code,
+                        Name = q.Product.Category.Name,
+                        Path = q.Product.Category.Path,
+                        ParentId = q.Product.Category.ParentId,
+                        StatusId = q.Product.Category.StatusId,
+                        Level = q.Product.Category.Level
+                    },
                     ProductType = new ProductType
                     {
                         Id = q.Product.ProductType.Id,

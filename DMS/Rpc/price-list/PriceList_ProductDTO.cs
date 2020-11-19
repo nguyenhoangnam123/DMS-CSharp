@@ -14,6 +14,7 @@ namespace DMS.Rpc.price_list
         public string Name { get; set; }
         public string Description { get; set; }
         public string ScanCode { get; set; }
+        public long CategoryId { get; set; }
         public long ProductTypeId { get; set; }
         public long? SupplierId { get; set; }
         public long? BrandId { get; set; }
@@ -26,6 +27,7 @@ namespace DMS.Rpc.price_list
         public string OtherName { get; set; }
         public string TechnicalName { get; set; }
         public string Note { get; set; }
+        public PriceList_CategoryDTO Category { get; set; }
         public PriceList_ProductTypeDTO ProductType { get; set; }
         public List<PriceList_ProductProductGroupingMappingDTO> ProductProductGroupingMappings { get; set; }
         public PriceList_ProductDTO() { }
@@ -38,6 +40,7 @@ namespace DMS.Rpc.price_list
             this.Name = Product.Name;
             this.Description = Product.Description;
             this.ScanCode = Product.ScanCode;
+            this.CategoryId = Product.CategoryId;
             this.ProductTypeId = Product.ProductTypeId;
             this.SupplierId = Product.SupplierId;
             this.BrandId = Product.BrandId;
@@ -50,6 +53,7 @@ namespace DMS.Rpc.price_list
             this.OtherName = Product.OtherName;
             this.TechnicalName = Product.TechnicalName;
             this.Note = Product.Note;
+            this.Category = Product.Category == null ? null : new PriceList_CategoryDTO(Product.Category);
             this.ProductType = Product.ProductType == null ? null : new PriceList_ProductTypeDTO(Product.ProductType);
             this.ProductProductGroupingMappings = Product.ProductProductGroupingMappings?.Select(x => new PriceList_ProductProductGroupingMappingDTO(x)).ToList();
             this.Errors = Product.Errors;
