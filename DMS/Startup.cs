@@ -30,7 +30,6 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
-using Winton.Extensions.Configuration.Consul;
 using Z.EntityFramework.Extensions;
 using Thinktecture;
 using Elastic.Apm.NetCoreAll;
@@ -47,19 +46,6 @@ namespace DMS
             .AddJsonFile($"appsettings.{env.EnvironmentName}.json", reloadOnChange: true, optional: true)
             .AddEnvironmentVariables();
 
-            if (env.EnvironmentName == "Production")
-            {
-                builder.AddConsul(
-                $"{env.ApplicationName}/appsettings.Production.json",
-                options =>
-                {
-                    options.ConsulConfigurationOptions =
-                        cco => { cco.Address = new Uri("http://localhost:8500"); };
-                    options.Optional = true;
-                    options.ReloadOnChange = true;
-                    options.OnLoadException = exceptionContext => { exceptionContext.Ignore = true; };
-                });
-            }
             Configuration = builder.Build();
             ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
             LicenseManager.AddLicense("2456;100-FPT", "3f0586d1-0216-5005-8b7a-9080b0bedb5e");

@@ -387,20 +387,15 @@ namespace DMS.Repositories
         public async Task Begin()
         {
             return;
-            await DataContext.Database.BeginTransactionAsync();
         }
 
         public Task Commit()
         {
             return Task.CompletedTask;
-            DataContext.Database.CommitTransaction();
-            return Task.CompletedTask;
         }
 
         public Task Rollback()
         {
-            return Task.CompletedTask;
-            DataContext.Database.RollbackTransaction();
             return Task.CompletedTask;
         }
 

@@ -164,7 +164,7 @@ namespace DMS.Services.MIndirectSalesOrder
                 }
             }
         }
-        
+
         public async Task<int> CountPending(IndirectSalesOrderFilter IndirectSalesOrderFilter)
         {
             try
@@ -209,7 +209,7 @@ namespace DMS.Services.MIndirectSalesOrder
                 }
             }
         }
-        
+
         public async Task<int> CountCompleted(IndirectSalesOrderFilter IndirectSalesOrderFilter)
         {
             try
@@ -254,7 +254,7 @@ namespace DMS.Services.MIndirectSalesOrder
                 }
             }
         }
-       
+
         public async Task<List<Item>> ListItem(ItemFilter ItemFilter, long? SalesEmployeeId, long? StoreId)
         {
             try
@@ -356,12 +356,13 @@ namespace DMS.Services.MIndirectSalesOrder
                         Time = Now,
                         Unread = true,
                         SenderId = CurrentContext.UserId,
-                        RecipientId = Id
+                        RecipientId = Id,
+                        RowId = Guid.NewGuid(),
                     };
                     UserNotifications.Add(UserNotification);
                 }
-
-                await NotificationService.BulkSend(UserNotifications);
+                List<EventMessage<UserNotification>> EventUserNotifications = UserNotifications.Select(x => new EventMessage<UserNotification>(x, x.RowId)).ToList();
+                RabbitManager.PublishList(EventUserNotifications, RoutingKeyEnum.UserNotificationSend);
 
                 NotifyUsed(IndirectSalesOrder);
                 await Logging.CreateAuditLog(IndirectSalesOrder, new { }, nameof(IndirectSalesOrderService));
@@ -415,11 +416,13 @@ namespace DMS.Services.MIndirectSalesOrder
                     Time = Now,
                     Unread = true,
                     SenderId = CurrentContext.UserId,
-                    RecipientId = IndirectSalesOrder.SaleEmployeeId
+                    RecipientId = IndirectSalesOrder.SaleEmployeeId,
+                    RowId = Guid.NewGuid(),
                 };
                 UserNotifications.Add(UserNotification);
 
-                await NotificationService.BulkSend(UserNotifications);
+                List<EventMessage<UserNotification>> EventUserNotifications = UserNotifications.Select(x => new EventMessage<UserNotification>(x, x.RowId)).ToList();
+                RabbitManager.PublishList(EventUserNotifications, RoutingKeyEnum.UserNotificationSend);
 
                 IndirectSalesOrder = await UOW.IndirectSalesOrderRepository.Get(IndirectSalesOrder.Id);
                 NotifyUsed(IndirectSalesOrder);
@@ -470,12 +473,14 @@ namespace DMS.Services.MIndirectSalesOrder
                         Time = Now,
                         Unread = true,
                         SenderId = CurrentContext.UserId,
-                        RecipientId = Id
+                        RecipientId = Id,
+                        RowId = Guid.NewGuid(),
                     };
                     UserNotifications.Add(UserNotification);
                 }
 
-                await NotificationService.BulkSend(UserNotifications);
+                List<EventMessage<UserNotification>> EventUserNotifications = UserNotifications.Select(x => new EventMessage<UserNotification>(x, x.RowId)).ToList();
+                RabbitManager.PublishList(EventUserNotifications, RoutingKeyEnum.UserNotificationSend);
 
                 await Logging.CreateAuditLog(new { }, IndirectSalesOrder, nameof(IndirectSalesOrderService));
                 return IndirectSalesOrder;
