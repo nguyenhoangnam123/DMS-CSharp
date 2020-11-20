@@ -23,6 +23,7 @@ namespace DMS.Services.MBanner
         {
             IdNotExisted,
             TitleEmpty,
+            ImageEmpty,
             TitleOverLength,
             ContentOverLength,
             PriorityInvalid,
@@ -66,6 +67,15 @@ namespace DMS.Services.MBanner
             return Banner.IsValidated;
         }
 
+        private async Task<bool> ValidateImage(Banner Banner)
+        {
+            if (Banner.ImageId.HasValue == false || Banner.ImageId.Value == 0)
+            {
+                Banner.AddError(nameof(BannerValidator), nameof(Banner.Image), ErrorCode.ImageEmpty);
+            }
+            return Banner.IsValidated;
+        }
+
         private async Task<bool> ValidateContent(Banner Banner)
         {
             if (!string.IsNullOrWhiteSpace(Banner.Content))
@@ -93,6 +103,7 @@ namespace DMS.Services.MBanner
         public async Task<bool> Create(Banner Banner)
         {
             await ValidateTitle(Banner);
+            await ValidateImage(Banner);
             await ValidateContent(Banner);
             await ValidatePriority(Banner);
             await ValidateStatus(Banner);
@@ -104,6 +115,7 @@ namespace DMS.Services.MBanner
             if (await ValidateId(Banner))
             {
                 await ValidateTitle(Banner);
+                await ValidateImage(Banner);
                 await ValidateContent(Banner);
                 await ValidatePriority(Banner);
                 await ValidateStatus(Banner);

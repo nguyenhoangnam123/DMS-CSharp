@@ -575,7 +575,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_employee_report
                 #endregion
             });
 
-            return KpiGeneralEmployeeReport_KpiGeneralEmployeeReportDTOs;
+            return KpiGeneralEmployeeReport_KpiGeneralEmployeeReportDTOs.OrderBy(x => x.KpiPeriodId).ThenBy(x => x.KpiYearId).ToList();
         }
 
         [Route(KpiGeneralEmployeeReportRoute.Export), HttpPost]

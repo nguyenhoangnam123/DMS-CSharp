@@ -14,6 +14,7 @@ namespace DMS.Rpc.product
         public string Name { get; set; }
         public string Description { get; set; }
         public string ScanCode { get; set; }
+        public long CategoryId { get; set; }
         public long ProductTypeId { get; set; }
         public long? SupplierId { get; set; }
         public long? BrandId { get; set; }
@@ -32,6 +33,7 @@ namespace DMS.Rpc.product
         public bool CanDelete { get; set; }
         public bool Used { get; set; }
         public Product_BrandDTO Brand { get; set; }
+        public Product_CategoryDTO Category { get; set; }
         public Product_ProductTypeDTO ProductType { get; set; }
         public Product_StatusDTO Status { get; set; }
         public Product_SupplierDTO Supplier { get; set; }
@@ -53,6 +55,7 @@ namespace DMS.Rpc.product
             this.Name = Product.Name;
             this.Description = Product.Description;
             this.ScanCode = Product.ScanCode;
+            this.CategoryId = Product.CategoryId;
             this.ProductTypeId = Product.ProductTypeId;
             this.SupplierId = Product.SupplierId;
             this.BrandId = Product.BrandId;
@@ -71,6 +74,7 @@ namespace DMS.Rpc.product
             this.CanDelete = Product.CanDelete;
             this.Used = Product.Used;
             this.Brand = Product.Brand == null ? null : new Product_BrandDTO(Product.Brand);
+            this.Category = Product.Category == null ? null : new Product_CategoryDTO(Product.Category);
             this.ProductType = Product.ProductType == null ? null : new Product_ProductTypeDTO(Product.ProductType);
             this.Status = Product.Status == null ? null : new Product_StatusDTO(Product.Status);
             this.Supplier = Product.Supplier == null ? null : new Product_SupplierDTO(Product.Supplier);
@@ -94,6 +98,7 @@ namespace DMS.Rpc.product
         public StringFilter Name { get; set; }
         public StringFilter Description { get; set; }
         public StringFilter ScanCode { get; set; }
+        public IdFilter CategoryId { get; set; }
         public IdFilter ProductTypeId { get; set; }
         public IdFilter SupplierId { get; set; }
         public IdFilter BrandId { get; set; }

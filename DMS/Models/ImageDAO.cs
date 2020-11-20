@@ -9,6 +9,7 @@ namespace DMS.Models
         {
             AlbumImageMappings = new HashSet<AlbumImageMappingDAO>();
             Banners = new HashSet<BannerDAO>();
+            Categories = new HashSet<CategoryDAO>();
             ItemImageMappings = new HashSet<ItemImageMappingDAO>();
             ProblemImageMappings = new HashSet<ProblemImageMappingDAO>();
             ProductImageMappings = new HashSet<ProductImageMappingDAO>();
@@ -49,6 +50,7 @@ namespace DMS.Models
 
         public virtual ICollection<AlbumImageMappingDAO> AlbumImageMappings { get; set; }
         public virtual ICollection<BannerDAO> Banners { get; set; }
+        public virtual ICollection<CategoryDAO> Categories { get; set; }
         public virtual ICollection<ItemImageMappingDAO> ItemImageMappings { get; set; }
         public virtual ICollection<ProblemImageMappingDAO> ProblemImageMappings { get; set; }
         public virtual ICollection<ProductImageMappingDAO> ProductImageMappings { get; set; }

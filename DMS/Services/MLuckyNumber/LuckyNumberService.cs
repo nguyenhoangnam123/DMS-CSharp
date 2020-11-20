@@ -109,7 +109,7 @@ namespace DMS.Services.MLuckyNumber
                     RewardStatusId = new IdFilter { Equal = RewardStatusEnum.ACTIVE.Id }
                 });
 
-                if (LuckyNumbers.Count() >= RewardHistory.TurnCounter)
+                if (LuckyNumbers.Count() >= 1)
                 {
                     Random rnd = new Random();
                     var RandomNumber = LuckyNumbers.OrderBy(x => rnd.Next()).FirstOrDefault();

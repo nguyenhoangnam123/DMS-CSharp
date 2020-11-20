@@ -7,6 +7,9 @@
       "TitleEmpty": "Chưa nhập tiêu đề",
       "TitleOverLength": "Tiêu đề quá dài"
     },
+    "Image": {
+      "ImageEmpty": "Chưa chọn ảnh"
+    },
     "Content": {
       "ContentOverLength": "Nội dung quá dài"
     },

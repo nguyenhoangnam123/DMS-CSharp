@@ -576,6 +576,16 @@ namespace DMS.Repositories
                         Product = x.Item.Product == null ? null : new Product
                         {
                             Id = x.Item.Product.Id,
+                            Category = x.Item.Product.Category == null ? null : new Category
+                            {
+                                Id = x.Item.Product.Category.Id,
+                                Code = x.Item.Product.Category.Code,
+                                Name = x.Item.Product.Category.Name,
+                                Path = x.Item.Product.Category.Path,
+                                ParentId = x.Item.Product.Category.ParentId,
+                                StatusId = x.Item.Product.Category.StatusId,
+                                Level = x.Item.Product.Category.Level
+                            },
                             ProductProductGroupingMappings = x.Item.Product.ProductProductGroupingMappings != null ?
                             x.Item.Product.ProductProductGroupingMappings.Select(p => new ProductProductGroupingMapping
                             {

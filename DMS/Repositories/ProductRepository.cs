@@ -48,6 +48,8 @@ namespace DMS.Repositories
                 query = query.Where(q => q.Description, filter.Description);
             if (filter.ScanCode != null)
                 query = query.Where(q => q.ScanCode, filter.ScanCode);
+            if (filter.CategoryId != null)
+                query = query.Where(q => q.CategoryId, filter.CategoryId);
             if (filter.ProductTypeId != null)
                 query = query.Where(q => q.ProductTypeId, filter.ProductTypeId);
             if (filter.SupplierId != null)
@@ -225,6 +227,9 @@ namespace DMS.Repositories
                         case ProductOrder.ScanCode:
                             query = query.OrderBy(q => q.ScanCode);
                             break;
+                        case ProductOrder.Category:
+                            query = query.OrderBy(q => q.Category.Name);
+                            break;
                         case ProductOrder.ProductType:
                             query = query.OrderBy(q => q.ProductType.Name);
                             break;
@@ -287,6 +292,9 @@ namespace DMS.Repositories
                         case ProductOrder.ScanCode:
                             query = query.OrderByDescending(q => q.ScanCode);
                             break;
+                        case ProductOrder.Category:
+                            query = query.OrderByDescending(q => q.Category.Name);
+                            break;
                         case ProductOrder.ProductType:
                             query = query.OrderByDescending(q => q.ProductType.Name);
                             break;
@@ -344,6 +352,7 @@ namespace DMS.Repositories
                 Description = filter.Selects.Contains(ProductSelect.Description) ? q.Description : default(string),
                 ScanCode = filter.Selects.Contains(ProductSelect.ScanCode) ? q.ScanCode : default(string),
                 ERPCode = filter.Selects.Contains(ProductSelect.ERPCode) ? q.ERPCode : default(string),
+                CategoryId = filter.Selects.Contains(ProductSelect.Category) ? q.CategoryId : default(long),
                 ProductTypeId = filter.Selects.Contains(ProductSelect.ProductType) ? q.ProductTypeId : default(long),
                 SupplierId = filter.Selects.Contains(ProductSelect.Supplier) ? q.SupplierId : default(long?),
                 BrandId = filter.Selects.Contains(ProductSelect.Brand) ? q.BrandId : default(long?),
@@ -365,6 +374,16 @@ namespace DMS.Repositories
                     Name = q.Brand.Name,
                     Description = q.Brand.Description,
                     StatusId = q.Brand.StatusId,
+                } : null,
+                Category = filter.Selects.Contains(ProductSelect.Category) && q.Category != null ? new Category
+                {
+                    Id = q.Category.Id,
+                    Code = q.Category.Code,
+                    Name = q.Category.Name,
+                    Path = q.Category.Path,
+                    ParentId = q.Category.ParentId,
+                    StatusId = q.Category.StatusId,
+                    Level = q.Category.Level
                 } : null,
                 ProductType = filter.Selects.Contains(ProductSelect.ProductType) && q.ProductType != null ? new ProductType
                 {
@@ -441,6 +460,7 @@ namespace DMS.Repositories
                     RowId = v.RowId,
                 }).ToList() : null,
                 Used = q.Used,
+                RowId = q.RowId,
             }).ToListAsync();
 
             //Lấy ra 1 cái ảnh cho list product
@@ -470,7 +490,7 @@ namespace DMS.Repositories
 
             var VariationGroupingIds = Products.Where(x => x.VariationGroupings != null)
                 .SelectMany(x => x.VariationGroupings).Select(x => x.Id).Distinct().ToList();
-            if(VariationGroupingIds != null)
+            if (VariationGroupingIds != null)
             {
                 List<Variation> Variations = await DataContext.Variation.Where(x => VariationGroupingIds.Contains(x.VariationGroupingId))
                     .Select(x => new Variation
@@ -482,7 +502,7 @@ namespace DMS.Repositories
                     }).ToListAsync();
                 foreach (var Product in Products)
                 {
-                    if(Product.VariationGroupings != null)
+                    if (Product.VariationGroupings != null)
                     {
                         foreach (var VariationGrouping in Product.VariationGroupings)
                         {
@@ -525,6 +545,7 @@ namespace DMS.Repositories
                     OtherName = x.OtherName,
                     Description = x.Description,
                     ScanCode = x.ScanCode,
+                    CategoryId = x.CategoryId,
                     ProductTypeId = x.ProductTypeId,
                     SupplierId = x.SupplierId,
                     BrandId = x.BrandId,
@@ -537,6 +558,11 @@ namespace DMS.Repositories
                     IsNew = x.IsNew,
                     UsedVariationId = x.UsedVariationId,
                     Used = x.Used,
+                    RowId = x.RowId,
+                    CreatedAt = x.CreatedAt,
+                    UpdatedAt = x.CreatedAt,
+                    DeletedAt = x.DeletedAt,
+                    Note = x.Note,
                     Brand = x.Brand == null ? null : new Brand
                     {
                         Id = x.Brand.Id,
@@ -544,6 +570,16 @@ namespace DMS.Repositories
                         Name = x.Brand.Name,
                         Description = x.Brand.Description,
                         StatusId = x.Brand.StatusId,
+                    },
+                    Category = x.Category == null ? null : new Category
+                    {
+                        Id = x.Category.Id,
+                        Code = x.Category.Code,
+                        Name = x.Category.Name,
+                        Path = x.Category.Path,
+                        ParentId = x.Category.ParentId,
+                        StatusId = x.Category.StatusId,
+                        Level = x.Category.Level
                     },
                     ProductType = x.ProductType == null ? null : new ProductType
                     {
@@ -710,7 +746,7 @@ namespace DMS.Repositories
                 ItemId = x.ItemId,
                 ModifierId = x.ModifierId,
                 NewPrice = x.NewPrice,
-                OldPrice = x.OldPrice,  
+                OldPrice = x.OldPrice,
                 Time = x.Time,
             }).ToListAsync();
 
@@ -732,6 +768,7 @@ namespace DMS.Repositories
             ProductDAO.OtherName = Product.OtherName;
             ProductDAO.Description = Product.Description;
             ProductDAO.ScanCode = Product.ScanCode;
+            ProductDAO.CategoryId = Product.CategoryId;
             ProductDAO.ProductTypeId = Product.ProductTypeId;
             ProductDAO.SupplierId = Product.SupplierId;
             ProductDAO.BrandId = Product.BrandId;
@@ -746,6 +783,7 @@ namespace DMS.Repositories
             ProductDAO.CreatedAt = StaticParams.DateTimeNow;
             ProductDAO.UpdatedAt = StaticParams.DateTimeNow;
             ProductDAO.Used = false;
+            ProductDAO.RowId = Guid.NewGuid();
             DataContext.Product.Add(ProductDAO);
             await DataContext.SaveChangesAsync();
             Product.Id = ProductDAO.Id;
@@ -767,6 +805,7 @@ namespace DMS.Repositories
             ProductDAO.OtherName = Product.OtherName;
             ProductDAO.Description = Product.Description;
             ProductDAO.ScanCode = Product.ScanCode;
+            ProductDAO.CategoryId = Product.CategoryId;
             ProductDAO.ProductTypeId = Product.ProductTypeId;
             ProductDAO.SupplierId = Product.SupplierId;
             ProductDAO.BrandId = Product.BrandId;
@@ -830,6 +869,7 @@ namespace DMS.Repositories
                 ProductDAO.OtherName = Product.OtherName;
                 ProductDAO.Description = Product.Description;
                 ProductDAO.ScanCode = Product.ScanCode;
+                ProductDAO.CategoryId = Product.CategoryId;
                 ProductDAO.ProductTypeId = Product.ProductTypeId;
                 ProductDAO.SupplierId = Product.SupplierId;
                 ProductDAO.BrandId = Product.BrandId;
@@ -841,6 +881,7 @@ namespace DMS.Repositories
                 ProductDAO.StatusId = Product.StatusId;
                 ProductDAO.IsNew = Product.IsNew;
                 ProductDAO.UsedVariationId = Product.UsedVariationId;
+                ProductDAO.RowId = Product.RowId;
 
                 ProductDAO.CreatedAt = DateTime.Now;
                 ProductDAO.UpdatedAt = DateTime.Now;
@@ -861,7 +902,7 @@ namespace DMS.Repositories
                     Product.VariationGroupings.ForEach(vg => vg.ProductId = ProductId);
             }
             #region merge product grouping mapping
-            List<ProductProductGroupingMapping> ProductProductGroupingMappings = Products.SelectMany(p => p.ProductProductGroupingMappings).ToList();
+            List<ProductProductGroupingMapping> ProductProductGroupingMappings = Products.Where(x => x.ProductProductGroupingMappings != null).SelectMany(p => p.ProductProductGroupingMappings).ToList();
             List<ProductProductGroupingMappingDAO> ProductProductGroupingMappingDAOs = new List<ProductProductGroupingMappingDAO>();
             foreach (ProductProductGroupingMapping ProductProductGroupingMapping in ProductProductGroupingMappings)
             {
@@ -891,6 +932,7 @@ namespace DMS.Repositories
                 ItemDAO.CreatedAt = StaticParams.DateTimeNow;
                 ItemDAO.UpdatedAt = StaticParams.DateTimeNow;
                 ItemDAO.StatusId = Item.StatusId;
+                ItemDAO.RowId = Guid.NewGuid();
                 ItemDAOs.Add(ItemDAO);
             }
             await DataContext.Item.BulkMergeAsync(ItemDAOs);
@@ -907,10 +949,12 @@ namespace DMS.Repositories
                     Id = VariationGrouping.Id,
                     Name = VariationGrouping.Name,
                     ProductId = VariationGrouping.ProductId,
-                    RowId = VariationGrouping.RowId,
+                    RowId = Guid.NewGuid(),
+                    Used = true,
                     CreatedAt = StaticParams.DateTimeNow,
                     UpdatedAt = StaticParams.DateTimeNow
                 };
+                VariationGrouping.RowId = VariationGroupingDAO.RowId;
                 VariationGroupingDAOs.Add(VariationGroupingDAO);
             }
 
@@ -949,15 +993,15 @@ namespace DMS.Repositories
         public async Task<bool> BulkDelete(List<Product> Products)
         {
             DateTime Now = StaticParams.DateTimeNow;
-            
+
             List<long> Ids = Products.Select(x => x.Id).ToList();
             List<Product> RowIds = await DataContext.Product.Where(x => Ids.Contains(x.Id)).Select(x => new Product { Id = x.Id, RowId = x.RowId }).ToListAsync();
-            foreach(Product Product in Products)
+            foreach (Product Product in Products)
             {
                 Product.UpdatedAt = Now;
                 Product.DeletedAt = Now;
                 Product.RowId = RowIds.Where(x => x.Id == Product.Id).Select(x => x.RowId).FirstOrDefault();
-            }    
+            }
 
             List<long> ItemIds = await DataContext.Item.Where(x => Ids.Contains(x.ProductId)).Select(x => x.Id).ToListAsync();
 
@@ -979,13 +1023,13 @@ namespace DMS.Repositories
             await DataContext.ItemHistory.Where(x => ItemIds.Contains(x.ItemId)).DeleteFromQueryAsync();
             List<ItemDAO> ItemDAOs = await DataContext.Item
                 .Where(x => x.ProductId == Product.Id).ToListAsync();
-            foreach(ItemDAO ItemDAO in ItemDAOs)
+            foreach (ItemDAO ItemDAO in ItemDAOs)
             {
                 if (ItemDAO.Used == false)
                 {
                     ItemDAO.DeletedAt = StaticParams.DateTimeNow;
-                }    
-            }    
+                }
+            }
             if (Product.Items != null)
             {
                 foreach (Item Item in Product.Items)

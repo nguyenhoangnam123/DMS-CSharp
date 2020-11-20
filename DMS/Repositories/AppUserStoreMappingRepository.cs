@@ -10,7 +10,7 @@ namespace DMS.Repositories
     {
      
         Task<bool> Update(long AppUserId, long StoreId);
-        Task<bool> Delete(long AppUserId, long StoreId);
+        Task<bool> Delete(long? AppUserId, long StoreId);
     }
     public class AppUserStoreMappingRepository : IAppUserStoreMappingRepository
     {
@@ -20,9 +20,12 @@ namespace DMS.Repositories
             this.DataContext = DataContext;
         }
 
-        public async Task<bool> Delete(long AppUserId, long StoreId)
+        public async Task<bool> Delete(long? AppUserId, long StoreId)
         {
-            await DataContext.AppUserStoreMapping.Where(x => x.AppUserId == AppUserId && x.StoreId == StoreId).DeleteFromQueryAsync();
+            await DataContext.AppUserStoreMapping
+                .Where(x => x.StoreId == StoreId)
+                .Where(x => AppUserId.HasValue == false || (AppUserId.HasValue && x.AppUserId == AppUserId.Value))
+                .DeleteFromQueryAsync();
             return true;
         }
 

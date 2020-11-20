@@ -27,9 +27,9 @@ namespace DMS.Services.MStore
         Task<Store> Create(Store Store);
         Task<Store> Update(Store Store);
         Task<Store> Delete(Store Store);
-        Task<Store> Send(Store Store);
-        Task<Store> Approve(Store Store);
-        Task<Store> Reject(Store Store);
+        //Task<Store> Send(Store Store);
+        //Task<Store> Approve(Store Store);
+        //Task<Store> Reject(Store Store);
         Task<List<Store>> BulkDelete(List<Store> Stores);
         Task<List<Store>> Import(List<Store> Stores);
         StoreFilter ToFilter(StoreFilter StoreFilter);
@@ -192,16 +192,12 @@ namespace DMS.Services.MStore
             try
             {
                 var CurrentUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
-                Store.AppUserId = CurrentContext.UserId;
                 Store.UnsignName = Store.Name.ChangeToEnglishChar();
                 Store.UnsignAddress = Store.Address.ChangeToEnglishChar();
                 var Counter = await UOW.IdGenerateRepository.GetCounter();
                 StoreCodeGenerate(Store, Counter);
                 await UOW.Begin();
                 await UOW.StoreRepository.Create(Store);
-
-                if (Store.AppUserId.HasValue)
-                    await UOW.AppUserStoreMappingRepository.Update(Store.AppUserId.Value, Store.Id);
 
                 List<UserNotification> UserNotifications = new List<UserNotification>();
                 if (Store.StoreScoutingId.HasValue)
@@ -294,6 +290,10 @@ namespace DMS.Services.MStore
                 StoreCodeGenerate(Store);
                 await UOW.Begin();
                 await UOW.StoreRepository.Update(Store);
+                if(Store.StatusId == StatusEnum.INACTIVE.Id)
+                {
+                    await UOW.AppUserStoreMappingRepository.Delete(null, oldData.Id);
+                }
                 if (Store.StoreStatusId == StoreStatusEnum.OFFICIAL.Id)
                 {
                     if (oldData.AppUserId.HasValue)
@@ -502,7 +502,7 @@ namespace DMS.Services.MStore
 
                     var oldData = dbStores.Where(x => x.Id == Store.Id)
                                 .FirstOrDefault();
-                    if(oldData != null)
+                    if (oldData != null)
                     {
                         Store.RowId = oldData.RowId;
                     }
@@ -513,7 +513,7 @@ namespace DMS.Services.MStore
 
                     StoreCodeGenerate(Store);
                 }
-                
+
                 await UOW.StoreRepository.BulkMerge(Stores);
 
                 dbStores = await UOW.StoreRepository.List(StoreFilter);
@@ -534,6 +534,8 @@ namespace DMS.Services.MStore
                 }
                 await UOW.StoreRepository.BulkMerge(Stores);
                 await UOW.Commit();
+
+                NotifyUsed(Stores);
 
                 Stores = await UOW.StoreRepository.List(new StoreFilter
                 {
@@ -603,44 +605,44 @@ namespace DMS.Services.MStore
             return Image;
         }
 
-        public async Task<Store> Send(Store Store)
-        {
-            if (Store.Id == 0)
-                Store = await Create(Store);
-            else
-                Store = await Update(Store);
-            Dictionary<string, string> Parameters = MapParameters(Store);
-            GenericEnum Action = await WorkflowService.Send(Store.RowId, WorkflowTypeEnum.STORE.Id, Store.OrganizationId, Parameters);
-            if (Action != WorkflowActionEnum.OK)
-                return null;
-            return await Get(Store.Id);
-        }
-        public async Task<Store> Approve(Store Store)
-        {
-            Store = await Update(Store);
-            Dictionary<string, string> Parameters = MapParameters(Store);
-            GenericEnum Action = await WorkflowService.Approve(Store.RowId, WorkflowTypeEnum.STORE.Id, Parameters);
-            if (Action != WorkflowActionEnum.OK)
-                return null;
-            return await Get(Store.Id);
-        }
+        //public async Task<Store> Send(Store Store)
+        //{
+        //    if (Store.Id == 0)
+        //        Store = await Create(Store);
+        //    else
+        //        Store = await Update(Store);
+        //    Dictionary<string, string> Parameters = MapParameters(Store);
+        //    GenericEnum Action = await WorkflowService.Send(Store.RowId, WorkflowTypeEnum.STORE.Id, Store.OrganizationId, Parameters);
+        //    if (Action != WorkflowActionEnum.OK)
+        //        return null;
+        //    return await Get(Store.Id);
+        //}
+        //public async Task<Store> Approve(Store Store)
+        //{
+        //    Store = await Update(Store);
+        //    Dictionary<string, string> Parameters = MapParameters(Store);
+        //    GenericEnum Action = await WorkflowService.Approve(Store.RowId, WorkflowTypeEnum.STORE.Id, Parameters);
+        //    if (Action != WorkflowActionEnum.OK)
+        //        return null;
+        //    return await Get(Store.Id);
+        //}
 
-        public async Task<Store> Reject(Store Store)
-        {
-            Store = await UOW.StoreRepository.Get(Store.Id);
-            Dictionary<string, string> Parameters = MapParameters(Store);
-            GenericEnum Action = await WorkflowService.Reject(Store.RowId, WorkflowTypeEnum.STORE.Id, Parameters);
-            if (Action != WorkflowActionEnum.OK)
-                return null;
-            return await Get(Store.Id);
-        }
+        //public async Task<Store> Reject(Store Store)
+        //{
+        //    Store = await UOW.StoreRepository.Get(Store.Id);
+        //    Dictionary<string, string> Parameters = MapParameters(Store);
+        //    GenericEnum Action = await WorkflowService.Reject(Store.RowId, WorkflowTypeEnum.STORE.Id, Parameters);
+        //    if (Action != WorkflowActionEnum.OK)
+        //        return null;
+        //    return await Get(Store.Id);
+        //}
 
-        private Dictionary<string, string> MapParameters(Store Store)
-        {
-            Dictionary<string, string> Parameters = new Dictionary<string, string>();
-            Parameters.Add(WorkflowParameterEnum.STORE_ORGANIZATION.Code, Store.OrganizationId.ToString());
-            return Parameters;
-        }
+        //private Dictionary<string, string> MapParameters(Store Store)
+        //{
+        //    Dictionary<string, string> Parameters = new Dictionary<string, string>();
+        //    Parameters.Add(WorkflowParameterEnum.STORE_ORGANIZATION.Code, Store.OrganizationId.ToString());
+        //    return Parameters;
+        //}
 
         private async Task<List<long>> ListAppUserInOrgs(Store Store)
         {
@@ -669,6 +671,21 @@ namespace DMS.Services.MStore
 
         private void NotifyUsed(Store Store)
         {
+            EventMessage<StoreType> StoreTypeMessage = new EventMessage<StoreType>
+            {
+                Content = new StoreType { Id = Store.StoreTypeId },
+                EntityName = nameof(StoreType),
+                RowId = Guid.NewGuid(),
+                Time = StaticParams.DateTimeNow,
+            };
+            RabbitManager.PublishSingle(StoreTypeMessage, RoutingKeyEnum.StoreTypeUsed);
+
+        }
+
+        private void NotifyUsed(List<Store> Stores)
+        {
+            List<EventMessage<StoreType>> StoreTypeMessages = new List<EventMessage<StoreType>>();
+            foreach (var Store in Stores)
             {
                 EventMessage<StoreType> StoreTypeMessage = new EventMessage<StoreType>
                 {
@@ -677,8 +694,8 @@ namespace DMS.Services.MStore
                     RowId = Guid.NewGuid(),
                     Time = StaticParams.DateTimeNow,
                 };
-                RabbitManager.PublishSingle(StoreTypeMessage, RoutingKeyEnum.StoreTypeUsed);
             }
+            RabbitManager.PublishList(StoreTypeMessages, RoutingKeyEnum.StoreTypeUsed);
         }
 
         private void StoreCodeGenerate(Store Store, long? Counter = null)

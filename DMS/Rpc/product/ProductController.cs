@@ -3,6 +3,7 @@ using DMS.Entities;
 using DMS.Enums;
 using DMS.Helpers;
 using DMS.Services.MBrand;
+using DMS.Services.MCategory;
 using DMS.Services.MInventory;
 using DMS.Services.MItemHistory;
 using DMS.Services.MProduct;
@@ -33,6 +34,7 @@ namespace DMS.Rpc.product
         private readonly IWebHostEnvironment _env;
 
         private IBrandService BrandService;
+        private ICategoryService CategoryService;
         private IProductTypeService ProductTypeService;
         private IStatusService StatusService;
         private ISupplierService SupplierService;
@@ -49,6 +51,7 @@ namespace DMS.Rpc.product
         public ProductController(
             IWebHostEnvironment env,
             IBrandService BrandService,
+            ICategoryService CategoryService,
             IProductTypeService ProductTypeService,
             IStatusService StatusService,
             ISupplierService SupplierService,
@@ -66,6 +69,7 @@ namespace DMS.Rpc.product
         {
             _env = env;
             this.BrandService = BrandService;
+            this.CategoryService = CategoryService;
             this.ProductTypeService = ProductTypeService;
             this.StatusService = StatusService;
             this.SupplierService = SupplierService;
@@ -195,6 +199,12 @@ namespace DMS.Rpc.product
                 return BadRequest("Định dạng file không hợp lệ");
 
             #region MDM
+            List<Category> Categorys = await CategoryService.List(new CategoryFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = CategorySelect.ALL
+            });
             List<ProductGrouping> ProductGroupings = await ProductGroupingService.List(new ProductGroupingFilter
             {
                 Skip = 0,
@@ -249,12 +259,20 @@ namespace DMS.Rpc.product
                 Take = int.MaxValue,
                 Selects = StatusSelect.ALL
             });
+
+            List<Product> ProductInDBs = await ProductService.List(new ProductFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = ProductSelect.Code
+            });
             #endregion
             DataFile DataFile = new DataFile
             {
                 Name = file.FileName,
                 Content = file.OpenReadStream(),
             };
+            HashSet<string> ListProductCode = ProductInDBs.Select(x => x.Code).ToHashSet();
             List<Product> Products = new List<Product>();
             StringBuilder errorContent = new StringBuilder();
             using (ExcelPackage excelPackage = new ExcelPackage(DataFile.Content))
@@ -267,28 +285,28 @@ namespace DMS.Rpc.product
                 #region Khai báo thứ tự các cột trong Exel file 
                 
                 int StartColumn = 1;
-                int StartRow = 1;
+                int StartRow = 2;
 
                 int SttColumnn = 0 + StartColumn;
                 int CodeColumn = 1 + StartColumn;
                 int NameColumn = 2 + StartColumn;
-                int ProductGroupCodeColumn = 3 + StartColumn;
-                int ProductTypeCodeColumn = 4 + StartColumn;
-                int UoMCodeColumn = 5 + StartColumn;
-                int UoMGroupCodeColumn = 6 + StartColumn;
-                int SupplierCodeColumn = 7 + StartColumn;
-                int ERPCodeColumn = 8 + StartColumn;
-                int ScanCodeColumn = 9 + StartColumn;
-                int BrandCodeColumn = 10 + StartColumn;
-                int OtherNameColumn = 11 + StartColumn;
-                int TechnicalNameColumn = 12 + StartColumn;
-                int TaxTypeCodeColumn = 13 + StartColumn;
-                int DescriptionColumn = 14 + StartColumn;
-                int SalePriceColumn = 15 + StartColumn;
-                int RetailPriceColumn = 16 + StartColumn;
-
+                int CategoryCodeColumn = 3 + StartColumn;
+                int ProductGroupCodeColumn = 4 + StartColumn;
+                int ProductTypeCodeColumn = 5 + StartColumn;
+                int UoMCodeColumn = 6 + StartColumn;
+                int UoMGroupCodeColumn = 7 + StartColumn;
+                int SupplierCodeColumn = 8 + StartColumn;
+                int ERPCodeColumn = 9 + StartColumn;
+                int ScanCodeColumn = 10 + StartColumn;
+                int BrandCodeColumn = 11 + StartColumn;
+                int OtherNameColumn = 12 + StartColumn;
+                int TechnicalNameColumn = 13 + StartColumn;
+                int TaxTypeCodeColumn = 14 + StartColumn;
+                int DescriptionColumn = 15 + StartColumn;
+                int SalePriceColumn = 16 + StartColumn;
                 int StatusIdColumn = 17 + StartColumn;
                 int UsedVariationCodeColumn = 18 + StartColumn;
+
                 int Property1Column = 19 + StartColumn;
                 int PropertyValue1Column = 20 + StartColumn;
                 int Property2Column = 21 + StartColumn;
@@ -302,43 +320,46 @@ namespace DMS.Rpc.product
                 for (int i = StartRow; i <= ProductSheet.Dimension.End.Row; i++)
                 {
                     #region đọc dữ liệu các ô
-                    string stt = ProductSheet.Cells[i + StartRow, SttColumnn].Value?.ToString();
+                    string stt = ProductSheet.Cells[i, SttColumnn].Value?.ToString();
                     if (stt != null && stt.ToLower() == "END".ToLower())
                         break;
-                    string CodeValue = ProductSheet.Cells[i + StartRow, CodeColumn].Value?.ToString();
+                    string CodeValue = ProductSheet.Cells[i, CodeColumn].Value?.ToString();
                     if (string.IsNullOrWhiteSpace(CodeValue) && i != ProductSheet.Dimension.End.Row)
                     {
-                        errorContent.AppendLine($"Lỗi dòng thứ {i + 1}: Chưa nhập mã đơn vị");
+                        errorContent.AppendLine($"Lỗi dòng thứ {i}: Chưa nhập mã sản phẩm");
+                    }
+                    else if(!string.IsNullOrWhiteSpace(CodeValue) && ListProductCode.Contains(CodeValue))
+                    {
+                        errorContent.AppendLine($"Lỗi dòng thứ {i}: Mã sản phẩm đã tồn tại");
                     }
                     else if (string.IsNullOrWhiteSpace(CodeValue) && i == ProductSheet.Dimension.End.Row)
                         break;
-                    string NameValue = ProductSheet.Cells[i + StartRow, NameColumn].Value?.ToString();
-                    string ProductGroupCodeValue = ProductSheet.Cells[i + StartRow, ProductGroupCodeColumn].Value?.ToString();
-                    string ProductTypeCodeValue = ProductSheet.Cells[i + StartRow, ProductTypeCodeColumn].Value?.ToString();
-                    string UoMCodeValue = ProductSheet.Cells[i + StartRow, UoMCodeColumn].Value?.ToString();
-                    string UoMGroupCodeValue = ProductSheet.Cells[i + StartRow, UoMGroupCodeColumn].Value?.ToString();
-                    string SupplierCodeValue = ProductSheet.Cells[i + StartRow, SupplierCodeColumn].Value?.ToString();
-                    string ERPCodeValue = ProductSheet.Cells[i + StartRow, ERPCodeColumn].Value?.ToString();
-                    string ScanCodeValue = ProductSheet.Cells[i + StartRow, ScanCodeColumn].Value?.ToString();
-                    string BrandCodeValue = ProductSheet.Cells[i + StartRow, BrandCodeColumn].Value?.ToString();
-                    string OtherNameValue = ProductSheet.Cells[i + StartRow, OtherNameColumn].Value?.ToString();
-                    string TechnicalNameValue = ProductSheet.Cells[i + StartRow, TechnicalNameColumn].Value?.ToString();
-                    string TaxTypeCodeValue = ProductSheet.Cells[i + StartRow, TaxTypeCodeColumn].Value?.ToString();
-                    string DescriptionValue = ProductSheet.Cells[i + StartRow, DescriptionColumn].Value?.ToString();
-                    string SalePriceValue = ProductSheet.Cells[i + StartRow, SalePriceColumn].Value?.ToString();
-                    string RetailPriceValue = ProductSheet.Cells[i + StartRow, RetailPriceColumn].Value?.ToString();
-
-                    string StatusNameValue = ProductSheet.Cells[i + StartRow, StatusIdColumn].Value?.ToString();
-                    string UsedVariationCodeValue = ProductSheet.Cells[i + StartRow, UsedVariationCodeColumn].Value?.ToString();
+                    string NameValue = ProductSheet.Cells[i, NameColumn].Value?.ToString();
+                    string CategoryCodeValue = ProductSheet.Cells[i, CategoryCodeColumn].Value?.ToString();
+                    string ProductGroupCodeValue = ProductSheet.Cells[i, ProductGroupCodeColumn].Value?.ToString();
+                    string ProductTypeCodeValue = ProductSheet.Cells[i, ProductTypeCodeColumn].Value?.ToString();
+                    string UoMCodeValue = ProductSheet.Cells[i, UoMCodeColumn].Value?.ToString();
+                    string UoMGroupCodeValue = ProductSheet.Cells[i, UoMGroupCodeColumn].Value?.ToString();
+                    string SupplierCodeValue = ProductSheet.Cells[i, SupplierCodeColumn].Value?.ToString();
+                    string ERPCodeValue = ProductSheet.Cells[i, ERPCodeColumn].Value?.ToString();
+                    string ScanCodeValue = ProductSheet.Cells[i, ScanCodeColumn].Value?.ToString();
+                    string BrandCodeValue = ProductSheet.Cells[i, BrandCodeColumn].Value?.ToString();
+                    string OtherNameValue = ProductSheet.Cells[i, OtherNameColumn].Value?.ToString();
+                    string TechnicalNameValue = ProductSheet.Cells[i, TechnicalNameColumn].Value?.ToString();
+                    string TaxTypeCodeValue = ProductSheet.Cells[i, TaxTypeCodeColumn].Value?.ToString();
+                    string DescriptionValue = ProductSheet.Cells[i, DescriptionColumn].Value?.ToString();
+                    string SalePriceValue = ProductSheet.Cells[i, SalePriceColumn].Value?.ToString();
+                    string StatusNameValue = ProductSheet.Cells[i, StatusIdColumn].Value?.ToString();
+                    string UsedVariationCodeValue = ProductSheet.Cells[i, UsedVariationCodeColumn].Value?.ToString();
                     //Thuộc tính
-                    string Property1Value = ProductSheet.Cells[i + StartRow, Property1Column].Value?.ToString();
-                    string PropertyValue1Value = ProductSheet.Cells[i + StartRow, PropertyValue1Column].Value?.ToString();
-                    string Property2Value = ProductSheet.Cells[i + StartRow, Property2Column].Value?.ToString();
-                    string PropertyValue2Value = ProductSheet.Cells[i + StartRow, PropertyValue2Column].Value?.ToString();
-                    string Property3Value = ProductSheet.Cells[i + StartRow, Property3Column].Value?.ToString();
-                    string PropertyValue3Value = ProductSheet.Cells[i + StartRow, PropertyValue3Column].Value?.ToString();
-                    string Property4Value = ProductSheet.Cells[i + StartRow, Property4Column].Value?.ToString();
-                    string PropertyValue4Value = ProductSheet.Cells[i + StartRow, PropertyValue4Column].Value?.ToString();
+                    string Property1Value = ProductSheet.Cells[i, Property1Column].Value?.ToString();
+                    string PropertyValue1Value = ProductSheet.Cells[i, PropertyValue1Column].Value?.ToString();
+                    string Property2Value = ProductSheet.Cells[i, Property2Column].Value?.ToString();
+                    string PropertyValue2Value = ProductSheet.Cells[i, PropertyValue2Column].Value?.ToString();
+                    string Property3Value = ProductSheet.Cells[i, Property3Column].Value?.ToString();
+                    string PropertyValue3Value = ProductSheet.Cells[i, PropertyValue3Column].Value?.ToString();
+                    string Property4Value = ProductSheet.Cells[i, Property4Column].Value?.ToString();
+                    string PropertyValue4Value = ProductSheet.Cells[i, PropertyValue4Column].Value?.ToString();
                     #endregion
 
                     Product Product = new Product();
@@ -349,13 +370,14 @@ namespace DMS.Rpc.product
                     Product.OtherName = OtherNameValue;
                     Product.TechnicalName = TechnicalNameValue;
                     Product.Description = DescriptionValue;
+                    Product.RowId = Guid.NewGuid();
                     //Product Grouping
                     if (!string.IsNullOrEmpty(ProductGroupCodeValue))
                     {
                         var ProductGroupCodes = ProductGroupCodeValue.Split(';');
                         foreach (var ProductGroupCode in ProductGroupCodes)
                         {
-                            ProductGrouping ProductGrouping = ProductGroupings.Where(pg => pg.Code.Equals(ProductGroupCode.Trim())).FirstOrDefault();
+                            ProductGrouping ProductGrouping = ProductGroupings.Where(pg => pg.Code.ToLower()== ProductGroupCode.Trim().ToLower()).FirstOrDefault();
                             if (ProductGrouping != null)
                             {
                                 ProductProductGroupingMapping ProductProductGroupingMapping = new ProductProductGroupingMapping();
@@ -366,23 +388,29 @@ namespace DMS.Rpc.product
                             }
                             else
                             {
-                                errorContent.AppendLine($"Lỗi dòng thứ {i + 1}: Nhóm sản phẩm không tồn tại");
+                                errorContent.AppendLine($"Lỗi dòng thứ {i}: Nhóm sản phẩm không tồn tại");
                             }
                         }
                         
                     }
 
+                    Product.Category = new Category()
+                    {
+                        Code = CategoryCodeValue
+                    };
+                    Product.CategoryId = Categorys.Where(x => x.Code.ToLower()==CategoryCodeValue.Trim().ToLower()).Select(x => x.Id).FirstOrDefault();
+
                     Product.ProductType = new ProductType()
                     {
                         Code = ProductTypeCodeValue
                     };
-                    Product.ProductTypeId = ProductTypes.Where(x => x.Code.Equals(ProductTypeCodeValue)).Select(x => x.Id).FirstOrDefault();
+                    Product.ProductTypeId = ProductTypes.Where(x => x.Code.ToLower()==ProductTypeCodeValue.Trim().ToLower()).Select(x => x.Id).FirstOrDefault();
 
                     Product.UnitOfMeasure = new UnitOfMeasure()
                     {
                         Code = UoMCodeValue
                     };
-                    Product.UnitOfMeasureId = UnitOfMeasures.Where(x => x.Code.Equals(UoMCodeValue)).Select(x => x.Id).FirstOrDefault();
+                    Product.UnitOfMeasureId = UnitOfMeasures.Where(x => x.Code.ToLower()==UoMCodeValue.Trim().ToLower()).Select(x => x.Id).FirstOrDefault();
 
                     if (!string.IsNullOrWhiteSpace(BrandCodeValue))
                     {
@@ -390,7 +418,7 @@ namespace DMS.Rpc.product
                         {
                             Code = BrandCodeValue
                         };
-                        Product.BrandId = Brands.Where(x => x.Code.Equals(BrandCodeValue)).Select(x => x.Id).FirstOrDefault();
+                        Product.BrandId = Brands.Where(x => x.Code.ToLower() == BrandCodeValue.Trim().ToLower()).Select(x => x.Id).FirstOrDefault();
                     }
                     if (!string.IsNullOrWhiteSpace(UoMGroupCodeValue))
                     {
@@ -398,7 +426,7 @@ namespace DMS.Rpc.product
                         {
                             Code = UoMGroupCodeValue
                         };
-                        Product.UnitOfMeasureGroupingId = UnitOfMeasureGroupings.Where(x => x.Code.Equals(UoMGroupCodeValue)).Select(x => x.Id).FirstOrDefault();
+                        Product.UnitOfMeasureGroupingId = UnitOfMeasureGroupings.Where(x => x.Code.Trim() == UoMGroupCodeValue.Trim().Trim()).Select(x => x.Id).FirstOrDefault();
                     }
                     if (!string.IsNullOrWhiteSpace(SupplierCodeValue))
                     {
@@ -406,7 +434,7 @@ namespace DMS.Rpc.product
                         {
                             Code = SupplierCodeValue
                         };
-                        Product.SupplierId = Suppliers.Where(x => x.Code.Equals(SupplierCodeValue)).Select(x => x.Id).FirstOrDefault();
+                        Product.SupplierId = Suppliers.Where(x => x.Code.ToLower() == SupplierCodeValue.Trim().ToLower()).Select(x => x.Id).FirstOrDefault();
                     }
                     Product.TaxType = new TaxType()
                     {
@@ -423,18 +451,6 @@ namespace DMS.Rpc.product
                     {
                         Product.SalePrice = -1;
                     }
-                    if (!string.IsNullOrWhiteSpace(RetailPriceValue)) 
-                    {
-                        if (long.TryParse(RetailPriceValue, out long RetailPrice))
-                        {
-                            Product.RetailPrice = RetailPrice;
-                        }
-                        else
-                        {
-                            Product.RetailPrice = -1;
-                        }
-                    }
-
                     if (string.IsNullOrEmpty(StatusNameValue))
                     {
                         Product.StatusId = -1;
@@ -481,7 +497,7 @@ namespace DMS.Rpc.product
                         }
                         else if (!string.IsNullOrWhiteSpace(PropertyValue1Value))
                         {
-                            errorContent.AppendLine($"Lỗi dòng thứ {i + 1}: Chưa nhập thuộc tính 1");
+                            errorContent.AppendLine($"Lỗi dòng thứ {i}: Chưa nhập thuộc tính 1");
                         }
 
                         if (!string.IsNullOrWhiteSpace(Property2Value))
@@ -509,7 +525,7 @@ namespace DMS.Rpc.product
                         }
                         else if (!string.IsNullOrWhiteSpace(PropertyValue2Value))
                         {
-                            errorContent.AppendLine($"Lỗi dòng thứ {i + 1}: Chưa nhập thuộc tính 2");
+                            errorContent.AppendLine($"Lỗi dòng thứ {i}: Chưa nhập thuộc tính 2");
                         }
 
                         if (!string.IsNullOrWhiteSpace(Property3Value))
@@ -537,7 +553,7 @@ namespace DMS.Rpc.product
                         }
                         else if (!string.IsNullOrWhiteSpace(PropertyValue3Value))
                         {
-                            errorContent.AppendLine($"Lỗi dòng thứ {i + 1}: Chưa nhập thuộc tính 3");
+                            errorContent.AppendLine($"Lỗi dòng thứ {i}: Chưa nhập thuộc tính 3");
                         }
 
                         if (!string.IsNullOrWhiteSpace(Property4Value))
@@ -565,7 +581,7 @@ namespace DMS.Rpc.product
                         }
                         else if (!string.IsNullOrWhiteSpace(PropertyValue4Value))
                         {
-                            errorContent.AppendLine($"Lỗi dòng thứ {i + 1}: Chưa nhập thuộc tính 4");
+                            errorContent.AppendLine($"Lỗi dòng thứ {i}: Chưa nhập thuộc tính 4");
                         }
                         #endregion
                     }
@@ -763,6 +779,12 @@ namespace DMS.Rpc.product
 
             List<Product> Products = await ProductService.List(ProductFilter);
             #region MDM
+            List<Category> Categorys = await CategoryService.List(new CategoryFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = CategorySelect.ALL,
+            });
             List<Item> Items = await ItemService.List(new ItemFilter
             {
                 Skip = 0,
@@ -825,6 +847,7 @@ namespace DMS.Rpc.product
                     new string[] { "STT",
                         "Mã sản phẩm",
                         "Tên sản phẩm",
+                        "Danh mục sản phẩm",
                         "Nhóm sản phẩm",
                         "Loại sản phẩm",
                         "Đơn vị tính",
@@ -838,7 +861,6 @@ namespace DMS.Rpc.product
                         "% VAT",
                         "Mô tả",
                         "Giá bán",
-                        "Giá bán lẻ đề xuất",
                         "Trạng thái",
                         "Có tạo phiên bản",
                         "Thuộc tính 1",
@@ -904,6 +926,7 @@ namespace DMS.Rpc.product
                         Product.Code,
                         Product.Name,
                         ProductGroupingName,
+                        Product.Category?.Name,
                         Product.ProductType?.Name,
                         Product.UnitOfMeasure?.Name,
                         Product.UnitOfMeasureGrouping?.Name,
@@ -916,7 +939,6 @@ namespace DMS.Rpc.product
                         Product.TaxType.Code,
                         Product.Description,
                         Product.SalePrice.ToString("N0", culture),
-                        Product.RetailPrice?.ToString("N0", culture),
                         Product.Status?.Name,
                         Product.UsedVariation?.Name,
                         VariationGrouping1,
@@ -962,6 +984,26 @@ namespace DMS.Rpc.product
                                 });
                 }
                 excel.GenerateWorksheet("Item", ItemHeader, data);
+                #endregion
+
+                #region Sheet Product Type
+                data.Clear();
+                var CategoryHeader = new List<string[]>()
+                {
+                    new string[] {
+                        "Mã danh mục sản phẩm",
+                        "Tên danh mục sản phẩm",
+                    }
+                };
+                foreach (var Category in Categorys)
+                {
+                    data.Add(new object[]
+                    {
+                        Category.Code,
+                        Category.Name
+                    });
+                }
+                excel.GenerateWorksheet("Category", CategoryHeader, data);
                 #endregion
 
                 #region Sheet Product Group
@@ -1116,6 +1158,13 @@ namespace DMS.Rpc.product
         public async Task<ActionResult> ExportTemplate()
         {
             #region MDM
+            List<Category> Categorys = await CategoryService.List(new CategoryFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = CategorySelect.ALL,
+                StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id }
+            });
             List<ProductGrouping> ProductGroupings = await ProductGroupingService.List(new ProductGroupingFilter
             {
                 Skip = 0,
@@ -1180,6 +1229,19 @@ namespace DMS.Rpc.product
                     ProductGrouping ProductGrouping = ProductGroupings[i];
                     worksheet_ProductGroup.Cells[startRow_ProductGroup + i, numberCell_ProductGroup].Value = ProductGrouping.Code;
                     worksheet_ProductGroup.Cells[startRow_ProductGroup + i, numberCell_ProductGroup + 1].Value = ProductGrouping.Name;
+                }
+                #endregion
+
+                #region sheet Category
+                var worksheet_Category = xlPackage.Workbook.Worksheets["Category"];
+                xlPackage.Workbook.CalcMode = ExcelCalcMode.Manual;
+                int startRow_Category = 2;
+                int numberCell_Category = 1;
+                for (var i = 0; i < Categorys.Count; i++)
+                {
+                    Category Category = Categorys[i];
+                    worksheet_Category.Cells[startRow_Category + i, numberCell_Category].Value = Category.Code;
+                    worksheet_Category.Cells[startRow_Category + i, numberCell_Category + 1].Value = Category.Name;
                 }
                 #endregion
 
@@ -1365,6 +1427,7 @@ namespace DMS.Rpc.product
             Product.ERPCode = Product_ProductDTO.ERPCode;
             Product.Description = Product_ProductDTO.Description;
             Product.ScanCode = Product_ProductDTO.ScanCode;
+            Product.CategoryId = Product_ProductDTO.CategoryId;
             Product.ProductTypeId = Product_ProductDTO.ProductTypeId;
             Product.SupplierId = Product_ProductDTO.SupplierId;
             Product.BrandId = Product_ProductDTO.BrandId;
@@ -1385,6 +1448,16 @@ namespace DMS.Rpc.product
                 Name = Product_ProductDTO.Brand.Name,
                 Description = Product_ProductDTO.Brand.Description,
                 StatusId = Product_ProductDTO.Brand.StatusId,
+            };
+            Product.Category = Product_ProductDTO.Category == null ? null : new Category
+            {
+                Id = Product_ProductDTO.Category.Id,
+                Code = Product_ProductDTO.Category.Code,
+                Name = Product_ProductDTO.Category.Name,
+                Path = Product_ProductDTO.Category.Path,
+                ParentId = Product_ProductDTO.Category.ParentId,
+                StatusId = Product_ProductDTO.Category.StatusId,
+                Level = Product_ProductDTO.Category.Level
             };
             Product.ProductType = Product_ProductDTO.ProductType == null ? null : new ProductType
             {
@@ -1502,7 +1575,7 @@ namespace DMS.Rpc.product
             ProductFilter ProductFilter = new ProductFilter();
             ProductFilter.Selects = ProductSelect.Code | ProductSelect.Name
                 | ProductSelect.Id | ProductSelect.ProductProductGroupingMapping
-                | ProductSelect.ProductType | ProductSelect.Supplier
+                | ProductSelect.Category | ProductSelect.ProductType | ProductSelect.Supplier
                 | ProductSelect.Status | ProductSelect.UsedVariation;
             ProductFilter.Skip = Product_ProductFilterDTO.Skip;
             ProductFilter.Take = Product_ProductFilterDTO.Take;
@@ -1515,6 +1588,7 @@ namespace DMS.Rpc.product
             ProductFilter.Name = Product_ProductFilterDTO.Name;
             ProductFilter.Description = Product_ProductFilterDTO.Description;
             ProductFilter.ScanCode = Product_ProductFilterDTO.ScanCode;
+            ProductFilter.CategoryId = Product_ProductFilterDTO.CategoryId;
             ProductFilter.ProductTypeId = Product_ProductFilterDTO.ProductTypeId;
             ProductFilter.SupplierId = Product_ProductFilterDTO.SupplierId;
             ProductFilter.BrandId = Product_ProductFilterDTO.BrandId;

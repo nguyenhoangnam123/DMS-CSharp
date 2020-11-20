@@ -276,6 +276,16 @@ namespace DMS.Repositories
                     RetailPrice = q.Product.RetailPrice,
                     TaxTypeId = q.Product.TaxTypeId,
                     StatusId = q.Product.StatusId,
+                    Category =  new Category
+                    {
+                        Id = q.Product.Category.Id,
+                        Code = q.Product.Category.Code,
+                        Name = q.Product.Category.Name,
+                        Path = q.Product.Category.Path,
+                        ParentId = q.Product.Category.ParentId,
+                        StatusId = q.Product.Category.StatusId,
+                        Level = q.Product.Category.Level
+                    },
                     ProductType = new ProductType
                     {
                         Id = q.Product.ProductType.Id,
@@ -449,6 +459,16 @@ namespace DMS.Repositories
                         Description = x.Product.ProductType.Description,
                         StatusId = x.Product.ProductType.StatusId,
                         UpdatedAt = x.Product.ProductType.UpdatedAt,
+                    },
+                    Category = x.Product.Category == null ? null : new Category
+                    {
+                        Id = x.Product.Category.Id,
+                        Code = x.Product.Category.Code,
+                        Name = x.Product.Category.Name,
+                        Path = x.Product.Category.Path,
+                        ParentId = x.Product.Category.ParentId,
+                        StatusId = x.Product.Category.StatusId,
+                        Level = x.Product.Category.Level
                     },
                     TaxType = x.Product.TaxType == null ? null : new TaxType
                     {

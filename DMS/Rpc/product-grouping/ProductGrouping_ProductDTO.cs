@@ -14,6 +14,7 @@ namespace DMS.Rpc.product_grouping
         public string Name { get; set; }
         public string Description { get; set; }
         public string ScanCode { get; set; }
+        public long CategoryId { get; set; }
         public long ProductTypeId { get; set; }
         public long? SupplierId { get; set; }
         public long? BrandId { get; set; }
@@ -26,6 +27,7 @@ namespace DMS.Rpc.product_grouping
         public string OtherName { get; set; }
         public string TechnicalName { get; set; }
         public string Note { get; set; }
+        public ProductGrouping_CategoryDTO Category { get; set; }
         public ProductGrouping_ProductTypeDTO ProductType { get; set; }
         public ProductGrouping_SupplierDTO Supplier { get; set; }
         public ProductGrouping_BrandDTO Brand { get; set; }
@@ -43,6 +45,7 @@ namespace DMS.Rpc.product_grouping
             this.Name = Product.Name;
             this.Description = Product.Description;
             this.ScanCode = Product.ScanCode;
+            this.CategoryId = Product.CategoryId;
             this.ProductTypeId = Product.ProductTypeId;
             this.SupplierId = Product.SupplierId;
             this.BrandId = Product.BrandId;
@@ -56,6 +59,7 @@ namespace DMS.Rpc.product_grouping
             this.TechnicalName = Product.TechnicalName;
             this.Note = Product.Note;
             this.Brand = Product.Brand == null ? null : new ProductGrouping_BrandDTO(Product.Brand);
+            this.Category = Product.Category == null ? null : new ProductGrouping_CategoryDTO(Product.Category);
             this.ProductType = Product.ProductType == null ? null : new ProductGrouping_ProductTypeDTO(Product.ProductType);
             this.Status = Product.Status == null ? null : new ProductGrouping_StatusDTO(Product.Status);
             this.Supplier = Product.Supplier == null ? null : new ProductGrouping_SupplierDTO(Product.Supplier);
@@ -75,6 +79,7 @@ namespace DMS.Rpc.product_grouping
         public StringFilter Name { get; set; }
         public StringFilter Description { get; set; }
         public StringFilter ScanCode { get; set; }
+        public IdFilter CategoryId { get; set; }
         public IdFilter ProductTypeId { get; set; }
         public IdFilter SupplierId { get; set; }
         public IdFilter BrandId { get; set; }

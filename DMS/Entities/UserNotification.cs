@@ -1,11 +1,12 @@
-﻿using System;
+﻿using DMS.Common;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace DMS.Entities
 {
-    public class UserNotification
+    public class UserNotification : DataEntity
     {
         public long Id { get; set; }
         public long SiteId
@@ -41,5 +42,6 @@ namespace DMS.Entities
         public string LinkWebsite { get; set; }
         public string LinkMobile { get; set; }
         public DateTime Time { get; set; }
+        public Guid RowId { get; set; }
     }
 }

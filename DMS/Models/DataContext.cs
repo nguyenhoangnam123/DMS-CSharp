@@ -18,6 +18,7 @@ namespace DMS.Models
         public virtual DbSet<AppUserStoreMappingDAO> AppUserStoreMapping { get; set; }
         public virtual DbSet<BannerDAO> Banner { get; set; }
         public virtual DbSet<BrandDAO> Brand { get; set; }
+        public virtual DbSet<CategoryDAO> Category { get; set; }
         public virtual DbSet<ColorDAO> Color { get; set; }
         public virtual DbSet<CounterDAO> Counter { get; set; }
         public virtual DbSet<DirectSalesOrderDAO> DirectSalesOrder { get; set; }
@@ -527,6 +528,45 @@ namespace DMS.Models
                     .HasConstraintName("FK_Brand_Status");
             });
 
+            modelBuilder.Entity<CategoryDAO>(entity =>
+            {
+                entity.ToTable("Category", "MDM");
+
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.Path)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.HasOne(d => d.Image)
+                    .WithMany(p => p.Categories)
+                    .HasForeignKey(d => d.ImageId)
+                    .HasConstraintName("FK_Category_Image");
+
+                entity.HasOne(d => d.Parent)
+                    .WithMany(p => p.InverseParent)
+                    .HasForeignKey(d => d.ParentId)
+                    .HasConstraintName("FK_Category_Category");
+
+                entity.HasOne(d => d.Status)
+                    .WithMany(p => p.Categories)
+                    .HasForeignKey(d => d.StatusId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Category_Status");
+            });
+
             modelBuilder.Entity<ColorDAO>(entity =>
             {
                 entity.ToTable("Color", "ENUM");
@@ -999,6 +1039,10 @@ namespace DMS.Models
                 entity.Property(e => e.Content).IsRequired();
 
                 entity.Property(e => e.EntityName)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.RoutingKey)
                     .IsRequired()
                     .HasMaxLength(500);
 
@@ -2411,6 +2455,12 @@ namespace DMS.Models
                     .WithMany(p => p.Products)
                     .HasForeignKey(d => d.BrandId)
                     .HasConstraintName("FK_Product_Brand");
+
+                entity.HasOne(d => d.Category)
+                    .WithMany(p => p.Products)
+                    .HasForeignKey(d => d.CategoryId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Product_Category");
 
                 entity.HasOne(d => d.ProductType)
                     .WithMany(p => p.Products)

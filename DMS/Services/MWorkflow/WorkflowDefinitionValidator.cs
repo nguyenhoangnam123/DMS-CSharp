@@ -68,35 +68,38 @@ namespace DMS.Services.MWorkflow
 
         private async Task<bool> ValidateCode(WorkflowDefinition WorkflowDefinition)
         {
-            if (string.IsNullOrWhiteSpace(WorkflowDefinition.Code))
+            var Code = WorkflowDefinition.Code;
+
+            if (string.IsNullOrWhiteSpace(Code))
             {
                 WorkflowDefinition.AddError(nameof(WorkflowDefinitionValidator), nameof(WorkflowDefinition.Code), ErrorCode.CodeEmpty);
-            }
-            if (WorkflowDefinition.Code.Length > 50)
+                return WorkflowDefinition.IsValidated;
+            } // check code is null or empty
+
+            if (Code.Length > 50)
             {
                 WorkflowDefinition.AddError(nameof(WorkflowDefinitionValidator), nameof(WorkflowDefinition.Code), ErrorCode.CodeOverLength);
-            }
-            else
+                return WorkflowDefinition.IsValidated;
+            } // check code length is longer than maximum in database
+
+            if (Code.Contains(" ") || !FilterExtension.ChangeToEnglishChar(Code).Equals(Code))
             {
-                var Code = WorkflowDefinition.Code;
-                if (WorkflowDefinition.Code.Contains(" ") || !FilterExtension.ChangeToEnglishChar(Code).Equals(WorkflowDefinition.Code))
-                {
-                    WorkflowDefinition.AddError(nameof(WorkflowDefinitionValidator), nameof(WorkflowDefinition.Code), ErrorCode.CodeHasSpecialCharacter);
-                }
+                WorkflowDefinition.AddError(nameof(WorkflowDefinitionValidator), nameof(WorkflowDefinition.Code), ErrorCode.CodeHasSpecialCharacter);
+                return WorkflowDefinition.IsValidated;
+            } // check code contain empty space and special character
 
-                WorkflowDefinitionFilter WorkflowDefinitionFilter = new WorkflowDefinitionFilter
-                {
-                    Skip = 0,
-                    Take = 10,
-                    Id = new IdFilter { NotEqual = WorkflowDefinition.Id },
-                    Code = new StringFilter { Equal = WorkflowDefinition.Code },
-                    Selects = WorkflowDefinitionSelect.Code
-                };
+            WorkflowDefinitionFilter WorkflowDefinitionFilter = new WorkflowDefinitionFilter
+            {
+                Skip = 0,
+                Take = 10,
+                Id = new IdFilter { NotEqual = WorkflowDefinition.Id },
+                Code = new StringFilter { Equal = Code },
+                Selects = WorkflowDefinitionSelect.Code
+            };
 
-                int count = await UOW.WorkflowDefinitionRepository.Count(WorkflowDefinitionFilter);
-                if (count != 0)
-                    WorkflowDefinition.AddError(nameof(WorkflowDefinitionValidator), nameof(WorkflowDefinition.Code), ErrorCode.CodeExisted);
-            }
+            int count = await UOW.WorkflowDefinitionRepository.Count(WorkflowDefinitionFilter);
+            if (count != 0)
+                WorkflowDefinition.AddError(nameof(WorkflowDefinitionValidator), nameof(WorkflowDefinition.Code), ErrorCode.CodeExisted); // check code existed
 
             return WorkflowDefinition.IsValidated;
         }
@@ -176,7 +179,7 @@ namespace DMS.Services.MWorkflow
         private async Task<bool> ValidateWorkflowStep(WorkflowDefinition WorkflowDefinition)
         {
             var hasError = false;
-            foreach(var step in WorkflowDefinition.WorkflowSteps)
+            foreach (var step in WorkflowDefinition.WorkflowSteps)
             {
                 if (step.Name.Length > 500 || step.Code.Length > 50) hasError = true;
             }
