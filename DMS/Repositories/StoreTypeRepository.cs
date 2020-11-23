@@ -142,6 +142,10 @@ namespace DMS.Repositories
                     Name = q.Status.Name,
                 } : null,
                 Used = q.Used,
+                CreatedAt = q.CreatedAt,
+                UpdatedAt = q.UpdatedAt,
+                DeletedAt = q.DeletedAt,
+                RowId = q.RowId,
             }).ToListAsync();
             return StoreTypes;
         }
@@ -174,6 +178,10 @@ namespace DMS.Repositories
                     ColorId = x.ColorId,
                     StatusId = x.StatusId,
                     Used = x.Used,
+                    CreatedAt = x.CreatedAt,
+                    UpdatedAt = x.UpdatedAt,
+                    DeletedAt = x.DeletedAt,
+                    RowId = x.RowId,
                     Color = x.Color == null ? null : new Color
                     {
                         Id = x.Color.Id,
@@ -204,6 +212,7 @@ namespace DMS.Repositories
             StoreTypeDAO.CreatedAt = StaticParams.DateTimeNow;
             StoreTypeDAO.UpdatedAt = StaticParams.DateTimeNow;
             StoreTypeDAO.Used = false;
+            StoreTypeDAO.RowId = Guid.NewGuid();
             DataContext.StoreType.Add(StoreTypeDAO);
             await DataContext.SaveChangesAsync();
             StoreType.Id = StoreTypeDAO.Id;
