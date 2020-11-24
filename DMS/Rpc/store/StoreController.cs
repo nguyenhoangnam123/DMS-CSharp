@@ -495,6 +495,7 @@ namespace DMS.Rpc.store
                 Store.OwnerPhone = Store_ImportDTO.OwnerPhoneValue;
                 Store.OwnerEmail = Store_ImportDTO.OwnerEmailValue;
                 Store.StatusId = Store_ImportDTO.StatusId;
+                Store.BaseLanguage = CurrentContext.Language;
             });
             List<Store> Stores = DictionaryStores.Select(x => x.Value).ToList();
             errorContent = new StringBuilder(error);
