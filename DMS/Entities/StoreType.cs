@@ -13,7 +13,11 @@ namespace DMS.Entities
         public string Name { get; set; }
         public long? ColorId { get; set; }
         public long StatusId { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; }
+        public DateTime? DeletedAt { get; set; }
         public bool Used { get; set; }
+        public Guid RowId { get; set; }
         public Color Color { get; set; }
         public Status Status { get; set; }
 
