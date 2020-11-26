@@ -251,12 +251,14 @@ namespace DMS.Services.MStore
                         RecipientId = Id,
                         SenderId = CurrentContext.UserId,
                         Time = StaticParams.DateTimeNow,
-                        Unread = false
+                        Unread = false,
+                        RowId = Guid.NewGuid(),
                     };
                     UserNotifications.Add(UserNotification);
                 }
 
-                await NotificationService.BulkSend(UserNotifications);
+                List<EventMessage<UserNotification>> EventUserNotifications = UserNotifications.Select(x => new EventMessage<UserNotification>(x, x.RowId)).ToList();
+                RabbitManager.PublishList(EventUserNotifications, RoutingKeyEnum.UserNotificationSend);
 
                 await Logging.CreateAuditLog(Store, new { }, nameof(StoreService));
                 return await UOW.StoreRepository.Get(Store.Id);
@@ -336,13 +338,15 @@ namespace DMS.Services.MStore
                             RecipientId = Id,
                             SenderId = CurrentContext.UserId,
                             Time = StaticParams.DateTimeNow,
-                            Unread = false
+                            Unread = false,
+                            RowId = Guid.NewGuid(),
                         };
                         UserNotifications.Add(UserNotification);
                     }
                 }
 
-                await NotificationService.BulkSend(UserNotifications);
+                List<EventMessage<UserNotification>> EventUserNotifications = UserNotifications.Select(x => new EventMessage<UserNotification>(x, x.RowId)).ToList();
+                RabbitManager.PublishList(EventUserNotifications, RoutingKeyEnum.UserNotificationSend);
 
                 var newData = await UOW.StoreRepository.Get(Store.Id);
                 await Logging.CreateAuditLog(newData, oldData, nameof(StoreService));
@@ -395,12 +399,14 @@ namespace DMS.Services.MStore
                         RecipientId = Id,
                         SenderId = CurrentContext.UserId,
                         Time = StaticParams.DateTimeNow,
-                        Unread = false
+                        Unread = false,
+                        RowId = Guid.NewGuid(),
                     };
                     UserNotifications.Add(UserNotification);
                 }
 
-                await NotificationService.BulkSend(UserNotifications);
+                List<EventMessage<UserNotification>> EventUserNotifications = UserNotifications.Select(x => new EventMessage<UserNotification>(x, x.RowId)).ToList();
+                RabbitManager.PublishList(EventUserNotifications, RoutingKeyEnum.UserNotificationSend);
 
                 await Logging.CreateAuditLog(new { }, Store, nameof(StoreService));
                 return Store;
@@ -446,13 +452,15 @@ namespace DMS.Services.MStore
                             RecipientId = Id,
                             SenderId = CurrentContext.UserId,
                             Time = StaticParams.DateTimeNow,
-                            Unread = false
+                            Unread = false,
+                            RowId = Guid.NewGuid(),
                         };
                         UserNotifications.Add(UserNotification);
                     }
                 }
 
-                await NotificationService.BulkSend(UserNotifications);
+                List<EventMessage<UserNotification>> EventUserNotifications = UserNotifications.Select(x => new EventMessage<UserNotification>(x, x.RowId)).ToList();
+                RabbitManager.PublishList(EventUserNotifications, RoutingKeyEnum.UserNotificationSend);
                 await Logging.CreateAuditLog(new { }, Stores, nameof(StoreService));
                 return Stores;
             }

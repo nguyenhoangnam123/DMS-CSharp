@@ -95,7 +95,7 @@ namespace DMS.Handlers
                 throw new Exception();
             foreach (IHandler handler in Handlers)
             {
-                if (path[0] == handler.Name)
+                if (path.Any(p => p == handler.Name))
                 {
                     handler.RabbitManager = RabbitManager;
                     await handler.Handle(context, routingKey, content);

@@ -13,6 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using DMS.Handlers;
 
 namespace DMS.Services.MERoute
 {
@@ -51,6 +52,7 @@ namespace DMS.Services.MERoute
         private IStoreService StoreService;
         private IOrganizationService OrganizationService;
         private IAppUserService AppUserService;
+        private IRabbitManager RabbitManager;
         private IWorkflowService WorkflowService;
 
         public ERouteService(
@@ -62,6 +64,7 @@ namespace DMS.Services.MERoute
             IOrganizationService OrganizationService,
             IAppUserService AppUserService,
             IWorkflowService WorkflowService,
+            IRabbitManager RabbitManager,
             IERouteValidator ERouteValidator
         )
         {
@@ -73,6 +76,7 @@ namespace DMS.Services.MERoute
             this.OrganizationService = OrganizationService;
             this.AppUserService = AppUserService;
             this.WorkflowService = WorkflowService;
+            this.RabbitManager = RabbitManager;
             this.ERouteValidator = ERouteValidator;
         }
         public async Task<int> Count(ERouteFilter ERouteFilter)
@@ -314,7 +318,7 @@ namespace DMS.Services.MERoute
                 await UOW.Commit();
 
                 DateTime Now = StaticParams.DateTimeNow;
-                UserNotification UserNotifications = new UserNotification
+                UserNotification UserNotification = new UserNotification
                 {
                     TitleWeb = $"Thông báo từ DMS",
                     ContentWeb = $"Tuyên {ERoute.Code} - {ERoute.Name} đã được thêm mới cho anh/chị bởi {CurrentUser.DisplayName}",
@@ -323,9 +327,11 @@ namespace DMS.Services.MERoute
                     Time = Now,
                     Unread = true,
                     SenderId = CurrentContext.UserId,
-                    RecipientId = ERoute.SaleEmployeeId
+                    RecipientId = ERoute.SaleEmployeeId,
+                    RowId = Guid.NewGuid(),
                 };
-                await NotificationService.BulkSend(new List<UserNotification> { UserNotifications });
+                EventMessage<UserNotification> EventUserNotification =  new EventMessage<UserNotification>(UserNotification, UserNotification.RowId);
+                RabbitManager.PublishSingle(EventUserNotification, RoutingKeyEnum.UserNotificationSend);
 
                 await Logging.CreateAuditLog(ERoute, new { }, nameof(ERouteService));
                 return await UOW.ERouteRepository.Get(ERoute.Id);
@@ -375,9 +381,11 @@ namespace DMS.Services.MERoute
                     Time = Now,
                     Unread = true,
                     SenderId = CurrentContext.UserId,
-                    RecipientId = ERoute.SaleEmployeeId
+                    RecipientId = ERoute.SaleEmployeeId,
+                    RowId = Guid.NewGuid(),
                 };
-                await NotificationService.BulkSend(new List<UserNotification> { UserNotifications });
+                EventMessage<UserNotification> EventUserNotification = new EventMessage<UserNotification>(UserNotifications, UserNotifications.RowId);
+                RabbitManager.PublishSingle(EventUserNotification, RoutingKeyEnum.UserNotificationSend);
 
                 var newData = await UOW.ERouteRepository.Get(ERoute.Id);
                 await Logging.CreateAuditLog(newData, oldData, nameof(ERouteService));
@@ -419,9 +427,11 @@ namespace DMS.Services.MERoute
                     Time = Now,
                     Unread = true,
                     SenderId = CurrentContext.UserId,
-                    RecipientId = ERoute.SaleEmployeeId
+                    RecipientId = ERoute.SaleEmployeeId,
+                    RowId = Guid.NewGuid(),
                 };
-                await NotificationService.BulkSend(new List<UserNotification> { UserNotifications });
+                EventMessage<UserNotification> EventUserNotification = new EventMessage<UserNotification>(UserNotifications, UserNotifications.RowId);
+                RabbitManager.PublishSingle(EventUserNotification, RoutingKeyEnum.UserNotificationSend);
 
                 await Logging.CreateAuditLog(new { }, ERoute, nameof(ERouteService));
                 return ERoute;

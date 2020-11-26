@@ -208,13 +208,15 @@ namespace DMS.Services.MProduct
                             RecipientId = Id,
                             SenderId = CurrentContext.UserId,
                             Time = StaticParams.DateTimeNow,
-                            Unread = false
+                            Unread = false,
+                            RowId = Guid.NewGuid(),
                         };
                         UserNotifications.Add(UserNotification);
                     }
                 }
 
-                await NotificationService.BulkSend(UserNotifications);
+                List<EventMessage<UserNotification>> EventUserNotifications = UserNotifications.Select(x => new EventMessage<UserNotification>(x, x.RowId)).ToList();
+                RabbitManager.PublishList(EventUserNotifications, RoutingKeyEnum.UserNotificationSend);
 
                 await Logging.CreateAuditLog(new { }, Products, nameof(ProductService));
                 return Products;

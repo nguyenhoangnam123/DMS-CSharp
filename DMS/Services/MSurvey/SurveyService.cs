@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using DMS.Handlers;
 
 namespace DMS.Services.MSurvey
 {
@@ -31,6 +32,7 @@ namespace DMS.Services.MSurvey
         private ILogging Logging;
         private INotificationService NotificationService;
         private ICurrentContext CurrentContext;
+        private IRabbitManager RabbitManager;
         private ISurveyValidator SurveyValidator;
 
         public SurveyService(
@@ -38,6 +40,7 @@ namespace DMS.Services.MSurvey
             ILogging Logging,
             INotificationService NotificationService,
             ICurrentContext CurrentContext,
+            IRabbitManager RabbitManager,
             ISurveyValidator SurveyValidator
         )
         {
@@ -45,6 +48,7 @@ namespace DMS.Services.MSurvey
             this.Logging = Logging;
             this.NotificationService = NotificationService;
             this.CurrentContext = CurrentContext;
+            this.RabbitManager = RabbitManager;
             this.SurveyValidator = SurveyValidator;
         }
         public async Task<int> Count(SurveyFilter SurveyFilter)
@@ -137,12 +141,14 @@ namespace DMS.Services.MSurvey
                         RecipientId = Id,
                         SenderId = CurrentContext.UserId,
                         Time = StaticParams.DateTimeNow,
-                        Unread = false
+                        Unread = false,
+                        RowId = Guid.NewGuid(),
                     };
                     UserNotifications.Add(UserNotification);
                 }
 
-                await NotificationService.BulkSend(UserNotifications);
+                List<EventMessage<UserNotification>> EventUserNotifications = UserNotifications.Select(x => new EventMessage<UserNotification>(x, x.RowId)).ToList();
+                RabbitManager.PublishList(EventUserNotifications, RoutingKeyEnum.UserNotificationSend);
 
                 await Logging.CreateAuditLog(Survey, new { }, nameof(SurveyService));
                 return await UOW.SurveyRepository.Get(Survey.Id);
@@ -195,12 +201,14 @@ namespace DMS.Services.MSurvey
                         RecipientId = Id,
                         SenderId = CurrentContext.UserId,
                         Time = StaticParams.DateTimeNow,
-                        Unread = false
+                        Unread = false,
+                        RowId = Guid.NewGuid(),
                     };
                     UserNotifications.Add(UserNotification);
                 }
 
-                await NotificationService.BulkSend(UserNotifications);
+                List<EventMessage<UserNotification>> EventUserNotifications = UserNotifications.Select(x => new EventMessage<UserNotification>(x, x.RowId)).ToList();
+                RabbitManager.PublishList(EventUserNotifications, RoutingKeyEnum.UserNotificationSend);
 
                 var newData = await UOW.SurveyRepository.Get(Survey.Id);
                 await Logging.CreateAuditLog(newData, oldData, nameof(SurveyService));
@@ -251,12 +259,14 @@ namespace DMS.Services.MSurvey
                         RecipientId = Id,
                         SenderId = CurrentContext.UserId,
                         Time = StaticParams.DateTimeNow,
-                        Unread = false
+                        Unread = false,
+                        RowId = Guid.NewGuid(),
                     };
                     UserNotifications.Add(UserNotification);
                 }
 
-                await NotificationService.BulkSend(UserNotifications);
+                List<EventMessage<UserNotification>> EventUserNotifications = UserNotifications.Select(x => new EventMessage<UserNotification>(x, x.RowId)).ToList();
+                RabbitManager.PublishList(EventUserNotifications, RoutingKeyEnum.UserNotificationSend);
 
                 await Logging.CreateAuditLog(new { }, Survey, nameof(SurveyService));
                 return Survey;

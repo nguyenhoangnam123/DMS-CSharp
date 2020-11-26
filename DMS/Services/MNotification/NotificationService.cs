@@ -22,7 +22,6 @@ namespace DMS.Services.MNotification
         Task<Notification> Update(Notification Notification);
         Task<Notification> Delete(Notification Notification);
         Task<Notification> Send(Notification Notification);
-        Task<List<UserNotification>> BulkSend(List<UserNotification> UserNotifications);
         Task<List<Notification>> BulkDelete(List<Notification> Notifications);
         Task<List<Notification>> Import(List<Notification> Notifications);
         NotificationFilter ToFilter(NotificationFilter NotificationFilter);
@@ -344,31 +343,5 @@ namespace DMS.Services.MNotification
             return filter;
         }
 
-        public async Task<List<UserNotification>> BulkSend(List<UserNotification> UserNotifications)
-        {
-            if (StaticParams.EnableExternalService)
-            {
-                RestClient restClient = new RestClient(InternalServices.UTILS);
-                RestRequest restRequest = new RestRequest("/rpc/utils/user-notification/bulk-create");
-                restRequest.RequestFormat = DataFormat.Json;
-                restRequest.Method = Method.POST;
-                restRequest.AddCookie("Token", CurrentContext.Token);
-                restRequest.AddCookie("X-Language", CurrentContext.Language);
-                restRequest.AddJsonBody(UserNotifications);
-                try
-                {
-                    var response = await restClient.ExecuteAsync<List<UserNotification>>(restRequest);
-                    if (response.StatusCode == System.Net.HttpStatusCode.OK)
-                    {
-                        return UserNotifications;
-                    }
-                }
-                catch
-                {
-                    return null;
-                }
-            }
-            return null;
-        }
     }
 }

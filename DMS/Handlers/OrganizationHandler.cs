@@ -12,7 +12,7 @@ namespace DMS.Handlers
 {
     public class OrganizationHandler : Handler
     {
-        private string SyncKey => Name + ".Sync";
+        private string SyncKey => $"{Name}.Sync";
         public override string Name => nameof(Organization);
 
         public override void QueueBind(IModel channel, string queue, string exchange)
@@ -27,9 +27,9 @@ namespace DMS.Handlers
 
         private async Task Sync(DataContext context, string json)
         {
-            List<EventMessage<Organization>> EventMessageReviced = JsonConvert.DeserializeObject<List<EventMessage<Organization>>>(json);
-            await SaveEventMessage(context, SyncKey, EventMessageReviced);
-            List<Guid> RowIds = EventMessageReviced.Select(a => a.RowId).Distinct().ToList();
+            List<EventMessage<Organization>> EventMessageReceived = JsonConvert.DeserializeObject<List<EventMessage<Organization>>>(json);
+            await SaveEventMessage(context, SyncKey, EventMessageReceived);
+            List<Guid> RowIds = EventMessageReceived.Select(a => a.RowId).Distinct().ToList();
             List<EventMessage<Organization>> OrganizationEventMessages = await ListEventMessage<Organization>(context, SyncKey, RowIds);
 
             List<Organization> Organizations = new List<Organization>();

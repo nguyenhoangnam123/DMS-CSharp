@@ -158,12 +158,14 @@ namespace DMS.Services.MProblem
                         Time = Now,
                         Unread = true,
                         SenderId = CurrentContext.UserId,
-                        RecipientId = id
+                        RecipientId = id,
+                        RowId = Guid.NewGuid(),
                     };
                     UserNotifications.Add(UserNotification);
                 }
 
-                await NotificationService.BulkSend(UserNotifications);
+                List<EventMessage<UserNotification>> EventUserNotifications = UserNotifications.Select(x => new EventMessage<UserNotification>(x, x.RowId)).ToList();
+                RabbitManager.PublishList(EventUserNotifications, RoutingKeyEnum.UserNotificationSend);
 
                 await Logging.CreateAuditLog(Problem, new { }, nameof(ProblemService));
                 return await UOW.ProblemRepository.Get(Problem.Id);
@@ -242,6 +244,7 @@ namespace DMS.Services.MProblem
                             Unread = true,
                             SenderId = CurrentContext.UserId,
                             RecipientId = Problem.CreatorId,
+                            RowId = Guid.NewGuid(),
                         };
                         UserNotifications.Add(UserNotification);
                     }
@@ -249,7 +252,8 @@ namespace DMS.Services.MProblem
                         Problem.ProblemHistories = new List<ProblemHistory>();
                     Problem.ProblemHistories.Add(ProblemHistory);
 
-                    await NotificationService.BulkSend(UserNotifications);
+                    List<EventMessage<UserNotification>> EventUserNotifications = UserNotifications.Select(x => new EventMessage<UserNotification>(x, x.RowId)).ToList();
+                    RabbitManager.PublishList(EventUserNotifications, RoutingKeyEnum.UserNotificationSend);
                 }
                 await UOW.Begin();
                 await UOW.ProblemRepository.Update(Problem);

@@ -437,7 +437,8 @@ namespace DMS.Services.MDirectSalesOrder
                     UserNotifications.Add(UserNotification);
                 }
 
-                await NotificationService.BulkSend(UserNotifications);
+                List<EventMessage<UserNotification>> EventUserNotifications = UserNotifications.Select(x => new EventMessage<UserNotification>(x, x.RowId)).ToList();
+                RabbitManager.PublishList(EventUserNotifications, RoutingKeyEnum.UserNotificationSend);
 
                 NotifyUsed(DirectSalesOrder);
                 await Logging.CreateAuditLog(DirectSalesOrder, new { }, nameof(DirectSalesOrderService));
@@ -494,7 +495,8 @@ namespace DMS.Services.MDirectSalesOrder
                 };
                 UserNotifications.Add(UserNotification);
 
-                await NotificationService.BulkSend(UserNotifications);
+                List<EventMessage<UserNotification>> EventUserNotifications = UserNotifications.Select(x => new EventMessage<UserNotification>(x, x.RowId)).ToList();
+                RabbitManager.PublishList(EventUserNotifications, RoutingKeyEnum.UserNotificationSend);
 
                 DirectSalesOrder = await UOW.DirectSalesOrderRepository.Get(DirectSalesOrder.Id);
                 NotifyUsed(DirectSalesOrder);
@@ -545,12 +547,14 @@ namespace DMS.Services.MDirectSalesOrder
                         Time = Now,
                         Unread = true,
                         SenderId = CurrentContext.UserId,
-                        RecipientId = Id
+                        RecipientId = Id,
+                        RowId = Guid.NewGuid(),
                     };
                     UserNotifications.Add(UserNotification);
                 }
 
-                await NotificationService.BulkSend(UserNotifications);
+                List<EventMessage<UserNotification>> EventUserNotifications = UserNotifications.Select(x => new EventMessage<UserNotification>(x, x.RowId)).ToList();
+                RabbitManager.PublishList(EventUserNotifications, RoutingKeyEnum.UserNotificationSend);
 
                 await Logging.CreateAuditLog(new { }, DirectSalesOrder, nameof(DirectSalesOrderService));
                 return DirectSalesOrder;
