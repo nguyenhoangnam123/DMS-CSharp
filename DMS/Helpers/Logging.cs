@@ -3,7 +3,6 @@ using DMS.Entities;
 using DMS.Enums;
 using DMS.Handlers;
 using DMS.Repositories;
-using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using System;
 using System.Runtime.CompilerServices;
