@@ -20,6 +20,9 @@
     "PermissionContent": {
       "Field": {
         "FieldNotExisted": "Trường dữ liệu không tồn tại"
+      },
+      "PermissionOperator": {
+        "PermissionOperatorNotExisted": "Phép toán điều kiện không tồn tại"
       }
     }
   }
