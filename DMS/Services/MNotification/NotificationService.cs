@@ -10,6 +10,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using DMS.Handlers;
+using DMS.Enums;
 
 namespace DMS.Services.MNotification
 {
@@ -32,18 +34,21 @@ namespace DMS.Services.MNotification
         private IUOW UOW;
         private ILogging Logging;
         private ICurrentContext CurrentContext;
+        private IRabbitManager RabbitManager;
         private INotificationValidator NotificationValidator;
 
         public NotificationService(
             IUOW UOW,
             ILogging Logging,
             ICurrentContext CurrentContext,
+            IRabbitManager RabbitManager,
             INotificationValidator NotificationValidator
         )
         {
             this.UOW = UOW;
             this.Logging = Logging;
             this.CurrentContext = CurrentContext;
+            this.RabbitManager = RabbitManager;
             this.NotificationValidator = NotificationValidator;
         }
         public async Task<int> Count(NotificationFilter NotificationFilter)
@@ -153,7 +158,8 @@ namespace DMS.Services.MNotification
                         RecipientId = x
                     }).ToList();
 
-                    await BulkSend(UserNotifications);
+                    List<EventMessage<UserNotification>> EventUserNotifications = UserNotifications.Select(x => new EventMessage<UserNotification>(x, x.RowId)).ToList();
+                    RabbitManager.PublishList(EventUserNotifications, RoutingKeyEnum.UserNotificationSend);
                 }
 
                 var newData = await UOW.NotificationRepository.Get(Notification.Id);
