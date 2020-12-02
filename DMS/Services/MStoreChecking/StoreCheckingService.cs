@@ -380,7 +380,7 @@ namespace DMS.Services.MStoreChecking
                 }
                 Stores = (from s in Stores
                           join id in StoreIds on s.Id equals id.Key
-                          orderby id.Value, s.Distance
+                          orderby s.Distance, id.Value
                           select s)
                            .Skip(skip).Take(take).ToList();
 
@@ -468,7 +468,7 @@ namespace DMS.Services.MStoreChecking
                 }
                 Stores = (from s in Stores
                           join id in StoreIds on s.Id equals id.Key
-                          orderby id.Value, s.Distance
+                          orderby s.Distance, id.Value
                           select s)
                           .Skip(skip).Take(take).ToList();
                 Stores = await CheckStoreChecking(Stores);
