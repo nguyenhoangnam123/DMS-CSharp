@@ -1,7 +1,8 @@
 ﻿{
   "Product": {
     "Id": {
-      "IdNotExisted": "Id không tồn tại"
+      "IdNotExisted": "Id không tồn tại",
+      "ProductInUsed": "Không thể sửa mã và tên sản phẩm khi đã được sử dụng"
     },
     "Code": {
       "CodeExisted": "Mã sản phẩm đã tồn tại",
