@@ -267,6 +267,7 @@ namespace DMS.Repositories
                 } : null,
                 CreatedAt = q.CreatedAt,
                 UpdatedAt = q.UpdatedAt,
+                RowId = q.RowId,
             }).ToListAsync();
             return KpiGenerals;
         }
@@ -301,6 +302,7 @@ namespace DMS.Repositories
                 KpiYearId = x.KpiYearId,
                 StatusId = x.StatusId,
                 CreatorId = x.CreatorId,
+                RowId = x.RowId,
                 Creator = x.Creator == null ? null : new AppUser
                 {
                     Id = x.Creator.Id,

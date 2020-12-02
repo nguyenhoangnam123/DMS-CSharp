@@ -284,6 +284,7 @@ namespace DMS.Repositories
                 } : null,
                 CreatedAt = q.CreatedAt,
                 UpdatedAt = q.UpdatedAt,
+                RowId = q.RowId,
             }).ToListAsync();
             return KpiItems;
         }
@@ -319,6 +320,7 @@ namespace DMS.Repositories
                 StatusId = x.StatusId,
                 EmployeeId = x.EmployeeId,
                 CreatorId = x.CreatorId,
+                RowId = x.RowId,
                 Creator = x.Creator == null ? null : new AppUser
                 {
                     Id = x.Creator.Id,
@@ -518,9 +520,8 @@ namespace DMS.Repositories
                 KpiItemDAO.CreatorId = KpiItem.CreatorId;
                 KpiItemDAO.CreatedAt = StaticParams.DateTimeNow;
                 KpiItemDAO.UpdatedAt = StaticParams.DateTimeNow;
-                KpiItemDAO.RowId = Guid.NewGuid();
+                KpiItemDAO.RowId = KpiItem.RowId;
                 KpiItemDAOs.Add(KpiItemDAO);
-                KpiItem.RowId = KpiItemDAO.RowId;
             }
             await DataContext.BulkMergeAsync(KpiItemDAOs);
 
