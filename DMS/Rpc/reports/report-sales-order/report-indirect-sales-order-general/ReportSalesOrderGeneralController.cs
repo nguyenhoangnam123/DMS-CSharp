@@ -19,6 +19,8 @@ using System.IO;
 using System.Dynamic;
 using NGS.Templater;
 using DMS.Services.MStoreStatus;
+using Thinktecture.EntityFrameworkCore.TempTables;
+using Thinktecture;
 
 namespace DMS.Rpc.reports.report_sales_order.report_indirect_sales_order_general
 {
@@ -179,16 +181,39 @@ namespace DMS.Rpc.reports.report_sales_order.report_indirect_sales_order_general
                 OrganizationDAOs = OrganizationDAOs.Where(o => o.Path.StartsWith(OrganizationDAO.Path)).ToList();
             }
             OrganizationIds = OrganizationDAOs.Select(o => o.Id).ToList();
-            
+
+            AppUserFilter AppUserFilter = new AppUserFilter
+            {
+                OrganizationId = new IdFilter { In = OrganizationIds },
+                Id = new IdFilter { },
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = AppUserSelect.Id | AppUserSelect.DisplayName | AppUserSelect.Organization
+            };
+            AppUserFilter.Id.In = await FilterAppUser(AppUserService, OrganizationService, CurrentContext);
+            var AppUsers = await AppUserService.List(AppUserFilter);
+            var AppUserIds = AppUsers.Select(x => x.Id).ToList();
+
+            List<long> StoreIds = await FilterStore(StoreService, OrganizationService, CurrentContext);
+            if (SellerStoreId.HasValue)
+            {
+                var listId = new List<long> { SellerStoreId.Value };
+                StoreIds = StoreIds.Intersect(listId).ToList();
+            }
+            ITempTableQuery<TempTable<long>> tempTableQuery = await DataContext
+                       .BulkInsertValuesIntoTempTableAsync<long>(StoreIds);
+
             var query = from i in DataContext.IndirectSalesOrder
                         join au in DataContext.AppUser on i.SaleEmployeeId equals au.Id
                         join s in DataContext.Store on i.BuyerStoreId equals s.Id
+                        join tt in tempTableQuery.Query on s.Id equals tt.Column1
                         where i.OrderDate >= Start && i.OrderDate <= End &&
                         (SaleEmployeeId.HasValue == false || i.SaleEmployeeId == SaleEmployeeId.Value) &&
                         (BuyerStoreId.HasValue == false || i.BuyerStoreId == BuyerStoreId.Value) &&
                         (SellerStoreId.HasValue == false || i.SellerStoreId == SellerStoreId.Value) &&
                         (StoreStatusId.HasValue == false || StoreStatusId.Value == StoreStatusEnum.ALL.Id || s.StoreStatusId == StoreStatusId.Value) &&
                         OrganizationIds.Contains(i.OrganizationId) &&
+                        AppUserIds.Contains(i.SaleEmployeeId) &&
                         i.RequestStateId == RequestStateEnum.APPROVED.Id &&
                         s.DeletedAt == null && au.DeletedAt == null
                         select i;
@@ -244,14 +269,25 @@ namespace DMS.Rpc.reports.report_sales_order.report_indirect_sales_order_general
             var AppUsers = await AppUserService.List(AppUserFilter);
             var AppUserIds = AppUsers.Select(x => x.Id).ToList();
 
+            List<long> StoreIds = await FilterStore(StoreService, OrganizationService, CurrentContext);
+            if (SellerStoreId.HasValue)
+            {
+                var listId = new List<long> { SellerStoreId.Value };
+                StoreIds = StoreIds.Intersect(listId).ToList();
+            }
+            ITempTableQuery<TempTable<long>> tempTableQuery = await DataContext
+                       .BulkInsertValuesIntoTempTableAsync<long>(StoreIds);
+
             var query = from i in DataContext.IndirectSalesOrder
                         join s in DataContext.Store on i.BuyerStoreId equals s.Id
+                        join tt in tempTableQuery.Query on s.Id equals tt.Column1
                         where i.OrderDate >= Start && i.OrderDate <= End &&
                         (SaleEmployeeId.HasValue == false || i.SaleEmployeeId == SaleEmployeeId.Value) &&
                         (BuyerStoreId.HasValue == false || i.BuyerStoreId == BuyerStoreId.Value) &&
                         (SellerStoreId.HasValue == false || i.SellerStoreId == SellerStoreId.Value) &&
                         (StoreStatusId.HasValue == false || StoreStatusId.Value == StoreStatusEnum.ALL.Id || s.StoreStatusId == StoreStatusId.Value) &&
                         OrganizationIds.Contains(i.OrganizationId) &&
+                        AppUserIds.Contains(i.SaleEmployeeId) &&
                         i.RequestStateId == RequestStateEnum.APPROVED.Id &&
                         s.DeletedAt == null 
                         select i;
@@ -261,7 +297,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_indirect_sales_order_general
                 .Skip(ReportSalesOrderGeneral_ReportSalesOrderGeneralFilterDTO.Skip)
                 .Take(ReportSalesOrderGeneral_ReportSalesOrderGeneralFilterDTO.Take)
                 .ToListAsync();
-            var StoreIds = new List<long>();
+            StoreIds = new List<long>();
             StoreIds.AddRange(IndirectSalesOrderDAOs.Select(x => x.SellerStoreId));
             StoreIds.AddRange(IndirectSalesOrderDAOs.Select(x => x.BuyerStoreId));
             StoreIds = StoreIds.Distinct().ToList();
@@ -381,8 +417,18 @@ namespace DMS.Rpc.reports.report_sales_order.report_indirect_sales_order_general
             var AppUsers = await AppUserService.List(AppUserFilter);
             var AppUserIds = AppUsers.Select(x => x.Id).ToList();
 
+            List<long> StoreIds = await FilterStore(StoreService, OrganizationService, CurrentContext);
+            if (SellerStoreId.HasValue)
+            {
+                var listId = new List<long> { SellerStoreId.Value };
+                StoreIds = StoreIds.Intersect(listId).ToList();
+            }
+            ITempTableQuery<TempTable<long>> tempTableQuery = await DataContext
+                       .BulkInsertValuesIntoTempTableAsync<long>(StoreIds);
+
             var query = from i in DataContext.IndirectSalesOrder
                         join s in DataContext.Store on i.BuyerStoreId equals s.Id
+                        join tt in tempTableQuery.Query on s.Id equals tt.Column1
                         where i.OrderDate >= Start && i.OrderDate <= End &&
                         (SaleEmployeeId.HasValue == false || i.SaleEmployeeId == SaleEmployeeId.Value) &&
                         (BuyerStoreId.HasValue == false || i.BuyerStoreId == BuyerStoreId.Value) &&

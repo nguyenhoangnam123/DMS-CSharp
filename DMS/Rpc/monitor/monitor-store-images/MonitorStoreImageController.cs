@@ -69,6 +69,8 @@ namespace DMS.Rpc.monitor.monitor_store_images
             AppUserFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
             AppUserFilter.Id.In = await FilterAppUser(AppUserService, OrganizationService, CurrentContext);
 
+            if (AppUserFilter.Id == null) AppUserFilter.Id = new IdFilter();
+            AppUserFilter.Id.In = await FilterAppUser(AppUserService, OrganizationService, CurrentContext);
             List<AppUser> AppUsers = await AppUserService.List(AppUserFilter);
             List<MonitorStoreImage_AppUserDTO> StoreCheckerMonitor_AppUserDTOs = AppUsers
                 .Select(x => new MonitorStoreImage_AppUserDTO(x)).ToList();
@@ -122,6 +124,8 @@ namespace DMS.Rpc.monitor.monitor_store_images
             StoreFilter.OwnerEmail = MonitorStoreImage_StoreFilterDTO.OwnerEmail;
             StoreFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
+            if (StoreFilter.Id == null) StoreFilter.Id = new IdFilter();
+            StoreFilter.Id.In = await FilterStore(StoreService, OrganizationService, CurrentContext);
             List<Store> Stores = await StoreService.List(StoreFilter);
             List<MonitorStoreImage_StoreDTO> MonitorStoreImage_StoreDTOs = Stores
                 .Select(x => new MonitorStoreImage_StoreDTO(x)).ToList();
