@@ -31,6 +31,9 @@ namespace DMS.Rpc.e_route
         public const string Reject = Default + "/reject";
         public const string Delete = Default + "/delete";
         public const string BulkDelete = Default + "/bulk-delete";
+        public const string Import = Default + "/import";
+        public const string Export = Default + "/export";
+        public const string ExportTemplate = Default + "/export-template";
 
         public const string FilterListAppUser = Default + "/filter-list-app-user";
         public const string FilterListOrganization = Default + "/filter-list-organization";
@@ -113,6 +116,22 @@ namespace DMS.Rpc.e_route
                 CountNew, ListNew, CountPending, ListPending, CountCompleted, ListCompleted,
                 FilterListAppUser, FilterListOrganization, FilterListERouteType, FilterListRequestState, FilterListStatus,  FilterListStore,
                 DetailOwner, Detail, Send, Approve, Reject,
+                SingleListAppUser, SingleListERouteType, SingleListRequestState, SingleListStatus,  SingleListStore,  SingleListOrganization, SingleListStoreType,
+                CountStore, ListStore, } },
+             { "Nhập Excel", new List<string> {
+                Parent,
+                Master, Count, List, Get,
+                CountNew, ListNew, CountPending, ListPending, CountCompleted, ListCompleted,
+                FilterListAppUser, FilterListOrganization, FilterListERouteType, FilterListRequestState, FilterListStatus,  FilterListStore,
+                Import, ExportTemplate,
+                SingleListAppUser, SingleListERouteType, SingleListRequestState, SingleListStatus,  SingleListStore,  SingleListOrganization, SingleListStoreType,
+                CountStore, ListStore, } },
+             { "Xuất Excel", new List<string> {
+                Parent,
+                Master, Count, List, Get,
+                CountNew, ListNew, CountPending, ListPending, CountCompleted, ListCompleted,
+                FilterListAppUser, FilterListOrganization, FilterListERouteType, FilterListRequestState, FilterListStatus,  FilterListStore,
+                Export,
                 SingleListAppUser, SingleListERouteType, SingleListRequestState, SingleListStatus,  SingleListStore,  SingleListOrganization, SingleListStoreType,
                 CountStore, ListStore, } },
         };
