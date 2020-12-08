@@ -531,7 +531,7 @@ namespace DMS.Rpc.e_route
             long ERouteId = ERoute_ERouteDTO?.Id ?? 0;
             ERoute ERoute = await ERouteService.Get(ERouteId);
             if (ERoute == null)
-                return null;
+                return BadRequest("Tuyến không tồn tại");
 
             List<ERoute_ExportDTO> ERoute_ExportDTOs = ERoute.ERouteContents?.Select(x => new ERoute_ExportDTO(x)).ToList();
             var stt = 1;
@@ -551,7 +551,8 @@ namespace DMS.Rpc.e_route
             {
                 document.Process(Data);
             };
-            return File(output.ToArray(), "application/octet-stream", $"ERoute_{ERoute.SaleEmployee?.DisplayName}_{ERoute.Code}.xlsx");
+            var fileName = $"ERoute_{ERoute.Code}_{ERoute.SaleEmployee?.Username}.xlsx";
+            return File(output.ToArray(), "application/octet-stream", fileName);
         }
 
         [Route(ERouteRoute.ExportTemplate), HttpPost]
