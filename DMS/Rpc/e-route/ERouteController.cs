@@ -1,6 +1,7 @@
-using DMS.Common;
+﻿using DMS.Common;
 using DMS.Entities;
 using DMS.Enums;
+using DMS.Helpers;
 using DMS.Services.MAppUser;
 using DMS.Services.MERoute;
 using DMS.Services.MERouteType;
@@ -10,14 +11,20 @@ using DMS.Services.MStore;
 using DMS.Services.MStoreGrouping;
 using DMS.Services.MStoreType;
 using DMS.Services.MWorkflow;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using OfficeOpenXml;
+using System;
 using System.Collections.Generic;
+using System.Dynamic;
+using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace DMS.Rpc.e_route
 {
-    public class ERouteController : RpcController
+    public partial class ERouteController : RpcController
     {
         private IAppUserService AppUserService;
         private IERouteTypeService ERouteTypeService;
@@ -312,6 +319,284 @@ namespace DMS.Rpc.e_route
             return true;
         }
 
+        [Route(ERouteRoute.Import), HttpPost]
+        public async Task<ActionResult<List<ERoute_ERouteContentDTO>>> Import([FromForm] long ERouteId, [FromForm] IFormFile file)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            if (!await HasPermission(ERouteId))
+                return Forbid();
+
+            FileInfo FileInfo = new FileInfo(file.FileName);
+            if (!FileInfo.Extension.Equals(".xlsx"))
+                return BadRequest("Định dạng file không hợp lệ");
+
+            var StoreFilter = new StoreFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = StoreSelect.Id | StoreSelect.Code | StoreSelect.CodeDraft | StoreSelect.Name | StoreSelect.Address,
+                StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id }
+            };
+            var Stores = await StoreService.List(StoreFilter);
+
+            ERoute ERoute;
+            List<ERoute_ERouteContentDTO> ERoute_ERouteContentDTOs = new List<ERoute_ERouteContentDTO>();
+            if (ERouteId != 0)
+            {
+                ERoute = await ERouteService.Get(ERouteId);
+                ERoute_ERouteContentDTOs = ERoute.ERouteContents?.Select(x => new ERoute_ERouteContentDTO(x)).ToList();
+            }
+
+            StringBuilder errorContent = new StringBuilder();
+            using (ExcelPackage excelPackage = new ExcelPackage(file.OpenReadStream()))
+            {
+                ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets["ERoute"];
+                if (worksheet == null)
+                    return BadRequest("File không đúng biểu mẫu import");
+                int StartColumn = 1;
+                int StartRow = 3;
+                int SttColumnn = 0 + StartColumn;
+                int StoreCodeColumn = 1 + StartColumn;
+                int MondayColumn = 5 + StartColumn;
+                int TuesdayColumn = 6 + StartColumn;
+                int WednesdayColumn = 7 + StartColumn;
+                int ThursdayColumn = 8 + StartColumn;
+                int FridayColumn = 9 + StartColumn;
+                int SaturdayColumn = 10 + StartColumn;
+                int SundayColumn = 11 + StartColumn;
+                int Week1Column = 12 + StartColumn;
+                int Week2Column = 13 + StartColumn;
+                int Week3Column = 14 + StartColumn;
+                int Week4Column = 15 + StartColumn;
+
+                for (int i = StartRow; i <= worksheet.Dimension.End.Row; i++)
+                {
+                    string stt = worksheet.Cells[i, SttColumnn].Value?.ToString();
+                    if (stt != null && stt.ToLower() == "END".ToLower())
+                        break;
+
+                    string StoreCodeValue = worksheet.Cells[i, StoreCodeColumn].Value?.ToString();
+                    if (string.IsNullOrWhiteSpace(StoreCodeValue) && i != worksheet.Dimension.End.Row)
+                    {
+                        errorContent.AppendLine($"Lỗi dòng thứ {i}: Chưa nhập mã đại lý");
+                        continue;
+                    }
+                    else if (string.IsNullOrWhiteSpace(StoreCodeValue) && i == worksheet.Dimension.End.Row)
+                        break;
+
+                    var Store = Stores.Where(x => x.Code == StoreCodeValue).FirstOrDefault();
+                    if (Store == null)
+                    {
+                        errorContent.AppendLine($"Lỗi dòng thứ {i}: Mã đại lý không tồn tại");
+                        continue;
+                    }
+                    
+                    string MondayValue = worksheet.Cells[i, MondayColumn].Value?.ToString();
+                    string TuesdayValue = worksheet.Cells[i, TuesdayColumn].Value?.ToString();
+                    string WednesdayValue = worksheet.Cells[i, WednesdayColumn].Value?.ToString();
+                    string ThursdayValue = worksheet.Cells[i, ThursdayColumn].Value?.ToString();
+                    string FridayValue = worksheet.Cells[i, FridayColumn].Value?.ToString();
+                    string SaturdayValue = worksheet.Cells[i, SaturdayColumn].Value?.ToString();
+                    string SundayValue = worksheet.Cells[i, SundayColumn].Value?.ToString();
+                    string Week1Value = worksheet.Cells[i, Week1Column].Value?.ToString();
+                    string Week2Value = worksheet.Cells[i, Week2Column].Value?.ToString();
+                    string Week3Value = worksheet.Cells[i, Week3Column].Value?.ToString();
+                    string Week4Value = worksheet.Cells[i, Week4Column].Value?.ToString();
+
+                    var content = ERoute_ERouteContentDTOs.Where(x => x.StoreId == Store.Id).FirstOrDefault();
+                    if (content == null)
+                    {
+                        content = new ERoute_ERouteContentDTO()
+                        {
+                            StoreId = Store.Id,
+                            Store = new ERoute_StoreDTO(Store),
+                            ERouteId = ERouteId
+                        };
+                        ERoute_ERouteContentDTOs.Add(content);
+                    }
+                    if (!string.IsNullOrWhiteSpace(MondayValue) && (MondayValue.ToLower() == "x"))
+                    {
+                        content.Monday = true;
+                    }
+                    else
+                    {
+                        content.Monday = false;
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(TuesdayValue) && (TuesdayValue.ToLower() == "x"))
+                    {
+                        content.Tuesday = true;
+                    }
+                    else
+                    {
+                        content.Tuesday = false;
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(WednesdayValue) && (WednesdayValue.ToLower() == "x"))
+                    {
+                        content.Wednesday = true;
+                    }
+                    else
+                    {
+                        content.Wednesday = false;
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(ThursdayValue) && (ThursdayValue.ToLower() == "x"))
+                    {
+                        content.Thursday = true;
+                    }
+                    else
+                    {
+                        content.Thursday = false;
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(FridayValue) && (FridayValue.ToLower() == "x"))
+                    {
+                        content.Friday = true;
+                    }
+                    else
+                    {
+                        content.Friday = false;
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(SaturdayValue) && (SaturdayValue.ToLower() == "x"))
+                    {
+                        content.Saturday = true;
+                    }
+                    else
+                    {
+                        content.Saturday = false;
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(SundayValue) && (SundayValue.ToLower() == "x"))
+                    {
+                        content.Sunday = true;
+                    }
+                    else
+                    {
+                        content.Sunday = false;
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(Week1Value) && (Week1Value.ToLower() == "x"))
+                    {
+                        content.Week1 = true;
+                    }
+                    else
+                    {
+                        content.Week1 = false;
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(Week2Value) && (Week2Value.ToLower() == "x"))
+                    {
+                        content.Week2 = true;
+                    }
+                    else
+                    {
+                        content.Week2 = false;
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(Week3Value) && (Week3Value.ToLower() == "x"))
+                    {
+                        content.Week3 = true;
+                    }
+                    else
+                    {
+                        content.Week3 = false;
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(Week4Value) && (Week4Value.ToLower() == "x"))
+                    {
+                        content.Week4 = true;
+                    }
+                    else
+                    {
+                        content.Week4 = false;
+                    }
+                }
+                if (errorContent.Length > 0)
+                    return BadRequest(errorContent.ToString());
+            }
+
+            return ERoute_ERouteContentDTOs;
+        }
+
+        [Route(ERouteRoute.Export), HttpPost]
+        public async Task<ActionResult> Export([FromBody] ERoute_ERouteDTO ERoute_ERouteDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            long ERouteId = ERoute_ERouteDTO?.Id ?? 0;
+            ERoute ERoute = await ERouteService.Get(ERouteId);
+            if (ERoute == null)
+                return BadRequest("Tuyến không tồn tại");
+
+            List<ERoute_ExportDTO> ERoute_ExportDTOs = ERoute.ERouteContents?.Select(x => new ERoute_ExportDTO(x)).ToList();
+            var stt = 1;
+            foreach (var ERoute_ExportDTO in ERoute_ExportDTOs)
+            {
+                ERoute_ExportDTO.STT = stt++;
+            }
+
+            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+            string tempPath = "Templates/ERoute_Export.xlsx";
+            byte[] arr = System.IO.File.ReadAllBytes(tempPath);
+            MemoryStream input = new MemoryStream(arr);
+            MemoryStream output = new MemoryStream();
+            dynamic Data = new ExpandoObject();
+            Data.Contents = ERoute_ExportDTOs;
+            using (var document = StaticParams.DocumentFactory.Open(input, output, "xlsx"))
+            {
+                document.Process(Data);
+            };
+            var fileName = $"ERoute_{ERoute.Code}_{ERoute.SaleEmployee?.Username}.xlsx";
+            return File(output.ToArray(), "application/octet-stream", fileName);
+        }
+
+        [Route(ERouteRoute.ExportTemplate), HttpPost]
+        public async Task<ActionResult> ExportTemplate([FromBody] ERoute_ERouteDTO ERoute_ERouteDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            var appUser = await AppUserService.Get(ERoute_ERouteDTO.SaleEmployeeId);
+            if (appUser == null)
+            {
+                return BadRequest("Chưa chọn nhân viên hoặc nhân viên không tồn tại!");
+            }
+            var StoreIds = appUser.AppUserStoreMappings.Select(x => x.StoreId).ToList();
+            var StoreFilter = new StoreFilter
+            {
+                Selects = StoreSelect.Id | StoreSelect.Code | StoreSelect.CodeDraft | StoreSelect.Name | StoreSelect.Address,
+                Skip = 0,
+                Take = int.MaxValue,
+                StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id },
+                Id = new IdFilter { In = StoreIds }
+            };
+            var Stores = await StoreService.List(StoreFilter);
+            List<ERoute_StoreExportDTO> ERoute_StoreExportDTOs = Stores.Select(x => new ERoute_StoreExportDTO(x)).ToList();
+            var stt = 1;
+            foreach (var ERoute_StoreExportDTO in ERoute_StoreExportDTOs)
+            {
+                ERoute_StoreExportDTO.STT = stt++;
+            }
+
+            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+            string tempPath = "Templates/ERoute_Template.xlsx";
+            byte[] arr = System.IO.File.ReadAllBytes(tempPath);
+            MemoryStream input = new MemoryStream(arr);
+            MemoryStream output = new MemoryStream();
+            dynamic Data = new ExpandoObject();
+            Data.Stores = ERoute_StoreExportDTOs;
+            using (var document = StaticParams.DocumentFactory.Open(input, output, "xlsx"))
+            {
+                document.Process(Data);
+            };
+            return File(output.ToArray(), "application/octet-stream", "ERoute_Template.xlsx");
+        }
+
         private async Task<bool> HasPermission(long Id)
         {
             ERouteFilter ERouteFilter = new ERouteFilter();
@@ -483,460 +768,6 @@ namespace DMS.Rpc.e_route
             ERouteFilter.CreatedAt = ERoute_ERouteFilterDTO.CreatedAt;
             ERouteFilter.UpdatedAt = ERoute_ERouteFilterDTO.UpdatedAt;
             return ERouteFilter;
-        }
-
-        [Route(ERouteRoute.FilterListAppUser), HttpPost]
-        public async Task<List<ERoute_AppUserDTO>> FilterListAppUser([FromBody] ERoute_AppUserFilterDTO ERoute_AppUserFilterDTO)
-        {
-            var CurrentUser = await AppUserService.Get(CurrentContext.UserId);
-            AppUserFilter AppUserFilter = new AppUserFilter();
-            AppUserFilter.Skip = 0;
-            AppUserFilter.Take = 20;
-            AppUserFilter.OrderBy = AppUserOrder.Id;
-            AppUserFilter.OrderType = OrderType.ASC;
-            AppUserFilter.Selects = AppUserSelect.ALL;
-            AppUserFilter.Id = ERoute_AppUserFilterDTO.Id;
-            AppUserFilter.Username = ERoute_AppUserFilterDTO.Username;
-            AppUserFilter.Password = ERoute_AppUserFilterDTO.Password;
-            AppUserFilter.DisplayName = ERoute_AppUserFilterDTO.DisplayName;
-            AppUserFilter.Address = ERoute_AppUserFilterDTO.Address;
-            AppUserFilter.Email = ERoute_AppUserFilterDTO.Email;
-            AppUserFilter.Phone = ERoute_AppUserFilterDTO.Phone;
-            AppUserFilter.PositionId = ERoute_AppUserFilterDTO.PositionId;
-            AppUserFilter.Department = ERoute_AppUserFilterDTO.Department;
-            AppUserFilter.OrganizationId = new IdFilter { Equal = CurrentUser.OrganizationId };
-            AppUserFilter.SexId = ERoute_AppUserFilterDTO.SexId;
-            AppUserFilter.StatusId = ERoute_AppUserFilterDTO.StatusId;
-            AppUserFilter.Birthday = ERoute_AppUserFilterDTO.Birthday;
-            AppUserFilter.ProvinceId = ERoute_AppUserFilterDTO.ProvinceId;
-
-            if (AppUserFilter.Id == null) AppUserFilter.Id = new IdFilter();
-            AppUserFilter.Id.In = await FilterAppUser(AppUserService, OrganizationService, CurrentContext);
-
-            List<AppUser> AppUsers = await AppUserService.List(AppUserFilter);
-            List<ERoute_AppUserDTO> ERoute_AppUserDTOs = AppUsers
-                .Select(x => new ERoute_AppUserDTO(x)).ToList();
-            return ERoute_AppUserDTOs;
-        }
-        [Route(ERouteRoute.FilterListStore), HttpPost]
-        public async Task<List<ERoute_StoreDTO>> FilterListStore([FromBody] ERoute_StoreFilterDTO ERoute_StoreFilterDTO)
-        {
-            var CurrentUser = await AppUserService.Get(CurrentContext.UserId);
-            StoreFilter StoreFilter = new StoreFilter();
-            StoreFilter.Skip = 0;
-            StoreFilter.Take = 20;
-            StoreFilter.OrderBy = StoreOrder.Id;
-            StoreFilter.OrderType = OrderType.ASC;
-            StoreFilter.Selects = StoreSelect.ALL;
-            StoreFilter.Id = ERoute_StoreFilterDTO.Id;
-            StoreFilter.Code = ERoute_StoreFilterDTO.Code;
-            StoreFilter.CodeDraft = ERoute_StoreFilterDTO.CodeDraft;
-            StoreFilter.Name = ERoute_StoreFilterDTO.Name;
-            StoreFilter.ParentStoreId = ERoute_StoreFilterDTO.ParentStoreId;
-            StoreFilter.OrganizationId = new IdFilter { Equal = CurrentUser.OrganizationId };
-            StoreFilter.StoreTypeId = ERoute_StoreFilterDTO.StoreTypeId;
-            StoreFilter.StoreGroupingId = ERoute_StoreFilterDTO.StoreGroupingId;
-            StoreFilter.ResellerId = ERoute_StoreFilterDTO.ResellerId;
-            StoreFilter.Telephone = ERoute_StoreFilterDTO.Telephone;
-            StoreFilter.ProvinceId = ERoute_StoreFilterDTO.ProvinceId;
-            StoreFilter.DistrictId = ERoute_StoreFilterDTO.DistrictId;
-            StoreFilter.WardId = ERoute_StoreFilterDTO.WardId;
-            StoreFilter.Address = ERoute_StoreFilterDTO.Address;
-            StoreFilter.DeliveryAddress = ERoute_StoreFilterDTO.DeliveryAddress;
-            StoreFilter.Latitude = ERoute_StoreFilterDTO.Latitude;
-            StoreFilter.Longitude = ERoute_StoreFilterDTO.Longitude;
-            StoreFilter.DeliveryLatitude = ERoute_StoreFilterDTO.DeliveryLatitude;
-            StoreFilter.DeliveryLongitude = ERoute_StoreFilterDTO.DeliveryLongitude;
-            StoreFilter.OwnerName = ERoute_StoreFilterDTO.OwnerName;
-            StoreFilter.OwnerPhone = ERoute_StoreFilterDTO.OwnerPhone;
-            StoreFilter.OwnerEmail = ERoute_StoreFilterDTO.OwnerEmail;
-            StoreFilter.StatusId = ERoute_StoreFilterDTO.StatusId;
-
-            if (StoreFilter.Id == null) StoreFilter.Id = new IdFilter();
-            StoreFilter.Id.In = await FilterStore(StoreService, OrganizationService, CurrentContext);
-
-            List<Store> Stores = await StoreService.List(StoreFilter);
-            List<ERoute_StoreDTO> ERoute_StoreDTOs = Stores
-                .Select(x => new ERoute_StoreDTO(x)).ToList();
-            return ERoute_StoreDTOs;
-        }
-        [Route(ERouteRoute.FilterListERouteType), HttpPost]
-        public async Task<List<ERoute_ERouteTypeDTO>> FilterListERouteType([FromBody] ERoute_ERouteTypeFilterDTO ERoute_ERouteTypeFilterDTO)
-        {
-            ERouteTypeFilter ERouteTypeFilter = new ERouteTypeFilter();
-            ERouteTypeFilter.Skip = 0;
-            ERouteTypeFilter.Take = 20;
-            ERouteTypeFilter.OrderBy = ERouteTypeOrder.Id;
-            ERouteTypeFilter.OrderType = OrderType.ASC;
-            ERouteTypeFilter.Selects = ERouteTypeSelect.ALL;
-            ERouteTypeFilter.Id = ERoute_ERouteTypeFilterDTO.Id;
-            ERouteTypeFilter.Code = ERoute_ERouteTypeFilterDTO.Code;
-            ERouteTypeFilter.Name = ERoute_ERouteTypeFilterDTO.Name;
-
-            List<ERouteType> ERouteTypes = await ERouteTypeService.List(ERouteTypeFilter);
-            List<ERoute_ERouteTypeDTO> ERoute_ERouteTypeDTOs = ERouteTypes
-                .Select(x => new ERoute_ERouteTypeDTO(x)).ToList();
-            return ERoute_ERouteTypeDTOs;
-        }
-        [Route(ERouteRoute.FilterListStatus), HttpPost]
-        public async Task<List<ERoute_StatusDTO>> FilterListStatus([FromBody] ERoute_StatusFilterDTO ERoute_StatusFilterDTO)
-        {
-            StatusFilter StatusFilter = new StatusFilter();
-            StatusFilter.Skip = 0;
-            StatusFilter.Take = int.MaxValue;
-            StatusFilter.Take = 20;
-            StatusFilter.OrderBy = StatusOrder.Id;
-            StatusFilter.OrderType = OrderType.ASC;
-            StatusFilter.Selects = StatusSelect.ALL;
-
-            List<Status> Statuses = await StatusService.List(StatusFilter);
-            List<ERoute_StatusDTO> ERoute_StatusDTOs = Statuses
-                .Select(x => new ERoute_StatusDTO(x)).ToList();
-            return ERoute_StatusDTOs;
-        }
-        [Route(ERouteRoute.FilterListOrganization), HttpPost]
-        public async Task<List<ERoute_OrganizationDTO>> FilterListOrganization([FromBody] ERoute_OrganizationFilterDTO ERoute_OrganizationFilterDTO)
-        {
-            OrganizationFilter OrganizationFilter = new OrganizationFilter();
-            OrganizationFilter.Skip = 0;
-            OrganizationFilter.Take = 99999;
-            OrganizationFilter.OrderBy = OrganizationOrder.Id;
-            OrganizationFilter.OrderType = OrderType.ASC;
-            OrganizationFilter.Selects = OrganizationSelect.ALL;
-            OrganizationFilter.Id = ERoute_OrganizationFilterDTO.Id;
-            OrganizationFilter.Code = ERoute_OrganizationFilterDTO.Code;
-            OrganizationFilter.Name = ERoute_OrganizationFilterDTO.Name;
-            OrganizationFilter.ParentId = ERoute_OrganizationFilterDTO.ParentId;
-            OrganizationFilter.Path = ERoute_OrganizationFilterDTO.Path;
-            OrganizationFilter.Level = ERoute_OrganizationFilterDTO.Level;
-            OrganizationFilter.StatusId = null;
-            OrganizationFilter.Phone = ERoute_OrganizationFilterDTO.Phone;
-            OrganizationFilter.Address = ERoute_OrganizationFilterDTO.Address;
-            OrganizationFilter.Email = ERoute_OrganizationFilterDTO.Email;
-
-            if (OrganizationFilter.Id == null) OrganizationFilter.Id = new IdFilter();
-            OrganizationFilter.Id.In = await FilterOrganization(OrganizationService, CurrentContext);
-
-            List<Organization> Organizations = await OrganizationService.List(OrganizationFilter);
-            List<ERoute_OrganizationDTO> ERoute_OrganizationDTOs = Organizations
-                .Select(x => new ERoute_OrganizationDTO(x)).ToList();
-            return ERoute_OrganizationDTOs;
-        }
-
-        [Route(ERouteRoute.FilterListRequestState), HttpPost]
-        public async Task<List<ERoute_RequestStateDTO>> FilterListRequestState([FromBody] ERoute_RequestStateFilterDTO ERoute_RequestStateFilterDTO)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
-
-            RequestStateFilter RequestStateFilter = new RequestStateFilter();
-            RequestStateFilter.Skip = 0;
-            RequestStateFilter.Take = 20;
-            RequestStateFilter.OrderBy = RequestStateOrder.Id;
-            RequestStateFilter.OrderType = OrderType.ASC;
-            RequestStateFilter.Selects = RequestStateSelect.ALL;
-            RequestStateFilter.Id = ERoute_RequestStateFilterDTO.Id;
-            RequestStateFilter.Code = ERoute_RequestStateFilterDTO.Code;
-            RequestStateFilter.Name = ERoute_RequestStateFilterDTO.Name;
-
-            List<RequestState> RequestStatees = await RequestStateService.List(RequestStateFilter);
-            List<ERoute_RequestStateDTO> ERoute_RequestStateDTOs = RequestStatees
-                .Select(x => new ERoute_RequestStateDTO(x)).ToList();
-            return ERoute_RequestStateDTOs;
-        }
-
-        [Route(ERouteRoute.SingleListAppUser), HttpPost]
-        public async Task<List<ERoute_AppUserDTO>> SingleListAppUser([FromBody] ERoute_AppUserFilterDTO ERoute_AppUserFilterDTO)
-        {
-            var CurrentUser = await AppUserService.Get(CurrentContext.UserId);
-            AppUserFilter AppUserFilter = new AppUserFilter();
-            AppUserFilter.Skip = 0;
-            AppUserFilter.Take = 20;
-            AppUserFilter.OrderBy = AppUserOrder.Id;
-            AppUserFilter.OrderType = OrderType.ASC;
-            AppUserFilter.Selects = AppUserSelect.ALL;
-            AppUserFilter.Id = ERoute_AppUserFilterDTO.Id;
-            AppUserFilter.Username = ERoute_AppUserFilterDTO.Username;
-            AppUserFilter.Password = ERoute_AppUserFilterDTO.Password;
-            AppUserFilter.DisplayName = ERoute_AppUserFilterDTO.DisplayName;
-            AppUserFilter.Address = ERoute_AppUserFilterDTO.Address;
-            AppUserFilter.Email = ERoute_AppUserFilterDTO.Email;
-            AppUserFilter.Phone = ERoute_AppUserFilterDTO.Phone;
-            AppUserFilter.PositionId = ERoute_AppUserFilterDTO.PositionId;
-            AppUserFilter.Department = ERoute_AppUserFilterDTO.Department;
-            AppUserFilter.OrganizationId = new IdFilter { Equal = CurrentUser.OrganizationId };
-            AppUserFilter.SexId = ERoute_AppUserFilterDTO.SexId;
-            AppUserFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
-            AppUserFilter.Birthday = ERoute_AppUserFilterDTO.Birthday;
-            AppUserFilter.ProvinceId = ERoute_AppUserFilterDTO.ProvinceId;
-
-            if (AppUserFilter.Id == null) AppUserFilter.Id = new IdFilter();
-            AppUserFilter.Id.In = await FilterAppUser(AppUserService, OrganizationService, CurrentContext);
-
-            List<AppUser> AppUsers = await AppUserService.List(AppUserFilter);
-            List<ERoute_AppUserDTO> ERoute_AppUserDTOs = AppUsers
-                .Select(x => new ERoute_AppUserDTO(x)).ToList();
-            return ERoute_AppUserDTOs;
-        }
-        [Route(ERouteRoute.SingleListERouteType), HttpPost]
-        public async Task<List<ERoute_ERouteTypeDTO>> SingleListERouteType([FromBody] ERoute_ERouteTypeFilterDTO ERoute_ERouteTypeFilterDTO)
-        {
-            ERouteTypeFilter ERouteTypeFilter = new ERouteTypeFilter();
-            ERouteTypeFilter.Skip = 0;
-            ERouteTypeFilter.Take = 20;
-            ERouteTypeFilter.OrderBy = ERouteTypeOrder.Id;
-            ERouteTypeFilter.OrderType = OrderType.ASC;
-            ERouteTypeFilter.Selects = ERouteTypeSelect.ALL;
-            ERouteTypeFilter.Id = ERoute_ERouteTypeFilterDTO.Id;
-            ERouteTypeFilter.Code = ERoute_ERouteTypeFilterDTO.Code;
-            ERouteTypeFilter.Name = ERoute_ERouteTypeFilterDTO.Name;
-
-            List<ERouteType> ERouteTypes = await ERouteTypeService.List(ERouteTypeFilter);
-            List<ERoute_ERouteTypeDTO> ERoute_ERouteTypeDTOs = ERouteTypes
-                .Select(x => new ERoute_ERouteTypeDTO(x)).ToList();
-            return ERoute_ERouteTypeDTOs;
-        }
-        [Route(ERouteRoute.SingleListOrganization), HttpPost]
-        public async Task<List<ERoute_OrganizationDTO>> SingleListOrganization([FromBody] ERoute_OrganizationFilterDTO ERoute_OrganizationFilterDTO)
-        {
-            OrganizationFilter OrganizationFilter = new OrganizationFilter();
-            OrganizationFilter.Skip = 0;
-            OrganizationFilter.Take = 99999;
-            OrganizationFilter.OrderBy = OrganizationOrder.Id;
-            OrganizationFilter.OrderType = OrderType.ASC;
-            OrganizationFilter.Selects = OrganizationSelect.ALL;
-            OrganizationFilter.Id = ERoute_OrganizationFilterDTO.Id;
-            OrganizationFilter.Code = ERoute_OrganizationFilterDTO.Code;
-            OrganizationFilter.Name = ERoute_OrganizationFilterDTO.Name;
-            OrganizationFilter.ParentId = ERoute_OrganizationFilterDTO.ParentId;
-            OrganizationFilter.Path = ERoute_OrganizationFilterDTO.Path;
-            OrganizationFilter.Level = ERoute_OrganizationFilterDTO.Level;
-            OrganizationFilter.StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id };
-            OrganizationFilter.Phone = ERoute_OrganizationFilterDTO.Phone;
-            OrganizationFilter.Address = ERoute_OrganizationFilterDTO.Address;
-            OrganizationFilter.Email = ERoute_OrganizationFilterDTO.Email;
-
-            if (OrganizationFilter.Id == null) OrganizationFilter.Id = new IdFilter();
-            OrganizationFilter.Id.In = await FilterOrganization(OrganizationService, CurrentContext);
-
-            List<Organization> Organizations = await OrganizationService.List(OrganizationFilter);
-            List<ERoute_OrganizationDTO> ERoute_OrganizationDTOs = Organizations
-                .Select(x => new ERoute_OrganizationDTO(x)).ToList();
-            return ERoute_OrganizationDTOs;
-        }
-        [Route(ERouteRoute.SingleListRequestState), HttpPost]
-        public async Task<List<ERoute_RequestStateDTO>> SingleListRequestState([FromBody] ERoute_RequestStateFilterDTO ERoute_RequestStateFilterDTO)
-        {
-            RequestStateFilter RequestStateFilter = new RequestStateFilter();
-            RequestStateFilter.Skip = 0;
-            RequestStateFilter.Take = 20;
-            RequestStateFilter.OrderBy = RequestStateOrder.Id;
-            RequestStateFilter.OrderType = OrderType.ASC;
-            RequestStateFilter.Selects = RequestStateSelect.ALL;
-            RequestStateFilter.Id = ERoute_RequestStateFilterDTO.Id;
-            RequestStateFilter.Code = ERoute_RequestStateFilterDTO.Code;
-            RequestStateFilter.Name = ERoute_RequestStateFilterDTO.Name;
-
-            List<RequestState> RequestStates = await RequestStateService.List(RequestStateFilter);
-            List<ERoute_RequestStateDTO> ERoute_RequestStateDTOs = RequestStates
-                .Select(x => new ERoute_RequestStateDTO(x)).ToList();
-            return ERoute_RequestStateDTOs;
-        }
-        [Route(ERouteRoute.SingleListStore), HttpPost]
-        public async Task<List<ERoute_StoreDTO>> SingleListStore([FromBody] ERoute_StoreFilterDTO ERoute_StoreFilterDTO)
-        {
-            var CurrentUser = await AppUserService.Get(CurrentContext.UserId);
-            StoreFilter StoreFilter = new StoreFilter();
-            StoreFilter.Skip = 0;
-            StoreFilter.Take = 20;
-            StoreFilter.OrderBy = StoreOrder.Id;
-            StoreFilter.OrderType = OrderType.ASC;
-            StoreFilter.Selects = StoreSelect.ALL;
-            StoreFilter.Id = ERoute_StoreFilterDTO.Id;
-            StoreFilter.Code = ERoute_StoreFilterDTO.Code;
-            StoreFilter.CodeDraft = ERoute_StoreFilterDTO.CodeDraft;
-            StoreFilter.Name = ERoute_StoreFilterDTO.Name;
-            StoreFilter.ParentStoreId = ERoute_StoreFilterDTO.ParentStoreId;
-            StoreFilter.OrganizationId = new IdFilter { Equal = CurrentUser.OrganizationId };
-            StoreFilter.StoreTypeId = ERoute_StoreFilterDTO.StoreTypeId;
-            StoreFilter.StoreGroupingId = ERoute_StoreFilterDTO.StoreGroupingId;
-            StoreFilter.ResellerId = ERoute_StoreFilterDTO.ResellerId;
-            StoreFilter.Telephone = ERoute_StoreFilterDTO.Telephone;
-            StoreFilter.ProvinceId = ERoute_StoreFilterDTO.ProvinceId;
-            StoreFilter.DistrictId = ERoute_StoreFilterDTO.DistrictId;
-            StoreFilter.WardId = ERoute_StoreFilterDTO.WardId;
-            StoreFilter.Address = ERoute_StoreFilterDTO.Address;
-            StoreFilter.DeliveryAddress = ERoute_StoreFilterDTO.DeliveryAddress;
-            StoreFilter.Latitude = ERoute_StoreFilterDTO.Latitude;
-            StoreFilter.Longitude = ERoute_StoreFilterDTO.Longitude;
-            StoreFilter.DeliveryLatitude = ERoute_StoreFilterDTO.DeliveryLatitude;
-            StoreFilter.DeliveryLongitude = ERoute_StoreFilterDTO.DeliveryLongitude;
-            StoreFilter.OwnerName = ERoute_StoreFilterDTO.OwnerName;
-            StoreFilter.OwnerPhone = ERoute_StoreFilterDTO.OwnerPhone;
-            StoreFilter.OwnerEmail = ERoute_StoreFilterDTO.OwnerEmail;
-            StoreFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
-
-            if (StoreFilter.Id == null) StoreFilter.Id = new IdFilter();
-            StoreFilter.Id.In = await FilterStore(StoreService, OrganizationService, CurrentContext);
-
-            List<Store> Stores = await StoreService.List(StoreFilter);
-            List<ERoute_StoreDTO> ERoute_StoreDTOs = Stores
-                .Select(x => new ERoute_StoreDTO(x)).ToList();
-            return ERoute_StoreDTOs;
-
-        }
-        [Route(ERouteRoute.SingleListStoreGrouping), HttpPost]
-        public async Task<List<ERoute_StoreGroupingDTO>> SingleListStoreGrouping([FromBody] ERoute_StoreGroupingFilterDTO ERoute_StoreGroupingFilterDTO)
-        {
-            StoreGroupingFilter StoreGroupingFilter = new StoreGroupingFilter();
-            StoreGroupingFilter.Skip = 0;
-            StoreGroupingFilter.Take = 99999;
-            StoreGroupingFilter.OrderBy = StoreGroupingOrder.Id;
-            StoreGroupingFilter.OrderType = OrderType.ASC;
-            StoreGroupingFilter.Selects = StoreGroupingSelect.ALL;
-            StoreGroupingFilter.Code = ERoute_StoreGroupingFilterDTO.Code;
-            StoreGroupingFilter.Name = ERoute_StoreGroupingFilterDTO.Name;
-            StoreGroupingFilter.Level = ERoute_StoreGroupingFilterDTO.Level;
-            StoreGroupingFilter.Path = ERoute_StoreGroupingFilterDTO.Path;
-            StoreGroupingFilter.StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id };
-            List<StoreGrouping> StoreGroupings = await StoreGroupingService.List(StoreGroupingFilter);
-            List<ERoute_StoreGroupingDTO> ERoute_StoreGroupingDTOs = StoreGroupings
-                .Select(x => new ERoute_StoreGroupingDTO(x)).ToList();
-            return ERoute_StoreGroupingDTOs;
-        }
-        [Route(ERouteRoute.SingleListStoreType), HttpPost]
-        public async Task<List<ERoute_StoreTypeDTO>> SingleListStoreType([FromBody] ERoute_StoreTypeFilterDTO ERoute_StoreTypeFilterDTO)
-        {
-            StoreTypeFilter StoreTypeFilter = new StoreTypeFilter();
-            StoreTypeFilter.Skip = 0;
-            StoreTypeFilter.Take = 20;
-            StoreTypeFilter.OrderBy = StoreTypeOrder.Id;
-            StoreTypeFilter.OrderType = OrderType.ASC;
-            StoreTypeFilter.Selects = StoreTypeSelect.ALL;
-            StoreTypeFilter.Id = ERoute_StoreTypeFilterDTO.Id;
-            StoreTypeFilter.Code = ERoute_StoreTypeFilterDTO.Code;
-            StoreTypeFilter.Name = ERoute_StoreTypeFilterDTO.Name;
-            StoreTypeFilter.StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id };
-
-            List<StoreType> StoreTypes = await StoreTypeService.List(StoreTypeFilter);
-            List<ERoute_StoreTypeDTO> ERoute_StoreTypeDTOs = StoreTypes
-                .Select(x => new ERoute_StoreTypeDTO(x)).ToList();
-            return ERoute_StoreTypeDTOs;
-        }
-        [Route(ERouteRoute.SingleListStatus), HttpPost]
-        public async Task<List<ERoute_StatusDTO>> SingleListStatus([FromBody] ERoute_StatusFilterDTO ERoute_StatusFilterDTO)
-        {
-            StatusFilter StatusFilter = new StatusFilter();
-            StatusFilter.Skip = 0;
-            StatusFilter.Take = int.MaxValue;
-            StatusFilter.Take = 20;
-            StatusFilter.OrderBy = StatusOrder.Id;
-            StatusFilter.OrderType = OrderType.ASC;
-            StatusFilter.Selects = StatusSelect.ALL;
-
-            List<Status> Statuses = await StatusService.List(StatusFilter);
-            List<ERoute_StatusDTO> ERoute_StatusDTOs = Statuses
-                .Select(x => new ERoute_StatusDTO(x)).ToList();
-            return ERoute_StatusDTOs;
-        }
-
-        [Route(ERouteRoute.CountStore), HttpPost]
-        public async Task<long> CountStore([FromBody] ERoute_StoreFilterDTO ERoute_StoreFilterDTO)
-        {
-            var CurrentUser = await AppUserService.Get(CurrentContext.UserId);
-            StoreFilter StoreFilter = new StoreFilter();
-            StoreFilter.Id = ERoute_StoreFilterDTO.Id;
-            StoreFilter.Code = ERoute_StoreFilterDTO.Code;
-            StoreFilter.CodeDraft = ERoute_StoreFilterDTO.CodeDraft;
-            StoreFilter.Name = ERoute_StoreFilterDTO.Name;
-            StoreFilter.ParentStoreId = ERoute_StoreFilterDTO.ParentStoreId;
-            StoreFilter.OrganizationId = ERoute_StoreFilterDTO.OrganizationId;
-            StoreFilter.StoreTypeId = ERoute_StoreFilterDTO.StoreTypeId;
-            StoreFilter.ResellerId = ERoute_StoreFilterDTO.ResellerId;
-            StoreFilter.Telephone = ERoute_StoreFilterDTO.Telephone;
-            StoreFilter.ProvinceId = ERoute_StoreFilterDTO.ProvinceId;
-            StoreFilter.DistrictId = ERoute_StoreFilterDTO.DistrictId;
-            StoreFilter.WardId = ERoute_StoreFilterDTO.WardId;
-            StoreFilter.Address = ERoute_StoreFilterDTO.Address;
-            StoreFilter.DeliveryAddress = ERoute_StoreFilterDTO.DeliveryAddress;
-            StoreFilter.Latitude = ERoute_StoreFilterDTO.Latitude;
-            StoreFilter.Longitude = ERoute_StoreFilterDTO.Longitude;
-            StoreFilter.OwnerName = ERoute_StoreFilterDTO.OwnerName;
-            StoreFilter.OwnerPhone = ERoute_StoreFilterDTO.OwnerPhone;
-            StoreFilter.OwnerEmail = ERoute_StoreFilterDTO.OwnerEmail;
-            StoreFilter.SalesEmployeeId = ERoute_StoreFilterDTO.SaleEmployeeId;
-            StoreFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
-
-            if (StoreFilter.Id == null) StoreFilter.Id = new IdFilter();
-            if (StoreFilter.Id.In != null)
-            {
-                var StoreIds = await FilterStore(StoreService, OrganizationService, CurrentContext);
-                StoreFilter.Id.In = StoreFilter.Id.In.Intersect(StoreIds).ToList();
-            }
-            else
-            {
-                StoreFilter.Id.In = await FilterStore(StoreService, OrganizationService, CurrentContext);
-            }
-
-            if (ERoute_StoreFilterDTO.SaleEmployeeId != null && ERoute_StoreFilterDTO.SaleEmployeeId.Equal.HasValue)
-            {
-                int count = await StoreService.CountInScoped(StoreFilter, ERoute_StoreFilterDTO.SaleEmployeeId.Equal.Value);
-                return count;
-            }
-            return 0;
-        }
-
-        [Route(ERouteRoute.ListStore), HttpPost]
-        public async Task<List<ERoute_StoreDTO>> ListStore([FromBody] ERoute_StoreFilterDTO ERoute_StoreFilterDTO)
-        {
-            var CurrentUser = await AppUserService.Get(CurrentContext.UserId);
-            StoreFilter StoreFilter = new StoreFilter();
-            StoreFilter.Skip = ERoute_StoreFilterDTO.Skip;
-            StoreFilter.Take = ERoute_StoreFilterDTO.Take;
-            StoreFilter.OrderBy = StoreOrder.Id;
-            StoreFilter.OrderType = OrderType.ASC;
-            StoreFilter.Selects = StoreSelect.ALL;
-            StoreFilter.Id = ERoute_StoreFilterDTO.Id;
-            StoreFilter.Code = ERoute_StoreFilterDTO.Code;
-            StoreFilter.CodeDraft = ERoute_StoreFilterDTO.CodeDraft;
-            StoreFilter.Name = ERoute_StoreFilterDTO.Name;
-            StoreFilter.ParentStoreId = ERoute_StoreFilterDTO.ParentStoreId;
-            StoreFilter.OrganizationId = ERoute_StoreFilterDTO.OrganizationId;
-            StoreFilter.StoreTypeId = ERoute_StoreFilterDTO.StoreTypeId;
-            StoreFilter.ResellerId = ERoute_StoreFilterDTO.ResellerId;
-            StoreFilter.Telephone = ERoute_StoreFilterDTO.Telephone;
-            StoreFilter.ProvinceId = ERoute_StoreFilterDTO.ProvinceId;
-            StoreFilter.DistrictId = ERoute_StoreFilterDTO.DistrictId;
-            StoreFilter.WardId = ERoute_StoreFilterDTO.WardId;
-            StoreFilter.Address = ERoute_StoreFilterDTO.Address;
-            StoreFilter.DeliveryAddress = ERoute_StoreFilterDTO.DeliveryAddress;
-            StoreFilter.Latitude = ERoute_StoreFilterDTO.Latitude;
-            StoreFilter.Longitude = ERoute_StoreFilterDTO.Longitude;
-            StoreFilter.OwnerName = ERoute_StoreFilterDTO.OwnerName;
-            StoreFilter.OwnerPhone = ERoute_StoreFilterDTO.OwnerPhone;
-            StoreFilter.OwnerEmail = ERoute_StoreFilterDTO.OwnerEmail;
-            StoreFilter.SalesEmployeeId = ERoute_StoreFilterDTO.SaleEmployeeId;
-            StoreFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
-
-            if (StoreFilter.Id == null) StoreFilter.Id = new IdFilter();
-            if (StoreFilter.Id.In != null)
-            {
-                var StoreIds = await FilterStore(StoreService, OrganizationService, CurrentContext);
-                StoreFilter.Id.In = StoreFilter.Id.In.Intersect(StoreIds).ToList();
-            }
-            else
-            {
-                StoreFilter.Id.In = await FilterStore(StoreService, OrganizationService, CurrentContext);
-            }
-
-            if (ERoute_StoreFilterDTO.SaleEmployeeId != null && ERoute_StoreFilterDTO.SaleEmployeeId.Equal.HasValue)
-            {
-                List<Store> Stores = await StoreService.ListInScoped(StoreFilter, ERoute_StoreFilterDTO.SaleEmployeeId.Equal.Value);
-                List<ERoute_StoreDTO> ERoute_StoreDTOs = Stores
-                    .Select(x => new ERoute_StoreDTO(x)).ToList();
-                return ERoute_StoreDTOs;
-            }
-            return new List<ERoute_StoreDTO>();
         }
     }
 }
