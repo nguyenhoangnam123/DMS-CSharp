@@ -3461,9 +3461,13 @@ namespace DMS.Models
 
                 entity.HasIndex(e => e.CreatorId);
 
+                entity.HasIndex(e => e.RequestId);
+
                 entity.HasIndex(e => e.RequestStateId);
 
                 entity.HasIndex(e => e.WorkflowDefinitionId);
+
+                entity.HasIndex(e => new { e.RequestId, e.RequestStateId });
 
                 entity.Property(e => e.RequestId).ValueGeneratedNever();
 
@@ -3530,6 +3534,8 @@ namespace DMS.Models
                 entity.ToTable("RequestWorkflowStepMapping", "WF");
 
                 entity.HasIndex(e => e.AppUserId);
+
+                entity.HasIndex(e => new { e.WorkflowStepId, e.WorkflowStateId });
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
