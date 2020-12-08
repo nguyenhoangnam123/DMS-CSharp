@@ -10,3 +10,4 @@ StoreApp/bin/
 StoreApp/obj/
 StoreApp/appsettings.Development.json
 DMS/appsettings.Production.json
+DMS/DMS - Backup.csproj

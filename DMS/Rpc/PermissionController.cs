@@ -31,16 +31,16 @@ namespace DMS.Rpc
         [HttpGet, Route("rpc/dms/permission/test-export")]
         public async Task<ActionResult> Export()
         {
-            byte[] arr = System.IO.File.ReadAllBytes("Templates/Store_Export.xlsx");
+            byte[] arr = System.IO.File.ReadAllBytes("Templates/DHGT.docx");
             MemoryStream input = new MemoryStream(arr);
             MemoryStream output = new MemoryStream();
-            var documentConverter = new DocumentConverter(input, DocumentFormat.Xlsx);
+            var documentConverter = new DocumentConverter(input, DocumentFormat.Docx);
 
             // Convert "InputFile.docx" to Pdf written to outputStream
             documentConverter.ConvertTo(output, DocumentFormat.Pdf);
             ContentDisposition cd = new ContentDisposition
             {
-                FileName = "tore_Export.pdf",
+                FileName = "DHGT.pdf",
                 Inline = true,
             };
             Response.Headers.Add("Content-Disposition", cd.ToString());
