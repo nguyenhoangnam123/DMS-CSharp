@@ -626,6 +626,7 @@ namespace DMS.Rpc.indirect_sales_order
             StoreFilter.OwnerName = IndirectSalesOrder_StoreFilterDTO.OwnerName;
             StoreFilter.OwnerPhone = IndirectSalesOrder_StoreFilterDTO.OwnerPhone;
             StoreFilter.OwnerEmail = IndirectSalesOrder_StoreFilterDTO.OwnerEmail;
+            StoreFilter.StoreStatusId = IndirectSalesOrder_StoreFilterDTO.StoreStatusId;
             StoreFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
             if (StoreFilter.Id == null) StoreFilter.Id = new IdFilter();
@@ -671,6 +672,7 @@ namespace DMS.Rpc.indirect_sales_order
             StoreFilter.OwnerName = IndirectSalesOrder_StoreFilterDTO.OwnerName;
             StoreFilter.OwnerPhone = IndirectSalesOrder_StoreFilterDTO.OwnerPhone;
             StoreFilter.OwnerEmail = IndirectSalesOrder_StoreFilterDTO.OwnerEmail;
+            StoreFilter.StoreStatusId = IndirectSalesOrder_StoreFilterDTO.StoreStatusId;
             StoreFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
             if (StoreFilter.Id == null) StoreFilter.Id = new IdFilter();
@@ -714,6 +716,7 @@ namespace DMS.Rpc.indirect_sales_order
             StoreFilter.OwnerName = IndirectSalesOrder_StoreFilterDTO.OwnerName;
             StoreFilter.OwnerPhone = IndirectSalesOrder_StoreFilterDTO.OwnerPhone;
             StoreFilter.OwnerEmail = IndirectSalesOrder_StoreFilterDTO.OwnerEmail;
+            StoreFilter.StoreStatusId = IndirectSalesOrder_StoreFilterDTO.StoreStatusId;
             StoreFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
             if (StoreFilter.Id == null) StoreFilter.Id = new IdFilter();
@@ -754,6 +757,7 @@ namespace DMS.Rpc.indirect_sales_order
             StoreFilter.OwnerName = IndirectSalesOrder_StoreFilterDTO.OwnerName;
             StoreFilter.OwnerPhone = IndirectSalesOrder_StoreFilterDTO.OwnerPhone;
             StoreFilter.OwnerEmail = IndirectSalesOrder_StoreFilterDTO.OwnerEmail;
+            StoreFilter.StoreStatusId = IndirectSalesOrder_StoreFilterDTO.StoreStatusId;
             StoreFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
             if (StoreFilter.Id == null) StoreFilter.Id = new IdFilter();
