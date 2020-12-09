@@ -268,6 +268,8 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_general
 
             List<DirectSalesOrderDAO> DirectSalesOrderDAOs = await query
                 .OrderBy(x => x.OrganizationId).ThenBy(x => x.OrderDate)
+                .Skip(ReportDirectSalesOrderGeneral_ReportDirectSalesOrderGeneralFilterDTO.Skip)
+                .Take(ReportDirectSalesOrderGeneral_ReportDirectSalesOrderGeneralFilterDTO.Take)
                 .ToListAsync();
             var StoreIds = DirectSalesOrderDAOs.Select(x => x.BuyerStoreId).Distinct().ToList();
             List<Store> Stores = await StoreService.List(new StoreFilter
