@@ -4,7 +4,8 @@
       "IdNotExisted": "Id không tồn tại"
     },
     "Revenue": {
-      "RevenueEmpty": "Chưa nhập doanh thu"
+      "RevenueEmpty": "Chưa nhập doanh thu",
+      "RevenueNotEnough": "Chưa đạt doanh thu tối thiểu"
     }
   }
 }

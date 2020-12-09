@@ -22,7 +22,8 @@ namespace DMS.Services.MRewardHistory
         public enum ErrorCode
         {
             IdNotExisted,
-            RevenueEmpty
+            RevenueEmpty,
+            RevenueNotEnough
         }
 
         private IUOW UOW;
@@ -55,6 +56,10 @@ namespace DMS.Services.MRewardHistory
             if(RewardHistory.Revenue <= 0)
             {
                 RewardHistory.AddError(nameof(RewardHistoryValidator), nameof(RewardHistory.Revenue), ErrorCode.RevenueEmpty);
+            }
+            else if (RewardHistory.Revenue <= 20000000)
+            {
+                RewardHistory.AddError(nameof(RewardHistoryValidator), nameof(RewardHistory.Revenue), ErrorCode.RevenueNotEnough);
             }
             return RewardHistory.IsValidated;
         }
