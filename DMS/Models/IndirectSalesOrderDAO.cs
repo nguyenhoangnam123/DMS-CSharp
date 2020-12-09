@@ -71,10 +71,6 @@ namespace DMS.Models
         /// </summary>
         public decimal? GeneralDiscountAmount { get; set; }
         /// <summary>
-        /// Tổng thuế
-        /// </summary>
-        public decimal TotalTaxAmount { get; set; }
-        /// <summary>
         /// Tổng tiền sau thuế
         /// </summary>
         public decimal Total { get; set; }

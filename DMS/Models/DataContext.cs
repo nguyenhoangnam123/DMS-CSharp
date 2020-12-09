@@ -9,7 +9,6 @@ namespace DMS.Models
     {
         public virtual DbSet<ActionDAO> Action { get; set; }
         public virtual DbSet<ActionPageMappingDAO> ActionPageMapping { get; set; }
-        public virtual DbSet<AggregatedCounterDAO> AggregatedCounter { get; set; }
         public virtual DbSet<AlbumDAO> Album { get; set; }
         public virtual DbSet<AlbumImageMappingDAO> AlbumImageMapping { get; set; }
         public virtual DbSet<AppUserDAO> AppUser { get; set; }
@@ -20,7 +19,6 @@ namespace DMS.Models
         public virtual DbSet<BrandDAO> Brand { get; set; }
         public virtual DbSet<CategoryDAO> Category { get; set; }
         public virtual DbSet<ColorDAO> Color { get; set; }
-        public virtual DbSet<CounterDAO> Counter { get; set; }
         public virtual DbSet<DirectSalesOrderDAO> DirectSalesOrder { get; set; }
         public virtual DbSet<DirectSalesOrderContentDAO> DirectSalesOrderContent { get; set; }
         public virtual DbSet<DirectSalesOrderPromotionDAO> DirectSalesOrderPromotion { get; set; }
@@ -36,7 +34,6 @@ namespace DMS.Models
         public virtual DbSet<EventMessageDAO> EventMessage { get; set; }
         public virtual DbSet<FieldDAO> Field { get; set; }
         public virtual DbSet<FieldTypeDAO> FieldType { get; set; }
-        public virtual DbSet<HashDAO> Hash { get; set; }
         public virtual DbSet<IdGeneratorDAO> IdGenerator { get; set; }
         public virtual DbSet<ImageDAO> Image { get; set; }
         public virtual DbSet<IndirectSalesOrderDAO> IndirectSalesOrder { get; set; }
@@ -48,9 +45,6 @@ namespace DMS.Models
         public virtual DbSet<ItemDAO> Item { get; set; }
         public virtual DbSet<ItemHistoryDAO> ItemHistory { get; set; }
         public virtual DbSet<ItemImageMappingDAO> ItemImageMapping { get; set; }
-        public virtual DbSet<JobDAO> Job { get; set; }
-        public virtual DbSet<JobParameterDAO> JobParameter { get; set; }
-        public virtual DbSet<JobQueueDAO> JobQueue { get; set; }
         public virtual DbSet<KpiCriteriaGeneralDAO> KpiCriteriaGeneral { get; set; }
         public virtual DbSet<KpiCriteriaItemDAO> KpiCriteriaItem { get; set; }
         public virtual DbSet<KpiCriteriaTotalDAO> KpiCriteriaTotal { get; set; }
@@ -63,7 +57,6 @@ namespace DMS.Models
         public virtual DbSet<KpiItemKpiCriteriaTotalMappingDAO> KpiItemKpiCriteriaTotalMapping { get; set; }
         public virtual DbSet<KpiPeriodDAO> KpiPeriod { get; set; }
         public virtual DbSet<KpiYearDAO> KpiYear { get; set; }
-        public virtual DbSet<ListDAO> List { get; set; }
         public virtual DbSet<LuckyNumberDAO> LuckyNumber { get; set; }
         public virtual DbSet<MenuDAO> Menu { get; set; }
         public virtual DbSet<NotificationDAO> Notification { get; set; }
@@ -138,11 +131,7 @@ namespace DMS.Models
         public virtual DbSet<RewardStatusDAO> RewardStatus { get; set; }
         public virtual DbSet<RoleDAO> Role { get; set; }
         public virtual DbSet<SalesOrderTypeDAO> SalesOrderType { get; set; }
-        public virtual DbSet<SchemaDAO> Schema { get; set; }
-        public virtual DbSet<ServerDAO> Server { get; set; }
-        public virtual DbSet<SetDAO> Set { get; set; }
         public virtual DbSet<SexDAO> Sex { get; set; }
-        public virtual DbSet<StateDAO> State { get; set; }
         public virtual DbSet<StatusDAO> Status { get; set; }
         public virtual DbSet<StoreDAO> Store { get; set; }
         public virtual DbSet<StoreCheckingDAO> StoreChecking { get; set; }
@@ -236,22 +225,6 @@ namespace DMS.Models
                     .HasForeignKey(d => d.PageId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_ActionPageMapping_Page");
-            });
-
-            modelBuilder.Entity<AggregatedCounterDAO>(entity =>
-            {
-                entity.HasKey(e => e.Key)
-                    .HasName("PK_HangFire_CounterAggregated");
-
-                entity.ToTable("AggregatedCounter", "HangFire");
-
-                entity.HasIndex(e => e.ExpireAt)
-                    .HasName("IX_HangFire_AggregatedCounter_ExpireAt")
-                    .HasFilter("([ExpireAt] IS NOT NULL)");
-
-                entity.Property(e => e.Key).HasMaxLength(100);
-
-                entity.Property(e => e.ExpireAt).HasColumnType("datetime");
             });
 
             modelBuilder.Entity<AlbumDAO>(entity =>
@@ -580,23 +553,6 @@ namespace DMS.Models
                 entity.Property(e => e.Name)
                     .IsRequired()
                     .HasMaxLength(50);
-            });
-
-            modelBuilder.Entity<CounterDAO>(entity =>
-            {
-                entity.HasNoKey();
-
-                entity.ToTable("Counter", "HangFire");
-
-                entity.HasIndex(e => e.Key)
-                    .HasName("CX_HangFire_Counter")
-                    .IsClustered();
-
-                entity.Property(e => e.ExpireAt).HasColumnType("datetime");
-
-                entity.Property(e => e.Key)
-                    .IsRequired()
-                    .HasMaxLength(100);
             });
 
             modelBuilder.Entity<DirectSalesOrderDAO>(entity =>
@@ -1085,22 +1041,6 @@ namespace DMS.Models
                     .HasMaxLength(50);
             });
 
-            modelBuilder.Entity<HashDAO>(entity =>
-            {
-                entity.HasKey(e => new { e.Key, e.Field })
-                    .HasName("PK_HangFire_Hash");
-
-                entity.ToTable("Hash", "HangFire");
-
-                entity.HasIndex(e => e.ExpireAt)
-                    .HasName("IX_HangFire_Hash_ExpireAt")
-                    .HasFilter("([ExpireAt] IS NOT NULL)");
-
-                entity.Property(e => e.Key).HasMaxLength(100);
-
-                entity.Property(e => e.Field).HasMaxLength(100);
-            });
-
             modelBuilder.Entity<IdGeneratorDAO>(entity =>
             {
                 entity.ToTable("IdGenerator", "MDM");
@@ -1214,10 +1154,6 @@ namespace DMS.Models
                 entity.Property(e => e.Total)
                     .HasColumnType("decimal(18, 4)")
                     .HasComment("Tổng tiền sau thuế");
-
-                entity.Property(e => e.TotalTaxAmount)
-                    .HasColumnType("decimal(18, 4)")
-                    .HasComment("Tổng thuế");
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
@@ -1566,58 +1502,6 @@ namespace DMS.Models
                     .HasConstraintName("FK_ItemImageMapping_Item");
             });
 
-            modelBuilder.Entity<JobDAO>(entity =>
-            {
-                entity.ToTable("Job", "HangFire");
-
-                entity.HasIndex(e => e.StateName)
-                    .HasName("IX_HangFire_Job_StateName")
-                    .HasFilter("([StateName] IS NOT NULL)");
-
-                entity.HasIndex(e => new { e.StateName, e.ExpireAt })
-                    .HasName("IX_HangFire_Job_ExpireAt")
-                    .HasFilter("([ExpireAt] IS NOT NULL)");
-
-                entity.Property(e => e.Arguments).IsRequired();
-
-                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
-
-                entity.Property(e => e.ExpireAt).HasColumnType("datetime");
-
-                entity.Property(e => e.InvocationData).IsRequired();
-
-                entity.Property(e => e.StateName).HasMaxLength(20);
-            });
-
-            modelBuilder.Entity<JobParameterDAO>(entity =>
-            {
-                entity.HasKey(e => new { e.JobId, e.Name })
-                    .HasName("PK_HangFire_JobParameter");
-
-                entity.ToTable("JobParameter", "HangFire");
-
-                entity.Property(e => e.Name).HasMaxLength(40);
-
-                entity.HasOne(d => d.Job)
-                    .WithMany(p => p.JobParameters)
-                    .HasForeignKey(d => d.JobId)
-                    .HasConstraintName("FK_HangFire_JobParameter_Job");
-            });
-
-            modelBuilder.Entity<JobQueueDAO>(entity =>
-            {
-                entity.HasKey(e => new { e.Queue, e.Id })
-                    .HasName("PK_HangFire_JobQueue");
-
-                entity.ToTable("JobQueue", "HangFire");
-
-                entity.Property(e => e.Queue).HasMaxLength(50);
-
-                entity.Property(e => e.Id).ValueGeneratedOnAdd();
-
-                entity.Property(e => e.FetchedAt).HasColumnType("datetime");
-            });
-
             modelBuilder.Entity<KpiCriteriaGeneralDAO>(entity =>
             {
                 entity.ToTable("KpiCriteriaGeneral", "ENUM");
@@ -1854,24 +1738,6 @@ namespace DMS.Models
                 entity.Property(e => e.Name)
                     .IsRequired()
                     .HasMaxLength(500);
-            });
-
-            modelBuilder.Entity<ListDAO>(entity =>
-            {
-                entity.HasKey(e => new { e.Key, e.Id })
-                    .HasName("PK_HangFire_List");
-
-                entity.ToTable("List", "HangFire");
-
-                entity.HasIndex(e => e.ExpireAt)
-                    .HasName("IX_HangFire_List_ExpireAt")
-                    .HasFilter("([ExpireAt] IS NOT NULL)");
-
-                entity.Property(e => e.Key).HasMaxLength(100);
-
-                entity.Property(e => e.Id).ValueGeneratedOnAdd();
-
-                entity.Property(e => e.ExpireAt).HasColumnType("datetime");
             });
 
             modelBuilder.Entity<LuckyNumberDAO>(entity =>
@@ -3745,49 +3611,6 @@ namespace DMS.Models
                     .HasMaxLength(50);
             });
 
-            modelBuilder.Entity<SchemaDAO>(entity =>
-            {
-                entity.HasKey(e => e.Version)
-                    .HasName("PK_HangFire_Schema");
-
-                entity.ToTable("Schema", "HangFire");
-
-                entity.Property(e => e.Version).ValueGeneratedNever();
-            });
-
-            modelBuilder.Entity<ServerDAO>(entity =>
-            {
-                entity.ToTable("Server", "HangFire");
-
-                entity.HasIndex(e => e.LastHeartbeat)
-                    .HasName("IX_HangFire_Server_LastHeartbeat");
-
-                entity.Property(e => e.Id).HasMaxLength(100);
-
-                entity.Property(e => e.LastHeartbeat).HasColumnType("datetime");
-            });
-
-            modelBuilder.Entity<SetDAO>(entity =>
-            {
-                entity.HasKey(e => new { e.Key, e.Value })
-                    .HasName("PK_HangFire_Set");
-
-                entity.ToTable("Set", "HangFire");
-
-                entity.HasIndex(e => e.ExpireAt)
-                    .HasName("IX_HangFire_Set_ExpireAt")
-                    .HasFilter("([ExpireAt] IS NOT NULL)");
-
-                entity.HasIndex(e => new { e.Key, e.Score })
-                    .HasName("IX_HangFire_Set_Score");
-
-                entity.Property(e => e.Key).HasMaxLength(100);
-
-                entity.Property(e => e.Value).HasMaxLength(256);
-
-                entity.Property(e => e.ExpireAt).HasColumnType("datetime");
-            });
-
             modelBuilder.Entity<SexDAO>(entity =>
             {
                 entity.ToTable("Sex", "MDM");
@@ -3801,29 +3624,6 @@ namespace DMS.Models
                 entity.Property(e => e.Name)
                     .IsRequired()
                     .HasMaxLength(50);
-            });
-
-            modelBuilder.Entity<StateDAO>(entity =>
-            {
-                entity.HasKey(e => new { e.JobId, e.Id })
-                    .HasName("PK_HangFire_State");
-
-                entity.ToTable("State", "HangFire");
-
-                entity.Property(e => e.Id).ValueGeneratedOnAdd();
-
-                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
-
-                entity.Property(e => e.Name)
-                    .IsRequired()
-                    .HasMaxLength(20);
-
-                entity.Property(e => e.Reason).HasMaxLength(100);
-
-                entity.HasOne(d => d.Job)
-                    .WithMany(p => p.States)
-                    .HasForeignKey(d => d.JobId)
-                    .HasConstraintName("FK_HangFire_State_Job");
             });
 
             modelBuilder.Entity<StatusDAO>(entity =>
