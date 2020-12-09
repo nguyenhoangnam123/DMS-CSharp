@@ -246,6 +246,19 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
                 OrganizationDAOs = OrganizationDAOs.Where(o => o.Path.StartsWith(OrganizationDAO.Path)).ToList();
             }
             OrganizationIds = OrganizationDAOs.Select(o => o.Id).ToList();
+
+            AppUserFilter AppUserFilter = new AppUserFilter
+            {
+                OrganizationId = new IdFilter { In = OrganizationIds },
+                Id = new IdFilter { },
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = AppUserSelect.Id | AppUserSelect.DisplayName | AppUserSelect.Organization
+            };
+            AppUserFilter.Id.In = await FilterAppUser(AppUserService, OrganizationService, CurrentContext);
+            var AppUsers = await AppUserService.List(AppUserFilter);
+            var AppUserIds = AppUsers.Select(x => x.Id).ToList();
+
             List<long> StoreIds = await FilterStore(StoreService, OrganizationService, CurrentContext);
             if (StoreId.HasValue)
             {
@@ -273,6 +286,7 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
                         join au in DataContext.AppUser on sc.SaleEmployeeId equals au.Id
                         join tt in tempTableQuery.Query on s.Id equals tt.Column1
                         where sc.CheckOutAt.HasValue && sc.CheckOutAt >= Start && sc.CheckOutAt <= End &&
+                        AppUserIds.Contains(au.Id) &&
                         (SaleEmployeeId.HasValue == false || sc.SaleEmployeeId == SaleEmployeeId.Value) &&
                         StoreTypeIds.Contains(s.StoreTypeId) &&
                         (
@@ -333,6 +347,19 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
                 OrganizationDAOs = OrganizationDAOs.Where(o => o.Path.StartsWith(OrganizationDAO.Path)).ToList();
             }
             OrganizationIds = OrganizationDAOs.Select(o => o.Id).ToList();
+
+            AppUserFilter AppUserFilter = new AppUserFilter
+            {
+                OrganizationId = new IdFilter { In = OrganizationIds },
+                Id = new IdFilter { },
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = AppUserSelect.Id | AppUserSelect.DisplayName | AppUserSelect.Organization
+            };
+            AppUserFilter.Id.In = await FilterAppUser(AppUserService, OrganizationService, CurrentContext);
+            var AppUsers = await AppUserService.List(AppUserFilter);
+            var AppUserIds = AppUsers.Select(x => x.Id).ToList();
+
             List<long> StoreIds = await FilterStore(StoreService, OrganizationService, CurrentContext);
             if (StoreId.HasValue)
             {
@@ -359,6 +386,7 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
                         join au in DataContext.AppUser on sc.SaleEmployeeId equals au.Id
                         join tt in tempTableQuery.Query on s.Id equals tt.Column1
                         where sc.CheckOutAt.HasValue && sc.CheckOutAt >= Start && sc.CheckOutAt <= End &&
+                        AppUserIds.Contains(au.Id) &&
                         (SaleEmployeeId.HasValue == false || sc.SaleEmployeeId == SaleEmployeeId.Value) &&
                         StoreTypeIds.Contains(s.StoreTypeId) &&
                         (
@@ -386,7 +414,7 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
                 .Skip(ReportStoreChecker_ReportStoreCheckedFilterDTO.Skip)
                 .Take(ReportStoreChecker_ReportStoreCheckedFilterDTO.Take)
                 .ToListAsync();
-            var AppUserIds = Ids.Select(x => x.SalesEmployeeId).Distinct().ToList();
+            AppUserIds = Ids.Select(x => x.SalesEmployeeId).Distinct().ToList();
 
             List<AppUserDAO> AppUserDAOs = await DataContext.AppUser
                 .Where(x => x.DeletedAt == null)
