@@ -18,7 +18,6 @@ namespace DMS.Rpc.reports.report_sales_order.report_indirect_sales_order_general
         public DateTime OrderDate { get; set; }
         public string eOrderDate { get; set; }
         public decimal Discount { get; set; }
-        public decimal TaxValue { get; set; }
         public decimal SubTotal { get; set; }
         public decimal Total { get; set; }
     }

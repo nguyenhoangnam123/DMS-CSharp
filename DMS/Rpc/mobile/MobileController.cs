@@ -702,7 +702,6 @@ namespace DMS.Rpc.mobile
 
             Mobile_PrintDTO.SubTotalString = Mobile_PrintDTO.SubTotal.ToString("N0", culture);
             Mobile_PrintDTO.Discount = Mobile_PrintDTO.GeneralDiscountAmount.HasValue ? Mobile_PrintDTO.GeneralDiscountAmount.Value.ToString("N0", culture) : "";
-            Mobile_PrintDTO.Tax = Mobile_PrintDTO.TotalTaxAmount.ToString("N0", culture);
             Mobile_PrintDTO.TotalString = Mobile_PrintDTO.Total.ToString("N0", culture);
             Mobile_PrintDTO.TotalText = Utils.ConvertAmountTostring((long)Mobile_PrintDTO.Total);
 
@@ -953,7 +952,6 @@ namespace DMS.Rpc.mobile
             IndirectSalesOrder.SubTotal = Mobile_IndirectSalesOrderDTO.SubTotal;
             IndirectSalesOrder.GeneralDiscountPercentage = Mobile_IndirectSalesOrderDTO.GeneralDiscountPercentage;
             IndirectSalesOrder.GeneralDiscountAmount = Mobile_IndirectSalesOrderDTO.GeneralDiscountAmount;
-            IndirectSalesOrder.TotalTaxAmount = Mobile_IndirectSalesOrderDTO.TotalTaxAmount;
             IndirectSalesOrder.Total = Mobile_IndirectSalesOrderDTO.Total;
             IndirectSalesOrder.BuyerStore = Mobile_IndirectSalesOrderDTO.BuyerStore == null ? null : new Store
             {

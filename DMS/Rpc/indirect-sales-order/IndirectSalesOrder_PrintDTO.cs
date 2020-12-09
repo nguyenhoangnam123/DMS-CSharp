@@ -20,11 +20,11 @@ namespace DMS.Rpc.indirect_sales_order
         public string SubTotalString { get; set; }
         public decimal? GeneralDiscountAmount { get; set; }
         public string Discount { get; set; }
-        public decimal TotalTaxAmount { get; set; }
         public string Tax { get; set; }
         public decimal Total { get; set; }
         public string TotalString { get; set; }
         public string TotalText { get; set; }
+        public string Note { get; set; }
         public IndirectSalesOrder_StoreDTO BuyerStore { get; set; }
         public IndirectSalesOrder_AppUserDTO SaleEmployee { get; set; }
         public IndirectSalesOrder_StoreDTO SellerStore { get; set; }
@@ -42,8 +42,8 @@ namespace DMS.Rpc.indirect_sales_order
             this.DeliveryDate = IndirectSalesOrder.DeliveryDate;
             this.SubTotal = IndirectSalesOrder.SubTotal;
             this.GeneralDiscountAmount = IndirectSalesOrder.GeneralDiscountAmount;
-            this.TotalTaxAmount = IndirectSalesOrder.TotalTaxAmount;
             this.Total = IndirectSalesOrder.Total;
+            this.Note = IndirectSalesOrder.Note;
             this.BuyerStore = IndirectSalesOrder.BuyerStore == null ? null : new IndirectSalesOrder_StoreDTO(IndirectSalesOrder.BuyerStore);
             this.SaleEmployee = IndirectSalesOrder.SaleEmployee == null ? null : new IndirectSalesOrder_AppUserDTO(IndirectSalesOrder.SaleEmployee);
             this.SellerStore = IndirectSalesOrder.SellerStore == null ? null : new IndirectSalesOrder_StoreDTO(IndirectSalesOrder.SellerStore);
