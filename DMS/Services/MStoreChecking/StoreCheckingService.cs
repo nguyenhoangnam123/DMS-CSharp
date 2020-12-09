@@ -311,8 +311,9 @@ namespace DMS.Services.MStoreChecking
             {
                 Stores = await ListRecentStore(Stores, CurrentContext.Latitude.Value, CurrentContext.Longitude.Value);
             }
-            Stores = Stores.OrderByDescending(x => x.CreatedAt).ThenBy(x => x.Distance).Skip(skip).Take(take).ToList();
             Stores = await CheckStoreChecking(Stores);
+            Stores = Stores.OrderBy(x => x.HasChecking).ThenBy(x => x.Distance).Skip(skip).Take(take).ToList();
+            
             return Stores;
         }
 
@@ -378,13 +379,13 @@ namespace DMS.Services.MStoreChecking
                 {
                     Stores = await ListRecentStore(Stores, CurrentContext.Latitude.Value, CurrentContext.Longitude.Value);
                 }
-                Stores = (from s in Stores
-                          join id in StoreIds on s.Id equals id.Key
-                          orderby s.Distance, id.Value
-                          select s)
-                           .Skip(skip).Take(take).ToList();
 
                 Stores = await CheckStoreChecking(Stores);
+                Stores = (from s in Stores
+                          join id in StoreIds on s.Id equals id.Key
+                          orderby s.HasChecking, s.Distance
+                          select s)
+                           .Skip(skip).Take(take).ToList();
                 return Stores;
             }
             catch (Exception ex)
@@ -466,12 +467,12 @@ namespace DMS.Services.MStoreChecking
                 {
                     Stores = await ListRecentStore(Stores, CurrentContext.Latitude.Value, CurrentContext.Longitude.Value);
                 }
+                Stores = await CheckStoreChecking(Stores);
                 Stores = (from s in Stores
                           join id in StoreIds on s.Id equals id.Key
-                          orderby s.Distance, id.Value
+                          orderby s.HasChecking, s.Distance
                           select s)
                           .Skip(skip).Take(take).ToList();
-                Stores = await CheckStoreChecking(Stores);
                 return Stores;
             }
             catch (Exception ex)
@@ -545,8 +546,9 @@ namespace DMS.Services.MStoreChecking
                 {
                     Stores = await ListRecentStore(Stores, CurrentContext.Latitude.Value, CurrentContext.Longitude.Value);
                 }
-                Stores = Stores.OrderBy(s => s.Distance).Skip(skip).Take(take).ToList();
                 Stores = await CheckStoreChecking(Stores);
+
+                Stores = Stores.OrderBy(s => s.HasChecking).ThenBy(s => s.Distance).Skip(skip).Take(take).ToList();
                 return Stores;
             }
             catch (Exception ex)
@@ -579,11 +581,11 @@ namespace DMS.Services.MStoreChecking
                 CheckOutAt = new DateFilter { GreaterEqual = StartToday, Less = EndToday }
             };
             List<StoreChecking> StoreCheckings = await UOW.StoreCheckingRepository.List(StoreCheckingFilter);
-            foreach (var Store in Stores)
+            Parallel.ForEach(Stores, Store =>
             {
                 var count = StoreCheckings.Where(x => x.StoreId == Store.Id).Count();
                 Store.HasChecking = count != 0 ? true : false;
-            }
+            });
             return Stores;
         }
 
