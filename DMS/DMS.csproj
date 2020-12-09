@@ -126,6 +126,9 @@
     <None Update="Templates\Print_Direct.docx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Templates\Print_Indirect_Mobile.docx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Templates\Print_Indirect.docx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
