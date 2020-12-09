@@ -287,6 +287,7 @@ namespace DMS.Repositories
             ProductGroupingDAO.Description = ProductGrouping.Description;
             ProductGroupingDAO.CreatedAt = StaticParams.DateTimeNow;
             ProductGroupingDAO.UpdatedAt = StaticParams.DateTimeNow;
+            ProductGroupingDAO.RowId = Guid.NewGuid();
             DataContext.ProductGrouping.Add(ProductGroupingDAO);
             await DataContext.SaveChangesAsync();
             ProductGrouping.Id = ProductGroupingDAO.Id;
