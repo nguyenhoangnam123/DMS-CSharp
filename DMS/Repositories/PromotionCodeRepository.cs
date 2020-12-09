@@ -242,7 +242,7 @@ namespace DMS.Repositories
                 Id = filter.Selects.Contains(PromotionCodeSelect.Id) ? q.Id : default(long),
                 Code = filter.Selects.Contains(PromotionCodeSelect.Code) ? q.Code : default(string),
                 Name = filter.Selects.Contains(PromotionCodeSelect.Name) ? q.Name : default(string),
-                Quantity = filter.Selects.Contains(PromotionCodeSelect.Quantity) ? q.Quantity : default(long),
+                Quantity = filter.Selects.Contains(PromotionCodeSelect.Quantity) ? q.Quantity : default(long?),
                 PromotionDiscountTypeId = filter.Selects.Contains(PromotionCodeSelect.PromotionDiscountType) ? q.PromotionDiscountTypeId : default(long),
                 Value = filter.Selects.Contains(PromotionCodeSelect.Value) ? q.Value : default(decimal),
                 MaxValue = filter.Selects.Contains(PromotionCodeSelect.MaxValue) ? q.MaxValue : default(decimal?),

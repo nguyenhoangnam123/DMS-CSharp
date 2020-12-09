@@ -11,7 +11,7 @@ namespace DMS.Entities
         public long Id { get; set; }
         public string Code { get; set; }
         public string Name { get; set; }
-        public long Quantity { get; set; }
+        public long? Quantity { get; set; }
         public long PromotionDiscountTypeId { get; set; }
         public decimal Value { get; set; }
         public decimal? MaxValue { get; set; }

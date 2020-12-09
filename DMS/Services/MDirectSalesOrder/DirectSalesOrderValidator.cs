@@ -358,7 +358,7 @@ namespace DMS.Services.MDirectSalesOrder
                     };
 
                     var countHistory = await UOW.PromotionCodeHistoryRepository.Count(PromotionCodeHistoryFilter);
-                    if(countHistory >= PromotionCode.Quantity)
+                    if(PromotionCode.Quantity.HasValue && countHistory >= PromotionCode.Quantity)
                     {
                         DirectSalesOrder.AddError(nameof(DirectSalesOrderValidator), nameof(DirectSalesOrder.PromotionCode), ErrorCode.PromotionCodeHasUsed);
                     }
