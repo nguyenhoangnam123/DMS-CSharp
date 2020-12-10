@@ -70,6 +70,7 @@ namespace DMS.Models
         /// Số tiền chiết khấu tổng
         /// </summary>
         public decimal? GeneralDiscountAmount { get; set; }
+        public decimal TotalTaxAmount { get; set; }
         /// <summary>
         /// Tổng tiền sau thuế
         /// </summary>

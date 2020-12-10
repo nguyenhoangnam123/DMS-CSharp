@@ -180,6 +180,7 @@ namespace DMS.Repositories
                     SubTotal = q.IndirectSalesOrder.SubTotal,
                     GeneralDiscountPercentage = q.IndirectSalesOrder.GeneralDiscountPercentage,
                     GeneralDiscountAmount = q.IndirectSalesOrder.GeneralDiscountAmount,
+                    TotalTaxAmount = q.IndirectSalesOrder.TotalTaxAmount,
                     Total = q.IndirectSalesOrder.Total,
                 } : null,
                 Item = filter.Selects.Contains(IndirectSalesOrderPromotionSelect.Item) && q.Item != null ? new Item
@@ -261,6 +262,7 @@ namespace DMS.Repositories
                     SubTotal = x.IndirectSalesOrder.SubTotal,
                     GeneralDiscountPercentage = x.IndirectSalesOrder.GeneralDiscountPercentage,
                     GeneralDiscountAmount = x.IndirectSalesOrder.GeneralDiscountAmount,
+                    TotalTaxAmount = x.IndirectSalesOrder.TotalTaxAmount,
                     Total = x.IndirectSalesOrder.Total,
                 },
                 Item = x.Item == null ? null : new Item

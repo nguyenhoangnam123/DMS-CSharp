@@ -952,6 +952,7 @@ namespace DMS.Rpc.mobile
             IndirectSalesOrder.SubTotal = Mobile_IndirectSalesOrderDTO.SubTotal;
             IndirectSalesOrder.GeneralDiscountPercentage = Mobile_IndirectSalesOrderDTO.GeneralDiscountPercentage;
             IndirectSalesOrder.GeneralDiscountAmount = Mobile_IndirectSalesOrderDTO.GeneralDiscountAmount;
+            IndirectSalesOrder.TotalTaxAmount = Mobile_IndirectSalesOrderDTO.TotalTaxAmount;
             IndirectSalesOrder.Total = Mobile_IndirectSalesOrderDTO.Total;
             IndirectSalesOrder.BuyerStore = Mobile_IndirectSalesOrderDTO.BuyerStore == null ? null : new Store
             {
