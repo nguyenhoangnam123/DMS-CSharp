@@ -1298,6 +1298,7 @@ namespace DMS.Rpc.mobile
                 Revenue = Mobile_RewardHistoryDTO.Revenue,
                 StoreId = Mobile_RewardHistoryDTO.StoreId
             };
+            RewardHistory.BaseLanguage = CurrentContext.Language;
             RewardHistory = await RewardHistoryService.Create(RewardHistory);
             if (RewardHistory.IsValidated)
             {
