@@ -48,6 +48,8 @@ namespace DMS.Repositories
                 query = query.Where(q => q.Value, filter.Value);
             if (filter.LuckyNumberGroupingId != null)
                 query = query.Where(q => q.LuckyNumberGroupingId, filter.LuckyNumberGroupingId);
+            if (filter.OrganizationId != null)
+                query = query.Where(q => q.LuckyNumberGrouping.OrganizationId, filter.OrganizationId);
             if (filter.RewardStatusId != null)
                 query = query.Where(q => q.RewardStatusId, filter.RewardStatusId);
             if (filter.RowId != null)

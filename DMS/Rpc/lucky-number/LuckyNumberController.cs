@@ -501,6 +501,7 @@ namespace DMS.Rpc.lucky_number
             LuckyNumberFilter.Id = LuckyNumber_LuckyNumberFilterDTO.Id;
             LuckyNumberFilter.Code = LuckyNumber_LuckyNumberFilterDTO.Code;
             LuckyNumberFilter.Name = LuckyNumber_LuckyNumberFilterDTO.Name;
+            LuckyNumberFilter.OrganizationId = LuckyNumber_LuckyNumberFilterDTO.OrganizationId;
             LuckyNumberFilter.RewardStatusId = LuckyNumber_LuckyNumberFilterDTO.RewardStatusId;
             LuckyNumberFilter.RowId = LuckyNumber_LuckyNumberFilterDTO.RowId;
             LuckyNumberFilter.CreatedAt = LuckyNumber_LuckyNumberFilterDTO.CreatedAt;

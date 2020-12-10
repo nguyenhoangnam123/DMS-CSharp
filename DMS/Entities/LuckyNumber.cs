@@ -38,6 +38,7 @@ namespace DMS.Entities
         public StringFilter Name { get; set; }
         public StringFilter Value { get; set; }
         public IdFilter LuckyNumberGroupingId { get; set; }
+        public IdFilter OrganizationId { get; set; }
         public IdFilter RewardStatusId { get; set; }
         public GuidFilter RowId { get; set; }
         public DateFilter CreatedAt { get; set; }

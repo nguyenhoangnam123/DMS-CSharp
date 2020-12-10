@@ -40,6 +40,7 @@ namespace DMS.Rpc.lucky_number
         public IdFilter Id { get; set; }
         public StringFilter Code { get; set; }
         public StringFilter Name { get; set; }
+        public IdFilter OrganizationId { get; set; }
         public IdFilter RewardStatusId { get; set; }
         public GuidFilter RowId { get; set; }
         public DateFilter CreatedAt { get; set; }

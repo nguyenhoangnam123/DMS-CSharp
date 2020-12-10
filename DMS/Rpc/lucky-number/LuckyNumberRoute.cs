@@ -34,9 +34,8 @@ namespace DMS.Rpc.lucky_number
         public const string BulkDelete = Default + "/bulk-delete";
         
         
+        public const string FilterListOrganization = Default + "/filter-list-organization";
         public const string FilterListRewardStatus = Default + "/filter-list-reward-status";
-        
-
         
         public const string SingleListRewardStatus = Default + "/single-list-reward-status";
         
@@ -58,37 +57,37 @@ namespace DMS.Rpc.lucky_number
                  FilterListRewardStatus, } },
             { "Thêm", new List<string> { 
                 Master, Count, List, Get, GetPreview,
-                FilterListRewardStatus,  
+                FilterListOrganization, FilterListRewardStatus,  
                 Detail, Create, 
                 SingleListRewardStatus, 
                  } },
 
             { "Sửa", new List<string> { 
                 Master, Count, List, Get, GetPreview,
-                FilterListRewardStatus,  
+                FilterListOrganization, FilterListRewardStatus,
                 Detail, Update, 
                 SingleListRewardStatus,  
                  } },
 
             { "Xoá", new List<string> { 
                 Master, Count, List, Get, GetPreview,
-                FilterListRewardStatus,  
+                FilterListOrganization, FilterListRewardStatus,
                 Delete, 
                 SingleListRewardStatus,  } },
 
             { "Xoá nhiều", new List<string> { 
                 Master, Count, List, Get, GetPreview,
-                FilterListRewardStatus,  
+                FilterListOrganization, FilterListRewardStatus,
                 BulkDelete } },
 
             { "Xuất excel", new List<string> { 
                 Master, Count, List, Get, GetPreview,
-                FilterListRewardStatus,  
+                FilterListOrganization, FilterListRewardStatus,
                 Export, ExportStore } },
 
             { "Nhập excel", new List<string> { 
                 Master, Count, List, Get, GetPreview,
-                FilterListRewardStatus,  
+                FilterListOrganization, FilterListRewardStatus,
                 ExportTemplate, Import } },
         };
     }
