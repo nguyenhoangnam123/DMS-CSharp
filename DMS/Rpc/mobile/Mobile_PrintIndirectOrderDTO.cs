@@ -5,9 +5,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace DMS.Rpc.indirect_sales_order
+namespace DMS.Rpc.mobile
 {
-    public class IndirectSalesOrder_PrintDTO : DataDTO
+    public class Mobile_PrintIndirectOrderDTO : DataDTO
     {
         public long Id { get; set; }
         public string Code { get; set; }
@@ -20,18 +20,17 @@ namespace DMS.Rpc.indirect_sales_order
         public string SubTotalString { get; set; }
         public decimal? GeneralDiscountAmount { get; set; }
         public string Discount { get; set; }
-        public string Tax { get; set; }
         public decimal Total { get; set; }
         public string TotalString { get; set; }
         public string TotalText { get; set; }
         public string Note { get; set; }
-        public IndirectSalesOrder_StoreDTO BuyerStore { get; set; }
-        public IndirectSalesOrder_AppUserDTO SaleEmployee { get; set; }
-        public IndirectSalesOrder_StoreDTO SellerStore { get; set; }
-        public List<IndirectSalesOrder_PrintContentDTO> Contents { get; set; }
-        public List<IndirectSalesOrder_PrintPromotionDTO> Promotions { get; set; }
-        public IndirectSalesOrder_PrintDTO() { }
-        public IndirectSalesOrder_PrintDTO(IndirectSalesOrder IndirectSalesOrder)
+        public Mobile_StoreDTO BuyerStore { get; set; }
+        public Mobile_AppUserDTO SaleEmployee { get; set; }
+        public Mobile_StoreDTO SellerStore { get; set; }
+        public List<Mobile_PrintIndirectOrderContentDTO> Contents { get; set; }
+        public List<Mobile_PrintIndirectOrderPromotionDTO> Promotions { get; set; }
+        public Mobile_PrintIndirectOrderDTO() { }
+        public Mobile_PrintIndirectOrderDTO(IndirectSalesOrder IndirectSalesOrder)
         {
             this.Id = IndirectSalesOrder.Id;
             this.Code = IndirectSalesOrder.Code;
@@ -44,11 +43,11 @@ namespace DMS.Rpc.indirect_sales_order
             this.GeneralDiscountAmount = IndirectSalesOrder.GeneralDiscountAmount;
             this.Total = IndirectSalesOrder.Total;
             this.Note = IndirectSalesOrder.Note;
-            this.BuyerStore = IndirectSalesOrder.BuyerStore == null ? null : new IndirectSalesOrder_StoreDTO(IndirectSalesOrder.BuyerStore);
-            this.SaleEmployee = IndirectSalesOrder.SaleEmployee == null ? null : new IndirectSalesOrder_AppUserDTO(IndirectSalesOrder.SaleEmployee);
-            this.SellerStore = IndirectSalesOrder.SellerStore == null ? null : new IndirectSalesOrder_StoreDTO(IndirectSalesOrder.SellerStore);
-            this.Contents = IndirectSalesOrder.IndirectSalesOrderContents?.Select(x => new IndirectSalesOrder_PrintContentDTO(x)).ToList();
-            this.Promotions = IndirectSalesOrder.IndirectSalesOrderPromotions?.Select(x => new IndirectSalesOrder_PrintPromotionDTO(x)).ToList();
+            this.BuyerStore = IndirectSalesOrder.BuyerStore == null ? null : new Mobile_StoreDTO(IndirectSalesOrder.BuyerStore);
+            this.SaleEmployee = IndirectSalesOrder.SaleEmployee == null ? null : new Mobile_AppUserDTO(IndirectSalesOrder.SaleEmployee);
+            this.SellerStore = IndirectSalesOrder.SellerStore == null ? null : new Mobile_StoreDTO(IndirectSalesOrder.SellerStore);
+            this.Contents = IndirectSalesOrder.IndirectSalesOrderContents?.Select(x => new Mobile_PrintIndirectOrderContentDTO(x)).ToList();
+            this.Promotions = IndirectSalesOrder.IndirectSalesOrderPromotions?.Select(x => new Mobile_PrintIndirectOrderPromotionDTO(x)).ToList();
             this.Errors = IndirectSalesOrder.Errors;
         }
     }

@@ -29,6 +29,7 @@ namespace DMS.Rpc.mobile
         public const string UpdateAlbum = Default + "/update-album";
         public const string GetNotification = Default + "/get-notification";
         public const string UpdateGPS = Default + "/update-gps";
+        public const string PrintIndirectOrder = Default + "/print-indirect-order";
 
         public const string SingleListAlbum = Default + "/single-list-album";
         public const string SingleListAppUser = Default + "/single-list-app-user";
@@ -101,7 +102,7 @@ namespace DMS.Rpc.mobile
                 } },
             { "Checkin", new List<string> {
                 Master, CountStoreChecking, ListStoreChecking, GetStoreChecking,
-                Detail, CheckIn,  UpdateStoreChecking, UpdateStoreCheckingImage, CheckOut,
+                Detail, CheckIn,  UpdateStoreChecking, UpdateStoreCheckingImage, CheckOut, PrintIndirectOrder,
                 CreateIndirectSalesOrder, CreateProblem, SaveImage, GetSurveyForm, SaveSurveyForm,
                 CountItem, ListItem, CountStorePlanned, ListStorePlanned, CountStoreUnPlanned, ListStoreUnPlanned, CountStoreInScope, ListStoreInScope, CountProblem, ListProblem, CountSurvey, ListSurvey, CountStoreScouting, ListStoreScouting,
                 SingleListAlbum, SingleListAppUser, SingleListStore, SingleListStoreStatus, SingleListTaxType, SingleListUnitOfMeasure, SingleListProblemType, SingleListStoreScoutingType, SingleListProvince, SingleListDistrict, SingleListWard, } },

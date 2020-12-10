@@ -22,7 +22,8 @@ namespace DMS.Services.MRewardHistory
         public enum ErrorCode
         {
             IdNotExisted,
-            RevenueEmpty
+            RevenueEmpty,
+            RevenueNotEnough
         }
 
         private IUOW UOW;
@@ -52,14 +53,18 @@ namespace DMS.Services.MRewardHistory
 
         private async Task<bool> ValidateRevenue(RewardHistory RewardHistory)
         {
-            if(RewardHistory.Revenue <= 0)
+            if (RewardHistory.Revenue <= 0)
             {
                 RewardHistory.AddError(nameof(RewardHistoryValidator), nameof(RewardHistory.Revenue), ErrorCode.RevenueEmpty);
+            }
+            else if (RewardHistory.Revenue < 20000000)
+            {
+                RewardHistory.AddError(nameof(RewardHistoryValidator), nameof(RewardHistory.Revenue), ErrorCode.RevenueNotEnough);
             }
             return RewardHistory.IsValidated;
         }
 
-        public async Task<bool>Create(RewardHistory RewardHistory)
+        public async Task<bool> Create(RewardHistory RewardHistory)
         {
             await ValidateRevenue(RewardHistory);
             return RewardHistory.IsValidated;
@@ -80,7 +85,7 @@ namespace DMS.Services.MRewardHistory
             }
             return RewardHistory.IsValidated;
         }
-        
+
         public async Task<bool> BulkDelete(List<RewardHistory> RewardHistories)
         {
             foreach (RewardHistory RewardHistory in RewardHistories)
@@ -89,7 +94,7 @@ namespace DMS.Services.MRewardHistory
             }
             return RewardHistories.All(x => x.IsValidated);
         }
-        
+
         public async Task<bool> Import(List<RewardHistory> RewardHistories)
         {
             return true;

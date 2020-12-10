@@ -382,7 +382,6 @@ namespace DMS.Repositories
             RewardHistoryDAO.Id = RewardHistory.Id;
             RewardHistoryDAO.AppUserId = RewardHistory.AppUserId;
             RewardHistoryDAO.StoreId = RewardHistory.StoreId;
-            RewardHistoryDAO.TurnCounter = RewardHistory.TurnCounter;
             RewardHistoryDAO.Revenue = RewardHistory.Revenue;
             RewardHistoryDAO.RowId = RewardHistory.RowId;
             RewardHistoryDAO.UpdatedAt = StaticParams.DateTimeNow;

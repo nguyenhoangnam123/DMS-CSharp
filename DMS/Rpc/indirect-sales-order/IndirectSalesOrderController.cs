@@ -363,7 +363,6 @@ namespace DMS.Rpc.indirect_sales_order
 
             IndirectSalesOrder_PrintDTO.SubTotalString = IndirectSalesOrder_PrintDTO.SubTotal.ToString("N0", culture);
             IndirectSalesOrder_PrintDTO.Discount = IndirectSalesOrder_PrintDTO.GeneralDiscountAmount.HasValue ? IndirectSalesOrder_PrintDTO.GeneralDiscountAmount.Value.ToString("N0", culture) : "";
-            IndirectSalesOrder_PrintDTO.Tax = IndirectSalesOrder_PrintDTO.TotalTaxAmount.ToString("N0", culture);
             IndirectSalesOrder_PrintDTO.TotalString = IndirectSalesOrder_PrintDTO.Total.ToString("N0", culture);
             IndirectSalesOrder_PrintDTO.TotalText = Utils.ConvertAmountTostring((long)IndirectSalesOrder_PrintDTO.Total);
 

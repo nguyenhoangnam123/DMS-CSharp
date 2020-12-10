@@ -102,6 +102,7 @@ namespace DMS.Services.MRewardHistory
 
             try
             {
+                RewardHistory.TurnCounter = (long)(RewardHistory.Revenue / 20000000);
                 await UOW.Begin();
                 await UOW.RewardHistoryRepository.Create(RewardHistory);
                 await UOW.Commit();
