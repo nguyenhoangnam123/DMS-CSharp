@@ -217,10 +217,7 @@ namespace DMS.Rpc.lucky_number
                 Take = int.MaxValue,
                 Selects = LuckyNumberSelect.ALL,
             });
-            foreach (var LuckyNumberGrouping in LuckyNumberGroupings)
-            {
-                LuckyNumberGrouping.LuckyNumbers = LuckyNumbers.Where(x => x.LuckyNumberGroupingId == LuckyNumberGrouping.Id).ToList();
-            }
+
             HashSet<string> Codes = LuckyNumbers.Select(x => x.Code).ToHashSet();
             HashSet<string> OrganizationCodes = Organizations.Select(x => x.Code).ToHashSet();
 
@@ -280,10 +277,13 @@ namespace DMS.Rpc.lucky_number
                             StatusId = StatusEnum.ACTIVE.Id,
                             StartDate = StaticParams.DateTimeNow,
                             Code = Guid.NewGuid().ToString(),
-                            Name = "LuckyNumbers"
+                            Name = "LuckyNumbers",
+                            
                         };
                         LuckyNumberGroupings.Add(LuckyNumberGrouping);
                     }
+                    if(LuckyNumberGrouping.LuckyNumbers == null)
+                        LuckyNumberGrouping.LuckyNumbers = new List<LuckyNumber>();
                     Codes.Add(CodeValue);
                     string NameValue = worksheet.Cells[i, NameColumn].Value?.ToString();
                     string ValueValue = worksheet.Cells[i, ValueColumn].Value?.ToString();
