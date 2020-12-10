@@ -54,6 +54,8 @@ namespace DMS.Repositories
                 query = query.Where(q => q.RewardStatusId, filter.RewardStatusId);
             if (filter.RowId != null)
                 query = query.Where(q => q.RowId, filter.RowId);
+            if (filter.UsedAt != null)
+                query = query.Where(q => q.UsedAt, filter.UsedAt);
             query = OrFilter(query, filter);
             return query;
         }
@@ -108,7 +110,7 @@ namespace DMS.Repositories
                         case LuckyNumberOrder.RewardStatus:
                             query = query.OrderBy(q => q.RewardStatusId);
                             break;
-                        case LuckyNumberOrder.Row:
+                        case LuckyNumberOrder.RowId:
                             query = query.OrderBy(q => q.RowId);
                             break;
                     }
@@ -134,8 +136,8 @@ namespace DMS.Repositories
                         case LuckyNumberOrder.RewardStatus:
                             query = query.OrderByDescending(q => q.RewardStatusId);
                             break;
-                        case LuckyNumberOrder.Row:
-                            query = query.OrderByDescending(q => q.RowId);
+                        case LuckyNumberOrder.UsedAt:
+                            query = query.OrderByDescending(q => q.UsedAt);
                             break;
                     }
                     break;
@@ -182,6 +184,7 @@ namespace DMS.Repositories
                 CreatedAt = q.CreatedAt,
                 UpdatedAt = q.UpdatedAt,
                 Used = q.Used,
+                UsedAt = q.UsedAt,
             }).ToListAsync();
             return LuckyNumbers;
         }
@@ -218,6 +221,7 @@ namespace DMS.Repositories
                 RewardStatusId = x.RewardStatusId,
                 RowId = x.RowId,
                 Used = x.Used,
+                UsedAt = x.UsedAt,
                 LuckyNumberGrouping = x.LuckyNumberGrouping == null ? null : new LuckyNumberGrouping
                 {
                     CreatedAt = x.LuckyNumberGrouping.CreatedAt,
@@ -256,6 +260,7 @@ namespace DMS.Repositories
             LuckyNumberDAO.CreatedAt = StaticParams.DateTimeNow;
             LuckyNumberDAO.UpdatedAt = StaticParams.DateTimeNow;
             LuckyNumberDAO.Used = false;
+            LuckyNumberDAO.UsedAt = LuckyNumber.UsedAt;
             DataContext.LuckyNumber.Add(LuckyNumberDAO);
             await DataContext.SaveChangesAsync();
             LuckyNumber.Id = LuckyNumberDAO.Id;
@@ -276,6 +281,7 @@ namespace DMS.Repositories
             LuckyNumberDAO.RewardStatusId = LuckyNumber.RewardStatusId;
             LuckyNumberDAO.RowId = LuckyNumber.RowId;
             LuckyNumberDAO.Used = LuckyNumber.Used;
+            LuckyNumberDAO.UsedAt = LuckyNumber.UsedAt;
             LuckyNumberDAO.UpdatedAt = StaticParams.DateTimeNow;
             await DataContext.SaveChangesAsync();
             await SaveReference(LuckyNumber);

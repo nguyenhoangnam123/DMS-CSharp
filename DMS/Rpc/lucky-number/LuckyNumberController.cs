@@ -233,6 +233,7 @@ namespace DMS.Rpc.lucky_number
 
                 int StartColumn = 1;
                 int StartRow = 2;
+                int SttColumnn = 0 + StartColumn;
                 int CodeColumn = 1 + StartColumn;
                 int NameColumn = 2 + StartColumn;
                 int ValueColumn = 3 + StartColumn;
@@ -240,6 +241,9 @@ namespace DMS.Rpc.lucky_number
 
                 for (int i = StartRow; i <= worksheet.Dimension.End.Row; i++)
                 {
+                    string stt = worksheet.Cells[i + StartRow, SttColumnn].Value?.ToString();
+                    if (stt != null && stt.ToLower() == "END".ToLower())
+                        break;
                     string CodeValue = worksheet.Cells[i, CodeColumn].Value?.ToString().Trim();
                     if (string.IsNullOrWhiteSpace(CodeValue) && i != worksheet.Dimension.End.Row)
                     {
@@ -506,6 +510,7 @@ namespace DMS.Rpc.lucky_number
             LuckyNumberFilter.RowId = LuckyNumber_LuckyNumberFilterDTO.RowId;
             LuckyNumberFilter.CreatedAt = LuckyNumber_LuckyNumberFilterDTO.CreatedAt;
             LuckyNumberFilter.UpdatedAt = LuckyNumber_LuckyNumberFilterDTO.UpdatedAt;
+            LuckyNumberFilter.UsedAt = LuckyNumber_LuckyNumberFilterDTO.UsedAt;
             return LuckyNumberFilter;
         }
     }

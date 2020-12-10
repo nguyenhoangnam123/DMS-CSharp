@@ -1740,6 +1740,8 @@ namespace DMS.Models
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
+                entity.Property(e => e.UsedAt).HasColumnType("datetime");
+
                 entity.Property(e => e.Value)
                     .IsRequired()
                     .HasMaxLength(500);

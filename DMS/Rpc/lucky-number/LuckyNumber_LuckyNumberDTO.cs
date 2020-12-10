@@ -18,6 +18,7 @@ namespace DMS.Rpc.lucky_number
         public LuckyNumber_RewardStatusDTO RewardStatus { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
+        public DateTime? UsedAt { get; set; }
         public bool Used { get; set; }
         public LuckyNumber_LuckyNumberDTO() {}
         public LuckyNumber_LuckyNumberDTO(LuckyNumber LuckyNumber)
@@ -47,6 +48,7 @@ namespace DMS.Rpc.lucky_number
         public GuidFilter RowId { get; set; }
         public DateFilter CreatedAt { get; set; }
         public DateFilter UpdatedAt { get; set; }
+        public DateFilter UsedAt { get; set; }
         public LuckyNumberOrder OrderBy { get; set; }
     }
 }
