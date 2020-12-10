@@ -110,8 +110,8 @@ namespace DMS.Repositories
                         case LuckyNumberOrder.RewardStatus:
                             query = query.OrderBy(q => q.RewardStatusId);
                             break;
-                        case LuckyNumberOrder.RowId:
-                            query = query.OrderBy(q => q.RowId);
+                        case LuckyNumberOrder.UsedAt:
+                            query = query.OrderBy(q => q.UsedAt);
                             break;
                     }
                     break;
