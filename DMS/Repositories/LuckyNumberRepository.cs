@@ -166,6 +166,12 @@ namespace DMS.Repositories
                     StatusId = q.LuckyNumberGrouping.StatusId,
                     StartDate = q.LuckyNumberGrouping.StartDate,
                     EndDate = q.LuckyNumberGrouping.EndDate,
+                    Organization = new Organization
+                    {
+                        Id = q.LuckyNumberGrouping.Organization.Id,
+                        Code = q.LuckyNumberGrouping.Organization.Code,
+                        Name = q.LuckyNumberGrouping.Organization.Name,
+                    }
                 } : null,
                 RewardStatus = filter.Selects.Contains(LuckyNumberSelect.RewardStatus) && q.RewardStatus != null ? new RewardStatus
                 {

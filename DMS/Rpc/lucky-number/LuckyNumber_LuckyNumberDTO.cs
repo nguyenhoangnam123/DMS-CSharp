@@ -14,6 +14,7 @@ namespace DMS.Rpc.lucky_number
         public string Value { get; set; }
         public long RewardStatusId { get; set; }
         public Guid RowId { get; set; }
+        public LuckyNumber_LuckyNumberGroupingDTO LuckyNumberGrouping { get; set; }
         public LuckyNumber_RewardStatusDTO RewardStatus { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
@@ -29,6 +30,7 @@ namespace DMS.Rpc.lucky_number
             this.RowId = LuckyNumber.RowId;
             this.Used = LuckyNumber.Used;
             this.RewardStatus = LuckyNumber.RewardStatus == null ? null : new LuckyNumber_RewardStatusDTO(LuckyNumber.RewardStatus);
+            this.LuckyNumberGrouping = LuckyNumber.LuckyNumberGrouping == null ? null : new LuckyNumber_LuckyNumberGroupingDTO(LuckyNumber.LuckyNumberGrouping);
             this.CreatedAt = LuckyNumber.CreatedAt;
             this.UpdatedAt = LuckyNumber.UpdatedAt;
             this.Errors = LuckyNumber.Errors;
