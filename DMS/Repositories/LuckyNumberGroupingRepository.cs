@@ -176,6 +176,8 @@ namespace DMS.Repositories
                     Code = q.Status.Code,
                     Name = q.Status.Name,
                 } : null,
+                CreatedAt = q.CreatedAt,
+                UpdatedAt = q.UpdatedAt,
             }).ToListAsync();
             return LuckyNumberGroupings;
         }
@@ -362,6 +364,27 @@ namespace DMS.Repositories
                 LuckyNumberGroupingDAOs.Add(LuckyNumberGroupingDAO);
             }
             await DataContext.BulkMergeAsync(LuckyNumberGroupingDAOs);
+
+            foreach (var LuckyNumberGrouping in LuckyNumberGroupings)
+            {
+                var LuckyNumberGroupingId = LuckyNumberGroupingDAOs.Where(x => x.OrganizationId == LuckyNumberGrouping.OrganizationId).Select(x => x.Id).FirstOrDefault();
+                LuckyNumberGrouping.LuckyNumbers.ForEach(x => x.LuckyNumberGroupingId = LuckyNumberGroupingId);
+            }
+
+            List<LuckyNumberDAO> LuckyNumberDAOs = LuckyNumberGroupings.SelectMany(x => x.LuckyNumbers).Select(x => new LuckyNumberDAO
+            {
+                CreatedAt = StaticParams.DateTimeNow,
+                UpdatedAt = StaticParams.DateTimeNow,
+                Id = x.Id,
+                Code = x.Code,
+                Name = x.Name,
+                Value = x.Value,
+                LuckyNumberGroupingId = x.LuckyNumberGroupingId,
+                RewardStatusId = x.RewardStatusId,
+                RowId = x.RowId,
+                Used = x.Used,
+            }).ToList();
+            await DataContext.BulkMergeAsync(LuckyNumberDAOs);
             return true;
         }
 
