@@ -10,11 +10,13 @@ namespace DMS.Models
             AppUserRoleMappings = new HashSet<AppUserRoleMappingDAO>();
             AppUserStoreMappings = new HashSet<AppUserStoreMappingDAO>();
             Banners = new HashSet<BannerDAO>();
-            DirectSalesOrders = new HashSet<DirectSalesOrderDAO>();
+            DirectSalesOrderCreators = new HashSet<DirectSalesOrderDAO>();
+            DirectSalesOrderSaleEmployees = new HashSet<DirectSalesOrderDAO>();
             ERouteChangeRequests = new HashSet<ERouteChangeRequestDAO>();
             ERouteCreators = new HashSet<ERouteDAO>();
             ERouteSaleEmployees = new HashSet<ERouteDAO>();
-            IndirectSalesOrders = new HashSet<IndirectSalesOrderDAO>();
+            IndirectSalesOrderCreators = new HashSet<IndirectSalesOrderDAO>();
+            IndirectSalesOrderSaleEmployees = new HashSet<IndirectSalesOrderDAO>();
             InventoryHistories = new HashSet<InventoryHistoryDAO>();
             ItemHistories = new HashSet<ItemHistoryDAO>();
             KpiGeneralCreators = new HashSet<KpiGeneralDAO>();
@@ -122,11 +124,13 @@ namespace DMS.Models
         public virtual ICollection<AppUserRoleMappingDAO> AppUserRoleMappings { get; set; }
         public virtual ICollection<AppUserStoreMappingDAO> AppUserStoreMappings { get; set; }
         public virtual ICollection<BannerDAO> Banners { get; set; }
-        public virtual ICollection<DirectSalesOrderDAO> DirectSalesOrders { get; set; }
+        public virtual ICollection<DirectSalesOrderDAO> DirectSalesOrderCreators { get; set; }
+        public virtual ICollection<DirectSalesOrderDAO> DirectSalesOrderSaleEmployees { get; set; }
         public virtual ICollection<ERouteChangeRequestDAO> ERouteChangeRequests { get; set; }
         public virtual ICollection<ERouteDAO> ERouteCreators { get; set; }
         public virtual ICollection<ERouteDAO> ERouteSaleEmployees { get; set; }
-        public virtual ICollection<IndirectSalesOrderDAO> IndirectSalesOrders { get; set; }
+        public virtual ICollection<IndirectSalesOrderDAO> IndirectSalesOrderCreators { get; set; }
+        public virtual ICollection<IndirectSalesOrderDAO> IndirectSalesOrderSaleEmployees { get; set; }
         public virtual ICollection<InventoryHistoryDAO> InventoryHistories { get; set; }
         public virtual ICollection<ItemHistoryDAO> ItemHistories { get; set; }
         public virtual ICollection<KpiGeneralDAO> KpiGeneralCreators { get; set; }
