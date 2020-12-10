@@ -319,7 +319,7 @@ namespace DMS.Services.MDirectSalesOrder
         {
             if (!string.IsNullOrWhiteSpace(DirectSalesOrder.PromotionCode))
             {
-                var appUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
+                var appUser = await UOW.AppUserRepository.Get(DirectSalesOrder.SaleEmployeeId);
                 OrganizationFilter OrganizationFilter = new OrganizationFilter
                 {
                     Skip = 0,
@@ -330,7 +330,7 @@ namespace DMS.Services.MDirectSalesOrder
 
                 var Organizations = await UOW.OrganizationRepository.List(OrganizationFilter);
                 var OrganizationIds = Organizations
-                    .Where(x => x.Path.StartsWith(appUser.Organization.Path) || appUser.Organization.Path.StartsWith(x.Path))
+                    .Where(x => x.Path.StartsWith(appUser.Organization.Path)/* || appUser.Organization.Path.StartsWith(x.Path)*/)
                     .Select(x => x.Id)
                     .ToList();
                 PromotionCodeFilter PromotionCodeFilter = new PromotionCodeFilter()
