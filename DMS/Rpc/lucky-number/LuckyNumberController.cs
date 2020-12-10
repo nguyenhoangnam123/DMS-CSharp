@@ -311,7 +311,7 @@ namespace DMS.Rpc.lucky_number
                 return BadRequest(errorContent.ToString());
 
             LuckyNumberGroupings = await LuckyNumberGroupingService.Import(LuckyNumberGroupings);
-            List<LuckyNumber_LuckyNumberDTO> LuckyNumber_LuckyNumberDTOs = LuckyNumberGroupings.SelectMany(x => x.LuckyNumbers
+            List<LuckyNumber_LuckyNumberDTO> LuckyNumber_LuckyNumberDTOs = LuckyNumberGroupings.Where(x => x.LuckyNumbers != null).SelectMany(x => x.LuckyNumbers
                 .Select(c => new LuckyNumber_LuckyNumberDTO(c))).ToList();
             return Ok(LuckyNumber_LuckyNumberDTOs);
         }

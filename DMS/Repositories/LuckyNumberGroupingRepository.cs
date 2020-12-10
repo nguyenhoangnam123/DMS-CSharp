@@ -368,10 +368,10 @@ namespace DMS.Repositories
             foreach (var LuckyNumberGrouping in LuckyNumberGroupings)
             {
                 var LuckyNumberGroupingId = LuckyNumberGroupingDAOs.Where(x => x.OrganizationId == LuckyNumberGrouping.OrganizationId).Select(x => x.Id).FirstOrDefault();
-                LuckyNumberGrouping.LuckyNumbers.ForEach(x => x.LuckyNumberGroupingId = LuckyNumberGroupingId);
+                LuckyNumberGrouping.LuckyNumbers?.ForEach(x => x.LuckyNumberGroupingId = LuckyNumberGroupingId);
             }
 
-            List<LuckyNumberDAO> LuckyNumberDAOs = LuckyNumberGroupings.SelectMany(x => x.LuckyNumbers).Select(x => new LuckyNumberDAO
+            List<LuckyNumberDAO> LuckyNumberDAOs = LuckyNumberGroupings.Where(x => x.LuckyNumbers != null).SelectMany(x => x.LuckyNumbers).Select(x => new LuckyNumberDAO
             {
                 CreatedAt = StaticParams.DateTimeNow,
                 UpdatedAt = StaticParams.DateTimeNow,
