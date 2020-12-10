@@ -101,11 +101,30 @@ namespace DMS.Services.MLuckyNumber
             RewardHistory RewardHistory = await UOW.RewardHistoryRepository.Get(RewardHistoryId);
             if(RewardHistory != null && RewardHistory.TurnCounter > 0)
             {
+                var CurrentUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
+                var Organizations = await UOW.OrganizationRepository.List(new OrganizationFilter
+                {
+                    Skip = 0,
+                    Take = int.MaxValue,
+                    Selects = OrganizationSelect.Id | OrganizationSelect.Path
+                });
+                var OrganizationIds = Organizations.Where(x => CurrentUser.Organization.Path.StartsWith(x.Path)).Select(x => x.Id).ToList();
+
+                List<LuckyNumberGrouping> LuckyNumberGroupings = await UOW.LuckyNumberGroupingRepository.List(new LuckyNumberGroupingFilter
+                {
+                    Skip = 0,
+                    Take = int.MaxValue,
+                    Selects = LuckyNumberGroupingSelect.Id,
+                    OrganizationId = new IdFilter { In = OrganizationIds },
+                    StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id }
+                });
+                var LuckyNumberGroupingIds = LuckyNumberGroupings.Select(x => x.Id).ToList();
                 List<LuckyNumber> LuckyNumbers = await UOW.LuckyNumberRepository.List(new LuckyNumberFilter
                 {
                     Skip = 0,
                     Take = int.MaxValue,
                     Selects = LuckyNumberSelect.ALL,
+                    LuckyNumberGroupingId = new IdFilter { In = LuckyNumberGroupingIds },
                     RewardStatusId = new IdFilter { Equal = RewardStatusEnum.ACTIVE.Id }
                 });
 

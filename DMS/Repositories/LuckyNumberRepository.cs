@@ -46,6 +46,8 @@ namespace DMS.Repositories
                 query = query.Where(q => q.Name, filter.Name);
             if (filter.Value != null)
                 query = query.Where(q => q.Value, filter.Value);
+            if (filter.LuckyNumberGroupingId != null)
+                query = query.Where(q => q.LuckyNumberGroupingId, filter.LuckyNumberGroupingId);
             if (filter.RewardStatusId != null)
                 query = query.Where(q => q.RewardStatusId, filter.RewardStatusId);
             if (filter.RowId != null)
@@ -68,6 +70,8 @@ namespace DMS.Repositories
                     queryable = queryable.Where(q => q.Code, LuckyNumberFilter.Code);
                 if (LuckyNumberFilter.Name != null)
                     queryable = queryable.Where(q => q.Name, LuckyNumberFilter.Name);
+                if (LuckyNumberFilter.LuckyNumberGroupingId != null)
+                    queryable = queryable.Where(q => q.LuckyNumberGroupingId, LuckyNumberFilter.LuckyNumberGroupingId);
                 if (LuckyNumberFilter.RewardStatusId != null)
                     queryable = queryable.Where(q => q.RewardStatusId, LuckyNumberFilter.RewardStatusId);
                 if (LuckyNumberFilter.RowId != null)
@@ -96,6 +100,9 @@ namespace DMS.Repositories
                         case LuckyNumberOrder.Value:
                             query = query.OrderBy(q => q.Value);
                             break;
+                        case LuckyNumberOrder.LuckyNumberGrouping:
+                            query = query.OrderBy(q => q.LuckyNumberGroupingId);
+                            break;
                         case LuckyNumberOrder.RewardStatus:
                             query = query.OrderBy(q => q.RewardStatusId);
                             break;
@@ -119,6 +126,9 @@ namespace DMS.Repositories
                         case LuckyNumberOrder.Value:
                             query = query.OrderByDescending(q => q.Value);
                             break;
+                        case LuckyNumberOrder.LuckyNumberGrouping:
+                            query = query.OrderByDescending(q => q.LuckyNumberGroupingId);
+                            break;
                         case LuckyNumberOrder.RewardStatus:
                             query = query.OrderByDescending(q => q.RewardStatusId);
                             break;
@@ -140,8 +150,21 @@ namespace DMS.Repositories
                 Code = filter.Selects.Contains(LuckyNumberSelect.Code) ? q.Code : default(string),
                 Name = filter.Selects.Contains(LuckyNumberSelect.Name) ? q.Name : default(string),
                 Value = filter.Selects.Contains(LuckyNumberSelect.Value) ? q.Value : default(string),
+                LuckyNumberGroupingId = filter.Selects.Contains(LuckyNumberSelect.LuckyNumberGrouping) ? q.LuckyNumberGroupingId : default(long),
                 RewardStatusId = filter.Selects.Contains(LuckyNumberSelect.RewardStatus) ? q.RewardStatusId : default(long),
                 RowId = filter.Selects.Contains(LuckyNumberSelect.Row) ? q.RowId : default(Guid),
+                LuckyNumberGrouping = filter.Selects.Contains(LuckyNumberSelect.LuckyNumberGrouping) && q.LuckyNumberGrouping != null ? new LuckyNumberGrouping
+                {
+                    CreatedAt = q.LuckyNumberGrouping.CreatedAt,
+                    UpdatedAt = q.LuckyNumberGrouping.UpdatedAt,
+                    Id = q.LuckyNumberGrouping.Id,
+                    Code = q.LuckyNumberGrouping.Code,
+                    Name = q.LuckyNumberGrouping.Name,
+                    OrganizationId = q.LuckyNumberGrouping.OrganizationId,
+                    StatusId = q.LuckyNumberGrouping.StatusId,
+                    StartDate = q.LuckyNumberGrouping.StartDate,
+                    EndDate = q.LuckyNumberGrouping.EndDate,
+                } : null,
                 RewardStatus = filter.Selects.Contains(LuckyNumberSelect.RewardStatus) && q.RewardStatus != null ? new RewardStatus
                 {
                     Id = q.RewardStatus.Id,
@@ -183,9 +206,22 @@ namespace DMS.Repositories
                 Code = x.Code,
                 Name = x.Name,
                 Value = x.Value,
+                LuckyNumberGroupingId = x.LuckyNumberGroupingId,
                 RewardStatusId = x.RewardStatusId,
                 RowId = x.RowId,
                 Used = x.Used,
+                LuckyNumberGrouping = x.LuckyNumberGrouping == null ? null : new LuckyNumberGrouping
+                {
+                    CreatedAt = x.LuckyNumberGrouping.CreatedAt,
+                    UpdatedAt = x.LuckyNumberGrouping.UpdatedAt,
+                    Id = x.LuckyNumberGrouping.Id,
+                    Code = x.LuckyNumberGrouping.Code,
+                    Name = x.LuckyNumberGrouping.Name,
+                    OrganizationId = x.LuckyNumberGrouping.OrganizationId,
+                    StatusId = x.LuckyNumberGrouping.StatusId,
+                    StartDate = x.LuckyNumberGrouping.StartDate,
+                    EndDate = x.LuckyNumberGrouping.EndDate,
+                },
                 RewardStatus = x.RewardStatus == null ? null : new RewardStatus
                 {
                     Id = x.RewardStatus.Id,
@@ -206,6 +242,7 @@ namespace DMS.Repositories
             LuckyNumberDAO.Code = LuckyNumber.Code;
             LuckyNumberDAO.Name = LuckyNumber.Name;
             LuckyNumberDAO.Value = LuckyNumber.Value;
+            LuckyNumberDAO.LuckyNumberGroupingId = LuckyNumber.LuckyNumberGroupingId;
             LuckyNumberDAO.RewardStatusId = LuckyNumber.RewardStatusId;
             LuckyNumberDAO.RowId = LuckyNumber.RowId;
             LuckyNumberDAO.CreatedAt = StaticParams.DateTimeNow;
@@ -227,6 +264,7 @@ namespace DMS.Repositories
             LuckyNumberDAO.Code = LuckyNumber.Code;
             LuckyNumberDAO.Name = LuckyNumber.Name;
             LuckyNumberDAO.Value = LuckyNumber.Value;
+            LuckyNumberDAO.LuckyNumberGroupingId = LuckyNumber.LuckyNumberGroupingId;
             LuckyNumberDAO.RewardStatusId = LuckyNumber.RewardStatusId;
             LuckyNumberDAO.RowId = LuckyNumber.RowId;
             LuckyNumberDAO.Used = LuckyNumber.Used;
@@ -252,6 +290,7 @@ namespace DMS.Repositories
                 LuckyNumberDAO.Code = LuckyNumber.Code;
                 LuckyNumberDAO.Name = LuckyNumber.Name;
                 LuckyNumberDAO.Value = LuckyNumber.Value;
+                LuckyNumberDAO.LuckyNumberGroupingId = LuckyNumber.LuckyNumberGroupingId;
                 LuckyNumberDAO.RewardStatusId = LuckyNumber.RewardStatusId;
                 LuckyNumberDAO.RowId = LuckyNumber.RowId;
                 LuckyNumberDAO.Used = LuckyNumber.Used;

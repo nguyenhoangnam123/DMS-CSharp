@@ -13,5 +13,6 @@ namespace DMS.Rpc.lucky_number
         public string Name { get; set; }
         public string Value { get; set; }
         public string RewardStatus { get; set; }
+        public string Date { get; set; }
     }
 }

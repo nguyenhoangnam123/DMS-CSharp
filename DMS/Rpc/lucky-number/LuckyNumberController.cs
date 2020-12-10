@@ -25,6 +25,7 @@ using Thinktecture;
 using DMS.Services.MRewardHistory;
 using DMS.Services.MRewardHistoryContent;
 using OfficeOpenXml.ConditionalFormatting;
+using DMS.Services.MLuckyNumberGrouping;
 
 namespace DMS.Rpc.lucky_number
 {
@@ -34,6 +35,7 @@ namespace DMS.Rpc.lucky_number
         private IOrganizationService OrganizationService;
         private IRewardStatusService RewardStatusService;
         private ILuckyNumberService LuckyNumberService;
+        private ILuckyNumberGroupingService LuckyNumberGroupingService;
         private IRewardHistoryService RewardHistoryService;
         private IRewardHistoryContentService RewardHistoryContentService;
         private IStoreService StoreService;
@@ -44,6 +46,7 @@ namespace DMS.Rpc.lucky_number
             IOrganizationService OrganizationService,
             IRewardStatusService RewardStatusService,
             ILuckyNumberService LuckyNumberService,
+            ILuckyNumberGroupingService LuckyNumberGroupingService,
             IRewardHistoryService RewardHistoryService,
             IRewardHistoryContentService RewardHistoryContentService,
             IStoreService StoreService,
@@ -55,6 +58,7 @@ namespace DMS.Rpc.lucky_number
             this.OrganizationService = OrganizationService;
             this.RewardStatusService = RewardStatusService;
             this.LuckyNumberService = LuckyNumberService;
+            this.LuckyNumberGroupingService = LuckyNumberGroupingService;
             this.RewardHistoryService = RewardHistoryService;
             this.RewardHistoryContentService = RewardHistoryContentService;
             this.StoreService = StoreService;
@@ -189,15 +193,37 @@ namespace DMS.Rpc.lucky_number
                 return BadRequest(errorContent.ToString());
             }
 
-            List<LuckyNumber> OldDatas = await LuckyNumberService.List(new LuckyNumberFilter
+            var OrganizationIds = await FilterOrganization(OrganizationService, CurrentContext);
+            OrganizationFilter OrganizationFilter = new OrganizationFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = OrganizationSelect.Id | OrganizationSelect.Code | OrganizationSelect.Name,
+                Id = new IdFilter { In = OrganizationIds }
+            };
+            var Organizations = await OrganizationService.List(OrganizationFilter);
+
+            List<LuckyNumberGrouping> LuckyNumberGroupings = await LuckyNumberGroupingService.List(new LuckyNumberGroupingFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = LuckyNumberGroupingSelect.ALL,
+                StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id }
+            });
+
+            List<LuckyNumber> LuckyNumbers = await LuckyNumberService.List(new LuckyNumberFilter
             {
                 Skip = 0,
                 Take = int.MaxValue,
                 Selects = LuckyNumberSelect.ALL,
             });
-            HashSet<string> Codes = OldDatas.Select(x => x.Code).ToHashSet();
+            foreach (var LuckyNumberGrouping in LuckyNumberGroupings)
+            {
+                LuckyNumberGrouping.LuckyNumbers = LuckyNumbers.Where(x => x.LuckyNumberGroupingId == LuckyNumberGrouping.Id).ToList();
+            }
+            HashSet<string> Codes = LuckyNumbers.Select(x => x.Code).ToHashSet();
+            HashSet<string> OrganizationCodes = Organizations.Select(x => x.Code).ToHashSet();
 
-            List<LuckyNumber> LuckyNumbers = new List<LuckyNumber>();
             using (ExcelPackage excelPackage = new ExcelPackage(file.OpenReadStream()))
             {
                 ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets["LuckyNumber"];
@@ -213,6 +239,7 @@ namespace DMS.Rpc.lucky_number
                 int CodeColumn = 1 + StartColumn;
                 int NameColumn = 2 + StartColumn;
                 int ValueColumn = 3 + StartColumn;
+                int OrganizationColumn = 4 + StartColumn;
 
                 for (int i = StartRow; i <= worksheet.Dimension.End.Row; i++)
                 {
@@ -230,6 +257,33 @@ namespace DMS.Rpc.lucky_number
                         continue;
                     }
 
+                    string OrganizationCodeValue = worksheet.Cells[i, OrganizationColumn].Value?.ToString().Trim();
+                    if (string.IsNullOrWhiteSpace(OrganizationCodeValue) && i != worksheet.Dimension.End.Row)
+                    {
+                        errorContent.AppendLine($"Lỗi dòng thứ {i}: Chưa nhập mã đơn vị");
+                        continue;
+                    }
+                    else if (!OrganizationCodes.Contains(OrganizationCodeValue))
+                    {
+                        errorContent.AppendLine($"Lỗi dòng thứ {i}: Mã đơn vị không tồn tại");
+                        continue;
+                    }
+
+                    Organization Organization = Organizations.Where(x => x.Code == OrganizationCodeValue).FirstOrDefault();
+                    LuckyNumberGrouping LuckyNumberGrouping = LuckyNumberGroupings.Where(x => x.OrganizationId == Organization.Id).FirstOrDefault();
+                    if(LuckyNumberGrouping == null)
+                    {
+                        LuckyNumberGrouping = new LuckyNumberGrouping()
+                        {
+                            OrganizationId = Organization.Id,
+                            CreatedAt = StaticParams.DateTimeNow,
+                            StatusId = StatusEnum.ACTIVE.Id,
+                            StartDate = StaticParams.DateTimeNow,
+                            Code = Guid.NewGuid().ToString(),
+                            Name = "LuckyNumbers"
+                        };
+                        LuckyNumberGroupings.Add(LuckyNumberGrouping);
+                    }
                     Codes.Add(CodeValue);
                     string NameValue = worksheet.Cells[i, NameColumn].Value?.ToString();
                     string ValueValue = worksheet.Cells[i, ValueColumn].Value?.ToString();
@@ -249,16 +303,16 @@ namespace DMS.Rpc.lucky_number
                         continue;
                     }
 
-                    LuckyNumbers.Add(LuckyNumber);
+                    LuckyNumberGrouping.LuckyNumbers.Add(LuckyNumber);
                 }
             }
 
             if (errorContent.Length > 0)
                 return BadRequest(errorContent.ToString());
 
-            LuckyNumbers = await LuckyNumberService.Import(LuckyNumbers);
-            List<LuckyNumber_LuckyNumberDTO> LuckyNumber_LuckyNumberDTOs = LuckyNumbers
-                .Select(c => new LuckyNumber_LuckyNumberDTO(c)).ToList();
+            LuckyNumberGroupings = await LuckyNumberGroupingService.Import(LuckyNumberGroupings);
+            List<LuckyNumber_LuckyNumberDTO> LuckyNumber_LuckyNumberDTOs = LuckyNumberGroupings.SelectMany(x => x.LuckyNumbers
+                .Select(c => new LuckyNumber_LuckyNumberDTO(c))).ToList();
             return Ok(LuckyNumber_LuckyNumberDTOs);
         }
 
@@ -278,7 +332,8 @@ namespace DMS.Rpc.lucky_number
                 Code = x.Code,
                 Name = x.Name,
                 Value = x.Value,
-                RewardStatus = x.RewardStatus?.Name
+                RewardStatus = x.RewardStatus?.Name,
+                Date = x.CreatedAt.ToString("dd-MM-yyyy")
             }).ToList();
             string path = "Templates/Lucky_Number_Report.xlsx";
             byte[] arr = System.IO.File.ReadAllBytes(path);
@@ -375,11 +430,22 @@ namespace DMS.Rpc.lucky_number
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
 
+            var OrganizationIds = await FilterOrganization(OrganizationService, CurrentContext);
+            OrganizationFilter OrganizationFilter = new OrganizationFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = OrganizationSelect.Id | OrganizationSelect.Code | OrganizationSelect.Name,
+                Id = new IdFilter { In = OrganizationIds }
+            };
+            var Organizations = await OrganizationService.List(OrganizationFilter);
+
             string path = "Templates/Lucky_Number.xlsx";
             byte[] arr = System.IO.File.ReadAllBytes(path);
             MemoryStream input = new MemoryStream(arr);
             MemoryStream output = new MemoryStream();
             dynamic Data = new ExpandoObject();
+            Data.Organizations = Organizations;
             using (var document = StaticParams.DocumentFactory.Open(input, output, "xlsx"))
             {
                 document.Process(Data);

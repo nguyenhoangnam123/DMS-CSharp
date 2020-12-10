@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using DMS.Common;
 using DMS.Entities;
+using DMS.Enums;
 using DMS.Repositories;
 
 namespace DMS.Services.MRewardHistory
@@ -23,7 +24,8 @@ namespace DMS.Services.MRewardHistory
         {
             IdNotExisted,
             RevenueEmpty,
-            RevenueNotEnough
+            RevenueNotEnough,
+            LuckyNumberEmpty
         }
 
         private IUOW UOW;
@@ -60,6 +62,29 @@ namespace DMS.Services.MRewardHistory
             else if (RewardHistory.Revenue < 20000000)
             {
                 RewardHistory.AddError(nameof(RewardHistoryValidator), nameof(RewardHistory.Revenue), ErrorCode.RevenueNotEnough);
+            }
+            else
+            {
+                var CurrentUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
+                var Organizations = await UOW.OrganizationRepository.List(new OrganizationFilter
+                {
+                    Skip = 0,
+                    Take = int.MaxValue,
+                    Selects = OrganizationSelect.Id | OrganizationSelect.Path
+                });
+                var OrganizationIds = Organizations.Where(x => CurrentUser.Organization.Path.StartsWith(x.Path)).Select(x => x.Id).ToList();
+
+                LuckyNumberGroupingFilter LuckyNumberGroupingFilter = new LuckyNumberGroupingFilter
+                {
+                    OrganizationId = new IdFilter { In = OrganizationIds },
+                    StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id }
+                };
+
+                var count = await UOW.LuckyNumberGroupingRepository.Count(LuckyNumberGroupingFilter);
+                if(count == 0)
+                {
+                    RewardHistory.AddError(nameof(RewardHistoryValidator), nameof(RewardHistory.Id), ErrorCode.LuckyNumberEmpty);
+                }
             }
             return RewardHistory.IsValidated;
         }
