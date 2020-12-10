@@ -18,6 +18,7 @@ namespace DMS.Rpc.lucky_number
         public LuckyNumber_AppUserDTO AppUser { get; set; }
         public LuckyNumber_StoreDTO Store { get; set; }
         public List<LuckyNumber_RewardHistoryContentDTO> RewardHistoryContents { get; set; }
+        public string Date => CreatedAt.ToString("dd-MM-yyyy");
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public LuckyNumber_RewardHistoryDTO() {}

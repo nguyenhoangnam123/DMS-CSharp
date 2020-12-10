@@ -58,6 +58,7 @@ namespace DMS.Models
         public virtual DbSet<KpiPeriodDAO> KpiPeriod { get; set; }
         public virtual DbSet<KpiYearDAO> KpiYear { get; set; }
         public virtual DbSet<LuckyNumberDAO> LuckyNumber { get; set; }
+        public virtual DbSet<LuckyNumberGroupingDAO> LuckyNumberGrouping { get; set; }
         public virtual DbSet<MenuDAO> Menu { get; set; }
         public virtual DbSet<NotificationDAO> Notification { get; set; }
         public virtual DbSet<NotificationStatusDAO> NotificationStatus { get; set; }
@@ -1762,11 +1763,50 @@ namespace DMS.Models
                     .IsRequired()
                     .HasMaxLength(500);
 
+                entity.HasOne(d => d.LuckyNumberGrouping)
+                    .WithMany(p => p.LuckyNumbers)
+                    .HasForeignKey(d => d.LuckyNumberGroupingId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_LuckyNumber_LuckyNumberGrouping");
+
                 entity.HasOne(d => d.RewardStatus)
                     .WithMany(p => p.LuckyNumbers)
                     .HasForeignKey(d => d.RewardStatusId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_LuckyNumber_RewardStatus");
+            });
+
+            modelBuilder.Entity<LuckyNumberGroupingDAO>(entity =>
+            {
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.EndDate).HasColumnType("datetime");
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.StartDate).HasColumnType("datetime");
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.HasOne(d => d.Organization)
+                    .WithMany(p => p.LuckyNumberGroupings)
+                    .HasForeignKey(d => d.OrganizationId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_LuckyNumberGrouping_Organization");
+
+                entity.HasOne(d => d.Status)
+                    .WithMany(p => p.LuckyNumberGroupings)
+                    .HasForeignKey(d => d.StatusId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_LuckyNumberGrouping_Status");
             });
 
             modelBuilder.Entity<MenuDAO>(entity =>

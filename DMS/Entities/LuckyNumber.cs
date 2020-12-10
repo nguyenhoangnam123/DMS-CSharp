@@ -12,9 +12,11 @@ namespace DMS.Entities
         public string Code { get; set; }
         public string Name { get; set; }
         public string Value { get; set; }
+        public long LuckyNumberGroupingId { get; set; }
         public long RewardStatusId { get; set; }
         public Guid RowId { get; set; }
         public bool Used { get; set; }
+        public LuckyNumberGrouping LuckyNumberGrouping { get; set; }
         public RewardStatus RewardStatus { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
@@ -35,6 +37,7 @@ namespace DMS.Entities
         public StringFilter Code { get; set; }
         public StringFilter Name { get; set; }
         public StringFilter Value { get; set; }
+        public IdFilter LuckyNumberGroupingId { get; set; }
         public IdFilter RewardStatusId { get; set; }
         public GuidFilter RowId { get; set; }
         public DateFilter CreatedAt { get; set; }
@@ -52,6 +55,7 @@ namespace DMS.Entities
         Name = 2,
         RewardStatus = 3,
         Value = 4,
+        LuckyNumberGrouping = 5,
         Row = 7,
         CreatedAt = 50,
         UpdatedAt = 51,
@@ -66,6 +70,7 @@ namespace DMS.Entities
         Name = E._2,
         RewardStatus = E._3,
         Value = E._4,
+        LuckyNumberGrouping = E._5,
         Row = E._7,
     }
 }
