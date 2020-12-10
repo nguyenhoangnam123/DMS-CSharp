@@ -792,14 +792,6 @@ namespace DMS.Rpc
                 Name = item.Name,
             }).ToList();
             DataContext.KpiYear.BulkSynchronize(KpiYearDAOs);
-
-            List<KpiCriteriaTotalDAO> KpiCriteriaTotalDAOs = KpiCriteriaTotalEnum.KpiCriteriaTotalEnumList.Select(item => new KpiCriteriaTotalDAO
-            {
-                Id = item.Id,
-                Code = item.Code,
-                Name = item.Name,
-            }).ToList();
-            DataContext.KpiCriteriaTotal.BulkSynchronize(KpiCriteriaTotalDAOs);
         }
 
         private void InitUsedVariationEnum()

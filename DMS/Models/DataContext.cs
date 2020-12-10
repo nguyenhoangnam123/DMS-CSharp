@@ -47,14 +47,12 @@ namespace DMS.Models
         public virtual DbSet<ItemImageMappingDAO> ItemImageMapping { get; set; }
         public virtual DbSet<KpiCriteriaGeneralDAO> KpiCriteriaGeneral { get; set; }
         public virtual DbSet<KpiCriteriaItemDAO> KpiCriteriaItem { get; set; }
-        public virtual DbSet<KpiCriteriaTotalDAO> KpiCriteriaTotal { get; set; }
         public virtual DbSet<KpiGeneralDAO> KpiGeneral { get; set; }
         public virtual DbSet<KpiGeneralContentDAO> KpiGeneralContent { get; set; }
         public virtual DbSet<KpiGeneralContentKpiPeriodMappingDAO> KpiGeneralContentKpiPeriodMapping { get; set; }
         public virtual DbSet<KpiItemDAO> KpiItem { get; set; }
         public virtual DbSet<KpiItemContentDAO> KpiItemContent { get; set; }
         public virtual DbSet<KpiItemContentKpiCriteriaItemMappingDAO> KpiItemContentKpiCriteriaItemMapping { get; set; }
-        public virtual DbSet<KpiItemKpiCriteriaTotalMappingDAO> KpiItemKpiCriteriaTotalMapping { get; set; }
         public virtual DbSet<KpiPeriodDAO> KpiPeriod { get; set; }
         public virtual DbSet<KpiYearDAO> KpiYear { get; set; }
         public virtual DbSet<LuckyNumberDAO> LuckyNumber { get; set; }
@@ -1543,17 +1541,6 @@ namespace DMS.Models
                 entity.Property(e => e.Name).HasMaxLength(500);
             });
 
-            modelBuilder.Entity<KpiCriteriaTotalDAO>(entity =>
-            {
-                entity.ToTable("KpiCriteriaTotal", "ENUM");
-
-                entity.Property(e => e.Id).ValueGeneratedNever();
-
-                entity.Property(e => e.Code).HasMaxLength(500);
-
-                entity.Property(e => e.Name).HasMaxLength(500);
-            });
-
             modelBuilder.Entity<KpiGeneralDAO>(entity =>
             {
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
@@ -1709,24 +1696,6 @@ namespace DMS.Models
                     .HasForeignKey(d => d.KpiItemContentId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_KpiItemContentKpiCriteriaItemMapping_KpiItemContent");
-            });
-
-            modelBuilder.Entity<KpiItemKpiCriteriaTotalMappingDAO>(entity =>
-            {
-                entity.HasKey(e => new { e.KpiItemId, e.KpiCriteriaTotalId })
-                    .HasName("PK_ItemSpecificKpiTotalItemSpecificCriteriaMapping");
-
-                entity.HasOne(d => d.KpiCriteriaTotal)
-                    .WithMany(p => p.KpiItemKpiCriteriaTotalMappings)
-                    .HasForeignKey(d => d.KpiCriteriaTotalId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_KpiItemKpiCriteriaTotalMapping_KpiCriteriaTotal");
-
-                entity.HasOne(d => d.KpiItem)
-                    .WithMany(p => p.KpiItemKpiCriteriaTotalMappings)
-                    .HasForeignKey(d => d.KpiItemId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_KpiItemKpiCriteriaTotalMapping_KpiItem");
             });
 
             modelBuilder.Entity<KpiPeriodDAO>(entity =>

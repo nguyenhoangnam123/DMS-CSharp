@@ -200,6 +200,18 @@ namespace DMS.Rpc.monitor.monitor_store_images
             }
             OrganizationIds = OrganizationDAOs.Select(o => o.Id).ToList();
 
+            AppUserFilter AppUserFilter = new AppUserFilter
+            {
+                OrganizationId = new IdFilter { In = OrganizationIds },
+                Id = new IdFilter { },
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = AppUserSelect.Id | AppUserSelect.DisplayName | AppUserSelect.Organization
+            };
+            AppUserFilter.Id.In = await FilterAppUser(AppUserService, OrganizationService, CurrentContext);
+            var AppUsers = await AppUserService.List(AppUserFilter);
+            var AppUserIds = AppUsers.Select(x => x.Id).ToList();
+
             List<long> StoreIds = await FilterStore(StoreService, OrganizationService, CurrentContext);
             if (StoreId.HasValue)
             {
@@ -213,6 +225,7 @@ namespace DMS.Rpc.monitor.monitor_store_images
                                      join tt in tempTableQuery.Query on sc.StoreId equals tt.Column1
                                      where sc.CheckOutAt.HasValue && Start <= sc.CheckOutAt.Value && sc.CheckOutAt.Value <= End &&
                                      OrganizationIds.Contains(sc.OrganizationId) &&
+                                     AppUserIds.Contains(sc.SaleEmployeeId) &&
                                      (SaleEmployeeId.HasValue == false || sc.SaleEmployeeId == SaleEmployeeId.Value) &&
                                      (StoreId.HasValue == false || sc.StoreId == StoreId.Value) &&
                                      sc.Store.DeletedAt == null
@@ -227,10 +240,11 @@ namespace DMS.Rpc.monitor.monitor_store_images
                                   join tt in tempTableQuery.Query on si.StoreId equals tt.Column1
                                   where Start <= si.ShootingAt && si.ShootingAt <= End &&
                                  OrganizationIds.Contains(si.OrganizationId) &&
-                                 (si.SaleEmployeeId.HasValue && (SaleEmployeeId.HasValue == false || si.SaleEmployeeId == SaleEmployeeId.Value)) &&
+                                 (si.SaleEmployeeId.HasValue && AppUserIds.Contains(si.SaleEmployeeId.Value) && (SaleEmployeeId.HasValue == false || si.SaleEmployeeId == SaleEmployeeId.Value)) &&
                                  (StoreId.HasValue == false || si.StoreId == StoreId.Value)
                                   select si;
-            var Ids2 = await StoreImageQuery.Select(x => new {
+            var Ids2 = await StoreImageQuery.Select(x => new
+            {
                 SalesEmployeeId = x.SaleEmployeeId.Value,
                 OrganizationId = x.OrganizationId,
             }).ToListAsync();
@@ -267,6 +281,19 @@ namespace DMS.Rpc.monitor.monitor_store_images
                 OrganizationDAOs = OrganizationDAOs.Where(o => o.Path.StartsWith(OrganizationDAO.Path)).ToList();
             }
             OrganizationIds = OrganizationDAOs.Select(o => o.Id).ToList();
+
+            AppUserFilter AppUserFilter = new AppUserFilter
+            {
+                OrganizationId = new IdFilter { In = OrganizationIds },
+                Id = new IdFilter { },
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = AppUserSelect.Id | AppUserSelect.DisplayName | AppUserSelect.Organization
+            };
+            AppUserFilter.Id.In = await FilterAppUser(AppUserService, OrganizationService, CurrentContext);
+            var AppUsers = await AppUserService.List(AppUserFilter);
+            var AppUserIds = AppUsers.Select(x => x.Id).ToList();
+
             List<long> StoreIds = await FilterStore(StoreService, OrganizationService, CurrentContext);
             if (StoreId.HasValue)
             {
@@ -280,6 +307,7 @@ namespace DMS.Rpc.monitor.monitor_store_images
                                      join tt in tempTableQuery.Query on sc.StoreId equals tt.Column1
                                      where sc.CheckOutAt.HasValue && Start <= sc.CheckOutAt.Value && sc.CheckOutAt.Value <= End &&
                                      OrganizationIds.Contains(sc.OrganizationId) &&
+                                     AppUserIds.Contains(sc.SaleEmployeeId) &&
                                      (SaleEmployeeId.HasValue == false || sc.SaleEmployeeId == SaleEmployeeId.Value) &&
                                      (StoreId.HasValue == false || sc.StoreId == StoreId.Value) &&
                                      sc.Store.DeletedAt == null
@@ -288,16 +316,17 @@ namespace DMS.Rpc.monitor.monitor_store_images
                                          SalesEmployeeId = sc.SaleEmployeeId,
                                          OrganizationId = sc.OrganizationId,
                                      };
-            
+
             var Ids = await StoreCheckingQuery.ToListAsync();
             var StoreImageQuery = from si in DataContext.StoreImage
                                   join tt in tempTableQuery.Query on si.StoreId equals tt.Column1
                                   where Start <= si.ShootingAt && si.ShootingAt <= End &&
                                  OrganizationIds.Contains(si.OrganizationId) &&
-                                 (si.SaleEmployeeId.HasValue &&(SaleEmployeeId.HasValue == false || si.SaleEmployeeId == SaleEmployeeId.Value)) &&
+                                 (si.SaleEmployeeId.HasValue && AppUserIds.Contains(si.SaleEmployeeId.Value) && (SaleEmployeeId.HasValue == false || si.SaleEmployeeId == SaleEmployeeId.Value)) &&
                                  (StoreId.HasValue == false || si.StoreId == StoreId.Value)
                                   select si;
-            var Ids2 = await StoreImageQuery.Select(x => new {
+            var Ids2 = await StoreImageQuery.Select(x => new
+            {
                 SalesEmployeeId = x.SaleEmployeeId.Value,
                 OrganizationId = x.OrganizationId,
             }).ToListAsync();
@@ -308,7 +337,7 @@ namespace DMS.Rpc.monitor.monitor_store_images
                 .Skip(MonitorStoreImage_MonitorStoreImageFilterDTO.Skip)
                 .Take(MonitorStoreImage_MonitorStoreImageFilterDTO.Take)
                 .ToList();
-            var AppUserIds = Ids.Select(x => x.SalesEmployeeId).Distinct().ToList();
+            AppUserIds = Ids.Select(x => x.SalesEmployeeId).Distinct().ToList();
             List<AppUserDAO> SalesEmployees = await DataContext.AppUser
                 .Where(x => AppUserIds.Contains(x.Id))
                 .OrderBy(q => q.OrganizationId).ThenBy(q => q.DisplayName)
@@ -321,27 +350,27 @@ namespace DMS.Rpc.monitor.monitor_store_images
                 .ToListAsync();
 
             var CheckingQuery = from sc in DataContext.StoreChecking
-                                     join s in DataContext.Store on sc.StoreId equals s.Id
-                                     join tt in tempTableQuery.Query on s.Id equals tt.Column1
-                                     where sc.CheckOutAt.HasValue && Start <= sc.CheckOutAt.Value && sc.CheckOutAt.Value <= End &&
-                                     AppUserIds.Contains(sc.SaleEmployeeId) &&
-                                     (StoreId.HasValue == false || sc.StoreId == StoreId.Value) &&
-                                     s.DeletedAt == null
-                                     select new StoreCheckingDAO
-                                     {
-                                         Id = sc.Id,
-                                         StoreId = sc.StoreId,
-                                         CheckOutAt = sc.CheckOutAt,
-                                         ImageCounter = sc.ImageCounter,
-                                         SaleEmployeeId = sc.SaleEmployeeId,
-                                         OrganizationId = sc.OrganizationId,
-                                         Store = new StoreDAO
-                                         {
-                                             Id = s.Id,
-                                             Name = s.Name,
-                                             OrganizationId = s.OrganizationId
-                                         }
-                                     };
+                                join s in DataContext.Store on sc.StoreId equals s.Id
+                                join tt in tempTableQuery.Query on s.Id equals tt.Column1
+                                where sc.CheckOutAt.HasValue && Start <= sc.CheckOutAt.Value && sc.CheckOutAt.Value <= End &&
+                                AppUserIds.Contains(sc.SaleEmployeeId) &&
+                                (StoreId.HasValue == false || sc.StoreId == StoreId.Value) &&
+                                s.DeletedAt == null
+                                select new StoreCheckingDAO
+                                {
+                                    Id = sc.Id,
+                                    StoreId = sc.StoreId,
+                                    CheckOutAt = sc.CheckOutAt,
+                                    ImageCounter = sc.ImageCounter,
+                                    SaleEmployeeId = sc.SaleEmployeeId,
+                                    OrganizationId = sc.OrganizationId,
+                                    Store = new StoreDAO
+                                    {
+                                        Id = s.Id,
+                                        Name = s.Name,
+                                        OrganizationId = s.OrganizationId
+                                    }
+                                };
 
             List<StoreCheckingDAO> StoreCheckingDAOs = await CheckingQuery.ToListAsync();
             var StoreImageDAOs = await StoreImageQuery.ToListAsync();
@@ -379,7 +408,7 @@ namespace DMS.Rpc.monitor.monitor_store_images
                 Parallel.ForEach(MonitorStoreImage_MonitorStoreImageDTO.SaleEmployees, SaleEmployee =>
                 {
                     var appUser = SalesEmployees.Where(x => x.Id == SaleEmployee.SaleEmployeeId).FirstOrDefault();
-                    if(appUser != null)
+                    if (appUser != null)
                     {
                         SaleEmployee.Username = appUser.Username;
                         SaleEmployee.DisplayName = appUser.DisplayName;
@@ -514,7 +543,7 @@ namespace DMS.Rpc.monitor.monitor_store_images
                 .FirstOrDefaultAsync();
                 if (StoreCheckingImageMappingDAO != null)
                 {
-                    await DataContext.StoreCheckingImageMapping.Where(x => x.ImageId == MonitorStoreImage_StoreCheckingImageMappingDTO.ImageId).UpdateFromQueryAsync(x => new StoreCheckingImageMappingDAO 
+                    await DataContext.StoreCheckingImageMapping.Where(x => x.ImageId == MonitorStoreImage_StoreCheckingImageMappingDTO.ImageId).UpdateFromQueryAsync(x => new StoreCheckingImageMappingDAO
                     {
                         AlbumId = MonitorStoreImage_StoreCheckingImageMappingDTO.AlbumId
                     });

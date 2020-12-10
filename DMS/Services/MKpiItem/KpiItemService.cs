@@ -134,6 +134,7 @@ namespace DMS.Services.MKpiItem
                         var newObj = Utils.Clone(KpiItem);
                         newObj.EmployeeId = EmployeeId;
                         newObj.CreatorId = CurrentContext.UserId;
+                        newObj.RowId = Guid.NewGuid();
                         KpiItems.Add(newObj);
                     }
                 }

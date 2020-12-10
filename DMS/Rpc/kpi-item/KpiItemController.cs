@@ -3,7 +3,6 @@ using DMS.Entities;
 using DMS.Enums;
 using DMS.Services.MAppUser;
 using DMS.Services.MKpiCriteriaItem;
-using DMS.Services.MKpiCriteriaTotal;
 using DMS.Services.MKpiItem;
 using DMS.Services.MKpiItemContent;
 using DMS.Services.MKpiPeriod;
@@ -36,7 +35,6 @@ namespace DMS.Rpc.kpi_item
         private IKpiYearService KpiYearService;
         private IOrganizationService OrganizationService;
         private IKpiCriteriaItemService KpiCriteriaItemService;
-        private IKpiCriteriaTotalService KpiCriteriaTotalService;
         private IStatusService StatusService;
         private IItemService ItemService;
         private IKpiItemContentService KpiItemContentService;
@@ -51,7 +49,6 @@ namespace DMS.Rpc.kpi_item
             IKpiYearService KpiYearService,
             IOrganizationService OrganizationService,
             IKpiCriteriaItemService KpiCriteriaItemService,
-            IKpiCriteriaTotalService KpiCriteriaTotalService,
             IStatusService StatusService,
             IItemService ItemService,
             IKpiItemContentService KpiItemContentService,
@@ -67,7 +64,6 @@ namespace DMS.Rpc.kpi_item
             this.KpiYearService = KpiYearService;
             this.OrganizationService = OrganizationService;
             this.KpiCriteriaItemService = KpiCriteriaItemService;
-            this.KpiCriteriaTotalService = KpiCriteriaTotalService;
             this.StatusService = StatusService;
             this.ItemService = ItemService;
             this.KpiItemContentService = KpiItemContentService;
@@ -122,12 +118,6 @@ namespace DMS.Rpc.kpi_item
         {
             long KpiYearId = StaticParams.DateTimeNow.Year;
             long KpiPeriodId = StaticParams.DateTimeNow.Month + 100;
-            List<KpiCriteriaTotal> KpiCriteriaTotals = await KpiCriteriaTotalService.List(new KpiCriteriaTotalFilter
-            {
-                Skip = 0,
-                Take = int.MaxValue,
-                Selects = KpiCriteriaTotalSelect.ALL,
-            });
             List<KpiCriteriaItem> KpiCriteriaItems = await KpiCriteriaItemService.List(new KpiCriteriaItemFilter
             {
                 Skip = 0,
@@ -154,8 +144,6 @@ namespace DMS.Rpc.kpi_item
                     Name = x.Name
                 })
                 .FirstOrDefault();
-            KpiItem_KpiItemDTO.KpiCriteriaTotals = KpiCriteriaTotals.Select(x => new KpiItem_KpiCriteriaTotalDTO(x)).ToList();
-            KpiItem_KpiItemDTO.KpiItemKpiCriteriaTotalMappings = KpiCriteriaTotals.ToDictionary(x => x.Id, y => 0L);
             KpiItem_KpiItemDTO.KpiCriteriaItems = KpiCriteriaItems.Select(x => new KpiItem_KpiCriteriaItemDTO(x)).ToList();
             KpiItem_KpiItemDTO.Status = new KpiItem_StatusDTO
             {
@@ -874,11 +862,6 @@ namespace DMS.Rpc.kpi_item
                         Value = p.Value,
                     }).ToList(),
                 }).ToList();
-            KpiItem.KpiItemKpiCriteriaTotalMappings = KpiItem_KpiItemDTO.KpiItemKpiCriteriaTotalMappings?.Select(p => new KpiItemKpiCriteriaTotalMapping
-            {
-                KpiCriteriaTotalId = p.Key,
-                Value = p.Value
-            }).ToList();
             KpiItem.BaseLanguage = CurrentContext.Language;
             return KpiItem;
         }
@@ -1060,26 +1043,6 @@ namespace DMS.Rpc.kpi_item
             List<KpiItem_KpiCriteriaItemDTO> KpiItem_KpiCriteriaItemDTOs = KpiCriteriaItemes
                 .Select(x => new KpiItem_KpiCriteriaItemDTO(x)).ToList();
             return KpiItem_KpiCriteriaItemDTOs;
-        }
-
-        [Route(KpiItemRoute.FilterListKpiCriteriaTotal), HttpPost]
-        public async Task<List<KpiItem_KpiCriteriaTotalDTO>> FilterListKpiCriteriaTotal()
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
-
-            KpiCriteriaTotalFilter KpiCriteriaTotalFilter = new KpiCriteriaTotalFilter();
-            KpiCriteriaTotalFilter.Skip = 0;
-            KpiCriteriaTotalFilter.Take = int.MaxValue;
-            KpiCriteriaTotalFilter.Take = 20;
-            KpiCriteriaTotalFilter.OrderBy = KpiCriteriaTotalOrder.Id;
-            KpiCriteriaTotalFilter.OrderType = OrderType.ASC;
-            KpiCriteriaTotalFilter.Selects = KpiCriteriaTotalSelect.ALL;
-
-            List<KpiCriteriaTotal> KpiCriteriaTotales = await KpiCriteriaTotalService.List(KpiCriteriaTotalFilter);
-            List<KpiItem_KpiCriteriaTotalDTO> KpiItem_KpiCriteriaTotalDTOs = KpiCriteriaTotales
-                .Select(x => new KpiItem_KpiCriteriaTotalDTO(x)).ToList();
-            return KpiItem_KpiCriteriaTotalDTOs;
         }
 
         [Route(KpiItemRoute.FilterListItem), HttpPost]
@@ -1297,25 +1260,6 @@ namespace DMS.Rpc.kpi_item
             return KpiItem_KpiCriteriaItemDTOs;
         }
 
-        [Route(KpiItemRoute.SingleListKpiCriteriaTotal), HttpPost]
-        public async Task<List<KpiItem_KpiCriteriaTotalDTO>> SingleListKpiCriteriaTotal()
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
-
-            KpiCriteriaTotalFilter KpiCriteriaTotalFilter = new KpiCriteriaTotalFilter();
-            KpiCriteriaTotalFilter.Skip = 0;
-            KpiCriteriaTotalFilter.Take = int.MaxValue;
-            KpiCriteriaTotalFilter.Take = 20;
-            KpiCriteriaTotalFilter.OrderBy = KpiCriteriaTotalOrder.Id;
-            KpiCriteriaTotalFilter.OrderType = OrderType.ASC;
-            KpiCriteriaTotalFilter.Selects = KpiCriteriaTotalSelect.ALL;
-
-            List<KpiCriteriaTotal> KpiCriteriaTotales = await KpiCriteriaTotalService.List(KpiCriteriaTotalFilter);
-            List<KpiItem_KpiCriteriaTotalDTO> KpiItem_KpiCriteriaTotalDTOs = KpiCriteriaTotales
-                .Select(x => new KpiItem_KpiCriteriaTotalDTO(x)).ToList();
-            return KpiItem_KpiCriteriaTotalDTOs;
-        }
 
         [Route(KpiItemRoute.SingleListItem), HttpPost]
         public async Task<List<KpiItem_ItemDTO>> SingleListItem([FromBody] KpiItem_ItemFilterDTO KpiItem_ItemFilterDTO)

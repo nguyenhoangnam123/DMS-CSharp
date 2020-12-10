@@ -440,20 +440,6 @@ namespace DMS.Repositories
             {
                 KpiItemContent.KpiItemContentKpiCriteriaItemMappings = KpiItemContentKpiItemCriteriaMappings.Where(x => x.KpiItemContentId == KpiItemContent.Id).ToList();
             }
-            KpiItem.KpiItemKpiCriteriaTotalMappings = await DataContext.KpiItemKpiCriteriaTotalMapping.AsNoTracking()
-                .Where(x => x.KpiItemId == KpiItem.Id)
-                .Select(x => new KpiItemKpiCriteriaTotalMapping
-                {
-                    KpiItemId = x.KpiItemId,
-                    KpiCriteriaTotalId = x.KpiCriteriaTotalId,
-                    Value = x.Value,
-                    KpiCriteriaTotal = new KpiCriteriaTotal
-                    {
-                        Id = x.KpiCriteriaTotal.Id,
-                        Code = x.KpiCriteriaTotal.Code,
-                        Name = x.KpiCriteriaTotal.Name,
-                    },
-                }).ToListAsync();
 
             return KpiItem;
         }
@@ -500,7 +486,6 @@ namespace DMS.Repositories
         {
             await DataContext.KpiItemContentKpiCriteriaItemMapping.Where(x => x.KpiItemContent.KpiItemId == KpiItem.Id).DeleteFromQueryAsync();
             await DataContext.KpiItemContent.Where(x => x.KpiItemId == KpiItem.Id).DeleteFromQueryAsync();
-            await DataContext.KpiItemKpiCriteriaTotalMapping.Where(x => x.KpiItemId == KpiItem.Id).DeleteFromQueryAsync();
             await DataContext.KpiItem.Where(x => x.Id == KpiItem.Id).UpdateFromQueryAsync(x => new KpiItemDAO { DeletedAt = StaticParams.DateTimeNow });
             return true;
         }
@@ -573,21 +558,6 @@ namespace DMS.Repositories
             }
             await DataContext.KpiItemContentKpiCriteriaItemMapping.BulkMergeAsync(KpiItemContentKpiCriteriaItemMappingDAOs);
 
-            var KpiItemKpiCriteriaTotalMappingDAOs = new List<KpiItemKpiCriteriaTotalMappingDAO>();
-            foreach (var KpiItem in KpiItems)
-            {
-                if (KpiItem.KpiItemKpiCriteriaTotalMappings != null && KpiItem.KpiItemKpiCriteriaTotalMappings.Any())
-                {
-                    var listTotal = KpiItem.KpiItemKpiCriteriaTotalMappings.Select(x => new KpiItemKpiCriteriaTotalMappingDAO
-                    {
-                        KpiItemId = KpiItem.Id,
-                        KpiCriteriaTotalId = x.KpiCriteriaTotalId,
-                        Value = x.Value,
-                    }).ToList();
-                    KpiItemKpiCriteriaTotalMappingDAOs.AddRange(listTotal);
-                }
-            }
-            await DataContext.KpiItemKpiCriteriaTotalMapping.BulkMergeAsync(KpiItemKpiCriteriaTotalMappingDAOs);
             return true;
         }
 
@@ -595,7 +565,6 @@ namespace DMS.Repositories
         {
             List<long> Ids = KpiItems.Select(x => x.Id).ToList();
             await DataContext.KpiItemContent.Where(x => Ids.Contains(x.KpiItemId)).DeleteFromQueryAsync();
-            await DataContext.KpiItemKpiCriteriaTotalMapping.Where(x => Ids.Contains(x.KpiItemId)).DeleteFromQueryAsync();
             await DataContext.KpiItem
                 .Where(x => Ids.Contains(x.Id))
                 .UpdateFromQueryAsync(x => new KpiItemDAO { DeletedAt = StaticParams.DateTimeNow });
@@ -645,22 +614,6 @@ namespace DMS.Repositories
                 }
 
                 await DataContext.KpiItemContentKpiCriteriaItemMapping.BulkMergeAsync(KpiItemContentKpiCriteriaItemMappingDAOs);
-            }
-            await DataContext.KpiItemKpiCriteriaTotalMapping
-                .Where(x => x.KpiItemId == KpiItem.Id)
-                .DeleteFromQueryAsync();
-            List<KpiItemKpiCriteriaTotalMappingDAO> KpiItemKpiCriteriaTotalMappingDAOs = new List<KpiItemKpiCriteriaTotalMappingDAO>();
-            if (KpiItem.KpiItemKpiCriteriaTotalMappings != null)
-            {
-                foreach (KpiItemKpiCriteriaTotalMapping KpiItemKpiCriteriaTotalMapping in KpiItem.KpiItemKpiCriteriaTotalMappings)
-                {
-                    KpiItemKpiCriteriaTotalMappingDAO KpiItemKpiCriteriaTotalMappingDAO = new KpiItemKpiCriteriaTotalMappingDAO();
-                    KpiItemKpiCriteriaTotalMappingDAO.KpiItemId = KpiItem.Id;
-                    KpiItemKpiCriteriaTotalMappingDAO.KpiCriteriaTotalId = KpiItemKpiCriteriaTotalMapping.KpiCriteriaTotalId;
-                    KpiItemKpiCriteriaTotalMappingDAO.Value = KpiItemKpiCriteriaTotalMapping.Value;
-                    KpiItemKpiCriteriaTotalMappingDAOs.Add(KpiItemKpiCriteriaTotalMappingDAO);
-                }
-                await DataContext.KpiItemKpiCriteriaTotalMapping.BulkMergeAsync(KpiItemKpiCriteriaTotalMappingDAOs);
             }
         }
     }

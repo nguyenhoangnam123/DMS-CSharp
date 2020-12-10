@@ -8,7 +8,6 @@ namespace DMS.Models
         public KpiItemDAO()
         {
             KpiItemContents = new HashSet<KpiItemContentDAO>();
-            KpiItemKpiCriteriaTotalMappings = new HashSet<KpiItemKpiCriteriaTotalMappingDAO>();
         }
 
         public long Id { get; set; }
@@ -30,6 +29,5 @@ namespace DMS.Models
         public virtual OrganizationDAO Organization { get; set; }
         public virtual StatusDAO Status { get; set; }
         public virtual ICollection<KpiItemContentDAO> KpiItemContents { get; set; }
-        public virtual ICollection<KpiItemKpiCriteriaTotalMappingDAO> KpiItemKpiCriteriaTotalMappings { get; set; }
     }
 }

@@ -26,8 +26,6 @@ namespace DMS.Rpc.kpi_item
         public KpiItem_OrganizationDTO Organization { get; set; }
         public KpiItem_StatusDTO Status { get; set; }
         public List<KpiItem_KpiItemContentDTO> KpiItemContents { get; set; }
-        public Dictionary<long, long> KpiItemKpiCriteriaTotalMappings { get; set; }
-        public List<KpiItem_KpiCriteriaTotalDTO> KpiCriteriaTotals { get; set; }
         public List<KpiItem_KpiCriteriaItemDTO> KpiCriteriaItems { get; set; }
         public List<long> EmployeeIds { get; set; }
         public DateTime CreatedAt { get; set; }
@@ -50,7 +48,6 @@ namespace DMS.Rpc.kpi_item
             this.Organization = KpiItem.Organization == null ? null : new KpiItem_OrganizationDTO(KpiItem.Organization);
             this.Status = KpiItem.Status == null ? null : new KpiItem_StatusDTO(KpiItem.Status);
             this.KpiItemContents = KpiItem.KpiItemContents?.Select(x => new KpiItem_KpiItemContentDTO(x)).ToList();
-            this.KpiItemKpiCriteriaTotalMappings = KpiItem.KpiItemKpiCriteriaTotalMappings?.ToDictionary(x => x.KpiCriteriaTotalId, y => y.Value);
             this.EmployeeIds = KpiItem.EmployeeIds; // to do
             this.CreatedAt = KpiItem.CreatedAt;
             this.UpdatedAt = KpiItem.UpdatedAt;
