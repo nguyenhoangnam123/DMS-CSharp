@@ -136,8 +136,8 @@ namespace DMS.Repositories
                     if (string.IsNullOrWhiteSpace(Token))
                         continue;
                     queryForCode = queryForCode.Where(x => x.Code.ToLower().Contains(Token));
-                    queryForName = queryForName.Where(x => x.Code.ToLower().Contains(Token));
-                    queryForOtherName = queryForOtherName.Where(x => x.Code.ToLower().Contains(Token));
+                    queryForName = queryForName.Where(x => x.Name.ToLower().Contains(Token));
+                    queryForOtherName = queryForOtherName.Where(x => x.OtherName.ToLower().Contains(Token));
                 }
                 query = queryForCode.Union(queryForName).Union(queryForOtherName);
                 query = query.Distinct();
