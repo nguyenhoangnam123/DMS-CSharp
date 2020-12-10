@@ -633,6 +633,12 @@ namespace DMS.Models
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_DirectSalesOrder_Store");
 
+                entity.HasOne(d => d.Creator)
+                    .WithMany(p => p.DirectSalesOrderCreators)
+                    .HasForeignKey(d => d.CreatorId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_DirectSalesOrder_AppUser1");
+
                 entity.HasOne(d => d.EditedPriceStatus)
                     .WithMany(p => p.DirectSalesOrders)
                     .HasForeignKey(d => d.EditedPriceStatusId)
@@ -652,7 +658,7 @@ namespace DMS.Models
                     .HasConstraintName("FK_DirectSalesOrder_RequestState");
 
                 entity.HasOne(d => d.SaleEmployee)
-                    .WithMany(p => p.DirectSalesOrders)
+                    .WithMany(p => p.DirectSalesOrderSaleEmployees)
                     .HasForeignKey(d => d.SaleEmployeeId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_DirectSalesOrder_AppUser");
@@ -1166,6 +1172,12 @@ namespace DMS.Models
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_IndirectSalesOrder_Store");
 
+                entity.HasOne(d => d.Creator)
+                    .WithMany(p => p.IndirectSalesOrderCreators)
+                    .HasForeignKey(d => d.CreatorId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_IndirectSalesOrder_AppUser1");
+
                 entity.HasOne(d => d.EditedPriceStatus)
                     .WithMany(p => p.IndirectSalesOrders)
                     .HasForeignKey(d => d.EditedPriceStatusId)
@@ -1185,7 +1197,7 @@ namespace DMS.Models
                     .HasConstraintName("FK_IndirectSalesOrder_RequestState");
 
                 entity.HasOne(d => d.SaleEmployee)
-                    .WithMany(p => p.IndirectSalesOrders)
+                    .WithMany(p => p.IndirectSalesOrderSaleEmployees)
                     .HasForeignKey(d => d.SaleEmployeeId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_IndirectSalesOrder_AppUser");

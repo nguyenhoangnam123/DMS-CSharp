@@ -87,6 +87,7 @@ namespace DMS.Models
         public DateTime? DeletedAt { get; set; }
 
         public virtual StoreDAO BuyerStore { get; set; }
+        public virtual AppUserDAO Creator { get; set; }
         public virtual EditedPriceStatusDAO EditedPriceStatus { get; set; }
         public virtual OrganizationDAO Organization { get; set; }
         public virtual RequestStateDAO RequestState { get; set; }
