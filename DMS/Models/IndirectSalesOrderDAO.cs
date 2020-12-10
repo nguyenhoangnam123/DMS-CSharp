@@ -81,6 +81,7 @@ namespace DMS.Models
         public Guid RowId { get; set; }
         public long? StoreCheckingId { get; set; }
         public long RequestStateId { get; set; }
+        public long CreatorId { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public DateTime? DeletedAt { get; set; }

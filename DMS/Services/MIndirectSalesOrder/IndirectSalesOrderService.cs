@@ -334,6 +334,7 @@ namespace DMS.Services.MIndirectSalesOrder
                 IndirectSalesOrder.RequestStateId = RequestStateEnum.NEW.Id;
                 IndirectSalesOrder.Code = IndirectSalesOrder.Id.ToString();
                 IndirectSalesOrder.OrganizationId = SaleEmployee.OrganizationId;
+                IndirectSalesOrder.CreatorId = CurrentContext.UserId;
                 await UOW.IndirectSalesOrderRepository.Create(IndirectSalesOrder);
                 IndirectSalesOrder.Code = IndirectSalesOrder.Id.ToString();
                 await UOW.IndirectSalesOrderRepository.Update(IndirectSalesOrder);

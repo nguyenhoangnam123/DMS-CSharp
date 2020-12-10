@@ -442,7 +442,7 @@ namespace DMS.Repositories
             IndirectSalesOrderDAOs = DynamicFilter(IndirectSalesOrderDAOs, filter);
             IndirectSalesOrderDAOs = from q in IndirectSalesOrderDAOs
                                      where q.RequestStateId == RequestStateEnum.NEW.Id &&
-                                     q.SaleEmployeeId == filter.ApproverId.Equal
+                                     q.CreatorId == filter.ApproverId.Equal
                                      select q;
 
             return await IndirectSalesOrderDAOs.Distinct().CountAsync();
@@ -455,7 +455,7 @@ namespace DMS.Repositories
             IndirectSalesOrderDAOs = DynamicFilter(IndirectSalesOrderDAOs, filter);
             IndirectSalesOrderDAOs = from q in IndirectSalesOrderDAOs
                                      where q.RequestStateId == RequestStateEnum.NEW.Id &&
-                                     q.SaleEmployeeId == filter.ApproverId.Equal
+                                     q.CreatorId == filter.ApproverId.Equal
                                      select q;
 
             IndirectSalesOrderDAOs = DynamicOrder(IndirectSalesOrderDAOs, filter);
@@ -518,7 +518,7 @@ namespace DMS.Repositories
                 var query2 = from q in IndirectSalesOrderDAOs
                              join r in DataContext.RequestWorkflowDefinitionMapping on q.RowId equals r.RequestId into result
                              from r in result.DefaultIfEmpty()
-                             where r == null && q.RequestStateId != RequestStateEnum.NEW.Id && q.SaleEmployeeId == filter.ApproverId.Equal
+                             where r == null && q.RequestStateId != RequestStateEnum.NEW.Id && q.CreatorId == filter.ApproverId.Equal
                              select q;
                 IndirectSalesOrderDAOs = query1.Union(query2);
             }
@@ -544,7 +544,7 @@ namespace DMS.Repositories
                 var query2 = from q in IndirectSalesOrderDAOs
                              join r in DataContext.RequestWorkflowDefinitionMapping on q.RowId equals r.RequestId into result
                              from r in result.DefaultIfEmpty()
-                             where r == null && q.RequestStateId != RequestStateEnum.NEW.Id && q.SaleEmployeeId == filter.ApproverId.Equal
+                             where r == null && q.RequestStateId != RequestStateEnum.NEW.Id && q.CreatorId == filter.ApproverId.Equal
                              select q;
                 IndirectSalesOrderDAOs = query1.Union(query2);
             }
@@ -911,6 +911,7 @@ namespace DMS.Repositories
             IndirectSalesOrderDAO.RowId = Guid.NewGuid();
             IndirectSalesOrderDAO.RequestStateId = IndirectSalesOrder.RequestStateId;
             IndirectSalesOrderDAO.StoreCheckingId = IndirectSalesOrder.StoreCheckingId;
+            IndirectSalesOrderDAO.CreatorId = IndirectSalesOrder.CreatorId;
             IndirectSalesOrderDAO.CreatedAt = StaticParams.DateTimeNow;
             IndirectSalesOrderDAO.UpdatedAt = StaticParams.DateTimeNow;
             DataContext.IndirectSalesOrder.Add(IndirectSalesOrderDAO);
@@ -928,7 +929,6 @@ namespace DMS.Repositories
                 return false;
             IndirectSalesOrderDAO.Id = IndirectSalesOrder.Id;
             IndirectSalesOrderDAO.Code = IndirectSalesOrder.Code;
-            //IndirectSalesOrderDAO.OrganizationId = IndirectSalesOrder.OrganizationId;
             IndirectSalesOrderDAO.BuyerStoreId = IndirectSalesOrder.BuyerStoreId;
             IndirectSalesOrderDAO.PhoneNumber = IndirectSalesOrder.PhoneNumber;
             IndirectSalesOrderDAO.StoreAddress = IndirectSalesOrder.StoreAddress;

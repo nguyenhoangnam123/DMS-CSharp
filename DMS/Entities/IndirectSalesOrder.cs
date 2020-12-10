@@ -31,11 +31,14 @@ namespace DMS.Entities
         public long TotalRequestedQuantity { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
+        public DateTime? DeletedAt { get; set; }
+        public long CreatorId { get; set; }
         public Store BuyerStore { get; set; }
         public EditedPriceStatus EditedPriceStatus { get; set; }
         public Organization Organization { get; set; }
         public RequestState RequestState { get; set; }
         public AppUser SaleEmployee { get; set; }
+        public AppUser Creator { get; set; }
         public Store SellerStore { get; set; }
         public Guid RowId { get; set; }
         public long? StoreCheckingId { get; set; }
