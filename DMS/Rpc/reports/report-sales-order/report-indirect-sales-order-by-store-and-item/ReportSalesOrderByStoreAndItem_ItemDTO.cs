@@ -1,4 +1,5 @@
 ﻿using DMS.Common;
+using DMS.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,5 +20,23 @@ namespace DMS.Rpc.reports.report_sales_order.report_indirect_sales_order_by_stor
         public decimal Revenue { get; set; }
         public long SalesOrderCounter => IndirectSalesOrderIds?.Count() ?? 0;
         internal HashSet<long> IndirectSalesOrderIds { get; set; }
+        public ReportSalesOrderByStoreAndItem_ItemDTO() { }
+        public ReportSalesOrderByStoreAndItem_ItemDTO(Item Item)
+        {
+            this.Id = Item.Id;
+            this.Code = Item.Code;
+            this.Name = Item.Name;
+        }
+    }
+
+    public class ReportSalesOrderByStoreAndItem_ItemFilterDTO : FilterDTO
+    {
+        public IdFilter Id { get; set; }
+        public IdFilter ProductTypeId { get; set; }
+        public IdFilter ProductGroupingId { get; set; }
+        public StringFilter Code { get; set; }
+        public StringFilter Name { get; set; }
+        public IdFilter StatusId { get; set; }
+        public ItemOrder OrderBy { get; set; }
     }
 }

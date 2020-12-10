@@ -18,6 +18,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_indirect_sales_order_by_stor
         public const string Export = Default + "/export";
 
         public const string FilterListOrganization = Default + "/filter-list-organization";
+        public const string FilterListItem = Default + "/filter-list-item";
         public const string FilterListStore = Default + "/filter-list-store";
         public const string FilterListStoreType = Default + "/filter-list-store-type";
         public const string FilterListStoreGrouping = Default + "/filter-list-store-grouping";
@@ -37,7 +38,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_indirect_sales_order_by_stor
             { "Tìm kiếm", new List<string> {
                 Parent,
                 Master, Count, List, Total, Export, 
-                FilterListOrganization, FilterListStore, FilterListStoreType, FilterListStoreGrouping, FilterListStoreStatus } },
+                FilterListOrganization, FilterListStore, FilterListStoreType, FilterListStoreGrouping, FilterListStoreStatus, FilterListItem } },
 
         };
     }

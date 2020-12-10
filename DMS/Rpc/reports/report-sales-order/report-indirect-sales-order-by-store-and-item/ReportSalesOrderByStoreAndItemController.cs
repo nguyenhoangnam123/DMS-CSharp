@@ -177,6 +177,29 @@ namespace DMS.Rpc.reports.report_sales_order.report_indirect_sales_order_by_stor
             return ReportSalesOrderByStoreAndItem_StoreStatusDTOs;
         }
 
+        [Route(ReportSalesOrderByStoreAndItemRoute.FilterListItem), HttpPost]
+        public async Task<List<ReportSalesOrderByStoreAndItem_ItemDTO>> FilterListItem([FromBody] ReportSalesOrderByStoreAndItem_ItemFilterDTO ReportSalesOrderByStoreAndItem_ItemFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            ItemFilter ItemFilter = new ItemFilter();
+            ItemFilter.Skip = 0;
+            ItemFilter.Take = 20;
+            ItemFilter.OrderBy = ItemOrder.Id;
+            ItemFilter.OrderType = OrderType.ASC;
+            ItemFilter.Selects = ItemSelect.ALL;
+            ItemFilter.Id = ReportSalesOrderByStoreAndItem_ItemFilterDTO.Id;
+            ItemFilter.Code = ReportSalesOrderByStoreAndItem_ItemFilterDTO.Code;
+            ItemFilter.Name = ReportSalesOrderByStoreAndItem_ItemFilterDTO.Name;
+            ItemFilter.StatusId = ReportSalesOrderByStoreAndItem_ItemFilterDTO.StatusId;
+
+            List<Item> Items = await ItemService.List(ItemFilter);
+            List<ReportSalesOrderByStoreAndItem_ItemDTO> ReportSalesOrderByStoreAndItem_ItemDTOs = Items
+                .Select(x => new ReportSalesOrderByStoreAndItem_ItemDTO(x)).ToList();
+            return ReportSalesOrderByStoreAndItem_ItemDTOs;
+        }
+
         [Route(ReportSalesOrderByStoreAndItemRoute.Count), HttpPost]
         public async Task<int> Count([FromBody] ReportSalesOrderByStoreAndItem_ReportSalesOrderByStoreAndItemFilterDTO ReportSalesOrderByStoreAndItem_ReportSalesOrderByStoreAndItemFilterDTO)
         {

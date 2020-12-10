@@ -17,12 +17,14 @@ namespace DMS.Rpc.reports.report_sales_order.report_indirect_sales_order_by_stor
     {
         public IdFilter OrganizationId { get; set; }
         public DateFilter OrderDate { get; set; }
+        public IdFilter ItemId { get; set; }
         public IdFilter StoreId { get; set; }
         public IdFilter StoreTypeId { get; set; }
         public IdFilter StoreGroupingId { get; set; }
         public IdFilter StoreStatusId { get; set; }
         internal bool HasValue => (OrganizationId != null && OrganizationId.HasValue) ||
             (OrderDate != null && OrderDate.HasValue) ||
+            (ItemId != null && ItemId.HasValue) ||
             (StoreId != null && StoreId.HasValue) ||
             (StoreTypeId != null && StoreTypeId.HasValue) ||
             (StoreStatusId != null && StoreStatusId.HasValue) ||
