@@ -75,12 +75,14 @@ namespace DMS
             services.AddSingleton<IPooledObjectPolicy<IModel>, RabbitModelPooledObjectPolicy>();
             services.AddSingleton<IRabbitManager, RabbitManager>();
             services.AddHostedService<ConsumeRabbitMQHostedService>();
-
             services.AddDbContext<DataContext>(options =>
-              options.UseSqlServer(Configuration.GetConnectionString("DataContext"), sqlOptions =>
-              {
-                  sqlOptions.AddTempTableSupport();
-              }));
+            {
+                options.UseSqlServer(Configuration.GetConnectionString("DataContext"), sqlOptions =>
+                {
+                    sqlOptions.AddTempTableSupport();
+                });
+                options.AddInterceptors(new HintCommandInterceptor());
+            });
             EntityFrameworkManager.ContextFactory = context =>
             {
                 var optionsBuilder = new DbContextOptionsBuilder<DataContext>();
