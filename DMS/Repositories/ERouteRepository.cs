@@ -342,7 +342,7 @@ namespace DMS.Repositories
             ERouteDAOs = DynamicFilter(ERouteDAOs, filter);
             ERouteDAOs = from q in ERouteDAOs
                                      where q.RequestStateId == RequestStateEnum.NEW.Id &&
-                                     q.SaleEmployeeId == filter.ApproverId.Equal
+                                     q.CreatorId == filter.ApproverId.Equal
                                      select q;
 
             return await ERouteDAOs.Distinct().CountAsync();
@@ -355,7 +355,7 @@ namespace DMS.Repositories
             ERouteDAOs = DynamicFilter(ERouteDAOs, filter);
             ERouteDAOs = from q in ERouteDAOs
                                      where q.RequestStateId == RequestStateEnum.NEW.Id &&
-                                     q.SaleEmployeeId == filter.ApproverId.Equal
+                                     q.CreatorId == filter.ApproverId.Equal
                                      select q;
 
             ERouteDAOs = DynamicOrder(ERouteDAOs, filter);
@@ -370,12 +370,12 @@ namespace DMS.Repositories
             if (filter.ApproverId.Equal.HasValue)
             {
                 ERouteDAOs = from q in ERouteDAOs
-                                         join r in DataContext.RequestWorkflowDefinitionMapping.Where(x => x.RequestStateId == RequestStateEnum.PENDING.Id) on q.RowId equals r.RequestId
-                                         join step in DataContext.WorkflowStep on r.WorkflowDefinitionId equals step.WorkflowDefinitionId
-                                         join rstep in DataContext.RequestWorkflowStepMapping.Where(x => x.WorkflowStateId == WorkflowStateEnum.PENDING.Id) on step.Id equals rstep.WorkflowStepId
-                                         join ra in DataContext.AppUserRoleMapping on step.RoleId equals ra.RoleId
-                                         where ra.AppUserId == filter.ApproverId.Equal && q.RowId == rstep.RequestId
-                                         select q;
+                                join r in DataContext.RequestWorkflowDefinitionMapping.Where(x => x.RequestStateId == RequestStateEnum.PENDING.Id) on q.RowId equals r.RequestId
+                                join step in DataContext.WorkflowStep on r.WorkflowDefinitionId equals step.WorkflowDefinitionId
+                                join rstep in DataContext.RequestWorkflowStepMapping.Where(x => x.WorkflowStateId == WorkflowStateEnum.PENDING.Id) on step.Id equals rstep.WorkflowStepId
+                                join ra in DataContext.AppUserRoleMapping on step.RoleId equals ra.RoleId
+                                where ra.AppUserId == filter.ApproverId.Equal && q.RowId == rstep.RequestId
+                                select q;
             }
             return await ERouteDAOs.Distinct().CountAsync();
         }
@@ -388,12 +388,12 @@ namespace DMS.Repositories
             if (filter.ApproverId.Equal.HasValue)
             {
                 ERouteDAOs = from q in ERouteDAOs
-                                         join r in DataContext.RequestWorkflowDefinitionMapping.Where(x => x.RequestStateId == RequestStateEnum.PENDING.Id) on q.RowId equals r.RequestId
-                                         join step in DataContext.WorkflowStep on r.WorkflowDefinitionId equals step.WorkflowDefinitionId
-                                         join rstep in DataContext.RequestWorkflowStepMapping.Where(x => x.WorkflowStateId == WorkflowStateEnum.PENDING.Id) on step.Id equals rstep.WorkflowStepId
-                                         join ra in DataContext.AppUserRoleMapping on step.RoleId equals ra.RoleId
-                                         where ra.AppUserId == filter.ApproverId.Equal && q.RowId == rstep.RequestId
-                                         select q;
+                                join r in DataContext.RequestWorkflowDefinitionMapping.Where(x => x.RequestStateId == RequestStateEnum.PENDING.Id) on q.RowId equals r.RequestId
+                                join step in DataContext.WorkflowStep on r.WorkflowDefinitionId equals step.WorkflowDefinitionId
+                                join rstep in DataContext.RequestWorkflowStepMapping.Where(x => x.WorkflowStateId == WorkflowStateEnum.PENDING.Id) on step.Id equals rstep.WorkflowStepId
+                                join ra in DataContext.AppUserRoleMapping on step.RoleId equals ra.RoleId
+                                where ra.AppUserId == filter.ApproverId.Equal && q.RowId == rstep.RequestId
+                                select q;
             }
             ERouteDAOs = DynamicOrder(ERouteDAOs, filter);
             List<ERoute> ERoutes = await DynamicSelect(ERouteDAOs, filter);
@@ -418,7 +418,7 @@ namespace DMS.Repositories
                 var query2 = from q in ERouteDAOs
                              join r in DataContext.RequestWorkflowDefinitionMapping on q.RowId equals r.RequestId into result
                              from r in result.DefaultIfEmpty()
-                             where r == null && q.RequestStateId != RequestStateEnum.NEW.Id && q.SaleEmployeeId == filter.ApproverId.Equal
+                             where r == null && q.RequestStateId != RequestStateEnum.NEW.Id && q.CreatorId == filter.ApproverId.Equal
                              select q;
                 ERouteDAOs = query1.Union(query2);
             }
@@ -444,7 +444,7 @@ namespace DMS.Repositories
                 var query2 = from q in ERouteDAOs
                              join r in DataContext.RequestWorkflowDefinitionMapping on q.RowId equals r.RequestId into result
                              from r in result.DefaultIfEmpty()
-                             where r == null && q.RequestStateId != RequestStateEnum.NEW.Id && q.SaleEmployeeId == filter.ApproverId.Equal
+                             where r == null && q.RequestStateId != RequestStateEnum.NEW.Id && q.CreatorId == filter.ApproverId.Equal
                              select q;
                 ERouteDAOs = query1.Union(query2);
             }
