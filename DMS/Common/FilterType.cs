@@ -1,12 +1,16 @@
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace DMS.Common
 {
@@ -579,6 +583,34 @@ namespace DMS.Common
             }
             var right = Expression.Constant(typedValue, left.Type);
             return Expression.MakeBinary(type, left, right);
+        }
+    }
+
+    public class HintCommandInterceptor : DbCommandInterceptor
+    {
+        public override InterceptionResult<DbDataReader> ReaderExecuting(
+            DbCommand command,
+            CommandEventData eventData,
+            InterceptionResult<DbDataReader> result)
+        {
+            if (command.CommandText.Contains("INSERT") ||
+                command.CommandText.Contains("UPDATE") ||
+                command.CommandText.Contains("DELETE"))
+                return result;
+
+            command.CommandText += " OPTION (FORCE ORDER)";
+            return result;
+        }
+
+        public override async Task<InterceptionResult<DbDataReader>> ReaderExecutingAsync(DbCommand command, CommandEventData eventData, InterceptionResult<DbDataReader> result, CancellationToken cancellationToken = default)
+        {
+            if (command.CommandText.Contains("INSERT") ||
+                command.CommandText.Contains("UPDATE") ||
+                command.CommandText.Contains("DELETE"))
+                return result;
+
+            command.CommandText += " OPTION (FORCE ORDER)";
+            return result;
         }
     }
 }

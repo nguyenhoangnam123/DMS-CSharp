@@ -126,7 +126,22 @@ namespace DMS.Repositories
                 }
             }
             if (!string.IsNullOrWhiteSpace(filter.Search))
-                query = query.Where(q => q.Code.ToLower().Contains(filter.Search.ToLower()) || q.Name.ToLower().Contains(filter.Search.ToLower()) || q.OtherName.ToLower().Contains(filter.Search.ToLower()));
+            {
+                List<string> Tokens = filter.Search.Split(" ").Select(x => x.ToLower()).ToList();
+                var queryForCode = query;
+                var queryForName = query;
+                var queryForOtherName = query;
+                foreach (string Token in Tokens)
+                {
+                    if (string.IsNullOrWhiteSpace(Token))
+                        continue;
+                    queryForCode = queryForCode.Where(x => x.Code.ToLower().Contains(Token));
+                    queryForName = queryForName.Where(x => x.Name.ToLower().Contains(Token));
+                    queryForOtherName = queryForOtherName.Where(x => x.OtherName.ToLower().Contains(Token));
+                }
+                query = queryForCode.Union(queryForName).Union(queryForOtherName);
+                query = query.Distinct();
+            }
             if (filter.IsNew != null)
                 query = query.Where(q => q.IsNew.Equals(filter.IsNew));
             query = OrFilter(query, filter);
