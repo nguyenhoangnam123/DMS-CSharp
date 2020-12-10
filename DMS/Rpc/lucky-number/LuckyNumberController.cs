@@ -241,7 +241,7 @@ namespace DMS.Rpc.lucky_number
 
                 for (int i = StartRow; i <= worksheet.Dimension.End.Row; i++)
                 {
-                    string stt = worksheet.Cells[i + StartRow, SttColumnn].Value?.ToString();
+                    string stt = worksheet.Cells[i, SttColumnn].Value?.ToString();
                     if (stt != null && stt.ToLower() == "END".ToLower())
                         break;
                     string CodeValue = worksheet.Cells[i, CodeColumn].Value?.ToString().Trim();
