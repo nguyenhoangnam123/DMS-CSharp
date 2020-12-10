@@ -35,7 +35,22 @@ namespace DMS.Repositories
                 return query.Where(q => false);
             query = query.Where(q => q.DeletedAt == null && q.Product.DeletedAt == null);
             if (filter.Search != null)
-                query = query.Where(q => q.Code.ToLower().Contains(filter.Search.ToLower()) || q.Name.ToLower().Contains(filter.Search.ToLower()) || q.Product.OtherName.ToLower().Contains(filter.Search.ToLower()));
+            {
+                List<string> Tokens = filter.Search.Split(" ").Select(x => x.ToLower()).ToList();
+                var queryForCode = query;
+                var queryForName = query;
+                var queryForOtherName = query;
+                foreach (string Token in Tokens)
+                {
+                    if (string.IsNullOrWhiteSpace(Token))
+                        continue;
+                    queryForCode = queryForCode.Where(x => x.Code.ToLower().Contains(Token));
+                    queryForName = queryForName.Where(x => x.Name.ToLower().Contains(Token));
+                    queryForOtherName = queryForOtherName.Where(x => x.Product.OtherName.ToLower().Contains(Token));
+                }
+                query = queryForCode.Union(queryForName).Union(queryForOtherName);
+                query = query.Distinct();
+            }
             if (filter.Id != null && filter.Id.HasValue)
                 query = query.Where(q => q.Id, filter.Id);
             if (filter.ProductId != null && filter.ProductId.HasValue)
