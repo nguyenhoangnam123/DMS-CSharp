@@ -1300,9 +1300,9 @@ namespace DMS.Rpc.mobile
             };
             RewardHistory.BaseLanguage = CurrentContext.Language;
             RewardHistory = await RewardHistoryService.Create(RewardHistory);
+            Mobile_RewardHistoryDTO = new Mobile_RewardHistoryDTO(RewardHistory);
             if (RewardHistory.IsValidated)
             {
-                Mobile_RewardHistoryDTO = new Mobile_RewardHistoryDTO(RewardHistory);
                 return Mobile_RewardHistoryDTO;
             }
             else
