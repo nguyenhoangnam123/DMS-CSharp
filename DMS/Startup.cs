@@ -81,7 +81,7 @@ namespace DMS
                 {
                     sqlOptions.AddTempTableSupport();
                 });
-                //options.AddInterceptors(new HintCommandInterceptor());
+                options.AddInterceptors(new HintCommandInterceptor());
             });
             EntityFrameworkManager.ContextFactory = context =>
             {

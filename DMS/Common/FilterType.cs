@@ -593,13 +593,22 @@ namespace DMS.Common
             CommandEventData eventData,
             InterceptionResult<DbDataReader> result)
         {
-            // Manipulate the command text, etc. here...
+            if (command.CommandText.Contains("INSERT") ||
+                command.CommandText.Contains("UPDATE") ||
+                command.CommandText.Contains("DELETE"))
+                return result;
+
             command.CommandText += " OPTION (FORCE ORDER)";
             return result;
         }
 
         public override async Task<InterceptionResult<DbDataReader>> ReaderExecutingAsync(DbCommand command, CommandEventData eventData, InterceptionResult<DbDataReader> result, CancellationToken cancellationToken = default)
         {
+            if (command.CommandText.Contains("INSERT") ||
+                command.CommandText.Contains("UPDATE") ||
+                command.CommandText.Contains("DELETE"))
+                return result;
+
             command.CommandText += " OPTION (FORCE ORDER)";
             return result;
         }
