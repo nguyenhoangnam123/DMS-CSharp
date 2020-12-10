@@ -281,5 +281,39 @@ namespace DMS.Rpc.monitor.monitor_store_albums
 
             return MonitorStoreAlbum_StoreCheckingImageMappingDTOs;
         }
+
+        [Route(MonitorStoreAlbumRoute.UpdateAlbum), HttpPost]
+        public async Task<MonitorStoreAlbum_StoreCheckingImageMappingDTO> UpdateAlbum([FromBody] MonitorStoreAlbum_StoreCheckingImageMappingDTO MonitorStoreAlbum_StoreCheckingImageMappingDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            var AlbumImageMappingDAO = await DataContext
+                .AlbumImageMapping.Where(x => x.ImageId == MonitorStoreAlbum_StoreCheckingImageMappingDTO.ImageId)
+                .FirstOrDefaultAsync();
+            if (AlbumImageMappingDAO != null)
+            {
+                var newObj = Utils.Clone(AlbumImageMappingDAO);
+                await DataContext.AlbumImageMapping.Where(x => x.ImageId == MonitorStoreAlbum_StoreCheckingImageMappingDTO.ImageId).DeleteFromQueryAsync();
+                newObj.AlbumId = MonitorStoreAlbum_StoreCheckingImageMappingDTO.AlbumId;
+                await DataContext.AlbumImageMapping.AddAsync(newObj);
+                await DataContext.SaveChangesAsync();
+            }
+            else
+            {
+                var StoreCheckingImageMappingDAO = await DataContext
+                .StoreCheckingImageMapping.Where(x => x.ImageId == MonitorStoreAlbum_StoreCheckingImageMappingDTO.ImageId)
+                .FirstOrDefaultAsync();
+                if (StoreCheckingImageMappingDAO != null)
+                {
+                    await DataContext.StoreCheckingImageMapping.Where(x => x.ImageId == MonitorStoreAlbum_StoreCheckingImageMappingDTO.ImageId).UpdateFromQueryAsync(x => new StoreCheckingImageMappingDAO
+                    {
+                        AlbumId = MonitorStoreAlbum_StoreCheckingImageMappingDTO.AlbumId
+                    });
+                }
+            }
+
+            return MonitorStoreAlbum_StoreCheckingImageMappingDTO;
+        }
     }
 }

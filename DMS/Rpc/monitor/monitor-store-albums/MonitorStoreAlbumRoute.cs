@@ -15,6 +15,7 @@ namespace DMS.Rpc.monitor.monitor_store_albums
         public const string Count = Default + "/count";
         public const string List = Default + "/list";
         public const string Get = Default + "/get";
+        public const string UpdateAlbum = Default + "/update-album";
         public const string Export = Default + "/export";
 
         public const string FilterListOrganization = Default + "/filter-list-organization";
@@ -34,6 +35,11 @@ namespace DMS.Rpc.monitor.monitor_store_albums
             { "Tìm kiếm", new List<string> {
                 Parent,
                 Master, Count, List, Get, Export,
+                FilterListOrganization, FilterListAppUser, FilterListStore, FilterListAlbum } },
+             { "Cập nhật Album", new List<string> {
+                Parent,
+                Master, Count, List, Get,
+                UpdateAlbum,
                 FilterListOrganization, FilterListAppUser, FilterListStore, FilterListAlbum } },
         };
     }
