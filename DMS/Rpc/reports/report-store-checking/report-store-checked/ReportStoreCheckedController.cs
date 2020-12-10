@@ -553,7 +553,7 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
                                 Id = x.Id,
                                 CheckIn = x.CheckInAt.Value,
                                 CheckOut = x.CheckOutAt.Value,
-                                DeviceName = x.DeviceName,
+                                IsClosed = x.IsOpenedStore ? false : true,
                                 ImageCounter = x.ImageCounter ?? 0,
                                 Planned = x.Planned,
                                 SaleEmployeeId = x.SaleEmployeeId,

@@ -68,10 +68,10 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
         public string CheckInDistance { get; set; }
         public string CheckOutDistance { get; set; }
         public string Duration { get; set; }
-        public string Device { get; set; }
         public string Planned { get; set; }
         public string Image { get; set; }
         public string Order { get; set; }
+        public string Closed { get; set; }
         public ReportStoreChecked_ExportContentDTO() { }
         public ReportStoreChecked_ExportContentDTO(ReportStoreChecked_StoreCheckingDTO ReportStoreChecked_StoreCheckingDTO)
         {
@@ -80,7 +80,6 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
             this.StoreName = ReportStoreChecked_StoreCheckingDTO.StoreName;
             this.StoreStatusName = ReportStoreChecked_StoreCheckingDTO.StoreStatusName;
             this.StoreAddress = ReportStoreChecked_StoreCheckingDTO.StoreAddress;
-            this.Device = ReportStoreChecked_StoreCheckingDTO.DeviceName;
             this.CheckIn = ReportStoreChecked_StoreCheckingDTO.eCheckIn;
             this.CheckOut = ReportStoreChecked_StoreCheckingDTO.eCheckOut;
             this.CheckInDistance = ReportStoreChecked_StoreCheckingDTO.CheckInDistance;
@@ -89,6 +88,7 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
             this.Image = ReportStoreChecked_StoreCheckingDTO.ImageCounter > 0 ? "X" : "";
             this.Planned = ReportStoreChecked_StoreCheckingDTO.Planned ? "X" : "";
             this.Order = ReportStoreChecked_StoreCheckingDTO.SalesOrder ? "X" : "";
+            this.Closed = ReportStoreChecked_StoreCheckingDTO.IsClosed ? "X" : "";
         }
     }
 }

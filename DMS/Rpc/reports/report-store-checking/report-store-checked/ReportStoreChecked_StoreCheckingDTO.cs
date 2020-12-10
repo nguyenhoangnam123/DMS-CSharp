@@ -22,12 +22,13 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
         public string Duaration { get; set; }
         public string CheckInDistance { get; set; }
         public string CheckOutDistance { get; set; }
-        public string DeviceName { get; set; }
         public long ImageCounter { get; set; }
         public bool Planned { get; set; }
         public string ePlanned => Planned == true ? "x" : "";
         public bool SalesOrder { get; set; }
         public string eSalesOrder => SalesOrder == true ? "x" : "";
+        public bool IsClosed { get; set; }
+        public string Closed => IsClosed == true ? "x" : "";
     }
 
     public class ReportStoreChecked_StoreCheckingGroupByDateDTO : DataDTO
