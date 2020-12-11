@@ -20,8 +20,9 @@ namespace DMS.Rpc.monitor
             int PlanCounter = 0;
             ERouteContentDAOs = ERouteContentDAOs.Where(ec => ec.ERoute.SaleEmployeeId == SalesEmployeeId &&
                ec.ERoute.RealStartDate <= Date &&
-               (ec.ERoute.EndDate == null || ec.ERoute.EndDate.Value >= Date)
-            ).ToList();
+               (ec.ERoute.EndDate == null || ec.ERoute.EndDate.Value >= Date))
+                .ToList();
+            ERouteContentDAOs = ERouteContentDAOs.Distinct().ToList();
             foreach (var ERouteContent in ERouteContentDAOs)
             {
                 var index = (Date - ERouteContent.ERoute.RealStartDate).Days % 28;
