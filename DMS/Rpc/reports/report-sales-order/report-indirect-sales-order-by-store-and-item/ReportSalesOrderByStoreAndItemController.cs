@@ -21,12 +21,14 @@ using OfficeOpenXml.FormulaParsing.ExpressionGraph.FunctionCompilers;
 using Thinktecture.EntityFrameworkCore.TempTables;
 using Thinktecture;
 using DMS.Services.MStoreStatus;
+using DMS.Services.MAppUser;
 
 namespace DMS.Rpc.reports.report_sales_order.report_indirect_sales_order_by_store_and_item
 {
     public class ReportSalesOrderByStoreAndItemController : RpcController
     {
         private DataContext DataContext;
+        private IAppUserService AppUserService;
         private IItemService ItemService;
         private IOrganizationService OrganizationService;
         private IStoreService StoreService;
@@ -36,6 +38,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_indirect_sales_order_by_stor
         private ICurrentContext CurrentContext;
         public ReportSalesOrderByStoreAndItemController(
             DataContext DataContext,
+            IAppUserService AppUserService,
             IItemService ItemService,
             IOrganizationService OrganizationService,
             IStoreService StoreService,
@@ -45,6 +48,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_indirect_sales_order_by_stor
             ICurrentContext CurrentContext)
         {
             this.DataContext = DataContext;
+            this.AppUserService = AppUserService;
             this.ItemService = ItemService;
             this.OrganizationService = OrganizationService;
             this.StoreService = StoreService;
@@ -235,6 +239,18 @@ namespace DMS.Rpc.reports.report_sales_order.report_indirect_sales_order_by_stor
             }
             OrganizationIds = OrganizationDAOs.Select(o => o.Id).ToList();
 
+            AppUserFilter AppUserFilter = new AppUserFilter
+            {
+                OrganizationId = new IdFilter { In = OrganizationIds },
+                Id = new IdFilter { },
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = AppUserSelect.Id | AppUserSelect.DisplayName | AppUserSelect.Organization
+            };
+            AppUserFilter.Id.In = await FilterAppUser(AppUserService, OrganizationService, CurrentContext);
+            var AppUsers = await AppUserService.List(AppUserFilter);
+            var AppUserIds = AppUsers.Select(x => x.Id).ToList();
+
             List<long> StoreIds = await FilterStore(StoreService, OrganizationService, CurrentContext);
             if (StoreId.HasValue)
             {
@@ -261,6 +277,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_indirect_sales_order_by_stor
                         join s in DataContext.Store on i.BuyerStoreId equals s.Id
                         join tt in tempTableQuery.Query on i.BuyerStoreId equals tt.Column1
                         where i.OrderDate >= Start && i.OrderDate <= End &&
+                        AppUserIds.Contains(i.SaleEmployeeId) &&
                         (StoreTypeIds.Contains(s.StoreTypeId)) &&
                         (
                             (
@@ -316,6 +333,19 @@ namespace DMS.Rpc.reports.report_sales_order.report_indirect_sales_order_by_stor
                 OrganizationDAOs = OrganizationDAOs.Where(o => o.Path.StartsWith(OrganizationDAO.Path)).ToList();
             }
             OrganizationIds = OrganizationDAOs.Select(o => o.Id).ToList();
+
+            AppUserFilter AppUserFilter = new AppUserFilter
+            {
+                OrganizationId = new IdFilter { In = OrganizationIds },
+                Id = new IdFilter { },
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = AppUserSelect.Id | AppUserSelect.DisplayName | AppUserSelect.Organization
+            };
+            AppUserFilter.Id.In = await FilterAppUser(AppUserService, OrganizationService, CurrentContext);
+            var AppUsers = await AppUserService.List(AppUserFilter);
+            var AppUserIds = AppUsers.Select(x => x.Id).ToList();
+
             List<long> StoreIds = await FilterStore(StoreService, OrganizationService, CurrentContext);
             if (StoreId.HasValue)
             {
@@ -342,6 +372,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_indirect_sales_order_by_stor
                         join s in DataContext.Store on i.BuyerStoreId equals s.Id
                         join tt in tempTableQuery.Query on i.BuyerStoreId equals tt.Column1
                         where i.OrderDate >= Start && i.OrderDate <= End &&
+                        AppUserIds.Contains(i.SaleEmployeeId) &&
                         (StoreTypeIds.Contains(s.StoreTypeId)) &&
                         (
                             (
@@ -588,6 +619,19 @@ namespace DMS.Rpc.reports.report_sales_order.report_indirect_sales_order_by_stor
                 OrganizationDAOs = OrganizationDAOs.Where(o => o.Path.StartsWith(OrganizationDAO.Path)).ToList();
             }
             OrganizationIds = OrganizationDAOs.Select(o => o.Id).ToList();
+
+            AppUserFilter AppUserFilter = new AppUserFilter
+            {
+                OrganizationId = new IdFilter { In = OrganizationIds },
+                Id = new IdFilter { },
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = AppUserSelect.Id | AppUserSelect.DisplayName | AppUserSelect.Organization
+            };
+            AppUserFilter.Id.In = await FilterAppUser(AppUserService, OrganizationService, CurrentContext);
+            var AppUsers = await AppUserService.List(AppUserFilter);
+            var AppUserIds = AppUsers.Select(x => x.Id).ToList();
+
             List<long> StoreIds = await FilterStore(StoreService, OrganizationService, CurrentContext);
             if (StoreId.HasValue)
             {
@@ -614,6 +658,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_indirect_sales_order_by_stor
                         join s in DataContext.Store on i.BuyerStoreId equals s.Id
                         join tt in tempTableQuery.Query on i.BuyerStoreId equals tt.Column1
                         where i.OrderDate >= Start && i.OrderDate <= End &&
+                        AppUserIds.Contains(i.SaleEmployeeId) &&
                         (StoreTypeIds.Contains(s.StoreTypeId)) &&
                         (
                             (

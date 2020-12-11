@@ -464,7 +464,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
                         //thực hiện
                         SaleEmployeeDTO.TotalDirectOrders = SaleEmployeeDTO.TotalDirectOrdersPLanned == null ? null : (decimal?)DirectSalesOrders.Count();
                         //tỉ lệ
-                        SaleEmployeeDTO.TotalDirectOrdersRatio = (SaleEmployeeDTO.TotalDirectOrdersPLanned == null || SaleEmployeeDTO.TotalDirectOrders.HasValue || SaleEmployeeDTO.TotalDirectOrdersPLanned.Value == 0)
+                        SaleEmployeeDTO.TotalDirectOrdersRatio = (SaleEmployeeDTO.TotalDirectOrdersPLanned == null || SaleEmployeeDTO.TotalDirectOrders == null || SaleEmployeeDTO.TotalDirectOrdersPLanned.Value == 0)
                             ? null
                             : (decimal?)Math.Round(SaleEmployeeDTO.TotalDirectOrders.Value / SaleEmployeeDTO.TotalDirectOrdersPLanned.Value * 100, 2);
                     }
