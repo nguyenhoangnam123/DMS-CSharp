@@ -111,6 +111,7 @@ namespace DMS.Services.MRewardHistory
         public async Task<bool> Create(RewardHistory RewardHistory)
         {
             await ValidateRevenue(RewardHistory);
+            await ValidateLuckyNumber(RewardHistory);
             return RewardHistory.IsValidated;
         }
 
