@@ -275,6 +275,11 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_employee_report
                         RequestedQuantity = c.RequestedQuantity,
                         ItemId = c.ItemId,
                     }).ToList(),
+                    DirectSalesOrderPromotions = x.DirectSalesOrderPromotions.Select(x => new DirectSalesOrderPromotionDAO
+                    {
+                        RequestedQuantity = x.RequestedQuantity,
+                        ItemId = x.ItemId
+                    }).ToList()
                 })
                 .ToListAsync();
 
@@ -496,8 +501,8 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_employee_report
                         var itemIds = DirectSalesOrder.DirectSalesOrderContents.Select(x => x.ItemId).Distinct().ToList();
                         Period.SKUDirectItems.AddRange(itemIds);
                     }
-                    Period.SkuDirectOrder = IndirectSalesOrders.Count() == 0 || Period.SKUIndirectItems == null ? 0 :
-                        Math.Round((decimal)Period.SKUIndirectItems.Count() / IndirectSalesOrders.Count(), 2);
+                    Period.SkuDirectOrder = DirectSalesOrders.Count() == 0 || Period.SKUDirectItems == null ? 0 :
+                        Math.Round((decimal)Period.SKUDirectItems.Count() / DirectSalesOrders.Count(), 2);
                     //tỉ lệ
                     Period.SkuDirectOrderRatio = Period.SkuDirectOrderPlanned == null || Period.SkuDirectOrder == null || Period.SkuDirectOrderPlanned == 0 ? 0 :
                         Math.Round((Period.SkuDirectOrder.Value / Period.SkuDirectOrderPlanned.Value) * 100, 2);
