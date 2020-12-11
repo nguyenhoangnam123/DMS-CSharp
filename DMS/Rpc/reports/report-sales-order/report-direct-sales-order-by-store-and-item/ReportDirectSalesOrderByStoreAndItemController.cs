@@ -418,7 +418,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_by_store_
                 }).ToListAsync();
             List<long> DirectSalesOrderIds = DirectSalesOrderDAOs.Select(x => x.Id).ToList();
             List<DirectSalesOrderContentDAO> DirectSalesOrderContentDAOs = await DataContext.DirectSalesOrderContent
-                .Where(x => StoreIds.Contains(x.DirectSalesOrder.BuyerStoreId) && Start <= x.DirectSalesOrder.OrderDate && x.DirectSalesOrder.OrderDate <= End)
+                .Where(x => DirectSalesOrderIds.Contains(x.DirectSalesOrderId))
                 .Select(x => new DirectSalesOrderContentDAO
                 {
                     Id = x.Id,
@@ -440,7 +440,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_by_store_
                 })
                 .ToListAsync();
             List<DirectSalesOrderPromotionDAO> DirectSalesOrderPromotionDAOs = await DataContext.DirectSalesOrderPromotion
-                .Where(x => StoreIds.Contains(x.DirectSalesOrder.BuyerStoreId) && Start <= x.DirectSalesOrder.OrderDate && x.DirectSalesOrder.OrderDate <= End)
+                .Where(x => DirectSalesOrderIds.Contains(x.DirectSalesOrderId))
                 .Select(x => new DirectSalesOrderPromotionDAO
                 {
                     Id = x.Id,
@@ -460,13 +460,23 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_by_store_
             ItemIds.AddRange(DirectSalesOrderPromotionDAOs.Select(x => x.ItemId));
             ItemIds = ItemIds.Distinct().ToList();
 
-            List<Item> Items = await ItemService.List(new ItemFilter
-            {
-                Skip = 0,
-                Take = int.MaxValue,
-                Id = new IdFilter { In = ItemIds },
-                Selects = ItemSelect.Id | ItemSelect.Code | ItemSelect.Name | ItemSelect.SalePrice
-            });
+            var Items = await DataContext.Item.Where(x => ItemIds.Contains(x.Id))
+                .Where(x => x.DeletedAt == null)
+                .Select(x => new Item
+                {
+                    Id = x.Id,
+                    Code = x.Code,
+                    Name = x.Name,
+                    SalePrice = x.SalePrice,
+                }).ToListAsync();
+
+            //List<Item> Items = await ItemService.List(new ItemFilter
+            //{
+            //    Skip = 0,
+            //    Take = int.MaxValue,
+            //    Id = new IdFilter { In = ItemIds },
+            //    Selects = ItemSelect.Id | ItemSelect.Code | ItemSelect.Name | ItemSelect.SalePrice
+            //});
 
             List<UnitOfMeasureDAO> UnitOfMeasureDAOs = await DataContext.UnitOfMeasure.ToListAsync();
             // khởi tạo khung dữ liệu
@@ -479,7 +489,8 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_by_store_
                     {
                         Name = x.Name
                     }).FirstOrDefault();
-                    Store.Items = new List<ReportDirectSalesOrderByStoreAndItem_ItemDTO>();
+                    if(Store.Items == null)
+                        Store.Items = new List<ReportDirectSalesOrderByStoreAndItem_ItemDTO>();
                     foreach (DirectSalesOrderContentDAO DirectSalesOrderContentDAO in DirectSalesOrderContentDAOs)
                     {
                         if (SalesOrderIds.Contains(DirectSalesOrderContentDAO.DirectSalesOrderId))
@@ -556,8 +567,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_by_store_
                 }
             }
 
-            ReportDirectSalesOrderByStoreAndItem_ReportDirectSalesOrderByStoreAndItemDTOs = ReportDirectSalesOrderByStoreAndItem_ReportDirectSalesOrderByStoreAndItemDTOs.Where(x => x.Stores.Any()).ToList();
-            return ReportDirectSalesOrderByStoreAndItem_ReportDirectSalesOrderByStoreAndItemDTOs.Where(x => x.Stores.Any()).ToList();
+            return ReportDirectSalesOrderByStoreAndItem_ReportDirectSalesOrderByStoreAndItemDTOs;
         }
 
         [Route(ReportDirectSalesOrderByStoreAndItemRoute.Total), HttpPost]
@@ -687,9 +697,13 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_by_store_
 
             StoreIds = Stores.Select(s => s.Id).ToList();
             var DirectSalesOrderContentQuery = DataContext.DirectSalesOrderContent
-                .Where(x => StoreIds.Contains(x.DirectSalesOrder.BuyerStoreId) && Start <= x.DirectSalesOrder.OrderDate && x.DirectSalesOrder.OrderDate <= End);
+                .Where(x => StoreIds.Contains(x.DirectSalesOrder.BuyerStoreId) && 
+                Start <= x.DirectSalesOrder.OrderDate && x.DirectSalesOrder.OrderDate <= End &&
+                x.DirectSalesOrder.RequestStateId == RequestStateEnum.APPROVED.Id);
             var DirectSalesOrderPromotionQuery = DataContext.DirectSalesOrderPromotion
-                .Where(x => StoreIds.Contains(x.DirectSalesOrder.BuyerStoreId) && Start <= x.DirectSalesOrder.OrderDate && x.DirectSalesOrder.OrderDate <= End);
+                .Where(x => StoreIds.Contains(x.DirectSalesOrder.BuyerStoreId) && 
+                Start <= x.DirectSalesOrder.OrderDate && x.DirectSalesOrder.OrderDate <= End &&
+                x.DirectSalesOrder.RequestStateId == RequestStateEnum.APPROVED.Id);
 
             ReportDirectSalesOrderByStoreAndItem_TotalDTO.TotalSalesStock = DirectSalesOrderContentQuery.Select(x => x.RequestedQuantity).Sum();
 

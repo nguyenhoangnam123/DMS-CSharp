@@ -345,6 +345,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_by_item
                                    join o in DataContext.Organization on t.OrganizationId equals o.Id
                                    where OrgIds.Contains(t.OrganizationId) &&
                                    ItemIds.Contains(t.ItemId) &&
+                                   AppUserIds.Contains(od.SaleEmployeeId) &&
                                    od.OrderDate >= Start && od.OrderDate <= End &&
                                    ind.RequestStateId == RequestStateEnum.APPROVED.Id
                                    select new DirectSalesOrderTransactionDAO
