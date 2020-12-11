@@ -11,3 +11,4 @@ StoreApp/obj/
 StoreApp/appsettings.Development.json
 DMS/appsettings.Production.json
 DMS/DMS - Backup.csproj
+DMS/DMS.csproj.user
