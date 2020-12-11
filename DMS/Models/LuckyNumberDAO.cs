@@ -21,6 +21,7 @@ namespace DMS.Models
         public DateTime? DeletedAt { get; set; }
         public Guid RowId { get; set; }
         public bool Used { get; set; }
+        public DateTime? UsedAt { get; set; }
 
         public virtual LuckyNumberGroupingDAO LuckyNumberGrouping { get; set; }
         public virtual RewardStatusDAO RewardStatus { get; set; }

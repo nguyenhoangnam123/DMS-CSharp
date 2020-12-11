@@ -20,6 +20,7 @@ namespace DMS.Entities
         public RewardStatus RewardStatus { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
+        public DateTime? UsedAt { get; set; }
         
         public bool Equals(LuckyNumber other)
         {
@@ -43,6 +44,7 @@ namespace DMS.Entities
         public GuidFilter RowId { get; set; }
         public DateFilter CreatedAt { get; set; }
         public DateFilter UpdatedAt { get; set; }
+        public DateFilter UsedAt { get; set; }
         public List<LuckyNumberFilter> OrFilter { get; set; }
         public LuckyNumberOrder OrderBy {get; set;}
         public LuckyNumberSelect Selects {get; set;}
@@ -60,6 +62,7 @@ namespace DMS.Entities
         Row = 7,
         CreatedAt = 50,
         UpdatedAt = 51,
+        UsedAt = 52,
     }
 
     [Flags]

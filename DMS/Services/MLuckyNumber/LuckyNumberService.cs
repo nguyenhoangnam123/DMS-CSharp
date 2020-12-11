@@ -135,6 +135,7 @@ namespace DMS.Services.MLuckyNumber
 
                     RandomNumber.RewardStatusId = RewardStatusEnum.INACTIVE.Id;
                     RandomNumber.Used = true;
+                    RandomNumber.UsedAt = StaticParams.DateTimeNow;
                     await UOW.LuckyNumberRepository.Update(RandomNumber);
 
                     if(RewardHistory.RewardHistoryContents == null)
