@@ -116,6 +116,23 @@ namespace DMS.Repositories
                 query = query.Where(q => q.Total, filter.Total);
             if (filter.StoreStatusId != null)
                 query = query.Where(q => q.BuyerStore.StoreStatusId, filter.StoreStatusId);
+            if (!string.IsNullOrWhiteSpace(filter.Search))
+            {
+                List<string> Tokens = filter.Search.Split(" ").Select(x => x.ToLower()).ToList();
+                var queryForCode = query;
+                var queryForName = query;
+                var queryForUnsignName = query;
+                foreach (string Token in Tokens)
+                {
+                    if (string.IsNullOrWhiteSpace(Token))
+                        continue;
+                    queryForCode = queryForCode.Where(x => x.Code.ToLower().Contains(Token));
+                    queryForName = queryForName.Where(x => x.BuyerStore.Name.ToLower().Contains(Token));
+                    queryForUnsignName = queryForUnsignName.Where(x => x.BuyerStore.UnsignName.ToLower().Contains(Token));
+                }
+                query = queryForCode.Union(queryForName).Union(queryForUnsignName);
+                query = query.Distinct();
+            }
             return query;
         }
 
