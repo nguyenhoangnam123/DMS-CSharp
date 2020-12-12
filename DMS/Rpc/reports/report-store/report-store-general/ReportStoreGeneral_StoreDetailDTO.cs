@@ -25,7 +25,7 @@ namespace DMS.Rpc.reports.report_store.report_store_general
         public DateTime? LastChecking { get; set; }
         public string eLastChecking => LastChecking == DateTime.MinValue || LastChecking == null ? "" : LastChecking.Value.ToString("dd-MM-yyyy");
         public string EmployeeLastChecking { get; set; }
-        public long IndirectSalesOrderCounter => IndirectSalesOrderIds?.Count() ?? 0;
+        public long IndirectSalesOrderCounter => SalesOrderIds?.Count() ?? 0;
         public long SKUCounter => SKUItemIds?.Count() ?? 0;
         public decimal TotalRevenue { get; set; }
         public DateTime? LastOrder { get; set; }
@@ -33,6 +33,6 @@ namespace DMS.Rpc.reports.report_store.report_store_general
         internal HashSet<long> StoreCheckingPlannedIds { get; set; }
         internal HashSet<long> StoreCheckingUnPlannedIds { get; set; }
         internal List<long> SKUItemIds { get; set; }
-        internal HashSet<long> IndirectSalesOrderIds { get; set; }
+        internal HashSet<long> SalesOrderIds { get; set; }
     }
 }

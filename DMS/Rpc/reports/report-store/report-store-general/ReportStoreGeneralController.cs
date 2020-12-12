@@ -468,6 +468,44 @@ namespace DMS.Rpc.reports.report_store.report_store_general
                                                  };
             List<IndirectSalesOrderContentDAO> IndirectSalesOrderContentDAOs = await indirectSalesOrderContentQuery.ToListAsync();
 
+            var directSalesOrderQuery = from i in DataContext.DirectSalesOrder
+                                        join au in DataContext.AppUser on i.SaleEmployeeId equals au.Id
+                                        join s in DataContext.Store on i.BuyerStoreId equals s.Id
+                                        join tt in tempTableQuery.Query on s.Id equals tt.Column1
+                                        where Start <= i.OrderDate && i.OrderDate <= End &&
+                                        i.RequestStateId == RequestStateEnum.APPROVED.Id &&
+                                        AppUserIds.Contains(i.SaleEmployeeId) &&
+                                        au.DeletedAt == null &&
+                                        s.DeletedAt == null
+                                        select new DirectSalesOrderDAO
+                                        {
+                                            Id = i.Id,
+                                            Code = i.Code,
+                                            OrderDate = i.OrderDate,
+                                            BuyerStoreId = i.BuyerStoreId,
+                                            SaleEmployeeId = i.SaleEmployeeId,
+                                            Total = i.Total
+                                        };
+            List<DirectSalesOrderDAO> DirectSalesOrderDAOs = await directSalesOrderQuery.ToListAsync();
+
+            var DirectSalesOrderIds = DirectSalesOrderDAOs.Select(x => x.Id).ToList();
+            tempTableQuery = await DataContext
+                    .BulkInsertValuesIntoTempTableAsync<long>(DirectSalesOrderIds);
+            var DirectSalesOrderContentQuery = from ic in DataContext.DirectSalesOrderContent
+                                               join i in DataContext.DirectSalesOrder on ic.DirectSalesOrderId equals i.Id
+                                               join tt in tempTableQuery.Query on i.Id equals tt.Column1
+                                               select new DirectSalesOrderContentDAO
+                                               {
+                                                   Id = ic.Id,
+                                                   ItemId = ic.ItemId,
+                                                   DirectSalesOrderId = ic.DirectSalesOrderId,
+                                                   DirectSalesOrder = new DirectSalesOrderDAO
+                                                   {
+                                                       BuyerStoreId = i.BuyerStoreId
+                                                   }
+                                               };
+            List<DirectSalesOrderContentDAO> DirectSalesOrderContentDAOs = await DirectSalesOrderContentQuery.ToListAsync();
+
             // khởi tạo khung dữ liệu
             foreach (ReportStoreGeneral_ReportStoreGeneralDTO ReportStoreGeneral_ReportStoreGeneralDTO in ReportStoreGeneral_ReportStoreGeneralDTOs)
             {
@@ -511,12 +549,19 @@ namespace DMS.Rpc.reports.report_store.report_store_general
                     Store.TotalCheckingTime = $"{timeSpan.Hours.ToString().PadLeft(2, '0')} : {timeSpan.Minutes.ToString().PadLeft(2, '0')} : {timeSpan.Seconds.ToString().PadLeft(2, '0')}";
 
                     //tổng doanh thu
-                    Store.TotalRevenue = IndirectSalesOrderDAOs.Where(x => x.BuyerStoreId == Store.Id).Sum(x => x.Total);
+                    var IndirectRevenue = IndirectSalesOrderDAOs.Where(x => x.BuyerStoreId == Store.Id).Sum(x => x.Total);
+                    var DirectRevenue = DirectSalesOrderDAOs.Where(x => x.BuyerStoreId == Store.Id).Sum(x => x.Total);
+                    Store.TotalRevenue = IndirectRevenue + DirectRevenue;
                     //ngày đặt hàng gần nhất
-                    Store.LastOrder = IndirectSalesOrderDAOs.Where(x => x.BuyerStoreId == Store.Id)
+                    var IndireatLastOrder = IndirectSalesOrderDAOs.Where(x => x.BuyerStoreId == Store.Id)
                         .OrderByDescending(x => x.OrderDate)
                         .Select(x => x.OrderDate.AddHours(CurrentContext.TimeZone).Date)
                         .FirstOrDefault();
+                    var DireatLastOrder = DirectSalesOrderDAOs.Where(x => x.BuyerStoreId == Store.Id)
+                        .OrderByDescending(x => x.OrderDate)
+                        .Select(x => x.OrderDate.AddHours(CurrentContext.TimeZone).Date)
+                        .FirstOrDefault();
+                    Store.LastOrder = IndireatLastOrder > DireatLastOrder ? IndireatLastOrder : DireatLastOrder;
                 }
 
                 foreach (var Store in ReportStoreGeneral_ReportStoreGeneralDTO.Stores)
@@ -524,11 +569,24 @@ namespace DMS.Rpc.reports.report_store.report_store_general
                     var indirectSalesOrderIds = IndirectSalesOrderDAOs.Where(x => x.BuyerStoreId == Store.Id).Select(x => x.Id).ToList();
                     foreach (var Id in IndirectSalesOrderIds)
                     {
-                        if (Store.IndirectSalesOrderIds == null)
-                            Store.IndirectSalesOrderIds = new HashSet<long>();
-                        Store.IndirectSalesOrderIds.Add(Id);
+                        if (Store.SalesOrderIds == null)
+                            Store.SalesOrderIds = new HashSet<long>();
+                        Store.SalesOrderIds.Add(Id);
 
                         var itemIds = IndirectSalesOrderContentDAOs.Where(x => x.IndirectSalesOrderId == Id).Select(x => x.ItemId).Distinct().ToList();
+                        if (Store.SKUItemIds == null)
+                            Store.SKUItemIds = new List<long>();
+                        Store.SKUItemIds.AddRange(itemIds);
+                    }
+
+                    var directSalesOrderIds = DirectSalesOrderDAOs.Where(x => x.BuyerStoreId == Store.Id).Select(x => x.Id).ToList();
+                    foreach (var Id in DirectSalesOrderIds)
+                    {
+                        if (Store.SalesOrderIds == null)
+                            Store.SalesOrderIds = new HashSet<long>();
+                        Store.SalesOrderIds.Add(Id);
+
+                        var itemIds = DirectSalesOrderContentDAOs.Where(x => x.DirectSalesOrderId == Id).Select(x => x.ItemId).Distinct().ToList();
                         if (Store.SKUItemIds == null)
                             Store.SKUItemIds = new List<long>();
                         Store.SKUItemIds.AddRange(itemIds);
