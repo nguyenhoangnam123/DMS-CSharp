@@ -302,7 +302,7 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
                         (StoreStatusId.HasValue == false || StoreStatusId.Value == StoreStatusEnum.ALL.Id || s.StoreStatusId == StoreStatusId.Value) &&
                         OrganizationIds.Contains(sc.OrganizationId) &&
                         s.DeletedAt == null
-                        select new 
+                        select new
                         {
                             SalesEmployeeId = au.Id,
                             OrganizationId = sc.OrganizationId
@@ -583,11 +583,8 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
                             var TotalMinuteChecking = StoreChecking.CheckOut.Subtract(StoreChecking.CheckIn).TotalSeconds;
                             TimeSpan timeSpan = TimeSpan.FromSeconds(TotalMinuteChecking);
                             StoreChecking.Duaration = $"{timeSpan.Hours.ToString().PadLeft(2, '0')} : {timeSpan.Minutes.ToString().PadLeft(2, '0')} : {timeSpan.Seconds.ToString().PadLeft(2, '0')}";
-                            var HasSalesOrder = SalesOrders.Where(x => x.StoreCheckingId == StoreChecking.Id).FirstOrDefault();
-                            if (HasSalesOrder == null)
-                                StoreChecking.SalesOrder = false;
-                            else
-                                StoreChecking.SalesOrder = true;
+                            var OrderCounter = SalesOrders.Where(x => x.StoreCheckingId == StoreChecking.Id).Count();
+                            StoreChecking.SalesOrderCounter = OrderCounter;
                         }
                         SaleEmployee.StoreCheckingGroupByDates.Add(ReportStoreChecked_StoreCheckingGroupByDateDTO);
                     }

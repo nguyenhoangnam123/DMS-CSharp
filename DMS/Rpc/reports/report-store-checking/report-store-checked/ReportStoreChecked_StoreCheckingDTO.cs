@@ -25,8 +25,8 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
         public long ImageCounter { get; set; }
         public bool Planned { get; set; }
         public string ePlanned => Planned == true ? "x" : "";
-        public bool SalesOrder { get; set; }
-        public string eSalesOrder => SalesOrder == true ? "x" : "";
+        public long SalesOrderCounter { get; set; }
+        public string eSalesOrder => SalesOrderCounter.ToString();
         public bool IsClosed { get; set; }
         public string Closed => IsClosed == true ? "x" : "";
     }
