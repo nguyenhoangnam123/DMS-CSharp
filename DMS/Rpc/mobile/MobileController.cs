@@ -292,6 +292,63 @@ namespace DMS.Rpc.mobile
                 return BadRequest(Mobile_IndirectSalesOrderDTO);
         }
 
+        [Route(MobileRoute.PreviewIndirectOrder), HttpPost]
+        public async Task<ActionResult> PreviewIndirectOrder([FromBody] Mobile_IndirectSalesOrderDTO Mobile_IndirectSalesOrderDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            IndirectSalesOrder IndirectSalesOrder = ConvertIndirectSalesOrderDTOToEntity(Mobile_IndirectSalesOrderDTO);
+            IndirectSalesOrder.BaseLanguage = CurrentContext.Language;
+            IndirectSalesOrder.StoreCheckingId = Mobile_IndirectSalesOrderDTO.StoreCheckingId;
+            IndirectSalesOrder = await IndirectSalesOrderService.PreviewIndirectOrder(IndirectSalesOrder);
+
+            Mobile_PrintIndirectOrderDTO Mobile_PrintDTO = new Mobile_PrintIndirectOrderDTO(IndirectSalesOrder);
+            var culture = System.Globalization.CultureInfo.GetCultureInfo("en-EN");
+            var STT = 1;
+            foreach (var IndirectSalesOrderContent in Mobile_PrintDTO.Contents)
+            {
+                IndirectSalesOrderContent.STT = STT++;
+                IndirectSalesOrderContent.AmountString = IndirectSalesOrderContent.Amount.ToString("N0", culture);
+                IndirectSalesOrderContent.PrimaryPriceString = IndirectSalesOrderContent.PrimaryPrice.ToString("N0", culture);
+                IndirectSalesOrderContent.QuantityString = IndirectSalesOrderContent.Quantity.ToString("N0", culture);
+                IndirectSalesOrderContent.RequestedQuantityString = IndirectSalesOrderContent.RequestedQuantity.ToString("N0", culture);
+                IndirectSalesOrderContent.SalePriceString = IndirectSalesOrderContent.SalePrice.ToString("N0", culture);
+                IndirectSalesOrderContent.DiscountString = IndirectSalesOrderContent.DiscountPercentage.HasValue ? IndirectSalesOrderContent.DiscountPercentage.Value.ToString("N0", culture) + "%" : "";
+                IndirectSalesOrderContent.TaxPercentageString = IndirectSalesOrderContent.TaxPercentage.HasValue ? IndirectSalesOrderContent.TaxPercentage.Value.ToString("N0", culture) + "%" : "";
+            }
+            foreach (var IndirectSalesOrderPromotion in Mobile_PrintDTO.Promotions)
+            {
+                IndirectSalesOrderPromotion.STT = STT++;
+                IndirectSalesOrderPromotion.QuantityString = IndirectSalesOrderPromotion.Quantity.ToString("N0", culture);
+                IndirectSalesOrderPromotion.RequestedQuantityString = IndirectSalesOrderPromotion.RequestedQuantity.ToString("N0", culture);
+            }
+
+            Mobile_PrintDTO.SubTotalString = Mobile_PrintDTO.SubTotal.ToString("N0", culture);
+            Mobile_PrintDTO.Discount = Mobile_PrintDTO.GeneralDiscountAmount.HasValue ? Mobile_PrintDTO.GeneralDiscountAmount.Value.ToString("N0", culture) : "";
+            Mobile_PrintDTO.TotalString = Mobile_PrintDTO.Total.ToString("N0", culture);
+            Mobile_PrintDTO.TotalText = Utils.ConvertAmountTostring((long)Mobile_PrintDTO.Total);
+
+            string path = "Templates/Print_Indirect_Mobile.docx";
+            byte[] arr = System.IO.File.ReadAllBytes(path);
+            dynamic Data = new ExpandoObject();
+            Data.Order = Mobile_PrintDTO;
+            MemoryStream MemoryStream = new MemoryStream();
+            MemoryStream input = new MemoryStream(arr);
+            MemoryStream output = new MemoryStream();
+            using (var document = StaticParams.DocumentFactory.Open(input, output, "docx"))
+            {
+                document.Process(Data);
+            };
+
+            ContentDisposition cd = new ContentDisposition
+            {
+                FileName = $"Don-hang-gian-tiep-preview.pdf",
+                Inline = true,
+            };
+            Response.Headers.Add("Content-Disposition", cd.ToString());
+            return File(output.ToArray(), "application/vnd.openxmlformats-officedocument.wordprocessingml.document;charset=utf-8");
+        }
 
         [Route(MobileRoute.CreateProblem), HttpPost]
         public async Task<ActionResult<Mobile_ProblemDTO>> CreateProblem([FromBody] Mobile_ProblemDTO Mobile_ProblemDTO)
@@ -719,8 +776,8 @@ namespace DMS.Rpc.mobile
 
             ContentDisposition cd = new ContentDisposition
             {
-                FileName = $"Don-hang-gian-tiep-{IndirectSalesOrder.Code}.docx",
-                Inline = false,
+                FileName = $"Don-hang-gian-tiep-{IndirectSalesOrder.Code}.pdf",
+                Inline = true,
             };
             Response.Headers.Add("Content-Disposition", cd.ToString());
             return File(output.ToArray(), "application/vnd.openxmlformats-officedocument.wordprocessingml.document;charset=utf-8");

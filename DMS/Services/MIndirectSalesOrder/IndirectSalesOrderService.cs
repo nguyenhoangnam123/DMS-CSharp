@@ -35,6 +35,7 @@ namespace DMS.Services.MIndirectSalesOrder
         Task<IndirectSalesOrder> Send(IndirectSalesOrder IndirectSalesOrder);
         Task<IndirectSalesOrder> Approve(IndirectSalesOrder IndirectSalesOrder);
         Task<IndirectSalesOrder> Reject(IndirectSalesOrder IndirectSalesOrder);
+        Task<IndirectSalesOrder> PreviewIndirectOrder(IndirectSalesOrder IndirectSalesOrder);
         Task<List<IndirectSalesOrder>> BulkDelete(List<IndirectSalesOrder> IndirectSalesOrders);
         Task<List<IndirectSalesOrder>> Import(List<IndirectSalesOrder> IndirectSalesOrders);
         Task<IndirectSalesOrderFilter> ToFilter(IndirectSalesOrderFilter IndirectSalesOrderFilter);
@@ -489,6 +490,43 @@ namespace DMS.Services.MIndirectSalesOrder
             catch (Exception ex)
             {
                 await UOW.Rollback();
+                if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(IndirectSalesOrderService));
+                    throw new MessageException(ex);
+                }
+                else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(IndirectSalesOrderService));
+                    throw new MessageException(ex.InnerException);
+                }
+            }
+        }
+
+        public async Task<IndirectSalesOrder> PreviewIndirectOrder(IndirectSalesOrder IndirectSalesOrder)
+        {
+            if (!await IndirectSalesOrderValidator.Create(IndirectSalesOrder))
+                return IndirectSalesOrder;
+
+            try
+            {
+                var CurrentUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
+                var SaleEmployee = await UOW.AppUserRepository.Get(IndirectSalesOrder.SaleEmployeeId);
+                await Calculator(IndirectSalesOrder);
+                await UOW.Begin();
+                IndirectSalesOrder.RequestStateId = RequestStateEnum.NEW.Id;
+                IndirectSalesOrder.Code = IndirectSalesOrder.Id.ToString();
+                IndirectSalesOrder.OrganizationId = SaleEmployee.OrganizationId;
+                IndirectSalesOrder.CreatorId = CurrentContext.UserId;
+                await UOW.Commit();
+
+                await Logging.CreateAuditLog(IndirectSalesOrder, new { }, nameof(IndirectSalesOrderService));
+                return IndirectSalesOrder;
+            }
+            catch (Exception ex)
+            {
+                await UOW.Rollback();
+
                 if (ex.InnerException == null)
                 {
                     await Logging.CreateSystemLog(ex, nameof(IndirectSalesOrderService));
