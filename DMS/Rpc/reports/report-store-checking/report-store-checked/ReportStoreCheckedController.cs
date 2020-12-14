@@ -212,7 +212,7 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
         [Route(ReportStoreCheckedRoute.FilterListCheckingPlanStatus), HttpPost]
         public async Task<List<GenericEnum>> FilterListCheckingPlanStatus()
         {
-            return CheckingPlanStatusEnum.CheckingPlanStatusEnumList();
+            return CheckingPlanStatusEnum.CheckingPlanStatusEnumList;
         }
         #endregion
 
