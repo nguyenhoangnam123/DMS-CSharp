@@ -214,7 +214,7 @@ namespace DMS.Rpc.monitor.monitor_salesman
                                   (SaleEmployeeId == null || au.Id == SaleEmployeeId.Value) &&
                                   au.DeletedAt == null &&
                                   Start <= i.OrderDate && i.OrderDate <= End &&
-                                  i.RequestStateId == RequestStateEnum.APPROVED.Id
+                                  (i.RequestStateId == RequestStateEnum.APPROVED.Id || i.RequestStateId == RequestStateEnum.PENDING.Id)
                                   select new IndirectSalesOrderDAO
                                   {
                                       Id = i.Id,
@@ -440,7 +440,7 @@ namespace DMS.Rpc.monitor.monitor_salesman
             List<IndirectSalesOrderDAO> IndirectSalesOrderDAOs = await DataContext.IndirectSalesOrder
                 .Where(o => Start <= o.OrderDate && o.OrderDate <= End && 
                 o.SaleEmployeeId == SaleEmployeeId &&
-                o.RequestStateId == RequestStateEnum.APPROVED.Id)
+                (o.RequestStateId == RequestStateEnum.APPROVED.Id || o.RequestStateId == RequestStateEnum.PENDING.Id))
                 .Select(x => new IndirectSalesOrderDAO
                 {
                     Id = x.Id,
