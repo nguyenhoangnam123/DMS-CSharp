@@ -191,18 +191,6 @@ namespace DMS.Rpc
                             NotIn.AddRange(FilterPermissionDefinition.IdFilter.NotIn);
                         }
                     }
-                    if (FilterPermissionDefinition.Name == "UsedId")
-                    {
-                        var listInScope = await StoreService.ListInScoped(new StoreFilter
-                        {
-                            Skip = 0,
-                            Take = int.MaxValue,
-                            Selects = StoreSelect.Id,
-                            Id = new IdFilter { In = In, NotIn = NotIn }
-                        }, CurrentContext.UserId);
-                        var StoreInScopeIds = listInScope.Select(x => x.Id).ToList();
-                        In = StoreInScopeIds;
-                    }
                 }
             }
 

@@ -82,6 +82,8 @@ namespace DMS.Rpc.reports.report_store.report_store_general
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
 
+            var CurrentUser = await AppUserService.Get(CurrentContext.UserId);
+
             StoreFilter StoreFilter = new StoreFilter();
             StoreFilter.Skip = 0;
             StoreFilter.Take = 20;
@@ -100,6 +102,10 @@ namespace DMS.Rpc.reports.report_store.report_store_general
 
             if (StoreFilter.Id == null) StoreFilter.Id = new IdFilter();
             StoreFilter.Id.In = await FilterStore(StoreService, OrganizationService, CurrentContext);
+            if(CurrentUser.AppUserStoreMappings != null && CurrentUser.AppUserStoreMappings.Count > 0)
+            {
+                StoreFilter.Id.In = CurrentUser.AppUserStoreMappings.Select(x => x.StoreId).ToList();
+            }
             List<Store> Stores = await StoreService.List(StoreFilter);
             List<ReportStoreGeneral_StoreDTO> ReportStoreGeneral_StoreDTOs = Stores
                 .Select(x => new ReportStoreGeneral_StoreDTO(x)).ToList();
@@ -189,6 +195,8 @@ namespace DMS.Rpc.reports.report_store.report_store_general
             if (ReportStoreGeneral_ReportStoreGeneralFilterDTO.HasValue == false)
                 return 0;
 
+            var CurrentUser = await AppUserService.Get(CurrentContext.UserId);
+
             DateTime Start = ReportStoreGeneral_ReportStoreGeneralFilterDTO.CheckIn?.GreaterEqual == null ?
                     LocalStartDay(CurrentContext) :
                     ReportStoreGeneral_ReportStoreGeneralFilterDTO.CheckIn.GreaterEqual.Value;
@@ -220,6 +228,10 @@ namespace DMS.Rpc.reports.report_store.report_store_general
             {
                 var listId = new List<long> { StoreId.Value };
                 StoreIds = StoreIds.Intersect(listId).ToList();
+            }
+            if (CurrentUser.AppUserStoreMappings != null && CurrentUser.AppUserStoreMappings.Count > 0)
+            {
+                StoreIds = CurrentUser.AppUserStoreMappings.Select(x => x.StoreId).ToList();
             }
             List<long> StoreTypeIds = await FilterStoreType(StoreTypeService, CurrentContext);
             if (StoreTypeId.HasValue)
@@ -266,6 +278,8 @@ namespace DMS.Rpc.reports.report_store.report_store_general
             if (ReportStoreGeneral_ReportStoreGeneralFilterDTO.HasValue == false)
                 return new List<ReportStoreGeneral_ReportStoreGeneralDTO>();
 
+            var CurrentUser = await AppUserService.Get(CurrentContext.UserId);
+
             DateTime Start = ReportStoreGeneral_ReportStoreGeneralFilterDTO.CheckIn?.GreaterEqual == null ?
                     LocalStartDay(CurrentContext) :
                     ReportStoreGeneral_ReportStoreGeneralFilterDTO.CheckIn.GreaterEqual.Value;
@@ -309,6 +323,10 @@ namespace DMS.Rpc.reports.report_store.report_store_general
             {
                 var listId = new List<long> { StoreId.Value };
                 StoreIds = StoreIds.Intersect(listId).ToList();
+            }
+            if (CurrentUser.AppUserStoreMappings != null && CurrentUser.AppUserStoreMappings.Count > 0)
+            {
+                StoreIds = CurrentUser.AppUserStoreMappings.Select(x => x.StoreId).ToList();
             }
             List<long> StoreTypeIds = await FilterStoreType(StoreTypeService, CurrentContext);
             if (StoreTypeId.HasValue)
