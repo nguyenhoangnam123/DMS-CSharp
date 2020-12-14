@@ -31,6 +31,8 @@ namespace DMS.Rpc.indirect_sales_order
         public const string Send = Default + "/send";
         public const string Approve = Default + "/approve";
         public const string Reject = Default + "/reject";
+        public const string BulkApprove = Default + "/bulk-approve";
+        public const string BulkReject = Default + "/bulk-reject";
         public const string Export = Default + "/export";
         public const string Print = Default + "/print";
 
@@ -134,7 +136,7 @@ namespace DMS.Rpc.indirect_sales_order
                 Master, Count, List, Get, Print,
                 CountNew, ListNew, CountPending, ListPending, CountCompleted, ListCompleted,
                 FilterListStore, FilterListStoreStatus, FilterListEditedPriceStatus, FilterListRequestState, FilterListAppUser, FilterListItem, FilterListUnitOfMeasure, FilterListOrganization,
-                OwnerDetail, Detail, Approve, Reject, Send,
+                OwnerDetail, Detail, Approve, Reject, Send, BulkApprove, BulkReject,
                 SingleListOrganization, SingleListStore, SingleListEditedPriceStatus, SingleListRequestState, SingleListAppUser,  SingleListItem, SingleListUnitOfMeasure, SingleListStoreType,
                 SingleListStoreGrouping, SingleListSupplier, SingleListProductGrouping, SingleListProductType, SingleListTaxType,
                 CountItem, ListItem, CountStore, ListStore, CountBuyerStore, ListBuyerStore
