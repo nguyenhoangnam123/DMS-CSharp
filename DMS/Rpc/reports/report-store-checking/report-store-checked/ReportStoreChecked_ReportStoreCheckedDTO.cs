@@ -21,6 +21,7 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
         public IdFilter StoreTypeId { get; set; }
         public IdFilter StoreGroupingId { get; set; }
         public IdFilter StoreStatusId { get; set; }
+        public IdFilter CheckingPlanStatusId { get; set; }
         public DateFilter CheckIn { get; set; }
 
 
@@ -29,6 +30,7 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
             (StoreId != null && StoreId.HasValue) ||
             (StoreTypeId != null && StoreTypeId.HasValue) ||
             (StoreStatusId != null && StoreStatusId.HasValue) ||
+            (CheckingPlanStatusId != null && CheckingPlanStatusId.HasValue) ||
             (CheckIn != null && CheckIn.HasValue) ||
             (StoreGroupingId != null && StoreGroupingId.HasValue);
     }
