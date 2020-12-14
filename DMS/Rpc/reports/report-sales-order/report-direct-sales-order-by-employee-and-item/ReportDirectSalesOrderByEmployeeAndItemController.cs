@@ -153,7 +153,8 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_by_employ
                 return 0;
 
             var SaleEmployeeId = ReportDirectSalesOrderByEmployeeAndItem_ReportDirectSalesOrderByEmployeeAndItemFilterDTO.AppUserId?.Equal;
-            var ItemId = ReportDirectSalesOrderByEmployeeAndItem_ReportDirectSalesOrderByEmployeeAndItemFilterDTO.ItemId?.Equal;
+            List<long> ItemIds = ReportDirectSalesOrderByEmployeeAndItem_ReportDirectSalesOrderByEmployeeAndItemFilterDTO.ItemId?.In;
+
             List<long> OrganizationIds = await FilterOrganization(OrganizationService, CurrentContext);
             List<OrganizationDAO> OrganizationDAOs = await DataContext.Organization.Where(o => o.DeletedAt == null && OrganizationIds.Contains(o.Id)).ToListAsync();
             OrganizationDAO OrganizationDAO = null;
@@ -188,7 +189,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_by_employ
 
             var transactionQuery = from t in DataContext.DirectSalesOrderTransaction
                                    where Ids.Contains(t.DirectSalesOrderId) &&
-                                   (ItemId.HasValue == false || t.ItemId == ItemId.Value)
+                                   (ItemIds == null || ItemIds.Count == 0 || ItemIds.Contains(t.ItemId))
                                    select new
                                    {
                                        OrganizationId = t.OrganizationId,
@@ -219,7 +220,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_by_employ
                 return BadRequest(new { message = "Chỉ được phép xem tối đa trong vòng 31 ngày" });
 
             long? SaleEmployeeId = ReportDirectSalesOrderByEmployeeAndItem_ReportDirectSalesOrderByEmployeeAndItemFilterDTO.AppUserId?.Equal;
-            long? ItemId = ReportDirectSalesOrderByEmployeeAndItem_ReportDirectSalesOrderByEmployeeAndItemFilterDTO.ItemId?.Equal;
+            List<long> ItemIds = ReportDirectSalesOrderByEmployeeAndItem_ReportDirectSalesOrderByEmployeeAndItemFilterDTO.ItemId?.In;
 
             List<long> OrganizationIds = await FilterOrganization(OrganizationService, CurrentContext);
             List<OrganizationDAO> OrganizationDAOs = await DataContext.Organization.Where(o => o.DeletedAt == null && (OrganizationIds.Count == 0 || OrganizationIds.Contains(o.Id))).ToListAsync();
@@ -255,7 +256,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_by_employ
 
             var transactionQuery = from t in DataContext.DirectSalesOrderTransaction
                                    where DirectSalesOrderIds.Contains(t.DirectSalesOrderId) &&
-                                   (ItemId.HasValue == false || t.ItemId == ItemId.Value)
+                                   (ItemIds == null || ItemIds.Count == 0 || ItemIds.Contains(t.ItemId))
                                    select new
                                    {
                                        OrganizationId = t.OrganizationId,
@@ -329,7 +330,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_by_employ
                     }
                 })
                 .ToListAsync();
-            List<long> ItemIds = new List<long>();
+            ItemIds = new List<long>();
             ItemIds.AddRange(DirectSalesOrderContentDAOs.Select(x => x.ItemId));
             ItemIds.AddRange(DirectSalesOrderPromotionDAOs.Select(x => x.ItemId));
             ItemIds = ItemIds.Distinct().ToList();
@@ -483,7 +484,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_by_employ
                 return new ReportDirectSalesOrderByEmployeeAndItem_TotalDTO();
 
             long? SaleEmployeeId = ReportDirectSalesOrderByEmployeeAndItem_ReportDirectSalesOrderByEmployeeAndItemFilterDTO.AppUserId?.Equal;
-            long? ItemId = ReportDirectSalesOrderByEmployeeAndItem_ReportDirectSalesOrderByEmployeeAndItemFilterDTO.ItemId?.Equal;
+            List<long> ItemIds = ReportDirectSalesOrderByEmployeeAndItem_ReportDirectSalesOrderByEmployeeAndItemFilterDTO.ItemId?.In;
 
             ReportDirectSalesOrderByEmployeeAndItem_TotalDTO ReportDirectSalesOrderByEmployeeAndItem_TotalDTO = new ReportDirectSalesOrderByEmployeeAndItem_TotalDTO();
             List<long> OrganizationIds = await FilterOrganization(OrganizationService, CurrentContext);
@@ -520,7 +521,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_by_employ
 
             var transactionQuery = from t in DataContext.DirectSalesOrderTransaction
                                    where DirectSalesOrderIds.Contains(t.DirectSalesOrderId) &&
-                                   (ItemId.HasValue == false || t.ItemId == ItemId.Value)
+                                   (ItemIds == null || ItemIds.Count == 0 || ItemIds.Contains(t.ItemId))
                                    select new
                                    {
                                        OrganizationId = t.OrganizationId,
