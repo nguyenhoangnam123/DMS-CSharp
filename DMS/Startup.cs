@@ -181,10 +181,11 @@ namespace DMS
                 }
 
                 string daily = "59 16 * * *";
-                RecurringJob.AddOrUpdate<MaintenanceService>("CleanHangfire", x => x.CleanHangfire(), daily);
+                RecurringJob.AddOrUpdate<MaintenanceService>("CleanHangfire", x => x.CleanHangfire(), Cron.Monthly);
                 RecurringJob.AddOrUpdate<MaintenanceService>("CleanEventMessage", x => x.CleanEventMessage(), daily);
                 RecurringJob.AddOrUpdate<MaintenanceService>("CompleteStoreCheckout", x => x.CompleteStoreCheckout(), daily);
                 RecurringJob.AddOrUpdate<MaintenanceService>("CreateStoreUnchecking", x => x.CreateStoreUnchecking(), daily);
+                RecurringJob.AddOrUpdate<MaintenanceService>("AutoInactive", x => x.AutoInactive(), "00 17 * * *");
             };
             onChange();
             ChangeToken.OnChange(() => Configuration.GetReloadToken(), onChange);
