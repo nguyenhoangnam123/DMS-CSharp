@@ -306,22 +306,28 @@ namespace DMS.Rpc.mobile
             Mobile_PrintIndirectOrderDTO Mobile_PrintDTO = new Mobile_PrintIndirectOrderDTO(IndirectSalesOrder);
             var culture = System.Globalization.CultureInfo.GetCultureInfo("en-EN");
             var STT = 1;
-            foreach (var IndirectSalesOrderContent in Mobile_PrintDTO.Contents)
+            if (Mobile_PrintDTO.Contents != null)
             {
-                IndirectSalesOrderContent.STT = STT++;
-                IndirectSalesOrderContent.AmountString = IndirectSalesOrderContent.Amount.ToString("N0", culture);
-                IndirectSalesOrderContent.PrimaryPriceString = IndirectSalesOrderContent.PrimaryPrice.ToString("N0", culture);
-                IndirectSalesOrderContent.QuantityString = IndirectSalesOrderContent.Quantity.ToString("N0", culture);
-                IndirectSalesOrderContent.RequestedQuantityString = IndirectSalesOrderContent.RequestedQuantity.ToString("N0", culture);
-                IndirectSalesOrderContent.SalePriceString = IndirectSalesOrderContent.SalePrice.ToString("N0", culture);
-                IndirectSalesOrderContent.DiscountString = IndirectSalesOrderContent.DiscountPercentage.HasValue ? IndirectSalesOrderContent.DiscountPercentage.Value.ToString("N0", culture) + "%" : "";
-                IndirectSalesOrderContent.TaxPercentageString = IndirectSalesOrderContent.TaxPercentage.HasValue ? IndirectSalesOrderContent.TaxPercentage.Value.ToString("N0", culture) + "%" : "";
+                foreach (var IndirectSalesOrderContent in Mobile_PrintDTO.Contents)
+                {
+                    IndirectSalesOrderContent.STT = STT++;
+                    IndirectSalesOrderContent.AmountString = IndirectSalesOrderContent.Amount.ToString("N0", culture);
+                    IndirectSalesOrderContent.PrimaryPriceString = IndirectSalesOrderContent.PrimaryPrice.ToString("N0", culture);
+                    IndirectSalesOrderContent.QuantityString = IndirectSalesOrderContent.Quantity.ToString("N0", culture);
+                    IndirectSalesOrderContent.RequestedQuantityString = IndirectSalesOrderContent.RequestedQuantity.ToString("N0", culture);
+                    IndirectSalesOrderContent.SalePriceString = IndirectSalesOrderContent.SalePrice.ToString("N0", culture);
+                    IndirectSalesOrderContent.DiscountString = IndirectSalesOrderContent.DiscountPercentage.HasValue ? IndirectSalesOrderContent.DiscountPercentage.Value.ToString("N0", culture) + "%" : "";
+                    IndirectSalesOrderContent.TaxPercentageString = IndirectSalesOrderContent.TaxPercentage.HasValue ? IndirectSalesOrderContent.TaxPercentage.Value.ToString("N0", culture) + "%" : "";
+                }
             }
-            foreach (var IndirectSalesOrderPromotion in Mobile_PrintDTO.Promotions)
+            if(Mobile_PrintDTO.Promotions != null)
             {
-                IndirectSalesOrderPromotion.STT = STT++;
-                IndirectSalesOrderPromotion.QuantityString = IndirectSalesOrderPromotion.Quantity.ToString("N0", culture);
-                IndirectSalesOrderPromotion.RequestedQuantityString = IndirectSalesOrderPromotion.RequestedQuantity.ToString("N0", culture);
+                foreach (var IndirectSalesOrderPromotion in Mobile_PrintDTO.Promotions)
+                {
+                    IndirectSalesOrderPromotion.STT = STT++;
+                    IndirectSalesOrderPromotion.QuantityString = IndirectSalesOrderPromotion.Quantity.ToString("N0", culture);
+                    IndirectSalesOrderPromotion.RequestedQuantityString = IndirectSalesOrderPromotion.RequestedQuantity.ToString("N0", culture);
+                }
             }
 
             Mobile_PrintDTO.SubTotalString = Mobile_PrintDTO.SubTotal.ToString("N0", culture);
@@ -739,22 +745,28 @@ namespace DMS.Rpc.mobile
             Mobile_PrintIndirectOrderDTO Mobile_PrintDTO = new Mobile_PrintIndirectOrderDTO(IndirectSalesOrder);
             var culture = System.Globalization.CultureInfo.GetCultureInfo("en-EN");
             var STT = 1;
-            foreach (var IndirectSalesOrderContent in Mobile_PrintDTO.Contents)
+            if (Mobile_PrintDTO.Contents != null)
             {
-                IndirectSalesOrderContent.STT = STT++;
-                IndirectSalesOrderContent.AmountString = IndirectSalesOrderContent.Amount.ToString("N0", culture);
-                IndirectSalesOrderContent.PrimaryPriceString = IndirectSalesOrderContent.PrimaryPrice.ToString("N0", culture);
-                IndirectSalesOrderContent.QuantityString = IndirectSalesOrderContent.Quantity.ToString("N0", culture);
-                IndirectSalesOrderContent.RequestedQuantityString = IndirectSalesOrderContent.RequestedQuantity.ToString("N0", culture);
-                IndirectSalesOrderContent.SalePriceString = IndirectSalesOrderContent.SalePrice.ToString("N0", culture);
-                IndirectSalesOrderContent.DiscountString = IndirectSalesOrderContent.DiscountPercentage.HasValue ? IndirectSalesOrderContent.DiscountPercentage.Value.ToString("N0", culture) + "%" : "";
-                IndirectSalesOrderContent.TaxPercentageString = IndirectSalesOrderContent.TaxPercentage.HasValue ? IndirectSalesOrderContent.TaxPercentage.Value.ToString("N0", culture) + "%" : "";
+                foreach (var IndirectSalesOrderContent in Mobile_PrintDTO.Contents)
+                {
+                    IndirectSalesOrderContent.STT = STT++;
+                    IndirectSalesOrderContent.AmountString = IndirectSalesOrderContent.Amount.ToString("N0", culture);
+                    IndirectSalesOrderContent.PrimaryPriceString = IndirectSalesOrderContent.PrimaryPrice.ToString("N0", culture);
+                    IndirectSalesOrderContent.QuantityString = IndirectSalesOrderContent.Quantity.ToString("N0", culture);
+                    IndirectSalesOrderContent.RequestedQuantityString = IndirectSalesOrderContent.RequestedQuantity.ToString("N0", culture);
+                    IndirectSalesOrderContent.SalePriceString = IndirectSalesOrderContent.SalePrice.ToString("N0", culture);
+                    IndirectSalesOrderContent.DiscountString = IndirectSalesOrderContent.DiscountPercentage.HasValue ? IndirectSalesOrderContent.DiscountPercentage.Value.ToString("N0", culture) + "%" : "";
+                    IndirectSalesOrderContent.TaxPercentageString = IndirectSalesOrderContent.TaxPercentage.HasValue ? IndirectSalesOrderContent.TaxPercentage.Value.ToString("N0", culture) + "%" : "";
+                }
             }
-            foreach (var IndirectSalesOrderPromotion in Mobile_PrintDTO.Promotions)
+            if (Mobile_PrintDTO.Promotions != null)
             {
-                IndirectSalesOrderPromotion.STT = STT++;
-                IndirectSalesOrderPromotion.QuantityString = IndirectSalesOrderPromotion.Quantity.ToString("N0", culture);
-                IndirectSalesOrderPromotion.RequestedQuantityString = IndirectSalesOrderPromotion.RequestedQuantity.ToString("N0", culture);
+                foreach (var IndirectSalesOrderPromotion in Mobile_PrintDTO.Promotions)
+                {
+                    IndirectSalesOrderPromotion.STT = STT++;
+                    IndirectSalesOrderPromotion.QuantityString = IndirectSalesOrderPromotion.Quantity.ToString("N0", culture);
+                    IndirectSalesOrderPromotion.RequestedQuantityString = IndirectSalesOrderPromotion.RequestedQuantity.ToString("N0", culture);
+                }
             }
 
             Mobile_PrintDTO.SubTotalString = Mobile_PrintDTO.SubTotal.ToString("N0", culture);
