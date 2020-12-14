@@ -292,7 +292,7 @@ namespace DMS.Rpc.mobile
                 return BadRequest(Mobile_IndirectSalesOrderDTO);
         }
 
-        [Route(MobileRoute.PreviewIndirectOrder), HttpGet]
+        [Route(MobileRoute.PreviewIndirectOrder), HttpPost]
         public async Task<ActionResult> PreviewIndirectOrder([FromBody] Mobile_IndirectSalesOrderDTO Mobile_IndirectSalesOrderDTO)
         {
             if (!ModelState.IsValid)
