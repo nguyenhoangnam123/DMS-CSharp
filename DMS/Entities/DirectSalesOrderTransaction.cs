@@ -11,15 +11,20 @@ namespace DMS.Entities
         public long Id { get; set; }
         public long DirectSalesOrderId { get; set; }
         public long OrganizationId { get; set; }
+        public long BuyerStoreId { get; set; }
+        public long SalesEmployeeId { get; set; }
         public long ItemId { get; set; }
         public long UnitOfMeasureId { get; set; }
         public long Quantity { get; set; }
         public decimal? Discount { get; set; }
         public decimal? Revenue { get; set; }
         public long TypeId { get; set; }
+        public DateTime OrderDate { get; set; }
+
         public DirectSalesOrder DirectSalesOrder { get; set; }
         public Item Item { get; set; }
         public Organization Organization { get; set; }
+        public TransactionType TransactionType { get; set; }
         public UnitOfMeasure UnitOfMeasure { get; set; }
 
         public bool Equals(DirectSalesOrderTransaction other)

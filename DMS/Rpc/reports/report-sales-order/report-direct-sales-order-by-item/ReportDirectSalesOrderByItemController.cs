@@ -397,11 +397,11 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_by_item
                         ItemDetail.BuyerStoreIds = new HashSet<long>();
                         ReportDirectSalesOrderByItem_ReportDirectSalesOrderByItemDTO.ItemDetails.Add(ItemDetail);
                     }
-                    if(Transaction.TypeId == DirectSalesOrderTransactionTypeEnum.SALES_CONTENT.Id)
+                    if(Transaction.TypeId == TransactionTypeEnum.SALES_CONTENT.Id)
                     {
                         ItemDetail.SaleStock += Transaction.Quantity;
                     }
-                    if (Transaction.TypeId == DirectSalesOrderTransactionTypeEnum.PROMOTION.Id)
+                    if (Transaction.TypeId == TransactionTypeEnum.PROMOTION.Id)
                     {
                         ItemDetail.PromotionStock += Transaction.Quantity;
                     }
@@ -566,11 +566,11 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_by_item
                 .DefaultIfEmpty(0)
                 .Sum();
             ReportDirectSalesOrderByItem_TotalDTO.TotalPromotionStock = DirectSalesOrderTransactions
-                .Where(x => x.TypeId == DirectSalesOrderTransactionTypeEnum.PROMOTION.Id)
+                .Where(x => x.TypeId == TransactionTypeEnum.PROMOTION.Id)
                 .Select(x => x.Quantity)
                 .Sum();
             ReportDirectSalesOrderByItem_TotalDTO.TotalSalesStock = DirectSalesOrderTransactions
-                .Where(x => x.TypeId == DirectSalesOrderTransactionTypeEnum.SALES_CONTENT.Id)
+                .Where(x => x.TypeId == TransactionTypeEnum.SALES_CONTENT.Id)
                 .Select(x => x.Quantity)
                 .Sum();
 
