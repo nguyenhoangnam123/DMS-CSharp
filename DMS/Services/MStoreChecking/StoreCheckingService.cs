@@ -312,6 +312,7 @@ namespace DMS.Services.MStoreChecking
                 Stores = await ListRecentStore(Stores, CurrentContext.Latitude.Value, CurrentContext.Longitude.Value);
             }
             Stores = await CheckStoreChecking(Stores);
+            Stores = await CheckOrder(Stores);
             Stores = Stores.OrderBy(x => x.HasChecking).ThenBy(x => x.Distance).Skip(skip).Take(take).ToList();
             
             return Stores;
@@ -381,6 +382,7 @@ namespace DMS.Services.MStoreChecking
                 }
 
                 Stores = await CheckStoreChecking(Stores);
+                Stores = await CheckOrder(Stores);
                 Stores = (from s in Stores
                           join id in StoreIds on s.Id equals id.Key
                           orderby s.HasChecking, s.Distance
@@ -468,6 +470,7 @@ namespace DMS.Services.MStoreChecking
                     Stores = await ListRecentStore(Stores, CurrentContext.Latitude.Value, CurrentContext.Longitude.Value);
                 }
                 Stores = await CheckStoreChecking(Stores);
+                Stores = await CheckOrder(Stores);
                 Stores = (from s in Stores
                           join id in StoreIds on s.Id equals id.Key
                           orderby s.HasChecking, s.Distance
@@ -547,6 +550,7 @@ namespace DMS.Services.MStoreChecking
                     Stores = await ListRecentStore(Stores, CurrentContext.Latitude.Value, CurrentContext.Longitude.Value);
                 }
                 Stores = await CheckStoreChecking(Stores);
+                Stores = await CheckOrder(Stores);
 
                 Stores = Stores.OrderBy(s => s.HasChecking).ThenBy(s => s.Distance).Skip(skip).Take(take).ToList();
                 return Stores;
@@ -585,6 +589,30 @@ namespace DMS.Services.MStoreChecking
             {
                 var count = StoreCheckings.Where(x => x.StoreId == Store.Id).Count();
                 Store.HasChecking = count != 0 ? true : false;
+            });
+            return Stores;
+        }
+
+        private async Task<List<Store>> CheckOrder(List<Store> Stores)
+        {
+            List<long> StoreIds = Stores.Select(x => x.Id).ToList();
+            DateTime StartToday = StaticParams.DateTimeNow.AddHours(CurrentContext.TimeZone).Date.AddHours(0 - CurrentContext.TimeZone);
+            DateTime EndToday = StartToday.AddDays(1);
+
+            IndirectSalesOrderFilter IndirectSalesOrderFilter = new IndirectSalesOrderFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = IndirectSalesOrderSelect.Id | IndirectSalesOrderSelect.BuyerStore,
+                BuyerStoreId = new IdFilter { In = StoreIds },
+                AppUserId = new IdFilter { Equal = CurrentContext.UserId },
+                OrderDate = new DateFilter { GreaterEqual = StartToday, Less = EndToday }
+            };
+            List<IndirectSalesOrder> IndirectSalesOrders = await UOW.IndirectSalesOrderRepository.List(IndirectSalesOrderFilter);
+            Parallel.ForEach(Stores, Store =>
+            {
+                var count = IndirectSalesOrders.Where(x => x.BuyerStoreId == Store.Id).Count();
+                Store.HasOrder = count != 0 ? true : false;
             });
             return Stores;
         }
