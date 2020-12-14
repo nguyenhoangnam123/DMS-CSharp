@@ -107,6 +107,29 @@ namespace DMS.Rpc.reports.report_sales_order.report_indirect_sales_order_by_empl
                 .Select(x => new ReportSalesOrderByEmployeeAndItem_OrganizationDTO(x)).ToList();
             return ReportSalesOrderByEmployeeAndItem_OrganizationDTOs;
         }
+
+        [Route(ReportSalesOrderByEmployeeAndItemRoute.FilterListItem), HttpPost]
+        public async Task<List<ReportSalesOrderByEmployeeAndItem_ItemDTO>> FilterListItem([FromBody] ReportSalesOrderByEmployeeAndItem_ItemFilterDTO ReportSalesOrderByEmployeeAndItem_ItemFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            ItemFilter ItemFilter = new ItemFilter();
+            ItemFilter.Skip = 0;
+            ItemFilter.Take = 20;
+            ItemFilter.OrderBy = ItemOrder.Id;
+            ItemFilter.OrderType = OrderType.ASC;
+            ItemFilter.Selects = ItemSelect.ALL;
+            ItemFilter.Id = ReportSalesOrderByEmployeeAndItem_ItemFilterDTO.Id;
+            ItemFilter.Code = ReportSalesOrderByEmployeeAndItem_ItemFilterDTO.Code;
+            ItemFilter.Name = ReportSalesOrderByEmployeeAndItem_ItemFilterDTO.Name;
+            ItemFilter.StatusId = ReportSalesOrderByEmployeeAndItem_ItemFilterDTO.StatusId;
+
+            List<Item> Items = await ItemService.List(ItemFilter);
+            List<ReportSalesOrderByEmployeeAndItem_ItemDTO> ReportSalesOrderByEmployeeAndItem_ItemDTOs = Items
+                .Select(x => new ReportSalesOrderByEmployeeAndItem_ItemDTO(x)).ToList();
+            return ReportSalesOrderByEmployeeAndItem_ItemDTOs;
+        }
         #endregion
 
         [Route(ReportSalesOrderByEmployeeAndItemRoute.Count), HttpPost]
@@ -130,6 +153,8 @@ namespace DMS.Rpc.reports.report_sales_order.report_indirect_sales_order_by_empl
                 return 0;
 
             var SaleEmployeeId = ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO.AppUserId?.Equal;
+            var ItemId = ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO.ItemId?.Equal;
+
             List<long> OrganizationIds = await FilterOrganization(OrganizationService, CurrentContext);
             List<OrganizationDAO> OrganizationDAOs = await DataContext.Organization.Where(o => o.DeletedAt == null && OrganizationIds.Contains(o.Id)).ToListAsync();
             OrganizationDAO OrganizationDAO = null;
@@ -152,19 +177,25 @@ namespace DMS.Rpc.reports.report_sales_order.report_indirect_sales_order_by_empl
             var AppUsers = await AppUserService.List(AppUserFilter);
             var AppUserIds = AppUsers.Select(x => x.Id).ToList();
 
-            var query = from i in DataContext.IndirectSalesOrder
-                        where i.OrderDate >= Start && i.OrderDate <= End &&
-                        AppUserIds.Contains(i.SaleEmployeeId) &&
-                        (SaleEmployeeId.HasValue == false || i.SaleEmployeeId == SaleEmployeeId.Value) &&
-                        OrganizationIds.Contains(i.OrganizationId) &&
-                        i.RequestStateId == RequestStateEnum.APPROVED.Id
-                        select new
-                        {
-                            OrganizationId = i.OrganizationId,
-                            SalesEmployeeId = i.SaleEmployeeId
-                        };
+            var orderQuery = from i in DataContext.IndirectSalesOrder
+                             where i.OrderDate >= Start && i.OrderDate <= End &&
+                             AppUserIds.Contains(i.SaleEmployeeId) &&
+                             (SaleEmployeeId.HasValue == false || i.SaleEmployeeId == SaleEmployeeId.Value) &&
+                             OrganizationIds.Contains(i.OrganizationId) &&
+                             i.RequestStateId == RequestStateEnum.APPROVED.Id
+                             select i.Id;
 
-            int count = await query.Distinct().CountAsync();
+            var Ids = await orderQuery.ToListAsync();
+
+            var transactionQuery = from t in DataContext.IndirectSalesOrderTransaction
+                                   where Ids.Contains(t.IndirectSalesOrderId) &&
+                                   (ItemId.HasValue == false || t.ItemId == ItemId.Value)
+                                   select new
+                                   {
+                                       OrganizationId = t.OrganizationId,
+                                       SalesEmployeeId = t.SalesEmployeeId
+                                   };
+            int count = await transactionQuery.Distinct().CountAsync();
             return count;
         }
 
@@ -189,6 +220,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_indirect_sales_order_by_empl
                 return BadRequest(new { message = "Chỉ được phép xem tối đa trong vòng 31 ngày" });
 
             long? SaleEmployeeId = ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO.AppUserId?.Equal;
+            var ItemId = ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO.ItemId?.Equal;
 
             List<long> OrganizationIds = await FilterOrganization(OrganizationService, CurrentContext);
             List<OrganizationDAO> OrganizationDAOs = await DataContext.Organization.Where(o => o.DeletedAt == null && (OrganizationIds.Count == 0 || OrganizationIds.Contains(o.Id))).ToListAsync();
@@ -212,19 +244,26 @@ namespace DMS.Rpc.reports.report_sales_order.report_indirect_sales_order_by_empl
             var AppUsers = await AppUserService.List(AppUserFilter);
             var AppUserIds = AppUsers.Select(x => x.Id).ToList();
 
-            var query = from i in DataContext.IndirectSalesOrder
-                        where i.OrderDate >= Start && i.OrderDate <= End &&
-                        AppUserIds.Contains(i.SaleEmployeeId) &&
-                        (SaleEmployeeId.HasValue == false || i.SaleEmployeeId == SaleEmployeeId.Value) &&
-                        OrganizationIds.Contains(i.OrganizationId) &&
-                        i.RequestStateId == RequestStateEnum.APPROVED.Id
-                        select new
-                        {
-                            OrganizationId = i.OrganizationId,
-                            SalesEmployeeId = i.SaleEmployeeId
-                        };
+            var orderQuery = from i in DataContext.IndirectSalesOrder
+                             where i.OrderDate >= Start && i.OrderDate <= End &&
+                             AppUserIds.Contains(i.SaleEmployeeId) &&
+                             (SaleEmployeeId.HasValue == false || i.SaleEmployeeId == SaleEmployeeId.Value) &&
+                             OrganizationIds.Contains(i.OrganizationId) &&
+                             i.RequestStateId == RequestStateEnum.APPROVED.Id
+                             select i.Id;
 
-            var Ids = await query
+            var IndirectSalesOrderIds = await orderQuery.ToListAsync();
+
+            var transactionQuery = from t in DataContext.IndirectSalesOrderTransaction
+                                   where IndirectSalesOrderIds.Contains(t.IndirectSalesOrderId) &&
+                                   (ItemId.HasValue == false || t.ItemId == ItemId.Value)
+                                   select new
+                                   {
+                                       OrganizationId = t.OrganizationId,
+                                       SalesEmployeeId = t.SalesEmployeeId
+                                   };
+
+            var Ids = await transactionQuery
                 .Distinct()
                 .OrderBy(x => x.OrganizationId)
                 .Skip(ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO.Skip)
@@ -251,7 +290,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_indirect_sales_order_by_empl
                 .Where(x => AppUserIds.Contains(x.SaleEmployeeId) && Start <= x.OrderDate && x.OrderDate <= End &&
                 x.RequestStateId == RequestStateEnum.APPROVED.Id)
                 .ToListAsync();
-            List<long> IndirectSalesOrderIds = IndirectSalesOrderDAOs.Select(x => x.Id).ToList();
+            IndirectSalesOrderIds = IndirectSalesOrderDAOs.Select(x => x.Id).ToList();
             List<IndirectSalesOrderContentDAO> IndirectSalesOrderContentDAOs = await DataContext.IndirectSalesOrderContent
                 .Where(x => AppUserIds.Contains(x.IndirectSalesOrder.SaleEmployeeId) && Start <= x.IndirectSalesOrder.OrderDate && x.IndirectSalesOrder.OrderDate <= End)
                 .Select(x => new IndirectSalesOrderContentDAO
@@ -444,6 +483,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_indirect_sales_order_by_empl
                 return new ReportSalesOrderByEmployeeAndItem_TotalDTO();
 
             long? SaleEmployeeId = ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO.AppUserId?.Equal;
+            var ItemId = ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO.ItemId?.Equal;
 
             ReportSalesOrderByEmployeeAndItem_TotalDTO ReportSalesOrderByEmployeeAndItem_TotalDTO = new ReportSalesOrderByEmployeeAndItem_TotalDTO();
             List<long> OrganizationIds = await FilterOrganization(OrganizationService, CurrentContext);
@@ -468,19 +508,26 @@ namespace DMS.Rpc.reports.report_sales_order.report_indirect_sales_order_by_empl
             var AppUsers = await AppUserService.List(AppUserFilter);
             var AppUserIds = AppUsers.Select(x => x.Id).ToList();
 
-            var query = from i in DataContext.IndirectSalesOrder
-                        where i.OrderDate >= Start && i.OrderDate <= End &&
-                        AppUserIds.Contains(i.SaleEmployeeId) &&
-                        (SaleEmployeeId.HasValue == false || i.SaleEmployeeId == SaleEmployeeId.Value) &&
-                        OrganizationIds.Contains(i.OrganizationId) &&
-                        i.RequestStateId == RequestStateEnum.APPROVED.Id
-                        select new
-                        {
-                            OrganizationId = i.OrganizationId,
-                            SalesEmployeeId = i.SaleEmployeeId
-                        };
+            var orderQuery = from i in DataContext.DirectSalesOrder
+                             where i.OrderDate >= Start && i.OrderDate <= End &&
+                             AppUserIds.Contains(i.SaleEmployeeId) &&
+                             (SaleEmployeeId.HasValue == false || i.SaleEmployeeId == SaleEmployeeId.Value) &&
+                             OrganizationIds.Contains(i.OrganizationId) &&
+                             i.RequestStateId == RequestStateEnum.APPROVED.Id
+                             select i.Id;
 
-            var Ids = await query
+            var DirectSalesOrderIds = await orderQuery.ToListAsync();
+
+            var transactionQuery = from t in DataContext.DirectSalesOrderTransaction
+                                   where DirectSalesOrderIds.Contains(t.DirectSalesOrderId) &&
+                                   (ItemId.HasValue == false || t.ItemId == ItemId.Value)
+                                   select new
+                                   {
+                                       OrganizationId = t.OrganizationId,
+                                       SalesEmployeeId = t.SalesEmployeeId
+                                   };
+
+            var Ids = await transactionQuery
                 .OrderBy(x => x.OrganizationId)
                 .Distinct().ToListAsync();
             AppUserIds = Ids.Select(x => x.SalesEmployeeId).Distinct().ToList();
