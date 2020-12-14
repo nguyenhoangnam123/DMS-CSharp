@@ -43,6 +43,7 @@ using DMS.Services.MLuckyNumber;
 using DMS.Helpers;
 using System.Dynamic;
 using System.Net.Mime;
+using GleamTech.DocumentUltimate;
 
 namespace DMS.Rpc.mobile
 {
@@ -346,6 +347,8 @@ namespace DMS.Rpc.mobile
             {
                 document.Process(Data);
             };
+            var documentConverter = new DocumentConverter(output, DocumentFormat.Docx);
+            documentConverter.ConvertTo(MemoryStream, DocumentFormat.Pdf);
 
             ContentDisposition cd = new ContentDisposition
             {
@@ -353,7 +356,7 @@ namespace DMS.Rpc.mobile
                 Inline = true,
             };
             Response.Headers.Add("Content-Disposition", cd.ToString());
-            return File(output.ToArray(), "application/vnd.openxmlformats-officedocument.wordprocessingml.document;charset=utf-8");
+            return File(output.ToArray(), "application/pdf;charset=utf-8");
         }
 
         [Route(MobileRoute.CreateProblem), HttpPost]
@@ -785,6 +788,8 @@ namespace DMS.Rpc.mobile
             {
                 document.Process(Data);
             };
+            var documentConverter = new DocumentConverter(output, DocumentFormat.Docx);
+            documentConverter.ConvertTo(MemoryStream, DocumentFormat.Pdf);
 
             ContentDisposition cd = new ContentDisposition
             {
@@ -792,7 +797,7 @@ namespace DMS.Rpc.mobile
                 Inline = true,
             };
             Response.Headers.Add("Content-Disposition", cd.ToString());
-            return File(output.ToArray(), "application/vnd.openxmlformats-officedocument.wordprocessingml.document;charset=utf-8");
+            return File(MemoryStream.ToArray(), "application/pdf;charset=utf-8");
         }
 
         private StoreChecking ConvertDTOToEntity(Mobile_StoreCheckingDTO Mobile_StoreCheckingDTO)
