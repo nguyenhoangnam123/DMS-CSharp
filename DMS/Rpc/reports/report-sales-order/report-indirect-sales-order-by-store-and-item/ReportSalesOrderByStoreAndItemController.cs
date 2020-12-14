@@ -434,6 +434,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_indirect_sales_order_by_stor
             StoreIds = Stores.Select(s => s.Id).ToList();
             List<IndirectSalesOrderDAO> IndirectSalesOrderDAOs = await DataContext.IndirectSalesOrder
                 .Where(x => StoreIds.Contains(x.BuyerStoreId) && Start <= x.OrderDate && x.OrderDate <= End &&
+                AppUserIds.Contains(x.SaleEmployeeId) &&
                 x.RequestStateId == RequestStateEnum.APPROVED.Id)
                 .Select(x => new IndirectSalesOrderDAO 
                 { 
@@ -712,11 +713,13 @@ namespace DMS.Rpc.reports.report_sales_order.report_indirect_sales_order_by_stor
 
             StoreIds = Stores.Select(s => s.Id).ToList();
             var IndirectSalesOrderContentQuery = DataContext.IndirectSalesOrderContent
-                .Where(x => StoreIds.Contains(x.IndirectSalesOrder.BuyerStoreId) && 
+                .Where(x => StoreIds.Contains(x.IndirectSalesOrder.BuyerStoreId) &&
+                AppUserIds.Contains(x.IndirectSalesOrder.SaleEmployeeId) &&
                 Start <= x.IndirectSalesOrder.OrderDate && x.IndirectSalesOrder.OrderDate <= End &&
                 x.IndirectSalesOrder.RequestStateId == RequestStateEnum.APPROVED.Id);
             var IndirectSalesOrderPromotionQuery = DataContext.IndirectSalesOrderPromotion
-                .Where(x => StoreIds.Contains(x.IndirectSalesOrder.BuyerStoreId) && 
+                .Where(x => StoreIds.Contains(x.IndirectSalesOrder.BuyerStoreId) &&
+                AppUserIds.Contains(x.IndirectSalesOrder.SaleEmployeeId) &&
                 Start <= x.IndirectSalesOrder.OrderDate && x.IndirectSalesOrder.OrderDate <= End &&
                 x.IndirectSalesOrder.RequestStateId == RequestStateEnum.APPROVED.Id);
 
