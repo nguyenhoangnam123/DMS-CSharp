@@ -34,6 +34,7 @@ namespace DMS.Rpc.lucky_number
             this.LuckyNumberGrouping = LuckyNumber.LuckyNumberGrouping == null ? null : new LuckyNumber_LuckyNumberGroupingDTO(LuckyNumber.LuckyNumberGrouping);
             this.CreatedAt = LuckyNumber.CreatedAt;
             this.UpdatedAt = LuckyNumber.UpdatedAt;
+            this.UsedAt = LuckyNumber.UsedAt;
             this.Errors = LuckyNumber.Errors;
         }
     }

@@ -390,7 +390,8 @@ namespace DMS.Rpc.lucky_number
                 Skip = 0,
                 Take = int.MaxValue,
                 Selects = RewardHistorySelect.ALL,
-                Id = new IdFilter { In = RewardHistoryIds }
+                Id = new IdFilter { In = RewardHistoryIds },
+                CreatedAt = LuckyNumber_LuckyNumberFilterDTO.UsedAt
             };
             List<RewardHistory> RewardHistories = await RewardHistoryService.List(RewardHistoryFilter);
             RewardHistoryContentFilter RewardHistoryContentFilter = new RewardHistoryContentFilter
