@@ -79,7 +79,8 @@
       "StatusNotExisted": "Trạng thái không tồn tại"
     },
     "StoreStatus": {
-      "StoreStatusNotExisted": "Trạng thái không tồn tại"
+      "StoreStatusNotSelected": "Trạng thái chưa được chọn.",
+      "StoreStatusNotExisted": "Trạng thái không tồn tại."
     },
     "StoreScouting": {
       "StoreScoutingHasOpened": "Đại lý cắm cờ đã được mở",
