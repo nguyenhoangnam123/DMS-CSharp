@@ -41,6 +41,7 @@ namespace DMS.Entities
         public long StoreStatusId { get; set; }
         public bool HasEroute { get; set; }
         public bool HasChecking { get; set; }
+        public bool HasOrder { get; set; }
         public bool Used { get; set; }
         public long? StoreScoutingId { get; set; }
         public DateTime CreatedAt { get; set; }

@@ -34,6 +34,7 @@ namespace DMS.Rpc.mobile
         public long StatusId { get; set; }
         public bool HasEroute { get; set; }
         public bool HasChecking { get; set; }
+        public bool HasOrder { get; set; }
         public bool Used { get; set; }
         public long? StoreScoutingId { get; set; }
         public long? StoreId { get; set; }
@@ -82,6 +83,7 @@ namespace DMS.Rpc.mobile
             this.StatusId = Store.StatusId;
             this.HasEroute = Store.HasEroute;
             this.HasChecking = Store.HasChecking;
+            this.HasOrder = Store.HasOrder;
             this.Used = Store.Used;
             this.StoreScoutingId = Store.StoreScoutingId;
             this.Distance = Store.Distance;

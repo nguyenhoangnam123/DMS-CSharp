@@ -12,11 +12,13 @@ namespace DMS.Models
             Banners = new HashSet<BannerDAO>();
             DirectSalesOrderCreators = new HashSet<DirectSalesOrderDAO>();
             DirectSalesOrderSaleEmployees = new HashSet<DirectSalesOrderDAO>();
+            DirectSalesOrderTransactions = new HashSet<DirectSalesOrderTransactionDAO>();
             ERouteChangeRequests = new HashSet<ERouteChangeRequestDAO>();
             ERouteCreators = new HashSet<ERouteDAO>();
             ERouteSaleEmployees = new HashSet<ERouteDAO>();
             IndirectSalesOrderCreators = new HashSet<IndirectSalesOrderDAO>();
             IndirectSalesOrderSaleEmployees = new HashSet<IndirectSalesOrderDAO>();
+            IndirectSalesOrderTransactions = new HashSet<IndirectSalesOrderTransactionDAO>();
             InventoryHistories = new HashSet<InventoryHistoryDAO>();
             ItemHistories = new HashSet<ItemHistoryDAO>();
             KpiGeneralCreators = new HashSet<KpiGeneralDAO>();
@@ -126,11 +128,13 @@ namespace DMS.Models
         public virtual ICollection<BannerDAO> Banners { get; set; }
         public virtual ICollection<DirectSalesOrderDAO> DirectSalesOrderCreators { get; set; }
         public virtual ICollection<DirectSalesOrderDAO> DirectSalesOrderSaleEmployees { get; set; }
+        public virtual ICollection<DirectSalesOrderTransactionDAO> DirectSalesOrderTransactions { get; set; }
         public virtual ICollection<ERouteChangeRequestDAO> ERouteChangeRequests { get; set; }
         public virtual ICollection<ERouteDAO> ERouteCreators { get; set; }
         public virtual ICollection<ERouteDAO> ERouteSaleEmployees { get; set; }
         public virtual ICollection<IndirectSalesOrderDAO> IndirectSalesOrderCreators { get; set; }
         public virtual ICollection<IndirectSalesOrderDAO> IndirectSalesOrderSaleEmployees { get; set; }
+        public virtual ICollection<IndirectSalesOrderTransactionDAO> IndirectSalesOrderTransactions { get; set; }
         public virtual ICollection<InventoryHistoryDAO> InventoryHistories { get; set; }
         public virtual ICollection<ItemHistoryDAO> ItemHistories { get; set; }
         public virtual ICollection<KpiGeneralDAO> KpiGeneralCreators { get; set; }

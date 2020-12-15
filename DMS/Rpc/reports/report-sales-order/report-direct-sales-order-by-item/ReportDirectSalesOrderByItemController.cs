@@ -19,12 +19,14 @@ using System.IO;
 using System.Dynamic;
 using NGS.Templater;
 using DMS.Rpc.direct_sales_order;
+using DMS.Services.MAppUser;
 
 namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_by_item
 {
     public class ReportDirectSalesOrderByItemController : RpcController
     {
         private DataContext DataContext;
+        private IAppUserService AppUserService;
         private IOrganizationService OrganizationService;
         private IDirectSalesOrderService DirectSalesOrderService;
         private IItemService ItemService;
@@ -34,6 +36,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_by_item
         private ICurrentContext CurrentContext;
         public ReportDirectSalesOrderByItemController(
             DataContext DataContext,
+            IAppUserService AppUserService,
             IOrganizationService OrganizationService,
             IItemService ItemService,
             IDirectSalesOrderService DirectSalesOrderService,
@@ -43,6 +46,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_by_item
             ICurrentContext CurrentContext)
         {
             this.DataContext = DataContext;
+            this.AppUserService = AppUserService;
             this.OrganizationService = OrganizationService;
             this.DirectSalesOrderService = DirectSalesOrderService;
             this.ItemService = ItemService;
@@ -183,6 +187,18 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_by_item
             }
             OrganizationIds = OrganizationDAOs.Select(o => o.Id).ToList();
 
+            AppUserFilter AppUserFilter = new AppUserFilter
+            {
+                OrganizationId = new IdFilter { In = OrganizationIds },
+                Id = new IdFilter { },
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = AppUserSelect.Id | AppUserSelect.DisplayName | AppUserSelect.Organization
+            };
+            AppUserFilter.Id.In = await FilterAppUser(AppUserService, OrganizationService, CurrentContext);
+            var AppUsers = await AppUserService.List(AppUserFilter);
+            var AppUserIds = AppUsers.Select(x => x.Id).ToList();
+
             List<long> ProductTypeIds = await FilterProductType(ProductTypeService, CurrentContext);
             if (ProductTypeId.HasValue)
             {
@@ -202,6 +218,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_by_item
                         join ppgm in DataContext.ProductProductGroupingMapping on p.Id equals ppgm.ProductId into PPGM
                         from sppgm in PPGM.DefaultIfEmpty()
                         where OrganizationIds.Contains(t.OrganizationId) &&
+                        AppUserIds.Contains(od.SaleEmployeeId) &&
                         (ItemId.HasValue == false || t.ItemId == ItemId) &&
                         (ProductTypeIds.Contains(p.ProductTypeId)) &&
                         (
@@ -253,6 +270,19 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_by_item
                 OrganizationDAOs = OrganizationDAOs.Where(o => o.Path.StartsWith(OrganizationDAO.Path)).ToList();
             }
             OrganizationIds = OrganizationDAOs.Select(o => o.Id).ToList();
+
+            AppUserFilter AppUserFilter = new AppUserFilter
+            {
+                OrganizationId = new IdFilter { In = OrganizationIds },
+                Id = new IdFilter { },
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = AppUserSelect.Id | AppUserSelect.DisplayName | AppUserSelect.Organization
+            };
+            AppUserFilter.Id.In = await FilterAppUser(AppUserService, OrganizationService, CurrentContext);
+            var AppUsers = await AppUserService.List(AppUserFilter);
+            var AppUserIds = AppUsers.Select(x => x.Id).ToList();
+
             List<long> ProductTypeIds = await FilterProductType(ProductTypeService, CurrentContext);
             if (ProductTypeId.HasValue)
             {
@@ -273,6 +303,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_by_item
                         join ppgm in DataContext.ProductProductGroupingMapping on p.Id equals ppgm.ProductId into PPGM
                         from sppgm in PPGM.DefaultIfEmpty()
                         where OrganizationIds.Contains(t.OrganizationId) &&
+                        AppUserIds.Contains(od.SaleEmployeeId) &&
                         (ItemId.HasValue == false || t.ItemId == ItemId) &&
                         (ProductTypeIds.Contains(p.ProductTypeId)) &&
                         (
@@ -314,6 +345,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_by_item
                                    join o in DataContext.Organization on t.OrganizationId equals o.Id
                                    where OrgIds.Contains(t.OrganizationId) &&
                                    ItemIds.Contains(t.ItemId) &&
+                                   AppUserIds.Contains(od.SaleEmployeeId) &&
                                    od.OrderDate >= Start && od.OrderDate <= End &&
                                    ind.RequestStateId == RequestStateEnum.APPROVED.Id
                                    select new DirectSalesOrderTransactionDAO
@@ -365,11 +397,11 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_by_item
                         ItemDetail.BuyerStoreIds = new HashSet<long>();
                         ReportDirectSalesOrderByItem_ReportDirectSalesOrderByItemDTO.ItemDetails.Add(ItemDetail);
                     }
-                    if(Transaction.TypeId == DirectSalesOrderTransactionTypeEnum.SALES_CONTENT.Id)
+                    if(Transaction.TypeId == TransactionTypeEnum.SALES_CONTENT.Id)
                     {
                         ItemDetail.SaleStock += Transaction.Quantity;
                     }
-                    if (Transaction.TypeId == DirectSalesOrderTransactionTypeEnum.PROMOTION.Id)
+                    if (Transaction.TypeId == TransactionTypeEnum.PROMOTION.Id)
                     {
                         ItemDetail.PromotionStock += Transaction.Quantity;
                     }
@@ -427,6 +459,19 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_by_item
                 OrganizationDAOs = OrganizationDAOs.Where(o => o.Path.StartsWith(OrganizationDAO.Path)).ToList();
             }
             OrganizationIds = OrganizationDAOs.Select(o => o.Id).ToList();
+
+            AppUserFilter AppUserFilter = new AppUserFilter
+            {
+                OrganizationId = new IdFilter { In = OrganizationIds },
+                Id = new IdFilter { },
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = AppUserSelect.Id | AppUserSelect.DisplayName | AppUserSelect.Organization
+            };
+            AppUserFilter.Id.In = await FilterAppUser(AppUserService, OrganizationService, CurrentContext);
+            var AppUsers = await AppUserService.List(AppUserFilter);
+            var AppUserIds = AppUsers.Select(x => x.Id).ToList();
+
             List<long> ProductTypeIds = await FilterProductType(ProductTypeService, CurrentContext);
             if (ProductTypeId.HasValue)
             {
@@ -447,6 +492,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_by_item
                         join ppgm in DataContext.ProductProductGroupingMapping on p.Id equals ppgm.ProductId into PPGM
                         from sppgm in PPGM.DefaultIfEmpty()
                         where OrganizationIds.Contains(t.OrganizationId) &&
+                        AppUserIds.Contains(od.SaleEmployeeId) &&
                         (ItemId.HasValue == false || t.ItemId == ItemId) &&
                         (ProductTypeIds.Contains(p.ProductTypeId)) &&
                         (
@@ -520,11 +566,11 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_by_item
                 .DefaultIfEmpty(0)
                 .Sum();
             ReportDirectSalesOrderByItem_TotalDTO.TotalPromotionStock = DirectSalesOrderTransactions
-                .Where(x => x.TypeId == DirectSalesOrderTransactionTypeEnum.PROMOTION.Id)
+                .Where(x => x.TypeId == TransactionTypeEnum.PROMOTION.Id)
                 .Select(x => x.Quantity)
                 .Sum();
             ReportDirectSalesOrderByItem_TotalDTO.TotalSalesStock = DirectSalesOrderTransactions
-                .Where(x => x.TypeId == DirectSalesOrderTransactionTypeEnum.SALES_CONTENT.Id)
+                .Where(x => x.TypeId == TransactionTypeEnum.SALES_CONTENT.Id)
                 .Select(x => x.Quantity)
                 .Sum();
 

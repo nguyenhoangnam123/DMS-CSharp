@@ -209,6 +209,11 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
             return ReportStoreChecked_StoreStatusDTOs;
         }
 
+        [Route(ReportStoreCheckedRoute.FilterListCheckingPlanStatus), HttpPost]
+        public async Task<List<GenericEnum>> FilterListCheckingPlanStatus()
+        {
+            return CheckingPlanStatusEnum.CheckingPlanStatusEnumList;
+        }
         #endregion
 
         [Route(ReportStoreCheckedRoute.Count), HttpPost]
@@ -236,6 +241,7 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
             long? StoreTypeId = ReportStoreChecked_ReportStoreCheckedFilterDTO.StoreTypeId?.Equal;
             long? StoreGroupingId = ReportStoreChecked_ReportStoreCheckedFilterDTO.StoreGroupingId?.Equal;
             long? StoreStatusId = ReportStoreChecked_ReportStoreCheckedFilterDTO.StoreStatusId?.Equal;
+            long? CheckingPlanStatusId = ReportStoreChecked_ReportStoreCheckedFilterDTO.CheckingPlanStatusId?.Equal;
 
             List<long> OrganizationIds = await FilterOrganization(OrganizationService, CurrentContext);
             List<OrganizationDAO> OrganizationDAOs = await DataContext.Organization.Where(o => o.DeletedAt == null && OrganizationIds.Contains(o.Id)).ToListAsync();
@@ -300,9 +306,13 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
                             )
                         ) &&
                         (StoreStatusId.HasValue == false || StoreStatusId.Value == StoreStatusEnum.ALL.Id || s.StoreStatusId == StoreStatusId.Value) &&
+                        (CheckingPlanStatusId.HasValue == false || CheckingPlanStatusId.Value == CheckingPlanStatusEnum.ALL.Id || 
+                            (CheckingPlanStatusId.Value == CheckingPlanStatusEnum.PLANNED.Id && sc.Planned == true) ||
+                            (CheckingPlanStatusId.Value == CheckingPlanStatusEnum.UNPLANNED.Id && sc.Planned == false)
+                        ) &&
                         OrganizationIds.Contains(sc.OrganizationId) &&
                         s.DeletedAt == null
-                        select new 
+                        select new
                         {
                             SalesEmployeeId = au.Id,
                             OrganizationId = sc.OrganizationId
@@ -337,6 +347,7 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
             long? StoreTypeId = ReportStoreChecker_ReportStoreCheckedFilterDTO.StoreTypeId?.Equal;
             long? StoreGroupingId = ReportStoreChecker_ReportStoreCheckedFilterDTO.StoreGroupingId?.Equal;
             long? StoreStatusId = ReportStoreChecker_ReportStoreCheckedFilterDTO.StoreStatusId?.Equal;
+            long? CheckingPlanStatusId = ReportStoreChecker_ReportStoreCheckedFilterDTO.CheckingPlanStatusId?.Equal;
 
             List<long> OrganizationIds = await FilterOrganization(OrganizationService, CurrentContext);
             List<OrganizationDAO> OrganizationDAOs = await DataContext.Organization.Where(o => o.DeletedAt == null && (OrganizationIds.Count == 0 || OrganizationIds.Contains(o.Id))).ToListAsync();
@@ -400,6 +411,10 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
                             )
                         ) &&
                         (StoreStatusId.HasValue == false || StoreStatusId.Value == StoreStatusEnum.ALL.Id || s.StoreStatusId == StoreStatusId.Value) &&
+                        (CheckingPlanStatusId.HasValue == false || CheckingPlanStatusId.Value == CheckingPlanStatusEnum.ALL.Id ||
+                            (CheckingPlanStatusId.Value == CheckingPlanStatusEnum.PLANNED.Id && sc.Planned == true) ||
+                            (CheckingPlanStatusId.Value == CheckingPlanStatusEnum.UNPLANNED.Id && sc.Planned == false)
+                        ) &&
                         OrganizationIds.Contains(sc.OrganizationId) &&
                         s.DeletedAt == null
                         select new
@@ -477,7 +492,7 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
             var query4 = from i in DataContext.IndirectSalesOrder
                          join tt in tempTableQuery.Query on i.StoreCheckingId equals tt.Column1
                          where i.StoreCheckingId.HasValue &&
-                         i.RequestStateId == RequestStateEnum.APPROVED.Id
+                         (i.RequestStateId == RequestStateEnum.APPROVED.Id || i.RequestStateId == RequestStateEnum.PENDING.Id)
                          select new
                          {
                              Id = i.Id,
@@ -583,11 +598,8 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
                             var TotalMinuteChecking = StoreChecking.CheckOut.Subtract(StoreChecking.CheckIn).TotalSeconds;
                             TimeSpan timeSpan = TimeSpan.FromSeconds(TotalMinuteChecking);
                             StoreChecking.Duaration = $"{timeSpan.Hours.ToString().PadLeft(2, '0')} : {timeSpan.Minutes.ToString().PadLeft(2, '0')} : {timeSpan.Seconds.ToString().PadLeft(2, '0')}";
-                            var HasSalesOrder = SalesOrders.Where(x => x.StoreCheckingId == StoreChecking.Id).FirstOrDefault();
-                            if (HasSalesOrder == null)
-                                StoreChecking.SalesOrder = false;
-                            else
-                                StoreChecking.SalesOrder = true;
+                            var OrderCounter = SalesOrders.Where(x => x.StoreCheckingId == StoreChecking.Id).Count();
+                            StoreChecking.SalesOrderCounter = OrderCounter;
                         }
                         SaleEmployee.StoreCheckingGroupByDates.Add(ReportStoreChecked_StoreCheckingGroupByDateDTO);
                     }

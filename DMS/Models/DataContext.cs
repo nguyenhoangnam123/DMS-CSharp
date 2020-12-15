@@ -158,6 +158,7 @@ namespace DMS.Models
         public virtual DbSet<SurveyResultTextDAO> SurveyResultText { get; set; }
         public virtual DbSet<SystemConfigurationDAO> SystemConfiguration { get; set; }
         public virtual DbSet<TaxTypeDAO> TaxType { get; set; }
+        public virtual DbSet<TransactionTypeDAO> TransactionType { get; set; }
         public virtual DbSet<UnitOfMeasureDAO> UnitOfMeasure { get; set; }
         public virtual DbSet<UnitOfMeasureGroupingDAO> UnitOfMeasureGrouping { get; set; }
         public virtual DbSet<UnitOfMeasureGroupingContentDAO> UnitOfMeasureGroupingContent { get; set; }
@@ -755,7 +756,15 @@ namespace DMS.Models
             {
                 entity.Property(e => e.Discount).HasColumnType("decimal(18, 4)");
 
+                entity.Property(e => e.OrderDate).HasColumnType("datetime");
+
                 entity.Property(e => e.Revenue).HasColumnType("decimal(18, 4)");
+
+                entity.HasOne(d => d.BuyerStore)
+                    .WithMany(p => p.DirectSalesOrderTransactions)
+                    .HasForeignKey(d => d.BuyerStoreId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_DirectSalesOrderTransaction_Store");
 
                 entity.HasOne(d => d.DirectSalesOrder)
                     .WithMany(p => p.DirectSalesOrderTransactions)
@@ -774,6 +783,18 @@ namespace DMS.Models
                     .HasForeignKey(d => d.OrganizationId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_DirectSalesOrderTransaction_Organization");
+
+                entity.HasOne(d => d.SalesEmployee)
+                    .WithMany(p => p.DirectSalesOrderTransactions)
+                    .HasForeignKey(d => d.SalesEmployeeId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_DirectSalesOrderTransaction_AppUser");
+
+                entity.HasOne(d => d.Type)
+                    .WithMany(p => p.DirectSalesOrderTransactions)
+                    .HasForeignKey(d => d.TypeId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_DirectSalesOrderTransaction_TransactionType");
 
                 entity.HasOne(d => d.UnitOfMeasure)
                     .WithMany(p => p.DirectSalesOrderTransactions)
@@ -1363,7 +1384,15 @@ namespace DMS.Models
 
                 entity.Property(e => e.Discount).HasColumnType("decimal(18, 4)");
 
+                entity.Property(e => e.OrderDate).HasColumnType("datetime");
+
                 entity.Property(e => e.Revenue).HasColumnType("decimal(18, 4)");
+
+                entity.HasOne(d => d.BuyerStore)
+                    .WithMany(p => p.IndirectSalesOrderTransactions)
+                    .HasForeignKey(d => d.BuyerStoreId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_IndirectSalesOrderTransaction_Store");
 
                 entity.HasOne(d => d.IndirectSalesOrder)
                     .WithMany(p => p.IndirectSalesOrderTransactions)
@@ -1382,6 +1411,18 @@ namespace DMS.Models
                     .HasForeignKey(d => d.OrganizationId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_IndirectSalesOrderTransaction_Organization");
+
+                entity.HasOne(d => d.SalesEmployee)
+                    .WithMany(p => p.IndirectSalesOrderTransactions)
+                    .HasForeignKey(d => d.SalesEmployeeId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_IndirectSalesOrderTransaction_AppUser");
+
+                entity.HasOne(d => d.Type)
+                    .WithMany(p => p.IndirectSalesOrderTransactions)
+                    .HasForeignKey(d => d.TypeId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_IndirectSalesOrderTransaction_TransactionType");
 
                 entity.HasOne(d => d.UnitOfMeasure)
                     .WithMany(p => p.IndirectSalesOrderTransactions)
@@ -4446,6 +4487,21 @@ namespace DMS.Models
                     .HasForeignKey(d => d.StatusId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_TaxType_Status");
+            });
+
+            modelBuilder.Entity<TransactionTypeDAO>(entity =>
+            {
+                entity.ToTable("TransactionType", "ENUM");
+
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(50);
             });
 
             modelBuilder.Entity<UnitOfMeasureDAO>(entity =>

@@ -70,29 +70,29 @@ namespace DMS.Rpc.kpi_tracking.kpi_item_report
             this.STT = KpiItemReport_KpiItemContentDTO.STT;
             this.ItemCode = KpiItemReport_KpiItemContentDTO.ItemCode;
             this.ItemName = KpiItemReport_KpiItemContentDTO.ItemName;
-            this.IndirectQuantityPlanned = KpiItemReport_KpiItemContentDTO.IndirectQuantityPlanned == null ? "" : KpiItemReport_KpiItemContentDTO.IndirectQuantityPlanned.ToString();
+            this.IndirectQuantityPlanned = KpiItemReport_KpiItemContentDTO.IndirectQuantityPlanned == null ? "" : ((long)KpiItemReport_KpiItemContentDTO.IndirectQuantityPlanned).ToString();
             this.IndirectQuantity = KpiItemReport_KpiItemContentDTO.IndirectQuantity == null ? "" : KpiItemReport_KpiItemContentDTO.IndirectQuantity.ToString();
             this.IndirectQuantityRatio = KpiItemReport_KpiItemContentDTO.IndirectQuantityRatio == null ? "" : KpiItemReport_KpiItemContentDTO.IndirectQuantityRatio.ToString();
-            this.IndirectRevenuePlanned = KpiItemReport_KpiItemContentDTO.IndirectRevenuePlanned == null ? "" : KpiItemReport_KpiItemContentDTO.IndirectRevenuePlanned.ToString();
+            this.IndirectRevenuePlanned = KpiItemReport_KpiItemContentDTO.IndirectRevenuePlanned == null ? "" : ((long)KpiItemReport_KpiItemContentDTO.IndirectRevenuePlanned).ToString();
             this.IndirectRevenue = KpiItemReport_KpiItemContentDTO.IndirectRevenue == null ? "" : KpiItemReport_KpiItemContentDTO.IndirectRevenue.ToString();
             this.IndirectRevenueRatio = KpiItemReport_KpiItemContentDTO.IndirectRevenueRatio == null ? "" : KpiItemReport_KpiItemContentDTO.IndirectRevenueRatio.ToString();
-            this.IndirectAmountPlanned = KpiItemReport_KpiItemContentDTO.IndirectAmountPlanned == null ? "" : KpiItemReport_KpiItemContentDTO.IndirectAmountPlanned.ToString();
+            this.IndirectAmountPlanned = KpiItemReport_KpiItemContentDTO.IndirectAmountPlanned == null ? "" : ((long)KpiItemReport_KpiItemContentDTO.IndirectAmountPlanned).ToString();
             this.IndirectAmount = KpiItemReport_KpiItemContentDTO.IndirectAmount == null ? "" : KpiItemReport_KpiItemContentDTO.IndirectAmount.ToString();
             this.IndirectAmountRatio = KpiItemReport_KpiItemContentDTO.IndirectAmountRatio == null ? "" : KpiItemReport_KpiItemContentDTO.IndirectAmountRatio.ToString();
-            this.IndirectStorePlanned = KpiItemReport_KpiItemContentDTO.IndirectStorePlanned == null ? "" : KpiItemReport_KpiItemContentDTO.IndirectStorePlanned.ToString();
+            this.IndirectStorePlanned = KpiItemReport_KpiItemContentDTO.IndirectStorePlanned == null ? "" : ((long)KpiItemReport_KpiItemContentDTO.IndirectStorePlanned).ToString();
             this.IndirectStore = KpiItemReport_KpiItemContentDTO.IndirectStore == null ? "" : KpiItemReport_KpiItemContentDTO.IndirectStore.ToString();
             this.IndirectStoreRatio = KpiItemReport_KpiItemContentDTO.IndirectStoreRatio == null ? "" : KpiItemReport_KpiItemContentDTO.IndirectStoreRatio.ToString();
 
-            this.DirectQuantityPlanned = KpiItemReport_KpiItemContentDTO.DirectQuantityPlanned == null ? "" : KpiItemReport_KpiItemContentDTO.DirectQuantityPlanned.ToString();
+            this.DirectQuantityPlanned = KpiItemReport_KpiItemContentDTO.DirectQuantityPlanned == null ? "" : ((long)KpiItemReport_KpiItemContentDTO.DirectQuantityPlanned).ToString();
             this.DirectQuantity = KpiItemReport_KpiItemContentDTO.DirectQuantity == null ? "" : KpiItemReport_KpiItemContentDTO.DirectQuantity.ToString();
             this.DirectQuantityRatio = KpiItemReport_KpiItemContentDTO.DirectQuantityRatio == null ? "" : KpiItemReport_KpiItemContentDTO.DirectQuantityRatio.ToString();
-            this.DirectRevenuePlanned = KpiItemReport_KpiItemContentDTO.DirectRevenuePlanned == null ? "" : KpiItemReport_KpiItemContentDTO.DirectRevenuePlanned.ToString();
+            this.DirectRevenuePlanned = KpiItemReport_KpiItemContentDTO.DirectRevenuePlanned == null ? "" : ((long)KpiItemReport_KpiItemContentDTO.DirectRevenuePlanned).ToString();
             this.DirectRevenue = KpiItemReport_KpiItemContentDTO.DirectRevenue == null ? "" : KpiItemReport_KpiItemContentDTO.DirectRevenue.ToString();
             this.DirectRevenueRatio = KpiItemReport_KpiItemContentDTO.DirectRevenueRatio == null ? "" : KpiItemReport_KpiItemContentDTO.DirectRevenueRatio.ToString();
-            this.DirectAmountPlanned = KpiItemReport_KpiItemContentDTO.DirectAmountPlanned == null ? "" : KpiItemReport_KpiItemContentDTO.DirectAmountPlanned.ToString();
+            this.DirectAmountPlanned = KpiItemReport_KpiItemContentDTO.DirectAmountPlanned == null ? "" : ((long)KpiItemReport_KpiItemContentDTO.DirectAmountPlanned).ToString();
             this.DirectAmount = KpiItemReport_KpiItemContentDTO.DirectAmount == null ? "" : KpiItemReport_KpiItemContentDTO.DirectAmount.ToString();
             this.DirectAmountRatio = KpiItemReport_KpiItemContentDTO.DirectAmountRatio == null ? "" : KpiItemReport_KpiItemContentDTO.DirectAmountRatio.ToString();
-            this.DirectStorePlanned = KpiItemReport_KpiItemContentDTO.DirectStorePlanned == null ? "" : KpiItemReport_KpiItemContentDTO.DirectStorePlanned.ToString();
+            this.DirectStorePlanned = KpiItemReport_KpiItemContentDTO.DirectStorePlanned == null ? "" : ((long)KpiItemReport_KpiItemContentDTO.DirectStorePlanned).ToString();
             this.DirectStore = KpiItemReport_KpiItemContentDTO.DirectStore == null ? "" : KpiItemReport_KpiItemContentDTO.DirectStore.ToString();
             this.DirectStoreRatio = KpiItemReport_KpiItemContentDTO.DirectStoreRatio == null ? "" : KpiItemReport_KpiItemContentDTO.DirectStoreRatio.ToString();
         }

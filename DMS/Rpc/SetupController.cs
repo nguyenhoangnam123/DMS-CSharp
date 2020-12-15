@@ -669,6 +669,7 @@ namespace DMS.Rpc
             InitPromotionPolicyEnum();
             InitPromotionDiscountTypeEnum();
             InitRewardStatusEnum();
+            InitTransactionTypeEnum();
             return Ok();
         }
 
@@ -735,6 +736,17 @@ namespace DMS.Rpc
                 Name = item.Name,
             }).ToList();
             DataContext.RewardStatus.BulkSynchronize(RewardStatusEnumList);
+        }
+
+        private void InitTransactionTypeEnum()
+        {
+            List<TransactionTypeDAO> TransactionTypeEnumList = TransactionTypeEnum.TransactionTypeEnumList.Select(item => new TransactionTypeDAO
+            {
+                Id = item.Id,
+                Code = item.Code,
+                Name = item.Name,
+            }).ToList();
+            DataContext.TransactionType.BulkSynchronize(TransactionTypeEnumList);
         }
 
         private void InitStoreScoutingStatusEnum()

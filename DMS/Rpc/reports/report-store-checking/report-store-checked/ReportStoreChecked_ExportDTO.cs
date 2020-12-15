@@ -85,9 +85,9 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
             this.CheckInDistance = ReportStoreChecked_StoreCheckingDTO.CheckInDistance;
             this.CheckOutDistance = ReportStoreChecked_StoreCheckingDTO.CheckOutDistance;
             this.Duration = ReportStoreChecked_StoreCheckingDTO.Duaration;
-            this.Image = ReportStoreChecked_StoreCheckingDTO.ImageCounter > 0 ? "X" : "";
+            this.Image = ReportStoreChecked_StoreCheckingDTO.ImageCounter.ToString();
             this.Planned = ReportStoreChecked_StoreCheckingDTO.Planned ? "X" : "";
-            this.Order = ReportStoreChecked_StoreCheckingDTO.SalesOrder ? "X" : "";
+            this.Order = ReportStoreChecked_StoreCheckingDTO.SalesOrderCounter.ToString();
             this.Closed = ReportStoreChecked_StoreCheckingDTO.IsClosed ? "X" : "";
         }
     }

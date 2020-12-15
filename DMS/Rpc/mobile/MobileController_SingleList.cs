@@ -1356,6 +1356,7 @@ namespace DMS.Rpc.mobile
             IndirectSalesOrderFilter.Code = Mobile_IndirectSalesOrderFilterDTO.Code;
             IndirectSalesOrderFilter.OrderDate = Mobile_IndirectSalesOrderFilterDTO.OrderDate;
             IndirectSalesOrderFilter.BuyerStoreId = Mobile_IndirectSalesOrderFilterDTO.BuyerStoreId;
+            IndirectSalesOrderFilter.Search = Mobile_IndirectSalesOrderFilterDTO.Search;
             IndirectSalesOrderFilter.AppUserId = new IdFilter { Equal = CurrentContext.UserId };
 
             int count = await IndirectSalesOrderService.CountCompleted(IndirectSalesOrderFilter);
@@ -1380,6 +1381,7 @@ namespace DMS.Rpc.mobile
             IndirectSalesOrderFilter.OrderDate = Mobile_IndirectSalesOrderFilterDTO.OrderDate;
             IndirectSalesOrderFilter.BuyerStoreId = Mobile_IndirectSalesOrderFilterDTO.BuyerStoreId;
             IndirectSalesOrderFilter.StoreCheckingId = Mobile_IndirectSalesOrderFilterDTO.StoreCheckingId;
+            IndirectSalesOrderFilter.Search = Mobile_IndirectSalesOrderFilterDTO.Search;
             IndirectSalesOrderFilter.AppUserId = new IdFilter { Equal = CurrentContext.UserId };
 
             List<IndirectSalesOrder> IndirectSalesOrders = await IndirectSalesOrderService.ListCompleted(IndirectSalesOrderFilter);
@@ -1406,6 +1408,7 @@ namespace DMS.Rpc.mobile
             IndirectSalesOrderFilter.Code = Mobile_IndirectSalesOrderFilterDTO.Code;
             IndirectSalesOrderFilter.OrderDate = Mobile_IndirectSalesOrderFilterDTO.OrderDate;
             IndirectSalesOrderFilter.BuyerStoreId = Mobile_IndirectSalesOrderFilterDTO.BuyerStoreId;
+            IndirectSalesOrderFilter.Search = Mobile_IndirectSalesOrderFilterDTO.Search;
             IndirectSalesOrderFilter.AppUserId = new IdFilter { Equal = CurrentContext.UserId };
 
             int count = await IndirectSalesOrderService.CountNew(IndirectSalesOrderFilter);
@@ -1430,6 +1433,7 @@ namespace DMS.Rpc.mobile
             IndirectSalesOrderFilter.OrderDate = Mobile_IndirectSalesOrderFilterDTO.OrderDate;
             IndirectSalesOrderFilter.BuyerStoreId = Mobile_IndirectSalesOrderFilterDTO.BuyerStoreId;
             IndirectSalesOrderFilter.StoreCheckingId = Mobile_IndirectSalesOrderFilterDTO.StoreCheckingId;
+            IndirectSalesOrderFilter.Search = Mobile_IndirectSalesOrderFilterDTO.Search;
             IndirectSalesOrderFilter.AppUserId = new IdFilter { Equal = CurrentContext.UserId };
 
             List<IndirectSalesOrder> IndirectSalesOrders = await IndirectSalesOrderService.ListNew(IndirectSalesOrderFilter);

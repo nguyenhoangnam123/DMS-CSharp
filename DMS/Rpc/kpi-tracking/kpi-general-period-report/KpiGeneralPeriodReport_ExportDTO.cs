@@ -85,27 +85,39 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
             this.Username = KpiGeneralPeriodReport_SaleEmployeeDTO.Username;
             this.DisplayName = KpiGeneralPeriodReport_SaleEmployeeDTO.DisplayName;
             this.OrganizationName = KpiGeneralPeriodReport_SaleEmployeeDTO.OrganizationName;
-            this.TotalIndirectOrdersPLanned = KpiGeneralPeriodReport_SaleEmployeeDTO.TotalIndirectOrdersPLanned == null ? "" : KpiGeneralPeriodReport_SaleEmployeeDTO.TotalIndirectOrdersPLanned.ToString();
+            this.TotalIndirectOrdersPLanned = KpiGeneralPeriodReport_SaleEmployeeDTO.TotalIndirectOrdersPLanned == null ? "" : ((long)KpiGeneralPeriodReport_SaleEmployeeDTO.TotalIndirectOrdersPLanned).ToString();
             this.TotalIndirectOrders = KpiGeneralPeriodReport_SaleEmployeeDTO.TotalIndirectOrders == null ? "" : KpiGeneralPeriodReport_SaleEmployeeDTO.TotalIndirectOrders.ToString();
             this.TotalIndirectOrdersRatio = KpiGeneralPeriodReport_SaleEmployeeDTO.TotalIndirectOrdersRatio == null ? "" : KpiGeneralPeriodReport_SaleEmployeeDTO.TotalIndirectOrdersRatio.ToString();
-            this.TotalIndirectQuantityPlanned = KpiGeneralPeriodReport_SaleEmployeeDTO.TotalIndirectQuantityPlanned == null ? "" : KpiGeneralPeriodReport_SaleEmployeeDTO.TotalIndirectQuantityPlanned.ToString();
+            this.TotalIndirectQuantityPlanned = KpiGeneralPeriodReport_SaleEmployeeDTO.TotalIndirectQuantityPlanned == null ? "" : ((long)KpiGeneralPeriodReport_SaleEmployeeDTO.TotalIndirectQuantityPlanned).ToString();
             this.TotalIndirectQuantity = KpiGeneralPeriodReport_SaleEmployeeDTO.TotalIndirectQuantity == null ? "" : KpiGeneralPeriodReport_SaleEmployeeDTO.TotalIndirectQuantity.ToString();
             this.TotalIndirectQuantityRatio = KpiGeneralPeriodReport_SaleEmployeeDTO.TotalIndirectQuantityRatio == null ? "" : KpiGeneralPeriodReport_SaleEmployeeDTO.TotalIndirectQuantityRatio.ToString();
-            this.TotalIndirectSalesAmountPlanned = KpiGeneralPeriodReport_SaleEmployeeDTO.TotalIndirectSalesAmountPlanned == null ? "" : KpiGeneralPeriodReport_SaleEmployeeDTO.TotalIndirectSalesAmountPlanned.ToString();
+            this.TotalIndirectSalesAmountPlanned = KpiGeneralPeriodReport_SaleEmployeeDTO.TotalIndirectSalesAmountPlanned == null ? "" : ((long)KpiGeneralPeriodReport_SaleEmployeeDTO.TotalIndirectSalesAmountPlanned).ToString();
             this.TotalIndirectSalesAmount = KpiGeneralPeriodReport_SaleEmployeeDTO.TotalIndirectSalesAmount == null ? "" : KpiGeneralPeriodReport_SaleEmployeeDTO.TotalIndirectSalesAmount.ToString();
             this.TotalIndirectSalesAmountRatio = KpiGeneralPeriodReport_SaleEmployeeDTO.TotalIndirectSalesAmountRatio == null ? "" : KpiGeneralPeriodReport_SaleEmployeeDTO.TotalIndirectSalesAmountRatio.ToString();
             this.SkuIndirectOrderPlanned = KpiGeneralPeriodReport_SaleEmployeeDTO.SkuIndirectOrderPlanned == null ? "" : KpiGeneralPeriodReport_SaleEmployeeDTO.SkuIndirectOrderPlanned.ToString();
             this.SkuIndirectOrder = KpiGeneralPeriodReport_SaleEmployeeDTO.SkuIndirectOrder == null ? "" : KpiGeneralPeriodReport_SaleEmployeeDTO.SkuIndirectOrder.ToString();
             this.SkuIndirectOrderRatio = KpiGeneralPeriodReport_SaleEmployeeDTO.SkuIndirectOrderRatio == null ? "" : KpiGeneralPeriodReport_SaleEmployeeDTO.SkuIndirectOrderRatio.ToString();
-            this.StoresVisitedPLanned = KpiGeneralPeriodReport_SaleEmployeeDTO.StoresVisitedPLanned == null ? "" : KpiGeneralPeriodReport_SaleEmployeeDTO.StoresVisitedPLanned.ToString();
+            this.StoresVisitedPLanned = KpiGeneralPeriodReport_SaleEmployeeDTO.StoresVisitedPLanned == null ? "" : ((long)KpiGeneralPeriodReport_SaleEmployeeDTO.StoresVisitedPLanned).ToString();
             this.StoresVisited = KpiGeneralPeriodReport_SaleEmployeeDTO.StoresVisited == null ? "" : KpiGeneralPeriodReport_SaleEmployeeDTO.StoresVisited.ToString();
             this.StoresVisitedRatio = KpiGeneralPeriodReport_SaleEmployeeDTO.StoresVisitedRatio == null ? "" : KpiGeneralPeriodReport_SaleEmployeeDTO.StoresVisitedRatio.ToString();
-            this.NewStoreCreatedPlanned = KpiGeneralPeriodReport_SaleEmployeeDTO.NewStoreCreatedPlanned == null ? "" : KpiGeneralPeriodReport_SaleEmployeeDTO.NewStoreCreatedPlanned.ToString();
+            this.NewStoreCreatedPlanned = KpiGeneralPeriodReport_SaleEmployeeDTO.NewStoreCreatedPlanned == null ? "" : ((long)KpiGeneralPeriodReport_SaleEmployeeDTO.NewStoreCreatedPlanned).ToString();
             this.NewStoreCreated = KpiGeneralPeriodReport_SaleEmployeeDTO.NewStoreCreated == null ? "" : KpiGeneralPeriodReport_SaleEmployeeDTO.NewStoreCreated.ToString();
             this.NewStoreCreatedRatio = KpiGeneralPeriodReport_SaleEmployeeDTO.NewStoreCreatedRatio == null ? "" : KpiGeneralPeriodReport_SaleEmployeeDTO.NewStoreCreatedRatio.ToString();
-            this.NumberOfStoreVisitsPlanned = KpiGeneralPeriodReport_SaleEmployeeDTO.NumberOfStoreVisitsPlanned == null ? "" : KpiGeneralPeriodReport_SaleEmployeeDTO.NumberOfStoreVisitsPlanned.ToString();
+            this.NumberOfStoreVisitsPlanned = KpiGeneralPeriodReport_SaleEmployeeDTO.NumberOfStoreVisitsPlanned == null ? "" : ((long)KpiGeneralPeriodReport_SaleEmployeeDTO.NumberOfStoreVisitsPlanned).ToString();
             this.NumberOfStoreVisits = KpiGeneralPeriodReport_SaleEmployeeDTO.NumberOfStoreVisits == null ? "" : KpiGeneralPeriodReport_SaleEmployeeDTO.NumberOfStoreVisits.ToString();
             this.NumberOfStoreVisitsRatio = KpiGeneralPeriodReport_SaleEmployeeDTO.NumberOfStoreVisitsRatio == null ? "" : KpiGeneralPeriodReport_SaleEmployeeDTO.NumberOfStoreVisitsRatio.ToString();
+            this.TotalDirectOrdersPLanned = KpiGeneralPeriodReport_SaleEmployeeDTO.TotalDirectOrdersPLanned == null ? "" : ((long)KpiGeneralPeriodReport_SaleEmployeeDTO.TotalDirectOrdersPLanned).ToString();
+            this.TotalDirectOrders = KpiGeneralPeriodReport_SaleEmployeeDTO.TotalDirectOrders == null ? "" : KpiGeneralPeriodReport_SaleEmployeeDTO.TotalDirectOrders.ToString();
+            this.TotalDirectOrdersRatio = KpiGeneralPeriodReport_SaleEmployeeDTO.TotalDirectOrdersRatio == null ? "" : KpiGeneralPeriodReport_SaleEmployeeDTO.TotalDirectOrdersRatio.ToString();
+            this.TotalDirectQuantityPlanned = KpiGeneralPeriodReport_SaleEmployeeDTO.TotalDirectQuantityPlanned == null ? "" : ((long)KpiGeneralPeriodReport_SaleEmployeeDTO.TotalDirectQuantityPlanned).ToString();
+            this.TotalDirectQuantity = KpiGeneralPeriodReport_SaleEmployeeDTO.TotalDirectQuantity == null ? "" : KpiGeneralPeriodReport_SaleEmployeeDTO.TotalDirectQuantity.ToString();
+            this.TotalDirectQuantityRatio = KpiGeneralPeriodReport_SaleEmployeeDTO.TotalDirectQuantityRatio == null ? "" : KpiGeneralPeriodReport_SaleEmployeeDTO.TotalDirectQuantityRatio.ToString();
+            this.TotalDirectSalesAmountPlanned = KpiGeneralPeriodReport_SaleEmployeeDTO.TotalDirectSalesAmountPlanned == null ? "" : ((long)KpiGeneralPeriodReport_SaleEmployeeDTO.TotalDirectSalesAmountPlanned).ToString();
+            this.TotalDirectSalesAmount = KpiGeneralPeriodReport_SaleEmployeeDTO.TotalDirectSalesAmount == null ? "" : KpiGeneralPeriodReport_SaleEmployeeDTO.TotalDirectSalesAmount.ToString();
+            this.TotalDirectSalesAmountRatio = KpiGeneralPeriodReport_SaleEmployeeDTO.TotalDirectSalesAmountRatio == null ? "" : KpiGeneralPeriodReport_SaleEmployeeDTO.TotalDirectSalesAmountRatio.ToString();
+            this.SkuDirectOrderPlanned = KpiGeneralPeriodReport_SaleEmployeeDTO.SkuDirectOrderPlanned == null ? "" : KpiGeneralPeriodReport_SaleEmployeeDTO.SkuDirectOrderPlanned.ToString();
+            this.SkuDirectOrder = KpiGeneralPeriodReport_SaleEmployeeDTO.SkuDirectOrder == null ? "" : KpiGeneralPeriodReport_SaleEmployeeDTO.SkuDirectOrder.ToString();
+            this.SkuDirectOrderRatio = KpiGeneralPeriodReport_SaleEmployeeDTO.SkuDirectOrderRatio == null ? "" : KpiGeneralPeriodReport_SaleEmployeeDTO.SkuDirectOrderRatio.ToString();
         }
     }
 }

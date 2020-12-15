@@ -25,7 +25,8 @@ namespace DMS.Services.MRewardHistory
             IdNotExisted,
             RevenueEmpty,
             RevenueNotEnough,
-            LuckyNumberEmpty
+            LuckyNumberEmpty,
+            LuckyNumberGroupingEmpty
         }
 
         private IUOW UOW;
@@ -63,35 +64,54 @@ namespace DMS.Services.MRewardHistory
             {
                 RewardHistory.AddError(nameof(RewardHistoryValidator), nameof(RewardHistory.Revenue), ErrorCode.RevenueNotEnough);
             }
+            return RewardHistory.IsValidated;
+        }
+
+        private async Task<bool> ValidateLuckyNumber(RewardHistory RewardHistory)
+        {
+            var CurrentUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
+            var Organizations = await UOW.OrganizationRepository.List(new OrganizationFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = OrganizationSelect.Id | OrganizationSelect.Path
+            });
+            var OrganizationIds = Organizations.Where(x => CurrentUser.Organization.Path.StartsWith(x.Path)).Select(x => x.Id).ToList();
+
+            List<LuckyNumberGrouping> LuckyNumberGroupings = await UOW.LuckyNumberGroupingRepository.List(new LuckyNumberGroupingFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = LuckyNumberGroupingSelect.Id,
+                OrganizationId = new IdFilter { In = OrganizationIds },
+                StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id }
+            });
+            var LuckyNumberGroupingIds = LuckyNumberGroupings.Select(x => x.Id).ToList();
+            if(LuckyNumberGroupingIds.Count == 0)
+            {
+                RewardHistory.AddError(nameof(RewardHistoryValidator), nameof(RewardHistory.Id), ErrorCode.LuckyNumberGroupingEmpty);
+            }
             else
             {
-                var CurrentUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
-                var Organizations = await UOW.OrganizationRepository.List(new OrganizationFilter
+                var count = await UOW.LuckyNumberRepository.Count(new LuckyNumberFilter
                 {
-                    Skip = 0,
-                    Take = int.MaxValue,
-                    Selects = OrganizationSelect.Id | OrganizationSelect.Path
+                    LuckyNumberGroupingId = new IdFilter { In = LuckyNumberGroupingIds },
+                    RewardStatusId = new IdFilter { Equal = RewardStatusEnum.ACTIVE.Id }
                 });
-                var OrganizationIds = Organizations.Where(x => CurrentUser.Organization.Path.StartsWith(x.Path)).Select(x => x.Id).ToList();
 
-                LuckyNumberGroupingFilter LuckyNumberGroupingFilter = new LuckyNumberGroupingFilter
-                {
-                    OrganizationId = new IdFilter { In = OrganizationIds },
-                    StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id }
-                };
-
-                var count = await UOW.LuckyNumberGroupingRepository.Count(LuckyNumberGroupingFilter);
-                if(count == 0)
+                if (count == 0)
                 {
                     RewardHistory.AddError(nameof(RewardHistoryValidator), nameof(RewardHistory.Id), ErrorCode.LuckyNumberEmpty);
                 }
             }
+            
             return RewardHistory.IsValidated;
         }
 
         public async Task<bool> Create(RewardHistory RewardHistory)
         {
             await ValidateRevenue(RewardHistory);
+            await ValidateLuckyNumber(RewardHistory);
             return RewardHistory.IsValidated;
         }
 

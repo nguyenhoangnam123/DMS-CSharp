@@ -314,6 +314,48 @@ namespace DMS.Rpc.indirect_sales_order
                 return BadRequest(IndirectSalesOrder_IndirectSalesOrderDTO);
         }
 
+        [Route(IndirectSalesOrderRoute.BulkApprove), HttpPost]
+        public async Task<ActionResult<List<IndirectSalesOrder_IndirectSalesOrderDTO>>> BulkApprove([FromBody] List<long> Ids)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            IndirectSalesOrderFilter IndirectSalesOrderFilter = new IndirectSalesOrderFilter();
+            IndirectSalesOrderFilter.Id = new IdFilter { In = Ids };
+            IndirectSalesOrderFilter.Selects = IndirectSalesOrderSelect.Id | IndirectSalesOrderSelect.Code | IndirectSalesOrderSelect.SaleEmployee | IndirectSalesOrderSelect.BuyerStore |
+                IndirectSalesOrderSelect.Organization | IndirectSalesOrderSelect.RequestState | IndirectSalesOrderSelect.Total | IndirectSalesOrderSelect.TotalTaxAmount;
+            IndirectSalesOrderFilter.Skip = 0;
+            IndirectSalesOrderFilter.Take = int.MaxValue;
+
+            List<IndirectSalesOrder> IndirectSalesOrders = await IndirectSalesOrderService.List(IndirectSalesOrderFilter);
+
+            IndirectSalesOrders = await IndirectSalesOrderService.BulkApprove(IndirectSalesOrders);
+            var IndirectSalesOrder_IndirectSalesOrderDTOs = IndirectSalesOrders?.Select(x => new IndirectSalesOrder_IndirectSalesOrderDTO(x)).ToList();
+
+            return IndirectSalesOrder_IndirectSalesOrderDTOs;
+        }
+
+        [Route(IndirectSalesOrderRoute.BulkReject), HttpPost]
+        public async Task<ActionResult<List<IndirectSalesOrder_IndirectSalesOrderDTO>>> BulkReject([FromBody] List<long> Ids)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            IndirectSalesOrderFilter IndirectSalesOrderFilter = new IndirectSalesOrderFilter();
+            IndirectSalesOrderFilter.Id = new IdFilter { In = Ids };
+            IndirectSalesOrderFilter.Selects = IndirectSalesOrderSelect.Id | IndirectSalesOrderSelect.Code | IndirectSalesOrderSelect.SaleEmployee | IndirectSalesOrderSelect.BuyerStore |
+                IndirectSalesOrderSelect.Organization | IndirectSalesOrderSelect.RequestState | IndirectSalesOrderSelect.Total | IndirectSalesOrderSelect.TotalTaxAmount;
+            IndirectSalesOrderFilter.Skip = 0;
+            IndirectSalesOrderFilter.Take = int.MaxValue;
+
+            List<IndirectSalesOrder> IndirectSalesOrders = await IndirectSalesOrderService.List(IndirectSalesOrderFilter);
+
+            IndirectSalesOrders = await IndirectSalesOrderService.BulkReject(IndirectSalesOrders);
+            var IndirectSalesOrder_IndirectSalesOrderDTOs = IndirectSalesOrders?.Select(x => new IndirectSalesOrder_IndirectSalesOrderDTO(x)).ToList();
+
+            return IndirectSalesOrder_IndirectSalesOrderDTOs;
+        }
+
         [Route(IndirectSalesOrderRoute.Delete), HttpPost]
         public async Task<ActionResult<IndirectSalesOrder_IndirectSalesOrderDTO>> Delete([FromBody] IndirectSalesOrder_IndirectSalesOrderDTO IndirectSalesOrder_IndirectSalesOrderDTO)
         {

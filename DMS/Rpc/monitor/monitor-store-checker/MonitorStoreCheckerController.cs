@@ -121,8 +121,6 @@ namespace DMS.Rpc.monitor.monitor_store_checker
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
 
-            long? SaleEmployeeId = MonitorStoreChecker_MonitorStoreCheckerFilterDTO.AppUserId?.Equal;
-
             DateTime Start = MonitorStoreChecker_MonitorStoreCheckerFilterDTO.CheckIn?.GreaterEqual == null ?
               LocalStartDay(CurrentContext) :
               MonitorStoreChecker_MonitorStoreCheckerFilterDTO.CheckIn.GreaterEqual.Value;
@@ -131,48 +129,35 @@ namespace DMS.Rpc.monitor.monitor_store_checker
                     LocalEndDay(CurrentContext) :
                     MonitorStoreChecker_MonitorStoreCheckerFilterDTO.CheckIn.LessEqual.Value;
 
-            //List<long> OrganizationIds = await FilterOrganization(OrganizationService, CurrentContext);
-            //List<OrganizationDAO> OrganizationDAOs = await DataContext.Organization.Where(o => o.DeletedAt == null && OrganizationIds.Contains(o.Id)).ToListAsync();
-            //OrganizationDAO OrganizationDAO = null;
-            //if (MonitorStoreChecker_MonitorStoreCheckerFilterDTO.OrganizationId?.Equal != null)
-            //{
-            //    OrganizationDAO = await DataContext.Organization.Where(o => o.Id == MonitorStoreChecker_MonitorStoreCheckerFilterDTO.OrganizationId.Equal.Value).FirstOrDefaultAsync();
-            //    OrganizationDAOs = OrganizationDAOs.Where(o => o.Path.StartsWith(OrganizationDAO.Path)).ToList();
-            //}
-            //OrganizationIds = OrganizationDAOs.Select(o => o.Id).ToList();
-            //List<long> FilterAppUserIds = await FilterAppUser(AppUserService, OrganizationService, CurrentContext);
-            //List<long> AppUserIds = new List<long>();
+            long? SaleEmployeeId = MonitorStoreChecker_MonitorStoreCheckerFilterDTO.AppUserId?.Equal;
 
-            //var ProblemDAOAppUserIds = await DataContext.Problem.Where(p => OrganizationIds.Contains(p.Store.OrganizationId))
-            //    .Select(x => x.CreatorId)
-            //    .ToListAsync();
-            //AppUserIds.AddRange(ProblemDAOAppUserIds);
+            List<long> OrganizationIds = await FilterOrganization(OrganizationService, CurrentContext);
+            List<OrganizationDAO> OrganizationDAOs = await DataContext.Organization.Where(o => o.DeletedAt == null && (OrganizationIds.Count == 0 || OrganizationIds.Contains(o.Id))).ToListAsync();
+            OrganizationDAO OrganizationDAO = null;
+            if (MonitorStoreChecker_MonitorStoreCheckerFilterDTO.OrganizationId?.Equal != null)
+            {
+                OrganizationDAO = await DataContext.Organization.Where(o => o.Id == MonitorStoreChecker_MonitorStoreCheckerFilterDTO.OrganizationId.Equal.Value).FirstOrDefaultAsync();
+                OrganizationDAOs = OrganizationDAOs.Where(o => o.Path.StartsWith(OrganizationDAO.Path)).ToList();
+            }
+            OrganizationIds = OrganizationDAOs.Select(o => o.Id).ToList();
 
-            //var StoreCheckingAppUserIds = await DataContext.StoreChecking
-            //    .Where(sc => OrganizationIds.Contains(sc.SaleEmployee.OrganizationId) &&
-            //    sc.Store.DeletedAt == null &&
-            //    sc.CheckOutAt.HasValue && Start <= sc.CheckOutAt.Value && sc.CheckOutAt.Value <= End)
-            //    .Select(x => x.SaleEmployeeId)
-            //    .ToListAsync();
-            //AppUserIds.AddRange(StoreCheckingAppUserIds);
-
-            //var IndirectSalesOrderAppUserIds = await DataContext.IndirectSalesOrder
-            //    .Where(o => Start <= o.OrderDate && o.OrderDate <= End && OrganizationIds.Contains(o.SaleEmployee.OrganizationId))
-            //    .Select(x => x.SaleEmployeeId)
-            //    .ToListAsync();
-            //AppUserIds.AddRange(IndirectSalesOrderAppUserIds);
-            //AppUserIds = FilterAppUserIds.Intersect(AppUserIds).ToList();
-
-            //if (SaleEmployeeId.HasValue)
-            //    AppUserIds = AppUserIds.Where(x => x == SaleEmployeeId.Value).ToList();
-            //AppUserIds = AppUserIds.Distinct().ToList();
+            AppUserFilter AppUserFilter = new AppUserFilter
+            {
+                OrganizationId = new IdFilter { In = OrganizationIds },
+                Id = new IdFilter { },
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = AppUserSelect.Id | AppUserSelect.DisplayName | AppUserSelect.Organization
+            };
+            AppUserFilter.Id.In = await FilterAppUser(AppUserService, OrganizationService, CurrentContext);
+            var AppUsers = await AppUserService.List(AppUserFilter);
+            var AppUserIds = AppUsers.Select(x => x.Id).ToList();
 
             int count = await DataContext.AppUser.Where(au =>
-                //AppUserIds.Contains(au.Id) &&
+                AppUserIds.Contains(au.Id) &&
                 au.DeletedAt == null &
-                //OrganizationIds.Contains(au.OrganizationId) &&
-                (SaleEmployeeId == null || au.Id == SaleEmployeeId.Value)
-            ).CountAsync();
+                (SaleEmployeeId == null || au.Id == SaleEmployeeId.Value))
+                .CountAsync();
             return count;
         }
 
@@ -183,8 +168,8 @@ namespace DMS.Rpc.monitor.monitor_store_checker
                 throw new BindException(ModelState);
 
             DateTime Start = MonitorStoreChecker_MonitorStoreCheckerFilterDTO.CheckIn?.GreaterEqual == null ?
-             LocalStartDay(CurrentContext) :
-             MonitorStoreChecker_MonitorStoreCheckerFilterDTO.CheckIn.GreaterEqual.Value;
+                    LocalStartDay(CurrentContext) :
+                    MonitorStoreChecker_MonitorStoreCheckerFilterDTO.CheckIn.GreaterEqual.Value;
 
             DateTime End = MonitorStoreChecker_MonitorStoreCheckerFilterDTO.CheckIn?.LessEqual == null ?
                     LocalEndDay(CurrentContext) :
@@ -204,7 +189,18 @@ namespace DMS.Rpc.monitor.monitor_store_checker
                 OrganizationDAOs = OrganizationDAOs.Where(o => o.Path.StartsWith(OrganizationDAO.Path)).ToList();
             }
             OrganizationIds = OrganizationDAOs.Select(o => o.Id).ToList();
-            List<long> AppUserIds = await FilterAppUser(AppUserService, OrganizationService, CurrentContext);
+
+            AppUserFilter AppUserFilter = new AppUserFilter
+            {
+                OrganizationId = new IdFilter { In = OrganizationIds },
+                Id = new IdFilter { },
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = AppUserSelect.Id | AppUserSelect.DisplayName | AppUserSelect.Organization
+            };
+            AppUserFilter.Id.In = await FilterAppUser(AppUserService, OrganizationService, CurrentContext);
+            var AppUsers = await AppUserService.List(AppUserFilter);
+            var AppUserIds = AppUsers.Select(x => x.Id).ToList();
 
             var storeCheckingQuery = from sc in DataContext.StoreChecking
                                      join au in DataContext.AppUser on sc.SaleEmployeeId equals au.Id
@@ -231,7 +227,7 @@ namespace DMS.Rpc.monitor.monitor_store_checker
                                   (SaleEmployeeId == null || au.Id == SaleEmployeeId.Value) &&
                                   au.DeletedAt == null &&
                                   Start <= i.OrderDate && i.OrderDate <= End &&
-                                  i.RequestStateId == RequestStateEnum.APPROVED.Id
+                                  (i.RequestStateId == RequestStateEnum.APPROVED.Id || i.RequestStateId == RequestStateEnum.PENDING.Id)
                                   select new IndirectSalesOrderDAO
                                   {
                                       Id = i.Id,
@@ -445,7 +441,7 @@ namespace DMS.Rpc.monitor.monitor_store_checker
             List<IndirectSalesOrderDAO> IndirectSalesOrderDAOs = await DataContext.IndirectSalesOrder
                 .Where(o => Start <= o.OrderDate && o.OrderDate <= End &&
                 o.SaleEmployeeId == SaleEmployeeId &&
-                o.RequestStateId == RequestStateEnum.APPROVED.Id)
+                (o.RequestStateId == RequestStateEnum.APPROVED.Id || o.RequestStateId == RequestStateEnum.PENDING.Id))
                 .Select(x => new IndirectSalesOrderDAO
                 {
                     Id = x.Id,

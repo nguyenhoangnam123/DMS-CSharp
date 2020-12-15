@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using DMS.Enums;
 
 namespace DMS.Services
 {
@@ -15,6 +16,7 @@ namespace DMS.Services
         Task CleanHangfire();
         Task CompleteStoreCheckout();
         Task CreateStoreUnchecking();
+        Task AutoInactive();
     }
     public class MaintenanceService : IMaintenanceService
     {
@@ -105,6 +107,16 @@ namespace DMS.Services
             }
 
             await DataContext.StoreUnchecking.BulkInsertAsync(StoreUncheckingDAOs);
+        }
+
+        public async Task AutoInactive()
+        {
+            var Now = StaticParams.DateTimeNow;
+            await DataContext.ERoute.Where(x => x.EndDate.HasValue && x.EndDate.Value > Now).UpdateFromQueryAsync(x => new ERouteDAO { StatusId = StatusEnum.INACTIVE.Id });
+            await DataContext.PriceList.Where(x => x.EndDate.HasValue && x.EndDate.Value > Now).UpdateFromQueryAsync(x => new PriceListDAO { StatusId = StatusEnum.INACTIVE.Id });
+            await DataContext.WorkflowDefinition.Where(x => x.EndDate.HasValue && x.EndDate.Value > Now).UpdateFromQueryAsync(x => new WorkflowDefinitionDAO { StatusId = StatusEnum.INACTIVE.Id });
+            await DataContext.Survey.Where(x => x.EndAt.HasValue && x.EndAt.Value > Now).UpdateFromQueryAsync(x => new SurveyDAO { StatusId = StatusEnum.INACTIVE.Id });
+            await DataContext.PromotionCode.Where(x => x.EndDate.HasValue && x.EndDate.Value > Now).UpdateFromQueryAsync(x => new PromotionCodeDAO { StatusId = StatusEnum.INACTIVE.Id });
         }
     }
 }

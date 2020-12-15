@@ -116,6 +116,23 @@ namespace DMS.Repositories
                 query = query.Where(q => q.Total, filter.Total);
             if (filter.StoreStatusId != null)
                 query = query.Where(q => q.BuyerStore.StoreStatusId, filter.StoreStatusId);
+            if (!string.IsNullOrWhiteSpace(filter.Search))
+            {
+                List<string> Tokens = filter.Search.Split(" ").Select(x => x.ToLower()).ToList();
+                var queryForCode = query;
+                var queryForName = query;
+                var queryForUnsignName = query;
+                foreach (string Token in Tokens)
+                {
+                    if (string.IsNullOrWhiteSpace(Token))
+                        continue;
+                    queryForCode = queryForCode.Where(x => x.Code.ToLower().Contains(Token));
+                    queryForName = queryForName.Where(x => x.BuyerStore.Name.ToLower().Contains(Token));
+                    queryForUnsignName = queryForUnsignName.Where(x => x.BuyerStore.UnsignName.ToLower().Contains(Token));
+                }
+                query = queryForCode.Union(queryForName).Union(queryForUnsignName);
+                query = query.Distinct();
+            }
             return query;
         }
 
@@ -1066,7 +1083,10 @@ namespace DMS.Repositories
                         IndirectSalesOrderId = IndirectSalesOrder.Id,
                         ItemId = IndirectSalesOrderContent.ItemId,
                         OrganizationId = IndirectSalesOrder.OrganizationId,
-                        TypeId = IndirectSalesOrderTransactionTypeEnum.SALES_CONTENT.Id,
+                        BuyerStoreId = IndirectSalesOrder.BuyerStoreId,
+                        SalesEmployeeId = IndirectSalesOrder.SaleEmployeeId,
+                        OrderDate = IndirectSalesOrder.OrderDate,
+                        TypeId = TransactionTypeEnum.SALES_CONTENT.Id,
                         UnitOfMeasureId = IndirectSalesOrderContent.PrimaryUnitOfMeasureId,
                         Quantity = IndirectSalesOrderContent.RequestedQuantity,
                         Revenue = IndirectSalesOrderContent.Amount - (IndirectSalesOrderContent.GeneralDiscountAmount ?? 0) + (IndirectSalesOrderContent.TaxAmount ?? 0),
@@ -1085,7 +1105,10 @@ namespace DMS.Repositories
                         IndirectSalesOrderId = IndirectSalesOrder.Id,
                         ItemId = IndirectSalesOrderPromotion.ItemId,
                         OrganizationId = IndirectSalesOrder.OrganizationId,
-                        TypeId = IndirectSalesOrderTransactionTypeEnum.PROMOTION.Id,
+                        BuyerStoreId = IndirectSalesOrder.BuyerStoreId,
+                        SalesEmployeeId = IndirectSalesOrder.SaleEmployeeId,
+                        OrderDate = IndirectSalesOrder.OrderDate,
+                        TypeId = TransactionTypeEnum.PROMOTION.Id,
                         UnitOfMeasureId = IndirectSalesOrderPromotion.PrimaryUnitOfMeasureId,
                         Quantity = IndirectSalesOrderPromotion.RequestedQuantity,
                     };

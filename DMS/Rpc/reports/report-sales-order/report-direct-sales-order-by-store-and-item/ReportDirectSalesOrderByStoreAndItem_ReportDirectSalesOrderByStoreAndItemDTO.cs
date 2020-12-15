@@ -21,11 +21,13 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_by_store_
         public IdFilter StoreTypeId { get; set; }
         public IdFilter StoreGroupingId { get; set; }
         public IdFilter StoreStatusId { get; set; }
+        public IdFilter ItemId { get; set; }
         internal bool HasValue => (OrganizationId != null && OrganizationId.HasValue) ||
             (OrderDate != null && OrderDate.HasValue) ||
             (StoreId != null && StoreId.HasValue) ||
             (StoreTypeId != null && StoreTypeId.HasValue) ||
             (StoreStatusId != null && StoreStatusId.HasValue) ||
+            (ItemId != null && ItemId.HasValue) ||
             (StoreGroupingId != null && StoreGroupingId.HasValue);
     }
 }
