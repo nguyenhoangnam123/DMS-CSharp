@@ -53,6 +53,7 @@ namespace DMS.Services.MStore
             OwnerEmailOverLength,
             OwnerEmailInvalid,
             StatusNotExisted,
+            StoreStatusNotExisted,
             StoreHasChild,
             StoreScoutingHasOpened,
             StoreScoutingHasRejected,
@@ -456,6 +457,12 @@ namespace DMS.Services.MStore
                 Store.AddError(nameof(StoreValidator), nameof(Store.Status), ErrorCode.StatusNotExisted);
             return Store.IsValidated;
         }
+        private async Task<bool> ValidateStoreStatusId(Store Store)
+        {
+            if (!StoreStatusEnum.StoreStatusEnumList.Any(x => x.Id ==  Store.StoreStatusId))
+                Store.AddError(nameof(StoreValidator), nameof(Store.StoreStatus), ErrorCode.StoreStatusNotExisted);
+            return Store.IsValidated;
+        }
         #endregion
 
         private async Task<bool> ValidateStoreHasChild(Store Store)
@@ -507,6 +514,7 @@ namespace DMS.Services.MStore
             await ValidateOwnerPhone(Store);
             await ValidateOwnerEmail(Store);
             await ValidateStatusId(Store);
+            await ValidateStoreStatusId(Store);
             await ValidateStoreScouting(Store);
             return Store.IsValidated;
         }
@@ -535,6 +543,7 @@ namespace DMS.Services.MStore
                 await ValidateOwnerPhone(Store);
                 await ValidateOwnerEmail(Store);
                 await ValidateStatusId(Store);
+                await ValidateStoreStatusId(Store);
             }
             return Store.IsValidated;
         }
