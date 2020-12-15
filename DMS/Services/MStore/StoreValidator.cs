@@ -54,6 +54,7 @@ namespace DMS.Services.MStore
             OwnerEmailInvalid,
             StatusNotExisted,
             StoreStatusNotExisted,
+            StoreStatusNotSelected,
             StoreHasChild,
             StoreScoutingHasOpened,
             StoreScoutingHasRejected,
@@ -413,14 +414,14 @@ namespace DMS.Services.MStore
         {
             if (!string.IsNullOrEmpty(Store.OwnerEmail))
             {
-                if(!IsValidEmail(Store.OwnerEmail))
+                if (!IsValidEmail(Store.OwnerEmail))
                     Store.AddError(nameof(StoreValidator), nameof(Store.OwnerEmail), ErrorCode.OwnerEmailInvalid);
                 if (Store.OwnerEmail.Length > 255)
                 {
                     Store.AddError(nameof(StoreValidator), nameof(Store.OwnerEmail), ErrorCode.OwnerEmailOverLength);
                 }
             }
-            
+
             return Store.IsValidated;
         }
 
@@ -459,8 +460,13 @@ namespace DMS.Services.MStore
         }
         private async Task<bool> ValidateStoreStatusId(Store Store)
         {
-            if (!StoreStatusEnum.StoreStatusEnumList.Any(x => x.Id ==  Store.StoreStatusId))
+            if (Store.StoreStatusId == 0)
+            {
+                Store.AddError(nameof(StoreValidator), nameof(Store.StoreStatus), ErrorCode.StoreStatusNotSelected);
+            }
+            else if (!StoreStatusEnum.StoreStatusEnumList.Any(x => x.Id == Store.StoreStatusId))
                 Store.AddError(nameof(StoreValidator), nameof(Store.StoreStatus), ErrorCode.StoreStatusNotExisted);
+
             return Store.IsValidated;
         }
         #endregion
@@ -484,7 +490,7 @@ namespace DMS.Services.MStore
             if (Store.StoreScoutingId.HasValue)
             {
                 StoreScouting StoreScouting = await UOW.StoreScoutingRepository.Get(Store.StoreScoutingId.Value);
-                if(StoreScouting.StoreScoutingStatusId == Enums.StoreScoutingStatusEnum.OPENED.Id)
+                if (StoreScouting.StoreScoutingStatusId == Enums.StoreScoutingStatusEnum.OPENED.Id)
                     Store.AddError(nameof(StoreValidator), nameof(Store.StoreScouting), ErrorCode.StoreScoutingHasOpened);
                 if (StoreScouting.StoreScoutingStatusId == Enums.StoreScoutingStatusEnum.REJECTED.Id)
                     Store.AddError(nameof(StoreValidator), nameof(Store.StoreScouting), ErrorCode.StoreScoutingHasRejected);
