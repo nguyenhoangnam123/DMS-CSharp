@@ -337,7 +337,7 @@ namespace DMS.Rpc.lucky_number
                 Name = x.Name,
                 Value = x.Value,
                 RewardStatus = x.RewardStatus?.Name,
-                Date = x.CreatedAt.ToString("dd-MM-yyyy")
+                Date = x.UsedAt?.ToString("dd-MM-yyyy")
             }).ToList();
             string path = "Templates/Lucky_Number_Report.xlsx";
             byte[] arr = System.IO.File.ReadAllBytes(path);
