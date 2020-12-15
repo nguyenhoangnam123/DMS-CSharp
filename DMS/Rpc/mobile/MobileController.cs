@@ -356,7 +356,7 @@ namespace DMS.Rpc.mobile
                 Inline = true,
             };
             Response.Headers.Add("Content-Disposition", cd.ToString());
-            return File(output.ToArray(), "application/pdf;charset=utf-8");
+            return File(MemoryStream.ToArray(), "application/pdf;charset=utf-8");
         }
 
         [Route(MobileRoute.CreateProblem), HttpPost]
