@@ -240,7 +240,7 @@ namespace DMS.Services.MStore
         #region Store Grouping
         private async Task<bool> ValidateStoreGroupingId(Store Store)
         {
-            if (Store.StoreGroupingId != 0)
+            if (Store.StoreGroupingId.HasValue)
             {
                 StoreGroupingFilter StoreGroupingFilter = new StoreGroupingFilter
                 {
@@ -271,7 +271,7 @@ namespace DMS.Services.MStore
         #region Reseller
         private async Task<bool> ValidateResellerId(Store Store)
         {
-            if (Store.ResellerId != null && Store.ResellerId != 0)
+            if (Store.ResellerId.HasValue)
             {
                 ResellerFilter ResellerFilter = new ResellerFilter
                 {
@@ -292,7 +292,7 @@ namespace DMS.Services.MStore
         #region Province + District + Ward
         private async Task<bool> ValidateProvinceId(Store Store)
         {
-            if (Store.ProvinceId != 0)
+            if (Store.ProvinceId.HasValue)
             {
                 ProvinceFilter ProvinceFilter = new ProvinceFilter
                 {
@@ -311,7 +311,7 @@ namespace DMS.Services.MStore
         }
         private async Task<bool> ValidateDistrictId(Store Store)
         {
-            if (Store.DistrictId != 0)
+            if (Store.DistrictId.HasValue)
             {
                 DistrictFilter DistrictFilter = new DistrictFilter
                 {
@@ -330,7 +330,7 @@ namespace DMS.Services.MStore
         }
         private async Task<bool> ValidateWardId(Store Store)
         {
-            if (Store.WardId != 0)
+            if (Store.WardId.HasValue)
             {
                 WardFilter WardFilter = new WardFilter
                 {
