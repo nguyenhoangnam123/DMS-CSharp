@@ -78,6 +78,9 @@
     "Status": {
       "StatusNotExisted": "Trạng thái không tồn tại"
     },
+    "StoreStatus": {
+      "StoreStatusNotExisted": "Trạng thái không tồn tại"
+    },
     "StoreScouting": {
       "StoreScoutingHasOpened": "Đại lý cắm cờ đã được mở",
       "StoreScoutingHasRejected": "Đại lý cắm cờ bị từ chối"
