@@ -224,6 +224,13 @@ namespace DMS.Rpc.monitor.monitor_salesman
                                       Total = i.Total
                                   };
 
+            var storeUncheckingQuery = from su in DataContext.StoreUnchecking
+                                       where AppUserIds.Contains(su.AppUserId) &&
+                                       OrganizationIds.Contains(su.OrganizationId) &&
+                                       (SaleEmployeeId == null || su.AppUserId == SaleEmployeeId.Value) &&
+                                       Start <= su.Date && su.Date <= End
+                                       select su;
+
             var Ids1 = await storeCheckingQuery.Select(x => new
             {
                 OrganizationId = x.OrganizationId,
@@ -239,9 +246,15 @@ namespace DMS.Rpc.monitor.monitor_salesman
                 OrganizationId = x.OrganizationId,
                 SalesEmployeeId = x.SaleEmployeeId,
             }).ToListAsync();
+            var Ids4 = await storeUncheckingQuery.Select(x => new
+            {
+                OrganizationId = x.OrganizationId,
+                SalesEmployeeId = x.AppUserId,
+            }).ToListAsync();
             var Ids = Ids1;
             Ids.AddRange(Ids2);
             Ids.AddRange(Ids3);
+            Ids.AddRange(Ids4);
             Ids = Ids.Distinct().ToList();
 
             AppUserIds = Ids.Select(x => x.SalesEmployeeId).Distinct().ToList();
@@ -270,6 +283,7 @@ namespace DMS.Rpc.monitor.monitor_salesman
             List<StoreCheckingDAO> StoreCheckingDAOs = await storeCheckingQuery.ToListAsync();
             List<StoreImageDAO> StoreImageDAOs = await storeImageQuery.ToListAsync();
             List<IndirectSalesOrderDAO> IndirectSalesOrderDAOs = await salesOrderQuery.ToListAsync();
+            List<StoreUncheckingDAO> StoreUncheckingDAOs = await storeUncheckingQuery.ToListAsync();
 
             List<ProblemDAO> ProblemDAOs = await DataContext.Problem
                 .Where(p => AppUserIds.Contains(p.CreatorId) && 
@@ -288,6 +302,7 @@ namespace DMS.Rpc.monitor.monitor_salesman
             StoreIds.AddRange(StoreImageDAOs.Select(x => x.StoreId).ToList());
             StoreIds.AddRange(ProblemDAOs.Select(x => x.StoreId).ToList());
             StoreIds.AddRange(IndirectSalesOrderDAOs.Select(x => x.BuyerStoreId).ToList());
+            StoreIds.AddRange(StoreUncheckingDAOs.Select(x => x.StoreId).ToList());
             StoreIds = StoreIds.Distinct().ToList();
 
             ITempTableQuery<TempTable<long>> tempTableQuery = await DataContext
@@ -338,6 +353,7 @@ namespace DMS.Rpc.monitor.monitor_salesman
                     List<IndirectSalesOrderDAO> SubIndirectSalesOrderDAOs = IndirectSalesOrderDAOs.Where(i => i.SaleEmployeeId == MonitorSalesman_SaleEmployeeDTO.SaleEmployeeId).ToList();
                     MonitorSalesman_SaleEmployeeDTO.SalesOrderCounter = SubIndirectSalesOrderDAOs.Count();
                     MonitorSalesman_SaleEmployeeDTO.Revenue = SubIndirectSalesOrderDAOs.Select(o => o.Total).DefaultIfEmpty(0).Sum();
+                    MonitorSalesman_SaleEmployeeDTO.Unchecking = StoreUncheckingDAOs.Where(x => x.AppUserId == MonitorSalesman_SaleEmployeeDTO.SaleEmployeeId).Count();
 
                     // Lấy tất cả các StoreChecking của AppUserId đang xét
                     List<StoreCheckingDAO> ListChecked = StoreCheckingDAOs

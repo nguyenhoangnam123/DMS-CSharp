@@ -238,6 +238,13 @@ namespace DMS.Rpc.monitor.monitor_store_checker
                                       Total = i.Total
                                   };
 
+            var storeUncheckingQuery = from su in DataContext.StoreUnchecking
+                                       where AppUserIds.Contains(su.AppUserId) &&
+                                       OrganizationIds.Contains(su.OrganizationId) &&
+                                       (SaleEmployeeId == null || su.AppUserId == SaleEmployeeId.Value) &&
+                                       Start <= su.Date && su.Date <= End
+                                       select su;
+
             var Ids1 = await storeCheckingQuery.Select(x => new
             {
                 OrganizationId = x.OrganizationId,
@@ -253,9 +260,15 @@ namespace DMS.Rpc.monitor.monitor_store_checker
                 OrganizationId = x.OrganizationId,
                 SalesEmployeeId = x.SaleEmployeeId,
             }).ToListAsync();
+            var Ids4 = await storeUncheckingQuery.Select(x => new
+            {
+                OrganizationId = x.OrganizationId,
+                SalesEmployeeId = x.AppUserId,
+            }).ToListAsync();
             var Ids = Ids1;
             Ids.AddRange(Ids2);
             Ids.AddRange(Ids3);
+            Ids.AddRange(Ids4);
             Ids = Ids.Distinct().OrderBy(x => x.OrganizationId).ToList();
 
             AppUserIds = Ids.Select(x => x.SalesEmployeeId).Distinct().ToList();
@@ -295,6 +308,7 @@ namespace DMS.Rpc.monitor.monitor_store_checker
             List<StoreCheckingDAO> StoreCheckingDAOs = await storeCheckingQuery.ToListAsync();
             List<StoreImageDAO> StoreImageDAOs = await storeImageQuery.ToListAsync();
             List<IndirectSalesOrderDAO> IndirectSalesOrderDAOs = await salesOrderQuery.ToListAsync();
+            List<StoreUncheckingDAO> StoreUncheckingDAOs = await storeUncheckingQuery.ToListAsync();
 
             List<MonitorStoreChecker_MonitorStoreCheckerDTO> MonitorStoreChecker_MonitorStoreCheckerDTOs = new List<MonitorStoreChecker_MonitorStoreCheckerDTO>();
             foreach (var Organization in Organizations)
@@ -357,6 +371,10 @@ namespace DMS.Rpc.monitor.monitor_store_checker
                             .Where(o => i <= o.OrderDate.AddHours(CurrentContext.TimeZone) && o.OrderDate.AddHours(CurrentContext.TimeZone) < i.AddDays(1) &&
                             o.SaleEmployeeId == SaleEmployee.SaleEmployeeId)
                             .Select(o => o.Total).DefaultIfEmpty(0).Sum();
+                        MonitorStoreChecker_StoreCheckingDTO.Unchecking = StoreUncheckingDAOs
+                        .Where(x => i <= x.Date.AddHours(CurrentContext.TimeZone) && x.Date.AddHours(CurrentContext.TimeZone) < i.AddDays(1) &&
+                        x.AppUserId == SaleEmployee.SaleEmployeeId)
+                        .Count();
 
                         MonitorStoreChecker_StoreCheckingDTO.PlanCounter = CountPlan(i, SaleEmployee.SaleEmployeeId, ERouteContentDAOs);
 
