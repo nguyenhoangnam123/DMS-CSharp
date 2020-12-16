@@ -227,7 +227,7 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_unchecked
                     LocalEndDay(CurrentContext) :
                     ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.Date.LessEqual.Value;
 
-            if (End.Subtract(Start).Days > 31)
+            if (End.Subtract(Start).Days > 7)
                 return BadRequest(new { message = "Chỉ được phép xem tối đa trong vòng 7 ngày" });
 
             long? AppUserId = ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.AppUserId?.Equal;
