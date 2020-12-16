@@ -114,6 +114,7 @@ namespace DMS.Repositories
                     Value = q.LuckyNumber.Value,
                     RewardStatusId = q.LuckyNumber.RewardStatusId,
                     RowId = q.LuckyNumber.RowId,
+                    UsedAt = q.LuckyNumber.UsedAt,
                 } : null,
                 RewardHistory = filter.Selects.Contains(RewardHistoryContentSelect.RewardHistory) && q.RewardHistory != null ? new RewardHistory
                 {
