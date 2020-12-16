@@ -461,9 +461,7 @@ namespace DMS.Services.MStore
         private async Task<bool> ValidateStoreStatusId(Store Store)
         {
             if (Store.StoreStatusId == 0)
-            {
                 Store.AddError(nameof(StoreValidator), nameof(Store.StoreStatus), ErrorCode.StoreStatusNotSelected);
-            }
             else if (!StoreStatusEnum.StoreStatusEnumList.Any(x => x.Id == Store.StoreStatusId))
                 Store.AddError(nameof(StoreValidator), nameof(Store.StoreStatus), ErrorCode.StoreStatusNotExisted);
 
