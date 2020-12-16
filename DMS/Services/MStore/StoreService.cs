@@ -297,7 +297,7 @@ namespace DMS.Services.MStore
                 {
                     await UOW.AppUserStoreMappingRepository.Delete(null, oldData.Id);
                 }
-                if (Store.StoreStatusId == StoreStatusEnum.OFFICIAL.Id)
+                if (Store.StoreStatusId == StoreStatusEnum.OFFICIAL.Id && oldData.StoreStatusId != StoreStatusEnum.OFFICIAL.Id)
                 {
                     if (oldData.AppUserId.HasValue)
                         await UOW.AppUserStoreMappingRepository.Delete(oldData.AppUserId.Value, oldData.Id);
