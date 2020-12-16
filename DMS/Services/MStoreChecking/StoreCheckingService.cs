@@ -550,9 +550,8 @@ namespace DMS.Services.MStoreChecking
                     Stores = await ListRecentStore(Stores, CurrentContext.Latitude.Value, CurrentContext.Longitude.Value);
                 }
                 Stores = await CheckStoreChecking(Stores);
-                Stores = await CheckOrder(Stores);
-
                 Stores = Stores.OrderBy(s => s.HasChecking).ThenBy(s => s.Distance).Skip(skip).Take(take).ToList();
+                Stores = await CheckOrder(Stores);
                 return Stores;
             }
             catch (Exception ex)

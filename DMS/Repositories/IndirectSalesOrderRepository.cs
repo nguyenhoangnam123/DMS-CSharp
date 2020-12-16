@@ -8,6 +8,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Thinktecture.EntityFrameworkCore.TempTables;
+using Thinktecture;
 
 namespace DMS.Repositories
 {
@@ -41,7 +43,7 @@ namespace DMS.Repositories
             this.DataContext = DataContext;
         }
 
-        private IQueryable<IndirectSalesOrderDAO> DynamicFilter(IQueryable<IndirectSalesOrderDAO> query, IndirectSalesOrderFilter filter)
+        private async Task<IQueryable<IndirectSalesOrderDAO>> DynamicFilter(IQueryable<IndirectSalesOrderDAO> query, IndirectSalesOrderFilter filter)
         {
             if (filter == null)
                 return query.Where(q => false);
@@ -83,7 +85,34 @@ namespace DMS.Repositories
             if (filter.Code != null)
                 query = query.Where(q => q.Code, filter.Code);
             if (filter.BuyerStoreId != null)
-                query = query.Where(q => q.BuyerStoreId, filter.BuyerStoreId);
+            {
+                if (filter.BuyerStoreId.In != null && filter.BuyerStoreId.In.Count > 0)
+                {
+                    if (filter.BuyerStoreId.NotIn == null || filter.BuyerStoreId.NotIn.Count == 0)
+                    {
+                        ITempTableQuery<TempTable<long>> tempTableQuery = await DataContext
+                        .BulkInsertValuesIntoTempTableAsync<long>(filter.BuyerStoreId.In.Distinct().ToList());
+                        query = query.Join(tempTableQuery.Query,
+                                           c => c.Id,
+                                           t => t.Column1,
+                                           (c, t) => c);
+                    }
+                    else
+                    {
+                        ITempTableQuery<TempTable<long>> tempTableQuery = await DataContext
+                            .BulkInsertValuesIntoTempTableAsync<long>(filter.BuyerStoreId.In.Distinct().ToList());
+                        query = query.Where(x => !filter.BuyerStoreId.NotIn.Contains(x.Id));
+                        query = query.Join(tempTableQuery.Query,
+                                           c => c.Id,
+                                           t => t.Column1,
+                                           (c, t) => c);
+                    }
+                }
+                else
+                {
+                    query = query.Where(q => q.BuyerStoreId, filter.BuyerStoreId);
+                }
+            }    
             if (filter.PhoneNumber != null)
                 query = query.Where(q => q.PhoneNumber, filter.PhoneNumber);
             if (filter.StoreAddress != null)
@@ -437,7 +466,7 @@ namespace DMS.Repositories
         public async Task<int> Count(IndirectSalesOrderFilter filter)
         {
             IQueryable<IndirectSalesOrderDAO> IndirectSalesOrderDAOs = DataContext.IndirectSalesOrder.AsNoTracking();
-            IndirectSalesOrderDAOs = DynamicFilter(IndirectSalesOrderDAOs, filter);
+            IndirectSalesOrderDAOs = await DynamicFilter(IndirectSalesOrderDAOs, filter);
             IndirectSalesOrderDAOs = OrFilter(IndirectSalesOrderDAOs, filter);
             return await IndirectSalesOrderDAOs.Distinct().CountAsync();
         }
@@ -446,7 +475,7 @@ namespace DMS.Repositories
         {
             if (filter == null) return new List<IndirectSalesOrder>();
             IQueryable<IndirectSalesOrderDAO> IndirectSalesOrderDAOs = DataContext.IndirectSalesOrder.AsNoTracking();
-            IndirectSalesOrderDAOs = DynamicFilter(IndirectSalesOrderDAOs, filter);
+            IndirectSalesOrderDAOs = await DynamicFilter(IndirectSalesOrderDAOs, filter);
             IndirectSalesOrderDAOs = OrFilter(IndirectSalesOrderDAOs, filter);
             IndirectSalesOrderDAOs = DynamicOrder(IndirectSalesOrderDAOs, filter);
             List<IndirectSalesOrder> IndirectSalesOrders = await DynamicSelect(IndirectSalesOrderDAOs, filter);
@@ -456,7 +485,7 @@ namespace DMS.Repositories
         public async Task<int> CountNew(IndirectSalesOrderFilter filter)
         {
             IQueryable<IndirectSalesOrderDAO> IndirectSalesOrderDAOs = DataContext.IndirectSalesOrder.AsNoTracking();
-            IndirectSalesOrderDAOs = DynamicFilter(IndirectSalesOrderDAOs, filter);
+            IndirectSalesOrderDAOs = await DynamicFilter(IndirectSalesOrderDAOs, filter);
             IndirectSalesOrderDAOs = from q in IndirectSalesOrderDAOs
                                      where (q.RequestStateId == RequestStateEnum.NEW.Id || q.RequestStateId == RequestStateEnum.REJECTED.Id) &&
                                      q.CreatorId == filter.ApproverId.Equal
@@ -469,7 +498,7 @@ namespace DMS.Repositories
         {
             if (filter == null) return new List<IndirectSalesOrder>();
             IQueryable<IndirectSalesOrderDAO> IndirectSalesOrderDAOs = DataContext.IndirectSalesOrder.AsNoTracking();
-            IndirectSalesOrderDAOs = DynamicFilter(IndirectSalesOrderDAOs, filter);
+            IndirectSalesOrderDAOs = await DynamicFilter(IndirectSalesOrderDAOs, filter);
             IndirectSalesOrderDAOs = from q in IndirectSalesOrderDAOs
                                      where (q.RequestStateId == RequestStateEnum.NEW.Id || q.RequestStateId == RequestStateEnum.REJECTED.Id) &&
                                      q.CreatorId == filter.ApproverId.Equal
@@ -483,7 +512,7 @@ namespace DMS.Repositories
         public async Task<int> CountPending(IndirectSalesOrderFilter filter)
         {
             IQueryable<IndirectSalesOrderDAO> IndirectSalesOrderDAOs = DataContext.IndirectSalesOrder.AsNoTracking();
-            IndirectSalesOrderDAOs = DynamicFilter(IndirectSalesOrderDAOs, filter);
+            IndirectSalesOrderDAOs = await DynamicFilter(IndirectSalesOrderDAOs, filter);
             if (filter.ApproverId.Equal.HasValue)
             {
                 IndirectSalesOrderDAOs = from q in IndirectSalesOrderDAOs
@@ -501,7 +530,7 @@ namespace DMS.Repositories
         {
             if (filter == null) return new List<IndirectSalesOrder>();
             IQueryable<IndirectSalesOrderDAO> IndirectSalesOrderDAOs = DataContext.IndirectSalesOrder.AsNoTracking();
-            IndirectSalesOrderDAOs = DynamicFilter(IndirectSalesOrderDAOs, filter);
+            IndirectSalesOrderDAOs = await DynamicFilter(IndirectSalesOrderDAOs, filter);
             if (filter.ApproverId.Equal.HasValue)
             {
                 IndirectSalesOrderDAOs = from q in IndirectSalesOrderDAOs
@@ -520,7 +549,7 @@ namespace DMS.Repositories
         public async Task<int> CountCompleted(IndirectSalesOrderFilter filter)
         {
             IQueryable<IndirectSalesOrderDAO> IndirectSalesOrderDAOs = DataContext.IndirectSalesOrder.AsNoTracking();
-            IndirectSalesOrderDAOs = DynamicFilter(IndirectSalesOrderDAOs, filter);
+            IndirectSalesOrderDAOs = await DynamicFilter(IndirectSalesOrderDAOs, filter);
             if (filter.ApproverId.Equal.HasValue)
             {
                 var query1 = from q in IndirectSalesOrderDAOs
@@ -546,7 +575,7 @@ namespace DMS.Repositories
         {
             if (filter == null) return new List<IndirectSalesOrder>();
             IQueryable<IndirectSalesOrderDAO> IndirectSalesOrderDAOs = DataContext.IndirectSalesOrder.AsNoTracking();
-            IndirectSalesOrderDAOs = DynamicFilter(IndirectSalesOrderDAOs, filter);
+            IndirectSalesOrderDAOs = await DynamicFilter(IndirectSalesOrderDAOs, filter);
             if (filter.ApproverId.Equal.HasValue)
             {
                 var query1 = from q in IndirectSalesOrderDAOs
