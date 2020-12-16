@@ -7,7 +7,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Portal.Handlers
+namespace DMS.Handlers
 {
     public class RabbitModelPooledObjectPolicy : IPooledObjectPolicy<IModel>
     {
@@ -27,6 +27,7 @@ namespace Portal.Handlers
             // create connection  
             _connection = factory.CreateConnection();
             _connection.ConnectionShutdown += RabbitMQ_ConnectionShutdown;
+
         }
 
         public IModel Create()

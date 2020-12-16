@@ -14,6 +14,7 @@ namespace DMS.Rpc.monitor.monitor_salesman
         public const string ListImage = Default + "/list-image";
         public const string Get = Default + "/get";
         public const string Export = Default + "/export";
+        public const string ExportUnchecking = Default + "/export-unchecking";
 
         public const string FilterListOrganization = Default + "/filter-list-organization";
         public const string FilterListAppUser = Default + "/filter-list-app-user";
@@ -29,7 +30,7 @@ namespace DMS.Rpc.monitor.monitor_salesman
         {
             { "Tìm kiếm", new List<string> {
                 Parent,
-                Master, Count, List, ListImage, Get, Export, 
+                Master, Count, List, ListImage, Get, Export, ExportUnchecking,
                 FilterListOrganization, FilterListAppUser, } },
         };
     }

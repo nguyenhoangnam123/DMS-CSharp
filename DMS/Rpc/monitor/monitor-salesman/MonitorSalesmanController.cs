@@ -224,6 +224,13 @@ namespace DMS.Rpc.monitor.monitor_salesman
                                       Total = i.Total
                                   };
 
+            var storeUncheckingQuery = from su in DataContext.StoreUnchecking
+                                       where AppUserIds.Contains(su.AppUserId) &&
+                                       OrganizationIds.Contains(su.OrganizationId) &&
+                                       (SaleEmployeeId == null || su.AppUserId == SaleEmployeeId.Value) &&
+                                       Start <= su.Date && su.Date <= End
+                                       select su;
+
             var Ids1 = await storeCheckingQuery.Select(x => new
             {
                 OrganizationId = x.OrganizationId,
@@ -239,9 +246,15 @@ namespace DMS.Rpc.monitor.monitor_salesman
                 OrganizationId = x.OrganizationId,
                 SalesEmployeeId = x.SaleEmployeeId,
             }).ToListAsync();
+            var Ids4 = await storeUncheckingQuery.Select(x => new
+            {
+                OrganizationId = x.OrganizationId,
+                SalesEmployeeId = x.AppUserId,
+            }).ToListAsync();
             var Ids = Ids1;
             Ids.AddRange(Ids2);
             Ids.AddRange(Ids3);
+            Ids.AddRange(Ids4);
             Ids = Ids.Distinct().ToList();
 
             AppUserIds = Ids.Select(x => x.SalesEmployeeId).Distinct().ToList();
@@ -270,6 +283,7 @@ namespace DMS.Rpc.monitor.monitor_salesman
             List<StoreCheckingDAO> StoreCheckingDAOs = await storeCheckingQuery.ToListAsync();
             List<StoreImageDAO> StoreImageDAOs = await storeImageQuery.ToListAsync();
             List<IndirectSalesOrderDAO> IndirectSalesOrderDAOs = await salesOrderQuery.ToListAsync();
+            List<StoreUncheckingDAO> StoreUncheckingDAOs = await storeUncheckingQuery.ToListAsync();
 
             List<ProblemDAO> ProblemDAOs = await DataContext.Problem
                 .Where(p => AppUserIds.Contains(p.CreatorId) && 
@@ -288,6 +302,7 @@ namespace DMS.Rpc.monitor.monitor_salesman
             StoreIds.AddRange(StoreImageDAOs.Select(x => x.StoreId).ToList());
             StoreIds.AddRange(ProblemDAOs.Select(x => x.StoreId).ToList());
             StoreIds.AddRange(IndirectSalesOrderDAOs.Select(x => x.BuyerStoreId).ToList());
+            StoreIds.AddRange(StoreUncheckingDAOs.Select(x => x.StoreId).ToList());
             StoreIds = StoreIds.Distinct().ToList();
 
             ITempTableQuery<TempTable<long>> tempTableQuery = await DataContext
@@ -338,6 +353,7 @@ namespace DMS.Rpc.monitor.monitor_salesman
                     List<IndirectSalesOrderDAO> SubIndirectSalesOrderDAOs = IndirectSalesOrderDAOs.Where(i => i.SaleEmployeeId == MonitorSalesman_SaleEmployeeDTO.SaleEmployeeId).ToList();
                     MonitorSalesman_SaleEmployeeDTO.SalesOrderCounter = SubIndirectSalesOrderDAOs.Count();
                     MonitorSalesman_SaleEmployeeDTO.Revenue = SubIndirectSalesOrderDAOs.Select(o => o.Total).DefaultIfEmpty(0).Sum();
+                    MonitorSalesman_SaleEmployeeDTO.Unchecking = StoreUncheckingDAOs.Where(x => x.AppUserId == MonitorSalesman_SaleEmployeeDTO.SaleEmployeeId).Count();
 
                     // Lấy tất cả các StoreChecking của AppUserId đang xét
                     List<StoreCheckingDAO> ListChecked = StoreCheckingDAOs
@@ -613,6 +629,143 @@ namespace DMS.Rpc.monitor.monitor_salesman
             };
 
             return File(output.ToArray(), "application/octet-stream", "Monitor_Salesman_Report.xlsx");
+        }
+
+        [Route(MonitorSalesmanRoute.ExportUnchecking), HttpPost]
+        public async Task<ActionResult> ExExportUncheckingport([FromBody] MonitorSalesman_MonitorSalesmanFilterDTO MonitorSalesman_MonitorSalesmanFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            DateTime Start = LocalStartDay(CurrentContext);
+            DateTime End = LocalEndDay(CurrentContext);
+            DateTime Now = StaticParams.DateTimeNow.AddHours(CurrentContext.TimeZone);
+            
+            List<ERouteContentDAO> ERouteContentDAOs = await DataContext.ERouteContent
+                .Where(ec => (!ec.ERoute.EndDate.HasValue || Start <= ec.ERoute.EndDate) && ec.ERoute.StartDate <= End)
+                .Include(ec => ec.ERoute)
+                .Include(ec => ec.ERouteContentDays)
+                .ToListAsync();
+            List<StoreUncheckingDAO> PlannedStoreUncheckingDAOs = new List<StoreUncheckingDAO>();
+            List<StoreUncheckingDAO> StoreUncheckingDAOs = new List<StoreUncheckingDAO>();
+            foreach (ERouteContentDAO ERouteContentDAO in ERouteContentDAOs)
+            {
+                StoreUncheckingDAO StoreUncheckingDAO = PlannedStoreUncheckingDAOs.Where(su =>
+                    su.Date == Start &&
+                    su.AppUserId == ERouteContentDAO.ERoute.SaleEmployeeId &&
+                    su.StoreId == ERouteContentDAO.StoreId
+                ).FirstOrDefault();
+                if (StoreUncheckingDAO == null)
+                {
+                    if (Start >= ERouteContentDAO.ERoute.RealStartDate)
+                    {
+                        long gap = (Start - ERouteContentDAO.ERoute.RealStartDate).Days % 28;
+                        if (ERouteContentDAO.ERouteContentDays.Any(ecd => ecd.OrderDay == gap && ecd.Planned))
+                        {
+                            StoreUncheckingDAO = new StoreUncheckingDAO
+                            {
+                                AppUserId = ERouteContentDAO.ERoute.SaleEmployeeId,
+                                Date = Start,
+                                StoreId = ERouteContentDAO.StoreId,
+                                OrganizationId = ERouteContentDAO.ERoute.OrganizationId
+                            };
+                            PlannedStoreUncheckingDAOs.Add(StoreUncheckingDAO);
+                        }
+                    }
+                }
+            }
+            List<StoreCheckingDAO> StoreCheckingDAOs = await DataContext.StoreChecking.Where(sc => sc.CheckOutAt.HasValue &&
+                Start <= sc.CheckOutAt.Value && sc.CheckOutAt.Value <= End).ToListAsync();
+            foreach (StoreUncheckingDAO StoreUncheckingDAO in PlannedStoreUncheckingDAOs)
+            {
+                if (!StoreCheckingDAOs.Any(sc => sc.SaleEmployeeId == StoreUncheckingDAO.AppUserId && sc.StoreId == StoreUncheckingDAO.StoreId))
+                {
+                    StoreUncheckingDAOs.Add(StoreUncheckingDAO);
+                }
+            }
+
+            var AppUserIds = StoreUncheckingDAOs.Select(x => x.AppUserId).Distinct().ToList();
+            var StoreIds = StoreUncheckingDAOs.Select(x => x.StoreId).Distinct().ToList();
+
+            var AppUserDAOs = await DataContext.AppUser.Where(x => AppUserIds.Contains(x.Id)).Select(x => new AppUserDAO
+            {
+                Id = x.Id,
+                Username = x.Username,
+                DisplayName = x.DisplayName,
+                OrganizationId = x.OrganizationId
+            }).OrderBy(x => x.OrganizationId).ThenBy(x => x.DisplayName).ToListAsync();
+
+            var StoreDAOs = await DataContext.Store.Where(x => StoreIds.Contains(x.Id)).Select(x => new StoreDAO
+            {
+                Id = x.Id,
+                Code = x.Code,
+                Name = x.Name,
+                CodeDraft = x.CodeDraft,
+                Address = x.Address,
+                Telephone = x.Telephone,
+                StoreType = x.StoreType == null ? null : new StoreTypeDAO
+                {
+                    Name = x.Name
+                },
+                StoreStatus = x.StoreStatus == null ? null : new StoreStatusDAO
+                {
+                    Name = x.StoreStatus.Name
+                }
+            }).ToListAsync();
+
+            var MonitorSalesman_ExportEmployeeUncheckedDTOs = AppUserDAOs.Select(x => new MonitorSalesman_ExportEmployeeUncheckedDTO
+            {
+                AppUserId = x.Id,
+                DisplayName = x.DisplayName,
+            }).ToList();
+
+            Parallel.ForEach(StoreUncheckingDAOs, StoreUncheckingDAO =>
+            {
+                StoreUncheckingDAO.Store = StoreDAOs.Where(x => x.Id == StoreUncheckingDAO.StoreId).FirstOrDefault();
+                StoreUncheckingDAO.AppUser = AppUserDAOs.Where(x => x.Id == StoreUncheckingDAO.AppUserId).FirstOrDefault();
+            });
+
+            Parallel.ForEach(MonitorSalesman_ExportEmployeeUncheckedDTOs, MonitorSalesman_ExportEmployeeUncheckedDTO =>
+            {
+                MonitorSalesman_ExportEmployeeUncheckedDTO.Contents = StoreUncheckingDAOs
+                .Where(x => x.AppUserId == MonitorSalesman_ExportEmployeeUncheckedDTO.AppUserId)
+                .Select(x => new MonitorSalesman_ExportUncheckedDTO
+                {
+                    AppUserId = x.AppUserId,
+                    Username = x.AppUser.Username,
+                    DisplayName = x.AppUser.DisplayName,
+                    StoreCode = x.Store.Code,
+                    StoreCodeDraft = x.Store.CodeDraft,
+                    StoreAddress = x.Store.Address,
+                    StoreName = x.Store.Name,
+                    StorePhone = x.Store.Telephone,
+                    StoreTypeName = x.Store.StoreType?.Name,
+                    StoreStatusName = x.Store.StoreStatus?.Name,
+                }).ToList();
+            });
+
+            int stt = 1;
+            foreach (MonitorSalesman_ExportEmployeeUncheckedDTO MonitorSalesman_ExportEmployeeUncheckedDTO in MonitorSalesman_ExportEmployeeUncheckedDTOs)
+            {
+                foreach (var Content in MonitorSalesman_ExportEmployeeUncheckedDTO.Contents)
+                {
+                    Content.STT = stt;
+                    stt++;
+                }
+            }
+            string path = "Templates/Daily_Unchecking_Report.xlsx";
+            byte[] arr = System.IO.File.ReadAllBytes(path);
+            MemoryStream input = new MemoryStream(arr);
+            MemoryStream output = new MemoryStream();
+            dynamic Data = new ExpandoObject();
+            Data.Date = Now.ToString("HH:mm") + " ngày " + Now.ToString("dd-MM-yyyy");
+            Data.Employees = MonitorSalesman_ExportEmployeeUncheckedDTOs;
+            using (var document = StaticParams.DocumentFactory.Open(input, output, "xlsx"))
+            {
+                document.Process(Data);
+            };
+
+            return File(output.ToArray(), "application/octet-stream", "Daily_Unchecking_Report.xlsx");
         }
 
     }

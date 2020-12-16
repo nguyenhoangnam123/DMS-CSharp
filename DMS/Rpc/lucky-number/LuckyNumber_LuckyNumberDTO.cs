@@ -19,6 +19,7 @@ namespace DMS.Rpc.lucky_number
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public DateTime? UsedAt { get; set; }
+        public string eUsedAt => UsedAt?.ToString("dd-MM-yyyy");
         public bool Used { get; set; }
         public LuckyNumber_LuckyNumberDTO() {}
         public LuckyNumber_LuckyNumberDTO(LuckyNumber LuckyNumber)

@@ -4,6 +4,7 @@ using DMS.Helpers;
 using DMS.Models;
 using DMS.Rpc;
 using DMS.Services;
+using Elastic.Apm.NetCoreAll;
 using GleamTech.AspNet.Core;
 using Hangfire;
 using Hangfire.SqlServer;
@@ -23,16 +24,13 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
 using OfficeOpenXml;
-using Portal.Handlers;
 using RabbitMQ.Client;
 using System;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
-using Z.EntityFramework.Extensions;
 using Thinktecture;
-using Elastic.Apm.NetCoreAll;
+using Z.EntityFramework.Extensions;
 
 namespace DMS
 {

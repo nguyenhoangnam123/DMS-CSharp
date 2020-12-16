@@ -337,7 +337,7 @@ namespace DMS.Rpc.lucky_number
                 Name = x.Name,
                 Value = x.Value,
                 RewardStatus = x.RewardStatus?.Name,
-                Date = x.UsedAt?.ToString("dd-MM-yyyy")
+                Date = x.UsedAt?.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy")
             }).ToList();
             string path = "Templates/Lucky_Number_Report.xlsx";
             byte[] arr = System.IO.File.ReadAllBytes(path);
@@ -414,6 +414,7 @@ namespace DMS.Rpc.lucky_number
             foreach (var LuckyNumber_RewardHistoryDTO in LuckyNumber_RewardHistoryDTOs)
             {
                 LuckyNumber_RewardHistoryDTO.STT = STT++;
+                LuckyNumber_RewardHistoryDTO.Date = LuckyNumber_RewardHistoryDTO.CreatedAt.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy");
             }
             string path = "Templates/Lucky_Number_Store_Report.xlsx";
             byte[] arr = System.IO.File.ReadAllBytes(path);

@@ -19,6 +19,7 @@ namespace DMS.Rpc.monitor.monitor_salesman
         public string Username { get; set; }
         public string DisplayName { get; set; }
         public long PlanCounter { get; set; }
+        public long Unchecking { get; set; }
         public long InternalCounter { get { return Internal == null ? 0 : Internal.Count; } }
         public long ExternalCounter { get { return External == null ? 0 : External.Count; } }
         public long ImageCounter { get; set; }
