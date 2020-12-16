@@ -508,7 +508,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_indirect_sales_order_by_empl
             var AppUsers = await AppUserService.List(AppUserFilter);
             var AppUserIds = AppUsers.Select(x => x.Id).ToList();
 
-            var orderQuery = from i in DataContext.DirectSalesOrder
+            var orderQuery = from i in DataContext.IndirectSalesOrder
                              where i.OrderDate >= Start && i.OrderDate <= End &&
                              AppUserIds.Contains(i.SaleEmployeeId) &&
                              (SaleEmployeeId.HasValue == false || i.SaleEmployeeId == SaleEmployeeId.Value) &&
@@ -518,8 +518,8 @@ namespace DMS.Rpc.reports.report_sales_order.report_indirect_sales_order_by_empl
 
             var DirectSalesOrderIds = await orderQuery.ToListAsync();
 
-            var transactionQuery = from t in DataContext.DirectSalesOrderTransaction
-                                   where DirectSalesOrderIds.Contains(t.DirectSalesOrderId) &&
+            var transactionQuery = from t in DataContext.IndirectSalesOrderTransaction
+                                   where DirectSalesOrderIds.Contains(t.IndirectSalesOrderId) &&
                                    (ItemIds == null || ItemIds.Count == 0 || ItemIds.Contains(t.ItemId))
                                    select new
                                    {
