@@ -681,6 +681,7 @@ namespace DMS.Rpc.mobile
                 }).ToList()
             };
             Store.BaseLanguage = CurrentContext.Language;
+            Store.AppUserId = CurrentContext.UserId;
             Store = await StoreService.Create(Store);
             Mobile_StoreDTO = new Mobile_StoreDTO(Store);
             if (Store.IsValidated)
