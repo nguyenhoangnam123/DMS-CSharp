@@ -44,6 +44,7 @@ using DMS.Helpers;
 using System.Dynamic;
 using System.Net.Mime;
 using GleamTech.DocumentUltimate;
+using Newtonsoft.Json;
 
 namespace DMS.Rpc.mobile
 {
@@ -294,11 +295,15 @@ namespace DMS.Rpc.mobile
         }
 
         [Route(MobileRoute.PreviewIndirectOrder), HttpPost]
-        public async Task<ActionResult> PreviewIndirectOrder([FromBody] Mobile_IndirectSalesOrderDTO Mobile_IndirectSalesOrderDTO)
+        public async Task<ActionResult> PreviewIndirectOrder([FromForm] string data)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
 
+            if (string.IsNullOrWhiteSpace(data))
+                return BadRequest();
+
+            Mobile_IndirectSalesOrderDTO Mobile_IndirectSalesOrderDTO = JsonConvert.DeserializeObject<Mobile_IndirectSalesOrderDTO>(data);
             IndirectSalesOrder IndirectSalesOrder = ConvertIndirectSalesOrderDTOToEntity(Mobile_IndirectSalesOrderDTO);
             IndirectSalesOrder.BaseLanguage = CurrentContext.Language;
             IndirectSalesOrder.StoreCheckingId = Mobile_IndirectSalesOrderDTO.StoreCheckingId;
