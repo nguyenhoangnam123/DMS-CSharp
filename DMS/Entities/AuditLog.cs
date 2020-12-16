@@ -1,6 +1,7 @@
-﻿using System;
+﻿using DMS.Common;
+using System;
 
-namespace DMS.Common
+namespace DMS.Entities
 {
     public partial class AuditLog : DataEntity
     {

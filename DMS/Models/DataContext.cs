@@ -55,6 +55,7 @@ namespace DMS.Models
         public virtual DbSet<KpiItemContentKpiCriteriaItemMappingDAO> KpiItemContentKpiCriteriaItemMapping { get; set; }
         public virtual DbSet<KpiPeriodDAO> KpiPeriod { get; set; }
         public virtual DbSet<KpiYearDAO> KpiYear { get; set; }
+        public virtual DbSet<LastestEventMessageDAO> LastestEventMessage { get; set; }
         public virtual DbSet<LuckyNumberDAO> LuckyNumber { get; set; }
         public virtual DbSet<LuckyNumberGroupingDAO> LuckyNumberGrouping { get; set; }
         public virtual DbSet<MenuDAO> Menu { get; set; }
@@ -1763,6 +1764,27 @@ namespace DMS.Models
                 entity.Property(e => e.Name)
                     .IsRequired()
                     .HasMaxLength(500);
+            });
+
+            modelBuilder.Entity<LastestEventMessageDAO>(entity =>
+            {
+                entity.HasNoKey();
+
+                entity.ToView("LastestEventMessage");
+
+                entity.Property(e => e.Content).IsRequired();
+
+                entity.Property(e => e.EntityName)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.Id).ValueGeneratedOnAdd();
+
+                entity.Property(e => e.RoutingKey)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.Time).HasColumnType("datetime");
             });
 
             modelBuilder.Entity<LuckyNumberDAO>(entity =>

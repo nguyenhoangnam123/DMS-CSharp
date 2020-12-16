@@ -1,8 +1,7 @@
-﻿using DMS.Common;
-using DMS.Entities;
+﻿using DMS.Entities;
 using DMS.Enums;
-using DMS.Models;
 using DMS.Helpers;
+using DMS.Models;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
@@ -11,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+
 
 namespace DMS.Handlers
 {
@@ -26,24 +26,26 @@ namespace DMS.Handlers
     {
         public abstract string Name { get; }
         public IRabbitManager RabbitManager { get; set; }
+
         public abstract Task Handle(DataContext context, string routingKey, string content);
 
         public abstract void QueueBind(IModel channel, string queue, string exchange);
+
         protected async Task<bool> SaveEventMessage<T>(DataContext DataContext, string RoutingKey, List<EventMessage<T>> EventMessages)
         {
             List<EventMessageDAO> EventMessageDAOs = new List<EventMessageDAO>();
             foreach (var EventMessage in EventMessages)
             {
-                EventMessageDAO eventMessageDAO = new EventMessageDAO
+                EventMessageDAO EventMessageDAO = new EventMessageDAO
                 {
                     Id = EventMessage.Id,
                     Time = EventMessage.Time,
                     RoutingKey = RoutingKey,
                     RowId = EventMessage.RowId,
                     EntityName = typeof(T).Name,
-                    Content = JsonConvert.SerializeObject(EventMessage.Content)
+                    Content = JsonConvert.SerializeObject(EventMessage.Content),
                 };
-                EventMessageDAOs.Add(eventMessageDAO);
+                EventMessageDAOs.Add(EventMessageDAO);
             }
             await DataContext.EventMessage.BulkMergeAsync(EventMessageDAOs);
             return true;
@@ -51,12 +53,11 @@ namespace DMS.Handlers
         protected async Task<List<EventMessage<T>>> ListEventMessage<T>(DataContext DataContext, string RoutingKey, List<Guid> RowIds)
         {
             string typeName = typeof(T).Name;
-            List<EventMessageDAO> EventMessageDAOs = await DataContext.EventMessage
+            List<LastestEventMessageDAO> LastestEventMessageDAOs = await DataContext.LastestEventMessage
                 .Where(e => RowIds.Contains(e.RowId) && e.RoutingKey == RoutingKey && e.EntityName == typeName)
                 .OrderBy(e => e.Id)
-                .Skip(0).Take(int.MaxValue)
                 .ToListAsync();
-            List<EventMessage<T>> EventMessages = EventMessageDAOs.Select(q => new EventMessage<T>()
+            List<EventMessage<T>> EventMessages = LastestEventMessageDAOs.Select(q => new EventMessage<T>()
             {
                 Id = q.Id,
                 Time = q.Time,
@@ -67,7 +68,7 @@ namespace DMS.Handlers
             return EventMessages;
         }
 
-        protected async Task Log(Exception ex, string className, [CallerMemberName] string methodName = "")
+        protected void Log(Exception ex, string className, [CallerMemberName] string methodName = "")
         {
             SystemLog SystemLog = new SystemLog
             {
