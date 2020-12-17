@@ -27,6 +27,9 @@ using System.IO;
 using System.Linq;
 using System.Net.Mime;
 using System.Threading.Tasks;
+using System;
+using DMS.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace DMS.Rpc.indirect_sales_order
 {
@@ -49,6 +52,7 @@ namespace DMS.Rpc.indirect_sales_order
         private IStoreStatusService StoreStatusService;
         private IStoreTypeService StoreTypeService;
         private ITaxTypeService TaxTypeService;
+        private DataContext DataContext;
         private ICurrentContext CurrentContext;
         public IndirectSalesOrderController(
             IOrganizationService OrganizationService,
@@ -68,6 +72,7 @@ namespace DMS.Rpc.indirect_sales_order
             IStoreStatusService StoreStatusService,
             IStoreTypeService StoreTypeService,
             ITaxTypeService TaxTypeService,
+            DataContext DataContext,
             ICurrentContext CurrentContext
         )
         {
@@ -88,6 +93,7 @@ namespace DMS.Rpc.indirect_sales_order
             this.StoreStatusService = StoreStatusService;
             this.StoreTypeService = StoreTypeService;
             this.TaxTypeService = TaxTypeService;
+            this.DataContext = DataContext;
             this.CurrentContext = CurrentContext;
         }
 
@@ -209,7 +215,7 @@ namespace DMS.Rpc.indirect_sales_order
 
             IndirectSalesOrder IndirectSalesOrder = await IndirectSalesOrderService.Get(IndirectSalesOrder_IndirectSalesOrderDTO.Id);
             IndirectSalesOrder_IndirectSalesOrderDTO = new IndirectSalesOrder_IndirectSalesOrderDTO(IndirectSalesOrder);
-            
+
             return IndirectSalesOrder_IndirectSalesOrderDTO;
         }
 
@@ -419,7 +425,7 @@ namespace DMS.Rpc.indirect_sales_order
             {
                 document.Process(Data);
             };
-            
+
             ContentDisposition cd = new ContentDisposition
             {
                 FileName = $"Don-hang-gian-tiep-{IndirectSalesOrder.Code}.docx",
@@ -427,6 +433,79 @@ namespace DMS.Rpc.indirect_sales_order
             };
             Response.Headers.Add("Content-Disposition", cd.ToString());
             return File(output.ToArray(), "application/vnd.openxmlformats-officedocument.wordprocessingml.document;charset=utf-8");
+        }
+
+        [Route(IndirectSalesOrderRoute.Export), HttpPost]
+        public async Task<ActionResult> Export([FromBody] IndirectSalesOrder_IndirectSalesOrderFilterDTO IndirectSalesOrder_IndirectSalesOrderFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            DateTime Start = IndirectSalesOrder_IndirectSalesOrderFilterDTO.OrderDate?.GreaterEqual == null ?
+                    LocalStartDay(CurrentContext) :
+                    IndirectSalesOrder_IndirectSalesOrderFilterDTO.OrderDate.GreaterEqual.Value;
+
+            DateTime End = IndirectSalesOrder_IndirectSalesOrderFilterDTO.OrderDate?.LessEqual == null ?
+                    LocalEndDay(CurrentContext) :
+                    IndirectSalesOrder_IndirectSalesOrderFilterDTO.OrderDate.LessEqual.Value;
+
+            IndirectSalesOrder_IndirectSalesOrderFilterDTO.Skip = 0;
+            IndirectSalesOrder_IndirectSalesOrderFilterDTO.Take = int.MaxValue;
+            List<IndirectSalesOrder_IndirectSalesOrderDTO> IndirectSalesOrder_IndirectSalesOrderDTOs = (await List(IndirectSalesOrder_IndirectSalesOrderFilterDTO)).Value;
+
+            var OrganizationIds = IndirectSalesOrder_IndirectSalesOrderDTOs.Select(x => x.OrganizationId).Distinct().ToList();
+            var Organizations = await DataContext.Organization.Where(x => OrganizationIds.Contains(x.Id)).Select(x => new Organization
+            {
+                Id = x.Id,
+                Name = x.Name,
+            }).ToListAsync();
+
+            List<IndirectSalesOrder_ExportDTO> Exports = Organizations.Select(x => new IndirectSalesOrder_ExportDTO
+            {
+                OrganizationId = x.Id,
+                OrganizationName = x.Name,
+            }).ToList();
+
+            long stt = 1;
+            decimal SubTotal = 0;
+            decimal GeneralDiscountAmount = 0;
+            decimal Total = 0;
+            foreach (IndirectSalesOrder_ExportDTO IndirectSalesOrder_ExportDTO in Exports)
+            {
+                IndirectSalesOrder_ExportDTO.Contents = IndirectSalesOrder_IndirectSalesOrderDTOs
+                    .Where(x => x.OrganizationId == IndirectSalesOrder_ExportDTO.OrganizationId)
+                    .Select(x => new IndirectSalesOrder_ExportContentDTO(x))
+                    .ToList();
+                foreach (var content in IndirectSalesOrder_ExportDTO.Contents)
+                {
+                    content.STT = stt++;
+                    content.OrderDateString = content.OrderDate.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy");
+                    content.DeliveryDateString = content.DeliveryDate?.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy");
+                    if (content.EditedPriceStatus.Id == EditedPriceStatusEnum.ACTIVE.Id)
+                        content.EditPrice = "x";
+                }
+                SubTotal += IndirectSalesOrder_ExportDTO.Contents.Sum(x => x.SubTotal);
+                GeneralDiscountAmount += IndirectSalesOrder_ExportDTO.Contents.Where(x => x.GeneralDiscountAmount.HasValue).Sum(x => x.GeneralDiscountAmount.Value);
+                Total += IndirectSalesOrder_ExportDTO.Contents.Sum(x => x.Total);
+            }
+
+            string path = "Templates/Indirect_Order_Export.xlsx";
+            byte[] arr = System.IO.File.ReadAllBytes(path);
+            MemoryStream input = new MemoryStream(arr);
+            MemoryStream output = new MemoryStream();
+            dynamic Data = new ExpandoObject();
+            Data.Start = Start.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy");
+            Data.End = End.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy");
+            Data.Exports = Exports;
+            Data.SubTotal = SubTotal;
+            Data.GeneralDiscountAmount = GeneralDiscountAmount;
+            Data.Total = Total;
+            using (var document = StaticParams.DocumentFactory.Open(input, output, "xlsx"))
+            {
+                document.Process(Data);
+            };
+
+            return File(output.ToArray(), "application/octet-stream", "ListIndirectSalesOrder.xlsx");
         }
 
         private async Task<bool> HasPermission(long Id)

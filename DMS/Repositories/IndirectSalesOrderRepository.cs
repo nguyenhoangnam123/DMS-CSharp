@@ -412,6 +412,12 @@ namespace DMS.Repositories
                     Code = q.BuyerStore.Code,
                     CodeDraft = q.BuyerStore.CodeDraft,
                     Name = q.BuyerStore.Name,
+                    StoreStatus = q.BuyerStore.StoreStatus == null ? null : new StoreStatus
+                    {
+                        Id = q.BuyerStore.StoreStatus.Id,
+                        Code = q.BuyerStore.StoreStatus.Code,
+                        Name = q.BuyerStore.StoreStatus.Name,
+                    }
                 } : null,
                 EditedPriceStatus = filter.Selects.Contains(IndirectSalesOrderSelect.EditedPriceStatus) && q.EditedPriceStatus != null ? new EditedPriceStatus
                 {
