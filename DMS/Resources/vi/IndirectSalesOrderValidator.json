@@ -19,6 +19,9 @@
       "SaleEmployeeEmpty": "Chưa chọn nhân viên kinh doanh",
       "SaleEmployeeNotInOrg": "Nhân viên kinh doanh không thuộc đơn vị quản lý hiện tại"
     },
+    "GeneralDiscountAmount": {
+      "DiscountOverPrice": "Chiết khấu vượt quá thành tiền"
+    },
     "OrderDate": {
       "OrderDateEmpty": "Chưa nhập ngày đặt hàng"
     },
@@ -31,6 +34,9 @@
     "IndirectSalesOrderContent": {
       "Item": {
         "ItemNotExisted": "Phiên bản sản phẩm không tồn tại"
+      },
+      "DiscountAmount": {
+        "DiscountOverPrice": "Chiết khấu vượt quá thành tiền"
       },
       "Quantity": {
         "QuantityEmpty": "Chưa nhập số lượng",

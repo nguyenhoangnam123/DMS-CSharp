@@ -41,7 +41,8 @@ namespace DMS.Services.MIndirectSalesOrder
             ContentEmpty,
             DeliveryDateInvalid,
             BuyerStoreNotInERouteScope,
-            SaleEmployeeNotInOrg
+            SaleEmployeeNotInOrg,
+            DiscountOverPrice
         }
 
         private IUOW UOW;
@@ -191,6 +192,7 @@ namespace DMS.Services.MIndirectSalesOrder
                     Selects = UnitOfMeasureGroupingSelect.Id | UnitOfMeasureGroupingSelect.UnitOfMeasure | UnitOfMeasureGroupingSelect.UnitOfMeasureGroupingContents
                 });
 
+                decimal SubTotal = 0;
                 foreach (var IndirectSalesOrderContent in IndirectSalesOrder.IndirectSalesOrderContents)
                 {
                     if (IndirectSalesOrderContent.UnitOfMeasureId == 0)
@@ -233,22 +235,40 @@ namespace DMS.Services.MIndirectSalesOrder
                             var UOM = UnitOfMeasures.Where(x => IndirectSalesOrderContent.UnitOfMeasureId == x.Id).FirstOrDefault();
                             if (UOM == null)
                                 IndirectSalesOrderContent.AddError(nameof(IndirectSalesOrderValidator), nameof(IndirectSalesOrderContent.UnitOfMeasure), ErrorCode.UnitOfMeasureNotExisted);
-                            //else
-                            //{
-                            //    if(IndirectSalesOrder.EditedPriceStatusId == EditedPriceStatusEnum.ACTIVE.Id)
-                            //    {
-                            //        if(IndirectSalesOrderContent.SalePrice < (Item.SalePrice * UOM.Factor.Value) * 0.9m
-                            //            || IndirectSalesOrderContent.SalePrice > (Item.SalePrice * UOM.Factor.Value) * 1.1m)
-                            //            IndirectSalesOrderContent.AddError(nameof(IndirectSalesOrderValidator), nameof(IndirectSalesOrderContent.SalePrice), ErrorCode.PriceOutOfRange);
-                            //    }
-                            //}
+                            else
+                            {
+                                if (IndirectSalesOrderContent.Quantity <= 0)
+                                    IndirectSalesOrderContent.AddError(nameof(IndirectSalesOrderValidator), nameof(IndirectSalesOrderContent.Quantity), ErrorCode.QuantityEmpty);
+                                else
+                                {
+                                    decimal DiscountAmount = 0;
+                                    if (IndirectSalesOrderContent.DiscountPercentage.HasValue && IndirectSalesOrderContent.DiscountPercentage.Value > 0)
+                                        DiscountAmount = Item.SalePrice * IndirectSalesOrderContent.Quantity * UOM.Factor.Value * IndirectSalesOrderContent.DiscountPercentage.Value / 100;
+                                    if (IndirectSalesOrderContent.DiscountAmount.HasValue)
+                                        DiscountAmount = IndirectSalesOrderContent.DiscountAmount.Value;
+                                    if (DiscountAmount > 0)
+                                    {
+                                        var SubTotalContent = Item.SalePrice * UOM.Factor.Value * IndirectSalesOrderContent.Quantity;
+                                        SubTotal += SubTotalContent;
+                                        if (DiscountAmount > SubTotalContent)
+                                        {
+                                            IndirectSalesOrderContent.AddError(nameof(IndirectSalesOrderValidator), nameof(IndirectSalesOrderContent.DiscountAmount), ErrorCode.DiscountOverPrice);
+                                        }
+                                    }
+                                }
+                            }
                         }
-
-                        if (IndirectSalesOrderContent.Quantity <= 0)
-                            IndirectSalesOrderContent.AddError(nameof(IndirectSalesOrderValidator), nameof(IndirectSalesOrderContent.Quantity), ErrorCode.QuantityEmpty);
-
                     }
-                    
+                }
+
+                decimal GeneralDiscountAmount = 0;
+                if (IndirectSalesOrder.GeneralDiscountPercentage.HasValue && IndirectSalesOrder.GeneralDiscountPercentage.Value > 0)
+                    GeneralDiscountAmount = SubTotal * IndirectSalesOrder.GeneralDiscountPercentage.Value / 100;
+                if (IndirectSalesOrder.GeneralDiscountAmount.HasValue)
+                    GeneralDiscountAmount = IndirectSalesOrder.GeneralDiscountAmount.Value;
+                if (GeneralDiscountAmount > 0 && GeneralDiscountAmount > SubTotal)
+                {
+                    IndirectSalesOrder.AddError(nameof(IndirectSalesOrderValidator), nameof(IndirectSalesOrder.GeneralDiscountAmount), ErrorCode.DiscountOverPrice);
                 }
             }
             else
