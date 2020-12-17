@@ -401,6 +401,12 @@ namespace DMS.Repositories
                     TaxCode = q.BuyerStore.TaxCode,
                     LegalEntity = q.BuyerStore.LegalEntity,
                     StatusId = q.BuyerStore.StatusId,
+                    StoreStatus = q.BuyerStore.StoreStatus == null ? null : new StoreStatus
+                    {
+                        Id = q.BuyerStore.StoreStatus.Id,
+                        Code = q.BuyerStore.StoreStatus.Code,
+                        Name = q.BuyerStore.StoreStatus.Name,
+                    }
                 } : null,
                 EditedPriceStatus = filter.Selects.Contains(DirectSalesOrderSelect.EditedPriceStatus) && q.EditedPriceStatus != null ? new EditedPriceStatus
                 {

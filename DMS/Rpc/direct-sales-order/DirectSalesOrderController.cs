@@ -27,6 +27,9 @@ using System.IO;
 using GleamTech.DocumentUltimate;
 using System.Net.Mime;
 using DMS.Services.MStoreStatus;
+using System;
+using DMS.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace DMS.Rpc.direct_sales_order
 {
@@ -49,6 +52,7 @@ namespace DMS.Rpc.direct_sales_order
         private IStoreStatusService StoreStatusService;
         private IStoreTypeService StoreTypeService;
         private ITaxTypeService TaxTypeService;
+        private DataContext DataContext;
         private ICurrentContext CurrentContext;
         public DirectSalesOrderController(
             IOrganizationService OrganizationService,
@@ -68,6 +72,7 @@ namespace DMS.Rpc.direct_sales_order
             IStoreStatusService StoreStatusService,
             IStoreTypeService StoreTypeService,
             ITaxTypeService TaxTypeService,
+            DataContext DataContext,
             ICurrentContext CurrentContext
         )
         {
@@ -88,6 +93,7 @@ namespace DMS.Rpc.direct_sales_order
             this.StoreStatusService = StoreStatusService;
             this.StoreTypeService = StoreTypeService;
             this.TaxTypeService = TaxTypeService;
+            this.DataContext = DataContext;
             this.CurrentContext = CurrentContext;
         }
 
@@ -428,6 +434,81 @@ namespace DMS.Rpc.direct_sales_order
             };
             Response.Headers.Add("Content-Disposition", cd.ToString());
             return File(output.ToArray(), "application/vnd.openxmlformats-officedocument.wordprocessingml.document;charset=utf-8");
+        }
+
+        [Route(DirectSalesOrderRoute.Export), HttpPost]
+        public async Task<ActionResult> Export([FromBody] DirectSalesOrder_DirectSalesOrderFilterDTO DirectSalesOrder_DirectSalesOrderFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            DateTime Start = DirectSalesOrder_DirectSalesOrderFilterDTO.OrderDate?.GreaterEqual == null ?
+                    LocalStartDay(CurrentContext) :
+                    DirectSalesOrder_DirectSalesOrderFilterDTO.OrderDate.GreaterEqual.Value;
+
+            DateTime End = DirectSalesOrder_DirectSalesOrderFilterDTO.OrderDate?.LessEqual == null ?
+                    LocalEndDay(CurrentContext) :
+                    DirectSalesOrder_DirectSalesOrderFilterDTO.OrderDate.LessEqual.Value;
+
+            DirectSalesOrder_DirectSalesOrderFilterDTO.Skip = 0;
+            DirectSalesOrder_DirectSalesOrderFilterDTO.Take = int.MaxValue;
+            List<DirectSalesOrder_DirectSalesOrderDTO> DirectSalesOrder_DirectSalesOrderDTOs = (await List(DirectSalesOrder_DirectSalesOrderFilterDTO)).Value;
+
+            var OrganizationIds = DirectSalesOrder_DirectSalesOrderDTOs.Select(x => x.OrganizationId).Distinct().ToList();
+            var Organizations = await DataContext.Organization.Where(x => OrganizationIds.Contains(x.Id)).Select(x => new Organization
+            {
+                Id = x.Id,
+                Name = x.Name,
+            }).ToListAsync();
+
+            List<DirectSalesOrder_ExportDTO> Exports = Organizations.Select(x => new DirectSalesOrder_ExportDTO
+            {
+                OrganizationId = x.Id,
+                OrganizationName = x.Name,
+            }).ToList();
+
+            long stt = 1;
+            decimal SubTotal = 0;
+            decimal GeneralDiscountAmount = 0;
+            decimal TotalTaxAmount = 0;
+            decimal Total = 0;
+            foreach (DirectSalesOrder_ExportDTO DirectSalesOrder_ExportDTO in Exports)
+            {
+                DirectSalesOrder_ExportDTO.Contents = DirectSalesOrder_DirectSalesOrderDTOs
+                    .Where(x => x.OrganizationId == DirectSalesOrder_ExportDTO.OrganizationId)
+                    .Select(x => new DirectSalesOrder_ExportContentDTO(x))
+                    .ToList();
+                foreach (var content in DirectSalesOrder_ExportDTO.Contents)
+                {
+                    content.STT = stt++;
+                    content.OrderDateString = content.OrderDate.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy");
+                    content.DeliveryDateString = content.DeliveryDate?.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy");
+                    if (content.EditedPriceStatus.Id == EditedPriceStatusEnum.ACTIVE.Id)
+                        content.EditPrice = "x";
+                }
+                SubTotal += DirectSalesOrder_ExportDTO.Contents.Sum(x => x.SubTotal);
+                GeneralDiscountAmount += DirectSalesOrder_ExportDTO.Contents.Where(x => x.GeneralDiscountAmount.HasValue).Sum(x => x.GeneralDiscountAmount.Value);
+                TotalTaxAmount += DirectSalesOrder_ExportDTO.Contents.Sum(x => x.TotalTaxAmount);
+                Total += DirectSalesOrder_ExportDTO.Contents.Sum(x => x.Total);
+            }
+
+            string path = "Templates/Direct_Order_Export.xlsx";
+            byte[] arr = System.IO.File.ReadAllBytes(path);
+            MemoryStream input = new MemoryStream(arr);
+            MemoryStream output = new MemoryStream();
+            dynamic Data = new ExpandoObject();
+            Data.Start = Start.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy");
+            Data.End = End.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy");
+            Data.Exports = Exports;
+            Data.SubTotal = SubTotal;
+            Data.GeneralDiscountAmount = GeneralDiscountAmount;
+            Data.Total = Total;
+            using (var document = StaticParams.DocumentFactory.Open(input, output, "xlsx"))
+            {
+                document.Process(Data);
+            };
+
+            return File(output.ToArray(), "application/octet-stream", "ListDirectSalesOrder.xlsx");
         }
 
         private async Task<bool> HasPermission(long Id)
