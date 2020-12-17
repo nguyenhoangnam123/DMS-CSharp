@@ -467,7 +467,6 @@ namespace DMS.Rpc.indirect_sales_order
             IndirectSalesOrder.SubTotal = IndirectSalesOrder_IndirectSalesOrderDTO.SubTotal;
             IndirectSalesOrder.GeneralDiscountPercentage = IndirectSalesOrder_IndirectSalesOrderDTO.GeneralDiscountPercentage;
             IndirectSalesOrder.GeneralDiscountAmount = IndirectSalesOrder_IndirectSalesOrderDTO.GeneralDiscountAmount;
-            IndirectSalesOrder.TotalTaxAmount = IndirectSalesOrder_IndirectSalesOrderDTO.TotalTaxAmount;
             IndirectSalesOrder.Total = IndirectSalesOrder_IndirectSalesOrderDTO.Total;
             IndirectSalesOrder.BuyerStore = IndirectSalesOrder_IndirectSalesOrderDTO.BuyerStore == null ? null : new Store
             {
@@ -776,7 +775,6 @@ namespace DMS.Rpc.indirect_sales_order
             IndirectSalesOrderFilter.SubTotal = IndirectSalesOrder_IndirectSalesOrderFilterDTO.SubTotal;
             IndirectSalesOrderFilter.GeneralDiscountPercentage = IndirectSalesOrder_IndirectSalesOrderFilterDTO.GeneralDiscountPercentage;
             IndirectSalesOrderFilter.GeneralDiscountAmount = IndirectSalesOrder_IndirectSalesOrderFilterDTO.GeneralDiscountAmount;
-            IndirectSalesOrderFilter.TotalTaxAmount = IndirectSalesOrder_IndirectSalesOrderFilterDTO.TotalTaxAmount;
             IndirectSalesOrderFilter.Total = IndirectSalesOrder_IndirectSalesOrderFilterDTO.Total;
             IndirectSalesOrderFilter.StoreStatusId = IndirectSalesOrder_IndirectSalesOrderFilterDTO.StoreStatusId;
             return IndirectSalesOrderFilter;

@@ -360,7 +360,6 @@ namespace DMS.Rpc.reports.report_sales_order.report_indirect_sales_order_general
                         SaleEmployeeName = x.SaleEmployee.DisplayName,
                         OrderDate = x.OrderDate,
                         Discount = x.GeneralDiscountAmount ?? 0,
-                        TaxValue = x.TotalTaxAmount,
                         SubTotal = x.SubTotal,
                         Total = x.Total,
                     })
@@ -446,7 +445,6 @@ namespace DMS.Rpc.reports.report_sales_order.report_indirect_sales_order_general
                 TotalDiscount = IndirectSalesOrderDAOs.Where(x => x.GeneralDiscountAmount.HasValue)
                 .Select(x => x.GeneralDiscountAmount.Value)
                 .DefaultIfEmpty(0).Sum(),
-                TotalTax = IndirectSalesOrderDAOs.Select(x => x.TotalTaxAmount).DefaultIfEmpty(0).Sum(),
                 SubTotal = IndirectSalesOrderDAOs.Select(x => x.SubTotal).DefaultIfEmpty(0).Sum(),
                 TotalRevenue = IndirectSalesOrderDAOs.Select(x => x.Total).DefaultIfEmpty(0).Sum(),
             };

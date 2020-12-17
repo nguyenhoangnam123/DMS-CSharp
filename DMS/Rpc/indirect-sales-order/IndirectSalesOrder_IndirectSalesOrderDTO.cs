@@ -24,7 +24,6 @@ namespace DMS.Rpc.indirect_sales_order
         public decimal SubTotal { get; set; }
         public decimal? GeneralDiscountPercentage { get; set; }
         public decimal? GeneralDiscountAmount { get; set; }
-        public decimal TotalTaxAmount { get; set; }
         public decimal Total { get; set; }
         public long RequestStateId { get; set; }
         public Guid RowId { get; set; }
@@ -59,7 +58,6 @@ namespace DMS.Rpc.indirect_sales_order
             this.SubTotal = IndirectSalesOrder.SubTotal;
             this.GeneralDiscountPercentage = IndirectSalesOrder.GeneralDiscountPercentage;
             this.GeneralDiscountAmount = IndirectSalesOrder.GeneralDiscountAmount;
-            this.TotalTaxAmount = IndirectSalesOrder.TotalTaxAmount;
             this.Total = Math.Round(IndirectSalesOrder.Total, 0);
             this.CreatedAt = IndirectSalesOrder.CreatedAt;
             this.UpdatedAt = IndirectSalesOrder.UpdatedAt;
@@ -98,7 +96,6 @@ namespace DMS.Rpc.indirect_sales_order
         public DecimalFilter SubTotal { get; set; }
         public DecimalFilter GeneralDiscountPercentage { get; set; }
         public DecimalFilter GeneralDiscountAmount { get; set; }
-        public DecimalFilter TotalTaxAmount { get; set; }
         public DecimalFilter Total { get; set; }
         public IdFilter StoreStatusId { get; set; }
         public IndirectSalesOrderOrder OrderBy { get; set; }

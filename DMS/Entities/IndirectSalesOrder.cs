@@ -25,7 +25,6 @@ namespace DMS.Entities
         public decimal SubTotal { get; set; }
         public decimal? GeneralDiscountPercentage { get; set; }
         public decimal? GeneralDiscountAmount { get; set; }
-        public decimal TotalTaxAmount { get; set; }
         public decimal Total { get; set; }
         public decimal TotalDiscountAmount { get; set; }
         public long TotalRequestedQuantity { get; set; }
@@ -75,7 +74,6 @@ namespace DMS.Entities
         public DecimalFilter SubTotal { get; set; }
         public DecimalFilter GeneralDiscountPercentage { get; set; }
         public DecimalFilter GeneralDiscountAmount { get; set; }
-        public DecimalFilter TotalTaxAmount { get; set; }
         public DecimalFilter Total { get; set; }
         public IdFilter StoreCheckingId { get; set; }
         public IdFilter StoreStatusId { get; set; }
@@ -106,7 +104,6 @@ namespace DMS.Entities
         SubTotal = 13,
         GeneralDiscountPercentage = 14,
         GeneralDiscountAmount = 15,
-        TotalTaxAmount = 16,
         Total = 17,
         Organization = 18,
         UpdatedAt = 19,

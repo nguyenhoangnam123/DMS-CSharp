@@ -268,7 +268,6 @@ namespace DMS.Repositories
                     SubTotal = q.IndirectSalesOrder.SubTotal,
                     GeneralDiscountPercentage = q.IndirectSalesOrder.GeneralDiscountPercentage,
                     GeneralDiscountAmount = q.IndirectSalesOrder.GeneralDiscountAmount,
-                    TotalTaxAmount = q.IndirectSalesOrder.TotalTaxAmount,
                     Total = q.IndirectSalesOrder.Total,
                 } : null,
                 PrimaryUnitOfMeasure = filter.Selects.Contains(IndirectSalesOrderContentSelect.PrimaryUnitOfMeasure) && q.PrimaryUnitOfMeasure != null ? new UnitOfMeasure
@@ -347,7 +346,6 @@ namespace DMS.Repositories
                     SubTotal = x.IndirectSalesOrder.SubTotal,
                     GeneralDiscountPercentage = x.IndirectSalesOrder.GeneralDiscountPercentage,
                     GeneralDiscountAmount = x.IndirectSalesOrder.GeneralDiscountAmount,
-                    TotalTaxAmount = x.IndirectSalesOrder.TotalTaxAmount,
                     Total = x.IndirectSalesOrder.Total,
                 },
                 PrimaryUnitOfMeasure = x.PrimaryUnitOfMeasure == null ? null : new UnitOfMeasure

@@ -25,7 +25,6 @@ namespace DMS.Rpc.mobile
         public decimal SubTotal { get; set; }
         public decimal? GeneralDiscountPercentage { get; set; }
         public decimal? GeneralDiscountAmount { get; set; }
-        public decimal TotalTaxAmount { get; set; }
         public decimal Total { get; set; }
         public long? StoreCheckingId { get; set; }
         public Mobile_StoreDTO BuyerStore { get; set; }
@@ -56,7 +55,6 @@ namespace DMS.Rpc.mobile
             this.SubTotal = IndirectSalesOrder.SubTotal;
             this.GeneralDiscountPercentage = IndirectSalesOrder.GeneralDiscountPercentage;
             this.GeneralDiscountAmount = IndirectSalesOrder.GeneralDiscountAmount;
-            this.TotalTaxAmount = IndirectSalesOrder.TotalTaxAmount;
             this.Total = IndirectSalesOrder.Total;
             this.StoreCheckingId = StoreCheckingId;
             this.BuyerStore = IndirectSalesOrder.BuyerStore == null ? null : new Mobile_StoreDTO(IndirectSalesOrder.BuyerStore);
@@ -89,7 +87,6 @@ namespace DMS.Rpc.mobile
         public LongFilter SubTotal { get; set; }
         public LongFilter GeneralDiscountPercentage { get; set; }
         public LongFilter GeneralDiscountAmount { get; set; }
-        public LongFilter TotalTaxAmount { get; set; }
         public LongFilter Total { get; set; }
         public IdFilter StoreCheckingId { get; set; }
         public string Search { get; set; }

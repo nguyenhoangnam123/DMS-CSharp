@@ -139,8 +139,6 @@ namespace DMS.Repositories
                 query = query.Where(q => q.GeneralDiscountPercentage, filter.GeneralDiscountPercentage);
             if (filter.GeneralDiscountAmount != null)
                 query = query.Where(q => q.GeneralDiscountAmount, filter.GeneralDiscountAmount);
-            if (filter.TotalTaxAmount != null)
-                query = query.Where(q => q.TotalTaxAmount, filter.TotalTaxAmount);
             if (filter.Total != null)
                 query = query.Where(q => q.Total, filter.Total);
             if (filter.StoreStatusId != null)
@@ -236,8 +234,6 @@ namespace DMS.Repositories
                     queryable = queryable.Where(q => q.GeneralDiscountPercentage, IndirectSalesOrderFilter.GeneralDiscountPercentage);
                 if (IndirectSalesOrderFilter.GeneralDiscountAmount != null)
                     queryable = queryable.Where(q => q.GeneralDiscountAmount, IndirectSalesOrderFilter.GeneralDiscountAmount);
-                if (IndirectSalesOrderFilter.TotalTaxAmount != null)
-                    queryable = queryable.Where(q => q.TotalTaxAmount, IndirectSalesOrderFilter.TotalTaxAmount);
                 if (IndirectSalesOrderFilter.Total != null)
                     queryable = queryable.Where(q => q.Total, IndirectSalesOrderFilter.Total);
                 initQuery = initQuery.Union(queryable);
@@ -300,9 +296,6 @@ namespace DMS.Repositories
                             break;
                         case IndirectSalesOrderOrder.GeneralDiscountAmount:
                             query = query.OrderBy(q => q.GeneralDiscountAmount);
-                            break;
-                        case IndirectSalesOrderOrder.TotalTaxAmount:
-                            query = query.OrderBy(q => q.TotalTaxAmount);
                             break;
                         case IndirectSalesOrderOrder.Total:
                             query = query.OrderBy(q => q.Total);
@@ -369,9 +362,6 @@ namespace DMS.Repositories
                         case IndirectSalesOrderOrder.GeneralDiscountAmount:
                             query = query.OrderByDescending(q => q.GeneralDiscountAmount);
                             break;
-                        case IndirectSalesOrderOrder.TotalTaxAmount:
-                            query = query.OrderByDescending(q => q.TotalTaxAmount);
-                            break;
                         case IndirectSalesOrderOrder.Total:
                             query = query.OrderByDescending(q => q.Total);
                             break;
@@ -414,7 +404,6 @@ namespace DMS.Repositories
                 SubTotal = filter.Selects.Contains(IndirectSalesOrderSelect.SubTotal) ? q.SubTotal : default(long),
                 GeneralDiscountPercentage = filter.Selects.Contains(IndirectSalesOrderSelect.GeneralDiscountPercentage) ? q.GeneralDiscountPercentage : default(long?),
                 GeneralDiscountAmount = filter.Selects.Contains(IndirectSalesOrderSelect.GeneralDiscountAmount) ? q.GeneralDiscountAmount : default(long?),
-                TotalTaxAmount = filter.Selects.Contains(IndirectSalesOrderSelect.TotalTaxAmount) ? q.TotalTaxAmount : default(long),
                 Total = filter.Selects.Contains(IndirectSalesOrderSelect.Total) ? q.Total : default(long),
                 RequestStateId = filter.Selects.Contains(IndirectSalesOrderSelect.RequestState) ? q.RequestStateId : default(long),
                 BuyerStore = filter.Selects.Contains(IndirectSalesOrderSelect.BuyerStore) && q.BuyerStore != null ? new Store
@@ -620,7 +609,6 @@ namespace DMS.Repositories
                 SubTotal = x.SubTotal,
                 GeneralDiscountPercentage = x.GeneralDiscountPercentage,
                 GeneralDiscountAmount = x.GeneralDiscountAmount,
-                TotalTaxAmount = x.TotalTaxAmount,
                 Total = x.Total,
                 RowId = x.RowId,
                 StoreCheckingId = x.StoreCheckingId,
@@ -952,7 +940,6 @@ namespace DMS.Repositories
             IndirectSalesOrderDAO.SubTotal = IndirectSalesOrder.SubTotal;
             IndirectSalesOrderDAO.GeneralDiscountPercentage = IndirectSalesOrder.GeneralDiscountPercentage;
             IndirectSalesOrderDAO.GeneralDiscountAmount = IndirectSalesOrder.GeneralDiscountAmount;
-            IndirectSalesOrderDAO.TotalTaxAmount = IndirectSalesOrder.TotalTaxAmount;
             IndirectSalesOrderDAO.Total = IndirectSalesOrder.Total;
             IndirectSalesOrderDAO.RowId = Guid.NewGuid();
             IndirectSalesOrderDAO.RequestStateId = IndirectSalesOrder.RequestStateId;
@@ -988,7 +975,6 @@ namespace DMS.Repositories
             IndirectSalesOrderDAO.SubTotal = IndirectSalesOrder.SubTotal;
             IndirectSalesOrderDAO.GeneralDiscountPercentage = IndirectSalesOrder.GeneralDiscountPercentage;
             IndirectSalesOrderDAO.GeneralDiscountAmount = IndirectSalesOrder.GeneralDiscountAmount;
-            IndirectSalesOrderDAO.TotalTaxAmount = IndirectSalesOrder.TotalTaxAmount;
             IndirectSalesOrderDAO.Total = IndirectSalesOrder.Total;
             IndirectSalesOrderDAO.StoreCheckingId = IndirectSalesOrder.StoreCheckingId;
             IndirectSalesOrderDAO.UpdatedAt = StaticParams.DateTimeNow;
@@ -1028,7 +1014,6 @@ namespace DMS.Repositories
                 IndirectSalesOrderDAO.SubTotal = IndirectSalesOrder.SubTotal;
                 IndirectSalesOrderDAO.GeneralDiscountPercentage = IndirectSalesOrder.GeneralDiscountPercentage;
                 IndirectSalesOrderDAO.GeneralDiscountAmount = IndirectSalesOrder.GeneralDiscountAmount;
-                IndirectSalesOrderDAO.TotalTaxAmount = IndirectSalesOrder.TotalTaxAmount;
                 IndirectSalesOrderDAO.Total = IndirectSalesOrder.Total;
                 IndirectSalesOrderDAO.StoreCheckingId = IndirectSalesOrder.StoreCheckingId;
                 IndirectSalesOrderDAOs.Add(IndirectSalesOrderDAO);
