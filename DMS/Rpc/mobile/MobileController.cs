@@ -648,6 +648,7 @@ namespace DMS.Rpc.mobile
                 DeliveryLongitude = Mobile_StoreDTO.Longitude,
                 OrganizationId = CurrentUser.OrganizationId,
                 Organization = CurrentUser.Organization,
+                Telephone = Mobile_StoreDTO.OwnerPhone,
                 StatusId = StatusEnum.ACTIVE.Id,
                 StoreType = Mobile_StoreDTO.StoreType == null ? null : new StoreType
                 {
