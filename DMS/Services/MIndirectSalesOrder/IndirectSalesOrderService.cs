@@ -817,7 +817,7 @@ namespace DMS.Services.MIndirectSalesOrder
                     foreach (var IndirectSalesOrderContent in IndirectSalesOrder.IndirectSalesOrderContents)
                     {
                         var Item = Items.Where(x => x.Id == IndirectSalesOrderContent.ItemId).FirstOrDefault();
-                        IndirectSalesOrder.GeneralDiscountAmount += (Item.SalePrice / (1 + Item.Product.TaxType.Percentage / 100)) * IndirectSalesOrderContent.Quantity * IndirectSalesOrderContent.UnitOfMeasure.Factor.Value * IndirectSalesOrder.GeneralDiscountPercentage.Value / 100;
+                        IndirectSalesOrder.GeneralDiscountAmount += (Item.SalePrice / (1 + Item.Product.TaxType.Percentage / 100)) * (1 - Item.Product.TaxType.Percentage / 100) * IndirectSalesOrderContent.Quantity * IndirectSalesOrderContent.UnitOfMeasure.Factor.Value * IndirectSalesOrder.GeneralDiscountPercentage.Value / 100;
                     }
                     IndirectSalesOrder.GeneralDiscountAmount = Math.Round(IndirectSalesOrder.GeneralDiscountAmount.Value, 0);
                 }
