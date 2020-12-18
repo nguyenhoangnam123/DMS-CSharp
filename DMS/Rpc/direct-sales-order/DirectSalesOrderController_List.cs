@@ -626,7 +626,7 @@ namespace DMS.Rpc.direct_sales_order
             StoreFilter.OwnerName = DirectSalesOrder_StoreFilterDTO.OwnerName;
             StoreFilter.OwnerPhone = DirectSalesOrder_StoreFilterDTO.OwnerPhone;
             StoreFilter.OwnerEmail = DirectSalesOrder_StoreFilterDTO.OwnerEmail;
-            StoreFilter.StoreStatusId = new IdFilter { Equal = StoreStatusEnum.OFFICIAL.Id };
+            StoreFilter.StoreStatusId = DirectSalesOrder_StoreFilterDTO.StoreStatusId;
             StoreFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
             if (StoreFilter.Id == null) StoreFilter.Id = new IdFilter();
@@ -672,7 +672,7 @@ namespace DMS.Rpc.direct_sales_order
             StoreFilter.OwnerName = DirectSalesOrder_StoreFilterDTO.OwnerName;
             StoreFilter.OwnerPhone = DirectSalesOrder_StoreFilterDTO.OwnerPhone;
             StoreFilter.OwnerEmail = DirectSalesOrder_StoreFilterDTO.OwnerEmail;
-            StoreFilter.StoreStatusId = new IdFilter { Equal = StoreStatusEnum.OFFICIAL.Id };
+            StoreFilter.StoreStatusId = DirectSalesOrder_StoreFilterDTO.StoreStatusId;
             StoreFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
             if (StoreFilter.Id == null) StoreFilter.Id = new IdFilter();
@@ -715,7 +715,7 @@ namespace DMS.Rpc.direct_sales_order
             StoreFilter.OwnerName = DirectSalesOrder_StoreFilterDTO.OwnerName;
             StoreFilter.OwnerPhone = DirectSalesOrder_StoreFilterDTO.OwnerPhone;
             StoreFilter.OwnerEmail = DirectSalesOrder_StoreFilterDTO.OwnerEmail;
-            StoreFilter.StoreStatusId = DirectSalesOrder_StoreFilterDTO.StoreStatusId;
+            StoreFilter.StoreStatusId = new IdFilter { Equal = StoreStatusEnum.OFFICIAL.Id };
             StoreFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
             if (StoreFilter.Id == null) StoreFilter.Id = new IdFilter();
@@ -756,7 +756,7 @@ namespace DMS.Rpc.direct_sales_order
             StoreFilter.OwnerName = DirectSalesOrder_StoreFilterDTO.OwnerName;
             StoreFilter.OwnerPhone = DirectSalesOrder_StoreFilterDTO.OwnerPhone;
             StoreFilter.OwnerEmail = DirectSalesOrder_StoreFilterDTO.OwnerEmail;
-            StoreFilter.StoreStatusId = DirectSalesOrder_StoreFilterDTO.StoreStatusId;
+            StoreFilter.StoreStatusId = new IdFilter { Equal = StoreStatusEnum.OFFICIAL.Id };
             StoreFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
             if (StoreFilter.Id == null) StoreFilter.Id = new IdFilter();
