@@ -779,7 +779,7 @@ namespace DMS.Services.MIndirectSalesOrder
                     //Trường hợp không sửa giá, giá bán = giá bán cơ sở của sản phẩm * hệ số quy đổi của đơn vị tính
                     if (IndirectSalesOrder.EditedPriceStatusId == EditedPriceStatusEnum.INACTIVE.Id)
                     {
-                        IndirectSalesOrderContent.PrimaryPrice = Item.SalePrice * (1 + Item.Product.TaxType.Percentage / 100);
+                        IndirectSalesOrderContent.PrimaryPrice = Item.SalePrice;
                         IndirectSalesOrderContent.SalePrice = IndirectSalesOrderContent.PrimaryPrice * UOM.Factor.Value;
                         IndirectSalesOrderContent.EditedPriceStatusId = EditedPriceStatusEnum.INACTIVE.Id;
                     }
