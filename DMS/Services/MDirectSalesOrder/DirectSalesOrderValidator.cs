@@ -330,7 +330,7 @@ namespace DMS.Services.MDirectSalesOrder
 
                 var Organizations = await UOW.OrganizationRepository.List(OrganizationFilter);
                 var OrganizationIds = Organizations
-                    .Where(x => /*x.Path.StartsWith(appUser.Organization.Path) || */appUser.Organization.Path.StartsWith(x.Path))
+                    .Where(x => appUser.Organization.Path.StartsWith(x.Path))
                     .Select(x => x.Id)
                     .ToList();
                 PromotionCodeFilter PromotionCodeFilter = new PromotionCodeFilter()

@@ -10,12 +10,12 @@ namespace DMS.Rpc.kpi_tracking.kpi_item_report
     {
         public string Username { get; set; }
         public string DisplayName { get; set; }
-        public List<KpiItemReport_LineDTO> Lines { get; set; }
+        public List<KpiItemReport_KpiItemContentDTO> Lines { get; set; }
         public KpiItemReport_ExportDTO(KpiItemReport_KpiItemReportDTO KpiItemReport_KpiItemReportDTO)
         {
             this.Username = KpiItemReport_KpiItemReportDTO.Username;
             this.DisplayName = KpiItemReport_KpiItemReportDTO.DisplayName;
-            this.Lines = KpiItemReport_KpiItemReportDTO.ItemContents?.Select(x => new KpiItemReport_LineDTO(x)).ToList();
+            this.Lines = KpiItemReport_KpiItemReportDTO.ItemContents;
         }
     }
 
