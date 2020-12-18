@@ -262,8 +262,42 @@ namespace DMS.Services.MIndirectSalesOrder
         {
             try
             {
+
                 List<Item> Items = await ItemService.List(ItemFilter);
-                await ApplyPrice(Items, SalesEmployeeId, StoreId);
+                var Ids = Items.Select(x => x.Id).ToList();
+                AppUser AppUser = await UOW.AppUserRepository.Get(SalesEmployeeId.Value);
+                if (AppUser != null)
+                {
+                    List<Warehouse> Warehouses = await UOW.WarehouseRepository.List(new WarehouseFilter
+                    {
+                        Skip = 0,
+                        Take = int.MaxValue,
+                        Selects = WarehouseSelect.Id,
+                        StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id },
+                        OrganizationId = new IdFilter { Equal = AppUser.OrganizationId }
+                    });
+                    var WarehouseIds = Warehouses.Select(x => x.Id).ToList();
+
+                    InventoryFilter InventoryFilter = new InventoryFilter
+                    {
+                        Skip = 0,
+                        Take = int.MaxValue,
+                        ItemId = new IdFilter { In = Ids },
+                        WarehouseId = new IdFilter { In = WarehouseIds },
+                        Selects = InventorySelect.SaleStock | InventorySelect.Item
+                    };
+
+                    var inventories = await UOW.InventoryRepository.List(InventoryFilter);
+                    var list = inventories.GroupBy(x => x.ItemId).Select(x => new { ItemId = x.Key, SaleStock = x.Sum(s => s.SaleStock) }).ToList();
+
+                    foreach (var item in Items)
+                    {
+                        item.SaleStock = list.Where(i => i.ItemId == item.Id).Select(i => i.SaleStock).FirstOrDefault();
+                        item.HasInventory = item.SaleStock > 0;
+                    }
+
+                    await ApplyPrice(Items, SalesEmployeeId, StoreId);
+                }
                 return Items;
             }
             catch (Exception ex)
