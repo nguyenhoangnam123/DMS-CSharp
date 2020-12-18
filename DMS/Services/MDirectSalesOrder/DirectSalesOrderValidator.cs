@@ -342,9 +342,10 @@ namespace DMS.Services.MDirectSalesOrder
                     Code = new StringFilter { Equal = DirectSalesOrder.PromotionCode },
                     Skip = 0,
                     Take = 1,
-                    Selects = PromotionCodeSelect.Id | PromotionCodeSelect.Quantity
+                    Selects = PromotionCodeSelect.Id | PromotionCodeSelect.Quantity | PromotionCodeSelect.Organization
                 };
                 var PromotionCodes = await UOW.PromotionCodeRepository.List(PromotionCodeFilter);
+                PromotionCodes = PromotionCodes.Where(x => OrganizationIds.Contains(x.OrganizationId)).ToList();
                 if (PromotionCodes.Count() == 0)
                 {
                     DirectSalesOrder.AddError(nameof(DirectSalesOrderValidator), nameof(DirectSalesOrder.PromotionCode), ErrorCode.PromotionCodeNotExisted);
