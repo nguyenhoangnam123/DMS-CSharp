@@ -797,7 +797,7 @@ namespace DMS.Services.MIndirectSalesOrder
                     var SubAmount = IndirectSalesOrderContent.Quantity * IndirectSalesOrderContent.SalePrice;
                     if (IndirectSalesOrderContent.DiscountPercentage.HasValue)
                     {
-                        IndirectSalesOrderContent.DiscountAmount = Item.SalePrice * IndirectSalesOrderContent.Quantity * UOM.Factor.Value * IndirectSalesOrderContent.DiscountPercentage.Value / 100;
+                        IndirectSalesOrderContent.DiscountAmount = (Item.SalePrice / (1 + Item.Product.TaxType.Percentage / 100)) * IndirectSalesOrderContent.Quantity * UOM.Factor.Value * IndirectSalesOrderContent.DiscountPercentage.Value / 100;
                         IndirectSalesOrderContent.DiscountAmount = Math.Round(IndirectSalesOrderContent.DiscountAmount ?? 0, 0);
                         IndirectSalesOrderContent.Amount = SubAmount - IndirectSalesOrderContent.DiscountAmount.Value;
                     }
@@ -817,7 +817,7 @@ namespace DMS.Services.MIndirectSalesOrder
                     foreach (var IndirectSalesOrderContent in IndirectSalesOrder.IndirectSalesOrderContents)
                     {
                         var Item = Items.Where(x => x.Id == IndirectSalesOrderContent.ItemId).FirstOrDefault();
-                        IndirectSalesOrder.GeneralDiscountAmount += Item.SalePrice * IndirectSalesOrderContent.Quantity * IndirectSalesOrderContent.UnitOfMeasure.Factor.Value * IndirectSalesOrder.GeneralDiscountPercentage.Value / 100;
+                        IndirectSalesOrder.GeneralDiscountAmount += (Item.SalePrice / (1 + Item.Product.TaxType.Percentage / 100)) * IndirectSalesOrderContent.Quantity * IndirectSalesOrderContent.UnitOfMeasure.Factor.Value * IndirectSalesOrder.GeneralDiscountPercentage.Value / 100;
                     }
                     IndirectSalesOrder.GeneralDiscountAmount = Math.Round(IndirectSalesOrder.GeneralDiscountAmount.Value, 0);
                 }
