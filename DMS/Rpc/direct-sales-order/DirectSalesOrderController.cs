@@ -502,6 +502,7 @@ namespace DMS.Rpc.direct_sales_order
             Data.Exports = Exports;
             Data.SubTotal = SubTotal;
             Data.GeneralDiscountAmount = GeneralDiscountAmount;
+            Data.TotalTaxAmount = TotalTaxAmount;
             Data.Total = Total;
             using (var document = StaticParams.DocumentFactory.Open(input, output, "xlsx"))
             {
