@@ -115,12 +115,12 @@ namespace DMS.Rpc.kpi_general
         }
 
         [Route(KpiGeneralRoute.GetDraft), HttpPost]
-        public async Task<ActionResult<KpiGeneral_KpiGeneralDTO>> GetDraft([FromBody] KpiGeneral_KpiGeneralDTO kpiGeneral_KpiGeneralDTO)
+        public async Task<ActionResult<KpiGeneral_KpiGeneralDTO>> GetDraft([FromBody] KpiGeneral_KpiGeneralDTO KpiGeneral_KpiGeneralDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
 
-            long KpiYearId = kpiGeneral_KpiGeneralDTO.KpiYearId == 0 ? StaticParams.DateTimeNow.Year : kpiGeneral_KpiGeneralDTO.KpiYearId;
+            long KpiYearId = KpiGeneral_KpiGeneralDTO.KpiYearId == 0 ? StaticParams.DateTimeNow.Year : KpiGeneral_KpiGeneralDTO.KpiYearId;
 
             List<KpiCriteriaGeneral> KpiCriteriaGenerals = await KpiCriteriaGeneralService.List(new KpiCriteriaGeneralFilter
             {
@@ -134,7 +134,7 @@ namespace DMS.Rpc.kpi_general
                 Take = int.MaxValue,
                 Selects = KpiPeriodSelect.ALL,
             });
-            var KpiGeneral_KpiGeneralDTO = new KpiGeneral_KpiGeneralDTO();
+            if (KpiGeneral_KpiGeneralDTO == null) KpiGeneral_KpiGeneralDTO = new KpiGeneral_KpiGeneralDTO();
             (KpiGeneral_KpiGeneralDTO.CurrentMonth, KpiGeneral_KpiGeneralDTO.CurrentQuarter, KpiGeneral_KpiGeneralDTO.CurrentYear) = ConvertDateTime(StaticParams.DateTimeNow);
             KpiGeneral_KpiGeneralDTO.KpiPeriods = KpiPeriods.Select(x => new KpiGeneral_KpiPeriodDTO(x)).ToList();
             KpiGeneral_KpiGeneralDTO.KpiYearId = KpiYearId;
