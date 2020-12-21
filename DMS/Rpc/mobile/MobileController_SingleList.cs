@@ -166,7 +166,7 @@ namespace DMS.Rpc.mobile
             StoreStatusFilter.OrderBy = StoreStatusOrder.Id;
             StoreStatusFilter.OrderType = OrderType.ASC;
             StoreStatusFilter.Selects = StoreStatusSelect.ALL;
-            StoreStatusFilter.Id = Mobile_StoreStatusFilterDTO.Id;
+            StoreStatusFilter.Id = new IdFilter { NotEqual = StoreStatusEnum.ALL.Id };
             StoreStatusFilter.Code = Mobile_StoreStatusFilterDTO.Code;
             StoreStatusFilter.Name = Mobile_StoreStatusFilterDTO.Name;
 

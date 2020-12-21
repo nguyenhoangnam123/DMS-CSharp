@@ -359,7 +359,7 @@ namespace DMS.Rpc.store
             StoreStatusFilter.OrderBy = StoreStatusOrder.Id;
             StoreStatusFilter.OrderType = OrderType.ASC;
             StoreStatusFilter.Selects = StoreStatusSelect.ALL;
-            StoreStatusFilter.Id = Store_StoreStatusFilterDTO.Id;
+            StoreStatusFilter.Id = new IdFilter { NotEqual = StoreStatusEnum.ALL.Id }
             StoreStatusFilter.Code = Store_StoreStatusFilterDTO.Code;
             StoreStatusFilter.Name = Store_StoreStatusFilterDTO.Name;
 
