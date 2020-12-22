@@ -128,6 +128,7 @@ namespace DMS.Rpc.store
                 OwnerPhone = StoreScouting.OwnerPhone,
                 ProvinceId = StoreScouting.ProvinceId,
                 StatusId = StatusEnum.INACTIVE.Id,
+                StoreStatusId = StoreStatusEnum.OFFICIAL.Id,
                 WardId = StoreScouting.WardId,
                 District = StoreScouting.District == null ? null : new Store_DistrictDTO(StoreScouting.District),
                 Province = StoreScouting.Province == null ? null : new Store_ProvinceDTO(StoreScouting.Province),
