@@ -19,6 +19,8 @@ using System.IO;
 using System.Dynamic;
 using NGS.Templater;
 using System.Diagnostics;
+using Thinktecture.EntityFrameworkCore.TempTables;
+using Thinktecture;
 
 namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_by_employee_and_item
 {
@@ -185,11 +187,13 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_by_employ
                              i.RequestStateId == RequestStateEnum.APPROVED.Id
                              select i.Id;
 
-            var Ids = await orderQuery.ToListAsync();
+            var DirectSalesOrderIds = await orderQuery.ToListAsync();
+            ITempTableQuery<TempTable<long>> tempTableQuery = await DataContext
+                        .BulkInsertValuesIntoTempTableAsync<long>(DirectSalesOrderIds);
 
             var transactionQuery = from t in DataContext.DirectSalesOrderTransaction
-                                   where Ids.Contains(t.DirectSalesOrderId) &&
-                                   (ItemIds == null || ItemIds.Count == 0 || ItemIds.Contains(t.ItemId))
+                                   join tt in tempTableQuery.Query on t.DirectSalesOrderId equals tt.Column1
+                                   where (ItemIds == null || ItemIds.Count == 0 || ItemIds.Contains(t.ItemId))
                                    select new
                                    {
                                        OrganizationId = t.OrganizationId,
@@ -253,10 +257,12 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_by_employ
                              select i.Id;
 
             var DirectSalesOrderIds = await orderQuery.ToListAsync();
+            ITempTableQuery<TempTable<long>> tempTableQuery = await DataContext
+                        .BulkInsertValuesIntoTempTableAsync<long>(DirectSalesOrderIds);
 
             var transactionQuery = from t in DataContext.DirectSalesOrderTransaction
-                                   where DirectSalesOrderIds.Contains(t.DirectSalesOrderId) &&
-                                   (ItemIds == null || ItemIds.Count == 0 || ItemIds.Contains(t.ItemId))
+                                   join tt in tempTableQuery.Query on t.DirectSalesOrderId equals tt.Column1
+                                   where (ItemIds == null || ItemIds.Count == 0 || ItemIds.Contains(t.ItemId))
                                    select new
                                    {
                                        OrganizationId = t.OrganizationId,
@@ -286,14 +292,21 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_by_employ
                     Name = x.Name
                 }).ToListAsync();
 
+            var transactionQuery2 = from t in DataContext.DirectSalesOrderTransaction
+                                    join tt in tempTableQuery.Query on t.DirectSalesOrderId equals tt.Column1
+                                    where AppUserIds.Contains(t.SalesEmployeeId) &&
+                                    (SaleEmployeeId.HasValue == false || t.SalesEmployeeId == SaleEmployeeId.Value) &&
+                                    OrganizationIds.Contains(t.OrganizationId) &&
+                                    (ItemIds == null || ItemIds.Count == 0 || ItemIds.Contains(t.ItemId))
+                                    select t.DirectSalesOrderId;
+
+            DirectSalesOrderIds = await transactionQuery2.ToListAsync();
             List<DirectSalesOrderDAO> DirectSalesOrderDAOs = await DataContext.DirectSalesOrder
-                .Where(x => AppUserIds.Contains(x.SaleEmployeeId) && 
-                Start <= x.OrderDate && x.OrderDate <= End &&
-                x.RequestStateId == RequestStateEnum.APPROVED.Id)
+                .Where(x => DirectSalesOrderIds.Contains(x.Id))
                 .ToListAsync();
-            DirectSalesOrderIds = DirectSalesOrderDAOs.Select(x => x.Id).ToList();
             List<DirectSalesOrderContentDAO> DirectSalesOrderContentDAOs = await DataContext.DirectSalesOrderContent
-                .Where(x => AppUserIds.Contains(x.DirectSalesOrder.SaleEmployeeId) && Start <= x.DirectSalesOrder.OrderDate && x.DirectSalesOrder.OrderDate <= End)
+                .Where(x => DirectSalesOrderIds.Contains(x.DirectSalesOrderId) &&
+                (ItemIds == null || ItemIds.Count == 0 || ItemIds.Contains(x.ItemId)))
                 .Select(x => new DirectSalesOrderContentDAO
                 {
                     Id = x.Id,
@@ -315,7 +328,8 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_by_employ
                 })
                 .ToListAsync();
             List<DirectSalesOrderPromotionDAO> DirectSalesOrderPromotionDAOs = await DataContext.DirectSalesOrderPromotion
-                .Where(x => AppUserIds.Contains(x.DirectSalesOrder.SaleEmployeeId) && Start <= x.DirectSalesOrder.OrderDate && x.DirectSalesOrder.OrderDate <= End)
+                .Where(x => DirectSalesOrderIds.Contains(x.DirectSalesOrderId) &&
+                (ItemIds == null || ItemIds.Count == 0 || ItemIds.Contains(x.ItemId)))
                 .Select(x => new DirectSalesOrderPromotionDAO
                 {
                     Id = x.Id,
@@ -518,10 +532,12 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_by_employ
                              select i.Id;
 
             var DirectSalesOrderIds = await orderQuery.ToListAsync();
+            ITempTableQuery<TempTable<long>> tempTableQuery = await DataContext
+                        .BulkInsertValuesIntoTempTableAsync<long>(DirectSalesOrderIds);
 
             var transactionQuery = from t in DataContext.DirectSalesOrderTransaction
-                                   where DirectSalesOrderIds.Contains(t.DirectSalesOrderId) &&
-                                   (ItemIds == null || ItemIds.Count == 0 || ItemIds.Contains(t.ItemId))
+                                   join tt in tempTableQuery.Query on t.DirectSalesOrderId equals tt.Column1
+                                   where (ItemIds == null || ItemIds.Count == 0 || ItemIds.Contains(t.ItemId))
                                    select new
                                    {
                                        OrganizationId = t.OrganizationId,
@@ -567,11 +583,15 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_by_employ
             }
 
             var DirectSalesOrderContentQuery = DataContext.DirectSalesOrderContent
-                .Where(x => AppUserIds.Contains(x.DirectSalesOrder.SaleEmployeeId) && 
+                .Where(x => AppUserIds.Contains(x.DirectSalesOrder.SaleEmployeeId) &&
+                OrganizationIds.Contains(x.DirectSalesOrder.OrganizationId) &&
+                (ItemIds == null || ItemIds.Count == 0 || ItemIds.Contains(x.ItemId)) &&
                 Start <= x.DirectSalesOrder.OrderDate && x.DirectSalesOrder.OrderDate <= End &&
                 x.DirectSalesOrder.RequestStateId == RequestStateEnum.APPROVED.Id);
             var DirectSalesOrderPromotionQuery = DataContext.DirectSalesOrderPromotion
-                .Where(x => AppUserIds.Contains(x.DirectSalesOrder.SaleEmployeeId) && 
+                .Where(x => AppUserIds.Contains(x.DirectSalesOrder.SaleEmployeeId) &&
+                OrganizationIds.Contains(x.DirectSalesOrder.OrganizationId) &&
+                (ItemIds == null || ItemIds.Count == 0 || ItemIds.Contains(x.ItemId)) &&
                 Start <= x.DirectSalesOrder.OrderDate && x.DirectSalesOrder.OrderDate <= End &&
                 x.DirectSalesOrder.RequestStateId == RequestStateEnum.APPROVED.Id);
 
