@@ -241,20 +241,8 @@ namespace DMS.Services.MIndirectSalesOrder
                                     IndirectSalesOrderContent.AddError(nameof(IndirectSalesOrderValidator), nameof(IndirectSalesOrderContent.Quantity), ErrorCode.QuantityEmpty);
                                 else
                                 {
-                                    decimal DiscountAmount = 0;
-                                    if (IndirectSalesOrderContent.DiscountPercentage.HasValue && IndirectSalesOrderContent.DiscountPercentage.Value > 0)
-                                        DiscountAmount = Item.SalePrice * IndirectSalesOrderContent.Quantity * UOM.Factor.Value * IndirectSalesOrderContent.DiscountPercentage.Value / 100;
-                                    if (IndirectSalesOrderContent.DiscountAmount.HasValue)
-                                        DiscountAmount = IndirectSalesOrderContent.DiscountAmount.Value;
-                                    if (DiscountAmount > 0)
-                                    {
-                                        var SubTotalContent = Item.SalePrice * UOM.Factor.Value * IndirectSalesOrderContent.Quantity;
-                                        SubTotal += SubTotalContent;
-                                        if (DiscountAmount > SubTotalContent)
-                                        {
-                                            IndirectSalesOrderContent.AddError(nameof(IndirectSalesOrderValidator), nameof(IndirectSalesOrderContent.DiscountAmount), ErrorCode.DiscountOverPrice);
-                                        }
-                                    }
+                                    var SubTotalContent = Item.SalePrice * UOM.Factor.Value * IndirectSalesOrderContent.Quantity;
+                                    SubTotal += SubTotalContent;
                                 }
                             }
                         }
