@@ -714,7 +714,6 @@ namespace DMS.Repositories
                 .Where(x =>
                     x.StoreStatusId == StoreStatusEnum.DRAFT.Id &&
                     x.Organization.Path.StartsWith(AppUserDAO.Organization.Path) &&
-                    (x.AppUserId.HasValue == false || x.AppUserId == AppUserId) &&
                     x.DeletedAt == null)
               .Select(x => x.Id).ToListAsync();
             //cộng thêm đại lý dự thảo
@@ -755,7 +754,6 @@ namespace DMS.Repositories
                 .Where(x =>
                     x.StoreStatusId == StoreStatusEnum.DRAFT.Id &&
                     x.Organization.Path.StartsWith(AppUserDAO.Organization.Path) &&
-                    (x.AppUserId.HasValue == false || x.AppUserId == AppUserId) &&
                     x.DeletedAt == null)
               .Select(x => x.Id).ToListAsync();
 
