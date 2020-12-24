@@ -103,7 +103,8 @@ namespace DMS.Rpc
         [HttpGet, Route("rpc/dms/setup/job")]
         public async Task TestJob()
         {
-            await MaintenanceService.AutoInactive();
+            await MaintenanceService.CreateStoreUnchecking();
+            //await MaintenanceService.AutoInactive();
         }
 
         [HttpGet, Route("rpc/dms/setup/year/{year}")]

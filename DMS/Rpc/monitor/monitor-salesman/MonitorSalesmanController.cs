@@ -632,13 +632,13 @@ namespace DMS.Rpc.monitor.monitor_salesman
         }
 
         [Route(MonitorSalesmanRoute.ExportUnchecking), HttpPost]
-        public async Task<ActionResult> ExExportUncheckingport([FromBody] MonitorSalesman_MonitorSalesmanFilterDTO MonitorSalesman_MonitorSalesmanFilterDTO)
+        public async Task<ActionResult> ExportUnchecking([FromBody] MonitorSalesman_MonitorSalesmanFilterDTO MonitorSalesman_MonitorSalesmanFilterDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
 
-            DateTime Start = LocalStartDay(CurrentContext);
-            DateTime End = LocalEndDay(CurrentContext);
+            DateTime Start = LocalStartDay(CurrentContext).AddHours(0-CurrentContext.TimeZone);
+            DateTime End = LocalEndDay(CurrentContext).AddHours(0 - CurrentContext.TimeZone);
             DateTime Now = StaticParams.DateTimeNow.AddHours(CurrentContext.TimeZone);
             
             List<ERouteContentDAO> ERouteContentDAOs = await DataContext.ERouteContent
