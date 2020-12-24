@@ -660,7 +660,7 @@ namespace DMS.Rpc.monitor.monitor_salesman
                 .Include(ec => ec.ERouteContentDays)
                 .ToListAsync();
             ERouteContentDAOs = ERouteContentDAOs.Where(x => OrganizationIds.Contains(x.ERoute.OrganizationId))
-                .Where(x => AppUserIds.Contains(x.ERoute.SaleEmployeeId))
+                .Where(x => SaleEmployeeId.HasValue == false || AppUserIds.Contains(x.ERoute.SaleEmployeeId))
                 .ToList();
             List<StoreUncheckingDAO> PlannedStoreUncheckingDAOs = new List<StoreUncheckingDAO>();
             List<StoreUncheckingDAO> StoreUncheckingDAOs = new List<StoreUncheckingDAO>();
@@ -693,7 +693,7 @@ namespace DMS.Rpc.monitor.monitor_salesman
             List<StoreCheckingDAO> StoreCheckingDAOs = await DataContext.StoreChecking
                 .Where(sc => sc.CheckOutAt.HasValue && Start <= sc.CheckOutAt.Value && sc.CheckOutAt.Value <= End)
                 .Where(x => OrganizationIds.Contains(x.OrganizationId))
-                .Where(x => AppUserIds.Contains(x.SaleEmployeeId))
+                .Where(x => SaleEmployeeId.HasValue == false || AppUserIds.Contains(x.SaleEmployeeId))
                 .ToListAsync();
             foreach (StoreUncheckingDAO StoreUncheckingDAO in PlannedStoreUncheckingDAOs)
             {
@@ -706,7 +706,7 @@ namespace DMS.Rpc.monitor.monitor_salesman
             AppUserIds = StoreUncheckingDAOs.Select(x => x.AppUserId).Distinct().ToList();
             var StoreIds = StoreUncheckingDAOs.Select(x => x.StoreId).Distinct().ToList();
 
-            var AppUserDAOs = await DataContext.AppUser.Where(x => AppUserIds.Contains(x.Id)).Select(x => new AppUserDAO
+            var AppUserDAOs = await DataContext.AppUser.Where(x => SaleEmployeeId.HasValue == false || AppUserIds.Contains(x.Id)).Select(x => new AppUserDAO
             {
                 Id = x.Id,
                 Username = x.Username,
