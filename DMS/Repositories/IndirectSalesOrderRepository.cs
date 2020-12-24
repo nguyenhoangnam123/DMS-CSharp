@@ -93,7 +93,7 @@ namespace DMS.Repositories
                         ITempTableQuery<TempTable<long>> tempTableQuery = await DataContext
                         .BulkInsertValuesIntoTempTableAsync<long>(filter.BuyerStoreId.In.Distinct().ToList());
                         query = query.Join(tempTableQuery.Query,
-                                           c => c.Id,
+                                           c => c.BuyerStoreId,
                                            t => t.Column1,
                                            (c, t) => c);
                     }
@@ -103,7 +103,7 @@ namespace DMS.Repositories
                             .BulkInsertValuesIntoTempTableAsync<long>(filter.BuyerStoreId.In.Distinct().ToList());
                         query = query.Where(x => !filter.BuyerStoreId.NotIn.Contains(x.Id));
                         query = query.Join(tempTableQuery.Query,
-                                           c => c.Id,
+                                           c => c.BuyerStoreId,
                                            t => t.Column1,
                                            (c, t) => c);
                     }
