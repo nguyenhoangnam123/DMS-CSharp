@@ -497,7 +497,7 @@ namespace DMS.Rpc.direct_sales_order
             MemoryStream input = new MemoryStream(arr);
             MemoryStream output = new MemoryStream();
             dynamic Data = new ExpandoObject();
-            Data.Start = Start.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy");
+            Data.Start = Start == LocalStartDay(CurrentContext) ? "" : Start.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy");
             Data.End = End.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy");
             Data.Exports = Exports;
             Data.SubTotal = SubTotal;
