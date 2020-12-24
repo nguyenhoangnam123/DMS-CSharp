@@ -638,8 +638,8 @@ namespace DMS.Rpc.monitor.monitor_salesman
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
 
-            DateTime Start = LocalStartDay(CurrentContext).AddHours(0 - CurrentContext.TimeZone);
-            DateTime End = LocalEndDay(CurrentContext).AddHours(0 - CurrentContext.TimeZone);
+            DateTime Start = LocalStartDay(CurrentContext);
+            DateTime End = LocalEndDay(CurrentContext);
             DateTime Now = StaticParams.DateTimeNow.AddHours(CurrentContext.TimeZone);
 
             long? OrganizationId = MonitorSalesman_MonitorSalesmanFilterDTO.OrganizationId?.Equal;
@@ -685,7 +685,7 @@ namespace DMS.Rpc.monitor.monitor_salesman
                             StoreUncheckingDAO = new StoreUncheckingDAO
                             {
                                 AppUserId = ERouteContentDAO.ERoute.SaleEmployeeId,
-                                Date = Start,
+                                Date = End,
                                 StoreId = ERouteContentDAO.StoreId,
                                 OrganizationId = ERouteContentDAO.ERoute.OrganizationId
                             };
