@@ -640,12 +640,28 @@ namespace DMS.Rpc.monitor.monitor_salesman
             DateTime Start = LocalStartDay(CurrentContext).AddHours(0-CurrentContext.TimeZone);
             DateTime End = LocalEndDay(CurrentContext).AddHours(0 - CurrentContext.TimeZone);
             DateTime Now = StaticParams.DateTimeNow.AddHours(CurrentContext.TimeZone);
-            
+
+            long? OrganizationId = MonitorSalesman_MonitorSalesmanFilterDTO.OrganizationId?.Equal;
+            long? SaleEmployeeId = MonitorSalesman_MonitorSalesmanFilterDTO.AppUserId?.Equal;
+            List<long> OrganizationIds = await FilterOrganization(OrganizationService, CurrentContext);
+            List<OrganizationDAO> OrganizationDAOs = await DataContext.Organization.Where(o => o.DeletedAt == null && (OrganizationIds.Count == 0 || OrganizationIds.Contains(o.Id))).ToListAsync();
+            OrganizationDAO OrganizationDAO = null;
+            if (MonitorSalesman_MonitorSalesmanFilterDTO.OrganizationId?.Equal != null)
+            {
+                OrganizationDAO = await DataContext.Organization.Where(o => o.Id == MonitorSalesman_MonitorSalesmanFilterDTO.OrganizationId.Equal.Value).FirstOrDefaultAsync();
+                OrganizationDAOs = OrganizationDAOs.Where(o => o.Path.StartsWith(OrganizationDAO.Path)).ToList();
+            }
+            OrganizationIds = OrganizationDAOs.Select(o => o.Id).ToList();
+            List<long> AppUserIds = await FilterAppUser(AppUserService, OrganizationService, CurrentContext);
+
             List<ERouteContentDAO> ERouteContentDAOs = await DataContext.ERouteContent
                 .Where(ec => (!ec.ERoute.EndDate.HasValue || Start <= ec.ERoute.EndDate) && ec.ERoute.StartDate <= End)
                 .Include(ec => ec.ERoute)
                 .Include(ec => ec.ERouteContentDays)
                 .ToListAsync();
+            ERouteContentDAOs = ERouteContentDAOs.Where(x => OrganizationIds.Contains(x.ERoute.OrganizationId))
+                .Where(x => AppUserIds.Contains(x.ERoute.SaleEmployeeId))
+                .ToList();
             List<StoreUncheckingDAO> PlannedStoreUncheckingDAOs = new List<StoreUncheckingDAO>();
             List<StoreUncheckingDAO> StoreUncheckingDAOs = new List<StoreUncheckingDAO>();
             foreach (ERouteContentDAO ERouteContentDAO in ERouteContentDAOs)
@@ -674,8 +690,11 @@ namespace DMS.Rpc.monitor.monitor_salesman
                     }
                 }
             }
-            List<StoreCheckingDAO> StoreCheckingDAOs = await DataContext.StoreChecking.Where(sc => sc.CheckOutAt.HasValue &&
-                Start <= sc.CheckOutAt.Value && sc.CheckOutAt.Value <= End).ToListAsync();
+            List<StoreCheckingDAO> StoreCheckingDAOs = await DataContext.StoreChecking
+                .Where(sc => sc.CheckOutAt.HasValue && Start <= sc.CheckOutAt.Value && sc.CheckOutAt.Value <= End)
+                .Where(x => OrganizationIds.Contains(x.OrganizationId))
+                .Where(x => AppUserIds.Contains(x.SaleEmployeeId))
+                .ToListAsync();
             foreach (StoreUncheckingDAO StoreUncheckingDAO in PlannedStoreUncheckingDAOs)
             {
                 if (!StoreCheckingDAOs.Any(sc => sc.SaleEmployeeId == StoreUncheckingDAO.AppUserId && sc.StoreId == StoreUncheckingDAO.StoreId))
@@ -684,7 +703,7 @@ namespace DMS.Rpc.monitor.monitor_salesman
                 }
             }
 
-            var AppUserIds = StoreUncheckingDAOs.Select(x => x.AppUserId).Distinct().ToList();
+            AppUserIds = StoreUncheckingDAOs.Select(x => x.AppUserId).Distinct().ToList();
             var StoreIds = StoreUncheckingDAOs.Select(x => x.StoreId).Distinct().ToList();
 
             var AppUserDAOs = await DataContext.AppUser.Where(x => AppUserIds.Contains(x.Id)).Select(x => new AppUserDAO
