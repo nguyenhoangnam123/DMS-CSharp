@@ -292,6 +292,7 @@ namespace DMS.Rpc.monitor.monitor_salesman
 
             List<ERouteContentDAO> ERouteContentDAOs = await DataContext.ERouteContent
                 .Where(x => x.ERoute.DeletedAt == null && x.ERoute.StatusId == StatusEnum.ACTIVE.Id)
+                .Where(x => x.ERoute.RequestStateId == RequestStateEnum.APPROVED.Id)
                 .Where(ec => ec.ERoute.RealStartDate <= End && (ec.ERoute.EndDate == null || ec.ERoute.EndDate.Value >= Start) && AppUserIds.Contains(ec.ERoute.SaleEmployeeId))
                 .Include(ec => ec.ERouteContentDays)
                 .Include(ec => ec.ERoute)
@@ -656,6 +657,8 @@ namespace DMS.Rpc.monitor.monitor_salesman
 
             List<ERouteContentDAO> ERouteContentDAOs = await DataContext.ERouteContent
                 .Where(ec => (!ec.ERoute.EndDate.HasValue || Start <= ec.ERoute.EndDate) && ec.ERoute.StartDate <= End)
+                .Where(x => x.ERoute.DeletedAt == null && x.ERoute.StatusId == StatusEnum.ACTIVE.Id)
+                .Where(x => x.ERoute.RequestStateId == RequestStateEnum.APPROVED.Id)
                 .Include(ec => ec.ERoute)
                 .Include(ec => ec.ERouteContentDays)
                 .ToListAsync();
