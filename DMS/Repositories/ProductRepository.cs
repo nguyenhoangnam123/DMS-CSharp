@@ -284,6 +284,9 @@ namespace DMS.Repositories
                         case ProductOrder.UsedVariation:
                             query = query.OrderBy(q => q.UsedVariationId);
                             break;
+                        default:
+                            query = query.OrderBy(q => q.UpdatedAt);
+                            break;
                     }
                     break;
                 case OrderType.DESC:
@@ -348,6 +351,9 @@ namespace DMS.Repositories
                             break;
                         case ProductOrder.UsedVariation:
                             query = query.OrderByDescending(q => q.UsedVariationId);
+                            break;
+                        default:
+                            query = query.OrderByDescending(q => q.UpdatedAt);
                             break;
                     }
                     break;
