@@ -231,7 +231,8 @@ namespace DMS.Rpc.reports.report_store.report_store_general
             }
             if (CurrentUser.AppUserStoreMappings != null && CurrentUser.AppUserStoreMappings.Count > 0)
             {
-                StoreIds = CurrentUser.AppUserStoreMappings.Select(x => x.StoreId).ToList();
+                var StoreInScopeIds = CurrentUser.AppUserStoreMappings.Select(x => x.StoreId).ToList();
+                StoreIds = StoreIds.Intersect(StoreInScopeIds).ToList();
             }
             List<long> StoreTypeIds = await FilterStoreType(StoreTypeService, CurrentContext);
             if (StoreTypeId.HasValue)
@@ -326,7 +327,8 @@ namespace DMS.Rpc.reports.report_store.report_store_general
             }
             if (CurrentUser.AppUserStoreMappings != null && CurrentUser.AppUserStoreMappings.Count > 0)
             {
-                StoreIds = CurrentUser.AppUserStoreMappings.Select(x => x.StoreId).ToList();
+                var StoreInScopeIds = CurrentUser.AppUserStoreMappings.Select(x => x.StoreId).ToList();
+                StoreIds = StoreIds.Intersect(StoreInScopeIds).ToList();
             }
             List<long> StoreTypeIds = await FilterStoreType(StoreTypeService, CurrentContext);
             if (StoreTypeId.HasValue)
