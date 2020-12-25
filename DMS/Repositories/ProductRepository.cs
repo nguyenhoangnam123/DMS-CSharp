@@ -848,7 +848,8 @@ namespace DMS.Repositories
             var ProductIds = Products.Select(x => x.Id).ToList();
             await DataContext.Product.Where(x => ProductIds.Contains(x.Id)).UpdateFromQueryAsync(x => new ProductDAO
             {
-                IsNew = true
+                IsNew = true,
+                UpdatedAt = StaticParams.DateTimeNow
             });
 
             return true;
