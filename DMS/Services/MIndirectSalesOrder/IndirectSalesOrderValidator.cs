@@ -241,7 +241,18 @@ namespace DMS.Services.MIndirectSalesOrder
                                     IndirectSalesOrderContent.AddError(nameof(IndirectSalesOrderValidator), nameof(IndirectSalesOrderContent.Quantity), ErrorCode.QuantityEmpty);
                                 else
                                 {
-                                    var SubTotalContent = Item.SalePrice * UOM.Factor.Value * IndirectSalesOrderContent.Quantity;
+                                    decimal SalePrice = 0;
+                                    if (IndirectSalesOrder.EditedPriceStatusId == EditedPriceStatusEnum.INACTIVE.Id)
+                                    {
+                                        SalePrice = Item.SalePrice * UOM.Factor.Value;
+                                    }
+
+                                    if (IndirectSalesOrder.EditedPriceStatusId == EditedPriceStatusEnum.ACTIVE.Id)
+                                    {
+                                        SalePrice = IndirectSalesOrderContent.PrimaryPrice * UOM.Factor.Value;
+                                    }
+
+                                    var SubTotalContent = SalePrice * IndirectSalesOrderContent.Quantity;
                                     SubTotal += SubTotalContent;
                                 }
                             }
