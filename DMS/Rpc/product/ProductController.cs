@@ -394,23 +394,44 @@ namespace DMS.Rpc.product
                         
                     }
 
-                    Product.Category = new Category()
+                    if (!string.IsNullOrWhiteSpace(CategoryCodeValue))
                     {
-                        Code = CategoryCodeValue
-                    };
-                    Product.CategoryId = Categorys.Where(x => x.Code.ToLower()==CategoryCodeValue.Trim().ToLower()).Select(x => x.Id).FirstOrDefault();
+                        Product.Category = new Category()
+                        {
+                            Code = CategoryCodeValue
+                        };
+                        Product.CategoryId = Categorys.Where(x => x.Code.ToLower() == CategoryCodeValue.Trim().ToLower()).Select(x => x.Id).FirstOrDefault();
+                    }
+                    else
+                    {
+                        errorContent.AppendLine($"Lỗi dòng thứ {i}: Chưa nhập danh mục sản phẩm");
+                    }
 
-                    Product.ProductType = new ProductType()
+                    if (!string.IsNullOrWhiteSpace(ProductTypeCodeValue))
                     {
-                        Code = ProductTypeCodeValue
-                    };
-                    Product.ProductTypeId = ProductTypes.Where(x => x.Code.ToLower()==ProductTypeCodeValue.Trim().ToLower()).Select(x => x.Id).FirstOrDefault();
+                        Product.ProductType = new ProductType()
+                        {
+                            Code = ProductTypeCodeValue
+                        };
+                        Product.ProductTypeId = ProductTypes.Where(x => x.Code.ToLower() == ProductTypeCodeValue.Trim().ToLower()).Select(x => x.Id).FirstOrDefault();
+                    }
+                    else
+                    {
+                        errorContent.AppendLine($"Lỗi dòng thứ {i}: Chưa nhập loại sản phẩm");
+                    }
 
-                    Product.UnitOfMeasure = new UnitOfMeasure()
+                    if (!string.IsNullOrWhiteSpace(UoMCodeValue))
                     {
-                        Code = UoMCodeValue
-                    };
-                    Product.UnitOfMeasureId = UnitOfMeasures.Where(x => x.Code.ToLower()==UoMCodeValue.Trim().ToLower()).Select(x => x.Id).FirstOrDefault();
+                        Product.UnitOfMeasure = new UnitOfMeasure()
+                        {
+                            Code = UoMCodeValue
+                        };
+                        Product.UnitOfMeasureId = UnitOfMeasures.Where(x => x.Code.ToLower() == UoMCodeValue.Trim().ToLower()).Select(x => x.Id).FirstOrDefault();
+                    }
+                    else
+                    {
+                        errorContent.AppendLine($"Lỗi dòng thứ {i}: Chưa nhập đơn vị tính");
+                    }
 
                     if (!string.IsNullOrWhiteSpace(BrandCodeValue))
                     {
@@ -701,7 +722,7 @@ namespace DMS.Rpc.product
                 }
             }
             #endregion
-
+            Products.ForEach(x => x.BaseLanguage = CurrentContext.Language);
             Products = await ProductService.Import(Products);
             List<Product_ProductDTO> Product_ProductDTOs = Products
                 .Select(c => new Product_ProductDTO(c)).ToList();
