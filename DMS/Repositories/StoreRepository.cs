@@ -42,30 +42,13 @@ namespace DMS.Repositories
 
             query = query.Where(q => !q.DeletedAt.HasValue);
             if (filter.Search != null)
-            {
-                List<string> Tokens = filter.Search.ToLower().Split(" ").ToList();
-                var queryForCodeDraft = query;
-                var queryForCode = query;
-                var queryForAddress = query;
-                var queryForUnsignAddress = query;
-                var queryForUnsignName = query;
-                var queryForName = query;
-                foreach (string Token in Tokens)
-                {
-                    queryForCodeDraft = queryForCodeDraft.Where(x => x.CodeDraft.ToLower().Contains(Token));
-                    queryForCode = queryForCode.Where(x => x.Code.ToLower().Contains(Token));
-                    queryForAddress = queryForAddress.Where(x => x.Address.ToLower().Contains(Token));
-                    queryForUnsignAddress = queryForUnsignAddress.Where(x => x.UnsignAddress.ToLower().Contains(Token));
-                    queryForUnsignName = queryForUnsignName.Where(x => x.UnsignName.ToLower().Contains(Token));
-                    queryForName = queryForName.Where(x => x.Name.ToLower().Contains(Token));
-                }
-                query = queryForCodeDraft
-                    .Union(queryForCode)
-                    .Union(queryForAddress)
-                    .Union(queryForUnsignAddress)
-                    .Union(queryForUnsignName)
-                    .Union(queryForName);
-            }
+                query = query.Where(q =>
+                q.CodeDraft.ToLower().Contains(filter.Search.ToLower()) ||
+                q.Code.ToLower().Contains(filter.Search.ToLower()) ||
+                q.Address.ToLower().Contains(filter.Search.ToLower()) ||
+                q.UnsignAddress.ToLower().Contains(filter.Search.ToLower()) ||
+                q.UnsignName.ToLower().Contains(filter.Search.ToLower()) ||
+                q.Name.ToLower().Contains(filter.Search.ToLower()));
             if (filter.Id != null)
             {
                 if (filter.Id.In != null && filter.Id.In.Count > 0)
