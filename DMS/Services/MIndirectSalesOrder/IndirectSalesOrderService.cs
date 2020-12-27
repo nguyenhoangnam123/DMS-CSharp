@@ -262,7 +262,6 @@ namespace DMS.Services.MIndirectSalesOrder
         {
             try
             {
-
                 List<Item> Items = await ItemService.List(ItemFilter);
                 var Ids = Items.Select(x => x.Id).ToList();
                 AppUser AppUser = await UOW.AppUserRepository.Get(SalesEmployeeId.Value);
@@ -1011,9 +1010,16 @@ namespace DMS.Services.MIndirectSalesOrder
                 }
             }
 
+            //nhân giá với thuế
             foreach (var item in Items)
             {
                 item.SalePrice = result[item.Id] * (1 + item.Product.TaxType.Percentage / 100);
+                //làm tròn số
+                var surplus = item.SalePrice % 1000;
+                if (surplus >= 500)
+                    item.SalePrice = item.SalePrice + (1000 - surplus);
+                else
+                    item.SalePrice = item.SalePrice - surplus;
             }
             return Items;
         }

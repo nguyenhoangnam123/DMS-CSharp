@@ -245,6 +245,12 @@ namespace DMS.Services.MIndirectSalesOrder
                                     if (IndirectSalesOrder.EditedPriceStatusId == EditedPriceStatusEnum.INACTIVE.Id)
                                     {
                                         SalePrice = Item.SalePrice * UOM.Factor.Value;
+                                        //làm tròn số
+                                        var surplus = SalePrice % 1000;
+                                        if (surplus >= 500)
+                                            SalePrice = SalePrice + (1000 - surplus);
+                                        else
+                                            SalePrice = SalePrice - surplus;
                                     }
 
                                     if (IndirectSalesOrder.EditedPriceStatusId == EditedPriceStatusEnum.ACTIVE.Id)
