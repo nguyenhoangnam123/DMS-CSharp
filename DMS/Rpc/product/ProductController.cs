@@ -806,6 +806,7 @@ namespace DMS.Rpc.product
                 Take = int.MaxValue,
                 Selects = CategorySelect.ALL,
             });
+            Categorys = Categorys.Where(x => x.HasChildren == false).ToList();
             List<Item> Items = await ItemService.List(new ItemFilter
             {
                 Skip = 0,
@@ -1186,6 +1187,7 @@ namespace DMS.Rpc.product
                 Selects = CategorySelect.ALL,
                 StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id }
             });
+            Categorys = Categorys.Where(x => x.HasChildren == false).ToList();
             List<ProductGrouping> ProductGroupings = await ProductGroupingService.List(new ProductGroupingFilter
             {
                 Skip = 0,

@@ -213,6 +213,13 @@ namespace DMS.Repositories
                 CreatedAt = q.CreatedAt,
                 UpdatedAt = q.UpdatedAt,
             }).ToListAsync();
+
+            foreach (var Category in Categories)
+            {
+                var count = Categories.Where(x => x.Path.StartsWith(Category.Path) && x.Id != Category.Id).Count();
+                if (count > 0)
+                    Category.HasChildren = true;
+            }
             return Categories;
         }
 
