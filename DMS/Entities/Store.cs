@@ -107,6 +107,7 @@ namespace DMS.Entities
         public IdFilter StatusId { get; set; }
         public IdFilter WorkflowDefinitionId { get; set; }
         public IdFilter StoreStatusId { get; set; }
+        public IdFilter StoreDraftTypeId { get; set; }
         public List<StoreFilter> OrFilter { get; set; }
         public StoreOrder OrderBy { get; set; }
         public StoreSelect Selects { get; set; }
