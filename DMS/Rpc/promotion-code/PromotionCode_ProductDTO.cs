@@ -154,6 +154,7 @@ namespace DMS.Rpc.promotion_code
         public IdFilter UsedVariationId { get; set; }
         
         public GuidFilter RowId { get; set; }
+        public string Search { get; set; }
         
         public ProductOrder OrderBy { get; set; }
     }

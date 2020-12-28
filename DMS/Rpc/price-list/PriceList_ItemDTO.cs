@@ -70,6 +70,7 @@ namespace DMS.Rpc.price_list
         public DecimalFilter RetailPrice { get; set; }
 
         public IdFilter StatusId { get; set; }
+        public string Search { get; set; }
 
         public ItemOrder OrderBy { get; set; }
     }

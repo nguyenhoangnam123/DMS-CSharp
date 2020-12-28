@@ -74,6 +74,7 @@ namespace DMS.Rpc.kpi_item
         public DecimalFilter RetailPrice { get; set; }
 
         public IdFilter StatusId { get; set; }
+        public string Search { get; set; }
 
         public ItemOrder OrderBy { get; set; }
     }
