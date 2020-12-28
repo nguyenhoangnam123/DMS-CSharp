@@ -65,6 +65,7 @@ namespace DMS.Rpc.warehouse
         public DecimalFilter SalePrice { get; set; }
 
         public DecimalFilter RetailPrice { get; set; }
+        public string Search { get; set; }
 
         public ItemOrder OrderBy { get; set; }
     }

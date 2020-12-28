@@ -113,6 +113,10 @@ namespace DMS.Rpc.kpi_tracking.kpi_item_report
             ItemFilter.OrderType = OrderType.ASC;
             ItemFilter.Selects = ItemSelect.ALL;
             ItemFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+            ItemFilter.Id = KpiItemReport_ItemFilterDTO.Id;
+            ItemFilter.Code = KpiItemReport_ItemFilterDTO.Code;
+            ItemFilter.Name = KpiItemReport_ItemFilterDTO.Name;
+            ItemFilter.Search = KpiItemReport_ItemFilterDTO.Search;
 
             List<Item> Items = await ItemService.List(ItemFilter);
             List<KpiItemReport_ItemDTO> KpiItemReport_ItemDTOs = Items

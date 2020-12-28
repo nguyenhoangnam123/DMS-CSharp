@@ -96,6 +96,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_by_store_
             ItemFilter.Code = ReportDirectSalesOrderByStoreAndItem_ItemFilterDTO.Code;
             ItemFilter.Name = ReportDirectSalesOrderByStoreAndItem_ItemFilterDTO.Name;
             ItemFilter.StatusId = ReportDirectSalesOrderByStoreAndItem_ItemFilterDTO.StatusId;
+            ItemFilter.Search = ReportDirectSalesOrderByStoreAndItem_ItemFilterDTO.Search;
 
             List<Item> Items = await ItemService.List(ItemFilter);
             List<ReportDirectSalesOrderByStoreAndItem_ItemDTO> ReportDirectSalesOrderByStoreAndItem_ItemDTOs = Items
