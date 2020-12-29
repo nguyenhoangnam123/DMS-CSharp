@@ -107,8 +107,8 @@ namespace DMS.Rpc.kpi_tracking.kpi_item_report
                 throw new BindException(ModelState);
 
             ItemFilter ItemFilter = new ItemFilter();
-            ItemFilter.Skip = 0;
-            ItemFilter.Take = int.MaxValue;
+            ItemFilter.Skip = KpiItemReport_ItemFilterDTO.Skip;
+            ItemFilter.Take = KpiItemReport_ItemFilterDTO.Take;
             ItemFilter.OrderBy = ItemOrder.Id;
             ItemFilter.OrderType = OrderType.ASC;
             ItemFilter.Selects = ItemSelect.ALL;
