@@ -511,9 +511,9 @@ namespace DMS.Repositories
             IQueryable<DirectSalesOrderDAO> DirectSalesOrderDAOs = DataContext.DirectSalesOrder.AsNoTracking();
             DirectSalesOrderDAOs = DynamicFilter(DirectSalesOrderDAOs, filter);
             DirectSalesOrderDAOs = from q in DirectSalesOrderDAOs
-                                     where q.RequestStateId == RequestStateEnum.NEW.Id &&
-                                     q.CreatorId == filter.ApproverId.Equal
-                                     select q;
+                                   where (q.RequestStateId == RequestStateEnum.NEW.Id || q.RequestStateId == RequestStateEnum.REJECTED.Id) &&
+                                   q.CreatorId == filter.ApproverId.Equal
+                                   select q;
 
             return await DirectSalesOrderDAOs.Distinct().CountAsync();
         }
@@ -524,9 +524,9 @@ namespace DMS.Repositories
             IQueryable<DirectSalesOrderDAO> DirectSalesOrderDAOs = DataContext.DirectSalesOrder.AsNoTracking();
             DirectSalesOrderDAOs = DynamicFilter(DirectSalesOrderDAOs, filter);
             DirectSalesOrderDAOs = from q in DirectSalesOrderDAOs
-                                     where q.RequestStateId == RequestStateEnum.NEW.Id &&
-                                     q.CreatorId == filter.ApproverId.Equal
-                                     select q;
+                                   where (q.RequestStateId == RequestStateEnum.NEW.Id || q.RequestStateId == RequestStateEnum.REJECTED.Id) &&
+                                   q.CreatorId == filter.ApproverId.Equal
+                                   select q;
 
             DirectSalesOrderDAOs = DynamicOrder(DirectSalesOrderDAOs, filter);
             List<DirectSalesOrder> DirectSalesOrders = await DynamicSelect(DirectSalesOrderDAOs, filter);
@@ -540,12 +540,12 @@ namespace DMS.Repositories
             if (filter.ApproverId.Equal.HasValue)
             {
                 DirectSalesOrderDAOs = from q in DirectSalesOrderDAOs
-                                         join r in DataContext.RequestWorkflowDefinitionMapping.Where(x => x.RequestStateId == RequestStateEnum.PENDING.Id) on q.RowId equals r.RequestId
-                                         join step in DataContext.WorkflowStep on r.WorkflowDefinitionId equals step.WorkflowDefinitionId
-                                         join rstep in DataContext.RequestWorkflowStepMapping.Where(x => x.WorkflowStateId == WorkflowStateEnum.PENDING.Id) on step.Id equals rstep.WorkflowStepId
-                                         join ra in DataContext.AppUserRoleMapping on step.RoleId equals ra.RoleId
-                                         where ra.AppUserId == filter.ApproverId.Equal && q.RowId == rstep.RequestId
-                                         select q;
+                                       join r in DataContext.RequestWorkflowDefinitionMapping.Where(x => x.RequestStateId == RequestStateEnum.PENDING.Id) on q.RowId equals r.RequestId
+                                       join step in DataContext.WorkflowStep on r.WorkflowDefinitionId equals step.WorkflowDefinitionId
+                                       join rstep in DataContext.RequestWorkflowStepMapping.Where(x => x.WorkflowStateId == WorkflowStateEnum.PENDING.Id) on step.Id equals rstep.WorkflowStepId
+                                       join ra in DataContext.AppUserRoleMapping on step.RoleId equals ra.RoleId
+                                       where ra.AppUserId == filter.ApproverId.Equal && q.RowId == rstep.RequestId
+                                       select q;
             }
             return await DirectSalesOrderDAOs.Distinct().CountAsync();
         }
@@ -558,12 +558,12 @@ namespace DMS.Repositories
             if (filter.ApproverId.Equal.HasValue)
             {
                 DirectSalesOrderDAOs = from q in DirectSalesOrderDAOs
-                                         join r in DataContext.RequestWorkflowDefinitionMapping.Where(x => x.RequestStateId == RequestStateEnum.PENDING.Id) on q.RowId equals r.RequestId
-                                         join step in DataContext.WorkflowStep on r.WorkflowDefinitionId equals step.WorkflowDefinitionId
-                                         join rstep in DataContext.RequestWorkflowStepMapping.Where(x => x.WorkflowStateId == WorkflowStateEnum.PENDING.Id) on step.Id equals rstep.WorkflowStepId
-                                         join ra in DataContext.AppUserRoleMapping on step.RoleId equals ra.RoleId
-                                         where ra.AppUserId == filter.ApproverId.Equal && q.RowId == rstep.RequestId
-                                         select q;
+                                       join r in DataContext.RequestWorkflowDefinitionMapping.Where(x => x.RequestStateId == RequestStateEnum.PENDING.Id) on q.RowId equals r.RequestId
+                                       join step in DataContext.WorkflowStep on r.WorkflowDefinitionId equals step.WorkflowDefinitionId
+                                       join rstep in DataContext.RequestWorkflowStepMapping.Where(x => x.WorkflowStateId == WorkflowStateEnum.PENDING.Id) on step.Id equals rstep.WorkflowStepId
+                                       join ra in DataContext.AppUserRoleMapping on step.RoleId equals ra.RoleId
+                                       where ra.AppUserId == filter.ApproverId.Equal && q.RowId == rstep.RequestId
+                                       select q;
             }
             DirectSalesOrderDAOs = DynamicOrder(DirectSalesOrderDAOs, filter);
             List<DirectSalesOrder> DirectSalesOrders = await DynamicSelect(DirectSalesOrderDAOs, filter);
@@ -581,8 +581,8 @@ namespace DMS.Repositories
                              join step in DataContext.WorkflowStep on r.WorkflowDefinitionId equals step.WorkflowDefinitionId
                              join rstep in DataContext.RequestWorkflowStepMapping on step.Id equals rstep.WorkflowStepId
                              where
-                             (q.RequestStateId != RequestStateEnum.NEW.Id) &&
-                             (rstep.WorkflowStateId == WorkflowStateEnum.APPROVED.Id || rstep.WorkflowStateId == WorkflowStateEnum.REJECTED.Id) &&
+                             q.RequestStateId != RequestStateEnum.NEW.Id &&
+                             rstep.WorkflowStateId == WorkflowStateEnum.APPROVED.Id &&
                              rstep.AppUserId == filter.ApproverId.Equal
                              select q;
                 var query2 = from q in DirectSalesOrderDAOs
@@ -607,8 +607,8 @@ namespace DMS.Repositories
                              join step in DataContext.WorkflowStep on r.WorkflowDefinitionId equals step.WorkflowDefinitionId
                              join rstep in DataContext.RequestWorkflowStepMapping on step.Id equals rstep.WorkflowStepId
                              where
-                             (q.RequestStateId != RequestStateEnum.NEW.Id) &&
-                             (rstep.WorkflowStateId == WorkflowStateEnum.APPROVED.Id || rstep.WorkflowStateId == WorkflowStateEnum.REJECTED.Id) &&
+                             q.RequestStateId != RequestStateEnum.NEW.Id &&
+                             rstep.WorkflowStateId == WorkflowStateEnum.APPROVED.Id &&
                              rstep.AppUserId == filter.ApproverId.Equal
                              select q;
                 var query2 = from q in DirectSalesOrderDAOs

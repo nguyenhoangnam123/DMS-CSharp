@@ -76,7 +76,7 @@ namespace DMS.Repositories
                     List<OrganizationDAO> Parents = OrganizationDAOs.Where(o => filter.OrganizationId.In.Contains(o.Id)).ToList();
                     List<OrganizationDAO> Branches = OrganizationDAOs.Where(o => Parents.Any(p => o.Path.StartsWith(p.Path))).ToList();
                     List<long> Ids = Branches.Select(o => o.Id).ToList();
-                    query = query.Where(q =>  Ids.Contains(q.OrganizationId));
+                    query = query.Where(q => Ids.Contains(q.OrganizationId));
                 }
                 if (filter.OrganizationId.NotIn != null)
                 {
@@ -315,7 +315,7 @@ namespace DMS.Repositories
                         Id = x.Id,
                         StoreId = x.StoreId,
                     }).ToListAsync();
-            }    
+            }
             return ERoutes;
         }
 
@@ -341,9 +341,9 @@ namespace DMS.Repositories
             IQueryable<ERouteDAO> ERouteDAOs = DataContext.ERoute.AsNoTracking();
             ERouteDAOs = DynamicFilter(ERouteDAOs, filter);
             ERouteDAOs = from q in ERouteDAOs
-                                     where q.RequestStateId == RequestStateEnum.NEW.Id &&
-                                     q.CreatorId == filter.ApproverId.Equal
-                                     select q;
+                         where (q.RequestStateId == RequestStateEnum.NEW.Id || q.RequestStateId == RequestStateEnum.REJECTED.Id) &&
+                         q.CreatorId == filter.ApproverId.Equal
+                         select q;
 
             return await ERouteDAOs.Distinct().CountAsync();
         }
@@ -354,9 +354,9 @@ namespace DMS.Repositories
             IQueryable<ERouteDAO> ERouteDAOs = DataContext.ERoute.AsNoTracking();
             ERouteDAOs = DynamicFilter(ERouteDAOs, filter);
             ERouteDAOs = from q in ERouteDAOs
-                                     where q.RequestStateId == RequestStateEnum.NEW.Id &&
-                                     q.CreatorId == filter.ApproverId.Equal
-                                     select q;
+                         where (q.RequestStateId == RequestStateEnum.NEW.Id || q.RequestStateId == RequestStateEnum.REJECTED.Id) &&
+                         q.CreatorId == filter.ApproverId.Equal
+                         select q;
 
             ERouteDAOs = DynamicOrder(ERouteDAOs, filter);
             List<ERoute> ERoutes = await DynamicSelect(ERouteDAOs, filter);
@@ -370,12 +370,12 @@ namespace DMS.Repositories
             if (filter.ApproverId.Equal.HasValue)
             {
                 ERouteDAOs = from q in ERouteDAOs
-                                join r in DataContext.RequestWorkflowDefinitionMapping.Where(x => x.RequestStateId == RequestStateEnum.PENDING.Id) on q.RowId equals r.RequestId
-                                join step in DataContext.WorkflowStep on r.WorkflowDefinitionId equals step.WorkflowDefinitionId
-                                join rstep in DataContext.RequestWorkflowStepMapping.Where(x => x.WorkflowStateId == WorkflowStateEnum.PENDING.Id) on step.Id equals rstep.WorkflowStepId
-                                join ra in DataContext.AppUserRoleMapping on step.RoleId equals ra.RoleId
-                                where ra.AppUserId == filter.ApproverId.Equal && q.RowId == rstep.RequestId
-                                select q;
+                             join r in DataContext.RequestWorkflowDefinitionMapping.Where(x => x.RequestStateId == RequestStateEnum.PENDING.Id) on q.RowId equals r.RequestId
+                             join step in DataContext.WorkflowStep on r.WorkflowDefinitionId equals step.WorkflowDefinitionId
+                             join rstep in DataContext.RequestWorkflowStepMapping.Where(x => x.WorkflowStateId == WorkflowStateEnum.PENDING.Id) on step.Id equals rstep.WorkflowStepId
+                             join ra in DataContext.AppUserRoleMapping on step.RoleId equals ra.RoleId
+                             where ra.AppUserId == filter.ApproverId.Equal && q.RowId == rstep.RequestId
+                             select q;
             }
             return await ERouteDAOs.Distinct().CountAsync();
         }
@@ -388,12 +388,12 @@ namespace DMS.Repositories
             if (filter.ApproverId.Equal.HasValue)
             {
                 ERouteDAOs = from q in ERouteDAOs
-                                join r in DataContext.RequestWorkflowDefinitionMapping.Where(x => x.RequestStateId == RequestStateEnum.PENDING.Id) on q.RowId equals r.RequestId
-                                join step in DataContext.WorkflowStep on r.WorkflowDefinitionId equals step.WorkflowDefinitionId
-                                join rstep in DataContext.RequestWorkflowStepMapping.Where(x => x.WorkflowStateId == WorkflowStateEnum.PENDING.Id) on step.Id equals rstep.WorkflowStepId
-                                join ra in DataContext.AppUserRoleMapping on step.RoleId equals ra.RoleId
-                                where ra.AppUserId == filter.ApproverId.Equal && q.RowId == rstep.RequestId
-                                select q;
+                             join r in DataContext.RequestWorkflowDefinitionMapping.Where(x => x.RequestStateId == RequestStateEnum.PENDING.Id) on q.RowId equals r.RequestId
+                             join step in DataContext.WorkflowStep on r.WorkflowDefinitionId equals step.WorkflowDefinitionId
+                             join rstep in DataContext.RequestWorkflowStepMapping.Where(x => x.WorkflowStateId == WorkflowStateEnum.PENDING.Id) on step.Id equals rstep.WorkflowStepId
+                             join ra in DataContext.AppUserRoleMapping on step.RoleId equals ra.RoleId
+                             where ra.AppUserId == filter.ApproverId.Equal && q.RowId == rstep.RequestId
+                             select q;
             }
             ERouteDAOs = DynamicOrder(ERouteDAOs, filter);
             List<ERoute> ERoutes = await DynamicSelect(ERouteDAOs, filter);
@@ -411,8 +411,8 @@ namespace DMS.Repositories
                              join step in DataContext.WorkflowStep on r.WorkflowDefinitionId equals step.WorkflowDefinitionId
                              join rstep in DataContext.RequestWorkflowStepMapping on step.Id equals rstep.WorkflowStepId
                              where
-                             (q.RequestStateId != RequestStateEnum.NEW.Id) &&
-                             (rstep.WorkflowStateId == WorkflowStateEnum.APPROVED.Id || rstep.WorkflowStateId == WorkflowStateEnum.REJECTED.Id) &&
+                             q.RequestStateId != RequestStateEnum.NEW.Id &&
+                             rstep.WorkflowStateId == WorkflowStateEnum.APPROVED.Id &&
                              rstep.AppUserId == filter.ApproverId.Equal
                              select q;
                 var query2 = from q in ERouteDAOs
@@ -437,8 +437,8 @@ namespace DMS.Repositories
                              join step in DataContext.WorkflowStep on r.WorkflowDefinitionId equals step.WorkflowDefinitionId
                              join rstep in DataContext.RequestWorkflowStepMapping on step.Id equals rstep.WorkflowStepId
                              where
-                             (q.RequestStateId != RequestStateEnum.NEW.Id) &&
-                             (rstep.WorkflowStateId == WorkflowStateEnum.APPROVED.Id || rstep.WorkflowStateId == WorkflowStateEnum.REJECTED.Id) &&
+                             q.RequestStateId != RequestStateEnum.NEW.Id &&
+                             rstep.WorkflowStateId == WorkflowStateEnum.APPROVED.Id &&
                              rstep.AppUserId == filter.ApproverId.Equal
                              select q;
                 var query2 = from q in ERouteDAOs
@@ -751,7 +751,7 @@ namespace DMS.Repositories
                     Planned = false
                 });
             }
-            
+
             if (ERouteContent.Week1)
             {
                 if (ERouteContent.Monday)
@@ -876,7 +876,7 @@ namespace DMS.Repositories
                     ERouteContentDays[27].Planned = true;
                 }
             }
-            
+
             return ERouteContentDays;
         }
 

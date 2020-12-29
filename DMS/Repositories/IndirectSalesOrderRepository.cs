@@ -552,8 +552,8 @@ namespace DMS.Repositories
                              join step in DataContext.WorkflowStep on r.WorkflowDefinitionId equals step.WorkflowDefinitionId
                              join rstep in DataContext.RequestWorkflowStepMapping on step.Id equals rstep.WorkflowStepId
                              where
-                             (q.RequestStateId != RequestStateEnum.NEW.Id) &&
-                             (rstep.WorkflowStateId == WorkflowStateEnum.APPROVED.Id || rstep.WorkflowStateId == WorkflowStateEnum.REJECTED.Id) &&
+                             q.RequestStateId != RequestStateEnum.NEW.Id &&
+                             rstep.WorkflowStateId == WorkflowStateEnum.APPROVED.Id &&
                              rstep.AppUserId == filter.ApproverId.Equal
                              select q;
                 var query2 = from q in IndirectSalesOrderDAOs
@@ -578,8 +578,8 @@ namespace DMS.Repositories
                              join step in DataContext.WorkflowStep on r.WorkflowDefinitionId equals step.WorkflowDefinitionId
                              join rstep in DataContext.RequestWorkflowStepMapping on step.Id equals rstep.WorkflowStepId
                              where
-                             (q.RequestStateId != RequestStateEnum.NEW.Id) &&
-                             (rstep.WorkflowStateId == WorkflowStateEnum.APPROVED.Id || rstep.WorkflowStateId == WorkflowStateEnum.REJECTED.Id) &&
+                             q.RequestStateId != RequestStateEnum.NEW.Id &&
+                             rstep.WorkflowStateId == WorkflowStateEnum.APPROVED.Id &&
                              rstep.AppUserId == filter.ApproverId.Equal
                              select q;
                 var query2 = from q in IndirectSalesOrderDAOs
