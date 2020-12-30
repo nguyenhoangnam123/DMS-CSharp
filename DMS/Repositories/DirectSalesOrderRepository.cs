@@ -583,7 +583,7 @@ namespace DMS.Repositories
                              where
                              q.RequestStateId != RequestStateEnum.NEW.Id &&
                              rstep.WorkflowStateId == WorkflowStateEnum.APPROVED.Id &&
-                             rstep.AppUserId == filter.ApproverId.Equal
+                             rstep.AppUserId.HasValue && rstep.AppUserId == filter.ApproverId.Equal
                              select q;
                 var query2 = from q in DirectSalesOrderDAOs
                              join r in DataContext.RequestWorkflowDefinitionMapping on q.RowId equals r.RequestId into result
@@ -609,7 +609,7 @@ namespace DMS.Repositories
                              where
                              q.RequestStateId != RequestStateEnum.NEW.Id &&
                              rstep.WorkflowStateId == WorkflowStateEnum.APPROVED.Id &&
-                             rstep.AppUserId == filter.ApproverId.Equal
+                             rstep.AppUserId.HasValue && rstep.AppUserId == filter.ApproverId.Equal
                              select q;
                 var query2 = from q in DirectSalesOrderDAOs
                              join r in DataContext.RequestWorkflowDefinitionMapping on q.RowId equals r.RequestId into result
