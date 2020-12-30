@@ -8,7 +8,6 @@ namespace DMS.Models
     public partial class ERouteContentDAO : IEquatable<ERouteContentDAO>
     {
         internal DateTime RealStartDate { get; set; }
-        internal int index { get; set; }
         public bool Equals(ERouteContentDAO other)
         {
             return other != null && StoreId == other.StoreId &&

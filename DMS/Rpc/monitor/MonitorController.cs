@@ -17,7 +17,7 @@ namespace DMS.Rpc.monitor
     {
         protected int CountPlan(DateTime Date, long SalesEmployeeId, List<ERouteContentDAO> ERouteContentDAOs)
         {
-            var PlanCounter = 0;
+            HashSet<long> ListPlan = new HashSet<long>();
             ERouteContentDAOs = ERouteContentDAOs.Where(ec => ec.ERoute.SaleEmployeeId == SalesEmployeeId &&
                ec.ERoute.RealStartDate <= Date &&
                (ec.ERoute.EndDate == null || ec.ERoute.EndDate.Value >= Date))
@@ -25,22 +25,18 @@ namespace DMS.Rpc.monitor
             foreach (var ERouteContent in ERouteContentDAOs)
             {
                 ERouteContent.RealStartDate = ERouteContent.ERoute.RealStartDate;
-                var index = (Date - ERouteContent.ERoute.RealStartDate).Days % 28;
-                if (index >= 0 && ERouteContent.ERouteContentDays.Count > index)
-                {
-                    ERouteContent.index = index;
-                }
             }
             ERouteContentDAOs = ERouteContentDAOs.Distinct().ToList();
             foreach (var ERouteContent in ERouteContentDAOs)
             {
-                if (ERouteContent.index >= 0 && ERouteContent.ERouteContentDays.Count > ERouteContent.index)
+                var index = (Date - ERouteContent.ERoute.RealStartDate).Days % 28;
+                if (index >= 0 && ERouteContent.ERouteContentDays.Count > index)
                 {
-                    if (ERouteContent.ERouteContentDays.ElementAt(ERouteContent.index).Planned == true)
-                        PlanCounter++;
+                    if (ERouteContent.ERouteContentDays.ElementAt(index).Planned == true)
+                        ListPlan.Add(ERouteContent.StoreId);
                 }
             }
-            return PlanCounter;
+            return ListPlan.Count();
         }
     }
 }
