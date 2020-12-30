@@ -7,6 +7,7 @@ namespace DMS.Models
 {
     public partial class ERouteContentDAO : IEquatable<ERouteContentDAO>
     {
+        internal DateTime RealStartDate { get; set; }
         public bool Equals(ERouteContentDAO other)
         {
             return other != null && StoreId == other.StoreId &&
@@ -21,7 +22,7 @@ namespace DMS.Models
                 Week2 == other.Week2 &&
                 Week3 == other.Week3 &&
                 Week4 == other.Week4 &&
-                ERoute.RealStartDate == other.ERoute.RealStartDate;
+                RealStartDate == other.RealStartDate;
         }
         public override int GetHashCode()
         {
@@ -37,7 +38,7 @@ namespace DMS.Models
                 Week2 .GetHashCode() ^
                 Week3 .GetHashCode() ^
                 Week4.GetHashCode() ^
-                ERoute.RealStartDate.GetHashCode();
+                RealStartDate.GetHashCode();
         }
     }
 }

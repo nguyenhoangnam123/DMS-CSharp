@@ -22,6 +22,10 @@ namespace DMS.Rpc.monitor
                ec.ERoute.RealStartDate <= Date &&
                (ec.ERoute.EndDate == null || ec.ERoute.EndDate.Value >= Date))
                 .ToList();
+            foreach (var ERouteContentDAO in ERouteContentDAOs)
+            {
+                ERouteContentDAO.RealStartDate = ERouteContentDAO.ERoute.RealStartDate;
+            }
             ERouteContentDAOs = ERouteContentDAOs.Distinct().ToList();
             foreach (var ERouteContent in ERouteContentDAOs)
             {
