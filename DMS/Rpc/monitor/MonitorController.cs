@@ -22,22 +22,24 @@ namespace DMS.Rpc.monitor
                ec.ERoute.RealStartDate <= Date &&
                (ec.ERoute.EndDate == null || ec.ERoute.EndDate.Value >= Date))
                 .ToList();
-            foreach (var ERouteContentDAO in ERouteContentDAOs)
-            {
-                ERouteContentDAO.RealStartDate = ERouteContentDAO.ERoute.RealStartDate;
-            }
-            
             foreach (var ERouteContent in ERouteContentDAOs)
             {
+                ERouteContent.RealStartDate = ERouteContent.ERoute.RealStartDate;
                 var index = (Date - ERouteContent.ERoute.RealStartDate).Days % 28;
                 if (index >= 0 && ERouteContent.ERouteContentDays.Count > index)
                 {
                     ERouteContent.index = index;
-                    if (ERouteContent.ERouteContentDays.ElementAt(index).Planned == true)
-                        PlanCounter++;
                 }
             }
             ERouteContentDAOs = ERouteContentDAOs.Distinct().ToList();
+            foreach (var ERouteContent in ERouteContentDAOs)
+            {
+                if (ERouteContent.index >= 0 && ERouteContent.ERouteContentDays.Count > ERouteContent.index)
+                {
+                    if (ERouteContent.ERouteContentDays.ElementAt(ERouteContent.index).Planned == true)
+                        PlanCounter++;
+                }
+            }
             return PlanCounter;
         }
     }

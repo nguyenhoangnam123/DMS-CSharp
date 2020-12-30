@@ -71,7 +71,7 @@ namespace DMS.Services
             DateTime x = new DateTime(2020, 10, 01, 16, 59, 0);
             for (DateTime i = x; i < StaticParams.DateTimeNow; i = i.AddDays(1))
             {
-                DateTime End = StaticParams.DateTimeNow;
+                DateTime End = i;
                 DateTime Start = /*End.AddDays(-1);*/ End.AddDays(-1).AddMinutes(1);
                 List<ERouteContentDAO> ERouteContentDAOs = await DataContext.ERouteContent
                     .Where(ec => (!ec.ERoute.EndDate.HasValue || Start <= ec.ERoute.EndDate) && ec.ERoute.StartDate <= End)
