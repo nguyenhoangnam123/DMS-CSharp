@@ -68,58 +68,65 @@ namespace DMS.Services
 
         public async Task CreateStoreUnchecking()
         {
-            DateTime End = StaticParams.DateTimeNow;
-            DateTime Start = End.AddDays(-1).AddMinutes(1);
-            List<ERouteContentDAO> ERouteContentDAOs = await DataContext.ERouteContent
-                .Where(ec => (!ec.ERoute.EndDate.HasValue || Start <= ec.ERoute.EndDate) && ec.ERoute.StartDate <= End)
-                .Include(ec => ec.ERoute)
-                .Include(ec => ec.ERouteContentDays)
-                .Where(x => x.ERoute.RequestStateId == RequestStateEnum.APPROVED.Id && x.ERoute.StatusId == StatusEnum.ACTIVE.Id)
-                .ToListAsync();
-            foreach (var ERouteContentDAO in ERouteContentDAOs)
+            DateTime x = new DateTime(2020, 10, 01, 16, 59, 0);
+            for (DateTime i = x; i < StaticParams.DateTimeNow; i = i.AddDays(1))
             {
-                ERouteContentDAO.RealStartDate = ERouteContentDAO.ERoute.RealStartDate;
-            }
-            ERouteContentDAOs = ERouteContentDAOs.Distinct().ToList();
-            List<StoreUncheckingDAO> PlannedStoreUncheckingDAOs = new List<StoreUncheckingDAO>();
-            List<StoreUncheckingDAO> StoreUncheckingDAOs = new List<StoreUncheckingDAO>();
-            foreach (ERouteContentDAO ERouteContentDAO in ERouteContentDAOs)
-            {
-                StoreUncheckingDAO StoreUncheckingDAO = PlannedStoreUncheckingDAOs.Where(su =>
-                    su.Date == Start &&
-                    su.AppUserId == ERouteContentDAO.ERoute.SaleEmployeeId &&
-                    su.StoreId == ERouteContentDAO.StoreId
-                ).FirstOrDefault();
-                if (StoreUncheckingDAO == null)
+                DateTime End = StaticParams.DateTimeNow;
+                DateTime Start = /*End.AddDays(-1);*/ End.AddDays(-1).AddMinutes(1);
+                List<ERouteContentDAO> ERouteContentDAOs = await DataContext.ERouteContent
+                    .Where(ec => (!ec.ERoute.EndDate.HasValue || Start <= ec.ERoute.EndDate) && ec.ERoute.StartDate <= End)
+                    .Include(ec => ec.ERoute)
+                    .Include(ec => ec.ERouteContentDays)
+                    .Where(x => x.ERoute.RequestStateId == RequestStateEnum.APPROVED.Id && x.ERoute.StatusId == StatusEnum.ACTIVE.Id)
+                    .ToListAsync();
+                foreach (var ERouteContentDAO in ERouteContentDAOs)
                 {
-                    if (Start >= ERouteContentDAO.ERoute.RealStartDate)
+                    ERouteContentDAO.RealStartDate = ERouteContentDAO.ERoute.RealStartDate;
+                }
+                ERouteContentDAOs = ERouteContentDAOs.Distinct().ToList();
+                List<StoreUncheckingDAO> PlannedStoreUncheckingDAOs = new List<StoreUncheckingDAO>();
+                List<StoreUncheckingDAO> StoreUncheckingDAOs = new List<StoreUncheckingDAO>();
+                foreach (ERouteContentDAO ERouteContentDAO in ERouteContentDAOs)
+                {
+                    StoreUncheckingDAO StoreUncheckingDAO = PlannedStoreUncheckingDAOs.Where(su =>
+                        su.Date == Start &&
+                        su.AppUserId == ERouteContentDAO.ERoute.SaleEmployeeId &&
+                        su.StoreId == ERouteContentDAO.StoreId
+                    ).FirstOrDefault();
+                    if (StoreUncheckingDAO == null)
                     {
-                        long gap = (Start - ERouteContentDAO.ERoute.RealStartDate).Days % 28;
-                        if (ERouteContentDAO.ERouteContentDays.Any(ecd => ecd.OrderDay == gap && ecd.Planned))
+                        if (Start >= ERouteContentDAO.ERoute.RealStartDate)
                         {
-                            StoreUncheckingDAO = new StoreUncheckingDAO
+                            long gap = (Start - ERouteContentDAO.ERoute.RealStartDate).Days % 28;
+                            if (ERouteContentDAO.ERouteContentDays.Any(ecd => ecd.OrderDay == gap && ecd.Planned))
                             {
-                                AppUserId = ERouteContentDAO.ERoute.SaleEmployeeId,
-                                Date = End,
-                                StoreId = ERouteContentDAO.StoreId,
-                                OrganizationId = ERouteContentDAO.ERoute.OrganizationId
-                            };
-                            PlannedStoreUncheckingDAOs.Add(StoreUncheckingDAO);
+                                StoreUncheckingDAO = new StoreUncheckingDAO
+                                {
+                                    AppUserId = ERouteContentDAO.ERoute.SaleEmployeeId,
+                                    Date = End,
+                                    StoreId = ERouteContentDAO.StoreId,
+                                    OrganizationId = ERouteContentDAO.ERoute.OrganizationId
+                                };
+                                PlannedStoreUncheckingDAOs.Add(StoreUncheckingDAO);
+                            }
                         }
                     }
                 }
-            }
-            List<StoreCheckingDAO> StoreCheckingDAOs = await DataContext.StoreChecking.Where(sc => sc.CheckOutAt.HasValue &&
-                Start <= sc.CheckOutAt.Value && sc.CheckOutAt.Value <= End).ToListAsync();
-            foreach (StoreUncheckingDAO StoreUncheckingDAO in PlannedStoreUncheckingDAOs)
-            {
-                if (!StoreCheckingDAOs.Any(sc => sc.SaleEmployeeId == StoreUncheckingDAO.AppUserId && sc.StoreId == StoreUncheckingDAO.StoreId))
+                List<StoreCheckingDAO> StoreCheckingDAOs = await DataContext.StoreChecking.Where(sc => sc.CheckOutAt.HasValue &&
+                    Start <= sc.CheckOutAt.Value && sc.CheckOutAt.Value <= End).ToListAsync();
+                foreach (StoreUncheckingDAO StoreUncheckingDAO in PlannedStoreUncheckingDAOs)
                 {
-                    StoreUncheckingDAOs.Add(StoreUncheckingDAO);
+                    if (!StoreCheckingDAOs.Any(sc => sc.SaleEmployeeId == StoreUncheckingDAO.AppUserId && sc.StoreId == StoreUncheckingDAO.StoreId))
+                    {
+                        StoreUncheckingDAOs.Add(StoreUncheckingDAO);
+                    }
                 }
-            }
 
-            await DataContext.StoreUnchecking.BulkInsertAsync(StoreUncheckingDAOs);
+                StoreUncheckingDAOs = StoreUncheckingDAOs.Distinct().ToList();
+                await DataContext.StoreUnchecking.BulkInsertAsync(StoreUncheckingDAOs);
+            }
+            
+
         }
 
         public async Task AutoInactive()
