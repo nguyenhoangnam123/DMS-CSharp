@@ -20,7 +20,8 @@ namespace DMS.Models
                 Week1 == other.Week1 &&
                 Week2 == other.Week2 &&
                 Week3 == other.Week3 &&
-                Week4 == other.Week4;
+                Week4 == other.Week4 &&
+                ERoute.RealStartDate == other.ERoute.RealStartDate;
         }
         public override int GetHashCode()
         {
@@ -35,7 +36,8 @@ namespace DMS.Models
                 Week1 .GetHashCode() ^
                 Week2 .GetHashCode() ^
                 Week3 .GetHashCode() ^
-                Week4.GetHashCode();
+                Week4.GetHashCode() ^
+                ERoute.RealStartDate.GetHashCode();
         }
     }
 }
