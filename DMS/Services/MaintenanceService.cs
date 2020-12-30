@@ -69,13 +69,18 @@ namespace DMS.Services
         public async Task CreateStoreUnchecking()
         {
             DateTime End = StaticParams.DateTimeNow;
-            DateTime Start = End.AddDays(-1);
+            DateTime Start = End.AddDays(-1).AddMinutes(1);
             List<ERouteContentDAO> ERouteContentDAOs = await DataContext.ERouteContent
                 .Where(ec => (!ec.ERoute.EndDate.HasValue || Start <= ec.ERoute.EndDate) && ec.ERoute.StartDate <= End)
                 .Include(ec => ec.ERoute)
                 .Include(ec => ec.ERouteContentDays)
                 .Where(x => x.ERoute.RequestStateId == RequestStateEnum.APPROVED.Id && x.ERoute.StatusId == StatusEnum.ACTIVE.Id)
                 .ToListAsync();
+            foreach (var ERouteContentDAO in ERouteContentDAOs)
+            {
+                ERouteContentDAO.RealStartDate = ERouteContentDAO.ERoute.RealStartDate;
+            }
+            ERouteContentDAOs = ERouteContentDAOs.Distinct().ToList();
             List<StoreUncheckingDAO> PlannedStoreUncheckingDAOs = new List<StoreUncheckingDAO>();
             List<StoreUncheckingDAO> StoreUncheckingDAOs = new List<StoreUncheckingDAO>();
             foreach (ERouteContentDAO ERouteContentDAO in ERouteContentDAOs)
@@ -115,7 +120,6 @@ namespace DMS.Services
             }
 
             await DataContext.StoreUnchecking.BulkInsertAsync(StoreUncheckingDAOs);
-
         }
 
         public async Task AutoInactive()
