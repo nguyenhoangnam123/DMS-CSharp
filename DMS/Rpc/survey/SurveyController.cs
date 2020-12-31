@@ -1,6 +1,7 @@
 ﻿using DMS.Common;
 using DMS.Entities;
 using DMS.Enums;
+using DMS.Helpers;
 using DMS.Services.MAppUser;
 using DMS.Services.MOrganization;
 using DMS.Services.MStatus;
@@ -98,6 +99,8 @@ namespace DMS.Rpc.survey
                 return Forbid();
 
             Survey Survey = ConvertDTOToEntity(Survey_SurveyDTO);
+            if (Survey.StartAt == default(DateTime))
+                Survey.StartAt = StaticParams.DateTimeNow;
             Survey = await SurveyService.Create(Survey);
             Survey_SurveyDTO = new Survey_SurveyDTO(Survey);
             if (Survey.IsValidated)
