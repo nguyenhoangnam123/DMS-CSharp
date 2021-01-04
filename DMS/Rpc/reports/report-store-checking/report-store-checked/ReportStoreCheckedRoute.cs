@@ -27,7 +27,7 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
             { nameof(ReportStoreChecked_ReportStoreCheckedFilterDTO.AppUserId), FieldTypeEnum.ID.Id },
             { nameof(CurrentContext.UserId), FieldTypeEnum.ID.Id },
         };
-
+         
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
         {
             { "Tìm kiếm", new List<string> {
