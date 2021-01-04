@@ -57,6 +57,7 @@ namespace DMS.Rpc.direct_sales_order
         public DirectSalesOrder_StoreDTO ParentStore { get; set; }
         public DirectSalesOrder_StoreGroupingDTO StoreGrouping { get; set; }
         public DirectSalesOrder_StoreTypeDTO StoreType { get; set; }
+        public DirectSalesOrder_StoreStatusDTO StoreStatus { get; set; }
         public DirectSalesOrder_StoreDTO() { }
         public DirectSalesOrder_StoreDTO(Store Store)
         {
@@ -111,6 +112,7 @@ namespace DMS.Rpc.direct_sales_order
             this.ParentStore = Store.ParentStore == null ? null : new DirectSalesOrder_StoreDTO(Store.ParentStore);
             this.StoreGrouping = Store.StoreGrouping == null ? null : new DirectSalesOrder_StoreGroupingDTO(Store.StoreGrouping);
             this.StoreType = Store.StoreType == null ? null : new DirectSalesOrder_StoreTypeDTO(Store.StoreType);
+            this.StoreStatus = Store.StoreStatus == null ? null : new DirectSalesOrder_StoreStatusDTO(Store.StoreStatus);
             this.Errors = Store.Errors;
         }
     }

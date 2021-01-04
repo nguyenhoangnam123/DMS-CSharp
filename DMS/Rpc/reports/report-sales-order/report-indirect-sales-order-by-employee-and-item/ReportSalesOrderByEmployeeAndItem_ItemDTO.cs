@@ -41,6 +41,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_indirect_sales_order_by_empl
         public StringFilter Code { get; set; }
         public StringFilter Name { get; set; }
         public IdFilter StatusId { get; set; }
+        public string Search { get; set; }
         public ItemOrder OrderBy { get; set; }
     }
 }

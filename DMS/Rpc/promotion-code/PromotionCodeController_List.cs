@@ -146,6 +146,7 @@ namespace DMS.Rpc.promotion_code
             ProductFilter.TechnicalName = PromotionCode_ProductFilterDTO.TechnicalName;
             ProductFilter.Note = PromotionCode_ProductFilterDTO.Note;
             ProductFilter.UsedVariationId = PromotionCode_ProductFilterDTO.UsedVariationId;
+            ProductFilter.Search = PromotionCode_ProductFilterDTO.Search;
             ProductFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
             List<Product> Products = await ProductService.List(ProductFilter);
@@ -355,6 +356,7 @@ namespace DMS.Rpc.promotion_code
             ProductFilter.TechnicalName = PromotionCode_ProductFilterDTO.TechnicalName;
             ProductFilter.Note = PromotionCode_ProductFilterDTO.Note;
             ProductFilter.UsedVariationId = PromotionCode_ProductFilterDTO.UsedVariationId;
+            ProductFilter.Search = PromotionCode_ProductFilterDTO.Search;
 
             List<Product> Products = await ProductService.List(ProductFilter);
             List<PromotionCode_ProductDTO> PromotionCode_ProductDTOs = Products
@@ -530,6 +532,7 @@ namespace DMS.Rpc.promotion_code
             ProductFilter.TechnicalName = PromotionCode_ProductFilterDTO.TechnicalName;
             ProductFilter.Note = PromotionCode_ProductFilterDTO.Note;
             ProductFilter.UsedVariationId = PromotionCode_ProductFilterDTO.UsedVariationId;
+            ProductFilter.Search = PromotionCode_ProductFilterDTO.Search;
             ProductFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
             return await ProductService.Count(ProductFilter);
@@ -567,6 +570,7 @@ namespace DMS.Rpc.promotion_code
             ProductFilter.TechnicalName = PromotionCode_ProductFilterDTO.TechnicalName;
             ProductFilter.Note = PromotionCode_ProductFilterDTO.Note;
             ProductFilter.UsedVariationId = PromotionCode_ProductFilterDTO.UsedVariationId;
+            ProductFilter.Search = PromotionCode_ProductFilterDTO.Search;
             ProductFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
             List<Product> Products = await ProductService.List(ProductFilter);

@@ -1065,6 +1065,7 @@ namespace DMS.Rpc.kpi_item
             ItemFilter.SalePrice = KpiItem_ItemFilterDTO.SalePrice;
             ItemFilter.RetailPrice = KpiItem_ItemFilterDTO.RetailPrice;
             ItemFilter.StatusId = KpiItem_ItemFilterDTO.StatusId;
+            ItemFilter.Search = KpiItem_ItemFilterDTO.Search;
 
             List<Item> Items = await ItemService.List(ItemFilter);
             List<KpiItem_ItemDTO> KpiItem_ItemDTOs = Items
@@ -1281,6 +1282,7 @@ namespace DMS.Rpc.kpi_item
             ItemFilter.SalePrice = KpiItem_ItemFilterDTO.SalePrice;
             ItemFilter.RetailPrice = KpiItem_ItemFilterDTO.RetailPrice;
             ItemFilter.StatusId = KpiItem_ItemFilterDTO.StatusId;
+            ItemFilter.Search = KpiItem_ItemFilterDTO.Search;
 
             List<Item> Items = await ItemService.List(ItemFilter);
             List<KpiItem_ItemDTO> KpiItem_ItemDTOs = Items
@@ -1352,6 +1354,7 @@ namespace DMS.Rpc.kpi_item
             ItemFilter.ScanCode = KpiItem_ItemFilterDTO.ScanCode;
             ItemFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
             ItemFilter.SupplierId = KpiItem_ItemFilterDTO.SupplierId;
+            ItemFilter.Search = KpiItem_ItemFilterDTO.Search;
 
             return await ItemService.Count(ItemFilter);
         }
@@ -1375,6 +1378,7 @@ namespace DMS.Rpc.kpi_item
             ItemFilter.ScanCode = KpiItem_ItemFilterDTO.ScanCode;
             ItemFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
             ItemFilter.SupplierId = KpiItem_ItemFilterDTO.SupplierId;
+            ItemFilter.Search = KpiItem_ItemFilterDTO.Search;
 
             List<Item> Items = await ItemService.List(ItemFilter);
             List<KpiItem_ItemDTO> KpiItem_ItemDTOs = Items

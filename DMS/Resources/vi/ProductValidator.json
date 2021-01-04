@@ -58,16 +58,21 @@
       "ScanCodeHasSpecialCharacter": "Mã nhận diện chứa kí tự không hợp lệ"
     },
     "VariationGroupings": {
-      "VariationGroupingsEmpty": "Chưa tạo thuộc tính cho phiên bản của sản phẩm"
+      "VariationGroupingsEmpty": "Chưa tạo thuộc tính cho phiên bản của sản phẩm",
+      "Variation": {
+        "Code": {
+          "CodeHasSpecialCharacter": "Mã giá trị chứa kí tự đặc biệt"
+        }
+      }
     },
     "VariationGrouping": {
       "Variations": {
         "VariationsEmpty": "Chưa nhập giá trị cho thuộc tính"
-      }
-    },
-    "Variation": {
-      "Code": {
-        "CodeHasSpecialCharacter": "Mã giá trị chứa kí tự đặc biệt"
+      },
+      "Variation": {
+        "Code": {
+          "CodeHasSpecialCharacter": "Mã giá trị chứa kí tự đặc biệt"
+        }
       }
     },
     "Items": {

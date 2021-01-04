@@ -69,6 +69,7 @@ namespace DMS.Rpc.price_list
             ItemFilter.ScanCode = PriceList_ItemFilterDTO.ScanCode;
             ItemFilter.SalePrice = PriceList_ItemFilterDTO.SalePrice;
             ItemFilter.RetailPrice = PriceList_ItemFilterDTO.RetailPrice;
+            ItemFilter.Search = PriceList_ItemFilterDTO.Search;
             ItemFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
             List<Item> Items = await ItemService.List(ItemFilter);
@@ -323,6 +324,7 @@ namespace DMS.Rpc.price_list
             ItemFilter.SalePrice = PriceList_ItemFilterDTO.SalePrice;
             ItemFilter.RetailPrice = PriceList_ItemFilterDTO.RetailPrice;
             ItemFilter.StatusId = PriceList_ItemFilterDTO.StatusId;
+            ItemFilter.Search = PriceList_ItemFilterDTO.Search;
 
             List<Item> Items = await ItemService.List(ItemFilter);
             List<PriceList_ItemDTO> PriceList_ItemDTOs = Items
@@ -579,6 +581,7 @@ namespace DMS.Rpc.price_list
             ItemFilter.OtherName = PriceList_ItemFilterDTO.OtherName;
             ItemFilter.SalePrice = PriceList_ItemFilterDTO.SalePrice;
             ItemFilter.RetailPrice = PriceList_ItemFilterDTO.RetailPrice;
+            ItemFilter.Search = PriceList_ItemFilterDTO.Search;
             ItemFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
             return await ItemService.Count(ItemFilter);
@@ -605,6 +608,7 @@ namespace DMS.Rpc.price_list
             ItemFilter.OtherName = PriceList_ItemFilterDTO.OtherName;
             ItemFilter.SalePrice = PriceList_ItemFilterDTO.SalePrice;
             ItemFilter.RetailPrice = PriceList_ItemFilterDTO.RetailPrice;
+            ItemFilter.Search = PriceList_ItemFilterDTO.Search;
             ItemFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
             List<Item> Items = await ItemService.List(ItemFilter);

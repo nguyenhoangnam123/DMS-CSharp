@@ -284,6 +284,9 @@ namespace DMS.Repositories
                         case ProductOrder.UsedVariation:
                             query = query.OrderBy(q => q.UsedVariationId);
                             break;
+                        default:
+                            query = query.OrderBy(q => q.UpdatedAt);
+                            break;
                     }
                     break;
                 case OrderType.DESC:
@@ -348,6 +351,9 @@ namespace DMS.Repositories
                             break;
                         case ProductOrder.UsedVariation:
                             query = query.OrderByDescending(q => q.UsedVariationId);
+                            break;
+                        default:
+                            query = query.OrderByDescending(q => q.UpdatedAt);
                             break;
                     }
                     break;
@@ -842,7 +848,8 @@ namespace DMS.Repositories
             var ProductIds = Products.Select(x => x.Id).ToList();
             await DataContext.Product.Where(x => ProductIds.Contains(x.Id)).UpdateFromQueryAsync(x => new ProductDAO
             {
-                IsNew = true
+                IsNew = true,
+                UpdatedAt = StaticParams.DateTimeNow
             });
 
             return true;

@@ -59,9 +59,6 @@
     <None Update="Templates\Daily_Unchecking_Report.xlsx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Templates\DHGT.docx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Update="Templates\ERoute_Export.xlsx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -134,10 +131,10 @@
     <None Update="Templates\Print_Direct.docx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Templates\Print_Indirect_Mobile.docx">
+    <None Update="Templates\Print_Indirect.docx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Templates\Print_Indirect.docx">
+    <None Update="Templates\Print_Indirect_Mobile.docx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Templates\Product_Export.xlsx">

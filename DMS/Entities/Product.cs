@@ -117,6 +117,7 @@ namespace DMS.Entities
         IsNew = 18,
         UsedVariation = 19,
         Category = 20,
+        UpdatedAt = 21,
     }
 
     [Flags]

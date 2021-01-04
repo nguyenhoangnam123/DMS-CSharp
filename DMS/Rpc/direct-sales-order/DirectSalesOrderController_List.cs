@@ -715,7 +715,7 @@ namespace DMS.Rpc.direct_sales_order
             StoreFilter.OwnerName = DirectSalesOrder_StoreFilterDTO.OwnerName;
             StoreFilter.OwnerPhone = DirectSalesOrder_StoreFilterDTO.OwnerPhone;
             StoreFilter.OwnerEmail = DirectSalesOrder_StoreFilterDTO.OwnerEmail;
-            StoreFilter.StoreStatusId = DirectSalesOrder_StoreFilterDTO.StoreStatusId;
+            StoreFilter.StoreStatusId = new IdFilter { Equal = StoreStatusEnum.OFFICIAL.Id };
             StoreFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
             if (StoreFilter.Id == null) StoreFilter.Id = new IdFilter();
@@ -756,7 +756,7 @@ namespace DMS.Rpc.direct_sales_order
             StoreFilter.OwnerName = DirectSalesOrder_StoreFilterDTO.OwnerName;
             StoreFilter.OwnerPhone = DirectSalesOrder_StoreFilterDTO.OwnerPhone;
             StoreFilter.OwnerEmail = DirectSalesOrder_StoreFilterDTO.OwnerEmail;
-            StoreFilter.StoreStatusId = DirectSalesOrder_StoreFilterDTO.StoreStatusId;
+            StoreFilter.StoreStatusId = new IdFilter { Equal = StoreStatusEnum.OFFICIAL.Id };
             StoreFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
             if (StoreFilter.Id == null) StoreFilter.Id = new IdFilter();
@@ -787,6 +787,7 @@ namespace DMS.Rpc.direct_sales_order
             ItemFilter.ScanCode = DirectSalesOrder_ItemFilterDTO.ScanCode;
             ItemFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
             ItemFilter.SupplierId = DirectSalesOrder_ItemFilterDTO.SupplierId;
+            ItemFilter.Search = DirectSalesOrder_ItemFilterDTO.Search;
 
             ItemFilter = ItemService.ToFilter(ItemFilter);
 
@@ -817,6 +818,7 @@ namespace DMS.Rpc.direct_sales_order
             ItemFilter.ScanCode = DirectSalesOrder_ItemFilterDTO.ScanCode;
             ItemFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
             ItemFilter.SupplierId = DirectSalesOrder_ItemFilterDTO.SupplierId;
+            ItemFilter.Search = DirectSalesOrder_ItemFilterDTO.Search;
             ItemFilter = ItemService.ToFilter(ItemFilter);
 
             if (DirectSalesOrder_ItemFilterDTO.SalesEmployeeId == null && DirectSalesOrder_ItemFilterDTO.SalesEmployeeId.HasValue == false)

@@ -241,20 +241,25 @@ namespace DMS.Services.MIndirectSalesOrder
                                     IndirectSalesOrderContent.AddError(nameof(IndirectSalesOrderValidator), nameof(IndirectSalesOrderContent.Quantity), ErrorCode.QuantityEmpty);
                                 else
                                 {
-                                    decimal DiscountAmount = 0;
-                                    if (IndirectSalesOrderContent.DiscountPercentage.HasValue && IndirectSalesOrderContent.DiscountPercentage.Value > 0)
-                                        DiscountAmount = Item.SalePrice * IndirectSalesOrderContent.Quantity * UOM.Factor.Value * IndirectSalesOrderContent.DiscountPercentage.Value / 100;
-                                    if (IndirectSalesOrderContent.DiscountAmount.HasValue)
-                                        DiscountAmount = IndirectSalesOrderContent.DiscountAmount.Value;
-                                    if (DiscountAmount > 0)
+                                    decimal SalePrice = 0;
+                                    if (IndirectSalesOrder.EditedPriceStatusId == EditedPriceStatusEnum.INACTIVE.Id)
                                     {
-                                        var SubTotalContent = Item.SalePrice * UOM.Factor.Value * IndirectSalesOrderContent.Quantity;
-                                        SubTotal += SubTotalContent;
-                                        if (DiscountAmount > SubTotalContent)
-                                        {
-                                            IndirectSalesOrderContent.AddError(nameof(IndirectSalesOrderValidator), nameof(IndirectSalesOrderContent.DiscountAmount), ErrorCode.DiscountOverPrice);
-                                        }
+                                        SalePrice = Item.SalePrice * UOM.Factor.Value;
+                                        //làm tròn số
+                                        var surplus = SalePrice % 1000;
+                                        if (surplus >= 500)
+                                            SalePrice = SalePrice + (1000 - surplus);
+                                        else
+                                            SalePrice = SalePrice - surplus;
                                     }
+
+                                    if (IndirectSalesOrder.EditedPriceStatusId == EditedPriceStatusEnum.ACTIVE.Id)
+                                    {
+                                        SalePrice = IndirectSalesOrderContent.PrimaryPrice * UOM.Factor.Value;
+                                    }
+
+                                    var SubTotalContent = SalePrice * IndirectSalesOrderContent.Quantity;
+                                    SubTotal += SubTotalContent;
                                 }
                             }
                         }

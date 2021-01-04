@@ -330,7 +330,7 @@ namespace DMS.Services.MDirectSalesOrder
 
                 var Organizations = await UOW.OrganizationRepository.List(OrganizationFilter);
                 var OrganizationIds = Organizations
-                    .Where(x => x.Path.StartsWith(appUser.Organization.Path) || appUser.Organization.Path.StartsWith(x.Path))
+                    .Where(x => appUser.Organization.Path.StartsWith(x.Path))
                     .Select(x => x.Id)
                     .ToList();
                 PromotionCodeFilter PromotionCodeFilter = new PromotionCodeFilter()
@@ -342,9 +342,10 @@ namespace DMS.Services.MDirectSalesOrder
                     Code = new StringFilter { Equal = DirectSalesOrder.PromotionCode },
                     Skip = 0,
                     Take = 1,
-                    Selects = PromotionCodeSelect.Id | PromotionCodeSelect.Quantity
+                    Selects = PromotionCodeSelect.Id | PromotionCodeSelect.Quantity | PromotionCodeSelect.Organization
                 };
                 var PromotionCodes = await UOW.PromotionCodeRepository.List(PromotionCodeFilter);
+                PromotionCodes = PromotionCodes.Where(x => OrganizationIds.Contains(x.OrganizationId)).ToList();
                 if (PromotionCodes.Count() == 0)
                 {
                     DirectSalesOrder.AddError(nameof(DirectSalesOrderValidator), nameof(DirectSalesOrder.PromotionCode), ErrorCode.PromotionCodeNotExisted);

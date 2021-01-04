@@ -9,11 +9,11 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
     public class KpiGeneralPeriodReport_ExportDTO : DataDTO
     {
         public string OrganizationName { get; set; }
-        public List<KpiGeneralPeriodReport_LineDTO> Lines { get; set; }
+        public List<KpiGeneralPeriodReport_SaleEmployeeDTO> Lines { get; set; }
         public KpiGeneralPeriodReport_ExportDTO(KpiGeneralPeriodReport_KpiGeneralPeriodReportDTO KpiGeneralPeriodReport_KpiGeneralPeriodReportDTO)
         {
             this.OrganizationName = KpiGeneralPeriodReport_KpiGeneralPeriodReportDTO.OrganizationName;
-            this.Lines = KpiGeneralPeriodReport_KpiGeneralPeriodReportDTO.SaleEmployees?.Select(x => new KpiGeneralPeriodReport_LineDTO(x)).ToList();
+            this.Lines = KpiGeneralPeriodReport_KpiGeneralPeriodReportDTO.SaleEmployees;
         }
     }
 

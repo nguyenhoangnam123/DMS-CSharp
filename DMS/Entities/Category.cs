@@ -18,6 +18,7 @@ namespace DMS.Entities
         public long? ImageId { get; set; }
         public Guid RowId { get; set; }
         public bool Used { get; set; }
+        public bool HasChildren { get; set; }
         public Image Image { get; set; }
         public Category Parent { get; set; }
         public Status Status { get; set; }

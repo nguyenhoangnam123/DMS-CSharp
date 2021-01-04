@@ -14,6 +14,7 @@ namespace DMS.Services
     {
         Task CleanEventMessage();
         Task CleanHangfire();
+        Task Job_Checking();
         Task CompleteStoreCheckout();
         Task CreateStoreUnchecking();
         Task AutoInactive();
@@ -47,12 +48,18 @@ namespace DMS.Services
             var result = await DataContext.Database.ExecuteSqlRawAsync(commandText);
         }
 
+        public async Task Job_Checking()
+        {
+            await CompleteStoreCheckout();
+            await CreateStoreUnchecking();
+        }
+
         public async Task CompleteStoreCheckout()
         {
             DateTime Now = StaticParams.DateTimeNow;
             List<StoreCheckingDAO> StoreCheckingDAOs = await DataContext.StoreChecking
                 .Where(sc => sc.CheckOutAt.HasValue == false && sc.CheckInAt.HasValue).ToListAsync();
-            foreach(StoreCheckingDAO StoreCheckingDAO in StoreCheckingDAOs)
+            foreach (StoreCheckingDAO StoreCheckingDAO in StoreCheckingDAOs)
             {
                 StoreCheckingDAO.CheckOutAt = Now;
             }
@@ -62,15 +69,21 @@ namespace DMS.Services
         public async Task CreateStoreUnchecking()
         {
             DateTime End = StaticParams.DateTimeNow;
-            DateTime Start = End.AddDays(-1);
+            DateTime Start = End.AddDays(-1).AddMinutes(1);
             List<ERouteContentDAO> ERouteContentDAOs = await DataContext.ERouteContent
                 .Where(ec => (!ec.ERoute.EndDate.HasValue || Start <= ec.ERoute.EndDate) && ec.ERoute.StartDate <= End)
                 .Include(ec => ec.ERoute)
                 .Include(ec => ec.ERouteContentDays)
+                .Where(x => x.ERoute.RequestStateId == RequestStateEnum.APPROVED.Id && x.ERoute.StatusId == StatusEnum.ACTIVE.Id)
                 .ToListAsync();
+            foreach (var ERouteContentDAO in ERouteContentDAOs)
+            {
+                ERouteContentDAO.RealStartDate = ERouteContentDAO.ERoute.RealStartDate;
+            }
+            ERouteContentDAOs = ERouteContentDAOs.Distinct().ToList();
             List<StoreUncheckingDAO> PlannedStoreUncheckingDAOs = new List<StoreUncheckingDAO>();
             List<StoreUncheckingDAO> StoreUncheckingDAOs = new List<StoreUncheckingDAO>();
-            foreach(ERouteContentDAO ERouteContentDAO in ERouteContentDAOs)
+            foreach (ERouteContentDAO ERouteContentDAO in ERouteContentDAOs)
             {
                 StoreUncheckingDAO StoreUncheckingDAO = PlannedStoreUncheckingDAOs.Where(su =>
                     su.Date == Start &&
@@ -87,7 +100,7 @@ namespace DMS.Services
                             StoreUncheckingDAO = new StoreUncheckingDAO
                             {
                                 AppUserId = ERouteContentDAO.ERoute.SaleEmployeeId,
-                                Date = Start,
+                                Date = End,
                                 StoreId = ERouteContentDAO.StoreId,
                                 OrganizationId = ERouteContentDAO.ERoute.OrganizationId
                             };
@@ -98,7 +111,7 @@ namespace DMS.Services
             }
             List<StoreCheckingDAO> StoreCheckingDAOs = await DataContext.StoreChecking.Where(sc => sc.CheckOutAt.HasValue &&
                 Start <= sc.CheckOutAt.Value && sc.CheckOutAt.Value <= End).ToListAsync();
-            foreach(StoreUncheckingDAO StoreUncheckingDAO in PlannedStoreUncheckingDAOs)
+            foreach (StoreUncheckingDAO StoreUncheckingDAO in PlannedStoreUncheckingDAOs)
             {
                 if (!StoreCheckingDAOs.Any(sc => sc.SaleEmployeeId == StoreUncheckingDAO.AppUserId && sc.StoreId == StoreUncheckingDAO.StoreId))
                 {
@@ -106,17 +119,18 @@ namespace DMS.Services
                 }
             }
 
+            StoreUncheckingDAOs = StoreUncheckingDAOs.Distinct().ToList();
             await DataContext.StoreUnchecking.BulkInsertAsync(StoreUncheckingDAOs);
         }
 
         public async Task AutoInactive()
         {
             var Now = StaticParams.DateTimeNow;
-            await DataContext.ERoute.Where(x => x.EndDate.HasValue && x.EndDate.Value > Now).UpdateFromQueryAsync(x => new ERouteDAO { StatusId = StatusEnum.INACTIVE.Id });
-            await DataContext.PriceList.Where(x => x.EndDate.HasValue && x.EndDate.Value > Now).UpdateFromQueryAsync(x => new PriceListDAO { StatusId = StatusEnum.INACTIVE.Id });
-            await DataContext.WorkflowDefinition.Where(x => x.EndDate.HasValue && x.EndDate.Value > Now).UpdateFromQueryAsync(x => new WorkflowDefinitionDAO { StatusId = StatusEnum.INACTIVE.Id });
-            await DataContext.Survey.Where(x => x.EndAt.HasValue && x.EndAt.Value > Now).UpdateFromQueryAsync(x => new SurveyDAO { StatusId = StatusEnum.INACTIVE.Id });
-            await DataContext.PromotionCode.Where(x => x.EndDate.HasValue && x.EndDate.Value > Now).UpdateFromQueryAsync(x => new PromotionCodeDAO { StatusId = StatusEnum.INACTIVE.Id });
+            await DataContext.ERoute.Where(x => x.EndDate.HasValue && x.EndDate.Value < Now).UpdateFromQueryAsync(x => new ERouteDAO { StatusId = StatusEnum.INACTIVE.Id });
+            await DataContext.PriceList.Where(x => x.EndDate.HasValue && x.EndDate.Value < Now).UpdateFromQueryAsync(x => new PriceListDAO { StatusId = StatusEnum.INACTIVE.Id });
+            await DataContext.WorkflowDefinition.Where(x => x.EndDate.HasValue && x.EndDate.Value < Now).UpdateFromQueryAsync(x => new WorkflowDefinitionDAO { StatusId = StatusEnum.INACTIVE.Id });
+            await DataContext.Survey.Where(x => x.EndAt.HasValue && x.EndAt.Value < Now).UpdateFromQueryAsync(x => new SurveyDAO { StatusId = StatusEnum.INACTIVE.Id });
+            await DataContext.PromotionCode.Where(x => x.EndDate.HasValue && x.EndDate.Value < Now).UpdateFromQueryAsync(x => new PromotionCodeDAO { StatusId = StatusEnum.INACTIVE.Id });
         }
     }
 }

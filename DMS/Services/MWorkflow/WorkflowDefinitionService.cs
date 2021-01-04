@@ -245,6 +245,14 @@ namespace DMS.Services.MWorkflow
                 WorkflowDefinition.WorkflowDirections = new List<WorkflowDirection>();
                 WorkflowDefinition.WorkflowSteps = new List<WorkflowStep>();
 
+                if (!await WorkflowDefinitionValidator.Clone(WorkflowDefinition))
+                    return WorkflowDefinition; // validate Cloned WorkflowDefinition
+                if (!await WorkflowDefinitionValidator.CloneStep(oldData))
+                    return oldData; // validate Cloned WorkflowDefinition
+
+                await UOW.Begin(); // begin Transactions
+                await UOW.WorkflowDefinitionRepository.Create(WorkflowDefinition);
+
                 foreach (var WorkflowStep in oldData.WorkflowSteps)
                 {
                     WorkflowStep.Id = 0;
@@ -255,13 +263,6 @@ namespace DMS.Services.MWorkflow
                     WorkflowDefinition.WorkflowSteps.Add(WorkflowStep);
                 }
 
-                if (!await WorkflowDefinitionValidator.Clone(WorkflowDefinition))
-                    return WorkflowDefinition; // validate Cloned WorkflowDefinition
-                if (!await WorkflowDefinitionValidator.CloneStep(oldData))
-                    return oldData; // validate Cloned WorkflowDefinition
-
-                await UOW.Begin(); // begin Transactions
-                await UOW.WorkflowDefinitionRepository.Create(WorkflowDefinition);
                 await UOW.WorkflowStepRepository.BulkMerge(WorkflowDefinition.WorkflowSteps); // clone steps
                 var WorkflowSteps = await UOW.WorkflowStepRepository.List(new WorkflowStepFilter
                 {

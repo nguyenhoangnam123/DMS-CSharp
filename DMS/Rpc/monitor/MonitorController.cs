@@ -17,11 +17,15 @@ namespace DMS.Rpc.monitor
     {
         protected int CountPlan(DateTime Date, long SalesEmployeeId, List<ERouteContentDAO> ERouteContentDAOs)
         {
-            int PlanCounter = 0;
+            HashSet<long> ListPlan = new HashSet<long>();
             ERouteContentDAOs = ERouteContentDAOs.Where(ec => ec.ERoute.SaleEmployeeId == SalesEmployeeId &&
                ec.ERoute.RealStartDate <= Date &&
                (ec.ERoute.EndDate == null || ec.ERoute.EndDate.Value >= Date))
                 .ToList();
+            foreach (var ERouteContent in ERouteContentDAOs)
+            {
+                ERouteContent.RealStartDate = ERouteContent.ERoute.RealStartDate;
+            }
             ERouteContentDAOs = ERouteContentDAOs.Distinct().ToList();
             foreach (var ERouteContent in ERouteContentDAOs)
             {
@@ -29,10 +33,10 @@ namespace DMS.Rpc.monitor
                 if (index >= 0 && ERouteContent.ERouteContentDays.Count > index)
                 {
                     if (ERouteContent.ERouteContentDays.ElementAt(index).Planned == true)
-                        PlanCounter++;
+                        ListPlan.Add(ERouteContent.StoreId);
                 }
             }
-            return PlanCounter;
+            return ListPlan.Count();
         }
     }
 }

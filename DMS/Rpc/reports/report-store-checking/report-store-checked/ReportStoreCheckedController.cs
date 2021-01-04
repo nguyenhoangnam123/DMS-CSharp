@@ -306,7 +306,7 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
                             )
                         ) &&
                         (StoreStatusId.HasValue == false || StoreStatusId.Value == StoreStatusEnum.ALL.Id || s.StoreStatusId == StoreStatusId.Value) &&
-                        (CheckingPlanStatusId.HasValue == false || CheckingPlanStatusId.Value == CheckingPlanStatusEnum.ALL.Id || 
+                        (CheckingPlanStatusId.HasValue == false || 
                             (CheckingPlanStatusId.Value == CheckingPlanStatusEnum.PLANNED.Id && sc.Planned == true) ||
                             (CheckingPlanStatusId.Value == CheckingPlanStatusEnum.UNPLANNED.Id && sc.Planned == false)
                         ) &&
@@ -411,7 +411,7 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
                             )
                         ) &&
                         (StoreStatusId.HasValue == false || StoreStatusId.Value == StoreStatusEnum.ALL.Id || s.StoreStatusId == StoreStatusId.Value) &&
-                        (CheckingPlanStatusId.HasValue == false || CheckingPlanStatusId.Value == CheckingPlanStatusEnum.ALL.Id ||
+                        (CheckingPlanStatusId.HasValue == false ||
                             (CheckingPlanStatusId.Value == CheckingPlanStatusEnum.PLANNED.Id && sc.Planned == true) ||
                             (CheckingPlanStatusId.Value == CheckingPlanStatusEnum.UNPLANNED.Id && sc.Planned == false)
                         ) &&
@@ -464,6 +464,10 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
                              )
                          ) &&
                          (StoreStatusId.HasValue == false || StoreStatusId.Value == StoreStatusEnum.ALL.Id || s.StoreStatusId == StoreStatusId.Value) &&
+                         (CheckingPlanStatusId.HasValue == false ||
+                            (CheckingPlanStatusId.Value == CheckingPlanStatusEnum.PLANNED.Id && sc.Planned == true) ||
+                            (CheckingPlanStatusId.Value == CheckingPlanStatusEnum.UNPLANNED.Id && sc.Planned == false)
+                         ) &&
                          OrganizationIds.Contains(sc.OrganizationId) &&
                          s.DeletedAt == null
                          select sc;

@@ -719,6 +719,7 @@ namespace DMS.Rpc.warehouse
             ItemFilter.ScanCode = Warehouse_ItemFilterDTO.ScanCode;
             ItemFilter.SalePrice = Warehouse_ItemFilterDTO.SalePrice;
             ItemFilter.RetailPrice = Warehouse_ItemFilterDTO.RetailPrice;
+            ItemFilter.Search = Warehouse_ItemFilterDTO.Search;
 
             List<Item> Items = await ItemService.List(ItemFilter);
             List<Warehouse_ItemDTO> Warehouse_ItemDTOs = Items

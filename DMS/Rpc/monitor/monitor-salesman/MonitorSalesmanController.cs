@@ -286,12 +286,13 @@ namespace DMS.Rpc.monitor.monitor_salesman
             List<StoreUncheckingDAO> StoreUncheckingDAOs = await storeUncheckingQuery.ToListAsync();
 
             List<ProblemDAO> ProblemDAOs = await DataContext.Problem
-                .Where(p => AppUserIds.Contains(p.CreatorId) && 
+                .Where(p => AppUserIds.Contains(p.CreatorId) &&
                 Start <= p.NoteAt && p.NoteAt <= End)
                 .ToListAsync();
 
             List<ERouteContentDAO> ERouteContentDAOs = await DataContext.ERouteContent
                 .Where(x => x.ERoute.DeletedAt == null && x.ERoute.StatusId == StatusEnum.ACTIVE.Id)
+                .Where(x => x.ERoute.RequestStateId == RequestStateEnum.APPROVED.Id)
                 .Where(ec => ec.ERoute.RealStartDate <= End && (ec.ERoute.EndDate == null || ec.ERoute.EndDate.Value >= Start) && AppUserIds.Contains(ec.ERoute.SaleEmployeeId))
                 .Include(ec => ec.ERouteContentDays)
                 .Include(ec => ec.ERoute)
@@ -433,7 +434,7 @@ namespace DMS.Rpc.monitor.monitor_salesman
                 MonitorSalesman_MonitorSalesmanDTO.SaleEmployees.Add(MonitorSalesman_SaleEmployeeDTO);
             });
 
-            return MonitorSalesman_MonitorSalesmanDTOs.Where(x =>x.SaleEmployees.Any()).ToList();
+            return MonitorSalesman_MonitorSalesmanDTOs.Where(x => x.SaleEmployees.Any()).ToList();
         }
 
         [Route(MonitorSalesmanRoute.Get), HttpPost]
@@ -454,7 +455,7 @@ namespace DMS.Rpc.monitor.monitor_salesman
                 .ToListAsync();
 
             List<IndirectSalesOrderDAO> IndirectSalesOrderDAOs = await DataContext.IndirectSalesOrder
-                .Where(o => Start <= o.OrderDate && o.OrderDate <= End && 
+                .Where(o => Start <= o.OrderDate && o.OrderDate <= End &&
                 o.SaleEmployeeId == SaleEmployeeId &&
                 (o.RequestStateId == RequestStateEnum.APPROVED.Id || o.RequestStateId == RequestStateEnum.PENDING.Id))
                 .Select(x => new IndirectSalesOrderDAO
@@ -632,7 +633,7 @@ namespace DMS.Rpc.monitor.monitor_salesman
         }
 
         [Route(MonitorSalesmanRoute.ExportUnchecking), HttpPost]
-        public async Task<ActionResult> ExExportUncheckingport([FromBody] MonitorSalesman_MonitorSalesmanFilterDTO MonitorSalesman_MonitorSalesmanFilterDTO)
+        public async Task<ActionResult> ExportUnchecking([FromBody] MonitorSalesman_MonitorSalesmanFilterDTO MonitorSalesman_MonitorSalesmanFilterDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
@@ -640,12 +641,31 @@ namespace DMS.Rpc.monitor.monitor_salesman
             DateTime Start = LocalStartDay(CurrentContext);
             DateTime End = LocalEndDay(CurrentContext);
             DateTime Now = StaticParams.DateTimeNow.AddHours(CurrentContext.TimeZone);
-            
+
+            long? OrganizationId = MonitorSalesman_MonitorSalesmanFilterDTO.OrganizationId?.Equal;
+            long? SaleEmployeeId = MonitorSalesman_MonitorSalesmanFilterDTO.AppUserId?.Equal;
+            List<long> OrganizationIds = await FilterOrganization(OrganizationService, CurrentContext);
+            List<OrganizationDAO> OrganizationDAOs = await DataContext.Organization.Where(o => o.DeletedAt == null && (OrganizationIds.Count == 0 || OrganizationIds.Contains(o.Id))).ToListAsync();
+            OrganizationDAO OrganizationDAO = null;
+            if (MonitorSalesman_MonitorSalesmanFilterDTO.OrganizationId?.Equal != null)
+            {
+                OrganizationDAO = await DataContext.Organization.Where(o => o.Id == MonitorSalesman_MonitorSalesmanFilterDTO.OrganizationId.Equal.Value).FirstOrDefaultAsync();
+                OrganizationDAOs = OrganizationDAOs.Where(o => o.Path.StartsWith(OrganizationDAO.Path)).ToList();
+            }
+            OrganizationIds = OrganizationDAOs.Select(o => o.Id).ToList();
+            List<long> AppUserIds = await FilterAppUser(AppUserService, OrganizationService, CurrentContext);
+
             List<ERouteContentDAO> ERouteContentDAOs = await DataContext.ERouteContent
                 .Where(ec => (!ec.ERoute.EndDate.HasValue || Start <= ec.ERoute.EndDate) && ec.ERoute.StartDate <= End)
+                .Where(x => x.ERoute.DeletedAt == null && x.ERoute.StatusId == StatusEnum.ACTIVE.Id)
+                .Where(x => x.ERoute.RequestStateId == RequestStateEnum.APPROVED.Id)
                 .Include(ec => ec.ERoute)
                 .Include(ec => ec.ERouteContentDays)
                 .ToListAsync();
+            ERouteContentDAOs = ERouteContentDAOs.Where(x => OrganizationIds.Contains(x.ERoute.OrganizationId))
+                .Where(x => AppUserIds.Contains(x.ERoute.SaleEmployeeId))
+                .Where(x => SaleEmployeeId.HasValue == false || x.ERoute.SaleEmployeeId == SaleEmployeeId)
+                .ToList();
             List<StoreUncheckingDAO> PlannedStoreUncheckingDAOs = new List<StoreUncheckingDAO>();
             List<StoreUncheckingDAO> StoreUncheckingDAOs = new List<StoreUncheckingDAO>();
             foreach (ERouteContentDAO ERouteContentDAO in ERouteContentDAOs)
@@ -665,7 +685,7 @@ namespace DMS.Rpc.monitor.monitor_salesman
                             StoreUncheckingDAO = new StoreUncheckingDAO
                             {
                                 AppUserId = ERouteContentDAO.ERoute.SaleEmployeeId,
-                                Date = Start,
+                                Date = End,
                                 StoreId = ERouteContentDAO.StoreId,
                                 OrganizationId = ERouteContentDAO.ERoute.OrganizationId
                             };
@@ -674,8 +694,12 @@ namespace DMS.Rpc.monitor.monitor_salesman
                     }
                 }
             }
-            List<StoreCheckingDAO> StoreCheckingDAOs = await DataContext.StoreChecking.Where(sc => sc.CheckOutAt.HasValue &&
-                Start <= sc.CheckOutAt.Value && sc.CheckOutAt.Value <= End).ToListAsync();
+            List<StoreCheckingDAO> StoreCheckingDAOs = await DataContext.StoreChecking
+                .Where(sc => sc.CheckOutAt.HasValue && Start <= sc.CheckOutAt.Value && sc.CheckOutAt.Value <= End)
+                .Where(x => OrganizationIds.Contains(x.OrganizationId))
+                .Where(x => AppUserIds.Contains(x.SaleEmployeeId))
+                .Where(x => SaleEmployeeId.HasValue == false || x.SaleEmployeeId == SaleEmployeeId)
+                .ToListAsync();
             foreach (StoreUncheckingDAO StoreUncheckingDAO in PlannedStoreUncheckingDAOs)
             {
                 if (!StoreCheckingDAOs.Any(sc => sc.SaleEmployeeId == StoreUncheckingDAO.AppUserId && sc.StoreId == StoreUncheckingDAO.StoreId))
@@ -684,16 +708,19 @@ namespace DMS.Rpc.monitor.monitor_salesman
                 }
             }
 
-            var AppUserIds = StoreUncheckingDAOs.Select(x => x.AppUserId).Distinct().ToList();
+            AppUserIds = StoreUncheckingDAOs.Select(x => x.AppUserId).Distinct().ToList();
             var StoreIds = StoreUncheckingDAOs.Select(x => x.StoreId).Distinct().ToList();
 
-            var AppUserDAOs = await DataContext.AppUser.Where(x => AppUserIds.Contains(x.Id)).Select(x => new AppUserDAO
-            {
-                Id = x.Id,
-                Username = x.Username,
-                DisplayName = x.DisplayName,
-                OrganizationId = x.OrganizationId
-            }).OrderBy(x => x.OrganizationId).ThenBy(x => x.DisplayName).ToListAsync();
+            var AppUserDAOs = await DataContext.AppUser
+                .Where(x => AppUserIds.Contains(x.Id))
+                .Where(x => SaleEmployeeId.HasValue == false || x.Id == SaleEmployeeId)
+                .Select(x => new AppUserDAO
+                {
+                    Id = x.Id,
+                    Username = x.Username,
+                    DisplayName = x.DisplayName,
+                    OrganizationId = x.OrganizationId
+                }).OrderBy(x => x.OrganizationId).ThenBy(x => x.DisplayName).ToListAsync();
 
             var StoreDAOs = await DataContext.Store.Where(x => StoreIds.Contains(x.Id)).Select(x => new StoreDAO
             {

@@ -21,5 +21,6 @@ namespace DMS.Rpc.kpi_tracking.kpi_item_report
         public IdFilter Id { get; set; }
         public StringFilter Code { get; set; }
         public StringFilter Name { get; set; }
+        public string Search { get; set; }
     }
 }

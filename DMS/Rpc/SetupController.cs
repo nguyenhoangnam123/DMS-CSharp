@@ -3,6 +3,7 @@ using DMS.Entities;
 using DMS.Enums;
 using DMS.Helpers;
 using DMS.Models;
+using DMS.Services;
 using DMS.Services.MProduct;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -21,80 +22,89 @@ namespace DMS.Rpc
     {
         private DataContext DataContext;
         private IItemService ItemService;
-        public SetupController(DataContext DataContext, IItemService ItemService)
+        private IMaintenanceService MaintenanceService;
+        public SetupController(DataContext DataContext, IItemService ItemService, IMaintenanceService MaintenanceService)
         {
             this.ItemService = ItemService;
+            this.MaintenanceService = MaintenanceService;
             this.DataContext = DataContext;
         }
 
-        [HttpGet, Route("rpc/dms/setup/save-image")]
-        public async Task SaveImage()
-        {
-            string folderPath = @"E:\Downloads\Ma SP - Dong Luc";
-            List<FileInfo> FileInfos = new List<FileInfo>();
-            foreach (string file in Directory.EnumerateFiles(folderPath, "*.jpg"))
-            {
-                FileInfo FileInfo = new FileInfo(file);
-                FileInfos.Add(FileInfo);
-            }
+        //[HttpGet, Route("rpc/dms/setup/save-image")]
+        //public async Task SaveImage()
+        //{
+        //    string folderPath = @"E:\Downloads\Ma SP - Dong Luc";
+        //    List<FileInfo> FileInfos = new List<FileInfo>();
+        //    foreach (string file in Directory.EnumerateFiles(folderPath, "*.jpg"))
+        //    {
+        //        FileInfo FileInfo = new FileInfo(file);
+        //        FileInfos.Add(FileInfo);
+        //    }
 
-            var FileNames = FileInfos.Select(x => x.Name.Replace(".jpg", string.Empty)).ToList();
-            var Items = await DataContext.Item.Where(x => FileNames.Contains(x.Code)).ToListAsync();
+        //    var FileNames = FileInfos.Select(x => x.Name.Replace(".jpg", string.Empty)).ToList();
+        //    var Items = await DataContext.Item.Where(x => FileNames.Contains(x.Code)).ToListAsync();
 
-            List<ItemImageMappingDAO> ItemImageMappingDAOs = new List<ItemImageMappingDAO>();
-            foreach (var FileInfo in FileInfos)
-            {
-                var contents = await System.IO.File.ReadAllBytesAsync(FileInfo.FullName);
+        //    List<ItemImageMappingDAO> ItemImageMappingDAOs = new List<ItemImageMappingDAO>();
+        //    foreach (var FileInfo in FileInfos)
+        //    {
+        //        var contents = await System.IO.File.ReadAllBytesAsync(FileInfo.FullName);
 
-                Image Image = new Image()
-                {
-                    Name = FileInfo.Name,
-                    Content = contents
-                };
-                var Item = Items.Where(x => x.Code == FileInfo.Name).FirstOrDefault();
-                if (Item != null)
-                {
-                    Image = await ItemService.SaveImage(Image);
+        //        Image Image = new Image()
+        //        {
+        //            Name = FileInfo.Name,
+        //            Content = contents
+        //        };
+        //        var Item = Items.Where(x => x.Code == FileInfo.Name).FirstOrDefault();
+        //        if (Item != null)
+        //        {
+        //            Image = await ItemService.SaveImage(Image);
 
-                    ItemImageMappingDAO ItemImageMappingDAO = new ItemImageMappingDAO()
-                    {
-                        ItemId = Item.Id,
-                        ImageId = Image.Id
-                    };
-                    ItemImageMappingDAOs.Add(ItemImageMappingDAO);
+        //            ItemImageMappingDAO ItemImageMappingDAO = new ItemImageMappingDAO()
+        //            {
+        //                ItemId = Item.Id,
+        //                ImageId = Image.Id
+        //            };
+        //            ItemImageMappingDAOs.Add(ItemImageMappingDAO);
                     
-                }
-            }
-            await DataContext.ItemImageMapping.BulkMergeAsync(ItemImageMappingDAOs);
-        }
+        //        }
+        //    }
+        //    await DataContext.ItemImageMapping.BulkMergeAsync(ItemImageMappingDAOs);
+        //}
 
-        [HttpGet, Route("rpc/dms/setup/set-org")]
-        public async Task Count()
-        {
-            List<AlbumImageMappingDAO> AlbumImageMappingDAOs = await DataContext.AlbumImageMapping.ToListAsync();
-            var AppUserIds = AlbumImageMappingDAOs.Select(x => x.SaleEmployeeId).Distinct().ToList();
-            var AppUserDAOs = await DataContext.AppUser.Where(x => AppUserIds.Contains(x.Id)).ToListAsync();
-            foreach (var StoreCheckingDAO in AlbumImageMappingDAOs)
-            {
-                StoreCheckingDAO.OrganizationId = AppUserDAOs.Where(x => x.Id == StoreCheckingDAO.SaleEmployeeId).AsParallel().Select(x => x.OrganizationId).FirstOrDefault();
-            }
-            await DataContext.SaveChangesAsync();
-        }
+        //[HttpGet, Route("rpc/dms/setup/set-org")]
+        //public async Task Count()
+        //{
+        //    List<AlbumImageMappingDAO> AlbumImageMappingDAOs = await DataContext.AlbumImageMapping.ToListAsync();
+        //    var AppUserIds = AlbumImageMappingDAOs.Select(x => x.SaleEmployeeId).Distinct().ToList();
+        //    var AppUserDAOs = await DataContext.AppUser.Where(x => AppUserIds.Contains(x.Id)).ToListAsync();
+        //    foreach (var StoreCheckingDAO in AlbumImageMappingDAOs)
+        //    {
+        //        StoreCheckingDAO.OrganizationId = AppUserDAOs.Where(x => x.Id == StoreCheckingDAO.SaleEmployeeId).AsParallel().Select(x => x.OrganizationId).FirstOrDefault();
+        //    }
+        //    await DataContext.SaveChangesAsync();
+        //}
 
-        [HttpGet, Route("rpc/dms/setup/store-gen-code")]
-        public async Task StoreGenCode()
+        //[HttpGet, Route("rpc/dms/setup/store-gen-code")]
+        //public async Task StoreGenCode()
+        //{
+        //    List<StoreDAO> Stores = await DataContext.Store.OrderByDescending(x => x.CreatedAt).ToListAsync();
+        //    List<OrganizationDAO> Organizations = await DataContext.Organization.OrderByDescending(x => x.CreatedAt).ToListAsync();
+        //    List<StoreTypeDAO> StoreTypes = await DataContext.StoreType.OrderByDescending(x => x.CreatedAt).ToListAsync();
+        //    var counter = Stores.Count();
+        //    foreach (var Store in Stores)
+        //    {
+        //        var Organization = Organizations.Where(x => x.Id == Store.OrganizationId).Select(x => x.Code).FirstOrDefault();
+        //        var StoreType = StoreTypes.Where(x => x.Id == Store.StoreTypeId).Select(x => x.Code).FirstOrDefault();
+        //        Store.Code = $"{Organization}.{StoreType}.{(10000000 + counter--).ToString().Substring(1)}";
+        //    }
+        //    await DataContext.SaveChangesAsync();
+        //}
+
+        [HttpGet, Route("rpc/dms/setup/job")]
+        public async Task TestJob()
         {
-            List<StoreDAO> Stores = await DataContext.Store.OrderByDescending(x => x.CreatedAt).ToListAsync();
-            List<OrganizationDAO> Organizations = await DataContext.Organization.OrderByDescending(x => x.CreatedAt).ToListAsync();
-            List<StoreTypeDAO> StoreTypes = await DataContext.StoreType.OrderByDescending(x => x.CreatedAt).ToListAsync();
-            var counter = Stores.Count();
-            foreach (var Store in Stores)
-            {
-                var Organization = Organizations.Where(x => x.Id == Store.OrganizationId).Select(x => x.Code).FirstOrDefault();
-                var StoreType = StoreTypes.Where(x => x.Id == Store.StoreTypeId).Select(x => x.Code).FirstOrDefault();
-                Store.Code = $"{Organization}.{StoreType}.{(10000000 + counter--).ToString().Substring(1)}";
-            }
-            await DataContext.SaveChangesAsync();
+            await MaintenanceService.CreateStoreUnchecking();
+            //await MaintenanceService.AutoInactive();
         }
 
         [HttpGet, Route("rpc/dms/setup/year/{year}")]

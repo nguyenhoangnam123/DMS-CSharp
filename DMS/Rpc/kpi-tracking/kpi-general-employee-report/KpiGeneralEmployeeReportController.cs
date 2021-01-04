@@ -610,7 +610,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_employee_report
             dynamic Data = new ExpandoObject();
             Data.Username = SaleEmployee.Username;
             Data.DisplayName = SaleEmployee.DisplayName;
-            Data.KpiGeneralEmployeeReports = KpiGeneralEmployeeReport_ExportDTOs;
+            Data.KpiGeneralEmployeeReports = KpiGeneralEmployeeReport_KpiGeneralEmployeeReportDTOs;
             using (var document = StaticParams.DocumentFactory.Open(input, output, "xlsx"))
             {
                 document.Process(Data);

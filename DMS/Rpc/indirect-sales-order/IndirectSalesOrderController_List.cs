@@ -716,7 +716,7 @@ namespace DMS.Rpc.indirect_sales_order
             StoreFilter.OwnerName = IndirectSalesOrder_StoreFilterDTO.OwnerName;
             StoreFilter.OwnerPhone = IndirectSalesOrder_StoreFilterDTO.OwnerPhone;
             StoreFilter.OwnerEmail = IndirectSalesOrder_StoreFilterDTO.OwnerEmail;
-            StoreFilter.StoreStatusId = IndirectSalesOrder_StoreFilterDTO.StoreStatusId;
+            StoreFilter.StoreStatusId = new IdFilter { Equal = StoreStatusEnum.OFFICIAL.Id };
             StoreFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
             if (StoreFilter.Id == null) StoreFilter.Id = new IdFilter();
@@ -757,11 +757,13 @@ namespace DMS.Rpc.indirect_sales_order
             StoreFilter.OwnerName = IndirectSalesOrder_StoreFilterDTO.OwnerName;
             StoreFilter.OwnerPhone = IndirectSalesOrder_StoreFilterDTO.OwnerPhone;
             StoreFilter.OwnerEmail = IndirectSalesOrder_StoreFilterDTO.OwnerEmail;
-            StoreFilter.StoreStatusId = IndirectSalesOrder_StoreFilterDTO.StoreStatusId;
+            StoreFilter.StoreStatusId = new IdFilter { Equal = StoreStatusEnum.OFFICIAL.Id };
             StoreFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
             if (StoreFilter.Id == null) StoreFilter.Id = new IdFilter();
             StoreFilter.Id.In = await FilterStore(StoreService, OrganizationService, CurrentContext);
+            if (StoreFilter.Id.NotEqual.HasValue)
+                StoreFilter.Id.In.Remove(StoreFilter.Id.NotEqual.Value);
 
             List<Store> Stores = await StoreService.List(StoreFilter);
             List<IndirectSalesOrder_StoreDTO> IndirectSalesOrder_StoreDTOs = Stores
@@ -788,6 +790,7 @@ namespace DMS.Rpc.indirect_sales_order
             ItemFilter.ScanCode = IndirectSalesOrder_ItemFilterDTO.ScanCode;
             ItemFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
             ItemFilter.SupplierId = IndirectSalesOrder_ItemFilterDTO.SupplierId;
+            ItemFilter.Search = IndirectSalesOrder_ItemFilterDTO.Search;
 
             ItemFilter = ItemService.ToFilter(ItemFilter);
 
@@ -818,6 +821,7 @@ namespace DMS.Rpc.indirect_sales_order
             ItemFilter.ScanCode = IndirectSalesOrder_ItemFilterDTO.ScanCode;
             ItemFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
             ItemFilter.SupplierId = IndirectSalesOrder_ItemFilterDTO.SupplierId;
+            ItemFilter.Search = IndirectSalesOrder_ItemFilterDTO.Search;
             ItemFilter = ItemService.ToFilter(ItemFilter);
 
             if (IndirectSalesOrder_ItemFilterDTO.SalesEmployeeId == null && IndirectSalesOrder_ItemFilterDTO.SalesEmployeeId.HasValue == false)

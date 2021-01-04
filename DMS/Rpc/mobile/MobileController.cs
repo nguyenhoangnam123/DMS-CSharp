@@ -45,6 +45,7 @@ using System.Dynamic;
 using System.Net.Mime;
 using GleamTech.DocumentUltimate;
 using Newtonsoft.Json;
+using Microsoft.EntityFrameworkCore;
 
 namespace DMS.Rpc.mobile
 {
@@ -190,6 +191,7 @@ namespace DMS.Rpc.mobile
             StoreChecking StoreChecking = ConvertDTOToEntity(Mobile_StoreCheckingDTO);
             StoreChecking.DeviceName = HttpContext.Request.Headers["X-Device-Model"];
             StoreChecking = await StoreCheckingService.CheckIn(StoreChecking);
+            StoreChecking.IsOpenedStore = true;
             Mobile_StoreCheckingDTO = new Mobile_StoreCheckingDTO(StoreChecking);
             if (StoreChecking.IsValidated)
                 return Mobile_StoreCheckingDTO;
@@ -808,6 +810,42 @@ namespace DMS.Rpc.mobile
             };
             Response.Headers.Add("Content-Disposition", cd.ToString());
             return File(MemoryStream.ToArray(), "application/pdf;charset=utf-8");
+        }
+
+        [Route(MobileRoute.StoreReport), HttpPost]
+        public async Task<ActionResult<Mobile_StoreReportDTO>> StoreReport([FromBody] Mobile_StoreReportFilterDTO Mobile_StoreReportFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            if (Mobile_StoreReportFilterDTO.StoreId == null || Mobile_StoreReportFilterDTO.StoreId.Equal.HasValue == false)
+                return new Mobile_StoreReportDTO();
+
+            DateTime Start = Mobile_StoreReportFilterDTO.Date?.GreaterEqual == null ?
+                    StaticParams.DateTimeNow.AddHours(CurrentContext.TimeZone).Date.AddHours(0 - CurrentContext.TimeZone) :
+                    Mobile_StoreReportFilterDTO.Date.GreaterEqual.Value;
+
+            DateTime End = Mobile_StoreReportFilterDTO.Date?.LessEqual == null ?
+                    StaticParams.DateTimeNow.AddHours(CurrentContext.TimeZone).Date.AddHours(0 - CurrentContext.TimeZone).AddDays(1).AddSeconds(-1) :
+                    Mobile_StoreReportFilterDTO.Date.LessEqual.Value;
+
+            Mobile_StoreReportDTO Mobile_StoreReportDTO = new Mobile_StoreReportDTO();
+            Mobile_StoreReportDTO.ProblemCounter = await DataContext.Problem
+                .Where(x => x.CreatorId == CurrentContext.UserId &&
+                Start <= x.NoteAt && x.NoteAt <= End && 
+                x.StoreId == Mobile_StoreReportFilterDTO.StoreId.Equal.Value)
+                .CountAsync();
+            Mobile_StoreReportDTO.ImageCounter = await DataContext.StoreImage
+                .Where(x => x.SaleEmployeeId.HasValue && x.SaleEmployeeId == CurrentContext.UserId &&
+                x.StoreId == Mobile_StoreReportFilterDTO.StoreId.Equal.Value &&
+                Start <= x.ShootingAt && x.ShootingAt <= End)
+                .CountAsync();
+            Mobile_StoreReportDTO.SurveyResultCounter = await DataContext.SurveyResult
+                .Where(x => x.AppUserId == CurrentContext.UserId &&
+                x.StoreId == Mobile_StoreReportFilterDTO.StoreId.Equal.Value &&
+                Start <= x.Time && x.Time <= End)
+                .CountAsync();
+            return Mobile_StoreReportDTO;
         }
 
         private StoreChecking ConvertDTOToEntity(Mobile_StoreCheckingDTO Mobile_StoreCheckingDTO)

@@ -121,6 +121,8 @@ namespace DMS.Rpc.store
             Store_StoreDTO Store_StoreDTO = new Store_StoreDTO
             {
                 Address = StoreScouting.Address,
+                AppUserId = StoreScouting.CreatorId,
+                OrganizationId = StoreScouting.OrganizationId,
                 DistrictId = StoreScouting.DistrictId,
                 Latitude = StoreScouting.Latitude,
                 Longitude = StoreScouting.Longitude,
@@ -128,7 +130,10 @@ namespace DMS.Rpc.store
                 OwnerPhone = StoreScouting.OwnerPhone,
                 ProvinceId = StoreScouting.ProvinceId,
                 StatusId = StatusEnum.INACTIVE.Id,
+                StoreStatusId = StoreStatusEnum.OFFICIAL.Id,
                 WardId = StoreScouting.WardId,
+                AppUser = StoreScouting.Creator == null ? null : new Store_AppUserDTO(StoreScouting.Creator),
+                Organization = StoreScouting.Organization == null ? null : new Store_OrganizationDTO(StoreScouting.Organization),
                 District = StoreScouting.District == null ? null : new Store_DistrictDTO(StoreScouting.District),
                 Province = StoreScouting.Province == null ? null : new Store_ProvinceDTO(StoreScouting.Province),
                 Ward = StoreScouting.Ward == null ? null : new Store_WardDTO(StoreScouting.Ward),

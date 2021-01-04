@@ -318,6 +318,7 @@ namespace DMS.Rpc.product_grouping
             ProductFilter.OtherName = ProductGrouping_ProductFilterDTO.OtherName;
             ProductFilter.TechnicalName = ProductGrouping_ProductFilterDTO.TechnicalName;
             ProductFilter.Note = ProductGrouping_ProductFilterDTO.Note;
+            ProductFilter.Search = ProductGrouping_ProductFilterDTO.Search;
             ProductFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
             return await ProductService.Count(ProductFilter);
         }
@@ -349,6 +350,7 @@ namespace DMS.Rpc.product_grouping
             ProductFilter.OtherName = ProductGrouping_ProductFilterDTO.OtherName;
             ProductFilter.TechnicalName = ProductGrouping_ProductFilterDTO.TechnicalName;
             ProductFilter.Note = ProductGrouping_ProductFilterDTO.Note;
+            ProductFilter.Search = ProductGrouping_ProductFilterDTO.Search;
             ProductFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
             List<Product> Products = await ProductService.List(ProductFilter);

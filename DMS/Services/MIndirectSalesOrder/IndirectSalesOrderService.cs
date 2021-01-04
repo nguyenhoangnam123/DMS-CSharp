@@ -263,7 +263,40 @@ namespace DMS.Services.MIndirectSalesOrder
             try
             {
                 List<Item> Items = await ItemService.List(ItemFilter);
-                await ApplyPrice(Items, SalesEmployeeId, StoreId);
+                var Ids = Items.Select(x => x.Id).ToList();
+                AppUser AppUser = await UOW.AppUserRepository.Get(SalesEmployeeId.Value);
+                if (AppUser != null)
+                {
+                    List<Warehouse> Warehouses = await UOW.WarehouseRepository.List(new WarehouseFilter
+                    {
+                        Skip = 0,
+                        Take = int.MaxValue,
+                        Selects = WarehouseSelect.Id,
+                        StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id },
+                        OrganizationId = new IdFilter { Equal = AppUser.OrganizationId }
+                    });
+                    var WarehouseIds = Warehouses.Select(x => x.Id).ToList();
+
+                    InventoryFilter InventoryFilter = new InventoryFilter
+                    {
+                        Skip = 0,
+                        Take = int.MaxValue,
+                        ItemId = new IdFilter { In = Ids },
+                        WarehouseId = new IdFilter { In = WarehouseIds },
+                        Selects = InventorySelect.SaleStock | InventorySelect.Item
+                    };
+
+                    var inventories = await UOW.InventoryRepository.List(InventoryFilter);
+                    var list = inventories.GroupBy(x => x.ItemId).Select(x => new { ItemId = x.Key, SaleStock = x.Sum(s => s.SaleStock) }).ToList();
+
+                    foreach (var item in Items)
+                    {
+                        item.SaleStock = list.Where(i => i.ItemId == item.Id).Select(i => i.SaleStock).FirstOrDefault();
+                        item.HasInventory = item.SaleStock > 0;
+                    }
+
+                    await ApplyPrice(Items, SalesEmployeeId, StoreId);
+                }
                 return Items;
             }
             catch (Exception ex)
@@ -745,7 +778,7 @@ namespace DMS.Services.MIndirectSalesOrder
                     //Trường hợp không sửa giá, giá bán = giá bán cơ sở của sản phẩm * hệ số quy đổi của đơn vị tính
                     if (IndirectSalesOrder.EditedPriceStatusId == EditedPriceStatusEnum.INACTIVE.Id)
                     {
-                        IndirectSalesOrderContent.PrimaryPrice = Item.SalePrice * (1 + Item.Product.TaxType.Percentage / 100);
+                        IndirectSalesOrderContent.PrimaryPrice = Item.SalePrice;
                         IndirectSalesOrderContent.SalePrice = IndirectSalesOrderContent.PrimaryPrice * UOM.Factor.Value;
                         IndirectSalesOrderContent.EditedPriceStatusId = EditedPriceStatusEnum.INACTIVE.Id;
                     }
@@ -759,18 +792,7 @@ namespace DMS.Services.MIndirectSalesOrder
                             IndirectSalesOrderContent.EditedPriceStatusId = EditedPriceStatusEnum.ACTIVE.Id;
                     }
 
-                    //giá tiền từng line trước chiết khấu
-                    var SubAmount = IndirectSalesOrderContent.Quantity * IndirectSalesOrderContent.SalePrice;
-                    if (IndirectSalesOrderContent.DiscountPercentage.HasValue)
-                    {
-                        IndirectSalesOrderContent.DiscountAmount = Item.SalePrice * IndirectSalesOrderContent.Quantity * UOM.Factor.Value * IndirectSalesOrderContent.DiscountPercentage.Value / 100;
-                        IndirectSalesOrderContent.DiscountAmount = Math.Round(IndirectSalesOrderContent.DiscountAmount ?? 0, 0);
-                        IndirectSalesOrderContent.Amount = SubAmount - IndirectSalesOrderContent.DiscountAmount.Value;
-                    }
-                    else
-                    {
-                        IndirectSalesOrderContent.Amount = SubAmount;
-                    }
+                    IndirectSalesOrderContent.Amount = IndirectSalesOrderContent.Quantity * IndirectSalesOrderContent.SalePrice;
                 }
 
                 //tổng trước chiết khấu
@@ -779,13 +801,14 @@ namespace DMS.Services.MIndirectSalesOrder
                 //tính tổng chiết khấu theo % chiết khấu chung
                 if (IndirectSalesOrder.GeneralDiscountPercentage.HasValue && IndirectSalesOrder.GeneralDiscountPercentage > 0)
                 {
-                    IndirectSalesOrder.GeneralDiscountAmount = 0;
-                    foreach (var IndirectSalesOrderContent in IndirectSalesOrder.IndirectSalesOrderContents)
-                    {
-                        var Item = Items.Where(x => x.Id == IndirectSalesOrderContent.ItemId).FirstOrDefault();
-                        IndirectSalesOrder.GeneralDiscountAmount += Item.SalePrice * IndirectSalesOrderContent.Quantity * IndirectSalesOrderContent.UnitOfMeasure.Factor.Value * IndirectSalesOrder.GeneralDiscountPercentage.Value / 100;
-                    }
-                    IndirectSalesOrder.GeneralDiscountAmount = Math.Round(IndirectSalesOrder.GeneralDiscountAmount.Value, 0);
+                    IndirectSalesOrder.GeneralDiscountAmount = Math.Round(IndirectSalesOrder.SubTotal * IndirectSalesOrder.GeneralDiscountPercentage.Value / 100, 0);
+                }
+                foreach (var IndirectSalesOrderContent in IndirectSalesOrder.IndirectSalesOrderContents)
+                {
+                    //phân bổ chiết khấu chung = tổng chiết khấu chung * (tổng từng line/tổng trc chiết khấu)
+                    IndirectSalesOrderContent.GeneralDiscountPercentage = IndirectSalesOrderContent.Amount / IndirectSalesOrder.SubTotal * 100;
+                    IndirectSalesOrderContent.GeneralDiscountAmount = IndirectSalesOrder.GeneralDiscountAmount * IndirectSalesOrderContent.GeneralDiscountPercentage / 100;
+                    IndirectSalesOrderContent.GeneralDiscountAmount = Math.Round(IndirectSalesOrderContent.GeneralDiscountAmount ?? 0, 0);
                 }
                 //tổng phải thanh toán
                 IndirectSalesOrder.Total = IndirectSalesOrder.SubTotal - IndirectSalesOrder.GeneralDiscountAmount.GetValueOrDefault(0);
@@ -987,9 +1010,16 @@ namespace DMS.Services.MIndirectSalesOrder
                 }
             }
 
+            //nhân giá với thuế
             foreach (var item in Items)
             {
                 item.SalePrice = result[item.Id] * (1 + item.Product.TaxType.Percentage / 100);
+                //làm tròn số
+                var surplus = item.SalePrice % 1000;
+                if (surplus >= 500)
+                    item.SalePrice = item.SalePrice + (1000 - surplus);
+                else
+                    item.SalePrice = item.SalePrice - surplus;
             }
             return Items;
         }

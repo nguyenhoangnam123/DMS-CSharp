@@ -93,7 +93,7 @@ namespace DMS.Repositories
                         ITempTableQuery<TempTable<long>> tempTableQuery = await DataContext
                         .BulkInsertValuesIntoTempTableAsync<long>(filter.BuyerStoreId.In.Distinct().ToList());
                         query = query.Join(tempTableQuery.Query,
-                                           c => c.Id,
+                                           c => c.BuyerStoreId,
                                            t => t.Column1,
                                            (c, t) => c);
                     }
@@ -103,7 +103,7 @@ namespace DMS.Repositories
                             .BulkInsertValuesIntoTempTableAsync<long>(filter.BuyerStoreId.In.Distinct().ToList());
                         query = query.Where(x => !filter.BuyerStoreId.NotIn.Contains(x.Id));
                         query = query.Join(tempTableQuery.Query,
-                                           c => c.Id,
+                                           c => c.BuyerStoreId,
                                            t => t.Column1,
                                            (c, t) => c);
                     }
@@ -552,9 +552,9 @@ namespace DMS.Repositories
                              join step in DataContext.WorkflowStep on r.WorkflowDefinitionId equals step.WorkflowDefinitionId
                              join rstep in DataContext.RequestWorkflowStepMapping on step.Id equals rstep.WorkflowStepId
                              where
-                             (q.RequestStateId != RequestStateEnum.NEW.Id) &&
+                             q.RequestStateId != RequestStateEnum.NEW.Id &&
                              (rstep.WorkflowStateId == WorkflowStateEnum.APPROVED.Id || rstep.WorkflowStateId == WorkflowStateEnum.REJECTED.Id) &&
-                             rstep.AppUserId == filter.ApproverId.Equal
+                             rstep.AppUserId == filter.ApproverId.Equal && rstep.RequestId == q.RowId
                              select q;
                 var query2 = from q in IndirectSalesOrderDAOs
                              join r in DataContext.RequestWorkflowDefinitionMapping on q.RowId equals r.RequestId into result
@@ -578,9 +578,9 @@ namespace DMS.Repositories
                              join step in DataContext.WorkflowStep on r.WorkflowDefinitionId equals step.WorkflowDefinitionId
                              join rstep in DataContext.RequestWorkflowStepMapping on step.Id equals rstep.WorkflowStepId
                              where
-                             (q.RequestStateId != RequestStateEnum.NEW.Id) &&
+                             q.RequestStateId != RequestStateEnum.NEW.Id &&
                              (rstep.WorkflowStateId == WorkflowStateEnum.APPROVED.Id || rstep.WorkflowStateId == WorkflowStateEnum.REJECTED.Id) &&
-                             rstep.AppUserId == filter.ApproverId.Equal
+                             rstep.AppUserId == filter.ApproverId.Equal && rstep.RequestId == q.RowId
                              select q;
                 var query2 = from q in IndirectSalesOrderDAOs
                              join r in DataContext.RequestWorkflowDefinitionMapping on q.RowId equals r.RequestId into result

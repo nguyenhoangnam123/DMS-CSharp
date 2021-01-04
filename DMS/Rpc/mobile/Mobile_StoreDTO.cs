@@ -158,6 +158,7 @@ namespace DMS.Rpc.mobile
 
         public IdFilter StatusId { get; set; }
         public IdFilter StoreStatusId { get; set; }
+        public IdFilter StoreDraftTypeId { get; set; }
 
         public StoreOrder OrderBy { get; set; }
     }

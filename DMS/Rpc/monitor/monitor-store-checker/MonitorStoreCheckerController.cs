@@ -299,7 +299,7 @@ namespace DMS.Rpc.monitor.monitor_store_checker
               .Where(ec => ec.ERoute.RealStartDate <= End &&
                     (ec.ERoute.EndDate == null || ec.ERoute.EndDate.Value >= Start) &&
                     AppUserIds.Contains(ec.ERoute.SaleEmployeeId))
-              .Where(x => x.ERoute.StatusId == StatusEnum.ACTIVE.Id && 
+              .Where(x => x.ERoute.StatusId == StatusEnum.ACTIVE.Id &&
               x.ERoute.RequestStateId == RequestStateEnum.APPROVED.Id)
               .Include(ec => ec.ERouteContentDays)
               .Include(ec => ec.ERoute)
@@ -376,7 +376,7 @@ namespace DMS.Rpc.monitor.monitor_store_checker
                         x.AppUserId == SaleEmployee.SaleEmployeeId)
                         .Count();
 
-                        MonitorStoreChecker_StoreCheckingDTO.PlanCounter = CountPlan(i, SaleEmployee.SaleEmployeeId, ERouteContentDAOs);
+                        MonitorStoreChecker_StoreCheckingDTO.PlanCounter = CountPlan(i.AddHours(0 - CurrentContext.TimeZone), SaleEmployee.SaleEmployeeId, ERouteContentDAOs);
 
                         List<StoreCheckingDAO> ListChecked = StoreCheckingDAOs
                                .Where(s =>
