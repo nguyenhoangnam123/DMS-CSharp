@@ -21,9 +21,11 @@ namespace DMS.Rpc.banner
         public const string BulkDelete = Default + "/bulk-delete";
         public const string SaveImage = Default + "/save-image";
 
+        public const string FilterListOrganization = Default + "/filter-list-organization";
         public const string FilterListAppUser = Default + "/filter-list-app-user";
         public const string FilterListStatus = Default + "/filter-list-status";
 
+        public const string SingleListOrganization = Default + "/single-list-organization";
         public const string SingleListAppUser = Default + "/single-list-app-user";
         public const string SingleListStatus = Default + "/single-list-status";
 
@@ -37,19 +39,19 @@ namespace DMS.Rpc.banner
                 Parent,
                 Master,
                 Detail,Count,List,Get,
-                FilterListAppUser, FilterListStatus}
+                FilterListAppUser, FilterListOrganization, FilterListStatus}
             },
             { "Thêm mới", new List<string> {
                 Parent,
                 Master,
-                Detail, Count, List, Get, FilterListAppUser, FilterListStatus, Detail, Create,
-                SingleListAppUser, SingleListAppUser, SingleListStatus}
+                Detail, Count, List, Get, FilterListAppUser, FilterListOrganization, FilterListStatus, Detail, Create,
+                SingleListAppUser, SingleListAppUser, SingleListOrganization, SingleListStatus}
             },
             { "Sửa", new List<string> {
                 Parent,
                 Master,
-                Detail, Count, List, Get, FilterListAppUser, FilterListStatus, Detail, Update,
-                SingleListAppUser, SingleListAppUser, SingleListStatus}
+                Detail, Count, List, Get, FilterListAppUser, FilterListOrganization, FilterListStatus, Detail, Update,
+                SingleListAppUser, SingleListAppUser, SingleListOrganization, SingleListStatus}
             },
             { "Lưu ảnh", new List<string> {
                 Parent,
@@ -58,26 +60,26 @@ namespace DMS.Rpc.banner
             { "Xoá", new List<string> {
                 Parent,
                 Master,
-                Detail, Count, List, Get, FilterListAppUser, FilterListStatus, Detail, Delete,
-                SingleListAppUser, SingleListAppUser, SingleListStatus}
+                Detail, Count, List, Get, FilterListAppUser, FilterListOrganization, FilterListStatus, Detail, Delete,
+                SingleListAppUser, SingleListAppUser, SingleListOrganization, SingleListStatus}
             },
             { "Xoá nhiều", new List<string> {
                 Parent,
                 Master,
                 Detail,Count,List,Get, BulkDelete,
-                FilterListAppUser, FilterListStatus}
+                FilterListAppUser, FilterListOrganization, FilterListStatus}
             },
             { "Xuất excel", new List<string> {
                 Parent,
                 Master,
                 Detail,Count,List,Get, Export,
-                FilterListAppUser, FilterListStatus}
+                FilterListAppUser, FilterListOrganization, FilterListStatus}
             },
             { "Nhập excel", new List<string> {
                 Parent,
                 Master,
                 Detail,Count,List,Get, ExportTemplate, Import,
-                FilterListAppUser, FilterListStatus}
+                FilterListAppUser, FilterListOrganization, FilterListStatus}
             },
         };
     }

@@ -8,6 +8,7 @@ namespace DMS.Models
         public OrganizationDAO()
         {
             AppUsers = new HashSet<AppUserDAO>();
+            Banners = new HashSet<BannerDAO>();
             DirectSalesOrderTransactions = new HashSet<DirectSalesOrderTransactionDAO>();
             DirectSalesOrders = new HashSet<DirectSalesOrderDAO>();
             ERoutes = new HashSet<ERouteDAO>();
@@ -50,6 +51,7 @@ namespace DMS.Models
         public virtual OrganizationDAO Parent { get; set; }
         public virtual StatusDAO Status { get; set; }
         public virtual ICollection<AppUserDAO> AppUsers { get; set; }
+        public virtual ICollection<BannerDAO> Banners { get; set; }
         public virtual ICollection<DirectSalesOrderTransactionDAO> DirectSalesOrderTransactions { get; set; }
         public virtual ICollection<DirectSalesOrderDAO> DirectSalesOrders { get; set; }
         public virtual ICollection<ERouteDAO> ERoutes { get; set; }

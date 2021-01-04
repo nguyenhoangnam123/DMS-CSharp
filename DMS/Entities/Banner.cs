@@ -14,9 +14,11 @@ namespace DMS.Entities
         public long? Priority { get; set; }
         public string Content { get; set; }
         public long CreatorId { get; set; }
+        public long OrganizationId { get; set; }
         public long? ImageId { get; set; }
         public long StatusId { get; set; }
         public AppUser Creator { get; set; }
+        public Organization Organization { get; set; }
         public Image Image { get; set; }
         public Status Status { get; set; }
         public DateTime CreatedAt { get; set; }
@@ -40,6 +42,7 @@ namespace DMS.Entities
         public LongFilter Priority { get; set; }
         public StringFilter Content { get; set; }
         public IdFilter CreatorId { get; set; }
+        public IdFilter OrganizationId { get; set; }
         public IdFilter ImageId { get; set; }
         public IdFilter StatusId { get; set; }
         public DateFilter CreatedAt { get; set; }
@@ -60,6 +63,7 @@ namespace DMS.Entities
         Creator = 5,
         Image = 6,
         Status = 7,
+        Organization = 8,
         CreatedAt = 50,
         UpdatedAt = 51,
     }
@@ -76,5 +80,6 @@ namespace DMS.Entities
         Creator = E._5,
         Image = E._6,
         Status = E._7,
+        Organization = E._8,
     }
 }

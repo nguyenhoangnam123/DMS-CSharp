@@ -50,6 +50,8 @@ namespace DMS.Repositories
                 query = query.Where(q => q.Content, filter.Content);
             if (filter.CreatorId != null)
                 query = query.Where(q => q.CreatorId, filter.CreatorId);
+            if (filter.OrganizationId != null)
+                query = query.Where(q => q.OrganizationId, filter.OrganizationId);
             if (filter.ImageId != null)
                 query = query.Where(q => q.ImageId, filter.ImageId);
             if (filter.StatusId != null)
@@ -76,6 +78,8 @@ namespace DMS.Repositories
                     queryable = queryable.Where(q => q.Priority, BannerFilter.Priority);
                 if (BannerFilter.CreatorId != null)
                     queryable = queryable.Where(q => q.CreatorId, BannerFilter.CreatorId);
+                if (BannerFilter.OrganizationId != null)
+                    queryable = queryable.Where(q => q.OrganizationId, BannerFilter.OrganizationId);
                 if (BannerFilter.ImageId != null)
                     queryable = queryable.Where(q => q.ImageId, BannerFilter.ImageId);
                 if (BannerFilter.StatusId != null)
@@ -107,6 +111,9 @@ namespace DMS.Repositories
                         case BannerOrder.Creator:
                             query = query.OrderBy(q => q.CreatorId);
                             break;
+                        case BannerOrder.Organization:
+                            query = query.OrderBy(q => q.OrganizationId);
+                            break;
                         case BannerOrder.Image:
                             query = query.OrderBy(q => q.ImageId);
                             break;
@@ -133,6 +140,9 @@ namespace DMS.Repositories
                         case BannerOrder.Creator:
                             query = query.OrderByDescending(q => q.CreatorId);
                             break;
+                        case BannerOrder.Organization:
+                            query = query.OrderByDescending(q => q.OrganizationId);
+                            break;
                         case BannerOrder.Image:
                             query = query.OrderByDescending(q => q.ImageId);
                             break;
@@ -155,6 +165,7 @@ namespace DMS.Repositories
                 Title = filter.Selects.Contains(BannerSelect.Title) ? q.Title : default(string),
                 Priority = filter.Selects.Contains(BannerSelect.Priority) ? q.Priority : default(long?),
                 CreatorId = filter.Selects.Contains(BannerSelect.Creator) ? q.CreatorId : default(long),
+                OrganizationId = filter.Selects.Contains(BannerSelect.Organization) ? q.OrganizationId : default(long),
                 ImageId = filter.Selects.Contains(BannerSelect.Image) ? q.ImageId : default(long?),
                 StatusId = filter.Selects.Contains(BannerSelect.Status) ? q.StatusId : default(long),
                 Creator = filter.Selects.Contains(BannerSelect.Creator) && q.Creator != null ? new AppUser
@@ -173,6 +184,19 @@ namespace DMS.Repositories
                     Avatar = q.Creator.Avatar,
                     Birthday = q.Creator.Birthday,
                     ProvinceId = q.Creator.ProvinceId,
+                } : null,
+                Organization = filter.Selects.Contains(BannerSelect.Organization) && q.Organization != null ? new Organization
+                {
+                    Id = q.Organization.Id,
+                    Code = q.Organization.Code,
+                    Name = q.Organization.Name,
+                    Address = q.Organization.Address,
+                    Phone = q.Organization.Phone,
+                    Path = q.Organization.Path,
+                    ParentId = q.Organization.ParentId,
+                    Email = q.Organization.Email,
+                    StatusId = q.Organization.StatusId,
+                    Level = q.Organization.Level
                 } : null,
                 Image = filter.Selects.Contains(BannerSelect.Image) && q.Image != null ? new Image
                 {
@@ -222,6 +246,7 @@ namespace DMS.Repositories
                 Priority = x.Priority,
                 Content = x.Content,
                 CreatorId = x.CreatorId,
+                OrganizationId = x.OrganizationId,
                 ImageId = x.ImageId,
                 StatusId = x.StatusId,
                 Creator = x.Creator == null ? null : new AppUser
@@ -240,6 +265,19 @@ namespace DMS.Repositories
                     Avatar = x.Creator.Avatar,
                     Birthday = x.Creator.Birthday,
                     ProvinceId = x.Creator.ProvinceId,
+                },
+                Organization = x.Organization == null ? null : new Organization
+                {
+                    Id = x.Organization.Id,
+                    Code = x.Organization.Code,
+                    Name = x.Organization.Name,
+                    Address = x.Organization.Address,
+                    Phone = x.Organization.Phone,
+                    Path = x.Organization.Path,
+                    ParentId = x.Organization.ParentId,
+                    Email = x.Organization.Email,
+                    StatusId = x.Organization.StatusId,
+                    Level = x.Organization.Level
                 },
                 Image = x.Image == null ? null : new Image
                 {
@@ -269,6 +307,7 @@ namespace DMS.Repositories
             BannerDAO.Priority = Banner.Priority;
             BannerDAO.Content = Banner.Content;
             BannerDAO.CreatorId = Banner.CreatorId;
+            BannerDAO.OrganizationId = Banner.OrganizationId;
             BannerDAO.ImageId = Banner.ImageId;
             BannerDAO.StatusId = Banner.StatusId;
             BannerDAO.CreatedAt = StaticParams.DateTimeNow;
@@ -291,6 +330,7 @@ namespace DMS.Repositories
             BannerDAO.Priority = Banner.Priority;
             BannerDAO.Content = Banner.Content;
             BannerDAO.CreatorId = Banner.CreatorId;
+            BannerDAO.OrganizationId = Banner.OrganizationId;
             BannerDAO.ImageId = Banner.ImageId;
             BannerDAO.StatusId = Banner.StatusId;
             BannerDAO.UpdatedAt = StaticParams.DateTimeNow;
@@ -317,6 +357,7 @@ namespace DMS.Repositories
                 BannerDAO.Priority = Banner.Priority;
                 BannerDAO.Content = Banner.Content;
                 BannerDAO.CreatorId = Banner.CreatorId;
+                BannerDAO.OrganizationId = Banner.OrganizationId;
                 BannerDAO.ImageId = Banner.ImageId;
                 BannerDAO.StatusId = Banner.StatusId;
                 BannerDAO.CreatedAt = StaticParams.DateTimeNow;

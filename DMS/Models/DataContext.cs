@@ -454,6 +454,12 @@ namespace DMS.Models
                     .HasForeignKey(d => d.ImageId)
                     .HasConstraintName("FK_Banner_Image");
 
+                entity.HasOne(d => d.Organization)
+                    .WithMany(p => p.Banners)
+                    .HasForeignKey(d => d.OrganizationId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Banner_Organization");
+
                 entity.HasOne(d => d.Status)
                     .WithMany(p => p.Banners)
                     .HasForeignKey(d => d.StatusId)

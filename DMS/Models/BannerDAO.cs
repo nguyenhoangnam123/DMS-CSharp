@@ -11,6 +11,7 @@ namespace DMS.Models
         public long? Priority { get; set; }
         public string Content { get; set; }
         public long CreatorId { get; set; }
+        public long OrganizationId { get; set; }
         public long? ImageId { get; set; }
         public long StatusId { get; set; }
         public DateTime CreatedAt { get; set; }
@@ -19,6 +20,7 @@ namespace DMS.Models
 
         public virtual AppUserDAO Creator { get; set; }
         public virtual ImageDAO Image { get; set; }
+        public virtual OrganizationDAO Organization { get; set; }
         public virtual StatusDAO Status { get; set; }
     }
 }

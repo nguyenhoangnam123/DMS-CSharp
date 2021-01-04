@@ -3,6 +3,7 @@ using DMS.Entities;
 using DMS.Services.MAppUser;
 using DMS.Services.MBanner;
 using DMS.Services.MImage;
+using DMS.Services.MOrganization;
 using DMS.Services.MStatus;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -21,12 +22,14 @@ namespace DMS.Rpc.banner
     {
         private IAppUserService AppUserService;
         private IImageService ImageService;
+        private IOrganizationService OrganizationService;
         private IStatusService StatusService;
         private IBannerService BannerService;
         private ICurrentContext CurrentContext;
         public BannerController(
             IAppUserService AppUserService,
             IImageService ImageService,
+            IOrganizationService OrganizationService,
             IStatusService StatusService,
             IBannerService BannerService,
             ICurrentContext CurrentContext
@@ -34,6 +37,7 @@ namespace DMS.Rpc.banner
         {
             this.AppUserService = AppUserService;
             this.ImageService = ImageService;
+            this.OrganizationService = OrganizationService;
             this.StatusService = StatusService;
             this.BannerService = BannerService;
             this.CurrentContext = CurrentContext;
@@ -624,6 +628,7 @@ namespace DMS.Rpc.banner
             Banner.Priority = Banner_BannerDTO.Priority;
             Banner.Content = Banner_BannerDTO.Content;
             Banner.CreatorId = Banner_BannerDTO.CreatorId;
+            Banner.OrganizationId = Banner_BannerDTO.OrganizationId;
             Banner.ImageId = Banner_BannerDTO.ImageId;
             Banner.StatusId = Banner_BannerDTO.StatusId;
             Banner.Creator = Banner_BannerDTO.Creator == null ? null : new AppUser
@@ -641,6 +646,19 @@ namespace DMS.Rpc.banner
                 StatusId = Banner_BannerDTO.Creator.StatusId,
                 Birthday = Banner_BannerDTO.Creator.Birthday,
                 ProvinceId = Banner_BannerDTO.Creator.ProvinceId,
+            };
+            Banner.Organization = Banner_BannerDTO.Organization == null ? null : new Organization
+            {
+                Id = Banner_BannerDTO.Organization.Id,
+                Code = Banner_BannerDTO.Organization.Code,
+                Name = Banner_BannerDTO.Organization.Name,
+                ParentId = Banner_BannerDTO.Organization.ParentId,
+                Path = Banner_BannerDTO.Organization.Path,
+                Level = Banner_BannerDTO.Organization.Level,
+                StatusId = Banner_BannerDTO.Organization.StatusId,
+                Phone = Banner_BannerDTO.Organization.Phone,
+                Address = Banner_BannerDTO.Organization.Address,
+                Email = Banner_BannerDTO.Organization.Email,
             };
             Banner.Image = Banner_BannerDTO.Images == null ? null : Banner_BannerDTO.Images.Select(x => new Image
             {
@@ -673,6 +691,7 @@ namespace DMS.Rpc.banner
             BannerFilter.Priority = Banner_BannerFilterDTO.Priority;
             BannerFilter.Content = Banner_BannerFilterDTO.Content;
             BannerFilter.CreatorId = Banner_BannerFilterDTO.CreatorId;
+            BannerFilter.OrganizationId = Banner_BannerFilterDTO.OrganizationId;
             BannerFilter.ImageId = Banner_BannerFilterDTO.ImageId;
             BannerFilter.StatusId = Banner_BannerFilterDTO.StatusId;
             BannerFilter.CreatedAt = Banner_BannerFilterDTO.CreatedAt;
@@ -710,6 +729,48 @@ namespace DMS.Rpc.banner
             List<Banner_AppUserDTO> Banner_AppUserDTOs = AppUsers
                 .Select(x => new Banner_AppUserDTO(x)).ToList();
             return Banner_AppUserDTOs;
+        }
+
+        [Route(BannerRoute.FilterListOrganization), HttpPost]
+        public async Task<List<Banner_OrganizationDTO>> FilterListOrganization([FromBody] Banner_OrganizationFilterDTO Banner_OrganizationFilterDTO)
+        {
+            OrganizationFilter OrganizationFilter = new OrganizationFilter();
+            OrganizationFilter.Skip = 0;
+            OrganizationFilter.Take = 99999;
+            OrganizationFilter.OrderBy = OrganizationOrder.Id;
+            OrganizationFilter.OrderType = OrderType.ASC;
+            OrganizationFilter.Selects = OrganizationSelect.ALL;
+            OrganizationFilter.Id = Banner_OrganizationFilterDTO.Id;
+            OrganizationFilter.Code = Banner_OrganizationFilterDTO.Code;
+            OrganizationFilter.Name = Banner_OrganizationFilterDTO.Name;
+            OrganizationFilter.ParentId = Banner_OrganizationFilterDTO.ParentId;
+            OrganizationFilter.Path = Banner_OrganizationFilterDTO.Path;
+            OrganizationFilter.Level = Banner_OrganizationFilterDTO.Level;
+            OrganizationFilter.StatusId = Banner_OrganizationFilterDTO.StatusId;
+            OrganizationFilter.Phone = Banner_OrganizationFilterDTO.Phone;
+            OrganizationFilter.Address = Banner_OrganizationFilterDTO.Address;
+            OrganizationFilter.Email = Banner_OrganizationFilterDTO.Email;
+
+            if (OrganizationFilter.OrFilter == null) OrganizationFilter.OrFilter = new List<OrganizationFilter>();
+            if (CurrentContext.Filters != null)
+            {
+                foreach (var currentFilter in CurrentContext.Filters)
+                {
+                    OrganizationFilter subFilter = new OrganizationFilter();
+                    OrganizationFilter.OrFilter.Add(subFilter);
+                    List<FilterPermissionDefinition> FilterPermissionDefinitions = currentFilter.Value;
+                    foreach (FilterPermissionDefinition FilterPermissionDefinition in FilterPermissionDefinitions)
+                    {
+                        if (FilterPermissionDefinition.Name == nameof(BannerFilter.OrganizationId))
+                            subFilter.Id = FilterPermissionDefinition.IdFilter;
+                    }
+                }
+            }
+
+            List<Organization> Organizations = await OrganizationService.List(OrganizationFilter);
+            List<Banner_OrganizationDTO> Banner_OrganizationDTOs = Organizations
+                .Select(x => new Banner_OrganizationDTO(x)).ToList();
+            return Banner_OrganizationDTOs;
         }
 
         [Route(BannerRoute.FilterListStatus), HttpPost]
@@ -762,6 +823,48 @@ namespace DMS.Rpc.banner
             List<Banner_AppUserDTO> Banner_AppUserDTOs = AppUsers
                 .Select(x => new Banner_AppUserDTO(x)).ToList();
             return Banner_AppUserDTOs;
+        }
+
+        [Route(BannerRoute.SingleListOrganization), HttpPost]
+        public async Task<List<Banner_OrganizationDTO>> SingleListOrganization([FromBody] Banner_OrganizationFilterDTO Banner_OrganizationFilterDTO)
+        {
+            OrganizationFilter OrganizationFilter = new OrganizationFilter();
+            OrganizationFilter.Skip = 0;
+            OrganizationFilter.Take = 99999;
+            OrganizationFilter.OrderBy = OrganizationOrder.Id;
+            OrganizationFilter.OrderType = OrderType.ASC;
+            OrganizationFilter.Selects = OrganizationSelect.ALL;
+            OrganizationFilter.Id = Banner_OrganizationFilterDTO.Id;
+            OrganizationFilter.Code = Banner_OrganizationFilterDTO.Code;
+            OrganizationFilter.Name = Banner_OrganizationFilterDTO.Name;
+            OrganizationFilter.ParentId = Banner_OrganizationFilterDTO.ParentId;
+            OrganizationFilter.Path = Banner_OrganizationFilterDTO.Path;
+            OrganizationFilter.Level = Banner_OrganizationFilterDTO.Level;
+            OrganizationFilter.StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id };
+            OrganizationFilter.Phone = Banner_OrganizationFilterDTO.Phone;
+            OrganizationFilter.Address = Banner_OrganizationFilterDTO.Address;
+            OrganizationFilter.Email = Banner_OrganizationFilterDTO.Email;
+
+            if (OrganizationFilter.OrFilter == null) OrganizationFilter.OrFilter = new List<OrganizationFilter>();
+            if (CurrentContext.Filters != null)
+            {
+                foreach (var currentFilter in CurrentContext.Filters)
+                {
+                    OrganizationFilter subFilter = new OrganizationFilter();
+                    OrganizationFilter.OrFilter.Add(subFilter);
+                    List<FilterPermissionDefinition> FilterPermissionDefinitions = currentFilter.Value;
+                    foreach (FilterPermissionDefinition FilterPermissionDefinition in FilterPermissionDefinitions)
+                    {
+                        if (FilterPermissionDefinition.Name == nameof(BannerFilter.OrganizationId))
+                            subFilter.Id = FilterPermissionDefinition.IdFilter;
+                    }
+                }
+            }
+
+            List<Organization> Organizations = await OrganizationService.List(OrganizationFilter);
+            List<Banner_OrganizationDTO> Banner_OrganizationDTOs = Organizations
+                .Select(x => new Banner_OrganizationDTO(x)).ToList();
+            return Banner_OrganizationDTOs;
         }
 
         [Route(BannerRoute.SingleListStatus), HttpPost]
