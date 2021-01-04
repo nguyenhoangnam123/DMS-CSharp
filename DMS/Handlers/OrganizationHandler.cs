@@ -39,24 +39,31 @@ namespace DMS.Handlers
                 if (EventMessage != null)
                     Organizations.Add(EventMessage.Content);
             }
-            List<OrganizationDAO> OrganizationDAOs = Organizations.Select(o => new OrganizationDAO
+            try
             {
-                Id = o.Id,
-                Code = o.Code,
-                Name = o.Name,
-                Address = o.Address,
-                CreatedAt = o.CreatedAt,
-                UpdatedAt = o.UpdatedAt,
-                DeletedAt = o.DeletedAt,
-                Email = o.Email,
-                Level = o.Level,
-                ParentId = o.ParentId,
-                Path = o.Path,
-                Phone = o.Phone,
-                RowId = o.RowId,
-                StatusId = o.StatusId,
-            }).ToList();
-            await context.Organization.BulkMergeAsync(OrganizationDAOs);
+                List<OrganizationDAO> OrganizationDAOs = Organizations.Select(o => new OrganizationDAO
+                {
+                    Id = o.Id,
+                    Code = o.Code,
+                    Name = o.Name,
+                    Address = o.Address,
+                    CreatedAt = o.CreatedAt,
+                    UpdatedAt = o.UpdatedAt,
+                    DeletedAt = o.DeletedAt,
+                    Email = o.Email,
+                    Level = o.Level,
+                    ParentId = o.ParentId,
+                    Path = o.Path,
+                    Phone = o.Phone,
+                    RowId = o.RowId,
+                    StatusId = o.StatusId,
+                }).ToList();
+                await context.Organization.BulkMergeAsync(OrganizationDAOs);
+            }
+            catch(Exception ex)
+            {
+                Log(ex, nameof(OrganizationHandler));
+            }
         }
     }
 }

@@ -38,20 +38,27 @@ namespace DMS.Handlers
                 if (EventMessage != null)
                     Districts.Add(EventMessage.Content);
             }
-            List<DistrictDAO> DistrictDAOs = Districts.Select(x => new DistrictDAO
+            try
             {
-                Code = x.Code,
-                CreatedAt = x.CreatedAt,
-                UpdatedAt = x.UpdatedAt,
-                DeletedAt = x.DeletedAt,
-                ProvinceId = x.ProvinceId,
-                Id = x.Id,
-                Name = x.Name,
-                Priority = x.Priority,
-                RowId = x.RowId,
-                StatusId = x.StatusId,
-            }).ToList();
-            await context.BulkMergeAsync(DistrictDAOs);
+                List<DistrictDAO> DistrictDAOs = Districts.Select(x => new DistrictDAO
+                {
+                    Code = x.Code,
+                    CreatedAt = x.CreatedAt,
+                    UpdatedAt = x.UpdatedAt,
+                    DeletedAt = x.DeletedAt,
+                    ProvinceId = x.ProvinceId,
+                    Id = x.Id,
+                    Name = x.Name,
+                    Priority = x.Priority,
+                    RowId = x.RowId,
+                    StatusId = x.StatusId,
+                }).ToList();
+                await context.BulkMergeAsync(DistrictDAOs);
+            }
+            catch(Exception ex)
+            {
+                Log(ex, nameof(DistrictHandler));
+            }
         }
     }
 }

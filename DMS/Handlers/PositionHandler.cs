@@ -40,18 +40,25 @@ namespace DMS.Handlers
                 if (EventMessage != null)
                     Positions.Add(EventMessage.Content);
             }
-            List<PositionDAO> PositionDAOs = Positions.Select(x => new PositionDAO
+            try
             {
-                Code = x.Code,
-                CreatedAt = x.CreatedAt,
-                UpdatedAt = x.UpdatedAt,
-                DeletedAt = x.DeletedAt,
-                Id = x.Id,
-                Name = x.Name,
-                RowId = x.RowId,
-                StatusId = x.StatusId,
-            }).ToList();
-            await context.BulkMergeAsync(PositionDAOs);
+                List<PositionDAO> PositionDAOs = Positions.Select(x => new PositionDAO
+                {
+                    Code = x.Code,
+                    CreatedAt = x.CreatedAt,
+                    UpdatedAt = x.UpdatedAt,
+                    DeletedAt = x.DeletedAt,
+                    Id = x.Id,
+                    Name = x.Name,
+                    RowId = x.RowId,
+                    StatusId = x.StatusId,
+                }).ToList();
+                await context.BulkMergeAsync(PositionDAOs);
+            }
+            catch(Exception ex)
+            {
+                Log(ex, nameof(PositionHandler));
+            }
         }
     }
 }

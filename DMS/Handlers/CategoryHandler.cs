@@ -41,22 +41,29 @@ namespace DMS.Handlers
                 if (EventMessage != null)
                     Categorys.Add(EventMessage.Content);
             }
-            List<CategoryDAO> CategoryDAOs = Categorys.Select(x => new CategoryDAO
+            try
             {
-                Code = x.Code,
-                CreatedAt = x.CreatedAt,
-                UpdatedAt = x.UpdatedAt,
-                DeletedAt = x.DeletedAt,
-                Id = x.Id,
-                Name = x.Name,
-                RowId = x.RowId,
-                StatusId = x.StatusId,
-                ImageId = x.ImageId,
-                Level = x.Level,
-                ParentId = x.ParentId,
-                Path = x.Path,
-            }).ToList();
-            await context.BulkMergeAsync(CategoryDAOs);
+                List<CategoryDAO> CategoryDAOs = Categorys.Select(x => new CategoryDAO
+                {
+                    Code = x.Code,
+                    CreatedAt = x.CreatedAt,
+                    UpdatedAt = x.UpdatedAt,
+                    DeletedAt = x.DeletedAt,
+                    Id = x.Id,
+                    Name = x.Name,
+                    RowId = x.RowId,
+                    StatusId = x.StatusId,
+                    ImageId = x.ImageId,
+                    Level = x.Level,
+                    ParentId = x.ParentId,
+                    Path = x.Path,
+                }).ToList();
+                await context.BulkMergeAsync(CategoryDAOs);
+            }
+            catch(Exception ex)
+            {
+                Log(ex, nameof(CategoryHandler));
+            }
         }
     }
 }
