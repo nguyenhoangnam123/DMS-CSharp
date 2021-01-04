@@ -1,6 +1,7 @@
 ﻿using DMS.Common;
 using DMS.Entities;
 using DMS.Models;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
 using System;
@@ -39,6 +40,11 @@ namespace DMS.Handlers
                 if (EventMessage != null)
                     Organizations.Add(EventMessage.Content);
             }
+
+            var AppUsers = Organizations.Where(x => x.AppUsers != null).SelectMany(x => x.AppUsers).ToList();
+            var AppUserIds = AppUsers.Select(x => x.Id).ToList();
+            var AppUserDAOs = await context.AppUser.Where(x => AppUserIds.Contains(x.Id)).ToListAsync();
+
             try
             {
                 List<OrganizationDAO> OrganizationDAOs = Organizations.Select(o => new OrganizationDAO
@@ -59,6 +65,12 @@ namespace DMS.Handlers
                     StatusId = o.StatusId,
                 }).ToList();
                 await context.Organization.BulkMergeAsync(OrganizationDAOs);
+
+                foreach (var AppUserDAO in AppUserDAOs)
+                {
+                    AppUserDAO.OrganizationId = AppUsers.Where(x => x.Id == AppUserDAO.Id).Select(x => x.OrganizationId).FirstOrDefault();
+                }
+                await context.SaveChangesAsync();
             }
             catch(Exception ex)
             {
