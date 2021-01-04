@@ -118,7 +118,7 @@ namespace DMS.Services.MWorkflow
                     var WorkflowDefinitions = await UOW.WorkflowDefinitionRepository.List(WorkflowDefinitionFilter);
                     foreach (var oldWorkflowDefinition in WorkflowDefinitions)
                     {
-                        if ((oldWorkflowDefinition.EndDate.Value > WorkflowDefinition.StartDate || oldWorkflowDefinition.EndDate.HasValue == false) // if both has same range of time
+                        if ((oldWorkflowDefinition.EndDate.HasValue == false || oldWorkflowDefinition.EndDate.Value > WorkflowDefinition.StartDate) // if both has same range of time
                             && oldWorkflowDefinition.WorkflowTypeId == WorkflowDefinition.WorkflowTypeId // if both has same WorkflowTypeId
                             && oldWorkflowDefinition.OrganizationId == WorkflowDefinition.OrganizationId) // if both has same OrganizationId
                         {
