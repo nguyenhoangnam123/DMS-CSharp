@@ -660,19 +660,14 @@ namespace DMS.Rpc
             InitEditedPriceStatusEnum();
             InitProblemStatusEnum();
             InitResellerStatusEnum();
-            InitStatusEnum();
-            InitStoreStatusEnum();
             InitERouteTypeEnum();
             InitNotificationStatusEnum();
             InitSurveyEnum();
-            InitUsedVariationEnum();
             InitKpiEnum();
             InitPermissionEnum();
             InitStoreScoutingStatusEnum();
-            InitSexEnum();
             InitSystemConfigurationEnum();
             InitWorkflowEnum();
-            InitColorEnum();
             InitIdGenerate();
             InitPromotionTypeEnum();
             InitPromotionProductAppliedTypeEnum();
@@ -702,28 +697,6 @@ namespace DMS.Rpc
                 }
                 DataContext.IdGenerator.BulkSynchronize(StoreIds);
             }
-        }
-
-        private void InitStatusEnum()
-        {
-            List<StatusDAO> StatusEnumList = StatusEnum.StatusEnumList.Select(item => new StatusDAO
-            {
-                Id = item.Id,
-                Code = item.Code,
-                Name = item.Name,
-            }).ToList();
-            DataContext.Status.BulkSynchronize(StatusEnumList);
-        }
-
-        private void InitStoreStatusEnum()
-        {
-            List<StoreStatusDAO> StoreStatusEnumList = StoreStatusEnum.StoreStatusEnumList.Select(item => new StoreStatusDAO
-            {
-                Id = item.Id,
-                Code = item.Code,
-                Name = item.Name,
-            }).ToList();
-            DataContext.StoreStatus.BulkSynchronize(StoreStatusEnumList);
         }
 
         private void InitERouteTypeEnum()
@@ -816,16 +789,6 @@ namespace DMS.Rpc
             DataContext.KpiYear.BulkSynchronize(KpiYearDAOs);
         }
 
-        private void InitUsedVariationEnum()
-        {
-            List<UsedVariationDAO> UsedVariationEnumList = UsedVariationEnum.UsedVariationEnumList.Select(item => new UsedVariationDAO
-            {
-                Id = item.Id,
-                Code = item.Code,
-                Name = item.Name,
-            }).ToList();
-            DataContext.UsedVariation.BulkSynchronize(UsedVariationEnumList);
-        }
         private void InitEditedPriceStatusEnum()
         {
             List<EditedPriceStatusDAO> EditedPriceStatusEnumList = EditedPriceStatusEnum.EditedPriceStatusEnumList.Select(item => new EditedPriceStatusDAO
@@ -1007,16 +970,6 @@ namespace DMS.Rpc
 
             DataContext.PermissionOperator.BulkSynchronize(PermissionOperatorDAOs);
         }
-        private void InitSexEnum()
-        {
-            List<SexDAO> SexDAOs = SexEnum.SexEnumList.Select(item => new SexDAO
-            {
-                Id = item.Id,
-                Code = item.Code,
-                Name = item.Name,
-            }).ToList();
-            DataContext.Sex.BulkSynchronize(SexDAOs);
-        }
 
         private void InitSystemConfigurationEnum()
         {
@@ -1165,18 +1118,6 @@ namespace DMS.Rpc
             DataContext.RequestState.BulkSynchronize(RequestStateEnumList);
             
         }
-
-        private void InitColorEnum()
-        {
-            List<ColorDAO> ColorDAOs = ColorEnum.ColorEnumList.Select(item => new ColorDAO
-            {
-                Id = item.Id,
-                Code = item.Code,
-                Name = item.Name,
-            }).ToList();
-            DataContext.Color.BulkSynchronize(ColorDAOs);
-        }
-
         #endregion
     }
 }
