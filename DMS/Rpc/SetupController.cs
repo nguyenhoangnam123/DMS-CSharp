@@ -1,6 +1,7 @@
 ﻿using DMS.Common;
 using DMS.Entities;
 using DMS.Enums;
+using DMS.Handlers;
 using DMS.Helpers;
 using DMS.Models;
 using DMS.Services;
@@ -23,11 +24,13 @@ namespace DMS.Rpc
         private DataContext DataContext;
         private IItemService ItemService;
         private IMaintenanceService MaintenanceService;
-        public SetupController(DataContext DataContext, IItemService ItemService, IMaintenanceService MaintenanceService)
+        private IRabbitManager RabbitManager;
+        public SetupController(DataContext DataContext, IItemService ItemService, IMaintenanceService MaintenanceService, IRabbitManager RabbitManager)
         {
             this.ItemService = ItemService;
             this.MaintenanceService = MaintenanceService;
             this.DataContext = DataContext;
+            this.RabbitManager = RabbitManager;
         }
 
         //[HttpGet, Route("rpc/dms/setup/save-image")]
@@ -655,6 +658,7 @@ namespace DMS.Rpc
         [HttpGet, Route("rpc/dms/setup/init-enum")]
         public ActionResult InitEnum()
         {
+            InitStoreStatusEnum();
             InitPriceListTypeEnum();
             InitSalesOrderTypeEnum();
             InitEditedPriceStatusEnum();
@@ -697,6 +701,26 @@ namespace DMS.Rpc
                 }
                 DataContext.IdGenerator.BulkSynchronize(StoreIds);
             }
+        }
+
+        private void InitStoreStatusEnum()
+        {
+            List<StoreStatusDAO> StoreStatusDAOs = StoreStatusEnum.StoreStatusEnumList.Select(x => new StoreStatusDAO
+            {
+                Id = x.Id,
+                Code = x.Code,
+                Name = x.Name,
+            }).ToList();
+            DataContext.StoreStatus.BulkSynchronize(StoreStatusDAOs);
+            List<StoreStatus> StoreStatuses = StoreStatusDAOs.Select(x => new StoreStatus
+            {
+                Id = x.Id,
+                Code = x.Code,
+                Name = x.Name,
+            }).ToList();
+
+            List<EventMessage<StoreStatus>> messages = StoreStatuses.Select(x => new EventMessage<StoreStatus>(x, Guid.NewGuid())).ToList();
+            RabbitManager.PublishList(messages, RoutingKeyEnum.StoreStatusSync);
         }
 
         private void InitERouteTypeEnum()

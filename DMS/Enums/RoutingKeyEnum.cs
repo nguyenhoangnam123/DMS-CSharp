@@ -9,6 +9,7 @@ namespace DMS.Enums
         public static GenericEnum OrganizationSync = new GenericEnum { Id = 2, Code = "Organization.Sync", Name = "Đồng bộ Organization" };
         public static GenericEnum StoreSync = new GenericEnum { Id = 3, Code = "Store.Sync", Name = "Đồng bộ Store" };
         public static GenericEnum ProductSync = new GenericEnum { Id = 3, Code = "Product.Sync", Name = "Đồng bộ Product" };
+        public static GenericEnum StoreStatusSync = new GenericEnum { Id = 4, Code = "StoreStatus.Sync", Name = "Đồng bộ StoreStatus" };
 
         public static GenericEnum MailSend = new GenericEnum { Id = 4, Code = "Mail.Send", Name = "Gửi Mail" };
         public static GenericEnum AuditLogSend = new GenericEnum { Id = 5, Code = "AuditLog.Send", Name = "Audit Log" };
@@ -37,5 +38,9 @@ namespace DMS.Enums
         public static GenericEnum WorkflowDefinitionUsed = new GenericEnum { Id = 113, Code = "WorkflowDefinition.Used", Name = "WorkflowDefinition Used" };
         public static GenericEnum RoleUsed = new GenericEnum { Id = 114, Code = "Role.Used", Name = "Role Used" };
         public static GenericEnum PromotionCodeUsed = new GenericEnum { Id = 115, Code = "PromotionCode.Used", Name = "PromotionCode Used" };
+        public static GenericEnum StoreGroupingUsed = new GenericEnum { Id = 116, Code = "StoreGrouping.Used", Name = "StoreGrouping Used" };
+        public static GenericEnum ProvinceUsed = new GenericEnum { Id = 117, Code = "Province.Used", Name = "Province Used" };
+        public static GenericEnum DistrictUsed = new GenericEnum { Id = 118, Code = "District.Used", Name = "District Used" };
+        public static GenericEnum WardUsed = new GenericEnum { Id = 119, Code = "Ward.Used", Name = "Ward Used" };
     }
 }

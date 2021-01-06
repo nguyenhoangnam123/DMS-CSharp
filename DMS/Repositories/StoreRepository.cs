@@ -17,6 +17,7 @@ namespace DMS.Repositories
     {
         Task<int> Count(StoreFilter StoreFilter);
         Task<List<Store>> List(StoreFilter StoreFilter);
+        Task<List<Store>> List(List<long> Ids);
         Task<int> CountInScoped(StoreFilter filter, long AppUserId);
         Task<List<Store>> ListInScoped(StoreFilter filter, long AppUserId);
         Task<Store> Get(long Id);
@@ -686,6 +687,169 @@ namespace DMS.Repositories
             return Stores;
         }
 
+        public async Task<List<Store>> List(List<long> Ids)
+        {
+            IQueryable<StoreDAO> StoreDAOs = DataContext.Store.AsNoTracking();
+            List<Store> Stores = StoreDAOs.Where(x => Ids.Contains(x.Id)).Select(x => new Store
+            {
+                Id = x.Id,
+                Code = x.Code,
+                CodeDraft = x.CodeDraft,
+                Name = x.Name,
+                UnsignName = x.UnsignName,
+                ParentStoreId = x.ParentStoreId,
+                OrganizationId = x.OrganizationId,
+                StoreTypeId = x.StoreTypeId,
+                StoreGroupingId = x.StoreGroupingId,
+                Telephone = x.Telephone,
+                ProvinceId = x.ProvinceId,
+                DistrictId = x.DistrictId,
+                WardId = x.WardId,
+                Address = x.Address,
+                UnsignAddress = x.UnsignAddress,
+                DeliveryAddress = x.DeliveryAddress,
+                Latitude = x.Latitude,
+                Longitude = x.Longitude,
+                DeliveryLatitude = x.DeliveryLatitude,
+                DeliveryLongitude = x.DeliveryLongitude,
+                OwnerName = x.OwnerName,
+                OwnerPhone = x.OwnerPhone,
+                OwnerEmail = x.OwnerEmail,
+                TaxCode = x.TaxCode,
+                LegalEntity = x.LegalEntity,
+                StatusId = x.StatusId,
+                RowId = x.RowId,
+                Used = x.Used,
+                CreatedAt = x.CreatedAt,
+                UpdatedAt = x.UpdatedAt,
+                DeletedAt = x.DeletedAt,
+                AppUserId = x.AppUserId,
+                StoreStatusId = x.StoreStatusId,
+                District = x.District == null ? null : new District
+                {
+                    Id = x.District.Id,
+                    Name = x.District.Name,
+                    Priority = x.District.Priority,
+                    ProvinceId = x.District.ProvinceId,
+                    StatusId = x.District.StatusId,
+                },
+                Organization = x.Organization == null ? null : new Organization
+                {
+                    Id = x.Organization.Id,
+                    Code = x.Organization.Code,
+                    Name = x.Organization.Name,
+                    ParentId = x.Organization.ParentId,
+                    Path = x.Organization.Path,
+                    Level = x.Organization.Level,
+                    StatusId = x.Organization.StatusId,
+                    Phone = x.Organization.Phone,
+                    Address = x.Organization.Address,
+                    Email = x.Organization.Email,
+                    RowId = x.StoreType.RowId
+                },
+                ParentStore = x.ParentStore == null ? null : new Store
+                {
+                    Id = x.ParentStore.Id,
+                    Code = x.ParentStore.Code,
+                    Name = x.ParentStore.Name,
+                    ParentStoreId = x.ParentStore.ParentStoreId,
+                    OrganizationId = x.ParentStore.OrganizationId,
+                    StoreTypeId = x.ParentStore.StoreTypeId,
+                    StoreGroupingId = x.ParentStore.StoreGroupingId,
+                    Telephone = x.ParentStore.Telephone,
+                    ProvinceId = x.ParentStore.ProvinceId,
+                    DistrictId = x.ParentStore.DistrictId,
+                    WardId = x.ParentStore.WardId,
+                    Address = x.ParentStore.Address,
+                    DeliveryAddress = x.ParentStore.DeliveryAddress,
+                    Latitude = x.ParentStore.Latitude,
+                    Longitude = x.ParentStore.Longitude,
+                    OwnerName = x.ParentStore.OwnerName,
+                    OwnerPhone = x.ParentStore.OwnerPhone,
+                    OwnerEmail = x.ParentStore.OwnerEmail,
+                    TaxCode = x.ParentStore.TaxCode,
+                    LegalEntity = x.ParentStore.LegalEntity,
+                    StatusId = x.ParentStore.StatusId,
+                    RowId = x.StoreType.RowId
+                },
+                Province = x.Province == null ? null : new Province
+                {
+                    Id = x.Province.Id,
+                    Name = x.Province.Name,
+                    Priority = x.Province.Priority,
+                    StatusId = x.Province.StatusId,
+                },
+                AppUser = x.AppUser == null ? null : new AppUser
+                {
+                    Id = x.AppUser.Id,
+                    Username = x.AppUser.Username,
+                    DisplayName = x.AppUser.DisplayName,
+                    Address = x.AppUser.Address,
+                    Email = x.AppUser.Email,
+                    Phone = x.AppUser.Phone,
+                    PositionId = x.AppUser.PositionId,
+                    Department = x.AppUser.Department,
+                    OrganizationId = x.AppUser.OrganizationId,
+                    StatusId = x.AppUser.StatusId,
+                    Avatar = x.AppUser.Avatar,
+                    ProvinceId = x.AppUser.ProvinceId,
+                    SexId = x.AppUser.SexId,
+                    Birthday = x.AppUser.Birthday,
+                    RowId = x.StoreType.RowId
+                },
+                Status = x.Status == null ? null : new Status
+                {
+                    Id = x.Status.Id,
+                    Code = x.Status.Code,
+                    Name = x.Status.Name,
+                },
+                StoreGrouping = x.StoreGrouping == null ? null : new StoreGrouping
+                {
+                    Id = x.StoreGrouping.Id,
+                    Code = x.StoreGrouping.Code,
+                    Name = x.StoreGrouping.Name,
+                    ParentId = x.StoreGrouping.ParentId,
+                    Path = x.StoreGrouping.Path,
+                    RowId = x.StoreType.RowId,
+                    Level = x.StoreGrouping.Level,
+                    CreatedAt = x.StoreGrouping.CreatedAt,
+                    UpdatedAt = x.StoreGrouping.UpdatedAt,
+                    DeletedAt = x.StoreGrouping.DeletedAt,
+                    Used = x.StoreGrouping.Used,
+                    StatusId = x.StoreGrouping.StatusId,
+                },
+                StoreType = x.StoreType == null ? null : new StoreType
+                {
+                    Id = x.StoreType.Id,
+                    Code = x.StoreType.Code,
+                    Name = x.StoreType.Name,
+                    ColorId = x.StoreType.ColorId,
+                    StatusId = x.StoreType.StatusId,
+                    RowId = x.StoreType.RowId,
+                    Color = x.StoreType.Color == null ? null : new Color
+                    {
+                        Id = x.StoreType.Color.Id,
+                        Code = x.StoreType.Color.Code,
+                        Name = x.StoreType.Color.Name,
+                    }
+                },
+                Ward = x.Ward == null ? null : new Ward
+                {
+                    Id = x.Ward.Id,
+                    Name = x.Ward.Name,
+                    Priority = x.Ward.Priority,
+                    DistrictId = x.Ward.DistrictId,
+                    StatusId = x.Ward.StatusId,
+                },
+                StoreStatus = x.StoreStatus == null ? null : new StoreStatus
+                {
+                    Id = x.StoreStatus.Id,
+                    Code = x.StoreStatus.Code,
+                    Name = x.StoreStatus.Name,
+                },
+            }).ToList();
+            return Stores;
+        }
         public async Task<int> CountInScoped(StoreFilter filter, long AppUserId)
         {
             if (filter == null) return 0;
@@ -807,6 +971,9 @@ namespace DMS.Repositories
                     StoreScoutingId = x.StoreScoutingId,
                     AppUserId = x.AppUserId,
                     StoreStatusId = x.StoreStatusId,
+                    CreatedAt = x.CreatedAt,
+                    UpdatedAt = x.UpdatedAt,
+                    DeletedAt = x.DeletedAt,
                     StoreScouting = x.StoreScouting == null ? null : new StoreScouting
                     {
                         Id = x.StoreScouting.Id,
@@ -914,6 +1081,9 @@ namespace DMS.Repositories
                         ParentId = x.StoreGrouping.ParentId,
                         Path = x.StoreGrouping.Path,
                         Level = x.StoreGrouping.Level,
+                        RowId = x.StoreGrouping.RowId,
+                        Used = x.StoreGrouping.Used,
+                        StatusId = x.StoreGrouping.StatusId,
                     },
                     StoreType = x.StoreType == null ? null : new StoreType
                     {

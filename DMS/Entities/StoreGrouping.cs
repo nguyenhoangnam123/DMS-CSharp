@@ -15,6 +15,11 @@ namespace DMS.Entities
         public string Path { get; set; }
         public long Level { get; set; }
         public long StatusId { get; set; }
+        public bool Used { get; set; }
+        public Guid RowId { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; }
+        public DateTime? DeletedAt { get; set; }
         public StoreGrouping Parent { get; set; }
         public Status Status { get; set; }
         public List<Store> Stores { get; set; }

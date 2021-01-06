@@ -237,7 +237,8 @@ namespace DMS.Services.MStore
                 }
                 await UOW.Commit();
 
-                NotifyUsed(Store);
+                Store = await UOW.StoreRepository.Get(Store.Id);
+                Sync(new List<Store> { Store });
 
                 var RecipientIds = await ListAppUserInOrgs(Store);
                 foreach (var Id in RecipientIds)
@@ -305,8 +306,6 @@ namespace DMS.Services.MStore
                 }
                 await UOW.Commit();
 
-                NotifyUsed(Store);
-
                 var CurrentUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
                 var RecipientIds = await ListAppUserInOrgs(Store);
                 List<UserNotification> UserNotifications = new List<UserNotification>();
@@ -349,6 +348,7 @@ namespace DMS.Services.MStore
                 RabbitManager.PublishList(EventUserNotifications, RoutingKeyEnum.UserNotificationSend);
 
                 var newData = await UOW.StoreRepository.Get(Store.Id);
+                Sync(new List<Store> { newData });
                 await Logging.CreateAuditLog(newData, oldData, nameof(StoreService));
                 return newData;
             }
@@ -386,6 +386,9 @@ namespace DMS.Services.MStore
 
                 await UOW.StoreRepository.Delete(Store);
                 await UOW.Commit();
+
+                Store = await UOW.StoreRepository.Get(Store.Id);
+                Sync(new List<Store> { Store });
 
                 var CurrentUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
                 var RecipientIds = await ListAppUserInOrgs(Store);
@@ -461,6 +464,11 @@ namespace DMS.Services.MStore
 
                 List<EventMessage<UserNotification>> EventUserNotifications = UserNotifications.Select(x => new EventMessage<UserNotification>(x, x.RowId)).ToList();
                 RabbitManager.PublishList(EventUserNotifications, RoutingKeyEnum.UserNotificationSend);
+
+                var Ids = Stores.Select(x => x.Id).ToList();
+                Stores = await UOW.StoreRepository.List(Ids);
+                Sync(Stores);
+
                 await Logging.CreateAuditLog(new { }, Stores, nameof(StoreService));
                 return Stores;
             }
@@ -543,24 +551,11 @@ namespace DMS.Services.MStore
                 await UOW.StoreRepository.BulkMerge(Stores);
                 await UOW.Commit();
 
-                NotifyUsed(Stores);
+                var Ids = Stores.Select(x => x.Id).ToList();
+                Stores = await UOW.StoreRepository.List(Ids);
+                Sync(Stores);
 
-                Stores = await UOW.StoreRepository.List(new StoreFilter
-                {
-                    Skip = 0,
-                    Take = int.MaxValue,
-                    Selects = StoreSelect.Id | StoreSelect.Code | StoreSelect.Name | StoreSelect.ParentStore,
-                    OrderBy = StoreOrder.Id,
-                    OrderType = OrderType.ASC,
-                });
                 await Logging.CreateAuditLog(Stores, new { }, nameof(StoreService));
-
-                List<EventMessage<Store>> eventMessages = new List<EventMessage<Store>>();
-                foreach (var Store in Stores)
-                {
-                    eventMessages.Add(new EventMessage<Store>(Store, Store.RowId));
-                }
-                RabbitManager.PublishList(eventMessages, RoutingKeyEnum.StoreSync);
                 return null;
             }
             catch (Exception ex)
@@ -613,45 +608,6 @@ namespace DMS.Services.MStore
             return Image;
         }
 
-        //public async Task<Store> Send(Store Store)
-        //{
-        //    if (Store.Id == 0)
-        //        Store = await Create(Store);
-        //    else
-        //        Store = await Update(Store);
-        //    Dictionary<string, string> Parameters = MapParameters(Store);
-        //    GenericEnum Action = await WorkflowService.Send(Store.RowId, WorkflowTypeEnum.STORE.Id, Store.OrganizationId, Parameters);
-        //    if (Action != WorkflowActionEnum.OK)
-        //        return null;
-        //    return await Get(Store.Id);
-        //}
-        //public async Task<Store> Approve(Store Store)
-        //{
-        //    Store = await Update(Store);
-        //    Dictionary<string, string> Parameters = MapParameters(Store);
-        //    GenericEnum Action = await WorkflowService.Approve(Store.RowId, WorkflowTypeEnum.STORE.Id, Parameters);
-        //    if (Action != WorkflowActionEnum.OK)
-        //        return null;
-        //    return await Get(Store.Id);
-        //}
-
-        //public async Task<Store> Reject(Store Store)
-        //{
-        //    Store = await UOW.StoreRepository.Get(Store.Id);
-        //    Dictionary<string, string> Parameters = MapParameters(Store);
-        //    GenericEnum Action = await WorkflowService.Reject(Store.RowId, WorkflowTypeEnum.STORE.Id, Parameters);
-        //    if (Action != WorkflowActionEnum.OK)
-        //        return null;
-        //    return await Get(Store.Id);
-        //}
-
-        //private Dictionary<string, string> MapParameters(Store Store)
-        //{
-        //    Dictionary<string, string> Parameters = new Dictionary<string, string>();
-        //    Parameters.Add(WorkflowParameterEnum.STORE_ORGANIZATION.Code, Store.OrganizationId.ToString());
-        //    return Parameters;
-        //}
-
         private async Task<List<long>> ListAppUserInOrgs(Store Store)
         {
             var Org = await UOW.OrganizationRepository.Get(Store.OrganizationId);
@@ -677,33 +633,72 @@ namespace DMS.Services.MStore
             return Ids;
         }
 
-        private void NotifyUsed(Store Store)
+        private void Sync(List<Store> Stores)
         {
-            EventMessage<StoreType> StoreTypeMessage = new EventMessage<StoreType>
-            {
-                Content = new StoreType { Id = Store.StoreTypeId },
-                EntityName = nameof(StoreType),
-                RowId = Guid.NewGuid(),
-                Time = StaticParams.DateTimeNow,
-            };
-            RabbitManager.PublishSingle(StoreTypeMessage, RoutingKeyEnum.StoreTypeUsed);
-
-        }
-
-        private void NotifyUsed(List<Store> Stores)
-        {
-            List<EventMessage<StoreType>> StoreTypeMessages = new List<EventMessage<StoreType>>();
+            List<EventMessage<Store>> EventMessageSyncStores = new List<EventMessage<Store>>();
+            List<EventMessage<AppUser>> EventMessageAppUsers = new List<EventMessage<AppUser>>();
+            List<EventMessage<Store>> EventMessageStores = new List<EventMessage<Store>>();
+            List<EventMessage<StoreType>> EventMessageStoreTypes = new List<EventMessage<StoreType>>();
+            List<EventMessage<StoreGrouping>> EventMessageStoreGroupings = new List<EventMessage<StoreGrouping>>();
+            List<EventMessage<Province>> EventMessageProvinces = new List<EventMessage<Province>>();
+            List<EventMessage<District>> EventMessageDistricts = new List<EventMessage<District>>();
+            List<EventMessage<Ward>> EventMessageWards = new List<EventMessage<Ward>>();
+            List<EventMessage<Organization>> OrganizationEventMessages = new List<EventMessage<Organization>>();
             foreach (var Store in Stores)
             {
-                EventMessage<StoreType> StoreTypeMessage = new EventMessage<StoreType>
+                EventMessage<Store> EventMessagesSyncStore = new EventMessage<Store>(Store, Store.RowId);
+                EventMessageSyncStores.Add(EventMessagesSyncStore);
+
+                EventMessage<StoreType> EventMessagesSyncStoreType = new EventMessage<StoreType>(Store.StoreType, Store.StoreType.RowId);
+                EventMessageStoreTypes.Add(EventMessagesSyncStoreType);
+                if (Store.AppUserId.HasValue)
                 {
-                    Content = new StoreType { Id = Store.StoreTypeId },
-                    EntityName = nameof(StoreType),
-                    RowId = Guid.NewGuid(),
-                    Time = StaticParams.DateTimeNow,
-                };
+                    EventMessage<AppUser> EventMessageAppUser = new EventMessage<AppUser>(Store.AppUser, Store.AppUser.RowId);
+                    EventMessageAppUsers.Add(EventMessageAppUser);
+                }
+                if (Store.ParentStoreId.HasValue)
+                {
+                    EventMessage<Store> EventMessageStore = new EventMessage<Store>(Store.ParentStore, Store.ParentStore.RowId);
+                    EventMessageStores.Add(EventMessageStore);
+                }
+                if (Store.StoreGroupingId.HasValue)
+                {
+                    EventMessage<StoreGrouping> EventMessageStoreGrouping = new EventMessage<StoreGrouping>(Store.StoreGrouping, Store.StoreGrouping.RowId);
+                    EventMessageStoreGroupings.Add(EventMessageStoreGrouping);
+                }
+                if (Store.ProvinceId.HasValue)
+                {
+                    EventMessage<Province> EventMessageProvince = new EventMessage<Province>(Store.Province, Store.Province.RowId);
+                    EventMessageProvinces.Add(EventMessageProvince);
+                }
+                if (Store.DistrictId.HasValue)
+                {
+                    EventMessage<District> EventMessageDistrict = new EventMessage<District>(Store.District, Store.District.RowId);
+                    EventMessageDistricts.Add(EventMessageDistrict);
+                }
+                if (Store.WardId.HasValue)
+                {
+                    EventMessage<Ward> EventMessageWard = new EventMessage<Ward>(Store.Ward, Store.Ward.RowId);
+                    EventMessageWards.Add(EventMessageWard);
+                }
             }
-            RabbitManager.PublishList(StoreTypeMessages, RoutingKeyEnum.StoreTypeUsed);
+            RabbitManager.PublishList(EventMessageSyncStores, RoutingKeyEnum.StoreSync);
+            EventMessageAppUsers = EventMessageAppUsers.Distinct().ToList();
+            EventMessageStores = EventMessageStores.Distinct().ToList();
+            EventMessageStoreTypes = EventMessageStoreTypes.Distinct().ToList();
+            EventMessageStoreGroupings = EventMessageStoreGroupings.Distinct().ToList();
+            EventMessageProvinces = EventMessageProvinces.Distinct().ToList();
+            EventMessageDistricts = EventMessageDistricts.Distinct().ToList();
+            EventMessageWards = EventMessageWards.Distinct().ToList();
+            OrganizationEventMessages = OrganizationEventMessages.Distinct().ToList();
+            RabbitManager.PublishList(EventMessageAppUsers, RoutingKeyEnum.AppUserUsed);
+            RabbitManager.PublishList(EventMessageStores, RoutingKeyEnum.StoreUsed);
+            RabbitManager.PublishList(EventMessageStoreTypes, RoutingKeyEnum.StoreTypeUsed);
+            RabbitManager.PublishList(EventMessageStoreGroupings, RoutingKeyEnum.StoreGroupingUsed);
+            RabbitManager.PublishList(EventMessageProvinces, RoutingKeyEnum.ProvinceUsed);
+            RabbitManager.PublishList(EventMessageDistricts, RoutingKeyEnum.DistrictUsed);
+            RabbitManager.PublishList(EventMessageWards, RoutingKeyEnum.WardUsed);
+            RabbitManager.PublishList(OrganizationEventMessages, RoutingKeyEnum.OrganizationUsed);
         }
 
         private void StoreCodeGenerate(Store Store, long? Counter = null)
