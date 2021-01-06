@@ -254,6 +254,7 @@ namespace DMS.Rpc.mobile
             IndirectSalesOrder IndirectSalesOrder = ConvertIndirectSalesOrderDTOToEntity(Mobile_IndirectSalesOrderDTO);
             IndirectSalesOrder.BaseLanguage = CurrentContext.Language;
             IndirectSalesOrder.StoreCheckingId = Mobile_IndirectSalesOrderDTO.StoreCheckingId;
+            IndirectSalesOrder.SaleEmployeeId = CurrentContext.UserId;
             IndirectSalesOrder = await IndirectSalesOrderService.Create(IndirectSalesOrder);
             Mobile_IndirectSalesOrderDTO = new Mobile_IndirectSalesOrderDTO(IndirectSalesOrder);
             if (IndirectSalesOrder.IsValidated)
@@ -271,6 +272,7 @@ namespace DMS.Rpc.mobile
             IndirectSalesOrder IndirectSalesOrder = ConvertIndirectSalesOrderDTOToEntity(Mobile_IndirectSalesOrderDTO);
             IndirectSalesOrder.BaseLanguage = CurrentContext.Language;
             IndirectSalesOrder.StoreCheckingId = Mobile_IndirectSalesOrderDTO.StoreCheckingId;
+            IndirectSalesOrder.SaleEmployeeId = CurrentContext.UserId;
             IndirectSalesOrder = await IndirectSalesOrderService.Update(IndirectSalesOrder);
             Mobile_IndirectSalesOrderDTO = new Mobile_IndirectSalesOrderDTO(IndirectSalesOrder);
             if (IndirectSalesOrder.IsValidated)
