@@ -1014,12 +1014,6 @@ namespace DMS.Services.MIndirectSalesOrder
             foreach (var item in Items)
             {
                 item.SalePrice = result[item.Id] * (1 + item.Product.TaxType.Percentage / 100);
-                //làm tròn số
-                var surplus = item.SalePrice % 1000;
-                if (surplus >= 500)
-                    item.SalePrice = item.SalePrice + (1000 - surplus);
-                else
-                    item.SalePrice = item.SalePrice - surplus;
             }
             return Items;
         }
