@@ -8,6 +8,7 @@ using DMS.Services.MERouteType;
 using DMS.Services.MOrganization;
 using DMS.Services.MStatus;
 using DMS.Services.MStore;
+using DMS.Services.MStoreChecking;
 using DMS.Services.MStoreGrouping;
 using DMS.Services.MStoreType;
 using DMS.Services.MWorkflow;
@@ -33,6 +34,7 @@ namespace DMS.Rpc.e_route
         private IStatusService StatusService;
         private IERouteService ERouteService;
         private IStoreService StoreService;
+        private IStoreCheckingService StoreCheckingService;
         private IStoreGroupingService StoreGroupingService;
         private IStoreTypeService StoreTypeService;
         private ICurrentContext CurrentContext;
@@ -44,6 +46,7 @@ namespace DMS.Rpc.e_route
             IStatusService StatusService,
             IERouteService ERouteService,
             IStoreService StoreService,
+            IStoreCheckingService StoreCheckingService,
             IStoreGroupingService StoreGroupingService,
             IStoreTypeService StoreTypeService,
             ICurrentContext CurrentContext
@@ -56,6 +59,7 @@ namespace DMS.Rpc.e_route
             this.StatusService = StatusService;
             this.ERouteService = ERouteService;
             this.StoreService = StoreService;
+            this.StoreCheckingService = StoreCheckingService;
             this.StoreGroupingService = StoreGroupingService;
             this.StoreTypeService = StoreTypeService;
             this.CurrentContext = CurrentContext;
@@ -575,13 +579,7 @@ namespace DMS.Rpc.e_route
                 StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id },
                 
             };
-            if (StoreIds.Count == 0)
-                StoreFilter.Id = new IdFilter { In = StoreIds };
-            else
-            {
-                StoreFilter.OrganizationId = new IdFilter { Equal = appUser.OrganizationId };
-            }
-            var Stores = await StoreService.List(StoreFilter);
+            var Stores = await StoreCheckingService.ListStoreInScope(StoreFilter, null);
             List<ERoute_StoreExportDTO> ERoute_StoreExportDTOs = Stores.Select(x => new ERoute_StoreExportDTO(x)).ToList();
             var stt = 1;
             foreach (var ERoute_StoreExportDTO in ERoute_StoreExportDTOs)
