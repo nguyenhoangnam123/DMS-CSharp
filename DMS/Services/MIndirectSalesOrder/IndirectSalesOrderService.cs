@@ -29,6 +29,7 @@ namespace DMS.Services.MIndirectSalesOrder
         Task<IndirectSalesOrder> Get(long Id);
         Task<IndirectSalesOrder> GetDetail(long Id);
         Task<List<Item>> ListItem(ItemFilter ItemFilter, long? SalesEmployeeId, long? StoreId);
+        Task<Item> GetItem(long Id, long SalesEmployeeId);
         Task<IndirectSalesOrder> Create(IndirectSalesOrder IndirectSalesOrder);
         Task<IndirectSalesOrder> Update(IndirectSalesOrder IndirectSalesOrder);
         Task<IndirectSalesOrder> Delete(IndirectSalesOrder IndirectSalesOrder);
@@ -298,6 +299,30 @@ namespace DMS.Services.MIndirectSalesOrder
                     await ApplyPrice(Items, SalesEmployeeId, StoreId);
                 }
                 return Items;
+            }
+            catch (Exception ex)
+            {
+                if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(IndirectSalesOrderService));
+                    throw new MessageException(ex);
+                }
+                else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(IndirectSalesOrderService));
+                    throw new MessageException(ex.InnerException);
+                }
+            }
+        }
+
+        public async Task<Item> GetItem(long Id, long SalesEmployeeId)
+        {
+            try
+            {
+                Item Item = await UOW.ItemRepository.Get(Id);
+                List<Item> Items = new List<Item> { Item };
+                await ApplyPrice(Items, SalesEmployeeId, null);
+                return Items.FirstOrDefault();
             }
             catch (Exception ex)
             {
