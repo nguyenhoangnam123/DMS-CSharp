@@ -860,6 +860,9 @@ namespace DMS.Repositories
                     ThumbnailUrl = x.Image.ThumbnailUrl,
                     Name = x.Image.Name,
                     RowId = x.Image.RowId,
+                    CreatedAt = x.Image.CreatedAt,
+                    UpdatedAt = x.Image.UpdatedAt,
+                    DeletedAt = x.Image.DeletedAt,
                 }
             }).ToListAsync();
             return Stores;
@@ -1143,6 +1146,10 @@ namespace DMS.Repositories
                         Name = x.Image.Name,
                         Url = x.Image.Url,
                         ThumbnailUrl = x.Image.ThumbnailUrl,
+                        RowId = x.Image.RowId,
+                        CreatedAt = x.Image.CreatedAt,
+                        UpdatedAt = x.Image.UpdatedAt,
+                        DeletedAt = x.Image.DeletedAt,
                     }
                 }).ToListAsync();
 
