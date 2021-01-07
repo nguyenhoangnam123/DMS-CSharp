@@ -14,6 +14,9 @@ namespace DMS.Entities
         public string Url { get; set; }
         public string ThumbnailUrl { get; set; }
         public Guid RowId { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; }
+        public DateTime? DeletedAt { get; set; }
         public byte[] Content { get; set; }
         public List<StoreCheckingImageMapping> ImageStoreCheckingMapping { get; set; }
         public bool Equals(Image other)

@@ -125,39 +125,6 @@ namespace DMS.Rpc.store_grouping
                 return BadRequest(StoreGrouping_StoreGroupingDTO);
         }
 
-        [Route(StoreGroupingRoute.Import), HttpPost]
-        public async Task<ActionResult<List<StoreGrouping_StoreGroupingDTO>>> Import(IFormFile file)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
-
-            DataFile DataFile = new DataFile
-            {
-                Name = file.FileName,
-                Content = file.OpenReadStream(),
-            };
-
-            List<StoreGrouping> StoreGroupings = await StoreGroupingService.Import(DataFile);
-            List<StoreGrouping_StoreGroupingDTO> StoreGrouping_StoreGroupingDTOs = StoreGroupings
-                .Select(c => new StoreGrouping_StoreGroupingDTO(c)).ToList();
-            return StoreGrouping_StoreGroupingDTOs;
-        }
-
-        [Route(StoreGroupingRoute.Export), HttpPost]
-        public async Task<ActionResult> Export([FromBody] StoreGrouping_StoreGroupingFilterDTO StoreGrouping_StoreGroupingFilterDTO)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
-
-            StoreGroupingFilter StoreGroupingFilter = ConvertFilterDTOToFilterEntity(StoreGrouping_StoreGroupingFilterDTO);
-            StoreGroupingFilter = StoreGroupingService.ToFilter(StoreGroupingFilter);
-            DataFile DataFile = await StoreGroupingService.Export(StoreGroupingFilter);
-            return new FileStreamResult(DataFile.Content, StaticParams.ExcelFileType)
-            {
-                FileDownloadName = DataFile.Name ?? "File export.xlsx",
-            };
-        }
-
         [Route(StoreGroupingRoute.BulkDelete), HttpPost]
         public async Task<ActionResult<bool>> BulkDelete([FromBody] List<long> Ids)
         {
