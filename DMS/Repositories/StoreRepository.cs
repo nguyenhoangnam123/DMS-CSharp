@@ -848,6 +848,20 @@ namespace DMS.Repositories
                     Name = x.StoreStatus.Name,
                 },
             }).ToList();
+
+            var StoreImageMappings = await DataContext.StoreImageMapping.Where(x => Ids.Contains(x.StoreId)).Select(x => new StoreImageMapping
+            {
+                ImageId = x.ImageId,
+                StoreId = x.StoreId,
+                Image = x.Image == null ? null : new Image
+                {
+                    Id = x.Image.Id,
+                    Url = x.Image.Url,
+                    ThumbnailUrl = x.Image.ThumbnailUrl,
+                    Name = x.Image.Name,
+                    RowId = x.Image.RowId,
+                }
+            }).ToListAsync();
             return Stores;
         }
         public async Task<int> CountInScoped(StoreFilter filter, long AppUserId)
