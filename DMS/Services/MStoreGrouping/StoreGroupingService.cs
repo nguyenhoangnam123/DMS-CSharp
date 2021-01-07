@@ -8,6 +8,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using DMS.Handlers;
+using DMS.Enums;
 
 namespace DMS.Services.MStoreGrouping
 {
@@ -20,8 +22,6 @@ namespace DMS.Services.MStoreGrouping
         Task<StoreGrouping> Update(StoreGrouping StoreGrouping);
         Task<StoreGrouping> Delete(StoreGrouping StoreGrouping);
         Task<List<StoreGrouping>> BulkDelete(List<StoreGrouping> StoreGroupings);
-        Task<List<StoreGrouping>> Import(DataFile DataFile);
-        Task<DataFile> Export(StoreGroupingFilter StoreGroupingFilter);
         StoreGroupingFilter ToFilter(StoreGroupingFilter StoreGroupingFilter);
     }
 
@@ -31,18 +31,21 @@ namespace DMS.Services.MStoreGrouping
         private ILogging Logging;
         private ICurrentContext CurrentContext;
         private IStoreGroupingValidator StoreGroupingValidator;
+        private IRabbitManager RabbitManager;
 
         public StoreGroupingService(
             IUOW UOW,
             ILogging Logging,
             ICurrentContext CurrentContext,
-            IStoreGroupingValidator StoreGroupingValidator
+            IStoreGroupingValidator StoreGroupingValidator,
+            IRabbitManager RabbitManager
         )
         {
             this.UOW = UOW;
             this.Logging = Logging;
             this.CurrentContext = CurrentContext;
             this.StoreGroupingValidator = StoreGroupingValidator;
+            this.RabbitManager = RabbitManager;
         }
         public async Task<int> Count(StoreGroupingFilter StoreGroupingFilter)
         {
@@ -102,11 +105,12 @@ namespace DMS.Services.MStoreGrouping
 
             try
             {
-                StoreGrouping.Id = 0;
                 await UOW.Begin();
                 await UOW.StoreGroupingRepository.Create(StoreGrouping);
                 await UOW.Commit();
 
+                var newData = await UOW.StoreGroupingRepository.Get(StoreGrouping.Id);
+                Sync(new List<StoreGrouping> { newData });
                 await Logging.CreateAuditLog(StoreGrouping, new { }, nameof(StoreGroupingService));
                 return await UOW.StoreGroupingRepository.Get(StoreGrouping.Id);
             }
@@ -139,6 +143,7 @@ namespace DMS.Services.MStoreGrouping
                 await UOW.Commit();
 
                 var newData = await UOW.StoreGroupingRepository.Get(StoreGrouping.Id);
+                Sync(new List<StoreGrouping> { newData });
                 await Logging.CreateAuditLog(newData, oldData, nameof(StoreGroupingService));
                 return newData;
             }
@@ -168,7 +173,10 @@ namespace DMS.Services.MStoreGrouping
                 await UOW.Begin();
                 await UOW.StoreGroupingRepository.Delete(StoreGrouping);
                 await UOW.Commit();
-                await Logging.CreateAuditLog(new { }, StoreGrouping, nameof(StoreGroupingService));
+
+                var newData = await UOW.StoreGroupingRepository.Get(StoreGrouping.Id);
+                Sync(new List<StoreGrouping> { newData });
+                await Logging.CreateAuditLog(newData, StoreGrouping, nameof(StoreGroupingService));
                 return StoreGrouping;
             }
             catch (Exception ex)
@@ -197,6 +205,11 @@ namespace DMS.Services.MStoreGrouping
                 await UOW.Begin();
                 await UOW.StoreGroupingRepository.BulkDelete(StoreGroupings);
                 await UOW.Commit();
+
+                var Ids = StoreGroupings.Select(x => x.Id).ToList();
+                StoreGroupings = await UOW.StoreGroupingRepository.List(Ids);
+                Sync(StoreGroupings);
+
                 await Logging.CreateAuditLog(new { }, StoreGroupings, nameof(StoreGroupingService));
                 return StoreGroupings;
             }
@@ -216,124 +229,6 @@ namespace DMS.Services.MStoreGrouping
             }
         }
 
-        public async Task<List<StoreGrouping>> Import(DataFile DataFile)
-        {
-            List<StoreGrouping> StoreGroupings = new List<StoreGrouping>();
-            using (ExcelPackage excelPackage = new ExcelPackage(DataFile.Content))
-            {
-                ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets.FirstOrDefault();
-                if (worksheet == null)
-                    return StoreGroupings;
-                int StartColumn = 1;
-                int StartRow = 1;
-                int IdColumn = 0 + StartColumn;
-                int CodeColumn = 1 + StartColumn;
-                int NameColumn = 2 + StartColumn;
-                int ParentIdColumn = 3 + StartColumn;
-                int PathColumn = 4 + StartColumn;
-                int LevelColumn = 5 + StartColumn;
-                int IsActiveColumn = 6 + StartColumn;
-                for (int i = 1; i <= worksheet.Dimension.End.Row; i++)
-                {
-                    if (string.IsNullOrEmpty(worksheet.Cells[i + StartRow, IdColumn].Value?.ToString()))
-                        break;
-                    string IdValue = worksheet.Cells[i + StartRow, IdColumn].Value?.ToString();
-                    string CodeValue = worksheet.Cells[i + StartRow, CodeColumn].Value?.ToString();
-                    string NameValue = worksheet.Cells[i + StartRow, NameColumn].Value?.ToString();
-                    string ParentIdValue = worksheet.Cells[i + StartRow, ParentIdColumn].Value?.ToString();
-                    string PathValue = worksheet.Cells[i + StartRow, PathColumn].Value?.ToString();
-                    string LevelValue = worksheet.Cells[i + StartRow, LevelColumn].Value?.ToString();
-                    string IsActiveValue = worksheet.Cells[i + StartRow, IsActiveColumn].Value?.ToString();
-                    StoreGrouping StoreGrouping = new StoreGrouping();
-                    StoreGrouping.Code = CodeValue;
-                    StoreGrouping.Name = NameValue;
-                    StoreGrouping.Path = PathValue;
-                    StoreGrouping.Level = long.TryParse(LevelValue, out long Level) ? Level : 0;
-                    StoreGroupings.Add(StoreGrouping);
-                }
-            }
-
-            if (!await StoreGroupingValidator.Import(StoreGroupings))
-                return StoreGroupings;
-
-            try
-            {
-                await UOW.Begin();
-                await UOW.StoreGroupingRepository.BulkMerge(StoreGroupings);
-                await UOW.Commit();
-
-                await Logging.CreateAuditLog(StoreGroupings, new { }, nameof(StoreGroupingService));
-                return StoreGroupings;
-            }
-            catch (Exception ex)
-            {
-                await UOW.Rollback();
-                if (ex.InnerException == null)
-                {
-                    await Logging.CreateSystemLog(ex, nameof(StoreGroupingService));
-                    throw new MessageException(ex);
-                }
-                else
-                {
-                    await Logging.CreateSystemLog(ex.InnerException, nameof(StoreGroupingService));
-                    throw new MessageException(ex.InnerException);
-                };
-            }
-        }
-
-        public async Task<DataFile> Export(StoreGroupingFilter StoreGroupingFilter)
-        {
-            List<StoreGrouping> StoreGroupings = await UOW.StoreGroupingRepository.List(StoreGroupingFilter);
-            MemoryStream MemoryStream = new MemoryStream();
-            using (ExcelPackage excelPackage = new ExcelPackage(MemoryStream))
-            {
-                //Set some properties of the Excel document
-                excelPackage.Workbook.Properties.Author = CurrentContext.UserName;
-                excelPackage.Workbook.Properties.Title = nameof(StoreGrouping);
-                excelPackage.Workbook.Properties.Created = StaticParams.DateTimeNow;
-
-                //Create the WorkSheet
-                ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets.Add("Sheet 1");
-                int StartColumn = 1;
-                int StartRow = 2;
-                int IdColumn = 0 + StartColumn;
-                int CodeColumn = 1 + StartColumn;
-                int NameColumn = 2 + StartColumn;
-                int ParentIdColumn = 3 + StartColumn;
-                int PathColumn = 4 + StartColumn;
-                int LevelColumn = 5 + StartColumn;
-                int IsActiveColumn = 6 + StartColumn;
-
-                worksheet.Cells[1, IdColumn].Value = nameof(StoreGrouping.Id);
-                worksheet.Cells[1, CodeColumn].Value = nameof(StoreGrouping.Code);
-                worksheet.Cells[1, NameColumn].Value = nameof(StoreGrouping.Name);
-                worksheet.Cells[1, ParentIdColumn].Value = nameof(StoreGrouping.ParentId);
-                worksheet.Cells[1, PathColumn].Value = nameof(StoreGrouping.Path);
-                worksheet.Cells[1, LevelColumn].Value = nameof(StoreGrouping.Level);
-
-
-                for (int i = 0; i < StoreGroupings.Count; i++)
-                {
-                    StoreGrouping StoreGrouping = StoreGroupings[i];
-                    worksheet.Cells[i + StartRow, IdColumn].Value = StoreGrouping.Id;
-                    worksheet.Cells[i + StartRow, CodeColumn].Value = StoreGrouping.Code;
-                    worksheet.Cells[i + StartRow, NameColumn].Value = StoreGrouping.Name;
-                    worksheet.Cells[i + StartRow, ParentIdColumn].Value = StoreGrouping.ParentId;
-                    worksheet.Cells[i + StartRow, PathColumn].Value = StoreGrouping.Path;
-                    worksheet.Cells[i + StartRow, LevelColumn].Value = StoreGrouping.Level;
-
-                }
-                excelPackage.Save();
-            }
-
-            DataFile DataFile = new DataFile
-            {
-                Name = nameof(StoreGrouping),
-                Content = MemoryStream,
-            };
-            return DataFile;
-        }
-
         public StoreGroupingFilter ToFilter(StoreGroupingFilter filter)
         {
             if (filter.OrFilter == null) filter.OrFilter = new List<StoreGroupingFilter>();
@@ -348,6 +243,24 @@ namespace DMS.Services.MStoreGrouping
                 }
             }
             return filter;
+        }
+
+        private void Sync(List<StoreGrouping> StoreGroupings)
+        {
+            List<EventMessage<StoreGrouping>> EventMessageSyncStoreGroupings = new List<EventMessage<StoreGrouping>>();
+            List<EventMessage<StoreGrouping>> EventMessageStoreGroupings = new List<EventMessage<StoreGrouping>>();
+            foreach (StoreGrouping StoreGrouping in StoreGroupings)
+            {
+                EventMessage<StoreGrouping> EventMessageSyncStoreGrouping = new EventMessage<StoreGrouping>(StoreGrouping, StoreGrouping.RowId);
+                EventMessageSyncStoreGroupings.Add(EventMessageSyncStoreGrouping);
+                if (StoreGrouping.ParentId.HasValue)
+                {
+                    EventMessage<StoreGrouping> EventMessageStoreGrouping = new EventMessage<StoreGrouping>(StoreGrouping.Parent, StoreGrouping.Parent.RowId);
+                    EventMessageStoreGroupings.Add(EventMessageStoreGrouping);
+                }
+            }
+            RabbitManager.PublishList(EventMessageSyncStoreGroupings, RoutingKeyEnum.StoreGroupingSync);
+            RabbitManager.PublishList(EventMessageStoreGroupings, RoutingKeyEnum.StoreGroupingUsed);
         }
     }
 }

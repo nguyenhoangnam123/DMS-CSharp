@@ -14,6 +14,7 @@ namespace DMS.Repositories
     {
         Task<int> Count(StoreTypeFilter StoreTypeFilter);
         Task<List<StoreType>> List(StoreTypeFilter StoreTypeFilter);
+        Task<List<StoreType>> List(List<long> Ids);
         Task<StoreType> Get(long Id);
         Task<bool> Create(StoreType StoreType);
         Task<bool> Update(StoreType StoreType);
@@ -164,6 +165,38 @@ namespace DMS.Repositories
             StoreTypeDAOs = DynamicFilter(StoreTypeDAOs, filter);
             StoreTypeDAOs = DynamicOrder(StoreTypeDAOs, filter);
             List<StoreType> StoreTypes = await DynamicSelect(StoreTypeDAOs, filter);
+            return StoreTypes;
+        }
+
+        public async Task<List<StoreType>> List(List<long> Ids)
+        {
+            List<StoreType> StoreTypes = await DataContext.StoreType.AsNoTracking()
+            .Where(x => Ids.Contains(x.Id)).Select(x => new StoreType()
+            {
+                CreatedAt = x.CreatedAt,
+                UpdatedAt = x.UpdatedAt,
+                DeletedAt = x.DeletedAt,
+                Id = x.Id,
+                Code = x.Code,
+                Name = x.Name,
+                ColorId = x.ColorId,
+                StatusId = x.StatusId,
+                Used = x.Used,
+                RowId = x.RowId,
+                Color = x.Color == null ? null : new Color
+                {
+                    Id = x.Color.Id,
+                    Code = x.Color.Code,
+                    Name = x.Color.Name,
+                },
+                Status = x.Status == null ? null : new Status
+                {
+                    Id = x.Status.Id,
+                    Code = x.Status.Code,
+                    Name = x.Status.Name,
+                },
+            }).ToListAsync();
+
             return StoreTypes;
         }
 

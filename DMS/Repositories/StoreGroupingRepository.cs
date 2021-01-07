@@ -14,6 +14,7 @@ namespace DMS.Repositories
     {
         Task<int> Count(StoreGroupingFilter StoreGroupingFilter);
         Task<List<StoreGrouping>> List(StoreGroupingFilter StoreGroupingFilter);
+        Task<List<StoreGrouping>> List(List<long> Ids);
         Task<StoreGrouping> Get(long Id);
         Task<bool> Create(StoreGrouping StoreGrouping);
         Task<bool> Update(StoreGrouping StoreGrouping);
@@ -217,6 +218,46 @@ namespace DMS.Repositories
             return StoreGroupings;
         }
 
+        public async Task<List<StoreGrouping>> List(List<long> Ids)
+        {
+            List<StoreGrouping> StoreGroupings = await DataContext.StoreGrouping.AsNoTracking()
+            .Where(x => Ids.Contains(x.Id)).Select(x => new StoreGrouping()
+            {
+                CreatedAt = x.CreatedAt,
+                UpdatedAt = x.UpdatedAt,
+                DeletedAt = x.DeletedAt,
+                Id = x.Id,
+                Code = x.Code,
+                Name = x.Name,
+                ParentId = x.ParentId,
+                Path = x.Path,
+                Level = x.Level,
+                StatusId = x.StatusId,
+                RowId = x.RowId,
+                Used = x.Used,
+                Parent = x.Parent == null ? null : new StoreGrouping
+                {
+                    Id = x.Parent.Id,
+                    Code = x.Parent.Code,
+                    Name = x.Parent.Name,
+                    ParentId = x.Parent.ParentId,
+                    Path = x.Parent.Path,
+                    Level = x.Parent.Level,
+                    StatusId = x.Parent.StatusId,
+                    RowId = x.Parent.RowId,
+                    Used = x.Parent.Used,
+                },
+                Status = x.Status == null ? null : new Status
+                {
+                    Id = x.Status.Id,
+                    Code = x.Status.Code,
+                    Name = x.Status.Name,
+                },
+            }).ToListAsync();
+
+            return StoreGroupings;
+        }
+
         public async Task<StoreGrouping> Get(long Id)
         {
             StoreGrouping StoreGrouping = await DataContext.StoreGrouping.AsNoTracking()
@@ -229,6 +270,11 @@ namespace DMS.Repositories
                     Path = x.Path,
                     Level = x.Level,
                     StatusId = x.StatusId,
+                    CreatedAt = x.CreatedAt,
+                    DeletedAt = x.DeletedAt,
+                    UpdatedAt = x.UpdatedAt,
+                    Used = x.Used,
+                    RowId = x.RowId,
                     Parent = x.Parent == null ? null : new StoreGrouping
                     {
                         Id = x.Parent.Id,
