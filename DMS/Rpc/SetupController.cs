@@ -137,8 +137,64 @@ namespace DMS.Rpc
             InitWard(RestClient);
             InitOrganization(RestClient);
             InitAppUser(RestClient);
+
+            InitProductType(RestClient);
+            InitProductGrouping(RestClient);
+            InitCategory(RestClient);
+            InitSupplier(RestClient);
+            InitBrand(RestClient);
+            InitUnitOfMeasure(RestClient);
+            InitUnitOfMeasureGrouping(RestClient);
+            InitTaxType(RestClient);
+            InitProduct(RestClient);
             return Ok();
         }
+
+        //[HttpGet, Route("rpc/dms/setup/delete-data")]
+        //public async Task<ActionResult> DeleteData()
+        //{
+        //    await DataContext.DirectSalesOrderTransaction.DeleteFromQueryAsync();
+        //    await DataContext.DirectSalesOrderContent.DeleteFromQueryAsync();
+        //    await DataContext.DirectSalesOrderPromotion.DeleteFromQueryAsync();
+        //    await DataContext.DirectSalesOrder.DeleteFromQueryAsync();
+        //    await DataContext.IndirectSalesOrderTransaction.DeleteFromQueryAsync();
+        //    await DataContext.IndirectSalesOrderContent.DeleteFromQueryAsync();
+        //    await DataContext.IndirectSalesOrderPromotion.DeleteFromQueryAsync();
+        //    await DataContext.IndirectSalesOrder.DeleteFromQueryAsync();
+        //    await DataContext.PriceListItemMapping.DeleteFromQueryAsync();
+        //    await DataContext.PriceListItemHistory.DeleteFromQueryAsync();
+        //    await DataContext.PriceListStoreGroupingMapping.DeleteFromQueryAsync();
+        //    await DataContext.PriceListStoreMapping.DeleteFromQueryAsync();
+        //    await DataContext.PriceListStoreTypeMapping.DeleteFromQueryAsync();
+        //    await DataContext.PriceList.DeleteFromQueryAsync();
+        //    await DataContext.KpiItemContentKpiCriteriaItemMapping.DeleteFromQueryAsync();
+        //    await DataContext.KpiItemContent.DeleteFromQueryAsync();
+        //    await DataContext.KpiItem.DeleteFromQueryAsync();
+        //    await DataContext.ItemHistory.DeleteFromQueryAsync();
+        //    await DataContext.ItemImageMapping.DeleteFromQueryAsync();
+        //    await DataContext.InventoryHistory.DeleteFromQueryAsync();
+        //    await DataContext.Inventory.DeleteFromQueryAsync();
+        //    await DataContext.Item.DeleteFromQueryAsync();
+        //    await DataContext.PromotionCodeProductMapping.DeleteFromQueryAsync();
+        //    await DataContext.PromotionCodeOrganizationMapping.DeleteFromQueryAsync();
+        //    await DataContext.PromotionCodeStoreMapping.DeleteFromQueryAsync();
+        //    await DataContext.PromotionCodeHistory.DeleteFromQueryAsync();
+        //    await DataContext.PromotionCode.DeleteFromQueryAsync();
+        //    await DataContext.Variation.DeleteFromQueryAsync();
+        //    await DataContext.VariationGrouping.DeleteFromQueryAsync();
+        //    await DataContext.ProductProductGroupingMapping.DeleteFromQueryAsync();
+        //    await DataContext.ProductImageMapping.DeleteFromQueryAsync();
+        //    await DataContext.Product.DeleteFromQueryAsync();
+        //    await DataContext.ProductGrouping.DeleteFromQueryAsync();
+        //    await DataContext.ProductType.DeleteFromQueryAsync();
+        //    await DataContext.Brand.DeleteFromQueryAsync();
+        //    await DataContext.Supplier.DeleteFromQueryAsync();
+        //    await DataContext.UnitOfMeasureGroupingContent.DeleteFromQueryAsync();
+        //    await DataContext.UnitOfMeasureGrouping.DeleteFromQueryAsync();
+        //    await DataContext.UnitOfMeasure.DeleteFromQueryAsync();
+        //    await DataContext.TaxType.DeleteFromQueryAsync();
+        //    return Ok();
+        //}
 
         private void InitPosition(RestClient RestClient)
         {
@@ -349,6 +405,660 @@ namespace DMS.Rpc
                     WardDAO.RowId = Ward.RowId;
                 }
                 DataContext.Ward.BulkMerge(WardInDB);
+            }
+        }
+
+        private void InitProductType(RestClient RestClient)
+        {
+            IRestRequest CountRequest = new RestRequest("rpc/es/product-type/count");
+            CountRequest.RequestFormat = DataFormat.Json;
+            IRestResponse<long> CountResponse = RestClient.Post<long>(CountRequest);
+            if (CountResponse.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                long count = CountResponse.Data;
+                var BatchCounter = (count / 10000) + 1;
+
+                for (int i = 0; i < BatchCounter; i++)
+                {
+                    IRestRequest ListRequest = new RestRequest("rpc/es/product-type/list");
+                    ListRequest.RequestFormat = DataFormat.Json;
+                    ProductTypeFilter ProductTypeFilter = new ProductTypeFilter
+                    {
+                        Skip = i * 10000,
+                        Take = 10000
+                    };
+                    ListRequest.Method = Method.POST;
+                    ListRequest.AddJsonBody(ProductTypeFilter);
+                    IRestResponse<List<ProductType>> RestResponse = RestClient.Post<List<ProductType>>(ListRequest);
+                    if (RestResponse.StatusCode == System.Net.HttpStatusCode.OK)
+                    {
+                        List<ProductTypeDAO> ProductTypeInDB = DataContext.ProductType.AsNoTracking().ToList();
+                        List<ProductType> ProductTypes = RestResponse.Data;
+                        foreach (ProductType ProductType in ProductTypes)
+                        {
+                            ProductTypeDAO ProductTypeDAO = ProductTypeInDB.Where(x => x.Id == ProductType.Id).FirstOrDefault();
+                            if (ProductTypeDAO == null)
+                            {
+                                ProductTypeDAO = new ProductTypeDAO
+                                {
+                                    Id = ProductType.Id,
+                                };
+                                ProductTypeInDB.Add(ProductTypeDAO);
+                            }
+                            ProductTypeDAO.Code = ProductType.Code;
+                            ProductTypeDAO.Name = ProductType.Name;
+                            ProductTypeDAO.Description = ProductType.Description;
+                            ProductTypeDAO.StatusId = ProductType.StatusId;
+                            ProductTypeDAO.CreatedAt = ProductType.CreatedAt;
+                            ProductTypeDAO.UpdatedAt = ProductType.UpdatedAt;
+                            ProductTypeDAO.DeletedAt = ProductType.DeletedAt;
+                            ProductTypeDAO.Used = ProductType.Used;
+                            ProductTypeDAO.RowId = ProductType.RowId;
+                        }
+                        DataContext.ProductType.BulkMerge(ProductTypeInDB);
+                    }
+                }
+            }
+        }
+
+        private void InitProductGrouping(RestClient RestClient)
+        {
+            IRestRequest CountRequest = new RestRequest("rpc/es/product-grouping/count");
+            CountRequest.RequestFormat = DataFormat.Json;
+            IRestResponse<long> CountResponse = RestClient.Post<long>(CountRequest);
+            if (CountResponse.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                long count = CountResponse.Data;
+                var BatchCounter = (count / 10000) + 1;
+
+                for (int i = 0; i < BatchCounter; i++)
+                {
+                    IRestRequest ListRequest = new RestRequest("rpc/es/product-grouping/list");
+                    ListRequest.RequestFormat = DataFormat.Json;
+                    ProductGroupingFilter ProductGroupingFilter = new ProductGroupingFilter
+                    {
+                        Skip = i * 10000,
+                        Take = 10000
+                    };
+                    ListRequest.Method = Method.POST;
+                    ListRequest.AddJsonBody(ProductGroupingFilter);
+                    IRestResponse<List<ProductGrouping>> RestResponse = RestClient.Post<List<ProductGrouping>>(ListRequest);
+                    if (RestResponse.StatusCode == System.Net.HttpStatusCode.OK)
+                    {
+                        List<ProductGroupingDAO> ProductGroupingInDB = DataContext.ProductGrouping.AsNoTracking().ToList();
+                        List<ProductGrouping> ProductGroupings = RestResponse.Data;
+                        foreach (ProductGrouping ProductGrouping in ProductGroupings)
+                        {
+                            ProductGroupingDAO ProductGroupingDAO = ProductGroupingInDB.Where(x => x.Id == ProductGrouping.Id).FirstOrDefault();
+                            if (ProductGroupingDAO == null)
+                            {
+                                ProductGroupingDAO = new ProductGroupingDAO
+                                {
+                                    Id = ProductGrouping.Id,
+                                };
+                                ProductGroupingInDB.Add(ProductGroupingDAO);
+                            }
+                            ProductGroupingDAO.Code = ProductGrouping.Code;
+                            ProductGroupingDAO.Name = ProductGrouping.Name;
+                            ProductGroupingDAO.Description = ProductGrouping.Description;
+                            ProductGroupingDAO.Level = ProductGrouping.Level;
+                            ProductGroupingDAO.ParentId = ProductGrouping.ParentId;
+                            ProductGroupingDAO.Path = ProductGrouping.Path;
+                            ProductGroupingDAO.CreatedAt = ProductGrouping.CreatedAt;
+                            ProductGroupingDAO.UpdatedAt = ProductGrouping.UpdatedAt;
+                            ProductGroupingDAO.DeletedAt = ProductGrouping.DeletedAt;
+                            ProductGroupingDAO.RowId = ProductGrouping.RowId;
+                        }
+                        DataContext.ProductGrouping.BulkMerge(ProductGroupingInDB);
+                    }
+                }
+            }
+        }
+
+        private void InitCategory(RestClient RestClient)
+        {
+            IRestRequest CountRequest = new RestRequest("rpc/es/category/count");
+            CountRequest.RequestFormat = DataFormat.Json;
+            IRestResponse<long> CountResponse = RestClient.Post<long>(CountRequest);
+            if (CountResponse.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                long count = CountResponse.Data;
+                var BatchCounter = (count / 10000) + 1;
+
+                for (int i = 0; i < BatchCounter; i++)
+                {
+                    IRestRequest ListRequest = new RestRequest("rpc/es/category/list");
+                    ListRequest.RequestFormat = DataFormat.Json;
+                    CategoryFilter CategoryFilter = new CategoryFilter
+                    {
+                        Skip = i * 10000,
+                        Take = 10000
+                    };
+                    ListRequest.Method = Method.POST;
+                    ListRequest.AddJsonBody(CategoryFilter);
+                    IRestResponse<List<Category>> RestResponse = RestClient.Post<List<Category>>(ListRequest);
+                    if (RestResponse.StatusCode == System.Net.HttpStatusCode.OK)
+                    {
+                        List<CategoryDAO> CategoryInDB = DataContext.Category.AsNoTracking().ToList();
+                        List<ImageDAO> ImageDAOs = new List<ImageDAO>();
+                        List<Category> Categorys = RestResponse.Data;
+                        foreach (Category Category in Categorys)
+                        {
+                            CategoryDAO CategoryDAO = CategoryInDB.Where(x => x.Id == Category.Id).FirstOrDefault();
+                            if (CategoryDAO == null)
+                            {
+                                CategoryDAO = new CategoryDAO
+                                {
+                                    Id = Category.Id,
+                                };
+                                CategoryInDB.Add(CategoryDAO);
+                            }
+                            CategoryDAO.Code = Category.Code;
+                            CategoryDAO.Name = Category.Name;
+                            CategoryDAO.StatusId = Category.StatusId;
+                            CategoryDAO.Level = Category.Level;
+                            CategoryDAO.ParentId = Category.ParentId;
+                            CategoryDAO.ImageId = Category.ImageId;
+                            CategoryDAO.Path = Category.Path;
+                            CategoryDAO.CreatedAt = Category.CreatedAt;
+                            CategoryDAO.UpdatedAt = Category.UpdatedAt;
+                            CategoryDAO.DeletedAt = Category.DeletedAt;
+                            CategoryDAO.RowId = Category.RowId;
+                            CategoryDAO.Used = Category.Used;
+
+                            if (Category.Image != null)
+                            {
+                                ImageDAOs.Add(new ImageDAO
+                                {
+                                    Id = Category.Image.Id,
+                                    Url = Category.Image.Url,
+                                    ThumbnailUrl = Category.Image.ThumbnailUrl,
+                                    RowId = Category.Image.RowId,
+                                    Name = Category.Image.Name,
+                                    CreatedAt = Category.Image.CreatedAt,
+                                    UpdatedAt = Category.Image.UpdatedAt,
+                                    DeletedAt = Category.Image.DeletedAt,
+                                });
+                            }
+                        }
+                        DataContext.Image.BulkMerge(ImageDAOs);
+                        DataContext.Category.BulkMerge(CategoryInDB);
+                    }
+                }
+            }
+        }
+
+        private void InitSupplier(RestClient RestClient)
+        {
+            IRestRequest CountRequest = new RestRequest("rpc/es/supplier/count");
+            CountRequest.RequestFormat = DataFormat.Json;
+            IRestResponse<long> CountResponse = RestClient.Post<long>(CountRequest);
+            if (CountResponse.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                long count = CountResponse.Data;
+                var BatchCounter = (count / 10000) + 1;
+
+                for (int i = 0; i < BatchCounter; i++)
+                {
+                    IRestRequest ListRequest = new RestRequest("rpc/es/supplier/list");
+                    ListRequest.RequestFormat = DataFormat.Json;
+                    SupplierFilter SupplierFilter = new SupplierFilter
+                    {
+                        Skip = i * 10000,
+                        Take = 10000
+                    };
+                    ListRequest.Method = Method.POST;
+                    ListRequest.AddJsonBody(SupplierFilter);
+                    IRestResponse<List<Supplier>> RestResponse = RestClient.Post<List<Supplier>>(ListRequest);
+                    if (RestResponse.StatusCode == System.Net.HttpStatusCode.OK)
+                    {
+                        List<SupplierDAO> SupplierInDB = DataContext.Supplier.AsNoTracking().ToList();
+                        List<Supplier> Suppliers = RestResponse.Data;
+                        foreach (Supplier Supplier in Suppliers)
+                        {
+                            SupplierDAO SupplierDAO = SupplierInDB.Where(x => x.Id == Supplier.Id).FirstOrDefault();
+                            if (SupplierDAO == null)
+                            {
+                                SupplierDAO = new SupplierDAO
+                                {
+                                    Id = Supplier.Id,
+                                };
+                                SupplierInDB.Add(SupplierDAO);
+                            }
+                            SupplierDAO.Code = Supplier.Code;
+                            SupplierDAO.Name = Supplier.Name;
+                            SupplierDAO.Description = Supplier.Description;
+                            SupplierDAO.TaxCode = Supplier.TaxCode;
+                            SupplierDAO.Phone = Supplier.Phone;
+                            SupplierDAO.Email = Supplier.Email;
+                            SupplierDAO.Address = Supplier.Address;
+                            SupplierDAO.ProvinceId = Supplier.ProvinceId;
+                            SupplierDAO.DistrictId = Supplier.DistrictId;
+                            SupplierDAO.WardId = Supplier.WardId;
+                            SupplierDAO.OwnerName = Supplier.OwnerName;
+                            SupplierDAO.PersonInChargeId = Supplier.PersonInChargeId;
+                            SupplierDAO.StatusId = Supplier.StatusId;
+                            SupplierDAO.CreatedAt = Supplier.CreatedAt;
+                            SupplierDAO.UpdatedAt = Supplier.UpdatedAt;
+                            SupplierDAO.DeletedAt = Supplier.DeletedAt;
+                            SupplierDAO.Used = Supplier.Used;
+                            SupplierDAO.RowId = Supplier.RowId;
+                        }
+                        DataContext.Supplier.BulkMerge(SupplierInDB);
+                    }
+                }
+            }
+        }
+
+        private void InitBrand(RestClient RestClient)
+        {
+            IRestRequest CountRequest = new RestRequest("rpc/es/brand/count");
+            CountRequest.RequestFormat = DataFormat.Json;
+            IRestResponse<long> CountResponse = RestClient.Post<long>(CountRequest);
+            if (CountResponse.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                long count = CountResponse.Data;
+                var BatchCounter = (count / 10000) + 1;
+
+                for (int i = 0; i < BatchCounter; i++)
+                {
+                    IRestRequest ListRequest = new RestRequest("rpc/es/brand/list");
+                    ListRequest.RequestFormat = DataFormat.Json;
+                    BrandFilter BrandFilter = new BrandFilter
+                    {
+                        Skip = i * 10000,
+                        Take = 10000
+                    };
+                    ListRequest.Method = Method.POST;
+                    ListRequest.AddJsonBody(BrandFilter);
+                    IRestResponse<List<Brand>> RestResponse = RestClient.Post<List<Brand>>(ListRequest);
+                    if (RestResponse.StatusCode == System.Net.HttpStatusCode.OK)
+                    {
+                        List<BrandDAO> BrandInDB = DataContext.Brand.AsNoTracking().ToList();
+                        List<Brand> Brands = RestResponse.Data;
+                        foreach (Brand Brand in Brands)
+                        {
+                            BrandDAO BrandDAO = BrandInDB.Where(x => x.Id == Brand.Id).FirstOrDefault();
+                            if (BrandDAO == null)
+                            {
+                                BrandDAO = new BrandDAO
+                                {
+                                    Id = Brand.Id,
+                                };
+                                BrandInDB.Add(BrandDAO);
+                            }
+                            BrandDAO.Code = Brand.Code;
+                            BrandDAO.Name = Brand.Name;
+                            BrandDAO.Description = Brand.Description;
+                            BrandDAO.StatusId = Brand.StatusId;
+                            BrandDAO.CreatedAt = Brand.CreatedAt;
+                            BrandDAO.UpdatedAt = Brand.UpdatedAt;
+                            BrandDAO.DeletedAt = Brand.DeletedAt;
+                            BrandDAO.RowId = Brand.RowId;
+                            BrandDAO.Used = Brand.Used;
+                        }
+                        DataContext.Brand.BulkMerge(BrandInDB);
+                    }
+                }
+            }
+        }
+
+        private void InitUnitOfMeasure(RestClient RestClient)
+        {
+            IRestRequest CountRequest = new RestRequest("rpc/es/unit-of-measure/count");
+            CountRequest.RequestFormat = DataFormat.Json;
+            IRestResponse<long> CountResponse = RestClient.Post<long>(CountRequest);
+            if (CountResponse.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                long count = CountResponse.Data;
+                var BatchCounter = (count / 10000) + 1;
+
+                for (int i = 0; i < BatchCounter; i++)
+                {
+                    IRestRequest ListRequest = new RestRequest("rpc/es/unit-of-measure/list");
+                    ListRequest.RequestFormat = DataFormat.Json;
+                    UnitOfMeasureFilter UnitOfMeasureFilter = new UnitOfMeasureFilter
+                    {
+                        Skip = i * 10000,
+                        Take = 10000
+                    };
+                    ListRequest.Method = Method.POST;
+                    ListRequest.AddJsonBody(UnitOfMeasureFilter);
+                    IRestResponse<List<UnitOfMeasure>> RestResponse = RestClient.Post<List<UnitOfMeasure>>(ListRequest);
+                    if (RestResponse.StatusCode == System.Net.HttpStatusCode.OK)
+                    {
+                        List<UnitOfMeasureDAO> UnitOfMeasureInDB = DataContext.UnitOfMeasure.AsNoTracking().ToList();
+                        List<UnitOfMeasure> UnitOfMeasures = RestResponse.Data;
+                        foreach (UnitOfMeasure UnitOfMeasure in UnitOfMeasures)
+                        {
+                            UnitOfMeasureDAO UnitOfMeasureDAO = UnitOfMeasureInDB.Where(x => x.Id == UnitOfMeasure.Id).FirstOrDefault();
+                            if (UnitOfMeasureDAO == null)
+                            {
+                                UnitOfMeasureDAO = new UnitOfMeasureDAO
+                                {
+                                    Id = UnitOfMeasure.Id,
+                                };
+                                UnitOfMeasureInDB.Add(UnitOfMeasureDAO);
+                            }
+                            UnitOfMeasureDAO.Code = UnitOfMeasure.Code;
+                            UnitOfMeasureDAO.Name = UnitOfMeasure.Name;
+                            UnitOfMeasureDAO.Description = UnitOfMeasure.Description;
+                            UnitOfMeasureDAO.StatusId = UnitOfMeasure.StatusId;
+                            UnitOfMeasureDAO.CreatedAt = UnitOfMeasure.CreatedAt;
+                            UnitOfMeasureDAO.UpdatedAt = UnitOfMeasure.UpdatedAt;
+                            UnitOfMeasureDAO.DeletedAt = UnitOfMeasure.DeletedAt;
+                            UnitOfMeasureDAO.RowId = UnitOfMeasure.RowId;
+                        }
+                        DataContext.UnitOfMeasure.BulkMerge(UnitOfMeasureInDB);
+                    }
+                }
+            }
+        }
+
+        private void InitUnitOfMeasureGrouping(RestClient RestClient)
+        {
+            IRestRequest CountRequest = new RestRequest("rpc/es/unit-of-measure-grouping/count");
+            CountRequest.RequestFormat = DataFormat.Json;
+            IRestResponse<long> CountResponse = RestClient.Post<long>(CountRequest);
+            if (CountResponse.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                long count = CountResponse.Data;
+                var BatchCounter = (count / 10000) + 1;
+
+                for (int i = 0; i < BatchCounter; i++)
+                {
+                    IRestRequest ListRequest = new RestRequest("rpc/es/unit-of-measure-grouping/list");
+                    ListRequest.RequestFormat = DataFormat.Json;
+                    UnitOfMeasureGroupingFilter UnitOfMeasureGroupingFilter = new UnitOfMeasureGroupingFilter
+                    {
+                        Skip = i * 10000,
+                        Take = 10000
+                    };
+                    ListRequest.Method = Method.POST;
+                    ListRequest.AddJsonBody(UnitOfMeasureGroupingFilter);
+                    IRestResponse<List<UnitOfMeasureGrouping>> RestResponse = RestClient.Post<List<UnitOfMeasureGrouping>>(ListRequest);
+                    if (RestResponse.StatusCode == System.Net.HttpStatusCode.OK)
+                    {
+                        List<UnitOfMeasureGroupingDAO> UnitOfMeasureGroupingInDB = DataContext.UnitOfMeasureGrouping.AsNoTracking().ToList();
+                        List<UnitOfMeasureGrouping> UnitOfMeasureGroupings = RestResponse.Data;
+                        foreach (UnitOfMeasureGrouping UnitOfMeasureGrouping in UnitOfMeasureGroupings)
+                        {
+                            UnitOfMeasureGroupingDAO UnitOfMeasureGroupingDAO = UnitOfMeasureGroupingInDB.Where(x => x.Id == UnitOfMeasureGrouping.Id).FirstOrDefault();
+                            if (UnitOfMeasureGroupingDAO == null)
+                            {
+                                UnitOfMeasureGroupingDAO = new UnitOfMeasureGroupingDAO
+                                {
+                                    Id = UnitOfMeasureGrouping.Id,
+                                };
+                                UnitOfMeasureGroupingInDB.Add(UnitOfMeasureGroupingDAO);
+                            }
+                            UnitOfMeasureGroupingDAO.Code = UnitOfMeasureGrouping.Code;
+                            UnitOfMeasureGroupingDAO.Name = UnitOfMeasureGrouping.Name;
+                            UnitOfMeasureGroupingDAO.Description = UnitOfMeasureGrouping.Description;
+                            UnitOfMeasureGroupingDAO.StatusId = UnitOfMeasureGrouping.StatusId;
+                            UnitOfMeasureGroupingDAO.UnitOfMeasureId = UnitOfMeasureGrouping.UnitOfMeasureId;
+                            UnitOfMeasureGroupingDAO.CreatedAt = UnitOfMeasureGrouping.CreatedAt;
+                            UnitOfMeasureGroupingDAO.UpdatedAt = UnitOfMeasureGrouping.UpdatedAt;
+                            UnitOfMeasureGroupingDAO.DeletedAt = UnitOfMeasureGrouping.DeletedAt;
+                            UnitOfMeasureGroupingDAO.RowId = UnitOfMeasureGrouping.RowId;
+                        }
+                        DataContext.UnitOfMeasureGrouping.BulkMerge(UnitOfMeasureGroupingInDB);
+
+                        List<UnitOfMeasureGroupingContentDAO> UnitOfMeasureGroupingContentInDB = DataContext.UnitOfMeasureGroupingContent.AsNoTracking().ToList();
+                        List<UnitOfMeasureGroupingContent> UnitOfMeasureGroupingContents = UnitOfMeasureGroupings.Where(x => x.UnitOfMeasureGroupingContents != null).SelectMany(x => x.UnitOfMeasureGroupingContents).ToList();
+                        foreach (UnitOfMeasureGroupingContent UnitOfMeasureGroupingContent in UnitOfMeasureGroupingContents)
+                        {
+                            UnitOfMeasureGroupingContentDAO UnitOfMeasureGroupingContentDAO = UnitOfMeasureGroupingContentInDB.Where(x => x.Id == UnitOfMeasureGroupingContent.Id).FirstOrDefault();
+                            if (UnitOfMeasureGroupingContentDAO == null)
+                            {
+                                UnitOfMeasureGroupingContentDAO = new UnitOfMeasureGroupingContentDAO()
+                                {
+                                    Id = UnitOfMeasureGroupingContent.Id
+                                };
+                                UnitOfMeasureGroupingContentInDB.Add(UnitOfMeasureGroupingContentDAO);
+                            }
+                            UnitOfMeasureGroupingContentDAO.Factor = UnitOfMeasureGroupingContent.Factor;
+                            UnitOfMeasureGroupingContentDAO.UnitOfMeasureGroupingId = UnitOfMeasureGroupingContent.UnitOfMeasureGroupingId;
+                            UnitOfMeasureGroupingContentDAO.UnitOfMeasureId = UnitOfMeasureGroupingContent.UnitOfMeasureId;
+                        }
+                        DataContext.UnitOfMeasureGroupingContent.BulkMerge(UnitOfMeasureGroupingContentInDB);
+                    }
+                }
+            }
+        }
+
+        private void InitTaxType(RestClient RestClient)
+        {
+            IRestRequest CountRequest = new RestRequest("rpc/es/tax-type/count");
+            CountRequest.RequestFormat = DataFormat.Json;
+            IRestResponse<long> CountResponse = RestClient.Post<long>(CountRequest);
+            if (CountResponse.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                long count = CountResponse.Data;
+                var BatchCounter = (count / 10000) + 1;
+
+                for (int i = 0; i < BatchCounter; i++)
+                {
+                    IRestRequest ListRequest = new RestRequest("rpc/es/tax-type/list");
+                    ListRequest.RequestFormat = DataFormat.Json;
+                    TaxTypeFilter TaxTypeFilter = new TaxTypeFilter
+                    {
+                        Skip = i * 10000,
+                        Take = 10000
+                    };
+                    ListRequest.Method = Method.POST;
+                    ListRequest.AddJsonBody(TaxTypeFilter);
+                    IRestResponse<List<TaxType>> RestResponse = RestClient.Post<List<TaxType>>(ListRequest);
+                    if (RestResponse.StatusCode == System.Net.HttpStatusCode.OK)
+                    {
+                        List<TaxTypeDAO> TaxTypeInDB = DataContext.TaxType.AsNoTracking().ToList();
+                        List<TaxType> TaxTypes = RestResponse.Data;
+                        foreach (TaxType TaxType in TaxTypes)
+                        {
+                            TaxTypeDAO TaxTypeDAO = TaxTypeInDB.Where(x => x.Id == TaxType.Id).FirstOrDefault();
+                            if (TaxTypeDAO == null)
+                            {
+                                TaxTypeDAO = new TaxTypeDAO
+                                {
+                                    Id = TaxType.Id,
+                                };
+                                TaxTypeInDB.Add(TaxTypeDAO);
+                            }
+                            TaxTypeDAO.Code = TaxType.Code;
+                            TaxTypeDAO.Name = TaxType.Name;
+                            TaxTypeDAO.Percentage = TaxType.Percentage;
+                            TaxTypeDAO.StatusId = TaxType.StatusId;
+                            TaxTypeDAO.CreatedAt = TaxType.CreatedAt;
+                            TaxTypeDAO.UpdatedAt = TaxType.UpdatedAt;
+                            TaxTypeDAO.DeletedAt = TaxType.DeletedAt;
+                            TaxTypeDAO.RowId = TaxType.RowId;
+                        }
+                        DataContext.TaxType.BulkMerge(TaxTypeInDB);
+                    }
+                }
+            }
+        }
+
+        private void InitProduct(RestClient RestClient)
+        {
+            IRestRequest CountRequest = new RestRequest("rpc/es/product/count");
+            CountRequest.RequestFormat = DataFormat.Json;
+            IRestResponse<long> CountResponse = RestClient.Post<long>(CountRequest);
+            if (CountResponse.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                long count = CountResponse.Data;
+                var BatchCounter = (count / 10000) + 1;
+
+                for (int i = 0; i < BatchCounter; i++)
+                {
+                    IRestRequest ListRequest = new RestRequest("rpc/es/product/list");
+                    ListRequest.RequestFormat = DataFormat.Json;
+                    ProductFilter ProductFilter = new ProductFilter
+                    {
+                        Skip = i * 10000,
+                        Take = 10000
+                    };
+                    ListRequest.Method = Method.POST;
+                    ListRequest.AddJsonBody(ProductFilter);
+                    IRestResponse<List<Product>> RestResponse = RestClient.Post<List<Product>>(ListRequest);
+                    if (RestResponse.StatusCode == System.Net.HttpStatusCode.OK)
+                    {
+                        List<ProductDAO> ProductDAOs = new List<ProductDAO>();
+                        List<ProductProductGroupingMappingDAO> ProductProductGroupingMappingDAOs = new List<ProductProductGroupingMappingDAO>();
+                        List<ProductImageMappingDAO> ProductImageMappingDAOs = new List<ProductImageMappingDAO>();
+                        List<VariationGroupingDAO> VariationGroupingDAOs = new List<VariationGroupingDAO>();
+                        List<VariationDAO> VariationDAOs = new List<VariationDAO>();
+                        List<ItemDAO> ItemDAOs = new List<ItemDAO>();
+                        List<ImageDAO> ImageDAOs = new List<ImageDAO>();
+                        List<ItemImageMappingDAO> ItemImageMappingDAOs = new List<ItemImageMappingDAO>();
+
+                        List<Product> Products = RestResponse.Data;
+                        List<ProductProductGroupingMapping> ProductProductGroupingMappings = Products.Where(x => x.ProductProductGroupingMappings != null).SelectMany(x => x.ProductProductGroupingMappings).ToList();
+                        List<ProductImageMapping> ProductImageMappings = Products.Where(x => x.ProductImageMappings != null).SelectMany(x => x.ProductImageMappings).ToList();
+                        List<VariationGrouping> VariationGroupings = Products.Where(x => x.VariationGroupings != null).SelectMany(x => x.VariationGroupings).ToList();
+                        List<Variation> Variations = VariationGroupings.Where(x => x.Variations != null).SelectMany(x => x.Variations).ToList();
+                        List<Item> Items = Products.Where(x => x.Items != null).SelectMany(x => x.Items).ToList();
+                        List<ItemImageMapping> ItemImageMappings = Items.Where(x => x.ItemImageMappings != null).SelectMany(x => x.ItemImageMappings).ToList();
+
+                        foreach (Product Product in Products)
+                        {
+                            ProductDAO ProductDAO = new ProductDAO();
+                            ProductDAO.Id = Product.Id;
+                            ProductDAO.Code = Product.Code;
+                            ProductDAO.Name = Product.Name;
+                            ProductDAO.SupplierCode = Product.SupplierCode;
+                            ProductDAO.Description = Product.Description;
+                            ProductDAO.ScanCode = Product.ScanCode;
+                            ProductDAO.ERPCode = Product.ERPCode;
+                            ProductDAO.CategoryId = Product.CategoryId;
+                            ProductDAO.ProductTypeId = Product.ProductTypeId;
+                            ProductDAO.SupplierId = Product.SupplierId;
+                            ProductDAO.BrandId = Product.BrandId;
+                            ProductDAO.UnitOfMeasureId = Product.UnitOfMeasureId;
+                            ProductDAO.UnitOfMeasureGroupingId = Product.UnitOfMeasureGroupingId;
+                            ProductDAO.SalePrice = Product.SalePrice;
+                            ProductDAO.RetailPrice = Product.RetailPrice;
+                            ProductDAO.TaxTypeId = Product.TaxTypeId;
+                            ProductDAO.StatusId = Product.StatusId;
+                            ProductDAO.OtherName = Product.OtherName;
+                            ProductDAO.TechnicalName = Product.TechnicalName;
+                            ProductDAO.IsNew = Product.IsNew;
+                            ProductDAO.UsedVariationId = Product.UsedVariationId;
+                            ProductDAO.CreatedAt = Product.CreatedAt;
+                            ProductDAO.UpdatedAt = Product.UpdatedAt;
+                            ProductDAO.DeletedAt = Product.DeletedAt;
+                            ProductDAO.RowId = Product.RowId;
+                            ProductDAO.Used = Product.Used;
+                            ProductDAOs.Add(ProductDAO);
+                        }
+                        DataContext.Product.BulkMerge(ProductDAOs);
+
+                        foreach (var ProductImageMapping in ProductImageMappings)
+                        {
+                            ProductImageMappingDAO ProductImageMappingDAO = new ProductImageMappingDAO
+                            {
+                                ProductId = ProductImageMapping.ProductId,
+                                ImageId = ProductImageMapping.ImageId,
+                            };
+                            ProductImageMappingDAOs.Add(ProductImageMappingDAO);
+                            ImageDAOs.Add(new ImageDAO
+                            {
+                                Id = ProductImageMapping.Image.Id,
+                                Url = ProductImageMapping.Image.Url,
+                                ThumbnailUrl = ProductImageMapping.Image.ThumbnailUrl,
+                                RowId = ProductImageMapping.Image.RowId,
+                                Name = ProductImageMapping.Image.Name,
+                                CreatedAt = ProductImageMapping.Image.CreatedAt,
+                                UpdatedAt = ProductImageMapping.Image.UpdatedAt,
+                                DeletedAt = ProductImageMapping.Image.DeletedAt,
+                            });
+                        }
+
+                        foreach (ProductProductGroupingMapping ProductProductGroupingMapping in ProductProductGroupingMappings)
+                        {
+                            ProductProductGroupingMappingDAO ProductProductGroupingMappingDAO = new ProductProductGroupingMappingDAO();
+                            ProductProductGroupingMappingDAO.ProductId = ProductProductGroupingMapping.ProductId;
+                            ProductProductGroupingMappingDAO.ProductGroupingId = ProductProductGroupingMapping.ProductGroupingId;
+                            ProductProductGroupingMappingDAOs.Add(ProductProductGroupingMappingDAO);
+                        }
+                        DataContext.ProductProductGroupingMapping.BulkMerge(ProductProductGroupingMappingDAOs);
+
+                        foreach (VariationGrouping VariationGrouping in VariationGroupings)
+                        {
+                            VariationGroupingDAO VariationGroupingDAO = new VariationGroupingDAO();
+                            VariationGroupingDAO.Id = VariationGrouping.Id;
+                            VariationGroupingDAO.Name = VariationGrouping.Name;
+                            VariationGroupingDAO.ProductId = VariationGrouping.ProductId;
+                            VariationGroupingDAO.CreatedAt = VariationGrouping.CreatedAt;
+                            VariationGroupingDAO.UpdatedAt = VariationGrouping.UpdatedAt;
+                            VariationGroupingDAO.DeletedAt = VariationGrouping.DeletedAt;
+                            VariationGroupingDAO.Used = VariationGrouping.Used;
+                            VariationGroupingDAO.RowId = VariationGrouping.RowId;
+                            VariationGroupingDAOs.Add(VariationGroupingDAO);
+                        }
+                        DataContext.VariationGrouping.BulkMerge(VariationGroupingDAOs);
+
+                        foreach (Variation Variation in Variations)
+                        {
+                            VariationDAO VariationDAO = new VariationDAO();
+                            VariationDAO.Id = Variation.Id;
+                            VariationDAO.Code = Variation.Code;
+                            VariationDAO.Name = Variation.Name;
+                            VariationDAO.VariationGroupingId = Variation.VariationGroupingId;
+                            VariationDAO.CreatedAt = Variation.CreatedAt;
+                            VariationDAO.UpdatedAt = Variation.UpdatedAt;
+                            VariationDAO.DeletedAt = Variation.DeletedAt;
+                            VariationDAO.RowId = Variation.RowId;
+                            VariationDAO.Used = Variation.Used;
+                            VariationDAOs.Add(VariationDAO);
+                        }
+                        DataContext.Variation.BulkMerge(VariationDAOs);
+
+                        foreach (Item Item in Items)
+                        {
+                            ItemDAO ItemDAO = new ItemDAO();
+                            ItemDAO.Id = Item.Id;
+                            ItemDAO.Code = Item.Code;
+                            ItemDAO.Name = Item.Name;
+                            ItemDAO.ProductId = Item.ProductId;
+                            ItemDAO.ScanCode = Item.ScanCode;
+                            ItemDAO.SalePrice = Item.SalePrice;
+                            ItemDAO.RetailPrice = Item.RetailPrice;
+                            ItemDAO.StatusId = Item.StatusId;
+                            ItemDAO.CreatedAt = Item.CreatedAt;
+                            ItemDAO.UpdatedAt = Item.UpdatedAt;
+                            ItemDAO.DeletedAt = Item.DeletedAt;
+                            ItemDAO.RowId = Item.RowId;
+                            ItemDAO.Used = Item.Used;
+                            ItemDAOs.Add(ItemDAO);
+                        }
+                        DataContext.Item.BulkMerge(ItemDAOs);
+
+                        foreach (var ItemImageMapping in ItemImageMappings)
+                        {
+                            ItemImageMappingDAO ItemImageMappingDAO = new ItemImageMappingDAO
+                            {
+                                ItemId = ItemImageMapping.ItemId,
+                                ImageId = ItemImageMapping.ImageId
+                            };
+                            ItemImageMappingDAOs.Add(ItemImageMappingDAO);
+                            ImageDAOs.Add(new ImageDAO
+                            {
+                                Id = ItemImageMapping.Image.Id,
+                                Url = ItemImageMapping.Image.Url,
+                                ThumbnailUrl = ItemImageMapping.Image.ThumbnailUrl,
+                                RowId = ItemImageMapping.Image.RowId,
+                                Name = ItemImageMapping.Image.Name,
+                                CreatedAt = ItemImageMapping.Image.CreatedAt,
+                                UpdatedAt = ItemImageMapping.Image.UpdatedAt,
+                                DeletedAt = ItemImageMapping.Image.DeletedAt,
+                            });
+                        }
+                        DataContext.Image.BulkMerge(ImageDAOs);
+                        DataContext.ProductImageMapping.BulkMerge(ProductImageMappingDAOs);
+                        DataContext.ItemImageMapping.BulkMerge(ItemImageMappingDAOs);
+                    }
+                }
             }
         }
         #endregion

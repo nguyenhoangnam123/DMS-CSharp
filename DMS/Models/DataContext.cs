@@ -468,7 +468,9 @@ namespace DMS.Models
             {
                 entity.ToTable("Brand", "MDM");
 
-                entity.Property(e => e.Id).HasComment("Id");
+                entity.Property(e => e.Id)
+                    .HasComment("Id")
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.Code)
                     .IsRequired()
@@ -508,6 +510,8 @@ namespace DMS.Models
             modelBuilder.Entity<CategoryDAO>(entity =>
             {
                 entity.ToTable("Category", "MDM");
+
+                entity.Property(e => e.Id).ValueGeneratedNever();
 
                 entity.Property(e => e.Code)
                     .IsRequired()
@@ -1483,6 +1487,8 @@ namespace DMS.Models
             {
                 entity.ToTable("Item", "MDM");
 
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
                 entity.Property(e => e.Code)
                     .IsRequired()
                     .HasMaxLength(4000);
@@ -1519,6 +1525,8 @@ namespace DMS.Models
             modelBuilder.Entity<ItemHistoryDAO>(entity =>
             {
                 entity.ToTable("ItemHistory", "MDM");
+
+                entity.Property(e => e.Id).ValueGeneratedNever();
 
                 entity.Property(e => e.NewPrice).HasColumnType("decimal(18, 4)");
 
@@ -2374,6 +2382,8 @@ namespace DMS.Models
             {
                 entity.ToTable("Product", "MDM");
 
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
                 entity.Property(e => e.Code)
                     .IsRequired()
                     .HasMaxLength(500);
@@ -2462,6 +2472,8 @@ namespace DMS.Models
             {
                 entity.ToTable("ProductGrouping", "MDM");
 
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
                 entity.Property(e => e.Code)
                     .IsRequired()
                     .HasMaxLength(255);
@@ -2530,6 +2542,8 @@ namespace DMS.Models
             modelBuilder.Entity<ProductTypeDAO>(entity =>
             {
                 entity.ToTable("ProductType", "MDM");
+
+                entity.Property(e => e.Id).ValueGeneratedNever();
 
                 entity.Property(e => e.Code)
                     .IsRequired()
@@ -4082,6 +4096,8 @@ namespace DMS.Models
             {
                 entity.ToTable("Supplier", "MDM");
 
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
                 entity.Property(e => e.Address).HasMaxLength(2000);
 
                 entity.Property(e => e.Code)
@@ -4383,6 +4399,8 @@ namespace DMS.Models
             {
                 entity.ToTable("TaxType", "MDM");
 
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
                 entity.Property(e => e.Code)
                     .IsRequired()
                     .HasMaxLength(500);
@@ -4425,6 +4443,8 @@ namespace DMS.Models
             {
                 entity.ToTable("UnitOfMeasure", "MDM");
 
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
                 entity.Property(e => e.Code)
                     .IsRequired()
                     .HasMaxLength(500);
@@ -4451,6 +4471,8 @@ namespace DMS.Models
             modelBuilder.Entity<UnitOfMeasureGroupingDAO>(entity =>
             {
                 entity.ToTable("UnitOfMeasureGrouping", "MDM");
+
+                entity.Property(e => e.Id).ValueGeneratedNever();
 
                 entity.Property(e => e.Code)
                     .IsRequired()
@@ -4485,6 +4507,8 @@ namespace DMS.Models
             {
                 entity.ToTable("UnitOfMeasureGroupingContent", "MDM");
 
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
                 entity.HasOne(d => d.UnitOfMeasureGrouping)
                     .WithMany(p => p.UnitOfMeasureGroupingContents)
                     .HasForeignKey(d => d.UnitOfMeasureGroupingId)
@@ -4517,6 +4541,8 @@ namespace DMS.Models
             {
                 entity.ToTable("Variation", "MDM");
 
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
                 entity.Property(e => e.Code)
                     .IsRequired()
                     .HasMaxLength(500);
@@ -4541,6 +4567,8 @@ namespace DMS.Models
             modelBuilder.Entity<VariationGroupingDAO>(entity =>
             {
                 entity.ToTable("VariationGrouping", "MDM");
+
+                entity.Property(e => e.Id).ValueGeneratedNever();
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
