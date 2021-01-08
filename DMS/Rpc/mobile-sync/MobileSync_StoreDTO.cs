@@ -24,8 +24,6 @@ namespace DMS.Rpc.mobile_sync
 
         public long? StoreGroupingId { get; set; }
 
-        public long? ResellerId { get; set; }
-
         public string Telephone { get; set; }
 
         public long? ProvinceId { get; set; }
@@ -78,8 +76,6 @@ namespace DMS.Rpc.mobile_sync
             this.StoreTypeId = Store.StoreTypeId;
 
             this.StoreGroupingId = Store.StoreGroupingId;
-
-            this.ResellerId = Store.ResellerId;
 
             this.Telephone = Store.Telephone;
 

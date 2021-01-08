@@ -19,7 +19,6 @@ namespace DMS.Entities
         public long StoreTypeId { get; set; }
         public long? StoreGroupingId { get; set; }
         public string Telephone { get; set; }
-        public long? ResellerId { get; set; }
         public long? ProvinceId { get; set; }
         public long? DistrictId { get; set; }
         public long? WardId { get; set; }
@@ -51,7 +50,6 @@ namespace DMS.Entities
         public District District { get; set; }
         public Organization Organization { get; set; }
         public Store ParentStore { get; set; }
-        public Reseller Reseller { get; set; }
         public Province Province { get; set; }
         public Status Status { get; set; }
         public StoreGrouping StoreGrouping { get; set; }
@@ -91,7 +89,6 @@ namespace DMS.Entities
         public IdFilter StoreCheckingStatusId { get; set; }
         public IdFilter SalesEmployeeId { get; set; }
         public StringFilter Telephone { get; set; }
-        public IdFilter ResellerId { get; set; }
         public IdFilter ProvinceId { get; set; }
         public IdFilter DistrictId { get; set; }
         public IdFilter WardId { get; set; }
@@ -125,7 +122,6 @@ namespace DMS.Entities
         Organization = 4,
         StoreType = 5,
         StoreGrouping = 6,
-        Reseller = 7,
         Telephone = 8,
         Province = 9,
         District = 10,
@@ -159,7 +155,6 @@ namespace DMS.Entities
         Organization = E._4,
         StoreType = E._5,
         StoreGrouping = E._6,
-        Reseller = E._6,
         Telephone = E._8,
         Province = E._9,
         District = E._10,

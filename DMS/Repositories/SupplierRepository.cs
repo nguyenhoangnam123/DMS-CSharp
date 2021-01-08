@@ -15,11 +15,6 @@ namespace DMS.Repositories
         Task<int> Count(SupplierFilter SupplierFilter);
         Task<List<Supplier>> List(SupplierFilter SupplierFilter);
         Task<Supplier> Get(long Id);
-        Task<bool> Create(Supplier Supplier);
-        Task<bool> Update(Supplier Supplier);
-        Task<bool> Delete(Supplier Supplier);
-        Task<bool> BulkMerge(List<Supplier> Suppliers);
-        Task<bool> BulkDelete(List<Supplier> Suppliers);
     }
     public class SupplierRepository : ISupplierRepository
     {
@@ -367,107 +362,5 @@ namespace DMS.Repositories
 
             return Supplier;
         }
-        public async Task<bool> Create(Supplier Supplier)
-        {
-            SupplierDAO SupplierDAO = new SupplierDAO();
-            SupplierDAO.Id = Supplier.Id;
-            SupplierDAO.Code = Supplier.Code;
-            SupplierDAO.Name = Supplier.Name;
-            SupplierDAO.TaxCode = Supplier.TaxCode;
-            SupplierDAO.Phone = Supplier.Phone;
-            SupplierDAO.Email = Supplier.Email;
-            SupplierDAO.Address = Supplier.Address;
-            SupplierDAO.ProvinceId = Supplier.ProvinceId;
-            SupplierDAO.DistrictId = Supplier.DistrictId;
-            SupplierDAO.WardId = Supplier.WardId;
-            SupplierDAO.OwnerName = Supplier.OwnerName;
-            SupplierDAO.PersonInChargeId = Supplier.PersonInChargeId;
-            SupplierDAO.Description = Supplier.Description;
-            SupplierDAO.StatusId = Supplier.StatusId;
-            SupplierDAO.CreatedAt = StaticParams.DateTimeNow;
-            SupplierDAO.UpdatedAt = StaticParams.DateTimeNow;
-            SupplierDAO.Used = false;
-            DataContext.Supplier.Add(SupplierDAO);
-            await DataContext.SaveChangesAsync();
-            Supplier.Id = SupplierDAO.Id;
-            return true;
-        }
-
-        public async Task<bool> Update(Supplier Supplier)
-        {
-            SupplierDAO SupplierDAO = DataContext.Supplier
-                .Where(x => x.Id == Supplier.Id).FirstOrDefault();
-            if (SupplierDAO == null)
-                return false;
-            SupplierDAO.Id = Supplier.Id;
-            SupplierDAO.Code = Supplier.Code;
-            SupplierDAO.Name = Supplier.Name;
-            SupplierDAO.TaxCode = Supplier.TaxCode;
-            SupplierDAO.Phone = Supplier.Phone;
-            SupplierDAO.Email = Supplier.Email;
-            SupplierDAO.Address = Supplier.Address;
-            SupplierDAO.ProvinceId = Supplier.ProvinceId;
-            SupplierDAO.DistrictId = Supplier.DistrictId;
-            SupplierDAO.WardId = Supplier.WardId;
-            SupplierDAO.OwnerName = Supplier.OwnerName;
-            SupplierDAO.PersonInChargeId = Supplier.PersonInChargeId;
-            SupplierDAO.Description = Supplier.Description;
-            SupplierDAO.StatusId = Supplier.StatusId;
-            SupplierDAO.UpdatedAt = StaticParams.DateTimeNow;
-            await DataContext.SaveChangesAsync();
-            return true;
-        }
-
-        public async Task<bool> Delete(Supplier Supplier)
-        {
-            await DataContext.Product
-                .Where(x => x.SupplierId.HasValue && x.SupplierId.Value == Supplier.Id)
-                .UpdateFromQueryAsync(x => new ProductDAO { SupplierId = null });
-            await DataContext.Supplier.Where(x => x.Id == Supplier.Id)
-                .UpdateFromQueryAsync(x => new SupplierDAO { DeletedAt = StaticParams.DateTimeNow });
-            return true;
-        }
-
-        public async Task<bool> BulkMerge(List<Supplier> Suppliers)
-        {
-            List<SupplierDAO> SupplierDAOs = new List<SupplierDAO>();
-            foreach (Supplier Supplier in Suppliers)
-            {
-                SupplierDAO SupplierDAO = new SupplierDAO();
-                SupplierDAO.Id = Supplier.Id;
-                SupplierDAO.Code = Supplier.Code;
-                SupplierDAO.Name = Supplier.Name;
-                SupplierDAO.TaxCode = Supplier.TaxCode;
-                SupplierDAO.Phone = Supplier.Phone;
-                SupplierDAO.Email = Supplier.Email;
-                SupplierDAO.Address = Supplier.Address;
-                SupplierDAO.ProvinceId = Supplier.ProvinceId;
-                SupplierDAO.DistrictId = Supplier.DistrictId;
-                SupplierDAO.WardId = Supplier.WardId;
-                SupplierDAO.OwnerName = Supplier.OwnerName;
-                SupplierDAO.PersonInChargeId = Supplier.PersonInChargeId;
-                SupplierDAO.Description = Supplier.Description;
-                SupplierDAO.StatusId = Supplier.StatusId;
-                SupplierDAO.CreatedAt = StaticParams.DateTimeNow;
-                SupplierDAO.UpdatedAt = StaticParams.DateTimeNow;
-                SupplierDAOs.Add(SupplierDAO);
-            }
-            await DataContext.BulkMergeAsync(SupplierDAOs);
-            return true;
-        }
-
-        public async Task<bool> BulkDelete(List<Supplier> Suppliers)
-        {
-            List<long> Ids = Suppliers.Select(x => x.Id).ToList();
-            await DataContext.Product
-              .Where(x => x.SupplierId.HasValue && Ids.Contains(x.SupplierId.Value))
-              .UpdateFromQueryAsync(x => new ProductDAO { SupplierId = null });
-
-            await DataContext.Supplier
-                .Where(x => Ids.Contains(x.Id))
-                .UpdateFromQueryAsync(x => new SupplierDAO { DeletedAt = StaticParams.DateTimeNow });
-            return true;
-        }
-
     }
 }

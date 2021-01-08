@@ -576,7 +576,6 @@ namespace DMS.Rpc.mobile
             StoreFilter.StoreGroupingId = Mobile_StoreFilterDTO.StoreGroupingId;
             StoreFilter.StoreCheckingStatusId = Mobile_StoreFilterDTO.StoreCheckingStatusId;
             StoreFilter.Telephone = Mobile_StoreFilterDTO.Telephone;
-            StoreFilter.ResellerId = Mobile_StoreFilterDTO.ResellerId;
             StoreFilter.ProvinceId = Mobile_StoreFilterDTO.ProvinceId;
             StoreFilter.DistrictId = Mobile_StoreFilterDTO.DistrictId;
             StoreFilter.WardId = Mobile_StoreFilterDTO.WardId;
@@ -617,7 +616,6 @@ namespace DMS.Rpc.mobile
             StoreFilter.StoreGroupingId = Mobile_StoreFilterDTO.StoreGroupingId;
             StoreFilter.StoreCheckingStatusId = Mobile_StoreFilterDTO.StoreCheckingStatusId;
             StoreFilter.Telephone = Mobile_StoreFilterDTO.Telephone;
-            StoreFilter.ResellerId = Mobile_StoreFilterDTO.ResellerId;
             StoreFilter.ProvinceId = Mobile_StoreFilterDTO.ProvinceId;
             StoreFilter.DistrictId = Mobile_StoreFilterDTO.DistrictId;
             StoreFilter.WardId = Mobile_StoreFilterDTO.WardId;
@@ -661,7 +659,6 @@ namespace DMS.Rpc.mobile
             StoreFilter.StoreGroupingId = Mobile_StoreFilterDTO.StoreGroupingId;
             StoreFilter.StoreCheckingStatusId = Mobile_StoreFilterDTO.StoreCheckingStatusId;
             StoreFilter.Telephone = Mobile_StoreFilterDTO.Telephone;
-            StoreFilter.ResellerId = Mobile_StoreFilterDTO.ResellerId;
             StoreFilter.ProvinceId = Mobile_StoreFilterDTO.ProvinceId;
             StoreFilter.DistrictId = Mobile_StoreFilterDTO.DistrictId;
             StoreFilter.WardId = Mobile_StoreFilterDTO.WardId;
@@ -708,7 +705,6 @@ namespace DMS.Rpc.mobile
             StoreFilter.StoreGroupingId = Mobile_StoreFilterDTO.StoreGroupingId;
             StoreFilter.StoreCheckingStatusId = Mobile_StoreFilterDTO.StoreCheckingStatusId;
             StoreFilter.Telephone = Mobile_StoreFilterDTO.Telephone;
-            StoreFilter.ResellerId = Mobile_StoreFilterDTO.ResellerId;
             StoreFilter.ProvinceId = Mobile_StoreFilterDTO.ProvinceId;
             StoreFilter.DistrictId = Mobile_StoreFilterDTO.DistrictId;
             StoreFilter.WardId = Mobile_StoreFilterDTO.WardId;
@@ -757,7 +753,6 @@ namespace DMS.Rpc.mobile
             StoreFilter.StoreGroupingId = Mobile_StoreFilterDTO.StoreGroupingId;
             StoreFilter.StoreCheckingStatusId = Mobile_StoreFilterDTO.StoreCheckingStatusId;
             StoreFilter.Telephone = Mobile_StoreFilterDTO.Telephone;
-            StoreFilter.ResellerId = Mobile_StoreFilterDTO.ResellerId;
             StoreFilter.ProvinceId = Mobile_StoreFilterDTO.ProvinceId;
             StoreFilter.DistrictId = Mobile_StoreFilterDTO.DistrictId;
             StoreFilter.WardId = Mobile_StoreFilterDTO.WardId;
@@ -798,7 +793,6 @@ namespace DMS.Rpc.mobile
             StoreFilter.StoreGroupingId = Mobile_StoreFilterDTO.StoreGroupingId;
             StoreFilter.StoreCheckingStatusId = Mobile_StoreFilterDTO.StoreCheckingStatusId;
             StoreFilter.Telephone = Mobile_StoreFilterDTO.Telephone;
-            StoreFilter.ResellerId = Mobile_StoreFilterDTO.ResellerId;
             StoreFilter.ProvinceId = Mobile_StoreFilterDTO.ProvinceId;
             StoreFilter.DistrictId = Mobile_StoreFilterDTO.DistrictId;
             StoreFilter.WardId = Mobile_StoreFilterDTO.WardId;
@@ -842,7 +836,6 @@ namespace DMS.Rpc.mobile
             StoreFilter.StoreGroupingId = Mobile_StoreFilterDTO.StoreGroupingId;
             StoreFilter.StoreCheckingStatusId = Mobile_StoreFilterDTO.StoreCheckingStatusId;
             StoreFilter.Telephone = Mobile_StoreFilterDTO.Telephone;
-            StoreFilter.ResellerId = Mobile_StoreFilterDTO.ResellerId;
             StoreFilter.ProvinceId = Mobile_StoreFilterDTO.ProvinceId;
             StoreFilter.DistrictId = Mobile_StoreFilterDTO.DistrictId;
             StoreFilter.WardId = Mobile_StoreFilterDTO.WardId;
@@ -883,7 +876,6 @@ namespace DMS.Rpc.mobile
             StoreFilter.StoreGroupingId = Mobile_StoreFilterDTO.StoreGroupingId;
             StoreFilter.StoreCheckingStatusId = Mobile_StoreFilterDTO.StoreCheckingStatusId;
             StoreFilter.Telephone = Mobile_StoreFilterDTO.Telephone;
-            StoreFilter.ResellerId = Mobile_StoreFilterDTO.ResellerId;
             StoreFilter.ProvinceId = Mobile_StoreFilterDTO.ProvinceId;
             StoreFilter.DistrictId = Mobile_StoreFilterDTO.DistrictId;
             StoreFilter.WardId = Mobile_StoreFilterDTO.WardId;
@@ -927,7 +919,6 @@ namespace DMS.Rpc.mobile
             StoreFilter.StoreGroupingId = Mobile_StoreFilterDTO.StoreGroupingId;
             StoreFilter.StoreCheckingStatusId = Mobile_StoreFilterDTO.StoreCheckingStatusId;
             StoreFilter.Telephone = Mobile_StoreFilterDTO.Telephone;
-            StoreFilter.ResellerId = Mobile_StoreFilterDTO.ResellerId;
             StoreFilter.ProvinceId = Mobile_StoreFilterDTO.ProvinceId;
             StoreFilter.DistrictId = Mobile_StoreFilterDTO.DistrictId;
             StoreFilter.WardId = Mobile_StoreFilterDTO.WardId;
@@ -968,7 +959,6 @@ namespace DMS.Rpc.mobile
             StoreFilter.StoreGroupingId = Mobile_StoreFilterDTO.StoreGroupingId;
             StoreFilter.StoreCheckingStatusId = Mobile_StoreFilterDTO.StoreCheckingStatusId;
             StoreFilter.Telephone = Mobile_StoreFilterDTO.Telephone;
-            StoreFilter.ResellerId = Mobile_StoreFilterDTO.ResellerId;
             StoreFilter.ProvinceId = Mobile_StoreFilterDTO.ProvinceId;
             StoreFilter.DistrictId = Mobile_StoreFilterDTO.DistrictId;
             StoreFilter.WardId = Mobile_StoreFilterDTO.WardId;

@@ -15,11 +15,6 @@ namespace DMS.Repositories
         Task<int> Count(BrandFilter BrandFilter);
         Task<List<Brand>> List(BrandFilter BrandFilter);
         Task<Brand> Get(long Id);
-        Task<bool> Create(Brand Brand);
-        Task<bool> Update(Brand Brand);
-        Task<bool> Delete(Brand Brand);
-        Task<bool> BulkMerge(List<Brand> Brands);
-        Task<bool> BulkDelete(List<Brand> Brands);
     }
     public class BrandRepository : IBrandRepository
     {
@@ -193,84 +188,5 @@ namespace DMS.Repositories
 
             return Brand;
         }
-        public async Task<bool> Create(Brand Brand)
-        {
-            BrandDAO BrandDAO = new BrandDAO();
-            BrandDAO.Id = Brand.Id;
-            BrandDAO.Code = Brand.Code;
-            BrandDAO.Name = Brand.Name;
-            BrandDAO.Description = Brand.Description;
-            BrandDAO.StatusId = Brand.StatusId;
-            BrandDAO.CreatedAt = StaticParams.DateTimeNow;
-            BrandDAO.UpdatedAt = StaticParams.DateTimeNow;
-            BrandDAO.Used = false;
-            DataContext.Brand.Add(BrandDAO);
-            await DataContext.SaveChangesAsync();
-            Brand.Id = BrandDAO.Id;
-            await SaveReference(Brand);
-            return true;
-        }
-
-        public async Task<bool> Update(Brand Brand)
-        {
-            BrandDAO BrandDAO = DataContext.Brand.Where(x => x.Id == Brand.Id).FirstOrDefault();
-            if (BrandDAO == null)
-                return false;
-            BrandDAO.Id = Brand.Id;
-            BrandDAO.Code = Brand.Code;
-            BrandDAO.Name = Brand.Name;
-            BrandDAO.Description = Brand.Description;
-            BrandDAO.StatusId = Brand.StatusId;
-            BrandDAO.UpdatedAt = StaticParams.DateTimeNow;
-            await DataContext.SaveChangesAsync();
-            await SaveReference(Brand);
-            return true;
-        }
-
-        public async Task<bool> Delete(Brand Brand)
-        {
-            await DataContext.Product
-                .Where(x => x.BrandId.HasValue && x.BrandId.Value == Brand.Id)
-                .UpdateFromQueryAsync(x => new ProductDAO { BrandId = null });
-
-            await DataContext.Brand.Where(x => x.Id == Brand.Id).UpdateFromQueryAsync(x => new BrandDAO { DeletedAt = StaticParams.DateTimeNow });
-            return true;
-        }
-
-        public async Task<bool> BulkMerge(List<Brand> Brands)
-        {
-            List<BrandDAO> BrandDAOs = new List<BrandDAO>();
-            foreach (Brand Brand in Brands)
-            {
-                BrandDAO BrandDAO = new BrandDAO();
-                BrandDAO.Id = Brand.Id;
-                BrandDAO.Code = Brand.Code;
-                BrandDAO.Name = Brand.Name;
-                BrandDAO.Description = Brand.Description;
-                BrandDAO.StatusId = Brand.StatusId;
-                BrandDAO.CreatedAt = StaticParams.DateTimeNow;
-                BrandDAO.UpdatedAt = StaticParams.DateTimeNow;
-                BrandDAOs.Add(BrandDAO);
-            }
-            await DataContext.BulkMergeAsync(BrandDAOs);
-            return true;
-        }
-
-        public async Task<bool> BulkDelete(List<Brand> Brands)
-        {
-            List<long> Ids = Brands.Select(x => x.Id).ToList();
-            await DataContext.Product
-                .Where(x => x.BrandId.HasValue && Ids.Contains(x.BrandId.Value))
-                .UpdateFromQueryAsync(x => new ProductDAO { BrandId = null });
-            await DataContext.Brand
-                .Where(x => Ids.Contains(x.Id))
-                .UpdateFromQueryAsync(x => new BrandDAO { DeletedAt = StaticParams.DateTimeNow });
-            return true;
-        }
-
-        private async Task SaveReference(Brand Brand)
-        {
-        }
-
     }
 }

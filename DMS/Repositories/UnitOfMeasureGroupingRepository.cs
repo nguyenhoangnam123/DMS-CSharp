@@ -15,11 +15,6 @@ namespace DMS.Repositories
         Task<int> Count(UnitOfMeasureGroupingFilter UnitOfMeasureGroupingFilter);
         Task<List<UnitOfMeasureGrouping>> List(UnitOfMeasureGroupingFilter UnitOfMeasureGroupingFilter);
         Task<UnitOfMeasureGrouping> Get(long Id);
-        Task<bool> Create(UnitOfMeasureGrouping UnitOfMeasureGrouping);
-        Task<bool> Update(UnitOfMeasureGrouping UnitOfMeasureGrouping);
-        Task<bool> Delete(UnitOfMeasureGrouping UnitOfMeasureGrouping);
-        Task<bool> BulkMerge(List<UnitOfMeasureGrouping> UnitOfMeasureGroupings);
-        Task<bool> BulkDelete(List<UnitOfMeasureGrouping> UnitOfMeasureGroupings);
     }
     public class UnitOfMeasureGroupingRepository : IUnitOfMeasureGroupingRepository
     {
@@ -239,107 +234,6 @@ namespace DMS.Repositories
                 }).ToListAsync();
 
             return UnitOfMeasureGrouping;
-        }
-        public async Task<bool> Create(UnitOfMeasureGrouping UnitOfMeasureGrouping)
-        {
-            UnitOfMeasureGroupingDAO UnitOfMeasureGroupingDAO = new UnitOfMeasureGroupingDAO();
-            UnitOfMeasureGroupingDAO.Id = UnitOfMeasureGrouping.Id;
-            UnitOfMeasureGroupingDAO.Code = UnitOfMeasureGrouping.Code;
-            UnitOfMeasureGroupingDAO.Name = UnitOfMeasureGrouping.Name;
-            UnitOfMeasureGroupingDAO.Description = UnitOfMeasureGrouping.Description;
-            UnitOfMeasureGroupingDAO.UnitOfMeasureId = UnitOfMeasureGrouping.UnitOfMeasureId;
-            UnitOfMeasureGroupingDAO.StatusId = UnitOfMeasureGrouping.StatusId;
-            UnitOfMeasureGroupingDAO.CreatedAt = StaticParams.DateTimeNow;
-            UnitOfMeasureGroupingDAO.UpdatedAt = StaticParams.DateTimeNow;
-            UnitOfMeasureGroupingDAO.Used = false;
-            DataContext.UnitOfMeasureGrouping.Add(UnitOfMeasureGroupingDAO);
-            await DataContext.SaveChangesAsync();
-            UnitOfMeasureGrouping.Id = UnitOfMeasureGroupingDAO.Id;
-            await SaveReference(UnitOfMeasureGrouping);
-            return true;
-        }
-
-        public async Task<bool> Update(UnitOfMeasureGrouping UnitOfMeasureGrouping)
-        {
-            UnitOfMeasureGroupingDAO UnitOfMeasureGroupingDAO = DataContext.UnitOfMeasureGrouping
-                .Where(x => x.Id == UnitOfMeasureGrouping.Id).FirstOrDefault();
-            if (UnitOfMeasureGroupingDAO == null)
-                return false;
-            UnitOfMeasureGroupingDAO.Id = UnitOfMeasureGrouping.Id;
-            UnitOfMeasureGroupingDAO.Code = UnitOfMeasureGrouping.Code;
-            UnitOfMeasureGroupingDAO.Name = UnitOfMeasureGrouping.Name;
-            UnitOfMeasureGroupingDAO.Description = UnitOfMeasureGrouping.Description;
-            UnitOfMeasureGroupingDAO.UnitOfMeasureId = UnitOfMeasureGrouping.UnitOfMeasureId;
-            UnitOfMeasureGroupingDAO.StatusId = UnitOfMeasureGrouping.StatusId;
-            UnitOfMeasureGroupingDAO.UpdatedAt = StaticParams.DateTimeNow;
-            await DataContext.SaveChangesAsync();
-            await SaveReference(UnitOfMeasureGrouping);
-            return true;
-        }
-
-        public async Task<bool> Delete(UnitOfMeasureGrouping UnitOfMeasureGrouping)
-        {
-            await DataContext.Product
-               .Where(x => x.UnitOfMeasureGroupingId.HasValue && x.UnitOfMeasureGroupingId.Value == UnitOfMeasureGrouping.Id)
-               .UpdateFromQueryAsync(x => new ProductDAO { SupplierId = null });
-
-            await DataContext.UnitOfMeasureGrouping.Where(x => x.Id == UnitOfMeasureGrouping.Id)
-                .UpdateFromQueryAsync(x => new UnitOfMeasureGroupingDAO { DeletedAt = StaticParams.DateTimeNow });
-            return true;
-        }
-
-        public async Task<bool> BulkMerge(List<UnitOfMeasureGrouping> UnitOfMeasureGroupings)
-        {
-            List<UnitOfMeasureGroupingDAO> UnitOfMeasureGroupingDAOs = new List<UnitOfMeasureGroupingDAO>();
-            foreach (UnitOfMeasureGrouping UnitOfMeasureGrouping in UnitOfMeasureGroupings)
-            {
-                UnitOfMeasureGroupingDAO UnitOfMeasureGroupingDAO = new UnitOfMeasureGroupingDAO();
-                UnitOfMeasureGroupingDAO.Id = UnitOfMeasureGrouping.Id;
-                UnitOfMeasureGroupingDAO.Code = UnitOfMeasureGrouping.Code;
-                UnitOfMeasureGroupingDAO.Name = UnitOfMeasureGrouping.Name;
-                UnitOfMeasureGroupingDAO.Description = UnitOfMeasureGrouping.Description;
-                UnitOfMeasureGroupingDAO.UnitOfMeasureId = UnitOfMeasureGrouping.UnitOfMeasureId;
-                UnitOfMeasureGroupingDAO.StatusId = UnitOfMeasureGrouping.StatusId;
-                UnitOfMeasureGroupingDAO.CreatedAt = StaticParams.DateTimeNow;
-                UnitOfMeasureGroupingDAO.UpdatedAt = StaticParams.DateTimeNow;
-                UnitOfMeasureGroupingDAOs.Add(UnitOfMeasureGroupingDAO);
-            }
-            await DataContext.BulkMergeAsync(UnitOfMeasureGroupingDAOs);
-            return true;
-        }
-
-        public async Task<bool> BulkDelete(List<UnitOfMeasureGrouping> UnitOfMeasureGroupings)
-        {
-            List<long> Ids = UnitOfMeasureGroupings.Select(x => x.Id).ToList();
-
-            await DataContext.Product
-                .Where(x => x.UnitOfMeasureGroupingId.HasValue && Ids.Contains(x.UnitOfMeasureGroupingId.Value))
-                .UpdateFromQueryAsync(x => new ProductDAO { UnitOfMeasureGroupingId = null });
-
-            await DataContext.UnitOfMeasureGrouping
-                .Where(x => Ids.Contains(x.Id))
-                .UpdateFromQueryAsync(x => new UnitOfMeasureGroupingDAO { DeletedAt = StaticParams.DateTimeNow });
-            return true;
-        }
-
-        private async Task SaveReference(UnitOfMeasureGrouping UnitOfMeasureGrouping)
-        {
-            await DataContext.UnitOfMeasureGroupingContent
-                .Where(x => x.UnitOfMeasureGroupingId == UnitOfMeasureGrouping.Id)
-                .DeleteFromQueryAsync();
-            List<UnitOfMeasureGroupingContentDAO> UnitOfMeasureGroupingContentDAOs = new List<UnitOfMeasureGroupingContentDAO>();
-            if (UnitOfMeasureGrouping.UnitOfMeasureGroupingContents != null)
-            {
-                foreach (UnitOfMeasureGroupingContent UnitOfMeasureGroupingContent in UnitOfMeasureGrouping.UnitOfMeasureGroupingContents)
-                {
-                    UnitOfMeasureGroupingContentDAO UnitOfMeasureGroupingContentDAO = new UnitOfMeasureGroupingContentDAO();
-                    UnitOfMeasureGroupingContentDAO.UnitOfMeasureGroupingId = UnitOfMeasureGrouping.Id;
-                    UnitOfMeasureGroupingContentDAO.UnitOfMeasureId = UnitOfMeasureGroupingContent.UnitOfMeasureId;
-                    UnitOfMeasureGroupingContentDAO.Factor = UnitOfMeasureGroupingContent.Factor;
-                    UnitOfMeasureGroupingContentDAOs.Add(UnitOfMeasureGroupingContentDAO);
-                }
-                await DataContext.UnitOfMeasureGroupingContent.BulkMergeAsync(UnitOfMeasureGroupingContentDAOs);
-            }
         }
     }
 }

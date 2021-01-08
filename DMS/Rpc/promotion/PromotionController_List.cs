@@ -277,7 +277,6 @@ namespace DMS.Rpc.promotion
             StoreFilter.OrganizationId = Promotion_StoreFilterDTO.OrganizationId;
             StoreFilter.StoreTypeId = Promotion_StoreFilterDTO.StoreTypeId;
             StoreFilter.StoreGroupingId = Promotion_StoreFilterDTO.StoreGroupingId;
-            StoreFilter.ResellerId = Promotion_StoreFilterDTO.ResellerId;
             StoreFilter.Telephone = Promotion_StoreFilterDTO.Telephone;
             StoreFilter.ProvinceId = Promotion_StoreFilterDTO.ProvinceId;
             StoreFilter.DistrictId = Promotion_StoreFilterDTO.DistrictId;
@@ -566,7 +565,6 @@ namespace DMS.Rpc.promotion
             StoreFilter.OrganizationId = Promotion_StoreFilterDTO.OrganizationId;
             StoreFilter.StoreTypeId = Promotion_StoreFilterDTO.StoreTypeId;
             StoreFilter.StoreGroupingId = Promotion_StoreFilterDTO.StoreGroupingId;
-            StoreFilter.ResellerId = Promotion_StoreFilterDTO.ResellerId;
             StoreFilter.Telephone = Promotion_StoreFilterDTO.Telephone;
             StoreFilter.ProvinceId = Promotion_StoreFilterDTO.ProvinceId;
             StoreFilter.DistrictId = Promotion_StoreFilterDTO.DistrictId;
@@ -676,7 +674,6 @@ namespace DMS.Rpc.promotion
             StoreFilter.OrganizationId = Promotion_StoreFilterDTO.OrganizationId;
             StoreFilter.StoreTypeId = Promotion_StoreFilterDTO.StoreTypeId;
             StoreFilter.StoreGroupingId = Promotion_StoreFilterDTO.StoreGroupingId;
-            StoreFilter.ResellerId = Promotion_StoreFilterDTO.ResellerId;
             StoreFilter.Telephone = Promotion_StoreFilterDTO.Telephone;
             StoreFilter.ProvinceId = Promotion_StoreFilterDTO.ProvinceId;
             StoreFilter.DistrictId = Promotion_StoreFilterDTO.DistrictId;
@@ -718,7 +715,6 @@ namespace DMS.Rpc.promotion
             StoreFilter.OrganizationId = Promotion_StoreFilterDTO.OrganizationId;
             StoreFilter.StoreTypeId = Promotion_StoreFilterDTO.StoreTypeId;
             StoreFilter.StoreGroupingId = Promotion_StoreFilterDTO.StoreGroupingId;
-            StoreFilter.ResellerId = Promotion_StoreFilterDTO.ResellerId;
             StoreFilter.Telephone = Promotion_StoreFilterDTO.Telephone;
             StoreFilter.ProvinceId = Promotion_StoreFilterDTO.ProvinceId;
             StoreFilter.DistrictId = Promotion_StoreFilterDTO.DistrictId;

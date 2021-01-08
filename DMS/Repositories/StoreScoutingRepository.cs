@@ -504,7 +504,6 @@ namespace DMS.Repositories
                 StoreTypeId = x.StoreTypeId,
                 StoreGroupingId = x.StoreGroupingId,
                 Telephone = x.Telephone,
-                ResellerId = x.ResellerId,
                 ProvinceId = x.ProvinceId,
                 DistrictId = x.DistrictId,
                 WardId = x.WardId,

@@ -15,11 +15,6 @@ namespace DMS.Repositories
         Task<int> Count(ItemHistoryFilter ItemHistoryFilter);
         Task<List<ItemHistory>> List(ItemHistoryFilter ItemHistoryFilter);
         Task<ItemHistory> Get(long Id);
-        Task<bool> Create(ItemHistory ItemHistory);
-        Task<bool> Update(ItemHistory ItemHistory);
-        Task<bool> Delete(ItemHistory ItemHistory);
-        Task<bool> BulkMerge(List<ItemHistory> ItemHistories);
-        Task<bool> BulkDelete(List<ItemHistory> ItemHistories);
     }
     public class ItemHistoryRepository : IItemHistoryRepository
     {
@@ -236,73 +231,5 @@ namespace DMS.Repositories
 
             return ItemHistory;
         }
-        public async Task<bool> Create(ItemHistory ItemHistory)
-        {
-            ItemHistoryDAO ItemHistoryDAO = new ItemHistoryDAO();
-            ItemHistoryDAO.Id = ItemHistory.Id;
-            ItemHistoryDAO.ItemId = ItemHistory.ItemId;
-            ItemHistoryDAO.Time = ItemHistory.Time;
-            ItemHistoryDAO.ModifierId = ItemHistory.ModifierId;
-            ItemHistoryDAO.OldPrice = ItemHistory.OldPrice;
-            ItemHistoryDAO.NewPrice = ItemHistory.NewPrice;
-            DataContext.ItemHistory.Add(ItemHistoryDAO);
-            await DataContext.SaveChangesAsync();
-            ItemHistory.Id = ItemHistoryDAO.Id;
-            await SaveReference(ItemHistory);
-            return true;
-        }
-
-        public async Task<bool> Update(ItemHistory ItemHistory)
-        {
-            ItemHistoryDAO ItemHistoryDAO = DataContext.ItemHistory.Where(x => x.Id == ItemHistory.Id).FirstOrDefault();
-            if (ItemHistoryDAO == null)
-                return false;
-            ItemHistoryDAO.Id = ItemHistory.Id;
-            ItemHistoryDAO.ItemId = ItemHistory.ItemId;
-            ItemHistoryDAO.Time = ItemHistory.Time;
-            ItemHistoryDAO.ModifierId = ItemHistory.ModifierId;
-            ItemHistoryDAO.OldPrice = ItemHistory.OldPrice;
-            ItemHistoryDAO.NewPrice = ItemHistory.NewPrice;
-            await DataContext.SaveChangesAsync();
-            await SaveReference(ItemHistory);
-            return true;
-        }
-
-        public async Task<bool> Delete(ItemHistory ItemHistory)
-        {
-            await DataContext.ItemHistory.Where(x => x.Id == ItemHistory.Id).DeleteFromQueryAsync();
-            return true;
-        }
-        
-        public async Task<bool> BulkMerge(List<ItemHistory> ItemHistories)
-        {
-            List<ItemHistoryDAO> ItemHistoryDAOs = new List<ItemHistoryDAO>();
-            foreach (ItemHistory ItemHistory in ItemHistories)
-            {
-                ItemHistoryDAO ItemHistoryDAO = new ItemHistoryDAO();
-                ItemHistoryDAO.Id = ItemHistory.Id;
-                ItemHistoryDAO.ItemId = ItemHistory.ItemId;
-                ItemHistoryDAO.Time = ItemHistory.Time;
-                ItemHistoryDAO.ModifierId = ItemHistory.ModifierId;
-                ItemHistoryDAO.OldPrice = ItemHistory.OldPrice;
-                ItemHistoryDAO.NewPrice = ItemHistory.NewPrice;
-                ItemHistoryDAOs.Add(ItemHistoryDAO);
-            }
-            await DataContext.BulkMergeAsync(ItemHistoryDAOs);
-            return true;
-        }
-
-        public async Task<bool> BulkDelete(List<ItemHistory> ItemHistories)
-        {
-            List<long> Ids = ItemHistories.Select(x => x.Id).ToList();
-            await DataContext.ItemHistory
-                .Where(x => Ids.Contains(x.Id)).DeleteFromQueryAsync();
-            return true;
-        }
-
-        private async Task SaveReference(ItemHistory ItemHistory)
-        {
-        }
-        
     }
 }

@@ -5,7 +5,6 @@ using DMS.Services.MAppUser;
 using DMS.Services.MDistrict;
 using DMS.Services.MOrganization;
 using DMS.Services.MProvince;
-using DMS.Services.MReseller;
 using DMS.Services.MStatus;
 using DMS.Services.MStore;
 using DMS.Services.MStoreGrouping;
@@ -32,7 +31,6 @@ namespace DMS.Rpc.store
         private IDistrictService DistrictService;
         private IOrganizationService OrganizationService;
         private IProvinceService ProvinceService;
-        private IResellerService ResellerService;
         private IStoreStatusService StoreStatusService;
         private IStatusService StatusService;
         private IStoreScoutingService StoreScoutingService;
@@ -46,7 +44,6 @@ namespace DMS.Rpc.store
             IDistrictService DistrictService,
             IOrganizationService OrganizationService,
             IProvinceService ProvinceService,
-            IResellerService ResellerService,
             IStoreStatusService StoreStatusService,
             IStatusService StatusService,
             IStoreScoutingService StoreScoutingService,
@@ -61,7 +58,6 @@ namespace DMS.Rpc.store
             this.DistrictService = DistrictService;
             this.OrganizationService = OrganizationService;
             this.ProvinceService = ProvinceService;
-            this.ResellerService = ResellerService;
             this.StoreStatusService = StoreStatusService;
             this.StatusService = StatusService;
             this.StoreScoutingService = StoreScoutingService;
@@ -1031,7 +1027,6 @@ namespace DMS.Rpc.store
             Store.StoreTypeId = Store_StoreDTO.StoreTypeId;
             Store.StoreGroupingId = Store_StoreDTO.StoreGroupingId;
             Store.Telephone = Store_StoreDTO.Telephone;
-            Store.ResellerId = Store_StoreDTO.ResellerId;
             Store.ProvinceId = Store_StoreDTO.ProvinceId;
             Store.DistrictId = Store_StoreDTO.DistrictId;
             Store.WardId = Store_StoreDTO.WardId;
@@ -1081,7 +1076,6 @@ namespace DMS.Rpc.store
                 StoreTypeId = Store_StoreDTO.ParentStore.StoreTypeId,
                 StoreGroupingId = Store_StoreDTO.ParentStore.StoreGroupingId,
                 Telephone = Store_StoreDTO.ParentStore.Telephone,
-                ResellerId = Store_StoreDTO.ParentStore.ResellerId,
                 ProvinceId = Store_StoreDTO.ParentStore.ProvinceId,
                 DistrictId = Store_StoreDTO.ParentStore.DistrictId,
                 WardId = Store_StoreDTO.ParentStore.WardId,
@@ -1198,7 +1192,6 @@ namespace DMS.Rpc.store
             StoreFilter.StoreTypeId = Store_StoreFilterDTO.StoreTypeId;
             StoreFilter.StoreGroupingId = Store_StoreFilterDTO.StoreGroupingId;
             StoreFilter.Telephone = Store_StoreFilterDTO.Telephone;
-            StoreFilter.ResellerId = Store_StoreFilterDTO.ResellerId;
             StoreFilter.ProvinceId = Store_StoreFilterDTO.ProvinceId;
             StoreFilter.DistrictId = Store_StoreFilterDTO.DistrictId;
             StoreFilter.WardId = Store_StoreFilterDTO.WardId;

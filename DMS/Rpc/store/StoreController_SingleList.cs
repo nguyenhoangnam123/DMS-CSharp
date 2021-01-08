@@ -113,7 +113,6 @@ namespace DMS.Rpc.store
             StoreFilter.StoreTypeId = Store_StoreFilterDTO.StoreTypeId;
             StoreFilter.StoreGroupingId = Store_StoreFilterDTO.StoreGroupingId;
             StoreFilter.Telephone = Store_StoreFilterDTO.Telephone;
-            StoreFilter.ResellerId = Store_StoreFilterDTO.ResellerId;
             StoreFilter.ProvinceId = Store_StoreFilterDTO.ProvinceId;
             StoreFilter.DistrictId = Store_StoreFilterDTO.DistrictId;
             StoreFilter.WardId = Store_StoreFilterDTO.WardId;
@@ -290,7 +289,6 @@ namespace DMS.Rpc.store
             StoreFilter.StoreTypeId = Store_StoreFilterDTO.StoreTypeId;
             StoreFilter.StoreGroupingId = Store_StoreFilterDTO.StoreGroupingId;
             StoreFilter.Telephone = Store_StoreFilterDTO.Telephone;
-            StoreFilter.ResellerId = Store_StoreFilterDTO.ResellerId;
             StoreFilter.ProvinceId = Store_StoreFilterDTO.ProvinceId;
             StoreFilter.DistrictId = Store_StoreFilterDTO.DistrictId;
             StoreFilter.WardId = Store_StoreFilterDTO.WardId;
@@ -439,60 +437,6 @@ namespace DMS.Rpc.store
             List<Store_StoreTypeDTO> Store_StoreTypeDTOs = StoreTypes
                 .Select(x => new Store_StoreTypeDTO(x)).ToList();
             return Store_StoreTypeDTOs;
-        }
-
-
-        [Route(StoreRoute.CountReseller), HttpPost]
-        public async Task<long> CountReseller([FromBody] Store_ResellerFilterDTO Store_ResellerFilterDTO)
-        {
-            ResellerFilter ResellerFilter = new ResellerFilter();
-            ResellerFilter.Id = Store_ResellerFilterDTO.Id;
-            ResellerFilter.Code = Store_ResellerFilterDTO.Code;
-            ResellerFilter.Name = Store_ResellerFilterDTO.Name;
-            ResellerFilter.OrganizationId = Store_ResellerFilterDTO.OrganizationId;
-            ResellerFilter.ResellerTypeId = Store_ResellerFilterDTO.ResellerTypeId;
-            ResellerFilter.ResellerStatusId = Store_ResellerFilterDTO.ResellerStatusId;
-            ResellerFilter.Phone = Store_ResellerFilterDTO.Phone;
-            ResellerFilter.Email = Store_ResellerFilterDTO.Email;
-            ResellerFilter.CompanyName = Store_ResellerFilterDTO.CompanyName;
-            ResellerFilter.DeputyName = Store_ResellerFilterDTO.DeputyName;
-            ResellerFilter.Address = Store_ResellerFilterDTO.Address;
-            ResellerFilter.Description = Store_ResellerFilterDTO.Description;
-            ResellerFilter.StaffId = Store_ResellerFilterDTO.StaffId;
-            ResellerFilter.TaxCode = Store_ResellerFilterDTO.TaxCode;
-            ResellerFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
-            return await ResellerService.Count(ResellerFilter);
-        }
-
-        [Route(StoreRoute.ListReseller), HttpPost]
-        public async Task<List<Store_ResellerDTO>> ListReseller([FromBody] Store_ResellerFilterDTO Store_ResellerFilterDTO)
-        {
-            ResellerFilter ResellerFilter = new ResellerFilter();
-            ResellerFilter.Skip = Store_ResellerFilterDTO.Skip;
-            ResellerFilter.Take = Store_ResellerFilterDTO.Take;
-            ResellerFilter.OrderBy = ResellerOrder.Id;
-            ResellerFilter.OrderType = OrderType.ASC;
-            ResellerFilter.Selects = ResellerSelect.ALL;
-            ResellerFilter.Id = Store_ResellerFilterDTO.Id;
-            ResellerFilter.Code = Store_ResellerFilterDTO.Code;
-            ResellerFilter.Name = Store_ResellerFilterDTO.Name;
-            ResellerFilter.OrganizationId = Store_ResellerFilterDTO.OrganizationId;
-            ResellerFilter.ResellerTypeId = Store_ResellerFilterDTO.ResellerTypeId;
-            ResellerFilter.ResellerStatusId = Store_ResellerFilterDTO.ResellerStatusId;
-            ResellerFilter.Phone = Store_ResellerFilterDTO.Phone;
-            ResellerFilter.Email = Store_ResellerFilterDTO.Email;
-            ResellerFilter.CompanyName = Store_ResellerFilterDTO.CompanyName;
-            ResellerFilter.DeputyName = Store_ResellerFilterDTO.DeputyName;
-            ResellerFilter.Address = Store_ResellerFilterDTO.Address;
-            ResellerFilter.Description = Store_ResellerFilterDTO.Description;
-            ResellerFilter.StaffId = Store_ResellerFilterDTO.StaffId;
-            ResellerFilter.TaxCode = Store_ResellerFilterDTO.TaxCode;
-            ResellerFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
-
-            List<Reseller> Resellers = await ResellerService.List(ResellerFilter);
-            List<Store_ResellerDTO> Store_ResellerDTOs = Resellers
-                .Select(x => new Store_ResellerDTO(x)).ToList();
-            return Store_ResellerDTOs;
         }
     }
 }

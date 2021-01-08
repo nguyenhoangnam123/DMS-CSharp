@@ -45,7 +45,6 @@ namespace DMS.Rpc.indirect_sales_order
             StoreFilter.OrganizationId = IndirectSalesOrder_StoreFilterDTO.OrganizationId;
             StoreFilter.StoreTypeId = IndirectSalesOrder_StoreFilterDTO.StoreTypeId;
             StoreFilter.StoreGroupingId = IndirectSalesOrder_StoreFilterDTO.StoreGroupingId;
-            StoreFilter.ResellerId = IndirectSalesOrder_StoreFilterDTO.ResellerId;
             StoreFilter.Telephone = IndirectSalesOrder_StoreFilterDTO.Telephone;
             StoreFilter.ProvinceId = IndirectSalesOrder_StoreFilterDTO.ProvinceId;
             StoreFilter.DistrictId = IndirectSalesOrder_StoreFilterDTO.DistrictId;
@@ -272,7 +271,6 @@ namespace DMS.Rpc.indirect_sales_order
             StoreFilter.OrganizationId = IndirectSalesOrder_StoreFilterDTO.OrganizationId;
             StoreFilter.StoreTypeId = IndirectSalesOrder_StoreFilterDTO.StoreTypeId;
             StoreFilter.StoreGroupingId = IndirectSalesOrder_StoreFilterDTO.StoreGroupingId;
-            StoreFilter.ResellerId = IndirectSalesOrder_StoreFilterDTO.ResellerId;
             StoreFilter.Telephone = IndirectSalesOrder_StoreFilterDTO.Telephone;
             StoreFilter.ProvinceId = IndirectSalesOrder_StoreFilterDTO.ProvinceId;
             StoreFilter.DistrictId = IndirectSalesOrder_StoreFilterDTO.DistrictId;
@@ -614,7 +612,6 @@ namespace DMS.Rpc.indirect_sales_order
             StoreFilter.OrganizationId = IndirectSalesOrder_StoreFilterDTO.OrganizationId;
             StoreFilter.StoreTypeId = IndirectSalesOrder_StoreFilterDTO.StoreTypeId;
             StoreFilter.StoreGroupingId = IndirectSalesOrder_StoreFilterDTO.StoreGroupingId;
-            StoreFilter.ResellerId = IndirectSalesOrder_StoreFilterDTO.ResellerId;
             StoreFilter.Telephone = IndirectSalesOrder_StoreFilterDTO.Telephone;
             StoreFilter.ProvinceId = IndirectSalesOrder_StoreFilterDTO.ProvinceId;
             StoreFilter.DistrictId = IndirectSalesOrder_StoreFilterDTO.DistrictId;
@@ -660,7 +657,6 @@ namespace DMS.Rpc.indirect_sales_order
             StoreFilter.OrganizationId = IndirectSalesOrder_StoreFilterDTO.OrganizationId;
             StoreFilter.StoreTypeId = IndirectSalesOrder_StoreFilterDTO.StoreTypeId;
             StoreFilter.StoreGroupingId = IndirectSalesOrder_StoreFilterDTO.StoreGroupingId;
-            StoreFilter.ResellerId = IndirectSalesOrder_StoreFilterDTO.ResellerId;
             StoreFilter.Telephone = IndirectSalesOrder_StoreFilterDTO.Telephone;
             StoreFilter.ProvinceId = IndirectSalesOrder_StoreFilterDTO.ProvinceId;
             StoreFilter.DistrictId = IndirectSalesOrder_StoreFilterDTO.DistrictId;
@@ -704,7 +700,6 @@ namespace DMS.Rpc.indirect_sales_order
             StoreFilter.OrganizationId = IndirectSalesOrder_StoreFilterDTO.OrganizationId;
             StoreFilter.StoreTypeId = IndirectSalesOrder_StoreFilterDTO.StoreTypeId;
             StoreFilter.StoreGroupingId = IndirectSalesOrder_StoreFilterDTO.StoreGroupingId;
-            StoreFilter.ResellerId = IndirectSalesOrder_StoreFilterDTO.ResellerId;
             StoreFilter.Telephone = IndirectSalesOrder_StoreFilterDTO.Telephone;
             StoreFilter.ProvinceId = IndirectSalesOrder_StoreFilterDTO.ProvinceId;
             StoreFilter.DistrictId = IndirectSalesOrder_StoreFilterDTO.DistrictId;
@@ -745,7 +740,6 @@ namespace DMS.Rpc.indirect_sales_order
             StoreFilter.OrganizationId = IndirectSalesOrder_StoreFilterDTO.OrganizationId;
             StoreFilter.StoreTypeId = IndirectSalesOrder_StoreFilterDTO.StoreTypeId;
             StoreFilter.StoreGroupingId = IndirectSalesOrder_StoreFilterDTO.StoreGroupingId;
-            StoreFilter.ResellerId = IndirectSalesOrder_StoreFilterDTO.ResellerId;
             StoreFilter.Telephone = IndirectSalesOrder_StoreFilterDTO.Telephone;
             StoreFilter.ProvinceId = IndirectSalesOrder_StoreFilterDTO.ProvinceId;
             StoreFilter.DistrictId = IndirectSalesOrder_StoreFilterDTO.DistrictId;

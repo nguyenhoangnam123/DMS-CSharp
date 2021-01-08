@@ -15,11 +15,6 @@ namespace DMS.Repositories
         Task<int> Count(ProductTypeFilter ProductTypeFilter);
         Task<List<ProductType>> List(ProductTypeFilter ProductTypeFilter);
         Task<ProductType> Get(long Id);
-        Task<bool> Create(ProductType ProductType);
-        Task<bool> Update(ProductType ProductType);
-        Task<bool> Delete(ProductType ProductType);
-        Task<bool> BulkMerge(List<ProductType> ProductTypes);
-        Task<bool> BulkDelete(List<ProductType> ProductTypes);
     }
     public class ProductTypeRepository : IProductTypeRepository
     {
@@ -193,76 +188,5 @@ namespace DMS.Repositories
 
             return ProductType;
         }
-        public async Task<bool> Create(ProductType ProductType)
-        {
-            ProductTypeDAO ProductTypeDAO = new ProductTypeDAO();
-            ProductTypeDAO.Id = ProductType.Id;
-            ProductTypeDAO.Code = ProductType.Code;
-            ProductTypeDAO.Name = ProductType.Name;
-            ProductTypeDAO.Description = ProductType.Description;
-            ProductTypeDAO.StatusId = ProductType.StatusId;
-            ProductTypeDAO.CreatedAt = StaticParams.DateTimeNow;
-            ProductTypeDAO.UpdatedAt = StaticParams.DateTimeNow;
-            ProductTypeDAO.Used = false;
-            DataContext.ProductType.Add(ProductTypeDAO);
-            await DataContext.SaveChangesAsync();
-            ProductType.Id = ProductTypeDAO.Id;
-            return true;
-        }
-
-        public async Task<bool> Update(ProductType ProductType)
-        {
-            ProductTypeDAO ProductTypeDAO = DataContext.ProductType.Where(x => x.Id == ProductType.Id).FirstOrDefault();
-            if (ProductTypeDAO == null)
-                return false;
-            ProductTypeDAO.Id = ProductType.Id;
-            ProductTypeDAO.Code = ProductType.Code;
-            ProductTypeDAO.Name = ProductType.Name;
-            ProductTypeDAO.Description = ProductType.Description;
-            ProductTypeDAO.StatusId = ProductType.StatusId;
-            ProductTypeDAO.UpdatedAt = StaticParams.DateTimeNow;
-            await DataContext.SaveChangesAsync();
-            await SaveReference(ProductType);
-            return true;
-        }
-
-        public async Task<bool> Delete(ProductType ProductType)
-        {
-            await DataContext.ProductType.Where(x => x.Id == ProductType.Id).UpdateFromQueryAsync(x => new ProductTypeDAO { DeletedAt = StaticParams.DateTimeNow });
-            return true;
-        }
-
-        public async Task<bool> BulkMerge(List<ProductType> ProductTypes)
-        {
-            List<ProductTypeDAO> ProductTypeDAOs = new List<ProductTypeDAO>();
-            foreach (ProductType ProductType in ProductTypes)
-            {
-                ProductTypeDAO ProductTypeDAO = new ProductTypeDAO();
-                ProductTypeDAO.Id = ProductType.Id;
-                ProductTypeDAO.Code = ProductType.Code;
-                ProductTypeDAO.Name = ProductType.Name;
-                ProductTypeDAO.Description = ProductType.Description;
-                ProductTypeDAO.StatusId = ProductType.StatusId;
-                ProductTypeDAO.CreatedAt = StaticParams.DateTimeNow;
-                ProductTypeDAO.UpdatedAt = StaticParams.DateTimeNow;
-                ProductTypeDAOs.Add(ProductTypeDAO);
-            }
-            await DataContext.BulkMergeAsync(ProductTypeDAOs);
-            return true;
-        }
-
-        public async Task<bool> BulkDelete(List<ProductType> ProductTypes)
-        {
-            List<long> Ids = ProductTypes.Select(x => x.Id).ToList();
-            await DataContext.ProductType
-                .Where(x => Ids.Contains(x.Id))
-                .UpdateFromQueryAsync(x => new ProductTypeDAO { DeletedAt = StaticParams.DateTimeNow });
-            return true;
-        }
-
-        private async Task SaveReference(ProductType ProductType)
-        {
-        }
-
     }
 }

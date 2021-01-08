@@ -280,7 +280,6 @@ namespace DMS.Rpc.monitor_store_problems
                 OrganizationId = MonitorStoreProblem_ProblemDTO.Store.OrganizationId,
                 StoreTypeId = MonitorStoreProblem_ProblemDTO.Store.StoreTypeId,
                 StoreGroupingId = MonitorStoreProblem_ProblemDTO.Store.StoreGroupingId,
-                ResellerId = MonitorStoreProblem_ProblemDTO.Store.ResellerId,
                 Telephone = MonitorStoreProblem_ProblemDTO.Store.Telephone,
                 ProvinceId = MonitorStoreProblem_ProblemDTO.Store.ProvinceId,
                 DistrictId = MonitorStoreProblem_ProblemDTO.Store.DistrictId,
@@ -462,7 +461,6 @@ namespace DMS.Rpc.monitor_store_problems
             StoreFilter.OrganizationId = MonitorStoreProblem_StoreFilterDTO.OrganizationId;
             StoreFilter.StoreTypeId = MonitorStoreProblem_StoreFilterDTO.StoreTypeId;
             StoreFilter.StoreGroupingId = MonitorStoreProblem_StoreFilterDTO.StoreGroupingId;
-            StoreFilter.ResellerId = MonitorStoreProblem_StoreFilterDTO.ResellerId;
             StoreFilter.StatusId = null;
 
             if (StoreFilter.Id == null) StoreFilter.Id = new IdFilter();
@@ -580,7 +578,6 @@ namespace DMS.Rpc.monitor_store_problems
             StoreFilter.OrganizationId = MonitorStoreProblem_StoreFilterDTO.OrganizationId;
             StoreFilter.StoreTypeId = MonitorStoreProblem_StoreFilterDTO.StoreTypeId;
             StoreFilter.StoreGroupingId = MonitorStoreProblem_StoreFilterDTO.StoreGroupingId;
-            StoreFilter.ResellerId = MonitorStoreProblem_StoreFilterDTO.ResellerId;
             StoreFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
 
             if (StoreFilter.Id == null) StoreFilter.Id = new IdFilter();

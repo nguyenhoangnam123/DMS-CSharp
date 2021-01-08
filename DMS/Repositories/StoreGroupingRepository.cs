@@ -180,7 +180,6 @@ namespace DMS.Repositories
                     StoreTypeId = s.StoreTypeId,
                     StoreGroupingId = s.StoreGroupingId,
                     Telephone = s.Telephone,
-                    ResellerId = s.ResellerId,
                     ProvinceId = s.ProvinceId,
                     DistrictId = s.DistrictId,
                     WardId = s.WardId,
@@ -307,7 +306,6 @@ namespace DMS.Repositories
                     StoreTypeId = x.StoreTypeId,
                     StoreGroupingId = x.StoreGroupingId,
                     Telephone = x.Telephone,
-                    ResellerId = x.ResellerId,
                     ProvinceId = x.ProvinceId,
                     DistrictId = x.DistrictId,
                     WardId = x.WardId,
@@ -354,7 +352,6 @@ namespace DMS.Repositories
                         StoreTypeId = x.ParentStore.StoreTypeId,
                         StoreGroupingId = x.ParentStore.StoreGroupingId,
                         Telephone = x.ParentStore.Telephone,
-                        ResellerId = x.ParentStore.ResellerId,
                         ProvinceId = x.ParentStore.ProvinceId,
                         DistrictId = x.ParentStore.DistrictId,
                         WardId = x.ParentStore.WardId,
@@ -505,7 +502,6 @@ namespace DMS.Repositories
                         StoreDAO.StoreTypeId = Store.StoreTypeId;
                         StoreDAO.StoreGroupingId = StoreGrouping.Id;
                         StoreDAO.Telephone = Store.Telephone;
-                        StoreDAO.ResellerId = Store.ResellerId;
                         StoreDAO.ProvinceId = Store.ProvinceId;
                         StoreDAO.DistrictId = Store.DistrictId;
                         StoreDAO.WardId = Store.WardId;
@@ -536,7 +532,6 @@ namespace DMS.Repositories
                         StoreDAO.StoreTypeId = Store.StoreTypeId;
                         StoreDAO.StoreGroupingId = StoreGrouping.Id;
                         StoreDAO.Telephone = Store.Telephone;
-                        StoreDAO.ResellerId = Store.ResellerId;
                         StoreDAO.ProvinceId = Store.ProvinceId;
                         StoreDAO.DistrictId = Store.DistrictId;
                         StoreDAO.WardId = Store.WardId;

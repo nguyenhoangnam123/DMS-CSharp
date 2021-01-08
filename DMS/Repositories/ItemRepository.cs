@@ -15,11 +15,6 @@ namespace DMS.Repositories
         Task<int> Count(ItemFilter ItemFilter);
         Task<List<Item>> List(ItemFilter ItemFilter);
         Task<Item> Get(long Id);
-        Task<bool> Create(Item Item);
-        Task<bool> Update(Item Item);
-        Task<bool> Delete(Item Item);
-        Task<bool> BulkMerge(List<Item> Items);
-        Task<bool> BulkDelete(List<Item> Items);
     }
     public class ItemRepository : IItemRepository
     {
@@ -594,100 +589,5 @@ namespace DMS.Repositories
             }
             return Item;
         }
-        public async Task<bool> Create(Item Item)
-        {
-            ItemDAO ItemDAO = new ItemDAO();
-            ItemDAO.Id = Item.Id;
-            ItemDAO.ProductId = Item.ProductId;
-            ItemDAO.Code = Item.Code;
-            ItemDAO.Name = Item.Name;
-            ItemDAO.ScanCode = Item.ScanCode;
-            ItemDAO.SalePrice = Item.SalePrice;
-            ItemDAO.RetailPrice = Item.RetailPrice;
-            ItemDAO.CreatedAt = StaticParams.DateTimeNow;
-            ItemDAO.UpdatedAt = StaticParams.DateTimeNow;
-            ItemDAO.Used = false;
-            DataContext.Item.Add(ItemDAO);
-            await DataContext.SaveChangesAsync();
-            Item.Id = ItemDAO.Id;
-            await SaveReference(Item);
-            return true;
-        }
-
-        public async Task<bool> Update(Item Item)
-        {
-            ItemDAO ItemDAO = DataContext.Item.Where(x => x.Id == Item.Id).FirstOrDefault();
-            if (ItemDAO == null)
-                return false;
-            ItemDAO.Id = Item.Id;
-            ItemDAO.ProductId = Item.ProductId;
-            ItemDAO.Code = Item.Code;
-            ItemDAO.Name = Item.Name;
-            ItemDAO.ScanCode = Item.ScanCode;
-            ItemDAO.SalePrice = Item.SalePrice;
-            ItemDAO.RetailPrice = Item.RetailPrice;
-            ItemDAO.UpdatedAt = StaticParams.DateTimeNow;
-            await DataContext.SaveChangesAsync();
-            await SaveReference(Item);
-            return true;
-        }
-
-        public async Task<bool> Delete(Item Item)
-        {
-            await DataContext.Item.Where(x => x.Id == Item.Id).UpdateFromQueryAsync(x => new ItemDAO { DeletedAt = StaticParams.DateTimeNow });
-            return true;
-        }
-
-        public async Task<bool> BulkMerge(List<Item> Items)
-        {
-            List<ItemDAO> ItemDAOs = new List<ItemDAO>();
-            foreach (Item Item in Items)
-            {
-                ItemDAO ItemDAO = new ItemDAO();
-                ItemDAO.Id = Item.Id;
-                ItemDAO.ProductId = Item.ProductId;
-                ItemDAO.Code = Item.Code;
-                ItemDAO.Name = Item.Name;
-                ItemDAO.ScanCode = Item.ScanCode;
-                ItemDAO.SalePrice = Item.SalePrice;
-                ItemDAO.RetailPrice = Item.RetailPrice;
-                ItemDAO.CreatedAt = StaticParams.DateTimeNow;
-                ItemDAO.UpdatedAt = StaticParams.DateTimeNow;
-                ItemDAOs.Add(ItemDAO);
-            }
-            await DataContext.BulkMergeAsync(ItemDAOs);
-            return true;
-        }
-
-        public async Task<bool> BulkDelete(List<Item> Items)
-        {
-            List<long> Ids = Items.Select(x => x.Id).ToList();
-            await DataContext.Item
-                .Where(x => Ids.Contains(x.Id))
-                .UpdateFromQueryAsync(x => new ItemDAO { DeletedAt = StaticParams.DateTimeNow });
-            return true;
-        }
-
-        private async Task SaveReference(Item Item)
-        {
-            await DataContext.ItemImageMapping
-                .Where(x => x.ItemId == Item.Id)
-                .DeleteFromQueryAsync();
-            List<ItemImageMappingDAO> ItemImageMappingDAOs = new List<ItemImageMappingDAO>();
-            if (Item.ItemImageMappings != null)
-            {
-                foreach (ItemImageMapping ItemImageMapping in Item.ItemImageMappings)
-                {
-                    ItemImageMappingDAO ItemImageMappingDAO = new ItemImageMappingDAO()
-                    {
-                        ItemId = Item.Id,
-                        ImageId = ItemImageMapping.ImageId,
-                    };
-                    ItemImageMappingDAOs.Add(ItemImageMappingDAO);
-                }
-                await DataContext.ItemImageMapping.BulkMergeAsync(ItemImageMappingDAOs);
-            }
-        }
-
     }
 }

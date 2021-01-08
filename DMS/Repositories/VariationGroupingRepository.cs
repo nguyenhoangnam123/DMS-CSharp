@@ -15,11 +15,6 @@ namespace DMS.Repositories
         Task<int> Count(VariationGroupingFilter VariationGroupingFilter);
         Task<List<VariationGrouping>> List(VariationGroupingFilter VariationGroupingFilter);
         Task<VariationGrouping> Get(long Id);
-        Task<bool> Create(VariationGrouping VariationGrouping);
-        Task<bool> Update(VariationGrouping VariationGrouping);
-        Task<bool> Delete(VariationGrouping VariationGrouping);
-        Task<bool> BulkMerge(List<VariationGrouping> VariationGroupings);
-        Task<bool> BulkDelete(List<VariationGrouping> VariationGroupings);
     }
     public class VariationGroupingRepository : IVariationGroupingRepository
     {
@@ -198,70 +193,5 @@ namespace DMS.Repositories
             }).ToListAsync();
             return VariationGrouping;
         }
-        public async Task<bool> Create(VariationGrouping VariationGrouping)
-        {
-            VariationGroupingDAO VariationGroupingDAO = new VariationGroupingDAO();
-            VariationGroupingDAO.Id = VariationGrouping.Id;
-            VariationGroupingDAO.Name = VariationGrouping.Name;
-            VariationGroupingDAO.ProductId = VariationGrouping.ProductId;
-            VariationGroupingDAO.CreatedAt = StaticParams.DateTimeNow;
-            VariationGroupingDAO.UpdatedAt = StaticParams.DateTimeNow;
-            DataContext.VariationGrouping.Add(VariationGroupingDAO);
-            await DataContext.SaveChangesAsync();
-            VariationGrouping.Id = VariationGroupingDAO.Id;
-            await SaveReference(VariationGrouping);
-            return true;
-        }
-
-        public async Task<bool> Update(VariationGrouping VariationGrouping)
-        {
-            VariationGroupingDAO VariationGroupingDAO = DataContext.VariationGrouping.Where(x => x.Id == VariationGrouping.Id).FirstOrDefault();
-            if (VariationGroupingDAO == null)
-                return false;
-            VariationGroupingDAO.Id = VariationGrouping.Id;
-            VariationGroupingDAO.Name = VariationGrouping.Name;
-            VariationGroupingDAO.ProductId = VariationGrouping.ProductId;
-            VariationGroupingDAO.UpdatedAt = StaticParams.DateTimeNow;
-            await DataContext.SaveChangesAsync();
-            await SaveReference(VariationGrouping);
-            return true;
-        }
-
-        public async Task<bool> Delete(VariationGrouping VariationGrouping)
-        {
-            await DataContext.VariationGrouping.Where(x => x.Id == VariationGrouping.Id).UpdateFromQueryAsync(x => new VariationGroupingDAO { DeletedAt = StaticParams.DateTimeNow });
-            return true;
-        }
-
-        public async Task<bool> BulkMerge(List<VariationGrouping> VariationGroupings)
-        {
-            List<VariationGroupingDAO> VariationGroupingDAOs = new List<VariationGroupingDAO>();
-            foreach (VariationGrouping VariationGrouping in VariationGroupings)
-            {
-                VariationGroupingDAO VariationGroupingDAO = new VariationGroupingDAO();
-                VariationGroupingDAO.Id = VariationGrouping.Id;
-                VariationGroupingDAO.Name = VariationGrouping.Name;
-                VariationGroupingDAO.ProductId = VariationGrouping.ProductId;
-                VariationGroupingDAO.CreatedAt = StaticParams.DateTimeNow;
-                VariationGroupingDAO.UpdatedAt = StaticParams.DateTimeNow;
-                VariationGroupingDAOs.Add(VariationGroupingDAO);
-            }
-            await DataContext.BulkMergeAsync(VariationGroupingDAOs);
-            return true;
-        }
-
-        public async Task<bool> BulkDelete(List<VariationGrouping> VariationGroupings)
-        {
-            List<long> Ids = VariationGroupings.Select(x => x.Id).ToList();
-            await DataContext.VariationGrouping
-                .Where(x => Ids.Contains(x.Id))
-                .UpdateFromQueryAsync(x => new VariationGroupingDAO { DeletedAt = StaticParams.DateTimeNow });
-            return true;
-        }
-
-        private async Task SaveReference(VariationGrouping VariationGrouping)
-        {
-        }
-
     }
 }

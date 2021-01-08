@@ -563,7 +563,6 @@ namespace DMS.Rpc.direct_sales_order
                 OrganizationId = DirectSalesOrder_DirectSalesOrderDTO.BuyerStore.OrganizationId,
                 StoreTypeId = DirectSalesOrder_DirectSalesOrderDTO.BuyerStore.StoreTypeId,
                 StoreGroupingId = DirectSalesOrder_DirectSalesOrderDTO.BuyerStore.StoreGroupingId,
-                ResellerId = DirectSalesOrder_DirectSalesOrderDTO.BuyerStore.ResellerId,
                 Telephone = DirectSalesOrder_DirectSalesOrderDTO.BuyerStore.Telephone,
                 ProvinceId = DirectSalesOrder_DirectSalesOrderDTO.BuyerStore.ProvinceId,
                 DistrictId = DirectSalesOrder_DirectSalesOrderDTO.BuyerStore.DistrictId,

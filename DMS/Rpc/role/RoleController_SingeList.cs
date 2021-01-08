@@ -172,25 +172,6 @@ namespace DMS.Rpc.role
             return Role_ProductTypeDTOs;
         }
 
-        [Route(RoleRoute.SingleListReseller), HttpPost]
-        public async Task<List<Role_ResellerDTO>> SingleListReseller([FromBody] Role_ResellerFilterDTO Role_ResellerFilterDTO)
-        {
-            ResellerFilter ResellerFilter = new ResellerFilter();
-            ResellerFilter.Skip = 0;
-            ResellerFilter.Take = 20;
-            ResellerFilter.OrderBy = ResellerOrder.Id;
-            ResellerFilter.OrderType = OrderType.ASC;
-            ResellerFilter.Selects = ResellerSelect.Id | ResellerSelect.Code | ResellerSelect.Name;
-            ResellerFilter.Id = Role_ResellerFilterDTO.Id;
-            ResellerFilter.Code = Role_ResellerFilterDTO.Code;
-            ResellerFilter.Name = Role_ResellerFilterDTO.Name;
-
-            List<Reseller> Reselleres = await ResellerService.List(ResellerFilter);
-            List<Role_ResellerDTO> Role_ResellerDTOs = Reselleres
-                .Select(x => new Role_ResellerDTO(x)).ToList();
-            return Role_ResellerDTOs;
-        }
-
         [Route(RoleRoute.SingleListStore), HttpPost]
         public async Task<List<Role_StoreDTO>> SingleListStore([FromBody] Role_StoreFilterDTO Role_StoreFilterDTO)
         {

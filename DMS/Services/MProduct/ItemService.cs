@@ -17,11 +17,6 @@ namespace DMS.Services.MProduct
         Task<int> Count(ItemFilter ItemFilter);
         Task<List<Item>> List(ItemFilter ItemFilter);
         Task<Item> Get(long Id);
-        Task<Item> Create(Item Item);
-        Task<Item> Update(Item Item);
-        Task<Item> Delete(Item Item);
-        Task<Image> SaveImage(Image Image);
-        Task<List<Item>> BulkDelete(List<Item> Items);
         ItemFilter ToFilter(ItemFilter ItemFilter);
     }
 
@@ -176,126 +171,6 @@ namespace DMS.Services.MProduct
             return Item;
         }
 
-        public async Task<Item> Create(Item Item)
-        {
-            if (!await ItemValidator.Create(Item))
-                return Item;
-
-            try
-            {
-                await UOW.Begin();
-                await UOW.ItemRepository.Create(Item);
-                await UOW.Commit();
-
-                await Logging.CreateAuditLog(Item, new { }, nameof(ItemService));
-                return await UOW.ItemRepository.Get(Item.Id);
-            }
-            catch (Exception ex)
-            {
-                await UOW.Rollback();
-                if (ex.InnerException == null)
-                {
-                    await Logging.CreateSystemLog(ex, nameof(ItemService));
-                    throw new MessageException(ex);
-                }
-                else
-                {
-                    await Logging.CreateSystemLog(ex.InnerException, nameof(ItemService));
-                    throw new MessageException(ex.InnerException);
-                };
-            }
-        }
-
-        public async Task<Item> Update(Item Item)
-        {
-            if (!await ItemValidator.Update(Item))
-                return Item;
-            try
-            {
-                var oldData = await UOW.ItemRepository.Get(Item.Id);
-
-                await UOW.Begin();
-                await UOW.ItemRepository.Update(Item);
-                await UOW.Commit();
-
-                var newData = await UOW.ItemRepository.Get(Item.Id);
-                await Logging.CreateAuditLog(newData, oldData, nameof(ItemService));
-                return newData;
-            }
-            catch (Exception ex)
-            {
-                await UOW.Rollback();
-                if (ex.InnerException == null)
-                {
-                    await Logging.CreateSystemLog(ex, nameof(ItemService));
-                    throw new MessageException(ex);
-                }
-                else
-                {
-                    await Logging.CreateSystemLog(ex.InnerException, nameof(ItemService));
-                    throw new MessageException(ex.InnerException);
-                };
-            }
-        }
-
-        public async Task<Item> Delete(Item Item)
-        {
-            if (!await ItemValidator.Delete(Item))
-                return Item;
-
-            try
-            {
-                await UOW.Begin();
-                await UOW.ItemRepository.Delete(Item);
-                await UOW.Commit();
-                await Logging.CreateAuditLog(new { }, Item, nameof(ItemService));
-                return Item;
-            }
-            catch (Exception ex)
-            {
-                await UOW.Rollback();
-                if (ex.InnerException == null)
-                {
-                    await Logging.CreateSystemLog(ex, nameof(ItemService));
-                    throw new MessageException(ex);
-                }
-                else
-                {
-                    await Logging.CreateSystemLog(ex.InnerException, nameof(ItemService));
-                    throw new MessageException(ex.InnerException);
-                };
-            }
-        }
-
-        public async Task<List<Item>> BulkDelete(List<Item> Items)
-        {
-            if (!await ItemValidator.BulkDelete(Items))
-                return Items;
-
-            try
-            {
-                await UOW.Begin();
-                await UOW.ItemRepository.BulkDelete(Items);
-                await UOW.Commit();
-                await Logging.CreateAuditLog(new { }, Items, nameof(ItemService));
-                return Items;
-            }
-            catch (Exception ex)
-            {
-                await UOW.Rollback();
-                if (ex.InnerException == null)
-                {
-                    await Logging.CreateSystemLog(ex, nameof(ItemService));
-                    throw new MessageException(ex);
-                }
-                else
-                {
-                    await Logging.CreateSystemLog(ex.InnerException, nameof(ItemService));
-                    throw new MessageException(ex.InnerException);
-                };
-            }
-        }
-
         public ItemFilter ToFilter(ItemFilter filter)
         {
             if (filter.OrFilter == null) filter.OrFilter = new List<ItemFilter>();
@@ -316,15 +191,6 @@ namespace DMS.Services.MProduct
                 }
             }
             return filter;
-        }
-
-        public async Task<Image> SaveImage(Image Image)
-        {
-            FileInfo fileInfo = new FileInfo(Image.Name);
-            string path = $"/item/{StaticParams.DateTimeNow.ToString("yyyyMMdd")}/{Guid.NewGuid()}{fileInfo.Extension}";
-            string thumbnailPath = $"/item/{StaticParams.DateTimeNow.ToString("yyyyMMdd")}/{Guid.NewGuid()}{fileInfo.Extension}";
-            Image = await ImageService.Create(Image, path, thumbnailPath, 128, 128);
-            return Image;
         }
     }
 }

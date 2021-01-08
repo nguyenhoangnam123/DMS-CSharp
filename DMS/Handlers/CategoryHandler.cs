@@ -1,6 +1,7 @@
 ﻿using DMS.Common;
 using DMS.Entities;
 using DMS.Models;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
 using System;
@@ -12,58 +13,80 @@ namespace DMS.Handlers
 {
     public class CategoryHandler : Handler
     {
-        private string SyncKey => $"{Name}.Sync" ;
-        private string UsedKey => $"DMS.{Name}.Used";
+        private string SyncKey => Name + ".Sync";
+
         public override string Name => nameof(Category);
 
         public override void QueueBind(IModel channel, string queue, string exchange)
         {
             channel.QueueBind(queue, exchange, $"{Name}.*", null);
-            channel.QueueBind(queue, exchange, $"DMS.{Name}.*", null);
         }
         public override async Task Handle(DataContext context, string routingKey, string content)
         {
             if (routingKey == SyncKey)
+            {
                 await Sync(context, content);
+            }
         }
 
         private async Task Sync(DataContext context, string json)
         {
-            List<EventMessage<Category>> EventMessageReviced = JsonConvert.DeserializeObject<List<EventMessage<Category>>>(json);
-            await SaveEventMessage(context, SyncKey, EventMessageReviced);
-            List<Guid> RowIds = EventMessageReviced.Select(a => a.RowId).Distinct().ToList();
+            List<EventMessage<Category>> EventMessageReceived = JsonConvert.DeserializeObject<List<EventMessage<Category>>>(json);
+            await SaveEventMessage(context, SyncKey, EventMessageReceived);
+            List<Guid> RowIds = EventMessageReceived.Select(a => a.RowId).Distinct().ToList();
             List<EventMessage<Category>> CategoryEventMessages = await ListEventMessage<Category>(context, SyncKey, RowIds);
-
-            List<Category> Categorys = new List<Category>();
-            foreach (var RowId in RowIds)
-            {
-                EventMessage<Category> EventMessage = CategoryEventMessages.Where(e => e.RowId == RowId).OrderByDescending(e => e.Time).FirstOrDefault();
-                if (EventMessage != null)
-                    Categorys.Add(EventMessage.Content);
-            }
+            List<Category> Categorys = CategoryEventMessages.Select(x => x.Content).ToList();
+            List<CategoryDAO> CategoryInDB = await context.Category.ToListAsync();
             try
             {
-                List<CategoryDAO> CategoryDAOs = Categorys.Select(x => new CategoryDAO
+                List<CategoryDAO> CategoryDAOs = new List<CategoryDAO>();
+                List<ImageDAO> ImageDAOs = new List<ImageDAO>();
+                foreach (Category Category in Categorys)
                 {
-                    Code = x.Code,
-                    CreatedAt = x.CreatedAt,
-                    UpdatedAt = x.UpdatedAt,
-                    DeletedAt = x.DeletedAt,
-                    Id = x.Id,
-                    Name = x.Name,
-                    RowId = x.RowId,
-                    StatusId = x.StatusId,
-                    ImageId = x.ImageId,
-                    Level = x.Level,
-                    ParentId = x.ParentId,
-                    Path = x.Path,
-                }).ToList();
+                    CategoryDAO CategoryDAO = CategoryInDB.Where(x => x.Id == Category.Id).FirstOrDefault();
+                    if (CategoryDAO == null)
+                    {
+                        CategoryDAO = new CategoryDAO();
+                    }
+                    CategoryDAO.Id = Category.Id;
+                    CategoryDAO.Code = Category.Code;
+                    CategoryDAO.CreatedAt = Category.CreatedAt;
+                    CategoryDAO.UpdatedAt = Category.UpdatedAt;
+                    CategoryDAO.DeletedAt = Category.DeletedAt;
+                    CategoryDAO.Id = Category.Id;
+                    CategoryDAO.Name = Category.Name;
+                    CategoryDAO.RowId = Category.RowId;
+                    CategoryDAO.StatusId = Category.StatusId;
+                    CategoryDAO.Level = Category.Level;
+                    CategoryDAO.ParentId = Category.ParentId;
+                    CategoryDAO.ImageId = Category.ImageId;
+                    CategoryDAO.Path = Category.Path;
+                    CategoryDAO.Used = Category.Used;
+                    CategoryDAOs.Add(CategoryDAO);
+
+                    if (Category.Image != null)
+                    {
+                        ImageDAOs.Add(new ImageDAO
+                        {
+                            Id = Category.Image.Id,
+                            Url = Category.Image.Url,
+                            ThumbnailUrl = Category.Image.ThumbnailUrl,
+                            RowId = Category.Image.RowId,
+                            Name = Category.Image.Name,
+                            CreatedAt = Category.Image.CreatedAt,
+                            UpdatedAt = Category.Image.UpdatedAt,
+                            DeletedAt = Category.Image.DeletedAt,
+                        });
+                    }
+                }
+                await context.BulkMergeAsync(ImageDAOs);
                 await context.BulkMergeAsync(CategoryDAOs);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Log(ex, nameof(CategoryHandler));
             }
+
         }
     }
 }

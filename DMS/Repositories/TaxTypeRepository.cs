@@ -15,11 +15,6 @@ namespace DMS.Repositories
         Task<int> Count(TaxTypeFilter TaxTypeFilter);
         Task<List<TaxType>> List(TaxTypeFilter TaxTypeFilter);
         Task<TaxType> Get(long Id);
-        Task<bool> Create(TaxType TaxType);
-        Task<bool> Update(TaxType TaxType);
-        Task<bool> Delete(TaxType TaxType);
-        Task<bool> BulkMerge(List<TaxType> TaxTypes);
-        Task<bool> BulkDelete(List<TaxType> TaxTypes);
     }
     public class TaxTypeRepository : ITaxTypeRepository
     {
@@ -180,71 +175,5 @@ namespace DMS.Repositories
 
             return TaxType;
         }
-        public async Task<bool> Create(TaxType TaxType)
-        {
-            TaxTypeDAO TaxTypeDAO = new TaxTypeDAO();
-            TaxTypeDAO.Id = TaxType.Id;
-            TaxTypeDAO.Code = TaxType.Code;
-            TaxTypeDAO.Name = TaxType.Name;
-            TaxTypeDAO.Percentage = TaxType.Percentage;
-            TaxTypeDAO.StatusId = TaxType.StatusId;
-            TaxTypeDAO.CreatedAt = StaticParams.DateTimeNow;
-            TaxTypeDAO.UpdatedAt = StaticParams.DateTimeNow;
-            TaxTypeDAO.Used = false;
-            DataContext.TaxType.Add(TaxTypeDAO);
-            await DataContext.SaveChangesAsync();
-            TaxType.Id = TaxTypeDAO.Id;
-            return true;
-        }
-
-        public async Task<bool> Update(TaxType TaxType)
-        {
-            TaxTypeDAO TaxTypeDAO = DataContext.TaxType.Where(x => x.Id == TaxType.Id).FirstOrDefault();
-            if (TaxTypeDAO == null)
-                return false;
-            TaxTypeDAO.Id = TaxType.Id;
-            TaxTypeDAO.Code = TaxType.Code;
-            TaxTypeDAO.Name = TaxType.Name;
-            TaxTypeDAO.Percentage = TaxType.Percentage;
-            TaxTypeDAO.StatusId = TaxType.StatusId;
-            TaxTypeDAO.UpdatedAt = StaticParams.DateTimeNow;
-            await DataContext.SaveChangesAsync();
-            return true;
-        }
-
-        public async Task<bool> Delete(TaxType TaxType)
-        {
-            await DataContext.TaxType.Where(x => x.Id == TaxType.Id).UpdateFromQueryAsync(x => new TaxTypeDAO { DeletedAt = StaticParams.DateTimeNow });
-            return true;
-        }
-
-        public async Task<bool> BulkMerge(List<TaxType> TaxTypes)
-        {
-            List<TaxTypeDAO> TaxTypeDAOs = new List<TaxTypeDAO>();
-            foreach (TaxType TaxType in TaxTypes)
-            {
-                TaxTypeDAO TaxTypeDAO = new TaxTypeDAO();
-                TaxTypeDAO.Id = TaxType.Id;
-                TaxTypeDAO.Code = TaxType.Code;
-                TaxTypeDAO.Name = TaxType.Name;
-                TaxTypeDAO.Percentage = TaxType.Percentage;
-                TaxTypeDAO.StatusId = TaxType.StatusId;
-                TaxTypeDAO.CreatedAt = StaticParams.DateTimeNow;
-                TaxTypeDAO.UpdatedAt = StaticParams.DateTimeNow;
-                TaxTypeDAOs.Add(TaxTypeDAO);
-            }
-            await DataContext.BulkMergeAsync(TaxTypeDAOs);
-            return true;
-        }
-
-        public async Task<bool> BulkDelete(List<TaxType> TaxTypes)
-        {
-            List<long> Ids = TaxTypes.Select(x => x.Id).ToList();
-            await DataContext.TaxType
-                .Where(x => Ids.Contains(x.Id))
-                .UpdateFromQueryAsync(x => new TaxTypeDAO { DeletedAt = StaticParams.DateTimeNow });
-            return true;
-        }
-
     }
 }

@@ -61,7 +61,6 @@ namespace DMS.Rpc.e_route
             StoreFilter.OrganizationId = new IdFilter { Equal = CurrentUser.OrganizationId };
             StoreFilter.StoreTypeId = ERoute_StoreFilterDTO.StoreTypeId;
             StoreFilter.StoreGroupingId = ERoute_StoreFilterDTO.StoreGroupingId;
-            StoreFilter.ResellerId = ERoute_StoreFilterDTO.ResellerId;
             StoreFilter.Telephone = ERoute_StoreFilterDTO.Telephone;
             StoreFilter.ProvinceId = ERoute_StoreFilterDTO.ProvinceId;
             StoreFilter.DistrictId = ERoute_StoreFilterDTO.DistrictId;
@@ -285,7 +284,6 @@ namespace DMS.Rpc.e_route
             StoreFilter.OrganizationId = new IdFilter { Equal = CurrentUser.OrganizationId };
             StoreFilter.StoreTypeId = ERoute_StoreFilterDTO.StoreTypeId;
             StoreFilter.StoreGroupingId = ERoute_StoreFilterDTO.StoreGroupingId;
-            StoreFilter.ResellerId = ERoute_StoreFilterDTO.ResellerId;
             StoreFilter.Telephone = ERoute_StoreFilterDTO.Telephone;
             StoreFilter.ProvinceId = ERoute_StoreFilterDTO.ProvinceId;
             StoreFilter.DistrictId = ERoute_StoreFilterDTO.DistrictId;
@@ -377,7 +375,6 @@ namespace DMS.Rpc.e_route
             StoreFilter.ParentStoreId = ERoute_StoreFilterDTO.ParentStoreId;
             StoreFilter.OrganizationId = ERoute_StoreFilterDTO.OrganizationId;
             StoreFilter.StoreTypeId = ERoute_StoreFilterDTO.StoreTypeId;
-            StoreFilter.ResellerId = ERoute_StoreFilterDTO.ResellerId;
             StoreFilter.Telephone = ERoute_StoreFilterDTO.Telephone;
             StoreFilter.ProvinceId = ERoute_StoreFilterDTO.ProvinceId;
             StoreFilter.DistrictId = ERoute_StoreFilterDTO.DistrictId;
@@ -428,7 +425,6 @@ namespace DMS.Rpc.e_route
             StoreFilter.ParentStoreId = ERoute_StoreFilterDTO.ParentStoreId;
             StoreFilter.OrganizationId = ERoute_StoreFilterDTO.OrganizationId;
             StoreFilter.StoreTypeId = ERoute_StoreFilterDTO.StoreTypeId;
-            StoreFilter.ResellerId = ERoute_StoreFilterDTO.ResellerId;
             StoreFilter.Telephone = ERoute_StoreFilterDTO.Telephone;
             StoreFilter.ProvinceId = ERoute_StoreFilterDTO.ProvinceId;
             StoreFilter.DistrictId = ERoute_StoreFilterDTO.DistrictId;

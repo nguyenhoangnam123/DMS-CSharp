@@ -268,27 +268,7 @@ namespace DMS.Services.MStore
             return Store.IsValidated;
         }
         #endregion
-        #region Reseller
-        private async Task<bool> ValidateResellerId(Store Store)
-        {
-            if (Store.ResellerId.HasValue)
-            {
-                ResellerFilter ResellerFilter = new ResellerFilter
-                {
-                    Skip = 0,
-                    Take = 10,
-                    Id = new IdFilter { Equal = Store.ResellerId },
-                    StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id },
-                    Selects = ResellerSelect.Id
-                };
 
-                int count = await UOW.ResellerRepository.Count(ResellerFilter);
-                if (count == 0)
-                    Store.AddError(nameof(StoreValidator), nameof(Store.ResellerId), ErrorCode.ResellerNotExisted);
-            }
-            return Store.IsValidated;
-        }
-        #endregion
         #region Province + District + Ward
         private async Task<bool> ValidateProvinceId(Store Store)
         {
@@ -451,6 +431,7 @@ namespace DMS.Services.MStore
             }
         }
         #endregion
+
         #region Status
         private async Task<bool> ValidateStatusId(Store Store)
         {
@@ -507,7 +488,6 @@ namespace DMS.Services.MStore
             await ValidateStoreGroupingId(Store);
             await ValidatePhone(Store);
             await ValidateTaxCode(Store);
-            await ValidateResellerId(Store);
             await ValidateProvinceId(Store);
             await ValidateDistrictId(Store);
             await ValidateWardId(Store);
@@ -536,7 +516,6 @@ namespace DMS.Services.MStore
                 await ValidateStoreGroupingId(Store);
                 await ValidatePhone(Store);
                 await ValidateTaxCode(Store);
-                await ValidateResellerId(Store);
                 await ValidateProvinceId(Store);
                 await ValidateDistrictId(Store);
                 await ValidateWardId(Store);

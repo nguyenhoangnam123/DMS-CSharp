@@ -123,9 +123,6 @@ namespace DMS.Models
         public virtual DbSet<RequestWorkflowHistoryDAO> RequestWorkflowHistory { get; set; }
         public virtual DbSet<RequestWorkflowParameterMappingDAO> RequestWorkflowParameterMapping { get; set; }
         public virtual DbSet<RequestWorkflowStepMappingDAO> RequestWorkflowStepMapping { get; set; }
-        public virtual DbSet<ResellerDAO> Reseller { get; set; }
-        public virtual DbSet<ResellerStatusDAO> ResellerStatus { get; set; }
-        public virtual DbSet<ResellerTypeDAO> ResellerType { get; set; }
         public virtual DbSet<RewardHistoryDAO> RewardHistory { get; set; }
         public virtual DbSet<RewardHistoryContentDAO> RewardHistoryContent { get; set; }
         public virtual DbSet<RewardStatusDAO> RewardStatus { get; set; }
@@ -3519,107 +3516,6 @@ namespace DMS.Models
                     .HasConstraintName("FK_RequestWorkflow_WorkflowStep");
             });
 
-            modelBuilder.Entity<ResellerDAO>(entity =>
-            {
-                entity.ToTable("Reseller", "MDM");
-
-                entity.Property(e => e.Address)
-                    .IsRequired()
-                    .HasMaxLength(500);
-
-                entity.Property(e => e.Code)
-                    .IsRequired()
-                    .HasMaxLength(500);
-
-                entity.Property(e => e.CompanyName).HasMaxLength(500);
-
-                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
-
-                entity.Property(e => e.DeletedAt).HasColumnType("datetime");
-
-                entity.Property(e => e.DeputyName).HasMaxLength(500);
-
-                entity.Property(e => e.Description).HasMaxLength(1000);
-
-                entity.Property(e => e.Email).HasMaxLength(500);
-
-                entity.Property(e => e.Name)
-                    .IsRequired()
-                    .HasMaxLength(500);
-
-                entity.Property(e => e.Phone)
-                    .IsRequired()
-                    .HasMaxLength(500);
-
-                entity.Property(e => e.TaxCode).HasMaxLength(500);
-
-                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
-
-                entity.HasOne(d => d.Organization)
-                    .WithMany(p => p.Resellers)
-                    .HasForeignKey(d => d.OrganizationId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Reseller_Organization");
-
-                entity.HasOne(d => d.ResellerStatus)
-                    .WithMany(p => p.Resellers)
-                    .HasForeignKey(d => d.ResellerStatusId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Reseller_ResellerStatus");
-
-                entity.HasOne(d => d.ResellerType)
-                    .WithMany(p => p.Resellers)
-                    .HasForeignKey(d => d.ResellerTypeId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Reseller_ResellerType");
-
-                entity.HasOne(d => d.Staff)
-                    .WithMany(p => p.Resellers)
-                    .HasForeignKey(d => d.StaffId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Reseller_AppUser");
-
-                entity.HasOne(d => d.Status)
-                    .WithMany(p => p.Resellers)
-                    .HasForeignKey(d => d.StatusId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Reseller_Status");
-            });
-
-            modelBuilder.Entity<ResellerStatusDAO>(entity =>
-            {
-                entity.ToTable("ResellerStatus", "MDM");
-
-                entity.Property(e => e.Id).ValueGeneratedNever();
-
-                entity.Property(e => e.Code)
-                    .IsRequired()
-                    .HasMaxLength(50);
-
-                entity.Property(e => e.Name)
-                    .IsRequired()
-                    .HasMaxLength(50);
-            });
-
-            modelBuilder.Entity<ResellerTypeDAO>(entity =>
-            {
-                entity.ToTable("ResellerType", "MDM");
-
-                entity.Property(e => e.Code)
-                    .IsRequired()
-                    .HasMaxLength(50);
-
-                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
-
-                entity.Property(e => e.DeletedAt).HasColumnType("datetime");
-
-                entity.Property(e => e.Name)
-                    .IsRequired()
-                    .HasMaxLength(50);
-
-                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
-            });
-
             modelBuilder.Entity<RewardHistoryDAO>(entity =>
             {
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
@@ -3809,11 +3705,6 @@ namespace DMS.Models
                     .WithMany(p => p.Stores)
                     .HasForeignKey(d => d.ProvinceId)
                     .HasConstraintName("FK_Store_Province");
-
-                entity.HasOne(d => d.Reseller)
-                    .WithMany(p => p.Stores)
-                    .HasForeignKey(d => d.ResellerId)
-                    .HasConstraintName("FK_Store_Reseller");
 
                 entity.HasOne(d => d.Status)
                     .WithMany(p => p.Stores)
@@ -4630,9 +4521,15 @@ namespace DMS.Models
                     .IsRequired()
                     .HasMaxLength(500);
 
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+
                 entity.Property(e => e.Name)
                     .IsRequired()
                     .HasMaxLength(500);
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
                 entity.HasOne(d => d.VariationGrouping)
                     .WithMany(p => p.Variations)

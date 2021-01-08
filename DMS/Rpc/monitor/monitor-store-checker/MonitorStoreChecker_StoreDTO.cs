@@ -20,8 +20,6 @@ namespace DMS.Rpc.monitor.monitor_store_checker
 
         public long? StoreGroupingId { get; set; }
 
-        public long? ResellerId { get; set; }
-
         public string Telephone { get; set; }
 
         public long? ProvinceId { get; set; }
@@ -72,8 +70,6 @@ namespace DMS.Rpc.monitor.monitor_store_checker
             this.StoreTypeId = Store.StoreTypeId;
 
             this.StoreGroupingId = Store.StoreGroupingId;
-
-            this.ResellerId = Store.ResellerId;
 
             this.Telephone = Store.Telephone;
 
@@ -127,8 +123,6 @@ namespace DMS.Rpc.monitor.monitor_store_checker
         public IdFilter StoreTypeId { get; set; }
 
         public IdFilter StoreGroupingId { get; set; }
-
-        public IdFilter ResellerId { get; set; }
 
         public StringFilter Telephone { get; set; }
 

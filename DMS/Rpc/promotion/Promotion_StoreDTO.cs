@@ -25,8 +25,6 @@ namespace DMS.Rpc.promotion
         
         public long? StoreGroupingId { get; set; }
         
-        public long? ResellerId { get; set; }
-        
         public string Telephone { get; set; }
         
         public long? ProvinceId { get; set; }
@@ -87,8 +85,6 @@ namespace DMS.Rpc.promotion
             this.StoreTypeId = Store.StoreTypeId;
             
             this.StoreGroupingId = Store.StoreGroupingId;
-            
-            this.ResellerId = Store.ResellerId;
             
             this.Telephone = Store.Telephone;
             
@@ -152,8 +148,6 @@ namespace DMS.Rpc.promotion
         public IdFilter StoreTypeId { get; set; }
         
         public IdFilter StoreGroupingId { get; set; }
-        
-        public IdFilter ResellerId { get; set; }
         
         public StringFilter Telephone { get; set; }
         

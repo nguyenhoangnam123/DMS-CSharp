@@ -29,7 +29,6 @@ namespace DMS.Models
             PromotionPromotionPolicyMappings = new HashSet<PromotionPromotionPolicyMappingDAO>();
             Promotions = new HashSet<PromotionDAO>();
             Provinces = new HashSet<ProvinceDAO>();
-            Resellers = new HashSet<ResellerDAO>();
             Roles = new HashSet<RoleDAO>();
             StoreGroupings = new HashSet<StoreGroupingDAO>();
             StoreScoutingTypes = new HashSet<StoreScoutingTypeDAO>();
@@ -73,7 +72,6 @@ namespace DMS.Models
         public virtual ICollection<PromotionPromotionPolicyMappingDAO> PromotionPromotionPolicyMappings { get; set; }
         public virtual ICollection<PromotionDAO> Promotions { get; set; }
         public virtual ICollection<ProvinceDAO> Provinces { get; set; }
-        public virtual ICollection<ResellerDAO> Resellers { get; set; }
         public virtual ICollection<RoleDAO> Roles { get; set; }
         public virtual ICollection<StoreGroupingDAO> StoreGroupings { get; set; }
         public virtual ICollection<StoreScoutingTypeDAO> StoreScoutingTypes { get; set; }

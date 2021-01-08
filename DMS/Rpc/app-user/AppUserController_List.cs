@@ -301,7 +301,6 @@ namespace DMS.Rpc.app_user
             StoreFilter.ParentStoreId = AppUser_StoreFilterDTO.ParentStoreId;
             StoreFilter.OrganizationId = AppUser_StoreFilterDTO.OrganizationId;
             StoreFilter.StoreTypeId = AppUser_StoreFilterDTO.StoreTypeId;
-            StoreFilter.ResellerId = AppUser_StoreFilterDTO.ResellerId;
             StoreFilter.Telephone = AppUser_StoreFilterDTO.Telephone;
             StoreFilter.ProvinceId = AppUser_StoreFilterDTO.ProvinceId;
             StoreFilter.DistrictId = AppUser_StoreFilterDTO.DistrictId;
@@ -337,7 +336,6 @@ namespace DMS.Rpc.app_user
             StoreFilter.ParentStoreId = AppUser_StoreFilterDTO.ParentStoreId;
             StoreFilter.OrganizationId = AppUser_StoreFilterDTO.OrganizationId;
             StoreFilter.StoreTypeId = AppUser_StoreFilterDTO.StoreTypeId;
-            StoreFilter.ResellerId = AppUser_StoreFilterDTO.ResellerId;
             StoreFilter.Telephone = AppUser_StoreFilterDTO.Telephone;
             StoreFilter.ProvinceId = AppUser_StoreFilterDTO.ProvinceId;
             StoreFilter.DistrictId = AppUser_StoreFilterDTO.DistrictId;

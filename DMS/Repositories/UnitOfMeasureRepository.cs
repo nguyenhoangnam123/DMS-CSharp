@@ -15,11 +15,6 @@ namespace DMS.Repositories
         Task<int> Count(UnitOfMeasureFilter UnitOfMeasureFilter);
         Task<List<UnitOfMeasure>> List(UnitOfMeasureFilter UnitOfMeasureFilter);
         Task<UnitOfMeasure> Get(long Id);
-        Task<bool> Create(UnitOfMeasure UnitOfMeasure);
-        Task<bool> Update(UnitOfMeasure UnitOfMeasure);
-        Task<bool> Delete(UnitOfMeasure UnitOfMeasure);
-        Task<bool> BulkMerge(List<UnitOfMeasure> UnitOfMeasures);
-        Task<bool> BulkDelete(List<UnitOfMeasure> UnitOfMeasures);
     }
     public class UnitOfMeasureRepository : IUnitOfMeasureRepository
     {
@@ -180,77 +175,5 @@ namespace DMS.Repositories
 
             return UnitOfMeasure;
         }
-        public async Task<bool> Create(UnitOfMeasure UnitOfMeasure)
-        {
-            UnitOfMeasureDAO UnitOfMeasureDAO = new UnitOfMeasureDAO();
-            UnitOfMeasureDAO.Id = UnitOfMeasure.Id;
-            UnitOfMeasureDAO.Code = UnitOfMeasure.Code;
-            UnitOfMeasureDAO.Name = UnitOfMeasure.Name;
-            UnitOfMeasureDAO.Description = UnitOfMeasure.Description;
-            UnitOfMeasureDAO.StatusId = UnitOfMeasure.StatusId;
-            UnitOfMeasureDAO.CreatedAt = StaticParams.DateTimeNow;
-            UnitOfMeasureDAO.UpdatedAt = StaticParams.DateTimeNow;
-            UnitOfMeasureDAO.Used = false;
-            DataContext.UnitOfMeasure.Add(UnitOfMeasureDAO);
-            await DataContext.SaveChangesAsync();
-            UnitOfMeasure.Id = UnitOfMeasureDAO.Id;
-            await SaveReference(UnitOfMeasure);
-            return true;
-        }
-
-        public async Task<bool> Update(UnitOfMeasure UnitOfMeasure)
-        {
-            UnitOfMeasureDAO UnitOfMeasureDAO = DataContext.UnitOfMeasure.Where(x => x.Id == UnitOfMeasure.Id).FirstOrDefault();
-            if (UnitOfMeasureDAO == null)
-                return false;
-            UnitOfMeasureDAO.Id = UnitOfMeasure.Id;
-            UnitOfMeasureDAO.Code = UnitOfMeasure.Code;
-            UnitOfMeasureDAO.Name = UnitOfMeasure.Name;
-            UnitOfMeasureDAO.Description = UnitOfMeasure.Description;
-            UnitOfMeasureDAO.StatusId = UnitOfMeasure.StatusId;
-            UnitOfMeasureDAO.UpdatedAt = StaticParams.DateTimeNow;
-            await DataContext.SaveChangesAsync();
-            await SaveReference(UnitOfMeasure);
-            return true;
-        }
-
-        public async Task<bool> Delete(UnitOfMeasure UnitOfMeasure)
-        {
-            await DataContext.UnitOfMeasure.Where(x => x.Id == UnitOfMeasure.Id).UpdateFromQueryAsync(x => new UnitOfMeasureDAO { DeletedAt = StaticParams.DateTimeNow });
-            return true;
-        }
-
-        public async Task<bool> BulkMerge(List<UnitOfMeasure> UnitOfMeasures)
-        {
-            List<UnitOfMeasureDAO> UnitOfMeasureDAOs = new List<UnitOfMeasureDAO>();
-            foreach (UnitOfMeasure UnitOfMeasure in UnitOfMeasures)
-            {
-                UnitOfMeasureDAO UnitOfMeasureDAO = new UnitOfMeasureDAO();
-                UnitOfMeasureDAO.Id = UnitOfMeasure.Id;
-                UnitOfMeasureDAO.Code = UnitOfMeasure.Code;
-                UnitOfMeasureDAO.Name = UnitOfMeasure.Name;
-                UnitOfMeasureDAO.Description = UnitOfMeasure.Description;
-                UnitOfMeasureDAO.StatusId = UnitOfMeasure.StatusId;
-                UnitOfMeasureDAO.CreatedAt = StaticParams.DateTimeNow;
-                UnitOfMeasureDAO.UpdatedAt = StaticParams.DateTimeNow;
-                UnitOfMeasureDAOs.Add(UnitOfMeasureDAO);
-            }
-            await DataContext.BulkMergeAsync(UnitOfMeasureDAOs);
-            return true;
-        }
-
-        public async Task<bool> BulkDelete(List<UnitOfMeasure> UnitOfMeasures)
-        {
-            List<long> Ids = UnitOfMeasures.Select(x => x.Id).ToList();
-            await DataContext.UnitOfMeasure
-                .Where(x => Ids.Contains(x.Id))
-                .UpdateFromQueryAsync(x => new UnitOfMeasureDAO { DeletedAt = StaticParams.DateTimeNow });
-            return true;
-        }
-
-        private async Task SaveReference(UnitOfMeasure UnitOfMeasure)
-        {
-        }
-
     }
 }

@@ -12,7 +12,8 @@ namespace DMS.Handlers
 {
     public class SupplierHandler : Handler
     {
-        private string UsedKey => Name + ".Used";
+        private string SyncKey => Name + ".Sync";
+
         public override string Name => nameof(Supplier);
 
         public override void QueueBind(IModel channel, string queue, string exchange)
@@ -21,15 +22,48 @@ namespace DMS.Handlers
         }
         public override async Task Handle(DataContext context, string routingKey, string content)
         {
-            if (routingKey == UsedKey)
-                await Used(context, content);
+            if (routingKey == SyncKey)
+                await Sync(context, content);
         }
 
-        private async Task Used(DataContext context, string json)
+        private async Task Sync(DataContext context, string json)
         {
-            List<EventMessage<Supplier>> EventMessageReviced = JsonConvert.DeserializeObject<List<EventMessage<Supplier>>>(json);
-            List<long> SupplierIds = EventMessageReviced.Select(em => em.Content.Id).ToList();
-            await context.Supplier.Where(a => SupplierIds.Contains(a.Id)).UpdateFromQueryAsync(a => new SupplierDAO { Used = true });
+            List<EventMessage<Supplier>> EventMessageReceived = JsonConvert.DeserializeObject<List<EventMessage<Supplier>>>(json);
+            await SaveEventMessage(context, SyncKey, EventMessageReceived);
+            List<Guid> RowIds = EventMessageReceived.Select(a => a.RowId).Distinct().ToList();
+            List<EventMessage<Supplier>> SupplierEventMessages = await ListEventMessage<Supplier>(context, SyncKey, RowIds);
+            List<Supplier> Suppliers = SupplierEventMessages.Select(x => x.Content).ToList();
+            try
+            {
+                List<SupplierDAO> SupplierDAOs = Suppliers
+                    .Select(x => new SupplierDAO
+                    {
+                        CreatedAt = x.CreatedAt,
+                        UpdatedAt = x.UpdatedAt,
+                        DeletedAt = x.DeletedAt,
+                        Id = x.Id,
+                        Code = x.Code,
+                        Name = x.Name,
+                        TaxCode = x.TaxCode,
+                        Phone = x.Phone,
+                        Email = x.Email,
+                        Address = x.Address,
+                        ProvinceId = x.ProvinceId,
+                        DistrictId = x.DistrictId,
+                        WardId = x.WardId,
+                        OwnerName = x.OwnerName,
+                        PersonInChargeId = x.PersonInChargeId,
+                        StatusId = x.StatusId,
+                        Description = x.Description,
+                        Used = x.Used,
+                        RowId = x.RowId,
+                    }).ToList();
+                await context.BulkMergeAsync(SupplierDAOs);
+            }
+            catch (Exception ex)
+            {
+                Log(ex, nameof(SupplierHandler));
+            }
         }
     }
 }

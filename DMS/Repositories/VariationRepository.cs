@@ -14,11 +14,6 @@ namespace DMS.Repositories
         Task<int> Count(VariationFilter VariationFilter);
         Task<List<Variation>> List(VariationFilter VariationFilter);
         Task<Variation> Get(long Id);
-        Task<bool> Create(Variation Variation);
-        Task<bool> Update(Variation Variation);
-        Task<bool> Delete(Variation Variation);
-        Task<bool> BulkMerge(List<Variation> Variations);
-        Task<bool> BulkDelete(List<Variation> Variations);
     }
     public class VariationRepository : IVariationRepository
     {
@@ -164,67 +159,5 @@ namespace DMS.Repositories
 
             return Variation;
         }
-        public async Task<bool> Create(Variation Variation)
-        {
-            VariationDAO VariationDAO = new VariationDAO();
-            VariationDAO.Id = Variation.Id;
-            VariationDAO.Code = Variation.Code;
-            VariationDAO.Name = Variation.Name;
-            VariationDAO.VariationGroupingId = Variation.VariationGroupingId;
-            DataContext.Variation.Add(VariationDAO);
-            await DataContext.SaveChangesAsync();
-            Variation.Id = VariationDAO.Id;
-            await SaveReference(Variation);
-            return true;
-        }
-
-        public async Task<bool> Update(Variation Variation)
-        {
-            VariationDAO VariationDAO = DataContext.Variation.Where(x => x.Id == Variation.Id).FirstOrDefault();
-            if (VariationDAO == null)
-                return false;
-            VariationDAO.Id = Variation.Id;
-            VariationDAO.Code = Variation.Code;
-            VariationDAO.Name = Variation.Name;
-            VariationDAO.VariationGroupingId = Variation.VariationGroupingId;
-            await DataContext.SaveChangesAsync();
-            await SaveReference(Variation);
-            return true;
-        }
-
-        public async Task<bool> Delete(Variation Variation)
-        {
-            await DataContext.Variation.Where(x => x.Id == Variation.Id).DeleteFromQueryAsync();
-            return true;
-        }
-
-        public async Task<bool> BulkMerge(List<Variation> Variations)
-        {
-            List<VariationDAO> VariationDAOs = new List<VariationDAO>();
-            foreach (Variation Variation in Variations)
-            {
-                VariationDAO VariationDAO = new VariationDAO();
-                VariationDAO.Id = Variation.Id;
-                VariationDAO.Code = Variation.Code;
-                VariationDAO.Name = Variation.Name;
-                VariationDAO.VariationGroupingId = Variation.VariationGroupingId;
-                VariationDAOs.Add(VariationDAO);
-            }
-            await DataContext.BulkMergeAsync(VariationDAOs);
-            return true;
-        }
-
-        public async Task<bool> BulkDelete(List<Variation> Variations)
-        {
-            List<long> Ids = Variations.Select(x => x.Id).ToList();
-            await DataContext.Variation
-                .Where(x => Ids.Contains(x.Id)).DeleteFromQueryAsync();
-            return true;
-        }
-
-        private async Task SaveReference(Variation Variation)
-        {
-        }
-
     }
 }

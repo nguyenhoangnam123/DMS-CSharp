@@ -90,9 +90,6 @@ namespace DMS.Repositories
         IRequestWorkflowHistoryRepository RequestWorkflowHistoryRepository { get; }
         IRequestWorkflowParameterMappingRepository RequestWorkflowParameterMappingRepository { get; }
         IRequestWorkflowStepMappingRepository RequestWorkflowStepMappingRepository { get; }
-        IResellerRepository ResellerRepository { get; }
-        IResellerStatusRepository ResellerStatusRepository { get; }
-        IResellerTypeRepository ResellerTypeRepository { get; }
         IRewardHistoryContentRepository RewardHistoryContentRepository { get; }
         IRewardHistoryRepository RewardHistoryRepository { get; }
         IRewardStatusRepository RewardStatusRepository { get; }
@@ -220,10 +217,6 @@ namespace DMS.Repositories
         public IRequestWorkflowHistoryRepository RequestWorkflowHistoryRepository { get; private set; }
         public IRequestWorkflowParameterMappingRepository RequestWorkflowParameterMappingRepository { get; private set; }
         public IRequestWorkflowStepMappingRepository RequestWorkflowStepMappingRepository { get; private set; }
-        public IResellerRepository ResellerRepository { get; private set; }
-        public IResellerStatusRepository ResellerStatusRepository { get; private set; }
-        public IResellerTypeRepository ResellerTypeRepository { get; private set; }
-
         public IRoleRepository RoleRepository { get; private set; }
         public ISalesOrderTypeRepository SalesOrderTypeRepository { get; private set; }
         public ISexRepository SexRepository { get; private set; }
@@ -343,9 +336,6 @@ namespace DMS.Repositories
             RequestWorkflowHistoryRepository = new RequestWorkflowHistoryRepository(DataContext);
             RequestWorkflowParameterMappingRepository = new RequestWorkflowParameterMappingRepository(DataContext);
             RequestWorkflowStepMappingRepository = new RequestWorkflowStepMappingRepository(DataContext);
-            ResellerRepository = new ResellerRepository(DataContext);
-            ResellerStatusRepository = new ResellerStatusRepository(DataContext);
-            ResellerTypeRepository = new ResellerTypeRepository(DataContext);
             RewardHistoryContentRepository = new RewardHistoryContentRepository(DataContext);
             RewardHistoryRepository = new RewardHistoryRepository(DataContext);
             RewardStatusRepository = new RewardStatusRepository(DataContext);

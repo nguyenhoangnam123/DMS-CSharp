@@ -15,6 +15,10 @@ namespace DMS.Entities
         public long StatusId { get; set; }
         public long? Factor { get; set; }
         public bool Used { get; set; }
+        public Guid RowId { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; }
+        public DateTime? DeletedAt { get; set; }
         public Status Status { get; set; }
         public bool Equals(UnitOfMeasure other)
         {

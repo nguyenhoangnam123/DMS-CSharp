@@ -16,7 +16,6 @@ namespace DMS.Rpc.store
         public long StoreTypeId { get; set; }
         public long? StoreGroupingId { get; set; }
         public string Telephone { get; set; }
-        public long? ResellerId { get; set; }
         public long? ProvinceId { get; set; }
         public long? DistrictId { get; set; }
         public long? WardId { get; set; }
@@ -43,7 +42,6 @@ namespace DMS.Rpc.store
         public Store_OrganizationDTO Organization { get; set; }
         public Store_StoreDTO ParentStore { get; set; }
         public Store_ProvinceDTO Province { get; set; }
-        public Store_ResellerDTO Reseller { get; set; }
         public Store_StatusDTO Status { get; set; }
         public Store_StoreGroupingDTO StoreGrouping { get; set; }
         public Store_StoreTypeDTO StoreType { get; set; }
@@ -64,7 +62,6 @@ namespace DMS.Rpc.store
             this.StoreTypeId = Store.StoreTypeId;
             this.StoreGroupingId = Store.StoreGroupingId;
             this.Telephone = Store.Telephone;
-            this.ResellerId = Store.ResellerId;
             this.ProvinceId = Store.ProvinceId;
             this.DistrictId = Store.DistrictId;
             this.WardId = Store.WardId;
@@ -90,7 +87,6 @@ namespace DMS.Rpc.store
             this.Organization = Store.Organization == null ? null : new Store_OrganizationDTO(Store.Organization);
             this.ParentStore = Store.ParentStore == null ? null : new Store_StoreDTO(Store.ParentStore);
             this.Province = Store.Province == null ? null : new Store_ProvinceDTO(Store.Province);
-            this.Reseller = Store.Reseller == null ? null : new Store_ResellerDTO(Store.Reseller);
             this.Status = Store.Status == null ? null : new Store_StatusDTO(Store.Status);
             this.StoreGrouping = Store.StoreGrouping == null ? null : new Store_StoreGroupingDTO(Store.StoreGrouping);
             this.StoreType = Store.StoreType == null ? null : new Store_StoreTypeDTO(Store.StoreType);
@@ -115,7 +111,6 @@ namespace DMS.Rpc.store
         public IdFilter StoreTypeId { get; set; }
         public IdFilter StoreGroupingId { get; set; }
         public StringFilter Telephone { get; set; }
-        public IdFilter ResellerId { get; set; }
         public IdFilter ProvinceId { get; set; }
         public IdFilter DistrictId { get; set; }
         public IdFilter WardId { get; set; }

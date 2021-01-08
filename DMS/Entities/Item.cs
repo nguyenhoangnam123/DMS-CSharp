@@ -9,7 +9,6 @@ namespace DMS.Entities
     public class Item : DataEntity, IEquatable<Item>
     {
         public long Id { get; set; }
-        public Guid RowId { get; set; }
         public long ProductId { get; set; }
         public string Code { get; set; }
         public string Name { get; set; }
@@ -21,7 +20,11 @@ namespace DMS.Entities
         public long StatusId { get; set; }
         public bool HasInventory { get; set; }
         public DateTime? LastUpdateInventory { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; }
+        public DateTime? DeletedAt { get; set; }
         public bool Used { get; set; }
+        public Guid RowId { get; set; }
         public Product Product { get; set; }
         public Status Status { get; set; }
         public List<Inventory> Inventories { get; set; }

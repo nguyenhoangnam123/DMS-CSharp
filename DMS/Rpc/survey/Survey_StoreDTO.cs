@@ -12,7 +12,6 @@ namespace DMS.Rpc.survey
         public long OrganizationId { get; set; }
         public long StoreTypeId { get; set; }
         public long? StoreGroupingId { get; set; }
-        public long? ResellerId { get; set; }
         public string Telephone { get; set; }
         public long? ProvinceId { get; set; }
         public long? DistrictId { get; set; }
@@ -39,7 +38,6 @@ namespace DMS.Rpc.survey
             this.OrganizationId = Store.OrganizationId;
             this.StoreTypeId = Store.StoreTypeId;
             this.StoreGroupingId = Store.StoreGroupingId;
-            this.ResellerId = Store.ResellerId;
             this.Telephone = Store.Telephone;
             this.ProvinceId = Store.ProvinceId;
             this.DistrictId = Store.DistrictId;
@@ -76,8 +74,6 @@ namespace DMS.Rpc.survey
         public IdFilter StoreTypeId { get; set; }
 
         public IdFilter StoreGroupingId { get; set; }
-
-        public IdFilter ResellerId { get; set; }
 
         public StringFilter Telephone { get; set; }
 

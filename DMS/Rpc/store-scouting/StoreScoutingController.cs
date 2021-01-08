@@ -494,7 +494,6 @@ namespace DMS.Rpc.store_scouting
             StoreFilter.OrganizationId = StoreScouting_StoreFilterDTO.OrganizationId;
             StoreFilter.StoreTypeId = StoreScouting_StoreFilterDTO.StoreTypeId;
             StoreFilter.StoreGroupingId = StoreScouting_StoreFilterDTO.StoreGroupingId;
-            StoreFilter.ResellerId = StoreScouting_StoreFilterDTO.ResellerId;
             StoreFilter.Telephone = StoreScouting_StoreFilterDTO.Telephone;
             StoreFilter.ProvinceId = StoreScouting_StoreFilterDTO.ProvinceId;
             StoreFilter.DistrictId = StoreScouting_StoreFilterDTO.DistrictId;
@@ -673,7 +672,6 @@ namespace DMS.Rpc.store_scouting
             StoreFilter.OrganizationId = StoreScouting_StoreFilterDTO.OrganizationId;
             StoreFilter.StoreTypeId = StoreScouting_StoreFilterDTO.StoreTypeId;
             StoreFilter.StoreGroupingId = StoreScouting_StoreFilterDTO.StoreGroupingId;
-            StoreFilter.ResellerId = StoreScouting_StoreFilterDTO.ResellerId;
             StoreFilter.Telephone = StoreScouting_StoreFilterDTO.Telephone;
             StoreFilter.ProvinceId = StoreScouting_StoreFilterDTO.ProvinceId;
             StoreFilter.DistrictId = StoreScouting_StoreFilterDTO.DistrictId;

@@ -197,7 +197,6 @@ namespace DMS.Rpc.store_grouping
                     OrganizationId = x.OrganizationId,
                     StoreTypeId = x.StoreTypeId,
                     Telephone = x.Telephone,
-                    ResellerId = x.ResellerId,
                     ProvinceId = x.ProvinceId,
                     DistrictId = x.DistrictId,
                     WardId = x.WardId,
@@ -245,7 +244,6 @@ namespace DMS.Rpc.store_grouping
                         StoreTypeId = x.ParentStore.StoreTypeId,
                         StoreGroupingId = x.ParentStore.StoreGroupingId,
                         Telephone = x.ParentStore.Telephone,
-                        ResellerId = x.ParentStore.ResellerId,
                         ProvinceId = x.ParentStore.ProvinceId,
                         DistrictId = x.ParentStore.DistrictId,
                         WardId = x.ParentStore.WardId,
@@ -362,7 +360,6 @@ namespace DMS.Rpc.store_grouping
             StoreFilter.StoreTypeId = StoreGrouping_StoreFilterDTO.StoreTypeId;
             StoreFilter.StoreGroupingId = StoreGrouping_StoreFilterDTO.StoreGroupingId;
             StoreFilter.Telephone = StoreGrouping_StoreFilterDTO.Telephone;
-            StoreFilter.ResellerId = StoreGrouping_StoreFilterDTO.ResellerId;
             StoreFilter.ProvinceId = StoreGrouping_StoreFilterDTO.ProvinceId;
             StoreFilter.DistrictId = StoreGrouping_StoreFilterDTO.DistrictId;
             StoreFilter.WardId = StoreGrouping_StoreFilterDTO.WardId;
@@ -396,7 +393,6 @@ namespace DMS.Rpc.store_grouping
             StoreFilter.StoreTypeId = StoreGrouping_StoreFilterDTO.StoreTypeId;
             StoreFilter.StoreGroupingId = StoreGrouping_StoreFilterDTO.StoreGroupingId;
             StoreFilter.Telephone = StoreGrouping_StoreFilterDTO.Telephone;
-            StoreFilter.ResellerId = StoreGrouping_StoreFilterDTO.ResellerId;
             StoreFilter.ProvinceId = StoreGrouping_StoreFilterDTO.ProvinceId;
             StoreFilter.DistrictId = StoreGrouping_StoreFilterDTO.DistrictId;
             StoreFilter.WardId = StoreGrouping_StoreFilterDTO.WardId;

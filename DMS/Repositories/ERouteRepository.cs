@@ -568,7 +568,6 @@ namespace DMS.Repositories
                     OrganizationId = x.Store.OrganizationId,
                     StoreTypeId = x.Store.StoreTypeId,
                     StoreGroupingId = x.Store.StoreGroupingId,
-                    ResellerId = x.Store.ResellerId,
                     Telephone = x.Store.Telephone,
                     ProvinceId = x.Store.ProvinceId,
                     DistrictId = x.Store.DistrictId,

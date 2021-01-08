@@ -11,7 +11,6 @@ using DMS.Services.MPermissionOperator;
 using DMS.Services.MProduct;
 using DMS.Services.MProductGrouping;
 using DMS.Services.MProductType;
-using DMS.Services.MReseller;
 using DMS.Services.MRole;
 using DMS.Services.MStatus;
 using DMS.Services.MStore;
@@ -39,7 +38,6 @@ namespace DMS.Rpc.role
         private IProductService ProductService;
         private IProductGroupingService ProductGroupingService;
         private IProductTypeService ProductTypeService;
-        private IResellerService ResellerService;
         private IStoreService StoreService;
         private IStoreGroupingService StoreGroupingService;
         private IStoreTypeService StoreTypeService;
@@ -62,7 +60,6 @@ namespace DMS.Rpc.role
             IProductService ProductService,
             IProductGroupingService ProductGroupingService,
             IProductTypeService ProductTypeService,
-            IResellerService ResellerService,
             IStoreService StoreService,
             IStoreGroupingService StoreGroupingService,
             IStoreTypeService StoreTypeService,
@@ -85,7 +82,6 @@ namespace DMS.Rpc.role
             this.ProductService = ProductService;
             this.ProductGroupingService = ProductGroupingService;
             this.ProductTypeService = ProductTypeService;
-            this.ResellerService = ResellerService;
             this.StoreService = StoreService;
             this.StoreGroupingService = StoreGroupingService;
             this.StoreTypeService = StoreTypeService;

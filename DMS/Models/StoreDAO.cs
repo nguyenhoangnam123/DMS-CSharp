@@ -38,7 +38,6 @@ namespace DMS.Models
         public long OrganizationId { get; set; }
         public long StoreTypeId { get; set; }
         public long? StoreGroupingId { get; set; }
-        public long? ResellerId { get; set; }
         public string Telephone { get; set; }
         public long? ProvinceId { get; set; }
         public long? DistrictId { get; set; }
@@ -70,7 +69,6 @@ namespace DMS.Models
         public virtual OrganizationDAO Organization { get; set; }
         public virtual StoreDAO ParentStore { get; set; }
         public virtual ProvinceDAO Province { get; set; }
-        public virtual ResellerDAO Reseller { get; set; }
         public virtual StatusDAO Status { get; set; }
         public virtual StoreGroupingDAO StoreGrouping { get; set; }
         public virtual StoreScoutingDAO StoreScouting { get; set; }

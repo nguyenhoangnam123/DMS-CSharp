@@ -12,6 +12,7 @@ namespace DMS.Entities
         public long UnitOfMeasureGroupingId { get; set; }
         public long UnitOfMeasureId { get; set; }
         public long? Factor { get; set; }
+        public Guid RowId { get; set; }
         public UnitOfMeasure UnitOfMeasure { get; set; }
         public UnitOfMeasureGrouping UnitOfMeasureGrouping { get; set; }
 

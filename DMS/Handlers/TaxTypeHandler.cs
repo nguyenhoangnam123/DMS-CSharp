@@ -12,7 +12,8 @@ namespace DMS.Handlers
 {
     public class TaxTypeHandler : Handler
     {
-        private string UsedKey => Name + ".Used";
+        private string SyncKey => Name + ".Sync";
+
         public override string Name => nameof(TaxType);
 
         public override void QueueBind(IModel channel, string queue, string exchange)
@@ -21,15 +22,40 @@ namespace DMS.Handlers
         }
         public override async Task Handle(DataContext context, string routingKey, string content)
         {
-            if (routingKey == UsedKey)
-                await Used(context, content);
+            if (routingKey == SyncKey)
+                await Sync(context, content);
         }
 
-        private async Task Used(DataContext context, string json)
+        private async Task Sync(DataContext context, string json)
         {
-            List<EventMessage<TaxType>> EventMessageReviced = JsonConvert.DeserializeObject<List<EventMessage<TaxType>>>(json);
-            List<long> TaxTypeIds = EventMessageReviced.Select(em => em.Content.Id).ToList();
-            await context.TaxType.Where(a => TaxTypeIds.Contains(a.Id)).UpdateFromQueryAsync(a => new TaxTypeDAO { Used = true });
+            List<EventMessage<TaxType>> EventMessageReceived = JsonConvert.DeserializeObject<List<EventMessage<TaxType>>>(json);
+            await SaveEventMessage(context, SyncKey, EventMessageReceived);
+            List<Guid> RowIds = EventMessageReceived.Select(a => a.RowId).Distinct().ToList();
+            List<EventMessage<TaxType>> TaxTypeEventMessages = await ListEventMessage<TaxType>(context, SyncKey, RowIds);
+            List<TaxType> TaxTypes = TaxTypeEventMessages.Select(x => x.Content).ToList();
+            try
+            {
+                List<TaxTypeDAO> TaxTypeDAOs = TaxTypes
+                    .Select(x => new TaxTypeDAO
+                    {
+                        CreatedAt = x.CreatedAt,
+                        UpdatedAt = x.UpdatedAt,
+                        DeletedAt = x.DeletedAt,
+                        Id = x.Id,
+                        Code = x.Code,
+                        Name = x.Name,
+                        StatusId = x.StatusId,
+                        Percentage = x.Percentage,
+                        Used = x.Used,
+                        RowId = x.RowId,
+
+                    }).ToList();
+                await context.BulkMergeAsync(TaxTypeDAOs);
+            }
+            catch (Exception ex)
+            {
+                Log(ex, nameof(TaxTypeHandler));
+            }
         }
     }
 }

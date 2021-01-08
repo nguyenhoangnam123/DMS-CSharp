@@ -146,8 +146,6 @@ namespace DMS.Repositories
             if (filter.StoreGroupingId != null && filter.StoreGroupingId.HasValue)
                 query = query.Where(q => q.StoreGroupingId.HasValue)
                     .Where(q => q.StoreGroupingId.Value, filter.StoreGroupingId);
-            if (filter.ResellerId != null)
-                query = query.Where(q => q.ResellerId, filter.ResellerId);
             if (filter.Telephone != null)
                 query = query.Where(q => q.Telephone, filter.Telephone);
             if (filter.ProvinceId != null)
@@ -252,8 +250,6 @@ namespace DMS.Repositories
                     queryable = queryable.Where(q => q.StoreTypeId, StoreFilter.StoreTypeId);
                 if (StoreFilter.StoreGroupingId != null)
                     queryable = queryable.Where(q => q.StoreGroupingId.HasValue).Where(q => q.StoreGroupingId.Value, StoreFilter.StoreGroupingId);
-                if (StoreFilter.ResellerId != null)
-                    queryable = queryable.Where(q => q.ResellerId, StoreFilter.ResellerId);
                 if (StoreFilter.Telephone != null)
                     queryable = queryable.Where(q => q.Telephone, StoreFilter.Telephone);
                 if (StoreFilter.ProvinceId != null)
@@ -321,9 +317,6 @@ namespace DMS.Repositories
                             break;
                         case StoreOrder.StoreGrouping:
                             query = query.OrderBy(q => q.StoreGroupingId);
-                            break;
-                        case StoreOrder.Reseller:
-                            query = query.OrderBy(q => q.ResellerId);
                             break;
                         case StoreOrder.Telephone:
                             query = query.OrderBy(q => q.Telephone);
@@ -402,9 +395,6 @@ namespace DMS.Repositories
                         case StoreOrder.StoreGrouping:
                             query = query.OrderByDescending(q => q.StoreGroupingId);
                             break;
-                        case StoreOrder.Reseller:
-                            query = query.OrderByDescending(q => q.ResellerId);
-                            break;
                         case StoreOrder.Telephone:
                             query = query.OrderByDescending(q => q.Telephone);
                             break;
@@ -473,7 +463,6 @@ namespace DMS.Repositories
                 OrganizationId = filter.Selects.Contains(StoreSelect.Organization) ? q.OrganizationId : default(long),
                 StoreTypeId = filter.Selects.Contains(StoreSelect.StoreType) ? q.StoreTypeId : default(long),
                 StoreGroupingId = filter.Selects.Contains(StoreSelect.StoreGrouping) ? q.StoreGroupingId : default(long?),
-                ResellerId = filter.Selects.Contains(StoreSelect.Reseller) ? q.ResellerId : default(long?),
                 Telephone = filter.Selects.Contains(StoreSelect.Telephone) ? q.Telephone : default(string),
                 ProvinceId = filter.Selects.Contains(StoreSelect.Province) ? q.ProvinceId : default(long),
                 DistrictId = filter.Selects.Contains(StoreSelect.District) ? q.DistrictId : default(long),
@@ -526,7 +515,6 @@ namespace DMS.Repositories
                     StoreTypeId = q.ParentStore.StoreTypeId,
                     StoreGroupingId = q.ParentStore.StoreGroupingId,
                     Telephone = q.ParentStore.Telephone,
-                    ResellerId = q.ParentStore.ResellerId,
                     ProvinceId = q.ParentStore.ProvinceId,
                     DistrictId = q.ParentStore.DistrictId,
                     WardId = q.ParentStore.WardId,
@@ -542,24 +530,6 @@ namespace DMS.Repositories
                     TaxCode = q.ParentStore.TaxCode,
                     LegalEntity = q.ParentStore.LegalEntity,
                     StatusId = q.ParentStore.StatusId,
-                } : null,
-                Reseller = filter.Selects.Contains(StoreSelect.Reseller) && q.Reseller != null ? new Reseller
-                {
-                    Id = q.Reseller.Id,
-                    Name = q.Reseller.Name,
-                    Code = q.Reseller.Code,
-                    Email = q.Reseller.Email,
-                    Phone = q.Reseller.Phone,
-                    CompanyName = q.Reseller.CompanyName,
-                    DeputyName = q.Reseller.DeputyName,
-                    Address = q.Reseller.Address,
-                    Description = q.Reseller.Description,
-                    OrganizationId = q.Reseller.OrganizationId,
-                    ResellerStatusId = q.Reseller.ResellerStatusId,
-                    ResellerTypeId = q.Reseller.ResellerTypeId,
-                    StaffId = q.Reseller.StaffId,
-                    TaxCode = q.Reseller.TaxCode,
-                    StatusId = q.Reseller.StatusId,
                 } : null,
                 Province = filter.Selects.Contains(StoreSelect.Province) && q.Province != null ? new Province
                 {
@@ -966,7 +936,6 @@ namespace DMS.Repositories
                     StoreTypeId = x.StoreTypeId,
                     StoreGroupingId = x.StoreGroupingId,
                     Telephone = x.Telephone,
-                    ResellerId = x.ResellerId,
                     ProvinceId = x.ProvinceId,
                     DistrictId = x.DistrictId,
                     WardId = x.WardId,
@@ -1048,24 +1017,6 @@ namespace DMS.Repositories
                         Name = x.Province.Name,
                         Priority = x.Province.Priority,
                         StatusId = x.Province.StatusId,
-                    },
-                    Reseller = x.Reseller == null ? null : new Reseller
-                    {
-                        Id = x.Reseller.Id,
-                        Name = x.Reseller.Name,
-                        Code = x.Reseller.Code,
-                        Email = x.Reseller.Email,
-                        Phone = x.Reseller.Phone,
-                        CompanyName = x.Reseller.CompanyName,
-                        DeputyName = x.Reseller.DeputyName,
-                        Address = x.Reseller.Address,
-                        Description = x.Reseller.Description,
-                        OrganizationId = x.Reseller.OrganizationId,
-                        ResellerStatusId = x.Reseller.ResellerStatusId,
-                        ResellerTypeId = x.Reseller.ResellerTypeId,
-                        StaffId = x.Reseller.StaffId,
-                        TaxCode = x.Reseller.TaxCode,
-                        StatusId = x.Reseller.StatusId,
                     },
                     AppUser = x.AppUser == null ? null : new AppUser
                     {
@@ -1184,7 +1135,6 @@ namespace DMS.Repositories
             StoreDAO.OrganizationId = Store.OrganizationId;
             StoreDAO.StoreTypeId = Store.StoreTypeId;
             StoreDAO.StoreGroupingId = Store.StoreGroupingId;
-            StoreDAO.ResellerId = Store.ResellerId;
             StoreDAO.Telephone = Store.Telephone;
             StoreDAO.ProvinceId = Store.ProvinceId;
             StoreDAO.DistrictId = Store.DistrictId;
@@ -1232,7 +1182,6 @@ namespace DMS.Repositories
             StoreDAO.StoreTypeId = Store.StoreTypeId;
             StoreDAO.StoreGroupingId = Store.StoreGroupingId;
             StoreDAO.Telephone = Store.Telephone;
-            StoreDAO.ResellerId = Store.ResellerId;
             StoreDAO.ProvinceId = Store.ProvinceId;
             StoreDAO.DistrictId = Store.DistrictId;
             StoreDAO.WardId = Store.WardId;
@@ -1281,7 +1230,6 @@ namespace DMS.Repositories
                 StoreDAO.StoreTypeId = Store.StoreTypeId;
                 StoreDAO.StoreGroupingId = Store.StoreGroupingId;
                 StoreDAO.Telephone = Store.Telephone;
-                StoreDAO.ResellerId = Store.ResellerId;
                 StoreDAO.ProvinceId = Store.ProvinceId;
                 StoreDAO.DistrictId = Store.DistrictId;
                 StoreDAO.WardId = Store.WardId;

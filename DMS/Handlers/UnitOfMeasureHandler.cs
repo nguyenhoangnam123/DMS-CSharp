@@ -12,7 +12,8 @@ namespace DMS.Handlers
 {
     public class UnitOfMeasureHandler : Handler
     {
-        private string UsedKey => Name + ".Used";
+        private string SyncKey => Name + ".Sync";
+
         public override string Name => nameof(UnitOfMeasure);
 
         public override void QueueBind(IModel channel, string queue, string exchange)
@@ -21,15 +22,39 @@ namespace DMS.Handlers
         }
         public override async Task Handle(DataContext context, string routingKey, string content)
         {
-            if (routingKey == UsedKey)
-                await Used(context, content);
+            if (routingKey == SyncKey)
+                await Sync(context, content);
         }
 
-        private async Task Used(DataContext context, string json)
+        private async Task Sync(DataContext context, string json)
         {
-            List<EventMessage<UnitOfMeasure>> EventMessageReviced = JsonConvert.DeserializeObject<List<EventMessage<UnitOfMeasure>>>(json);
-            List<long> UnitOfMeasureIds = EventMessageReviced.Select(em => em.Content.Id).ToList();
-            await context.UnitOfMeasure.Where(a => UnitOfMeasureIds.Contains(a.Id)).UpdateFromQueryAsync(a => new UnitOfMeasureDAO { Used = true });
+            List<EventMessage<UnitOfMeasure>> EventMessageReceived = JsonConvert.DeserializeObject<List<EventMessage<UnitOfMeasure>>>(json);
+            await SaveEventMessage(context, SyncKey, EventMessageReceived);
+            List<Guid> RowIds = EventMessageReceived.Select(a => a.RowId).Distinct().ToList();
+            List<EventMessage<UnitOfMeasure>> UnitOfMeasureEventMessages = await ListEventMessage<UnitOfMeasure>(context, SyncKey, RowIds);
+            List<UnitOfMeasure> UnitOfMeasures = UnitOfMeasureEventMessages.Select(x => x.Content).ToList();
+            try
+            {
+                List<UnitOfMeasureDAO> UnitOfMeasureDAOs = UnitOfMeasures
+                    .Select(x => new UnitOfMeasureDAO
+                    {
+                        CreatedAt = x.CreatedAt,
+                        UpdatedAt = x.UpdatedAt,
+                        DeletedAt = x.DeletedAt,
+                        Id = x.Id,
+                        Code = x.Code,
+                        Name = x.Name,
+                        Description = x.Description,
+                        Used = x.Used,
+                        RowId = x.RowId,
+                        StatusId = x.StatusId
+                    }).ToList();
+                await context.BulkMergeAsync(UnitOfMeasureDAOs);
+            }
+            catch (Exception ex)
+            {
+                Log(ex, nameof(UnitOfMeasureHandler));
+            }
         }
     }
 }

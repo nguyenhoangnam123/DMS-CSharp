@@ -133,7 +133,6 @@ namespace DMS.Rpc.e_route_change_request
                         OrganizationId = x.Store.OrganizationId,
                         StoreTypeId = x.Store.StoreTypeId,
                         StoreGroupingId = x.Store.StoreGroupingId,
-                        ResellerId = x.Store.ResellerId,
                         Telephone = x.Store.Telephone,
                         ProvinceId = x.Store.ProvinceId,
                         DistrictId = x.Store.DistrictId,
@@ -316,7 +315,6 @@ namespace DMS.Rpc.e_route_change_request
                         OrganizationId = x.Store.OrganizationId,
                         StoreTypeId = x.Store.StoreTypeId,
                         StoreGroupingId = x.Store.StoreGroupingId,
-                        ResellerId = x.Store.ResellerId,
                         Telephone = x.Store.Telephone,
                         ProvinceId = x.Store.ProvinceId,
                         DistrictId = x.Store.DistrictId,
@@ -439,7 +437,6 @@ namespace DMS.Rpc.e_route_change_request
             StoreFilter.OrganizationId = ERouteChangeRequest_StoreFilterDTO.OrganizationId;
             StoreFilter.StoreTypeId = ERouteChangeRequest_StoreFilterDTO.StoreTypeId;
             StoreFilter.StoreGroupingId = ERouteChangeRequest_StoreFilterDTO.StoreGroupingId;
-            StoreFilter.ResellerId = ERouteChangeRequest_StoreFilterDTO.ResellerId;
             StoreFilter.Telephone = ERouteChangeRequest_StoreFilterDTO.Telephone;
             StoreFilter.ProvinceId = ERouteChangeRequest_StoreFilterDTO.ProvinceId;
             StoreFilter.DistrictId = ERouteChangeRequest_StoreFilterDTO.DistrictId;
@@ -658,7 +655,6 @@ namespace DMS.Rpc.e_route_change_request
             StoreFilter.OrganizationId = ERouteChangeRequest_StoreFilterDTO.OrganizationId;
             StoreFilter.StoreTypeId = ERouteChangeRequest_StoreFilterDTO.StoreTypeId;
             StoreFilter.StoreGroupingId = ERouteChangeRequest_StoreFilterDTO.StoreGroupingId;
-            StoreFilter.ResellerId = ERouteChangeRequest_StoreFilterDTO.ResellerId;
             StoreFilter.Telephone = ERouteChangeRequest_StoreFilterDTO.Telephone;
             StoreFilter.ProvinceId = ERouteChangeRequest_StoreFilterDTO.ProvinceId;
             StoreFilter.DistrictId = ERouteChangeRequest_StoreFilterDTO.DistrictId;
@@ -691,7 +687,6 @@ namespace DMS.Rpc.e_route_change_request
             StoreFilter.ParentStoreId = ERouteChangeRequest_StoreFilterDTO.ParentStoreId;
             StoreFilter.OrganizationId = ERouteChangeRequest_StoreFilterDTO.OrganizationId;
             StoreFilter.StoreTypeId = ERouteChangeRequest_StoreFilterDTO.StoreTypeId;
-            StoreFilter.ResellerId = ERouteChangeRequest_StoreFilterDTO.ResellerId;
             StoreFilter.Telephone = ERouteChangeRequest_StoreFilterDTO.Telephone;
             StoreFilter.ProvinceId = ERouteChangeRequest_StoreFilterDTO.ProvinceId;
             StoreFilter.DistrictId = ERouteChangeRequest_StoreFilterDTO.DistrictId;
@@ -723,7 +718,6 @@ namespace DMS.Rpc.e_route_change_request
             StoreFilter.ParentStoreId = ERouteChangeRequest_StoreFilterDTO.ParentStoreId;
             StoreFilter.OrganizationId = ERouteChangeRequest_StoreFilterDTO.OrganizationId;
             StoreFilter.StoreTypeId = ERouteChangeRequest_StoreFilterDTO.StoreTypeId;
-            StoreFilter.ResellerId = ERouteChangeRequest_StoreFilterDTO.ResellerId;
             StoreFilter.Telephone = ERouteChangeRequest_StoreFilterDTO.Telephone;
             StoreFilter.ProvinceId = ERouteChangeRequest_StoreFilterDTO.ProvinceId;
             StoreFilter.DistrictId = ERouteChangeRequest_StoreFilterDTO.DistrictId;
