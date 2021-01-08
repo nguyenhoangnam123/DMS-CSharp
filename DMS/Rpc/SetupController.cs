@@ -121,13 +121,13 @@ namespace DMS.Rpc
         public ActionResult Init()
         {
             InitEnum();
-            InitData();
             InitRoute();
             InitAdmin();
             return Ok();
         }
 
         #region sync
+        [HttpGet, Route("rpc/dms/setup/init-data")]
         public ActionResult InitData()
         {
             RestClient RestClient = new RestClient(InternalServices.ES);
@@ -354,8 +354,7 @@ namespace DMS.Rpc
         #endregion
 
         #region permission
-        [HttpGet, Route("rpc/dms/setup/init-route")]
-        public ActionResult InitRoute()
+        private ActionResult InitRoute()
         {
             List<Type> routeTypes = typeof(SetupController).Assembly.GetTypes()
                .Where(x => typeof(Root).IsAssignableFrom(x) && x.IsClass)
@@ -376,8 +375,8 @@ namespace DMS.Rpc
             DataContext.Menu.Where(v => v.IsDeleted).DeleteFromQuery();
             return Ok();
         }
-        [HttpGet, Route("rpc/dms/setup/init-admin")]
-        public ActionResult InitAdmin()
+
+        private ActionResult InitAdmin()
         {
             RoleDAO Admin = DataContext.Role
                .Where(r => r.Name == "ADMIN")
@@ -477,6 +476,7 @@ namespace DMS.Rpc
             DataContext.PermissionActionMapping.BulkMerge(PermissionActionMappingDAOs);
             return Ok();
         }
+
         private void InitMenu(List<Type> routeTypes)
         {
             List<MenuDAO> Menus = DataContext.Menu.AsNoTracking().ToList();
@@ -655,8 +655,7 @@ namespace DMS.Rpc
         #endregion
 
         #region enum
-        [HttpGet, Route("rpc/dms/setup/init-enum")]
-        public ActionResult InitEnum()
+        private ActionResult InitEnum()
         {
             InitStoreStatusEnum();
             InitPriceListTypeEnum();
