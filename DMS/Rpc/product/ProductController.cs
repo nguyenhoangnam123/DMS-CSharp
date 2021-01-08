@@ -134,1293 +134,1293 @@ namespace DMS.Rpc.product
             return new Product_ItemDTO(Item);
         }
 
-        [Route(ProductRoute.Create), HttpPost]
-        public async Task<ActionResult<Product_ProductDTO>> Create([FromBody] Product_ProductDTO Product_ProductDTO)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
+        //[Route(ProductRoute.Create), HttpPost]
+        //public async Task<ActionResult<Product_ProductDTO>> Create([FromBody] Product_ProductDTO Product_ProductDTO)
+        //{
+        //    if (!ModelState.IsValid)
+        //        throw new BindException(ModelState);
 
-            if (!await HasPermission(Product_ProductDTO.Id))
-                return Forbid();
+        //    if (!await HasPermission(Product_ProductDTO.Id))
+        //        return Forbid();
 
-            Product Product = ConvertDTOToEntity(Product_ProductDTO);
+        //    Product Product = ConvertDTOToEntity(Product_ProductDTO);
 
-            Product = await ProductService.Create(Product);
-            Product_ProductDTO = new Product_ProductDTO(Product);
-            if (Product.IsValidated)
-                return Product_ProductDTO;
-            else
-                return BadRequest(Product_ProductDTO);
-        }
+        //    Product = await ProductService.Create(Product);
+        //    Product_ProductDTO = new Product_ProductDTO(Product);
+        //    if (Product.IsValidated)
+        //        return Product_ProductDTO;
+        //    else
+        //        return BadRequest(Product_ProductDTO);
+        //}
 
-        [Route(ProductRoute.Update), HttpPost]
-        public async Task<ActionResult<Product_ProductDTO>> Update([FromBody] Product_ProductDTO Product_ProductDTO)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
+        //[Route(ProductRoute.Update), HttpPost]
+        //public async Task<ActionResult<Product_ProductDTO>> Update([FromBody] Product_ProductDTO Product_ProductDTO)
+        //{
+        //    if (!ModelState.IsValid)
+        //        throw new BindException(ModelState);
 
-            if (!await HasPermission(Product_ProductDTO.Id))
-                return Forbid();
+        //    if (!await HasPermission(Product_ProductDTO.Id))
+        //        return Forbid();
 
-            Product Product = ConvertDTOToEntity(Product_ProductDTO);
-            Product = await ProductService.Update(Product);
-            Product_ProductDTO = new Product_ProductDTO(Product);
-            if (Product.IsValidated)
-                return Product_ProductDTO;
-            else
-                return BadRequest(Product_ProductDTO);
-        }
+        //    Product Product = ConvertDTOToEntity(Product_ProductDTO);
+        //    Product = await ProductService.Update(Product);
+        //    Product_ProductDTO = new Product_ProductDTO(Product);
+        //    if (Product.IsValidated)
+        //        return Product_ProductDTO;
+        //    else
+        //        return BadRequest(Product_ProductDTO);
+        //}
 
-        [Route(ProductRoute.Delete), HttpPost]
-        public async Task<ActionResult<Product_ProductDTO>> Delete([FromBody] Product_ProductDTO Product_ProductDTO)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
+        //[Route(ProductRoute.Delete), HttpPost]
+        //public async Task<ActionResult<Product_ProductDTO>> Delete([FromBody] Product_ProductDTO Product_ProductDTO)
+        //{
+        //    if (!ModelState.IsValid)
+        //        throw new BindException(ModelState);
 
-            if (!await HasPermission(Product_ProductDTO.Id))
-                return Forbid();
+        //    if (!await HasPermission(Product_ProductDTO.Id))
+        //        return Forbid();
 
-            Product Product = ConvertDTOToEntity(Product_ProductDTO);
-            Product = await ProductService.Delete(Product);
-            Product_ProductDTO = new Product_ProductDTO(Product);
-            if (Product.IsValidated)
-                return Product_ProductDTO;
-            else
-                return BadRequest(Product_ProductDTO);
-        }
+        //    Product Product = ConvertDTOToEntity(Product_ProductDTO);
+        //    Product = await ProductService.Delete(Product);
+        //    Product_ProductDTO = new Product_ProductDTO(Product);
+        //    if (Product.IsValidated)
+        //        return Product_ProductDTO;
+        //    else
+        //        return BadRequest(Product_ProductDTO);
+        //}
 
-        [Route(ProductRoute.Import), HttpPost]
-        public async Task<ActionResult<List<Product_ProductDTO>>> Import(IFormFile file)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
-            FileInfo FileInfo = new FileInfo(file.FileName);
-            if (!FileInfo.Extension.Equals(".xlsx"))
-                return BadRequest("Định dạng file không hợp lệ");
+        //[Route(ProductRoute.Import), HttpPost]
+        //public async Task<ActionResult<List<Product_ProductDTO>>> Import(IFormFile file)
+        //{
+        //    if (!ModelState.IsValid)
+        //        throw new BindException(ModelState);
+        //    FileInfo FileInfo = new FileInfo(file.FileName);
+        //    if (!FileInfo.Extension.Equals(".xlsx"))
+        //        return BadRequest("Định dạng file không hợp lệ");
 
-            #region MDM
-            List<Category> Categorys = await CategoryService.List(new CategoryFilter
-            {
-                Skip = 0,
-                Take = int.MaxValue,
-                Selects = CategorySelect.ALL
-            });
-            List<ProductGrouping> ProductGroupings = await ProductGroupingService.List(new ProductGroupingFilter
-            {
-                Skip = 0,
-                Take = int.MaxValue,
-                Selects = ProductGroupingSelect.ALL
-            });
-            List<ProductType> ProductTypes = await ProductTypeService.List(new ProductTypeFilter
-            {
-                Skip = 0,
-                Take = int.MaxValue,
-                Selects = ProductTypeSelect.ALL
-            });
-            List<UnitOfMeasure> UnitOfMeasures = await UnitOfMeasureService.List(new UnitOfMeasureFilter
-            {
-                Skip = 0,
-                Take = int.MaxValue,
-                Selects = UnitOfMeasureSelect.ALL
-            });
-            List<UnitOfMeasureGrouping> UnitOfMeasureGroupings = await UnitOfMeasureGroupingService.List(new UnitOfMeasureGroupingFilter
-            {
-                Skip = 0,
-                Take = int.MaxValue,
-                Selects = UnitOfMeasureGroupingSelect.ALL
-            });
-            List<Supplier> Suppliers = await SupplierService.List(new SupplierFilter
-            {
-                Skip = 0,
-                Take = int.MaxValue,
-                Selects = SupplierSelect.ALL
-            });
-            List<Brand> Brands = await BrandService.List(new BrandFilter
-            {
-                Skip = 0,
-                Take = int.MaxValue,
-                Selects = BrandSelect.ALL
-            });
-            List<TaxType> TaxTypes = await TaxTypeService.List(new TaxTypeFilter
-            {
-                Skip = 0,
-                Take = int.MaxValue,
-                Selects = TaxTypeSelect.ALL
-            });
-            List<UsedVariation> UsedVariations = await UsedVariationService.List(new UsedVariationFilter
-            {
-                Skip = 0,
-                Take = int.MaxValue,
-                Selects = UsedVariationSelect.ALL
-            });
-            List<Status> Statuses = await StatusService.List(new StatusFilter
-            {
-                Skip = 0,
-                Take = int.MaxValue,
-                Selects = StatusSelect.ALL
-            });
+        //    #region MDM
+        //    List<Category> Categorys = await CategoryService.List(new CategoryFilter
+        //    {
+        //        Skip = 0,
+        //        Take = int.MaxValue,
+        //        Selects = CategorySelect.ALL
+        //    });
+        //    List<ProductGrouping> ProductGroupings = await ProductGroupingService.List(new ProductGroupingFilter
+        //    {
+        //        Skip = 0,
+        //        Take = int.MaxValue,
+        //        Selects = ProductGroupingSelect.ALL
+        //    });
+        //    List<ProductType> ProductTypes = await ProductTypeService.List(new ProductTypeFilter
+        //    {
+        //        Skip = 0,
+        //        Take = int.MaxValue,
+        //        Selects = ProductTypeSelect.ALL
+        //    });
+        //    List<UnitOfMeasure> UnitOfMeasures = await UnitOfMeasureService.List(new UnitOfMeasureFilter
+        //    {
+        //        Skip = 0,
+        //        Take = int.MaxValue,
+        //        Selects = UnitOfMeasureSelect.ALL
+        //    });
+        //    List<UnitOfMeasureGrouping> UnitOfMeasureGroupings = await UnitOfMeasureGroupingService.List(new UnitOfMeasureGroupingFilter
+        //    {
+        //        Skip = 0,
+        //        Take = int.MaxValue,
+        //        Selects = UnitOfMeasureGroupingSelect.ALL
+        //    });
+        //    List<Supplier> Suppliers = await SupplierService.List(new SupplierFilter
+        //    {
+        //        Skip = 0,
+        //        Take = int.MaxValue,
+        //        Selects = SupplierSelect.ALL
+        //    });
+        //    List<Brand> Brands = await BrandService.List(new BrandFilter
+        //    {
+        //        Skip = 0,
+        //        Take = int.MaxValue,
+        //        Selects = BrandSelect.ALL
+        //    });
+        //    List<TaxType> TaxTypes = await TaxTypeService.List(new TaxTypeFilter
+        //    {
+        //        Skip = 0,
+        //        Take = int.MaxValue,
+        //        Selects = TaxTypeSelect.ALL
+        //    });
+        //    List<UsedVariation> UsedVariations = await UsedVariationService.List(new UsedVariationFilter
+        //    {
+        //        Skip = 0,
+        //        Take = int.MaxValue,
+        //        Selects = UsedVariationSelect.ALL
+        //    });
+        //    List<Status> Statuses = await StatusService.List(new StatusFilter
+        //    {
+        //        Skip = 0,
+        //        Take = int.MaxValue,
+        //        Selects = StatusSelect.ALL
+        //    });
 
-            List<Product> ProductInDBs = await ProductService.List(new ProductFilter
-            {
-                Skip = 0,
-                Take = int.MaxValue,
-                Selects = ProductSelect.Code
-            });
-            #endregion
-            DataFile DataFile = new DataFile
-            {
-                Name = file.FileName,
-                Content = file.OpenReadStream(),
-            };
-            HashSet<string> ListProductCode = ProductInDBs.Select(x => x.Code).ToHashSet();
-            List<Product> Products = new List<Product>();
-            StringBuilder errorContent = new StringBuilder();
-            using (ExcelPackage excelPackage = new ExcelPackage(DataFile.Content))
-            {
-                #region ProductSheet
-                ExcelWorksheet ProductSheet = excelPackage.Workbook.Worksheets["Product"];
-                if (ProductSheet == null)
-                    return BadRequest("File không đúng biểu mẫu import");
+        //    List<Product> ProductInDBs = await ProductService.List(new ProductFilter
+        //    {
+        //        Skip = 0,
+        //        Take = int.MaxValue,
+        //        Selects = ProductSelect.Code
+        //    });
+        //    #endregion
+        //    DataFile DataFile = new DataFile
+        //    {
+        //        Name = file.FileName,
+        //        Content = file.OpenReadStream(),
+        //    };
+        //    HashSet<string> ListProductCode = ProductInDBs.Select(x => x.Code).ToHashSet();
+        //    List<Product> Products = new List<Product>();
+        //    StringBuilder errorContent = new StringBuilder();
+        //    using (ExcelPackage excelPackage = new ExcelPackage(DataFile.Content))
+        //    {
+        //        #region ProductSheet
+        //        ExcelWorksheet ProductSheet = excelPackage.Workbook.Worksheets["Product"];
+        //        if (ProductSheet == null)
+        //            return BadRequest("File không đúng biểu mẫu import");
 
-                #region Khai báo thứ tự các cột trong Exel file 
+        //        #region Khai báo thứ tự các cột trong Exel file 
                 
-                int StartColumn = 1;
-                int StartRow = 2;
+        //        int StartColumn = 1;
+        //        int StartRow = 2;
 
-                int SttColumnn = 0 + StartColumn;
-                int CodeColumn = 1 + StartColumn;
-                int NameColumn = 2 + StartColumn;
-                int CategoryCodeColumn = 3 + StartColumn;
-                int ProductGroupCodeColumn = 4 + StartColumn;
-                int ProductTypeCodeColumn = 5 + StartColumn;
-                int UoMCodeColumn = 6 + StartColumn;
-                int UoMGroupCodeColumn = 7 + StartColumn;
-                int SupplierCodeColumn = 8 + StartColumn;
-                int ERPCodeColumn = 9 + StartColumn;
-                int ScanCodeColumn = 10 + StartColumn;
-                int BrandCodeColumn = 11 + StartColumn;
-                int OtherNameColumn = 12 + StartColumn;
-                int TechnicalNameColumn = 13 + StartColumn;
-                int TaxTypeCodeColumn = 14 + StartColumn;
-                int DescriptionColumn = 15 + StartColumn;
-                int SalePriceColumn = 16 + StartColumn;
-                int StatusIdColumn = 17 + StartColumn;
-                int UsedVariationCodeColumn = 18 + StartColumn;
+        //        int SttColumnn = 0 + StartColumn;
+        //        int CodeColumn = 1 + StartColumn;
+        //        int NameColumn = 2 + StartColumn;
+        //        int CategoryCodeColumn = 3 + StartColumn;
+        //        int ProductGroupCodeColumn = 4 + StartColumn;
+        //        int ProductTypeCodeColumn = 5 + StartColumn;
+        //        int UoMCodeColumn = 6 + StartColumn;
+        //        int UoMGroupCodeColumn = 7 + StartColumn;
+        //        int SupplierCodeColumn = 8 + StartColumn;
+        //        int ERPCodeColumn = 9 + StartColumn;
+        //        int ScanCodeColumn = 10 + StartColumn;
+        //        int BrandCodeColumn = 11 + StartColumn;
+        //        int OtherNameColumn = 12 + StartColumn;
+        //        int TechnicalNameColumn = 13 + StartColumn;
+        //        int TaxTypeCodeColumn = 14 + StartColumn;
+        //        int DescriptionColumn = 15 + StartColumn;
+        //        int SalePriceColumn = 16 + StartColumn;
+        //        int StatusIdColumn = 17 + StartColumn;
+        //        int UsedVariationCodeColumn = 18 + StartColumn;
 
-                int Property1Column = 19 + StartColumn;
-                int PropertyValue1Column = 20 + StartColumn;
-                int Property2Column = 21 + StartColumn;
-                int PropertyValue2Column = 22 + StartColumn;
-                int Property3Column = 23 + StartColumn;
-                int PropertyValue3Column = 24 + StartColumn;
-                int Property4Column = 25 + StartColumn;
-                int PropertyValue4Column = 26 + StartColumn;
-                #endregion
+        //        int Property1Column = 19 + StartColumn;
+        //        int PropertyValue1Column = 20 + StartColumn;
+        //        int Property2Column = 21 + StartColumn;
+        //        int PropertyValue2Column = 22 + StartColumn;
+        //        int Property3Column = 23 + StartColumn;
+        //        int PropertyValue3Column = 24 + StartColumn;
+        //        int Property4Column = 25 + StartColumn;
+        //        int PropertyValue4Column = 26 + StartColumn;
+        //        #endregion
 
-                for (int i = StartRow; i <= ProductSheet.Dimension.End.Row; i++)
-                {
-                    #region đọc dữ liệu các ô
-                    string stt = ProductSheet.Cells[i, SttColumnn].Value?.ToString();
-                    if (stt != null && stt.ToLower() == "END".ToLower())
-                        break;
-                    string CodeValue = ProductSheet.Cells[i, CodeColumn].Value?.ToString();
-                    if (string.IsNullOrWhiteSpace(CodeValue) && i != ProductSheet.Dimension.End.Row)
-                    {
-                        errorContent.AppendLine($"Lỗi dòng thứ {i}: Chưa nhập mã sản phẩm");
-                    }
-                    else if(!string.IsNullOrWhiteSpace(CodeValue) && ListProductCode.Contains(CodeValue))
-                    {
-                        errorContent.AppendLine($"Lỗi dòng thứ {i}: Mã sản phẩm đã tồn tại");
-                    }
-                    else if (string.IsNullOrWhiteSpace(CodeValue) && i == ProductSheet.Dimension.End.Row)
-                        break;
-                    string NameValue = ProductSheet.Cells[i, NameColumn].Value?.ToString();
-                    string CategoryCodeValue = ProductSheet.Cells[i, CategoryCodeColumn].Value?.ToString();
-                    string ProductGroupCodeValue = ProductSheet.Cells[i, ProductGroupCodeColumn].Value?.ToString();
-                    string ProductTypeCodeValue = ProductSheet.Cells[i, ProductTypeCodeColumn].Value?.ToString();
-                    string UoMCodeValue = ProductSheet.Cells[i, UoMCodeColumn].Value?.ToString();
-                    string UoMGroupCodeValue = ProductSheet.Cells[i, UoMGroupCodeColumn].Value?.ToString();
-                    string SupplierCodeValue = ProductSheet.Cells[i, SupplierCodeColumn].Value?.ToString();
-                    string ERPCodeValue = ProductSheet.Cells[i, ERPCodeColumn].Value?.ToString();
-                    string ScanCodeValue = ProductSheet.Cells[i, ScanCodeColumn].Value?.ToString();
-                    string BrandCodeValue = ProductSheet.Cells[i, BrandCodeColumn].Value?.ToString();
-                    string OtherNameValue = ProductSheet.Cells[i, OtherNameColumn].Value?.ToString();
-                    string TechnicalNameValue = ProductSheet.Cells[i, TechnicalNameColumn].Value?.ToString();
-                    string TaxTypeCodeValue = ProductSheet.Cells[i, TaxTypeCodeColumn].Value?.ToString();
-                    string DescriptionValue = ProductSheet.Cells[i, DescriptionColumn].Value?.ToString();
-                    string SalePriceValue = ProductSheet.Cells[i, SalePriceColumn].Value?.ToString();
-                    string StatusNameValue = ProductSheet.Cells[i, StatusIdColumn].Value?.ToString();
-                    string UsedVariationCodeValue = ProductSheet.Cells[i, UsedVariationCodeColumn].Value?.ToString();
-                    //Thuộc tính
-                    string Property1Value = ProductSheet.Cells[i, Property1Column].Value?.ToString();
-                    string PropertyValue1Value = ProductSheet.Cells[i, PropertyValue1Column].Value?.ToString();
-                    string Property2Value = ProductSheet.Cells[i, Property2Column].Value?.ToString();
-                    string PropertyValue2Value = ProductSheet.Cells[i, PropertyValue2Column].Value?.ToString();
-                    string Property3Value = ProductSheet.Cells[i, Property3Column].Value?.ToString();
-                    string PropertyValue3Value = ProductSheet.Cells[i, PropertyValue3Column].Value?.ToString();
-                    string Property4Value = ProductSheet.Cells[i, Property4Column].Value?.ToString();
-                    string PropertyValue4Value = ProductSheet.Cells[i, PropertyValue4Column].Value?.ToString();
-                    #endregion
+        //        for (int i = StartRow; i <= ProductSheet.Dimension.End.Row; i++)
+        //        {
+        //            #region đọc dữ liệu các ô
+        //            string stt = ProductSheet.Cells[i, SttColumnn].Value?.ToString();
+        //            if (stt != null && stt.ToLower() == "END".ToLower())
+        //                break;
+        //            string CodeValue = ProductSheet.Cells[i, CodeColumn].Value?.ToString();
+        //            if (string.IsNullOrWhiteSpace(CodeValue) && i != ProductSheet.Dimension.End.Row)
+        //            {
+        //                errorContent.AppendLine($"Lỗi dòng thứ {i}: Chưa nhập mã sản phẩm");
+        //            }
+        //            else if(!string.IsNullOrWhiteSpace(CodeValue) && ListProductCode.Contains(CodeValue))
+        //            {
+        //                errorContent.AppendLine($"Lỗi dòng thứ {i}: Mã sản phẩm đã tồn tại");
+        //            }
+        //            else if (string.IsNullOrWhiteSpace(CodeValue) && i == ProductSheet.Dimension.End.Row)
+        //                break;
+        //            string NameValue = ProductSheet.Cells[i, NameColumn].Value?.ToString();
+        //            string CategoryCodeValue = ProductSheet.Cells[i, CategoryCodeColumn].Value?.ToString();
+        //            string ProductGroupCodeValue = ProductSheet.Cells[i, ProductGroupCodeColumn].Value?.ToString();
+        //            string ProductTypeCodeValue = ProductSheet.Cells[i, ProductTypeCodeColumn].Value?.ToString();
+        //            string UoMCodeValue = ProductSheet.Cells[i, UoMCodeColumn].Value?.ToString();
+        //            string UoMGroupCodeValue = ProductSheet.Cells[i, UoMGroupCodeColumn].Value?.ToString();
+        //            string SupplierCodeValue = ProductSheet.Cells[i, SupplierCodeColumn].Value?.ToString();
+        //            string ERPCodeValue = ProductSheet.Cells[i, ERPCodeColumn].Value?.ToString();
+        //            string ScanCodeValue = ProductSheet.Cells[i, ScanCodeColumn].Value?.ToString();
+        //            string BrandCodeValue = ProductSheet.Cells[i, BrandCodeColumn].Value?.ToString();
+        //            string OtherNameValue = ProductSheet.Cells[i, OtherNameColumn].Value?.ToString();
+        //            string TechnicalNameValue = ProductSheet.Cells[i, TechnicalNameColumn].Value?.ToString();
+        //            string TaxTypeCodeValue = ProductSheet.Cells[i, TaxTypeCodeColumn].Value?.ToString();
+        //            string DescriptionValue = ProductSheet.Cells[i, DescriptionColumn].Value?.ToString();
+        //            string SalePriceValue = ProductSheet.Cells[i, SalePriceColumn].Value?.ToString();
+        //            string StatusNameValue = ProductSheet.Cells[i, StatusIdColumn].Value?.ToString();
+        //            string UsedVariationCodeValue = ProductSheet.Cells[i, UsedVariationCodeColumn].Value?.ToString();
+        //            //Thuộc tính
+        //            string Property1Value = ProductSheet.Cells[i, Property1Column].Value?.ToString();
+        //            string PropertyValue1Value = ProductSheet.Cells[i, PropertyValue1Column].Value?.ToString();
+        //            string Property2Value = ProductSheet.Cells[i, Property2Column].Value?.ToString();
+        //            string PropertyValue2Value = ProductSheet.Cells[i, PropertyValue2Column].Value?.ToString();
+        //            string Property3Value = ProductSheet.Cells[i, Property3Column].Value?.ToString();
+        //            string PropertyValue3Value = ProductSheet.Cells[i, PropertyValue3Column].Value?.ToString();
+        //            string Property4Value = ProductSheet.Cells[i, Property4Column].Value?.ToString();
+        //            string PropertyValue4Value = ProductSheet.Cells[i, PropertyValue4Column].Value?.ToString();
+        //            #endregion
 
-                    Product Product = new Product();
-                    Product.Code = CodeValue;
-                    Product.Name = NameValue;
-                    Product.ERPCode = ERPCodeValue;
-                    Product.ScanCode = ScanCodeValue;
-                    Product.OtherName = OtherNameValue;
-                    Product.TechnicalName = TechnicalNameValue;
-                    Product.Description = DescriptionValue;
-                    Product.RowId = Guid.NewGuid();
-                    //Product Grouping
-                    if (!string.IsNullOrEmpty(ProductGroupCodeValue))
-                    {
-                        var ProductGroupCodes = ProductGroupCodeValue.Split(';');
-                        foreach (var ProductGroupCode in ProductGroupCodes)
-                        {
-                            ProductGrouping ProductGrouping = ProductGroupings.Where(pg => pg.Code.ToLower()== ProductGroupCode.Trim().ToLower()).FirstOrDefault();
-                            if (ProductGrouping != null)
-                            {
-                                ProductProductGroupingMapping ProductProductGroupingMapping = new ProductProductGroupingMapping();
-                                Product.ProductProductGroupingMappings = new List<ProductProductGroupingMapping>();
-                                ProductProductGroupingMapping.ProductGroupingId = ProductGrouping.Id;
-                                ProductProductGroupingMapping.ProductGrouping = ProductGrouping;
-                                Product.ProductProductGroupingMappings.Add(ProductProductGroupingMapping);
-                            }
-                            else
-                            {
-                                errorContent.AppendLine($"Lỗi dòng thứ {i}: Nhóm sản phẩm không tồn tại");
-                            }
-                        }
+        //            Product Product = new Product();
+        //            Product.Code = CodeValue;
+        //            Product.Name = NameValue;
+        //            Product.ERPCode = ERPCodeValue;
+        //            Product.ScanCode = ScanCodeValue;
+        //            Product.OtherName = OtherNameValue;
+        //            Product.TechnicalName = TechnicalNameValue;
+        //            Product.Description = DescriptionValue;
+        //            Product.RowId = Guid.NewGuid();
+        //            //Product Grouping
+        //            if (!string.IsNullOrEmpty(ProductGroupCodeValue))
+        //            {
+        //                var ProductGroupCodes = ProductGroupCodeValue.Split(';');
+        //                foreach (var ProductGroupCode in ProductGroupCodes)
+        //                {
+        //                    ProductGrouping ProductGrouping = ProductGroupings.Where(pg => pg.Code.ToLower()== ProductGroupCode.Trim().ToLower()).FirstOrDefault();
+        //                    if (ProductGrouping != null)
+        //                    {
+        //                        ProductProductGroupingMapping ProductProductGroupingMapping = new ProductProductGroupingMapping();
+        //                        Product.ProductProductGroupingMappings = new List<ProductProductGroupingMapping>();
+        //                        ProductProductGroupingMapping.ProductGroupingId = ProductGrouping.Id;
+        //                        ProductProductGroupingMapping.ProductGrouping = ProductGrouping;
+        //                        Product.ProductProductGroupingMappings.Add(ProductProductGroupingMapping);
+        //                    }
+        //                    else
+        //                    {
+        //                        errorContent.AppendLine($"Lỗi dòng thứ {i}: Nhóm sản phẩm không tồn tại");
+        //                    }
+        //                }
                         
-                    }
+        //            }
 
-                    if (!string.IsNullOrWhiteSpace(CategoryCodeValue))
-                    {
-                        Product.Category = new Category()
-                        {
-                            Code = CategoryCodeValue
-                        };
-                        Product.CategoryId = Categorys.Where(x => x.Code.ToLower() == CategoryCodeValue.Trim().ToLower()).Select(x => x.Id).FirstOrDefault();
-                    }
-                    else
-                    {
-                        errorContent.AppendLine($"Lỗi dòng thứ {i}: Chưa nhập danh mục sản phẩm");
-                    }
+        //            if (!string.IsNullOrWhiteSpace(CategoryCodeValue))
+        //            {
+        //                Product.Category = new Category()
+        //                {
+        //                    Code = CategoryCodeValue
+        //                };
+        //                Product.CategoryId = Categorys.Where(x => x.Code.ToLower() == CategoryCodeValue.Trim().ToLower()).Select(x => x.Id).FirstOrDefault();
+        //            }
+        //            else
+        //            {
+        //                errorContent.AppendLine($"Lỗi dòng thứ {i}: Chưa nhập danh mục sản phẩm");
+        //            }
 
-                    if (!string.IsNullOrWhiteSpace(ProductTypeCodeValue))
-                    {
-                        Product.ProductType = new ProductType()
-                        {
-                            Code = ProductTypeCodeValue
-                        };
-                        Product.ProductTypeId = ProductTypes.Where(x => x.Code.ToLower() == ProductTypeCodeValue.Trim().ToLower()).Select(x => x.Id).FirstOrDefault();
-                    }
-                    else
-                    {
-                        errorContent.AppendLine($"Lỗi dòng thứ {i}: Chưa nhập loại sản phẩm");
-                    }
+        //            if (!string.IsNullOrWhiteSpace(ProductTypeCodeValue))
+        //            {
+        //                Product.ProductType = new ProductType()
+        //                {
+        //                    Code = ProductTypeCodeValue
+        //                };
+        //                Product.ProductTypeId = ProductTypes.Where(x => x.Code.ToLower() == ProductTypeCodeValue.Trim().ToLower()).Select(x => x.Id).FirstOrDefault();
+        //            }
+        //            else
+        //            {
+        //                errorContent.AppendLine($"Lỗi dòng thứ {i}: Chưa nhập loại sản phẩm");
+        //            }
 
-                    if (!string.IsNullOrWhiteSpace(UoMCodeValue))
-                    {
-                        Product.UnitOfMeasure = new UnitOfMeasure()
-                        {
-                            Code = UoMCodeValue
-                        };
-                        Product.UnitOfMeasureId = UnitOfMeasures.Where(x => x.Code.ToLower() == UoMCodeValue.Trim().ToLower()).Select(x => x.Id).FirstOrDefault();
-                    }
-                    else
-                    {
-                        errorContent.AppendLine($"Lỗi dòng thứ {i}: Chưa nhập đơn vị tính");
-                    }
+        //            if (!string.IsNullOrWhiteSpace(UoMCodeValue))
+        //            {
+        //                Product.UnitOfMeasure = new UnitOfMeasure()
+        //                {
+        //                    Code = UoMCodeValue
+        //                };
+        //                Product.UnitOfMeasureId = UnitOfMeasures.Where(x => x.Code.ToLower() == UoMCodeValue.Trim().ToLower()).Select(x => x.Id).FirstOrDefault();
+        //            }
+        //            else
+        //            {
+        //                errorContent.AppendLine($"Lỗi dòng thứ {i}: Chưa nhập đơn vị tính");
+        //            }
 
-                    if (!string.IsNullOrWhiteSpace(BrandCodeValue))
-                    {
-                        Product.Brand = new Brand()
-                        {
-                            Code = BrandCodeValue
-                        };
-                        Product.BrandId = Brands.Where(x => x.Code.ToLower() == BrandCodeValue.Trim().ToLower()).Select(x => x.Id).FirstOrDefault();
-                    }
-                    if (!string.IsNullOrWhiteSpace(UoMGroupCodeValue))
-                    {
-                        Product.UnitOfMeasureGrouping = new UnitOfMeasureGrouping()
-                        {
-                            Code = UoMGroupCodeValue
-                        };
-                        Product.UnitOfMeasureGroupingId = UnitOfMeasureGroupings.Where(x => x.Code.Trim() == UoMGroupCodeValue.Trim().Trim()).Select(x => x.Id).FirstOrDefault();
-                    }
-                    if (!string.IsNullOrWhiteSpace(SupplierCodeValue))
-                    {
-                        Product.Supplier = new Supplier()
-                        {
-                            Code = SupplierCodeValue
-                        };
-                        Product.SupplierId = Suppliers.Where(x => x.Code.ToLower() == SupplierCodeValue.Trim().ToLower()).Select(x => x.Id).FirstOrDefault();
-                    }
-                    Product.TaxType = new TaxType()
-                    {
-                        Code = TaxTypeCodeValue
-                    };
-                    Product.TaxTypeId = TaxTypes.Where(x => x.Code.Equals(TaxTypeCodeValue == null ? string.Empty : TaxTypeCodeValue.Trim())).Select(x => x.Id).FirstOrDefault();
+        //            if (!string.IsNullOrWhiteSpace(BrandCodeValue))
+        //            {
+        //                Product.Brand = new Brand()
+        //                {
+        //                    Code = BrandCodeValue
+        //                };
+        //                Product.BrandId = Brands.Where(x => x.Code.ToLower() == BrandCodeValue.Trim().ToLower()).Select(x => x.Id).FirstOrDefault();
+        //            }
+        //            if (!string.IsNullOrWhiteSpace(UoMGroupCodeValue))
+        //            {
+        //                Product.UnitOfMeasureGrouping = new UnitOfMeasureGrouping()
+        //                {
+        //                    Code = UoMGroupCodeValue
+        //                };
+        //                Product.UnitOfMeasureGroupingId = UnitOfMeasureGroupings.Where(x => x.Code.Trim() == UoMGroupCodeValue.Trim().Trim()).Select(x => x.Id).FirstOrDefault();
+        //            }
+        //            if (!string.IsNullOrWhiteSpace(SupplierCodeValue))
+        //            {
+        //                Product.Supplier = new Supplier()
+        //                {
+        //                    Code = SupplierCodeValue
+        //                };
+        //                Product.SupplierId = Suppliers.Where(x => x.Code.ToLower() == SupplierCodeValue.Trim().ToLower()).Select(x => x.Id).FirstOrDefault();
+        //            }
+        //            Product.TaxType = new TaxType()
+        //            {
+        //                Code = TaxTypeCodeValue
+        //            };
+        //            Product.TaxTypeId = TaxTypes.Where(x => x.Code.Equals(TaxTypeCodeValue == null ? string.Empty : TaxTypeCodeValue.Trim())).Select(x => x.Id).FirstOrDefault();
 
-                    //giá bán
-                    if (long.TryParse(SalePriceValue, out long SalePrice))
-                    {
-                        Product.SalePrice = SalePrice;
-                    }
-                    else
-                    {
-                        Product.SalePrice = -1;
-                    }
-                    if (string.IsNullOrEmpty(StatusNameValue))
-                    {
-                        Product.StatusId = -1;
-                    }
-                    else
-                    {
-                        Product.StatusId = Statuses.Where(x => x.Name.ToLower().Equals(StatusNameValue == null ? string.Empty : StatusNameValue.Trim().ToLower())).Select(x => x.Id).FirstOrDefault();
-                    }
-                    if (string.IsNullOrEmpty(UsedVariationCodeValue))
-                    {
-                        Product.UsedVariationId = -1;
-                    }
-                    else
-                    {
-                        Product.UsedVariationId = UsedVariations.Where(x => x.Name.ToLower().Equals(UsedVariationCodeValue == null ? string.Empty : UsedVariationCodeValue.Trim().ToLower())).Select(x => x.Id).FirstOrDefault();
-                    }
+        //            //giá bán
+        //            if (long.TryParse(SalePriceValue, out long SalePrice))
+        //            {
+        //                Product.SalePrice = SalePrice;
+        //            }
+        //            else
+        //            {
+        //                Product.SalePrice = -1;
+        //            }
+        //            if (string.IsNullOrEmpty(StatusNameValue))
+        //            {
+        //                Product.StatusId = -1;
+        //            }
+        //            else
+        //            {
+        //                Product.StatusId = Statuses.Where(x => x.Name.ToLower().Equals(StatusNameValue == null ? string.Empty : StatusNameValue.Trim().ToLower())).Select(x => x.Id).FirstOrDefault();
+        //            }
+        //            if (string.IsNullOrEmpty(UsedVariationCodeValue))
+        //            {
+        //                Product.UsedVariationId = -1;
+        //            }
+        //            else
+        //            {
+        //                Product.UsedVariationId = UsedVariations.Where(x => x.Name.ToLower().Equals(UsedVariationCodeValue == null ? string.Empty : UsedVariationCodeValue.Trim().ToLower())).Select(x => x.Id).FirstOrDefault();
+        //            }
 
-                    if (Product.UsedVariationId == Enums.UsedVariationEnum.USED.Id)
-                    {
-                        #region Variation
-                        Product.VariationGroupings = new List<VariationGrouping>();
-                        if (!string.IsNullOrWhiteSpace(Property1Value))
-                        {
-                            VariationGrouping VariationGrouping = new VariationGrouping
-                            {
-                                Name = Property1Value
-                            };
-                            VariationGrouping.Variations = new List<Variation>();
-                            if (!string.IsNullOrWhiteSpace(PropertyValue1Value))
-                            {
-                                var Values = PropertyValue1Value.Split(';');
-                                foreach (var Value in Values)
-                                {
-                                    var splitValue = Value.Trim().Split('-');
-                                    Variation Variation = new Variation
-                                    {
-                                        Code = splitValue[0].Trim(),
-                                        Name = splitValue[1].Trim()
-                                    };
-                                    VariationGrouping.Variations.Add(Variation);
-                                }
-                            }
-                            Product.VariationGroupings.Add(VariationGrouping);
-                        }
-                        else if (!string.IsNullOrWhiteSpace(PropertyValue1Value))
-                        {
-                            errorContent.AppendLine($"Lỗi dòng thứ {i}: Chưa nhập thuộc tính 1");
-                        }
+        //            if (Product.UsedVariationId == Enums.UsedVariationEnum.USED.Id)
+        //            {
+        //                #region Variation
+        //                Product.VariationGroupings = new List<VariationGrouping>();
+        //                if (!string.IsNullOrWhiteSpace(Property1Value))
+        //                {
+        //                    VariationGrouping VariationGrouping = new VariationGrouping
+        //                    {
+        //                        Name = Property1Value
+        //                    };
+        //                    VariationGrouping.Variations = new List<Variation>();
+        //                    if (!string.IsNullOrWhiteSpace(PropertyValue1Value))
+        //                    {
+        //                        var Values = PropertyValue1Value.Split(';');
+        //                        foreach (var Value in Values)
+        //                        {
+        //                            var splitValue = Value.Trim().Split('-');
+        //                            Variation Variation = new Variation
+        //                            {
+        //                                Code = splitValue[0].Trim(),
+        //                                Name = splitValue[1].Trim()
+        //                            };
+        //                            VariationGrouping.Variations.Add(Variation);
+        //                        }
+        //                    }
+        //                    Product.VariationGroupings.Add(VariationGrouping);
+        //                }
+        //                else if (!string.IsNullOrWhiteSpace(PropertyValue1Value))
+        //                {
+        //                    errorContent.AppendLine($"Lỗi dòng thứ {i}: Chưa nhập thuộc tính 1");
+        //                }
 
-                        if (!string.IsNullOrWhiteSpace(Property2Value))
-                        {
-                            VariationGrouping VariationGrouping = new VariationGrouping
-                            {
-                                Name = Property2Value
-                            };
-                            VariationGrouping.Variations = new List<Variation>();
-                            if (!string.IsNullOrWhiteSpace(PropertyValue2Value))
-                            {
-                                var Values = PropertyValue2Value.Split(';');
-                                foreach (var Value in Values)
-                                {
-                                    var splitValue = Value.Trim().Split('-');
-                                    Variation Variation = new Variation
-                                    {
-                                        Code = splitValue[0].Trim(),
-                                        Name = splitValue[1].Trim()
-                                    };
-                                    VariationGrouping.Variations.Add(Variation);
-                                }
-                            }
-                            Product.VariationGroupings.Add(VariationGrouping);
-                        }
-                        else if (!string.IsNullOrWhiteSpace(PropertyValue2Value))
-                        {
-                            errorContent.AppendLine($"Lỗi dòng thứ {i}: Chưa nhập thuộc tính 2");
-                        }
+        //                if (!string.IsNullOrWhiteSpace(Property2Value))
+        //                {
+        //                    VariationGrouping VariationGrouping = new VariationGrouping
+        //                    {
+        //                        Name = Property2Value
+        //                    };
+        //                    VariationGrouping.Variations = new List<Variation>();
+        //                    if (!string.IsNullOrWhiteSpace(PropertyValue2Value))
+        //                    {
+        //                        var Values = PropertyValue2Value.Split(';');
+        //                        foreach (var Value in Values)
+        //                        {
+        //                            var splitValue = Value.Trim().Split('-');
+        //                            Variation Variation = new Variation
+        //                            {
+        //                                Code = splitValue[0].Trim(),
+        //                                Name = splitValue[1].Trim()
+        //                            };
+        //                            VariationGrouping.Variations.Add(Variation);
+        //                        }
+        //                    }
+        //                    Product.VariationGroupings.Add(VariationGrouping);
+        //                }
+        //                else if (!string.IsNullOrWhiteSpace(PropertyValue2Value))
+        //                {
+        //                    errorContent.AppendLine($"Lỗi dòng thứ {i}: Chưa nhập thuộc tính 2");
+        //                }
 
-                        if (!string.IsNullOrWhiteSpace(Property3Value))
-                        {
-                            VariationGrouping VariationGrouping = new VariationGrouping
-                            {
-                                Name = Property3Value
-                            };
-                            VariationGrouping.Variations = new List<Variation>();
-                            if (!string.IsNullOrWhiteSpace(PropertyValue3Value))
-                            {
-                                var Values = PropertyValue3Value.Split(';');
-                                foreach (var Value in Values)
-                                {
-                                    var splitValue = Value.Trim().Split('-');
-                                    Variation Variation = new Variation
-                                    {
-                                        Code = splitValue[0].Trim(),
-                                        Name = splitValue[1].Trim()
-                                    };
-                                    VariationGrouping.Variations.Add(Variation);
-                                }
-                            }
-                            Product.VariationGroupings.Add(VariationGrouping);
-                        }
-                        else if (!string.IsNullOrWhiteSpace(PropertyValue3Value))
-                        {
-                            errorContent.AppendLine($"Lỗi dòng thứ {i}: Chưa nhập thuộc tính 3");
-                        }
+        //                if (!string.IsNullOrWhiteSpace(Property3Value))
+        //                {
+        //                    VariationGrouping VariationGrouping = new VariationGrouping
+        //                    {
+        //                        Name = Property3Value
+        //                    };
+        //                    VariationGrouping.Variations = new List<Variation>();
+        //                    if (!string.IsNullOrWhiteSpace(PropertyValue3Value))
+        //                    {
+        //                        var Values = PropertyValue3Value.Split(';');
+        //                        foreach (var Value in Values)
+        //                        {
+        //                            var splitValue = Value.Trim().Split('-');
+        //                            Variation Variation = new Variation
+        //                            {
+        //                                Code = splitValue[0].Trim(),
+        //                                Name = splitValue[1].Trim()
+        //                            };
+        //                            VariationGrouping.Variations.Add(Variation);
+        //                        }
+        //                    }
+        //                    Product.VariationGroupings.Add(VariationGrouping);
+        //                }
+        //                else if (!string.IsNullOrWhiteSpace(PropertyValue3Value))
+        //                {
+        //                    errorContent.AppendLine($"Lỗi dòng thứ {i}: Chưa nhập thuộc tính 3");
+        //                }
 
-                        if (!string.IsNullOrWhiteSpace(Property4Value))
-                        {
-                            VariationGrouping VariationGrouping = new VariationGrouping
-                            {
-                                Name = Property3Value
-                            };
-                            VariationGrouping.Variations = new List<Variation>();
-                            if (!string.IsNullOrWhiteSpace(PropertyValue3Value))
-                            {
-                                var Values = PropertyValue3Value.Split(';');
-                                foreach (var Value in Values)
-                                {
-                                    var splitValue = Value.Trim().Split('-');
-                                    Variation Variation = new Variation
-                                    {
-                                        Code = splitValue[0].Trim(),
-                                        Name = splitValue[1].Trim()
-                                    };
-                                    VariationGrouping.Variations.Add(Variation);
-                                }
-                            }
-                            Product.VariationGroupings.Add(VariationGrouping);
-                        }
-                        else if (!string.IsNullOrWhiteSpace(PropertyValue4Value))
-                        {
-                            errorContent.AppendLine($"Lỗi dòng thứ {i}: Chưa nhập thuộc tính 4");
-                        }
-                        #endregion
-                    }
-                    Products.Add(Product);
-                }
+        //                if (!string.IsNullOrWhiteSpace(Property4Value))
+        //                {
+        //                    VariationGrouping VariationGrouping = new VariationGrouping
+        //                    {
+        //                        Name = Property3Value
+        //                    };
+        //                    VariationGrouping.Variations = new List<Variation>();
+        //                    if (!string.IsNullOrWhiteSpace(PropertyValue3Value))
+        //                    {
+        //                        var Values = PropertyValue3Value.Split(';');
+        //                        foreach (var Value in Values)
+        //                        {
+        //                            var splitValue = Value.Trim().Split('-');
+        //                            Variation Variation = new Variation
+        //                            {
+        //                                Code = splitValue[0].Trim(),
+        //                                Name = splitValue[1].Trim()
+        //                            };
+        //                            VariationGrouping.Variations.Add(Variation);
+        //                        }
+        //                    }
+        //                    Product.VariationGroupings.Add(VariationGrouping);
+        //                }
+        //                else if (!string.IsNullOrWhiteSpace(PropertyValue4Value))
+        //                {
+        //                    errorContent.AppendLine($"Lỗi dòng thứ {i}: Chưa nhập thuộc tính 4");
+        //                }
+        //                #endregion
+        //            }
+        //            Products.Add(Product);
+        //        }
 
-                if (errorContent.Length > 0)
-                    return BadRequest(errorContent.ToString());
-                #endregion
-            }
-            #region Item
-            foreach (var Product in Products)
-            {
-                if (Product.UsedVariationId == Enums.UsedVariationEnum.NOTUSED.Id)
-                {
-                    Product.Items = new List<Item>();
-                    Product.Items.Add(new Item
-                    {
-                        Code = Product.Code,
-                        Name = Product.Name,
-                        ScanCode = Product.ScanCode,
-                        RetailPrice = Product.RetailPrice,
-                        SalePrice = Product.SalePrice,
-                        ProductId = Product.Id,
-                        StatusId = Product.StatusId
-                    });
-                }
-                if (Product.UsedVariationId == Enums.UsedVariationEnum.USED.Id)
-                {
-                    Product.Items = new List<Item>();
-                    var items1 = new List<Item>();
-                    var items2 = new List<Item>();
-                    var items3 = new List<Item>();
-                    var items4 = new List<Item>();
-                    //thuộc tính đầu tiên
-                    if(Product.VariationGroupings != null && Product.VariationGroupings.Any())
-                    {
-                        var VariationGrouping1 = Product.VariationGroupings[0];
-                        if (VariationGrouping1 != null)
-                        {
-                            foreach (var Variation in VariationGrouping1.Variations)
-                            {
-                                Item Item = new Item
-                                {
-                                    Code = $"{Product.Code}-{Variation.Code}",
-                                    Name = $"{Product.Name} - {Variation.Name}",
-                                    ScanCode = Product.ScanCode,
-                                    RetailPrice = Product.RetailPrice,
-                                    SalePrice = Product.SalePrice,
-                                    StatusId = Product.StatusId
-                                };
-                                items1.Add(Item);
-                            }
-                        }
-                        if(Product.VariationGroupings.Count > 1)
-                        {
-                            var VariationGrouping2 = Product.VariationGroupings[1];
-                            if (VariationGrouping2 != null)
-                            {
-                                foreach (var Variation in VariationGrouping2.Variations)
-                                {
-                                    foreach (var item in items1)
-                                    {
-                                        var newObj = Utils.Clone(item);
-                                        newObj.Code = newObj.Code + "-" + Variation.Code;
-                                        newObj.Name = newObj.Name + " - " + Variation.Name;
-                                        items2.Add(newObj);
-                                    }
-                                }
-                            }
-                        }
+        //        if (errorContent.Length > 0)
+        //            return BadRequest(errorContent.ToString());
+        //        #endregion
+        //    }
+        //    #region Item
+        //    foreach (var Product in Products)
+        //    {
+        //        if (Product.UsedVariationId == Enums.UsedVariationEnum.NOTUSED.Id)
+        //        {
+        //            Product.Items = new List<Item>();
+        //            Product.Items.Add(new Item
+        //            {
+        //                Code = Product.Code,
+        //                Name = Product.Name,
+        //                ScanCode = Product.ScanCode,
+        //                RetailPrice = Product.RetailPrice,
+        //                SalePrice = Product.SalePrice,
+        //                ProductId = Product.Id,
+        //                StatusId = Product.StatusId
+        //            });
+        //        }
+        //        if (Product.UsedVariationId == Enums.UsedVariationEnum.USED.Id)
+        //        {
+        //            Product.Items = new List<Item>();
+        //            var items1 = new List<Item>();
+        //            var items2 = new List<Item>();
+        //            var items3 = new List<Item>();
+        //            var items4 = new List<Item>();
+        //            //thuộc tính đầu tiên
+        //            if(Product.VariationGroupings != null && Product.VariationGroupings.Any())
+        //            {
+        //                var VariationGrouping1 = Product.VariationGroupings[0];
+        //                if (VariationGrouping1 != null)
+        //                {
+        //                    foreach (var Variation in VariationGrouping1.Variations)
+        //                    {
+        //                        Item Item = new Item
+        //                        {
+        //                            Code = $"{Product.Code}-{Variation.Code}",
+        //                            Name = $"{Product.Name} - {Variation.Name}",
+        //                            ScanCode = Product.ScanCode,
+        //                            RetailPrice = Product.RetailPrice,
+        //                            SalePrice = Product.SalePrice,
+        //                            StatusId = Product.StatusId
+        //                        };
+        //                        items1.Add(Item);
+        //                    }
+        //                }
+        //                if(Product.VariationGroupings.Count > 1)
+        //                {
+        //                    var VariationGrouping2 = Product.VariationGroupings[1];
+        //                    if (VariationGrouping2 != null)
+        //                    {
+        //                        foreach (var Variation in VariationGrouping2.Variations)
+        //                        {
+        //                            foreach (var item in items1)
+        //                            {
+        //                                var newObj = Utils.Clone(item);
+        //                                newObj.Code = newObj.Code + "-" + Variation.Code;
+        //                                newObj.Name = newObj.Name + " - " + Variation.Name;
+        //                                items2.Add(newObj);
+        //                            }
+        //                        }
+        //                    }
+        //                }
 
-                        if (Product.VariationGroupings.Count > 2)
-                        {
-                            var VariationGrouping3 = Product.VariationGroupings[2];
-                            if (VariationGrouping3 != null)
-                            {
-                                foreach (var Variation in VariationGrouping3.Variations)
-                                {
-                                    foreach (var item in items2)
-                                    {
-                                        var newObj = Utils.Clone(item);
-                                        newObj.Code = newObj.Code + "-" + Variation.Code;
-                                        newObj.Name = newObj.Name + " - " + Variation.Name;
-                                        items3.Add(newObj);
-                                    }
-                                }
-                            }
-                        }
+        //                if (Product.VariationGroupings.Count > 2)
+        //                {
+        //                    var VariationGrouping3 = Product.VariationGroupings[2];
+        //                    if (VariationGrouping3 != null)
+        //                    {
+        //                        foreach (var Variation in VariationGrouping3.Variations)
+        //                        {
+        //                            foreach (var item in items2)
+        //                            {
+        //                                var newObj = Utils.Clone(item);
+        //                                newObj.Code = newObj.Code + "-" + Variation.Code;
+        //                                newObj.Name = newObj.Name + " - " + Variation.Name;
+        //                                items3.Add(newObj);
+        //                            }
+        //                        }
+        //                    }
+        //                }
 
-                        if (Product.VariationGroupings.Count > 3)
-                        {
-                            var VariationGrouping4 = Product.VariationGroupings[3];
-                            if (VariationGrouping4 != null)
-                            {
-                                foreach (var Variation in VariationGrouping4.Variations)
-                                {
-                                    foreach (var item in items3)
-                                    {
-                                        var newObj = Utils.Clone(item);
-                                        newObj.Code = newObj.Code + "-" + Variation.Code;
-                                        newObj.Name = newObj.Name + " - " + Variation.Name;
-                                        items4.Add(newObj);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    if (items4.Count > 0)
-                        Product.Items = items4;
-                    else if(items3.Count > 0)
-                        Product.Items = items3;
-                    else if (items2.Count > 0)
-                        Product.Items = items2;
-                    else
-                        Product.Items = items1;
-                }
-            }
-            #endregion
-            Products.ForEach(x => x.BaseLanguage = CurrentContext.Language);
-            Products = await ProductService.Import(Products);
-            List<Product_ProductDTO> Product_ProductDTOs = Products
-                .Select(c => new Product_ProductDTO(c)).ToList();
+        //                if (Product.VariationGroupings.Count > 3)
+        //                {
+        //                    var VariationGrouping4 = Product.VariationGroupings[3];
+        //                    if (VariationGrouping4 != null)
+        //                    {
+        //                        foreach (var Variation in VariationGrouping4.Variations)
+        //                        {
+        //                            foreach (var item in items3)
+        //                            {
+        //                                var newObj = Utils.Clone(item);
+        //                                newObj.Code = newObj.Code + "-" + Variation.Code;
+        //                                newObj.Name = newObj.Name + " - " + Variation.Name;
+        //                                items4.Add(newObj);
+        //                            }
+        //                        }
+        //                    }
+        //                }
+        //            }
+        //            if (items4.Count > 0)
+        //                Product.Items = items4;
+        //            else if(items3.Count > 0)
+        //                Product.Items = items3;
+        //            else if (items2.Count > 0)
+        //                Product.Items = items2;
+        //            else
+        //                Product.Items = items1;
+        //        }
+        //    }
+        //    #endregion
+        //    Products.ForEach(x => x.BaseLanguage = CurrentContext.Language);
+        //    Products = await ProductService.Import(Products);
+        //    List<Product_ProductDTO> Product_ProductDTOs = Products
+        //        .Select(c => new Product_ProductDTO(c)).ToList();
 
-            //thông báo lỗi
-            for (int i = 0; i < Products.Count; i++)
-            {
-                if (!Products[i].IsValidated)
-                {
-                    if(Products[i].Errors != null)
-                    {
-                        foreach (var Error in Products[i].Errors)
-                        {
-                            errorContent.AppendLine($"Lỗi dòng thứ {i + 2}: {Error.Value}");
-                        }
-                    }
-                    if (Products[i].Items != null)
-                    {
-                        foreach (var item in Products[i].Items)
-                        {
-                            if(item.Errors != null)
-                            {
-                                foreach (var Error in item.Errors)
-                                {
-                                    errorContent.AppendLine($"Lỗi dòng thứ {i + 2}: {Error.Value}");
-                                }
-                            }
-                        }
-                    }
-                    if (Products[i].VariationGroupings != null)
-                    {
-                        foreach (var VariationGrouping in Products[i].VariationGroupings)
-                        {
-                            if (VariationGrouping.Errors != null)
-                            {
-                                foreach (var Error in VariationGrouping.Errors)
-                                {
-                                    errorContent.AppendLine($"Lỗi dòng thứ {i + 2}: {Error.Value}");
-                                }
-                            }
-                            if (VariationGrouping.Variations != null)
-                            {
-                                foreach (var Variation in VariationGrouping.Variations)
-                                {
-                                    if (Variation.Errors != null)
-                                    {
-                                        foreach (var Error in Variation.Errors)
-                                        {
-                                            errorContent.AppendLine($"Lỗi dòng thứ {i + 2}: {Error.Value}");
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+        //    //thông báo lỗi
+        //    for (int i = 0; i < Products.Count; i++)
+        //    {
+        //        if (!Products[i].IsValidated)
+        //        {
+        //            if(Products[i].Errors != null)
+        //            {
+        //                foreach (var Error in Products[i].Errors)
+        //                {
+        //                    errorContent.AppendLine($"Lỗi dòng thứ {i + 2}: {Error.Value}");
+        //                }
+        //            }
+        //            if (Products[i].Items != null)
+        //            {
+        //                foreach (var item in Products[i].Items)
+        //                {
+        //                    if(item.Errors != null)
+        //                    {
+        //                        foreach (var Error in item.Errors)
+        //                        {
+        //                            errorContent.AppendLine($"Lỗi dòng thứ {i + 2}: {Error.Value}");
+        //                        }
+        //                    }
+        //                }
+        //            }
+        //            if (Products[i].VariationGroupings != null)
+        //            {
+        //                foreach (var VariationGrouping in Products[i].VariationGroupings)
+        //                {
+        //                    if (VariationGrouping.Errors != null)
+        //                    {
+        //                        foreach (var Error in VariationGrouping.Errors)
+        //                        {
+        //                            errorContent.AppendLine($"Lỗi dòng thứ {i + 2}: {Error.Value}");
+        //                        }
+        //                    }
+        //                    if (VariationGrouping.Variations != null)
+        //                    {
+        //                        foreach (var Variation in VariationGrouping.Variations)
+        //                        {
+        //                            if (Variation.Errors != null)
+        //                            {
+        //                                foreach (var Error in Variation.Errors)
+        //                                {
+        //                                    errorContent.AppendLine($"Lỗi dòng thứ {i + 2}: {Error.Value}");
+        //                                }
+        //                            }
+        //                        }
+        //                    }
+        //                }
+        //            }
+        //        }
+        //    }
 
-            if (Products.Any(x => !x.IsValidated))
-                return BadRequest(errorContent.ToString());
-            return Product_ProductDTOs;
-        }
+        //    if (Products.Any(x => !x.IsValidated))
+        //        return BadRequest(errorContent.ToString());
+        //    return Product_ProductDTOs;
+        //}
 
-        [Route(ProductRoute.Export), HttpPost]
-        public async Task<ActionResult> Export([FromBody] Product_ProductFilterDTO Product_ProductFilterDTO)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
+        //[Route(ProductRoute.Export), HttpPost]
+        //public async Task<ActionResult> Export([FromBody] Product_ProductFilterDTO Product_ProductFilterDTO)
+        //{
+        //    if (!ModelState.IsValid)
+        //        throw new BindException(ModelState);
 
-            ProductFilter ProductFilter = ConvertFilterDTOToFilterEntity(Product_ProductFilterDTO);
-            ProductFilter.Skip = 0;
-            ProductFilter.Take = int.MaxValue;
-            ProductFilter.Selects = ProductSelect.ALL;
-            ProductFilter = ProductService.ToFilter(ProductFilter);
+        //    ProductFilter ProductFilter = ConvertFilterDTOToFilterEntity(Product_ProductFilterDTO);
+        //    ProductFilter.Skip = 0;
+        //    ProductFilter.Take = int.MaxValue;
+        //    ProductFilter.Selects = ProductSelect.ALL;
+        //    ProductFilter = ProductService.ToFilter(ProductFilter);
 
-            List<Product> Products = await ProductService.List(ProductFilter);
-            #region MDM
-            List<Category> Categorys = await CategoryService.List(new CategoryFilter
-            {
-                Skip = 0,
-                Take = int.MaxValue,
-                Selects = CategorySelect.ALL,
-            });
-            Categorys = Categorys.Where(x => x.HasChildren == false).ToList();
-            List<Item> Items = await ItemService.List(new ItemFilter
-            {
-                Skip = 0,
-                Take = int.MaxValue,
-                Selects = ItemSelect.ALL,
-                ProductId = new IdFilter { In = Products.Select(p => p.Id).ToList() }
-            });
-            List<ProductGrouping> ProductGroupings = await ProductGroupingService.List(new ProductGroupingFilter
-            {
-                Skip = 0,
-                Take = int.MaxValue,
-                Selects = ProductGroupingSelect.ALL,
-            });
-            List<ProductType> ProductTypes = await ProductTypeService.List(new ProductTypeFilter
-            {
-                Skip = 0,
-                Take = int.MaxValue,
-                Selects = ProductTypeSelect.ALL,
-            });
-            List<UnitOfMeasure> UnitOfMeasures = await UnitOfMeasureService.List(new UnitOfMeasureFilter
-            {
-                Skip = 0,
-                Take = int.MaxValue,
-                Selects = UnitOfMeasureSelect.ALL,
-            });
-            List<UnitOfMeasureGrouping> UnitOfMeasureGroupings = await UnitOfMeasureGroupingService.List(new UnitOfMeasureGroupingFilter
-            {
-                Skip = 0,
-                Take = int.MaxValue,
-                Selects = UnitOfMeasureGroupingSelect.ALL
-            });
-            List<Supplier> Suppliers = await SupplierService.List(new SupplierFilter
-            {
-                Skip = 0,
-                Take = int.MaxValue,
-                Selects = SupplierSelect.ALL
-            });
-            List<Brand> Brands = await BrandService.List(new BrandFilter
-            {
-                Skip = 0,
-                Take = int.MaxValue,
-                Selects = BrandSelect.ALL
-            });
-            List<TaxType> TaxTypes = await TaxTypeService.List(new TaxTypeFilter
-            {
-                Skip = 0,
-                Take = int.MaxValue,
-                Selects = TaxTypeSelect.ALL,
-                StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id }
-            });
-            #endregion
-            var culture = System.Globalization.CultureInfo.GetCultureInfo("en-EN");
-            MemoryStream MemoryStream = new MemoryStream();
-            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
-            using (ExcelPackage excel = new ExcelPackage(MemoryStream))
-            {
-                #region sheet product 
-                var ProductHeader = new List<string[]>()
-                {
-                    new string[] { "STT",
-                        "Mã sản phẩm",
-                        "Tên sản phẩm",
-                        "Danh mục sản phẩm",
-                        "Nhóm sản phẩm",
-                        "Loại sản phẩm",
-                        "Đơn vị tính",
-                        "Nhóm đơn vị chuyển đổi",
-                        "Nhà cung cấp",
-                        "Mã từ ERP",
-                        "Mã nhận diện sản phẩm",
-                        "Nhãn hiệu",
-                        "Tên khác",
-                        "Tên kỹ thuật",
-                        "% VAT",
-                        "Mô tả",
-                        "Giá bán",
-                        "Trạng thái",
-                        "Có tạo phiên bản",
-                        "Thuộc tính 1",
-                        "Giá trị 1",
-                        "Thuộc tính 2",
-                        "Giá trị 2",
-                        "Thuộc tính 3",
-                        "Giá trị 3",
-                        "Thuộc tính 4",
-                        "Giá trị 4",
-                    }
-                };
-                List<object[]> data = new List<object[]>();
-                for (int i = 0; i < Products.Count; i++)
-                {
-                    Product Product = Products[i];
-                    string ProductGroupingName = "";
-                    if (Product.ProductProductGroupingMappings != null)
-                    {
-                        foreach (var ProductProductGroupingMapping in Product.ProductProductGroupingMappings)
-                        {
-                            ProductGroupingName = string.Join(';', Product.ProductProductGroupingMappings.Select(x => x.ProductGrouping.Name).ToList());
-                        }
-                    }
-                    string VariationGrouping1 = "";
-                    string VariationValue1 = "";
-                    string VariationGrouping2 = "";
-                    string VariationValue2 = "";
-                    string VariationGrouping3 = "";
-                    string VariationValue3 = "";
-                    string VariationGrouping4 = "";
-                    string VariationValue4 = "";
+        //    List<Product> Products = await ProductService.List(ProductFilter);
+        //    #region MDM
+        //    List<Category> Categorys = await CategoryService.List(new CategoryFilter
+        //    {
+        //        Skip = 0,
+        //        Take = int.MaxValue,
+        //        Selects = CategorySelect.ALL,
+        //    });
+        //    Categorys = Categorys.Where(x => x.HasChildren == false).ToList();
+        //    List<Item> Items = await ItemService.List(new ItemFilter
+        //    {
+        //        Skip = 0,
+        //        Take = int.MaxValue,
+        //        Selects = ItemSelect.ALL,
+        //        ProductId = new IdFilter { In = Products.Select(p => p.Id).ToList() }
+        //    });
+        //    List<ProductGrouping> ProductGroupings = await ProductGroupingService.List(new ProductGroupingFilter
+        //    {
+        //        Skip = 0,
+        //        Take = int.MaxValue,
+        //        Selects = ProductGroupingSelect.ALL,
+        //    });
+        //    List<ProductType> ProductTypes = await ProductTypeService.List(new ProductTypeFilter
+        //    {
+        //        Skip = 0,
+        //        Take = int.MaxValue,
+        //        Selects = ProductTypeSelect.ALL,
+        //    });
+        //    List<UnitOfMeasure> UnitOfMeasures = await UnitOfMeasureService.List(new UnitOfMeasureFilter
+        //    {
+        //        Skip = 0,
+        //        Take = int.MaxValue,
+        //        Selects = UnitOfMeasureSelect.ALL,
+        //    });
+        //    List<UnitOfMeasureGrouping> UnitOfMeasureGroupings = await UnitOfMeasureGroupingService.List(new UnitOfMeasureGroupingFilter
+        //    {
+        //        Skip = 0,
+        //        Take = int.MaxValue,
+        //        Selects = UnitOfMeasureGroupingSelect.ALL
+        //    });
+        //    List<Supplier> Suppliers = await SupplierService.List(new SupplierFilter
+        //    {
+        //        Skip = 0,
+        //        Take = int.MaxValue,
+        //        Selects = SupplierSelect.ALL
+        //    });
+        //    List<Brand> Brands = await BrandService.List(new BrandFilter
+        //    {
+        //        Skip = 0,
+        //        Take = int.MaxValue,
+        //        Selects = BrandSelect.ALL
+        //    });
+        //    List<TaxType> TaxTypes = await TaxTypeService.List(new TaxTypeFilter
+        //    {
+        //        Skip = 0,
+        //        Take = int.MaxValue,
+        //        Selects = TaxTypeSelect.ALL,
+        //        StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id }
+        //    });
+        //    #endregion
+        //    var culture = System.Globalization.CultureInfo.GetCultureInfo("en-EN");
+        //    MemoryStream MemoryStream = new MemoryStream();
+        //    ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+        //    using (ExcelPackage excel = new ExcelPackage(MemoryStream))
+        //    {
+        //        #region sheet product 
+        //        var ProductHeader = new List<string[]>()
+        //        {
+        //            new string[] { "STT",
+        //                "Mã sản phẩm",
+        //                "Tên sản phẩm",
+        //                "Danh mục sản phẩm",
+        //                "Nhóm sản phẩm",
+        //                "Loại sản phẩm",
+        //                "Đơn vị tính",
+        //                "Nhóm đơn vị chuyển đổi",
+        //                "Nhà cung cấp",
+        //                "Mã từ ERP",
+        //                "Mã nhận diện sản phẩm",
+        //                "Nhãn hiệu",
+        //                "Tên khác",
+        //                "Tên kỹ thuật",
+        //                "% VAT",
+        //                "Mô tả",
+        //                "Giá bán",
+        //                "Trạng thái",
+        //                "Có tạo phiên bản",
+        //                "Thuộc tính 1",
+        //                "Giá trị 1",
+        //                "Thuộc tính 2",
+        //                "Giá trị 2",
+        //                "Thuộc tính 3",
+        //                "Giá trị 3",
+        //                "Thuộc tính 4",
+        //                "Giá trị 4",
+        //            }
+        //        };
+        //        List<object[]> data = new List<object[]>();
+        //        for (int i = 0; i < Products.Count; i++)
+        //        {
+        //            Product Product = Products[i];
+        //            string ProductGroupingName = "";
+        //            if (Product.ProductProductGroupingMappings != null)
+        //            {
+        //                foreach (var ProductProductGroupingMapping in Product.ProductProductGroupingMappings)
+        //                {
+        //                    ProductGroupingName = string.Join(';', Product.ProductProductGroupingMappings.Select(x => x.ProductGrouping.Name).ToList());
+        //                }
+        //            }
+        //            string VariationGrouping1 = "";
+        //            string VariationValue1 = "";
+        //            string VariationGrouping2 = "";
+        //            string VariationValue2 = "";
+        //            string VariationGrouping3 = "";
+        //            string VariationValue3 = "";
+        //            string VariationGrouping4 = "";
+        //            string VariationValue4 = "";
 
-                    if (Product.VariationGroupings != null)
-                    {
-                        if (Product.VariationGroupings.Count > 0)
-                        {
-                            VariationGrouping1 += Product.VariationGroupings[0].Name;
-                            VariationValue1 = string.Join(",", Product.VariationGroupings[0].Variations.Select(v => v.Code + '-' + v.Name).ToArray());
-                        }
+        //            if (Product.VariationGroupings != null)
+        //            {
+        //                if (Product.VariationGroupings.Count > 0)
+        //                {
+        //                    VariationGrouping1 += Product.VariationGroupings[0].Name;
+        //                    VariationValue1 = string.Join(",", Product.VariationGroupings[0].Variations.Select(v => v.Code + '-' + v.Name).ToArray());
+        //                }
 
-                        if (Product.VariationGroupings.Count > 1)
-                        {
-                            VariationGrouping2 += Product.VariationGroupings[1].Name;
-                            VariationValue2 = string.Join(",", Product.VariationGroupings[1].Variations.Select(v => v.Code + '-' + v.Name).ToArray());
-                        }
+        //                if (Product.VariationGroupings.Count > 1)
+        //                {
+        //                    VariationGrouping2 += Product.VariationGroupings[1].Name;
+        //                    VariationValue2 = string.Join(",", Product.VariationGroupings[1].Variations.Select(v => v.Code + '-' + v.Name).ToArray());
+        //                }
 
-                        if (Product.VariationGroupings.Count > 2)
-                        {
-                            VariationGrouping3 += Product.VariationGroupings[2].Name;
-                            VariationValue3 = string.Join(",", Product.VariationGroupings[2].Variations.Select(v => v.Code + '-' + v.Name).ToArray());
-                        }
+        //                if (Product.VariationGroupings.Count > 2)
+        //                {
+        //                    VariationGrouping3 += Product.VariationGroupings[2].Name;
+        //                    VariationValue3 = string.Join(",", Product.VariationGroupings[2].Variations.Select(v => v.Code + '-' + v.Name).ToArray());
+        //                }
 
-                        if (Product.VariationGroupings.Count > 3)
-                        {
-                            VariationGrouping4 += Product.VariationGroupings[3].Name;
-                            VariationValue4 = string.Join(",", Product.VariationGroupings[3].Variations.Select(v => v.Code + '-' + v.Name).ToArray());
-                        }
-                    }
-                    data.Add(new object[]
-                    {
-                        i+1,
-                        Product.Code,
-                        Product.Name,
-                        ProductGroupingName,
-                        Product.Category?.Name,
-                        Product.ProductType?.Name,
-                        Product.UnitOfMeasure?.Name,
-                        Product.UnitOfMeasureGrouping?.Name,
-                        Product.Supplier?.Name,
-                        Product.ERPCode,
-                        Product.ScanCode,
-                        Product.Brand?.Name,
-                        Product.OtherName,
-                        Product.TechnicalName,
-                        Product.TaxType.Code,
-                        Product.Description,
-                        Product.SalePrice.ToString("N0", culture),
-                        Product.Status?.Name,
-                        Product.UsedVariation?.Name,
-                        VariationGrouping1,
-                        VariationValue1,
-                        VariationGrouping2,
-                        VariationValue2,
-                        VariationGrouping3,
-                        VariationValue3,
-                        VariationGrouping4,
-                        VariationValue4,
-                    });
-                }
-                excel.GenerateWorksheet("Product", ProductHeader, data);
-                #endregion
+        //                if (Product.VariationGroupings.Count > 3)
+        //                {
+        //                    VariationGrouping4 += Product.VariationGroupings[3].Name;
+        //                    VariationValue4 = string.Join(",", Product.VariationGroupings[3].Variations.Select(v => v.Code + '-' + v.Name).ToArray());
+        //                }
+        //            }
+        //            data.Add(new object[]
+        //            {
+        //                i+1,
+        //                Product.Code,
+        //                Product.Name,
+        //                ProductGroupingName,
+        //                Product.Category?.Name,
+        //                Product.ProductType?.Name,
+        //                Product.UnitOfMeasure?.Name,
+        //                Product.UnitOfMeasureGrouping?.Name,
+        //                Product.Supplier?.Name,
+        //                Product.ERPCode,
+        //                Product.ScanCode,
+        //                Product.Brand?.Name,
+        //                Product.OtherName,
+        //                Product.TechnicalName,
+        //                Product.TaxType.Code,
+        //                Product.Description,
+        //                Product.SalePrice.ToString("N0", culture),
+        //                Product.Status?.Name,
+        //                Product.UsedVariation?.Name,
+        //                VariationGrouping1,
+        //                VariationValue1,
+        //                VariationGrouping2,
+        //                VariationValue2,
+        //                VariationGrouping3,
+        //                VariationValue3,
+        //                VariationGrouping4,
+        //                VariationValue4,
+        //            });
+        //        }
+        //        excel.GenerateWorksheet("Product", ProductHeader, data);
+        //        #endregion
 
-                #region sheet item  
-                data.Clear();
-                var ItemHeader = new List<string[]>()
-                {
-                    new string[] {
-                        "STT",
-                        "Mã sản phẩm",
-                        "Mã sản phẩm thuộc tính",
-                        "Tên sản phẩm thuộc tính",
-                        "Mã nhận diện sản phẩm",
-                        "Giá bán",
-                        "Giá bán lẻ đề xuất",
-                        "Trạng thái",
-                    }
-                };
-                for (int i = 0; i < Items.Count; i++)
-                {
-                    Item Item = Items[i];
-                    data.Add(new object[] {
-                                i+1,
-                                Item.Product?.Code,
-                                Item.Code,
-                                Item.Name,
-                                Item.ScanCode,
-                                Item.SalePrice.ToString("N0", culture),
-                                Item.RetailPrice?.ToString("N0", culture),
-                                Item.Status?.Name,
-                                });
-                }
-                excel.GenerateWorksheet("Item", ItemHeader, data);
-                #endregion
+        //        #region sheet item  
+        //        data.Clear();
+        //        var ItemHeader = new List<string[]>()
+        //        {
+        //            new string[] {
+        //                "STT",
+        //                "Mã sản phẩm",
+        //                "Mã sản phẩm thuộc tính",
+        //                "Tên sản phẩm thuộc tính",
+        //                "Mã nhận diện sản phẩm",
+        //                "Giá bán",
+        //                "Giá bán lẻ đề xuất",
+        //                "Trạng thái",
+        //            }
+        //        };
+        //        for (int i = 0; i < Items.Count; i++)
+        //        {
+        //            Item Item = Items[i];
+        //            data.Add(new object[] {
+        //                        i+1,
+        //                        Item.Product?.Code,
+        //                        Item.Code,
+        //                        Item.Name,
+        //                        Item.ScanCode,
+        //                        Item.SalePrice.ToString("N0", culture),
+        //                        Item.RetailPrice?.ToString("N0", culture),
+        //                        Item.Status?.Name,
+        //                        });
+        //        }
+        //        excel.GenerateWorksheet("Item", ItemHeader, data);
+        //        #endregion
 
-                #region Sheet Product Type
-                data.Clear();
-                var CategoryHeader = new List<string[]>()
-                {
-                    new string[] {
-                        "Mã danh mục sản phẩm",
-                        "Tên danh mục sản phẩm",
-                    }
-                };
-                foreach (var Category in Categorys)
-                {
-                    data.Add(new object[]
-                    {
-                        Category.Code,
-                        Category.Name
-                    });
-                }
-                excel.GenerateWorksheet("Category", CategoryHeader, data);
-                #endregion
+        //        #region Sheet Product Type
+        //        data.Clear();
+        //        var CategoryHeader = new List<string[]>()
+        //        {
+        //            new string[] {
+        //                "Mã danh mục sản phẩm",
+        //                "Tên danh mục sản phẩm",
+        //            }
+        //        };
+        //        foreach (var Category in Categorys)
+        //        {
+        //            data.Add(new object[]
+        //            {
+        //                Category.Code,
+        //                Category.Name
+        //            });
+        //        }
+        //        excel.GenerateWorksheet("Category", CategoryHeader, data);
+        //        #endregion
 
-                #region Sheet Product Group
-                data.Clear();
-                var ProductGroupHeader = new List<string[]>()
-                {
-                    new string[] {
-                        "Mã nhóm sản phẩm",
-                        "Tên nhóm sản phẩm",
-                    }
-                };
-                foreach (var ProductGrouping in ProductGroupings)
-                {
-                    data.Add(new object[]
-                    {
-                        ProductGrouping.Code,
-                        ProductGrouping.Name
-                    });
-                }
-                excel.GenerateWorksheet("ProductGroup", ProductGroupHeader, data);
-                #endregion
+        //        #region Sheet Product Group
+        //        data.Clear();
+        //        var ProductGroupHeader = new List<string[]>()
+        //        {
+        //            new string[] {
+        //                "Mã nhóm sản phẩm",
+        //                "Tên nhóm sản phẩm",
+        //            }
+        //        };
+        //        foreach (var ProductGrouping in ProductGroupings)
+        //        {
+        //            data.Add(new object[]
+        //            {
+        //                ProductGrouping.Code,
+        //                ProductGrouping.Name
+        //            });
+        //        }
+        //        excel.GenerateWorksheet("ProductGroup", ProductGroupHeader, data);
+        //        #endregion
 
-                #region Sheet Product Type
-                data.Clear();
-                var ProductTypeHeader = new List<string[]>()
-                {
-                    new string[] {
-                        "Mã loại sản phẩm",
-                        "Tên loại sản phẩm",
-                    }
-                };
-                foreach (var ProductType in ProductTypes)
-                {
-                    data.Add(new object[]
-                    {
-                        ProductType.Code,
-                        ProductType.Name
-                    });
-                }
-                excel.GenerateWorksheet("ProductType", ProductTypeHeader, data);
-                #endregion
+        //        #region Sheet Product Type
+        //        data.Clear();
+        //        var ProductTypeHeader = new List<string[]>()
+        //        {
+        //            new string[] {
+        //                "Mã loại sản phẩm",
+        //                "Tên loại sản phẩm",
+        //            }
+        //        };
+        //        foreach (var ProductType in ProductTypes)
+        //        {
+        //            data.Add(new object[]
+        //            {
+        //                ProductType.Code,
+        //                ProductType.Name
+        //            });
+        //        }
+        //        excel.GenerateWorksheet("ProductType", ProductTypeHeader, data);
+        //        #endregion
 
-                #region Sheet UOM
-                data.Clear();
-                var UOMHeader = new List<string[]>()
-                {
-                    new string[] {
-                        "Mã đơn vị tính",
-                        "Tên đơn vị tính",
-                    }
-                };
-                foreach (var UnitOfMeasure in UnitOfMeasures)
-                {
-                    data.Add(new object[]
-                    {
-                        UnitOfMeasure.Code,
-                        UnitOfMeasure.Name
-                    });
-                }
-                excel.GenerateWorksheet("UnitOfMeasure", UOMHeader, data);
-                #endregion
+        //        #region Sheet UOM
+        //        data.Clear();
+        //        var UOMHeader = new List<string[]>()
+        //        {
+        //            new string[] {
+        //                "Mã đơn vị tính",
+        //                "Tên đơn vị tính",
+        //            }
+        //        };
+        //        foreach (var UnitOfMeasure in UnitOfMeasures)
+        //        {
+        //            data.Add(new object[]
+        //            {
+        //                UnitOfMeasure.Code,
+        //                UnitOfMeasure.Name
+        //            });
+        //        }
+        //        excel.GenerateWorksheet("UnitOfMeasure", UOMHeader, data);
+        //        #endregion
 
-                #region Sheet UOMGrouping
-                data.Clear();
-                var UOMGroupingHeader = new List<string[]>()
-                {
-                    new string[] {
-                        "Mã nhóm đơn vị chuyển đổi",
-                        "Tên nhóm đơn vị chuyển đổi",
-                        "Đơn vị cơ bản"
-                    }
-                };
-                foreach (var UnitOfMeasureGrouping in UnitOfMeasureGroupings)
-                {
-                    data.Add(new object[]
-                    {
-                        UnitOfMeasureGrouping.Code,
-                        UnitOfMeasureGrouping.Name,
-                        UnitOfMeasureGrouping.UnitOfMeasure?.Name
-                    });
-                }
-                excel.GenerateWorksheet("UnitOfMeasureGrouping", UOMGroupingHeader, data);
-                #endregion
+        //        #region Sheet UOMGrouping
+        //        data.Clear();
+        //        var UOMGroupingHeader = new List<string[]>()
+        //        {
+        //            new string[] {
+        //                "Mã nhóm đơn vị chuyển đổi",
+        //                "Tên nhóm đơn vị chuyển đổi",
+        //                "Đơn vị cơ bản"
+        //            }
+        //        };
+        //        foreach (var UnitOfMeasureGrouping in UnitOfMeasureGroupings)
+        //        {
+        //            data.Add(new object[]
+        //            {
+        //                UnitOfMeasureGrouping.Code,
+        //                UnitOfMeasureGrouping.Name,
+        //                UnitOfMeasureGrouping.UnitOfMeasure?.Name
+        //            });
+        //        }
+        //        excel.GenerateWorksheet("UnitOfMeasureGrouping", UOMGroupingHeader, data);
+        //        #endregion
 
-                #region Sheet Supplier
-                data.Clear();
-                var SupplierHeader = new List<string[]>()
-                {
-                    new string[] {
-                        "Mã nhà cung cấp",
-                        "Tên nhà cung cấp",
-                    }
-                };
-                foreach (var Supplier in Suppliers)
-                {
-                    data.Add(new object[]
-                    {
-                        Supplier.Code,
-                        Supplier.Name
-                    });
-                }
-                excel.GenerateWorksheet("Supplier", SupplierHeader, data);
-                #endregion
+        //        #region Sheet Supplier
+        //        data.Clear();
+        //        var SupplierHeader = new List<string[]>()
+        //        {
+        //            new string[] {
+        //                "Mã nhà cung cấp",
+        //                "Tên nhà cung cấp",
+        //            }
+        //        };
+        //        foreach (var Supplier in Suppliers)
+        //        {
+        //            data.Add(new object[]
+        //            {
+        //                Supplier.Code,
+        //                Supplier.Name
+        //            });
+        //        }
+        //        excel.GenerateWorksheet("Supplier", SupplierHeader, data);
+        //        #endregion
 
-                #region Sheet Brand
-                data.Clear();
-                var BrandHeader = new List<string[]>()
-                {
-                    new string[] {
-                        "Mã nhãn hiệu",
-                        "Tên nhãn hiệu",
-                    }
-                };
-                foreach (var Brand in Brands)
-                {
-                    data.Add(new object[]
-                    {
-                        Brand.Code,
-                        Brand.Name
-                    });
-                }
-                excel.GenerateWorksheet("Brand", BrandHeader, data);
-                #endregion
+        //        #region Sheet Brand
+        //        data.Clear();
+        //        var BrandHeader = new List<string[]>()
+        //        {
+        //            new string[] {
+        //                "Mã nhãn hiệu",
+        //                "Tên nhãn hiệu",
+        //            }
+        //        };
+        //        foreach (var Brand in Brands)
+        //        {
+        //            data.Add(new object[]
+        //            {
+        //                Brand.Code,
+        //                Brand.Name
+        //            });
+        //        }
+        //        excel.GenerateWorksheet("Brand", BrandHeader, data);
+        //        #endregion
 
-                #region Sheet TaxType
-                data.Clear();
-                var TaxTypeHeader = new List<string[]>()
-                {
-                    new string[] {
-                        "Mã VAT",
-                        "Tên VAT",
-                    }
-                };
-                foreach (var TaxType in TaxTypes)
-                {
-                    data.Add(new object[]
-                    {
-                        TaxType.Code,
-                        TaxType.Name
-                    });
-                }
-                excel.GenerateWorksheet("TaxType", TaxTypeHeader, data);
-                #endregion
+        //        #region Sheet TaxType
+        //        data.Clear();
+        //        var TaxTypeHeader = new List<string[]>()
+        //        {
+        //            new string[] {
+        //                "Mã VAT",
+        //                "Tên VAT",
+        //            }
+        //        };
+        //        foreach (var TaxType in TaxTypes)
+        //        {
+        //            data.Add(new object[]
+        //            {
+        //                TaxType.Code,
+        //                TaxType.Name
+        //            });
+        //        }
+        //        excel.GenerateWorksheet("TaxType", TaxTypeHeader, data);
+        //        #endregion
 
-                excel.Save();
-            }
+        //        excel.Save();
+        //    }
 
-            return File(MemoryStream.ToArray(), "application/octet-stream", "Product" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".xlsx");
-        }
+        //    return File(MemoryStream.ToArray(), "application/octet-stream", "Product" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".xlsx");
+        //}
 
-        [Route(ProductRoute.ExportTemplate), HttpPost]
-        public async Task<ActionResult> ExportTemplate()
-        {
-            #region MDM
-            List<Category> Categorys = await CategoryService.List(new CategoryFilter
-            {
-                Skip = 0,
-                Take = int.MaxValue,
-                Selects = CategorySelect.ALL,
-                StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id }
-            });
-            Categorys = Categorys.Where(x => x.HasChildren == false).ToList();
-            List<ProductGrouping> ProductGroupings = await ProductGroupingService.List(new ProductGroupingFilter
-            {
-                Skip = 0,
-                Take = int.MaxValue,
-                Selects = ProductGroupingSelect.ALL,
-            });
-            List<ProductType> ProductTypes = await ProductTypeService.List(new ProductTypeFilter
-            {
-                Skip = 0,
-                Take = int.MaxValue,
-                Selects = ProductTypeSelect.ALL,
-                StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id }
-            });
-            List<UnitOfMeasure> UnitOfMeasures = await UnitOfMeasureService.List(new UnitOfMeasureFilter
-            {
-                Skip = 0,
-                Take = int.MaxValue,
-                Selects = UnitOfMeasureSelect.ALL,
-                StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id }
-            });
-            List<UnitOfMeasureGrouping> UnitOfMeasureGroupings = await UnitOfMeasureGroupingService.List(new UnitOfMeasureGroupingFilter
-            {
-                Skip = 0,
-                Take = int.MaxValue,
-                Selects = UnitOfMeasureGroupingSelect.ALL,
-                StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id }
-            });
-            List<Supplier> Suppliers = await SupplierService.List(new SupplierFilter
-            {
-                Skip = 0,
-                Take = int.MaxValue,
-                Selects = SupplierSelect.ALL,
-                StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id }
-            });
-            List<Brand> Brands = await BrandService.List(new BrandFilter
-            {
-                Skip = 0,
-                Take = int.MaxValue,
-                Selects = BrandSelect.ALL,
-                StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id }
-            });
-            List<TaxType> TaxTypes = await TaxTypeService.List(new TaxTypeFilter
-            {
-                Skip = 0,
-                Take = int.MaxValue,
-                Selects = TaxTypeSelect.ALL,
-                StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id }
-            });
-            #endregion
-            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
-            MemoryStream MemoryStream = new MemoryStream();
-            string tempPath = "Templates/Product_Export.xlsx";
-            using (var xlPackage = new ExcelPackage(new FileInfo(tempPath)))
-            {
-                #region sheet ProductGrouping 
-                var worksheet_ProductGroup = xlPackage.Workbook.Worksheets["ProductGroup"];
-                xlPackage.Workbook.CalcMode = ExcelCalcMode.Manual;
-                int startRow_ProductGroup = 2;
-                int numberCell_ProductGroup = 1;
-                for (var i = 0; i < ProductGroupings.Count; i++)
-                {
-                    ProductGrouping ProductGrouping = ProductGroupings[i];
-                    worksheet_ProductGroup.Cells[startRow_ProductGroup + i, numberCell_ProductGroup].Value = ProductGrouping.Code;
-                    worksheet_ProductGroup.Cells[startRow_ProductGroup + i, numberCell_ProductGroup + 1].Value = ProductGrouping.Name;
-                }
-                #endregion
+        //[Route(ProductRoute.ExportTemplate), HttpPost]
+        //public async Task<ActionResult> ExportTemplate()
+        //{
+        //    #region MDM
+        //    List<Category> Categorys = await CategoryService.List(new CategoryFilter
+        //    {
+        //        Skip = 0,
+        //        Take = int.MaxValue,
+        //        Selects = CategorySelect.ALL,
+        //        StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id }
+        //    });
+        //    Categorys = Categorys.Where(x => x.HasChildren == false).ToList();
+        //    List<ProductGrouping> ProductGroupings = await ProductGroupingService.List(new ProductGroupingFilter
+        //    {
+        //        Skip = 0,
+        //        Take = int.MaxValue,
+        //        Selects = ProductGroupingSelect.ALL,
+        //    });
+        //    List<ProductType> ProductTypes = await ProductTypeService.List(new ProductTypeFilter
+        //    {
+        //        Skip = 0,
+        //        Take = int.MaxValue,
+        //        Selects = ProductTypeSelect.ALL,
+        //        StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id }
+        //    });
+        //    List<UnitOfMeasure> UnitOfMeasures = await UnitOfMeasureService.List(new UnitOfMeasureFilter
+        //    {
+        //        Skip = 0,
+        //        Take = int.MaxValue,
+        //        Selects = UnitOfMeasureSelect.ALL,
+        //        StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id }
+        //    });
+        //    List<UnitOfMeasureGrouping> UnitOfMeasureGroupings = await UnitOfMeasureGroupingService.List(new UnitOfMeasureGroupingFilter
+        //    {
+        //        Skip = 0,
+        //        Take = int.MaxValue,
+        //        Selects = UnitOfMeasureGroupingSelect.ALL,
+        //        StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id }
+        //    });
+        //    List<Supplier> Suppliers = await SupplierService.List(new SupplierFilter
+        //    {
+        //        Skip = 0,
+        //        Take = int.MaxValue,
+        //        Selects = SupplierSelect.ALL,
+        //        StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id }
+        //    });
+        //    List<Brand> Brands = await BrandService.List(new BrandFilter
+        //    {
+        //        Skip = 0,
+        //        Take = int.MaxValue,
+        //        Selects = BrandSelect.ALL,
+        //        StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id }
+        //    });
+        //    List<TaxType> TaxTypes = await TaxTypeService.List(new TaxTypeFilter
+        //    {
+        //        Skip = 0,
+        //        Take = int.MaxValue,
+        //        Selects = TaxTypeSelect.ALL,
+        //        StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id }
+        //    });
+        //    #endregion
+        //    ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+        //    MemoryStream MemoryStream = new MemoryStream();
+        //    string tempPath = "Templates/Product_Export.xlsx";
+        //    using (var xlPackage = new ExcelPackage(new FileInfo(tempPath)))
+        //    {
+        //        #region sheet ProductGrouping 
+        //        var worksheet_ProductGroup = xlPackage.Workbook.Worksheets["ProductGroup"];
+        //        xlPackage.Workbook.CalcMode = ExcelCalcMode.Manual;
+        //        int startRow_ProductGroup = 2;
+        //        int numberCell_ProductGroup = 1;
+        //        for (var i = 0; i < ProductGroupings.Count; i++)
+        //        {
+        //            ProductGrouping ProductGrouping = ProductGroupings[i];
+        //            worksheet_ProductGroup.Cells[startRow_ProductGroup + i, numberCell_ProductGroup].Value = ProductGrouping.Code;
+        //            worksheet_ProductGroup.Cells[startRow_ProductGroup + i, numberCell_ProductGroup + 1].Value = ProductGrouping.Name;
+        //        }
+        //        #endregion
 
-                #region sheet Category
-                var worksheet_Category = xlPackage.Workbook.Worksheets["Category"];
-                xlPackage.Workbook.CalcMode = ExcelCalcMode.Manual;
-                int startRow_Category = 2;
-                int numberCell_Category = 1;
-                for (var i = 0; i < Categorys.Count; i++)
-                {
-                    Category Category = Categorys[i];
-                    worksheet_Category.Cells[startRow_Category + i, numberCell_Category].Value = Category.Code;
-                    worksheet_Category.Cells[startRow_Category + i, numberCell_Category + 1].Value = Category.Name;
-                }
-                #endregion
+        //        #region sheet Category
+        //        var worksheet_Category = xlPackage.Workbook.Worksheets["Category"];
+        //        xlPackage.Workbook.CalcMode = ExcelCalcMode.Manual;
+        //        int startRow_Category = 2;
+        //        int numberCell_Category = 1;
+        //        for (var i = 0; i < Categorys.Count; i++)
+        //        {
+        //            Category Category = Categorys[i];
+        //            worksheet_Category.Cells[startRow_Category + i, numberCell_Category].Value = Category.Code;
+        //            worksheet_Category.Cells[startRow_Category + i, numberCell_Category + 1].Value = Category.Name;
+        //        }
+        //        #endregion
 
-                #region sheet ProductType
-                var worksheet_ProductType = xlPackage.Workbook.Worksheets["ProductType"];
-                xlPackage.Workbook.CalcMode = ExcelCalcMode.Manual;
-                int startRow_ProductType = 2;
-                int numberCell_ProductType = 1;
-                for (var i = 0; i < ProductTypes.Count; i++)
-                {
-                    ProductType ProductType = ProductTypes[i];
-                    worksheet_ProductType.Cells[startRow_ProductType + i, numberCell_ProductType].Value = ProductType.Code;
-                    worksheet_ProductType.Cells[startRow_ProductType + i, numberCell_ProductType + 1].Value = ProductType.Name;
-                }
-                #endregion
+        //        #region sheet ProductType
+        //        var worksheet_ProductType = xlPackage.Workbook.Worksheets["ProductType"];
+        //        xlPackage.Workbook.CalcMode = ExcelCalcMode.Manual;
+        //        int startRow_ProductType = 2;
+        //        int numberCell_ProductType = 1;
+        //        for (var i = 0; i < ProductTypes.Count; i++)
+        //        {
+        //            ProductType ProductType = ProductTypes[i];
+        //            worksheet_ProductType.Cells[startRow_ProductType + i, numberCell_ProductType].Value = ProductType.Code;
+        //            worksheet_ProductType.Cells[startRow_ProductType + i, numberCell_ProductType + 1].Value = ProductType.Name;
+        //        }
+        //        #endregion
 
-                #region sheet UoM
-                var worksheet_UoM = xlPackage.Workbook.Worksheets["UoM"];
-                xlPackage.Workbook.CalcMode = ExcelCalcMode.Manual;
-                int startRow_UoM = 2;
-                int numberCell_UoM = 1;
-                for (var i = 0; i < UnitOfMeasures.Count; i++)
-                {
-                    UnitOfMeasure UnitOfMeasure = UnitOfMeasures[i];
-                    worksheet_UoM.Cells[startRow_UoM + i, numberCell_UoM].Value = UnitOfMeasure.Code;
-                    worksheet_UoM.Cells[startRow_UoM + i, numberCell_UoM + 1].Value = UnitOfMeasure.Name;
-                }
-                #endregion
+        //        #region sheet UoM
+        //        var worksheet_UoM = xlPackage.Workbook.Worksheets["UoM"];
+        //        xlPackage.Workbook.CalcMode = ExcelCalcMode.Manual;
+        //        int startRow_UoM = 2;
+        //        int numberCell_UoM = 1;
+        //        for (var i = 0; i < UnitOfMeasures.Count; i++)
+        //        {
+        //            UnitOfMeasure UnitOfMeasure = UnitOfMeasures[i];
+        //            worksheet_UoM.Cells[startRow_UoM + i, numberCell_UoM].Value = UnitOfMeasure.Code;
+        //            worksheet_UoM.Cells[startRow_UoM + i, numberCell_UoM + 1].Value = UnitOfMeasure.Name;
+        //        }
+        //        #endregion
 
-                #region sheet UoMGroup
-                var worksheet_UoMGroup = xlPackage.Workbook.Worksheets["UoMGroup"];
-                xlPackage.Workbook.CalcMode = ExcelCalcMode.Manual;
-                int startRow_UoMGroup = 2;
-                int numberCell_UoMGroup = 1;
-                for (var i = 0; i < UnitOfMeasureGroupings.Count; i++)
-                {
-                    UnitOfMeasureGrouping UnitOfMeasureGrouping = UnitOfMeasureGroupings[i];
-                    worksheet_UoMGroup.Cells[startRow_UoMGroup + i, numberCell_UoMGroup].Value = UnitOfMeasureGrouping.Code;
-                    worksheet_UoMGroup.Cells[startRow_UoMGroup + i, numberCell_UoMGroup + 1].Value = UnitOfMeasureGrouping.Name;
-                    worksheet_UoMGroup.Cells[startRow_UoMGroup + i, numberCell_UoMGroup + 2].Value = UnitOfMeasureGrouping.UnitOfMeasure.Name;
-                }
-                #endregion
+        //        #region sheet UoMGroup
+        //        var worksheet_UoMGroup = xlPackage.Workbook.Worksheets["UoMGroup"];
+        //        xlPackage.Workbook.CalcMode = ExcelCalcMode.Manual;
+        //        int startRow_UoMGroup = 2;
+        //        int numberCell_UoMGroup = 1;
+        //        for (var i = 0; i < UnitOfMeasureGroupings.Count; i++)
+        //        {
+        //            UnitOfMeasureGrouping UnitOfMeasureGrouping = UnitOfMeasureGroupings[i];
+        //            worksheet_UoMGroup.Cells[startRow_UoMGroup + i, numberCell_UoMGroup].Value = UnitOfMeasureGrouping.Code;
+        //            worksheet_UoMGroup.Cells[startRow_UoMGroup + i, numberCell_UoMGroup + 1].Value = UnitOfMeasureGrouping.Name;
+        //            worksheet_UoMGroup.Cells[startRow_UoMGroup + i, numberCell_UoMGroup + 2].Value = UnitOfMeasureGrouping.UnitOfMeasure.Name;
+        //        }
+        //        #endregion
 
-                #region sheet Supplier
-                var worksheet_Supplier = xlPackage.Workbook.Worksheets["Supplier"];
-                xlPackage.Workbook.CalcMode = ExcelCalcMode.Manual;
-                int startRow_Supplier = 2;
-                int numberCell_Supplier = 1;
-                for (var i = 0; i < Suppliers.Count; i++)
-                {
-                    Supplier Supplier = Suppliers[i];
-                    worksheet_Supplier.Cells[startRow_Supplier + i, numberCell_Supplier].Value = Supplier.Code;
-                    worksheet_Supplier.Cells[startRow_Supplier + i, numberCell_Supplier + 1].Value = Supplier.Name;
-                }
-                #endregion
+        //        #region sheet Supplier
+        //        var worksheet_Supplier = xlPackage.Workbook.Worksheets["Supplier"];
+        //        xlPackage.Workbook.CalcMode = ExcelCalcMode.Manual;
+        //        int startRow_Supplier = 2;
+        //        int numberCell_Supplier = 1;
+        //        for (var i = 0; i < Suppliers.Count; i++)
+        //        {
+        //            Supplier Supplier = Suppliers[i];
+        //            worksheet_Supplier.Cells[startRow_Supplier + i, numberCell_Supplier].Value = Supplier.Code;
+        //            worksheet_Supplier.Cells[startRow_Supplier + i, numberCell_Supplier + 1].Value = Supplier.Name;
+        //        }
+        //        #endregion
 
-                #region sheet Brand
-                var worksheet_Brand = xlPackage.Workbook.Worksheets["Brand"];
-                xlPackage.Workbook.CalcMode = ExcelCalcMode.Manual;
-                int startRow_Brand = 2;
-                int numberCell_Brand = 1;
-                for (var i = 0; i < Brands.Count; i++)
-                {
-                    Brand Brand = Brands[i];
-                    worksheet_Brand.Cells[startRow_Brand + i, numberCell_Brand].Value = Brand.Code;
-                    worksheet_Brand.Cells[startRow_Brand + i, numberCell_Brand + 1].Value = Brand.Name;
-                }
-                #endregion
+        //        #region sheet Brand
+        //        var worksheet_Brand = xlPackage.Workbook.Worksheets["Brand"];
+        //        xlPackage.Workbook.CalcMode = ExcelCalcMode.Manual;
+        //        int startRow_Brand = 2;
+        //        int numberCell_Brand = 1;
+        //        for (var i = 0; i < Brands.Count; i++)
+        //        {
+        //            Brand Brand = Brands[i];
+        //            worksheet_Brand.Cells[startRow_Brand + i, numberCell_Brand].Value = Brand.Code;
+        //            worksheet_Brand.Cells[startRow_Brand + i, numberCell_Brand + 1].Value = Brand.Name;
+        //        }
+        //        #endregion
 
-                #region sheet TaxType ( VAT )
-                var worksheet_TaxType = xlPackage.Workbook.Worksheets["VAT"];
-                xlPackage.Workbook.CalcMode = ExcelCalcMode.Manual;
-                int startRow_TaxType = 2;
-                int numberCell_TaxType = 1;
-                for (var i = 0; i < TaxTypes.Count; i++)
-                {
-                    TaxType TaxType = TaxTypes[i];
-                    worksheet_TaxType.Cells[startRow_TaxType + i, numberCell_TaxType].Value = TaxType.Code;
-                    worksheet_TaxType.Cells[startRow_TaxType + i, numberCell_TaxType + 1].Value = TaxType.Name;
-                }
-                #endregion
+        //        #region sheet TaxType ( VAT )
+        //        var worksheet_TaxType = xlPackage.Workbook.Worksheets["VAT"];
+        //        xlPackage.Workbook.CalcMode = ExcelCalcMode.Manual;
+        //        int startRow_TaxType = 2;
+        //        int numberCell_TaxType = 1;
+        //        for (var i = 0; i < TaxTypes.Count; i++)
+        //        {
+        //            TaxType TaxType = TaxTypes[i];
+        //            worksheet_TaxType.Cells[startRow_TaxType + i, numberCell_TaxType].Value = TaxType.Code;
+        //            worksheet_TaxType.Cells[startRow_TaxType + i, numberCell_TaxType + 1].Value = TaxType.Name;
+        //        }
+        //        #endregion
 
-                xlPackage.SaveAs(MemoryStream);
-            }
+        //        xlPackage.SaveAs(MemoryStream);
+        //    }
 
-            return File(MemoryStream.ToArray(), "application/octet-stream", "Template_Product.xlsx");
-        }
+        //    return File(MemoryStream.ToArray(), "application/octet-stream", "Template_Product.xlsx");
+        //}
 
-        [Route(ProductRoute.BulkDelete), HttpPost]
-        public async Task<ActionResult<bool>> BulkDelete([FromBody] List<long> Ids)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
+        //[Route(ProductRoute.BulkDelete), HttpPost]
+        //public async Task<ActionResult<bool>> BulkDelete([FromBody] List<long> Ids)
+        //{
+        //    if (!ModelState.IsValid)
+        //        throw new BindException(ModelState);
 
-            ProductFilter ProductFilter = new ProductFilter();
-            ProductFilter.Id = new IdFilter { In = Ids };
-            ProductFilter.Selects = ProductSelect.Id;
-            ProductFilter.Skip = 0;
-            ProductFilter.Take = int.MaxValue;
+        //    ProductFilter ProductFilter = new ProductFilter();
+        //    ProductFilter.Id = new IdFilter { In = Ids };
+        //    ProductFilter.Selects = ProductSelect.Id;
+        //    ProductFilter.Skip = 0;
+        //    ProductFilter.Take = int.MaxValue;
 
-            List<Product> Products = await ProductService.List(ProductFilter);
-            Products = await ProductService.BulkDelete(Products);
-            if (Products.Any(x => !x.IsValidated))
-                return BadRequest(Products.Where(x => !x.IsValidated));
-            return true;
-        }
+        //    List<Product> Products = await ProductService.List(ProductFilter);
+        //    Products = await ProductService.BulkDelete(Products);
+        //    if (Products.Any(x => !x.IsValidated))
+        //        return BadRequest(Products.Where(x => !x.IsValidated));
+        //    return true;
+        //}
 
-        [Route(ProductRoute.SaveImage), HttpPost]
-        public async Task<ActionResult<Product_ImageDTO>> SaveImage(IFormFile file)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
-            MemoryStream memoryStream = new MemoryStream();
-            file.CopyTo(memoryStream);
-            Image Image = new Image
-            {
-                Name = file.FileName,
-                Content = memoryStream.ToArray(),
-            };
-            Image = await ProductService.SaveImage(Image);
-            if (Image == null)
-                return BadRequest();
-            Product_ImageDTO product_ImageDTO = new Product_ImageDTO
-            {
-                Id = Image.Id,
-                Name = Image.Name,
-                Url = Image.Url,
-                ThumbnailUrl = Image.ThumbnailUrl,
-            };
-            return Ok(product_ImageDTO);
-        }
+        //[Route(ProductRoute.SaveImage), HttpPost]
+        //public async Task<ActionResult<Product_ImageDTO>> SaveImage(IFormFile file)
+        //{
+        //    if (!ModelState.IsValid)
+        //        throw new BindException(ModelState);
+        //    MemoryStream memoryStream = new MemoryStream();
+        //    file.CopyTo(memoryStream);
+        //    Image Image = new Image
+        //    {
+        //        Name = file.FileName,
+        //        Content = memoryStream.ToArray(),
+        //    };
+        //    Image = await ProductService.SaveImage(Image);
+        //    if (Image == null)
+        //        return BadRequest();
+        //    Product_ImageDTO product_ImageDTO = new Product_ImageDTO
+        //    {
+        //        Id = Image.Id,
+        //        Name = Image.Name,
+        //        Url = Image.Url,
+        //        ThumbnailUrl = Image.ThumbnailUrl,
+        //    };
+        //    return Ok(product_ImageDTO);
+        //}
 
-        [Route(ProductRoute.SaveItemImage), HttpPost]
-        public async Task<ActionResult<Product_ImageDTO>> SaveItemImage(IFormFile file)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
-            MemoryStream memoryStream = new MemoryStream();
-            file.CopyTo(memoryStream);
-            Image Image = new Image
-            {
-                Name = file.FileName,
-                Content = memoryStream.ToArray()
-            };
-            Image = await ItemService.SaveImage(Image);
-            if (Image == null)
-                return BadRequest();
-            Product_ImageDTO product_ImageDTO = new Product_ImageDTO
-            {
-                Id = Image.Id,
-                Name = Image.Name,
-                Url = Image.Url,
-                ThumbnailUrl = Image.ThumbnailUrl,
-            };
-            return Ok(product_ImageDTO);
-        }
+        //[Route(ProductRoute.SaveItemImage), HttpPost]
+        //public async Task<ActionResult<Product_ImageDTO>> SaveItemImage(IFormFile file)
+        //{
+        //    if (!ModelState.IsValid)
+        //        throw new BindException(ModelState);
+        //    MemoryStream memoryStream = new MemoryStream();
+        //    file.CopyTo(memoryStream);
+        //    Image Image = new Image
+        //    {
+        //        Name = file.FileName,
+        //        Content = memoryStream.ToArray()
+        //    };
+        //    Image = await ItemService.SaveImage(Image);
+        //    if (Image == null)
+        //        return BadRequest();
+        //    Product_ImageDTO product_ImageDTO = new Product_ImageDTO
+        //    {
+        //        Id = Image.Id,
+        //        Name = Image.Name,
+        //        Url = Image.Url,
+        //        ThumbnailUrl = Image.ThumbnailUrl,
+        //    };
+        //    return Ok(product_ImageDTO);
+        //}
 
         private async Task<bool> HasPermission(long Id)
         {

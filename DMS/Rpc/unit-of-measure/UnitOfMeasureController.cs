@@ -66,162 +66,162 @@ namespace DMS.Rpc.unit_of_measure
             return new UnitOfMeasure_UnitOfMeasureDTO(UnitOfMeasure);
         }
 
-        [Route(UnitOfMeasureRoute.Create), HttpPost]
-        public async Task<ActionResult<UnitOfMeasure_UnitOfMeasureDTO>> Create([FromBody] UnitOfMeasure_UnitOfMeasureDTO UnitOfMeasure_UnitOfMeasureDTO)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
+        //[Route(UnitOfMeasureRoute.Create), HttpPost]
+        //public async Task<ActionResult<UnitOfMeasure_UnitOfMeasureDTO>> Create([FromBody] UnitOfMeasure_UnitOfMeasureDTO UnitOfMeasure_UnitOfMeasureDTO)
+        //{
+        //    if (!ModelState.IsValid)
+        //        throw new BindException(ModelState);
 
-            if (!await HasPermission(UnitOfMeasure_UnitOfMeasureDTO.Id))
-                return Forbid();
+        //    if (!await HasPermission(UnitOfMeasure_UnitOfMeasureDTO.Id))
+        //        return Forbid();
 
-            UnitOfMeasure UnitOfMeasure = ConvertDTOToEntity(UnitOfMeasure_UnitOfMeasureDTO);
-            UnitOfMeasure = await UnitOfMeasureService.Create(UnitOfMeasure);
-            UnitOfMeasure_UnitOfMeasureDTO = new UnitOfMeasure_UnitOfMeasureDTO(UnitOfMeasure);
-            if (UnitOfMeasure.IsValidated)
-                return UnitOfMeasure_UnitOfMeasureDTO;
-            else
-                return BadRequest(UnitOfMeasure_UnitOfMeasureDTO);
-        }
+        //    UnitOfMeasure UnitOfMeasure = ConvertDTOToEntity(UnitOfMeasure_UnitOfMeasureDTO);
+        //    UnitOfMeasure = await UnitOfMeasureService.Create(UnitOfMeasure);
+        //    UnitOfMeasure_UnitOfMeasureDTO = new UnitOfMeasure_UnitOfMeasureDTO(UnitOfMeasure);
+        //    if (UnitOfMeasure.IsValidated)
+        //        return UnitOfMeasure_UnitOfMeasureDTO;
+        //    else
+        //        return BadRequest(UnitOfMeasure_UnitOfMeasureDTO);
+        //}
 
-        [Route(UnitOfMeasureRoute.Update), HttpPost]
-        public async Task<ActionResult<UnitOfMeasure_UnitOfMeasureDTO>> Update([FromBody] UnitOfMeasure_UnitOfMeasureDTO UnitOfMeasure_UnitOfMeasureDTO)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
+        //[Route(UnitOfMeasureRoute.Update), HttpPost]
+        //public async Task<ActionResult<UnitOfMeasure_UnitOfMeasureDTO>> Update([FromBody] UnitOfMeasure_UnitOfMeasureDTO UnitOfMeasure_UnitOfMeasureDTO)
+        //{
+        //    if (!ModelState.IsValid)
+        //        throw new BindException(ModelState);
 
-            if (!await HasPermission(UnitOfMeasure_UnitOfMeasureDTO.Id))
-                return Forbid();
+        //    if (!await HasPermission(UnitOfMeasure_UnitOfMeasureDTO.Id))
+        //        return Forbid();
 
-            UnitOfMeasure UnitOfMeasure = ConvertDTOToEntity(UnitOfMeasure_UnitOfMeasureDTO);
-            UnitOfMeasure = await UnitOfMeasureService.Update(UnitOfMeasure);
-            UnitOfMeasure_UnitOfMeasureDTO = new UnitOfMeasure_UnitOfMeasureDTO(UnitOfMeasure);
-            if (UnitOfMeasure.IsValidated)
-                return UnitOfMeasure_UnitOfMeasureDTO;
-            else
-                return BadRequest(UnitOfMeasure_UnitOfMeasureDTO);
-        }
+        //    UnitOfMeasure UnitOfMeasure = ConvertDTOToEntity(UnitOfMeasure_UnitOfMeasureDTO);
+        //    UnitOfMeasure = await UnitOfMeasureService.Update(UnitOfMeasure);
+        //    UnitOfMeasure_UnitOfMeasureDTO = new UnitOfMeasure_UnitOfMeasureDTO(UnitOfMeasure);
+        //    if (UnitOfMeasure.IsValidated)
+        //        return UnitOfMeasure_UnitOfMeasureDTO;
+        //    else
+        //        return BadRequest(UnitOfMeasure_UnitOfMeasureDTO);
+        //}
 
-        [Route(UnitOfMeasureRoute.Delete), HttpPost]
-        public async Task<ActionResult<UnitOfMeasure_UnitOfMeasureDTO>> Delete([FromBody] UnitOfMeasure_UnitOfMeasureDTO UnitOfMeasure_UnitOfMeasureDTO)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
+        //[Route(UnitOfMeasureRoute.Delete), HttpPost]
+        //public async Task<ActionResult<UnitOfMeasure_UnitOfMeasureDTO>> Delete([FromBody] UnitOfMeasure_UnitOfMeasureDTO UnitOfMeasure_UnitOfMeasureDTO)
+        //{
+        //    if (!ModelState.IsValid)
+        //        throw new BindException(ModelState);
 
-            if (!await HasPermission(UnitOfMeasure_UnitOfMeasureDTO.Id))
-                return Forbid();
+        //    if (!await HasPermission(UnitOfMeasure_UnitOfMeasureDTO.Id))
+        //        return Forbid();
 
-            UnitOfMeasure UnitOfMeasure = ConvertDTOToEntity(UnitOfMeasure_UnitOfMeasureDTO);
-            UnitOfMeasure = await UnitOfMeasureService.Delete(UnitOfMeasure);
-            UnitOfMeasure_UnitOfMeasureDTO = new UnitOfMeasure_UnitOfMeasureDTO(UnitOfMeasure);
-            if (UnitOfMeasure.IsValidated)
-                return UnitOfMeasure_UnitOfMeasureDTO;
-            else
-                return BadRequest(UnitOfMeasure_UnitOfMeasureDTO);
-        }
+        //    UnitOfMeasure UnitOfMeasure = ConvertDTOToEntity(UnitOfMeasure_UnitOfMeasureDTO);
+        //    UnitOfMeasure = await UnitOfMeasureService.Delete(UnitOfMeasure);
+        //    UnitOfMeasure_UnitOfMeasureDTO = new UnitOfMeasure_UnitOfMeasureDTO(UnitOfMeasure);
+        //    if (UnitOfMeasure.IsValidated)
+        //        return UnitOfMeasure_UnitOfMeasureDTO;
+        //    else
+        //        return BadRequest(UnitOfMeasure_UnitOfMeasureDTO);
+        //}
 
-        [Route(UnitOfMeasureRoute.Import), HttpPost]
-        public async Task<ActionResult<List<UnitOfMeasure_UnitOfMeasureDTO>>> Import(IFormFile file)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
+        //[Route(UnitOfMeasureRoute.Import), HttpPost]
+        //public async Task<ActionResult<List<UnitOfMeasure_UnitOfMeasureDTO>>> Import(IFormFile file)
+        //{
+        //    if (!ModelState.IsValid)
+        //        throw new BindException(ModelState);
 
-            DataFile DataFile = new DataFile
-            {
-                Name = file.FileName,
-                Content = file.OpenReadStream(),
-            };
+        //    DataFile DataFile = new DataFile
+        //    {
+        //        Name = file.FileName,
+        //        Content = file.OpenReadStream(),
+        //    };
 
-            List<UnitOfMeasure> UnitOfMeasures = new List<UnitOfMeasure>();
-            using (ExcelPackage excelPackage = new ExcelPackage(DataFile.Content))
-            {
-                ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets.FirstOrDefault();
-                if (worksheet == null)
-                    return null;
-                int StartColumn = 1;
-                int StartRow = 1;
+        //    List<UnitOfMeasure> UnitOfMeasures = new List<UnitOfMeasure>();
+        //    using (ExcelPackage excelPackage = new ExcelPackage(DataFile.Content))
+        //    {
+        //        ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets.FirstOrDefault();
+        //        if (worksheet == null)
+        //            return null;
+        //        int StartColumn = 1;
+        //        int StartRow = 1;
 
-                int CodeColumn = 0 + StartColumn;
-                int NameColumn = 1 + StartColumn;
+        //        int CodeColumn = 0 + StartColumn;
+        //        int NameColumn = 1 + StartColumn;
 
 
-                for (int i = StartRow; i <= worksheet.Dimension.End.Row; i++)
-                {
-                    // Lấy thông tin từng dòng
-                    string CodeValue = worksheet.Cells[i + StartRow, CodeColumn].Value?.ToString();
-                    string NameValue = worksheet.Cells[i + StartRow, NameColumn].Value?.ToString();
-                    if (string.IsNullOrEmpty(CodeValue))
-                        continue;
+        //        for (int i = StartRow; i <= worksheet.Dimension.End.Row; i++)
+        //        {
+        //            // Lấy thông tin từng dòng
+        //            string CodeValue = worksheet.Cells[i + StartRow, CodeColumn].Value?.ToString();
+        //            string NameValue = worksheet.Cells[i + StartRow, NameColumn].Value?.ToString();
+        //            if (string.IsNullOrEmpty(CodeValue))
+        //                continue;
 
-                    UnitOfMeasure UnitOfMeasure = new UnitOfMeasure();
-                    UnitOfMeasure.Code = CodeValue;
-                    UnitOfMeasure.Name = NameValue;
+        //            UnitOfMeasure UnitOfMeasure = new UnitOfMeasure();
+        //            UnitOfMeasure.Code = CodeValue;
+        //            UnitOfMeasure.Name = NameValue;
 
-                    UnitOfMeasures.Add(UnitOfMeasure);
-                }
-                UnitOfMeasures = await UnitOfMeasureService.BulkMerge(UnitOfMeasures);
-                List<UnitOfMeasure_UnitOfMeasureDTO> UnitOfMeasure_UnitOfMeasureDTOs = UnitOfMeasures
-                    .Select(c => new UnitOfMeasure_UnitOfMeasureDTO(c)).ToList();
-                return UnitOfMeasure_UnitOfMeasureDTOs;
-            }
-        }
+        //            UnitOfMeasures.Add(UnitOfMeasure);
+        //        }
+        //        UnitOfMeasures = await UnitOfMeasureService.BulkMerge(UnitOfMeasures);
+        //        List<UnitOfMeasure_UnitOfMeasureDTO> UnitOfMeasure_UnitOfMeasureDTOs = UnitOfMeasures
+        //            .Select(c => new UnitOfMeasure_UnitOfMeasureDTO(c)).ToList();
+        //        return UnitOfMeasure_UnitOfMeasureDTOs;
+        //    }
+        //}
 
-        [Route(UnitOfMeasureRoute.Export), HttpPost]
-        public async Task<ActionResult> Export([FromBody] UnitOfMeasure_UnitOfMeasureFilterDTO UnitOfMeasure_UnitOfMeasureFilterDTO)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
+        //[Route(UnitOfMeasureRoute.Export), HttpPost]
+        //public async Task<ActionResult> Export([FromBody] UnitOfMeasure_UnitOfMeasureFilterDTO UnitOfMeasure_UnitOfMeasureFilterDTO)
+        //{
+        //    if (!ModelState.IsValid)
+        //        throw new BindException(ModelState);
 
-            UnitOfMeasureFilter UnitOfMeasureFilter = ConvertFilterDTOToFilterEntity(UnitOfMeasure_UnitOfMeasureFilterDTO);
-            UnitOfMeasureFilter.Skip = 0;
-            UnitOfMeasureFilter.Take = int.MaxValue;
+        //    UnitOfMeasureFilter UnitOfMeasureFilter = ConvertFilterDTOToFilterEntity(UnitOfMeasure_UnitOfMeasureFilterDTO);
+        //    UnitOfMeasureFilter.Skip = 0;
+        //    UnitOfMeasureFilter.Take = int.MaxValue;
 
-            List<UnitOfMeasure> UnitOfMeasures = await UnitOfMeasureService.List(UnitOfMeasureFilter);
-            MemoryStream memoryStream = new MemoryStream();
-            using (ExcelPackage excel = new ExcelPackage(memoryStream))
-            {
-                var UnitOfMeasureHeaders = new List<string[]>()
-                {
-                    new string[] {"Mã đơn vị tính","Tên đơn vị tính","Mô tả"}
-                };
-                List<object[]> data = new List<object[]>();
-                for (int i = 0; i < UnitOfMeasures.Count; i++)
-                {
-                    var UnitOfMeasure = UnitOfMeasures[i];
+        //    List<UnitOfMeasure> UnitOfMeasures = await UnitOfMeasureService.List(UnitOfMeasureFilter);
+        //    MemoryStream memoryStream = new MemoryStream();
+        //    using (ExcelPackage excel = new ExcelPackage(memoryStream))
+        //    {
+        //        var UnitOfMeasureHeaders = new List<string[]>()
+        //        {
+        //            new string[] {"Mã đơn vị tính","Tên đơn vị tính","Mô tả"}
+        //        };
+        //        List<object[]> data = new List<object[]>();
+        //        for (int i = 0; i < UnitOfMeasures.Count; i++)
+        //        {
+        //            var UnitOfMeasure = UnitOfMeasures[i];
 
-                    data.Add(new Object[]
-                    {
-                         UnitOfMeasure.Code,
-                         UnitOfMeasure.Name,
-                         UnitOfMeasure.Description
-                    });
-                }
-                excel.GenerateWorksheet("UnitOfMeasure", UnitOfMeasureHeaders, data);
-                excel.Save();
-            }
+        //            data.Add(new Object[]
+        //            {
+        //                 UnitOfMeasure.Code,
+        //                 UnitOfMeasure.Name,
+        //                 UnitOfMeasure.Description
+        //            });
+        //        }
+        //        excel.GenerateWorksheet("UnitOfMeasure", UnitOfMeasureHeaders, data);
+        //        excel.Save();
+        //    }
 
-            return File(memoryStream.ToArray(), "application/octet-stream", "UnitOfMeasure.xlsx");
+        //    return File(memoryStream.ToArray(), "application/octet-stream", "UnitOfMeasure.xlsx");
 
-        }
+        //}
 
-        [Route(UnitOfMeasureRoute.BulkDelete), HttpPost]
-        public async Task<ActionResult<bool>> BulkDelete([FromBody] List<long> Ids)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
+        //[Route(UnitOfMeasureRoute.BulkDelete), HttpPost]
+        //public async Task<ActionResult<bool>> BulkDelete([FromBody] List<long> Ids)
+        //{
+        //    if (!ModelState.IsValid)
+        //        throw new BindException(ModelState);
 
-            UnitOfMeasureFilter UnitOfMeasureFilter = new UnitOfMeasureFilter();
-            UnitOfMeasureFilter.Id = new IdFilter { In = Ids };
-            UnitOfMeasureFilter.Selects = UnitOfMeasureSelect.Id;
-            UnitOfMeasureFilter.Skip = 0;
-            UnitOfMeasureFilter.Take = int.MaxValue;
+        //    UnitOfMeasureFilter UnitOfMeasureFilter = new UnitOfMeasureFilter();
+        //    UnitOfMeasureFilter.Id = new IdFilter { In = Ids };
+        //    UnitOfMeasureFilter.Selects = UnitOfMeasureSelect.Id;
+        //    UnitOfMeasureFilter.Skip = 0;
+        //    UnitOfMeasureFilter.Take = int.MaxValue;
 
-            List<UnitOfMeasure> UnitOfMeasures = await UnitOfMeasureService.List(UnitOfMeasureFilter);
-            UnitOfMeasures = await UnitOfMeasureService.BulkDelete(UnitOfMeasures);
-            if (UnitOfMeasures.Any(x => !x.IsValidated))
-                return BadRequest(UnitOfMeasures.Where(x => !x.IsValidated));
-            return true;
-        }
+        //    List<UnitOfMeasure> UnitOfMeasures = await UnitOfMeasureService.List(UnitOfMeasureFilter);
+        //    UnitOfMeasures = await UnitOfMeasureService.BulkDelete(UnitOfMeasures);
+        //    if (UnitOfMeasures.Any(x => !x.IsValidated))
+        //        return BadRequest(UnitOfMeasures.Where(x => !x.IsValidated));
+        //    return true;
+        //}
 
         private async Task<bool> HasPermission(long Id)
         {

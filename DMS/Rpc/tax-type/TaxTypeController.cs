@@ -64,110 +64,110 @@ namespace DMS.Rpc.tax_type
             return new TaxType_TaxTypeDTO(TaxType);
         }
 
-        [Route(TaxTypeRoute.Create), HttpPost]
-        public async Task<ActionResult<TaxType_TaxTypeDTO>> Create([FromBody] TaxType_TaxTypeDTO TaxType_TaxTypeDTO)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
+        //[Route(TaxTypeRoute.Create), HttpPost]
+        //public async Task<ActionResult<TaxType_TaxTypeDTO>> Create([FromBody] TaxType_TaxTypeDTO TaxType_TaxTypeDTO)
+        //{
+        //    if (!ModelState.IsValid)
+        //        throw new BindException(ModelState);
 
-            if (!await HasPermission(TaxType_TaxTypeDTO.Id))
-                return Forbid();
+        //    if (!await HasPermission(TaxType_TaxTypeDTO.Id))
+        //        return Forbid();
 
-            TaxType TaxType = ConvertDTOToEntity(TaxType_TaxTypeDTO);
-            TaxType = await TaxTypeService.Create(TaxType);
-            TaxType_TaxTypeDTO = new TaxType_TaxTypeDTO(TaxType);
-            if (TaxType.IsValidated)
-                return TaxType_TaxTypeDTO;
-            else
-                return BadRequest(TaxType_TaxTypeDTO);
-        }
+        //    TaxType TaxType = ConvertDTOToEntity(TaxType_TaxTypeDTO);
+        //    TaxType = await TaxTypeService.Create(TaxType);
+        //    TaxType_TaxTypeDTO = new TaxType_TaxTypeDTO(TaxType);
+        //    if (TaxType.IsValidated)
+        //        return TaxType_TaxTypeDTO;
+        //    else
+        //        return BadRequest(TaxType_TaxTypeDTO);
+        //}
 
-        [Route(TaxTypeRoute.Update), HttpPost]
-        public async Task<ActionResult<TaxType_TaxTypeDTO>> Update([FromBody] TaxType_TaxTypeDTO TaxType_TaxTypeDTO)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
+        //[Route(TaxTypeRoute.Update), HttpPost]
+        //public async Task<ActionResult<TaxType_TaxTypeDTO>> Update([FromBody] TaxType_TaxTypeDTO TaxType_TaxTypeDTO)
+        //{
+        //    if (!ModelState.IsValid)
+        //        throw new BindException(ModelState);
 
-            if (!await HasPermission(TaxType_TaxTypeDTO.Id))
-                return Forbid();
+        //    if (!await HasPermission(TaxType_TaxTypeDTO.Id))
+        //        return Forbid();
 
-            TaxType TaxType = ConvertDTOToEntity(TaxType_TaxTypeDTO);
-            TaxType = await TaxTypeService.Update(TaxType);
-            TaxType_TaxTypeDTO = new TaxType_TaxTypeDTO(TaxType);
-            if (TaxType.IsValidated)
-                return TaxType_TaxTypeDTO;
-            else
-                return BadRequest(TaxType_TaxTypeDTO);
-        }
+        //    TaxType TaxType = ConvertDTOToEntity(TaxType_TaxTypeDTO);
+        //    TaxType = await TaxTypeService.Update(TaxType);
+        //    TaxType_TaxTypeDTO = new TaxType_TaxTypeDTO(TaxType);
+        //    if (TaxType.IsValidated)
+        //        return TaxType_TaxTypeDTO;
+        //    else
+        //        return BadRequest(TaxType_TaxTypeDTO);
+        //}
 
-        [Route(TaxTypeRoute.Delete), HttpPost]
-        public async Task<ActionResult<TaxType_TaxTypeDTO>> Delete([FromBody] TaxType_TaxTypeDTO TaxType_TaxTypeDTO)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
+        //[Route(TaxTypeRoute.Delete), HttpPost]
+        //public async Task<ActionResult<TaxType_TaxTypeDTO>> Delete([FromBody] TaxType_TaxTypeDTO TaxType_TaxTypeDTO)
+        //{
+        //    if (!ModelState.IsValid)
+        //        throw new BindException(ModelState);
 
-            if (!await HasPermission(TaxType_TaxTypeDTO.Id))
-                return Forbid();
+        //    if (!await HasPermission(TaxType_TaxTypeDTO.Id))
+        //        return Forbid();
 
-            TaxType TaxType = ConvertDTOToEntity(TaxType_TaxTypeDTO);
-            TaxType = await TaxTypeService.Delete(TaxType);
-            TaxType_TaxTypeDTO = new TaxType_TaxTypeDTO(TaxType);
-            if (TaxType.IsValidated)
-                return TaxType_TaxTypeDTO;
-            else
-                return BadRequest(TaxType_TaxTypeDTO);
-        }
+        //    TaxType TaxType = ConvertDTOToEntity(TaxType_TaxTypeDTO);
+        //    TaxType = await TaxTypeService.Delete(TaxType);
+        //    TaxType_TaxTypeDTO = new TaxType_TaxTypeDTO(TaxType);
+        //    if (TaxType.IsValidated)
+        //        return TaxType_TaxTypeDTO;
+        //    else
+        //        return BadRequest(TaxType_TaxTypeDTO);
+        //}
 
-        [Route(TaxTypeRoute.Import), HttpPost]
-        public async Task<ActionResult<List<TaxType_TaxTypeDTO>>> Import(IFormFile file)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
+        //[Route(TaxTypeRoute.Import), HttpPost]
+        //public async Task<ActionResult<List<TaxType_TaxTypeDTO>>> Import(IFormFile file)
+        //{
+        //    if (!ModelState.IsValid)
+        //        throw new BindException(ModelState);
 
-            DataFile DataFile = new DataFile
-            {
-                Name = file.FileName,
-                Content = file.OpenReadStream(),
-            };
+        //    DataFile DataFile = new DataFile
+        //    {
+        //        Name = file.FileName,
+        //        Content = file.OpenReadStream(),
+        //    };
 
-            List<TaxType> TaxTypes = await TaxTypeService.Import(DataFile);
-            List<TaxType_TaxTypeDTO> TaxType_TaxTypeDTOs = TaxTypes
-                .Select(c => new TaxType_TaxTypeDTO(c)).ToList();
-            return TaxType_TaxTypeDTOs;
-        }
+        //    List<TaxType> TaxTypes = await TaxTypeService.Import(DataFile);
+        //    List<TaxType_TaxTypeDTO> TaxType_TaxTypeDTOs = TaxTypes
+        //        .Select(c => new TaxType_TaxTypeDTO(c)).ToList();
+        //    return TaxType_TaxTypeDTOs;
+        //}
 
-        [Route(TaxTypeRoute.Export), HttpPost]
-        public async Task<ActionResult> Export([FromBody] TaxType_TaxTypeFilterDTO TaxType_TaxTypeFilterDTO)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
+        //[Route(TaxTypeRoute.Export), HttpPost]
+        //public async Task<ActionResult> Export([FromBody] TaxType_TaxTypeFilterDTO TaxType_TaxTypeFilterDTO)
+        //{
+        //    if (!ModelState.IsValid)
+        //        throw new BindException(ModelState);
 
-            TaxTypeFilter TaxTypeFilter = ConvertFilterDTOToFilterEntity(TaxType_TaxTypeFilterDTO);
-            DataFile DataFile = await TaxTypeService.Export(TaxTypeFilter);
-            return new FileStreamResult(DataFile.Content, StaticParams.ExcelFileType)
-            {
-                FileDownloadName = DataFile.Name ?? "File export.xlsx",
-            };
-        }
+        //    TaxTypeFilter TaxTypeFilter = ConvertFilterDTOToFilterEntity(TaxType_TaxTypeFilterDTO);
+        //    DataFile DataFile = await TaxTypeService.Export(TaxTypeFilter);
+        //    return new FileStreamResult(DataFile.Content, StaticParams.ExcelFileType)
+        //    {
+        //        FileDownloadName = DataFile.Name ?? "File export.xlsx",
+        //    };
+        //}
 
-        [Route(TaxTypeRoute.BulkDelete), HttpPost]
-        public async Task<ActionResult<bool>> BulkDelete([FromBody] List<long> Ids)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
+        //[Route(TaxTypeRoute.BulkDelete), HttpPost]
+        //public async Task<ActionResult<bool>> BulkDelete([FromBody] List<long> Ids)
+        //{
+        //    if (!ModelState.IsValid)
+        //        throw new BindException(ModelState);
 
-            TaxTypeFilter TaxTypeFilter = new TaxTypeFilter();
-            TaxTypeFilter.Id = new IdFilter { In = Ids };
-            TaxTypeFilter.Selects = TaxTypeSelect.Id;
-            TaxTypeFilter.Skip = 0;
-            TaxTypeFilter.Take = int.MaxValue;
+        //    TaxTypeFilter TaxTypeFilter = new TaxTypeFilter();
+        //    TaxTypeFilter.Id = new IdFilter { In = Ids };
+        //    TaxTypeFilter.Selects = TaxTypeSelect.Id;
+        //    TaxTypeFilter.Skip = 0;
+        //    TaxTypeFilter.Take = int.MaxValue;
 
-            List<TaxType> TaxTypes = await TaxTypeService.List(TaxTypeFilter);
-            TaxTypes = await TaxTypeService.BulkDelete(TaxTypes);
-            if (TaxTypes.Any(x => !x.IsValidated))
-                return BadRequest(TaxTypes.Where(x => !x.IsValidated));
-            return true;
-        }
+        //    List<TaxType> TaxTypes = await TaxTypeService.List(TaxTypeFilter);
+        //    TaxTypes = await TaxTypeService.BulkDelete(TaxTypes);
+        //    if (TaxTypes.Any(x => !x.IsValidated))
+        //        return BadRequest(TaxTypes.Where(x => !x.IsValidated));
+        //    return true;
+        //}
 
         private async Task<bool> HasPermission(long Id)
         {

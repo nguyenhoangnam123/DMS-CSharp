@@ -67,78 +67,78 @@ namespace DMS.Rpc.unit_of_measure_grouping
             return new UnitOfMeasureGrouping_UnitOfMeasureGroupingDTO(UnitOfMeasureGrouping);
         }
 
-        [Route(UnitOfMeasureGroupingRoute.Create), HttpPost]
-        public async Task<ActionResult<UnitOfMeasureGrouping_UnitOfMeasureGroupingDTO>> Create([FromBody] UnitOfMeasureGrouping_UnitOfMeasureGroupingDTO UnitOfMeasureGrouping_UnitOfMeasureGroupingDTO)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
+        //[Route(UnitOfMeasureGroupingRoute.Create), HttpPost]
+        //public async Task<ActionResult<UnitOfMeasureGrouping_UnitOfMeasureGroupingDTO>> Create([FromBody] UnitOfMeasureGrouping_UnitOfMeasureGroupingDTO UnitOfMeasureGrouping_UnitOfMeasureGroupingDTO)
+        //{
+        //    if (!ModelState.IsValid)
+        //        throw new BindException(ModelState);
 
-            if (!await HasPermission(UnitOfMeasureGrouping_UnitOfMeasureGroupingDTO.Id))
-                return Forbid();
+        //    if (!await HasPermission(UnitOfMeasureGrouping_UnitOfMeasureGroupingDTO.Id))
+        //        return Forbid();
 
-            UnitOfMeasureGrouping UnitOfMeasureGrouping = ConvertDTOToEntity(UnitOfMeasureGrouping_UnitOfMeasureGroupingDTO);
-            UnitOfMeasureGrouping = await UnitOfMeasureGroupingService.Create(UnitOfMeasureGrouping);
-            UnitOfMeasureGrouping_UnitOfMeasureGroupingDTO = new UnitOfMeasureGrouping_UnitOfMeasureGroupingDTO(UnitOfMeasureGrouping);
-            if (UnitOfMeasureGrouping.IsValidated)
-                return UnitOfMeasureGrouping_UnitOfMeasureGroupingDTO;
-            else
-                return BadRequest(UnitOfMeasureGrouping_UnitOfMeasureGroupingDTO);
-        }
+        //    UnitOfMeasureGrouping UnitOfMeasureGrouping = ConvertDTOToEntity(UnitOfMeasureGrouping_UnitOfMeasureGroupingDTO);
+        //    UnitOfMeasureGrouping = await UnitOfMeasureGroupingService.Create(UnitOfMeasureGrouping);
+        //    UnitOfMeasureGrouping_UnitOfMeasureGroupingDTO = new UnitOfMeasureGrouping_UnitOfMeasureGroupingDTO(UnitOfMeasureGrouping);
+        //    if (UnitOfMeasureGrouping.IsValidated)
+        //        return UnitOfMeasureGrouping_UnitOfMeasureGroupingDTO;
+        //    else
+        //        return BadRequest(UnitOfMeasureGrouping_UnitOfMeasureGroupingDTO);
+        //}
 
-        [Route(UnitOfMeasureGroupingRoute.Update), HttpPost]
-        public async Task<ActionResult<UnitOfMeasureGrouping_UnitOfMeasureGroupingDTO>> Update([FromBody] UnitOfMeasureGrouping_UnitOfMeasureGroupingDTO UnitOfMeasureGrouping_UnitOfMeasureGroupingDTO)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
+        //[Route(UnitOfMeasureGroupingRoute.Update), HttpPost]
+        //public async Task<ActionResult<UnitOfMeasureGrouping_UnitOfMeasureGroupingDTO>> Update([FromBody] UnitOfMeasureGrouping_UnitOfMeasureGroupingDTO UnitOfMeasureGrouping_UnitOfMeasureGroupingDTO)
+        //{
+        //    if (!ModelState.IsValid)
+        //        throw new BindException(ModelState);
 
-            if (!await HasPermission(UnitOfMeasureGrouping_UnitOfMeasureGroupingDTO.Id))
-                return Forbid();
+        //    if (!await HasPermission(UnitOfMeasureGrouping_UnitOfMeasureGroupingDTO.Id))
+        //        return Forbid();
 
-            UnitOfMeasureGrouping UnitOfMeasureGrouping = ConvertDTOToEntity(UnitOfMeasureGrouping_UnitOfMeasureGroupingDTO);
-            UnitOfMeasureGrouping = await UnitOfMeasureGroupingService.Update(UnitOfMeasureGrouping);
-            UnitOfMeasureGrouping_UnitOfMeasureGroupingDTO = new UnitOfMeasureGrouping_UnitOfMeasureGroupingDTO(UnitOfMeasureGrouping);
-            if (UnitOfMeasureGrouping.IsValidated)
-                return UnitOfMeasureGrouping_UnitOfMeasureGroupingDTO;
-            else
-                return BadRequest(UnitOfMeasureGrouping_UnitOfMeasureGroupingDTO);
-        }
+        //    UnitOfMeasureGrouping UnitOfMeasureGrouping = ConvertDTOToEntity(UnitOfMeasureGrouping_UnitOfMeasureGroupingDTO);
+        //    UnitOfMeasureGrouping = await UnitOfMeasureGroupingService.Update(UnitOfMeasureGrouping);
+        //    UnitOfMeasureGrouping_UnitOfMeasureGroupingDTO = new UnitOfMeasureGrouping_UnitOfMeasureGroupingDTO(UnitOfMeasureGrouping);
+        //    if (UnitOfMeasureGrouping.IsValidated)
+        //        return UnitOfMeasureGrouping_UnitOfMeasureGroupingDTO;
+        //    else
+        //        return BadRequest(UnitOfMeasureGrouping_UnitOfMeasureGroupingDTO);
+        //}
 
-        [Route(UnitOfMeasureGroupingRoute.Delete), HttpPost]
-        public async Task<ActionResult<UnitOfMeasureGrouping_UnitOfMeasureGroupingDTO>> Delete([FromBody] UnitOfMeasureGrouping_UnitOfMeasureGroupingDTO UnitOfMeasureGrouping_UnitOfMeasureGroupingDTO)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
+        //[Route(UnitOfMeasureGroupingRoute.Delete), HttpPost]
+        //public async Task<ActionResult<UnitOfMeasureGrouping_UnitOfMeasureGroupingDTO>> Delete([FromBody] UnitOfMeasureGrouping_UnitOfMeasureGroupingDTO UnitOfMeasureGrouping_UnitOfMeasureGroupingDTO)
+        //{
+        //    if (!ModelState.IsValid)
+        //        throw new BindException(ModelState);
 
-            if (!await HasPermission(UnitOfMeasureGrouping_UnitOfMeasureGroupingDTO.Id))
-                return Forbid();
+        //    if (!await HasPermission(UnitOfMeasureGrouping_UnitOfMeasureGroupingDTO.Id))
+        //        return Forbid();
 
-            UnitOfMeasureGrouping UnitOfMeasureGrouping = ConvertDTOToEntity(UnitOfMeasureGrouping_UnitOfMeasureGroupingDTO);
-            UnitOfMeasureGrouping = await UnitOfMeasureGroupingService.Delete(UnitOfMeasureGrouping);
-            UnitOfMeasureGrouping_UnitOfMeasureGroupingDTO = new UnitOfMeasureGrouping_UnitOfMeasureGroupingDTO(UnitOfMeasureGrouping);
-            if (UnitOfMeasureGrouping.IsValidated)
-                return UnitOfMeasureGrouping_UnitOfMeasureGroupingDTO;
-            else
-                return BadRequest(UnitOfMeasureGrouping_UnitOfMeasureGroupingDTO);
-        }
+        //    UnitOfMeasureGrouping UnitOfMeasureGrouping = ConvertDTOToEntity(UnitOfMeasureGrouping_UnitOfMeasureGroupingDTO);
+        //    UnitOfMeasureGrouping = await UnitOfMeasureGroupingService.Delete(UnitOfMeasureGrouping);
+        //    UnitOfMeasureGrouping_UnitOfMeasureGroupingDTO = new UnitOfMeasureGrouping_UnitOfMeasureGroupingDTO(UnitOfMeasureGrouping);
+        //    if (UnitOfMeasureGrouping.IsValidated)
+        //        return UnitOfMeasureGrouping_UnitOfMeasureGroupingDTO;
+        //    else
+        //        return BadRequest(UnitOfMeasureGrouping_UnitOfMeasureGroupingDTO);
+        //}
 
-        [Route(UnitOfMeasureGroupingRoute.BulkDelete), HttpPost]
-        public async Task<ActionResult<bool>> BulkDelete([FromBody] List<long> Ids)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
+        //[Route(UnitOfMeasureGroupingRoute.BulkDelete), HttpPost]
+        //public async Task<ActionResult<bool>> BulkDelete([FromBody] List<long> Ids)
+        //{
+        //    if (!ModelState.IsValid)
+        //        throw new BindException(ModelState);
 
-            UnitOfMeasureGroupingFilter UnitOfMeasureGroupingFilter = new UnitOfMeasureGroupingFilter();
-            UnitOfMeasureGroupingFilter.Id = new IdFilter { In = Ids };
-            UnitOfMeasureGroupingFilter.Selects = UnitOfMeasureGroupingSelect.Id;
-            UnitOfMeasureGroupingFilter.Skip = 0;
-            UnitOfMeasureGroupingFilter.Take = int.MaxValue;
+        //    UnitOfMeasureGroupingFilter UnitOfMeasureGroupingFilter = new UnitOfMeasureGroupingFilter();
+        //    UnitOfMeasureGroupingFilter.Id = new IdFilter { In = Ids };
+        //    UnitOfMeasureGroupingFilter.Selects = UnitOfMeasureGroupingSelect.Id;
+        //    UnitOfMeasureGroupingFilter.Skip = 0;
+        //    UnitOfMeasureGroupingFilter.Take = int.MaxValue;
 
-            List<UnitOfMeasureGrouping> UnitOfMeasureGroupings = await UnitOfMeasureGroupingService.List(UnitOfMeasureGroupingFilter);
-            UnitOfMeasureGroupings = await UnitOfMeasureGroupingService.BulkDelete(UnitOfMeasureGroupings);
-            if (UnitOfMeasureGroupings.Any(x => !x.IsValidated))
-                return BadRequest(UnitOfMeasureGroupings.Where(x => !x.IsValidated));
-            return true;
-        }
+        //    List<UnitOfMeasureGrouping> UnitOfMeasureGroupings = await UnitOfMeasureGroupingService.List(UnitOfMeasureGroupingFilter);
+        //    UnitOfMeasureGroupings = await UnitOfMeasureGroupingService.BulkDelete(UnitOfMeasureGroupings);
+        //    if (UnitOfMeasureGroupings.Any(x => !x.IsValidated))
+        //        return BadRequest(UnitOfMeasureGroupings.Where(x => !x.IsValidated));
+        //    return true;
+        //}
 
         private async Task<bool> HasPermission(long Id)
         {

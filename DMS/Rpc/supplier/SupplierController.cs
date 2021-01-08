@@ -81,78 +81,78 @@ namespace DMS.Rpc.supplier
             return new Supplier_SupplierDTO(Supplier);
         }
 
-        [Route(SupplierRoute.Create), HttpPost]
-        public async Task<ActionResult<Supplier_SupplierDTO>> Create([FromBody] Supplier_SupplierDTO Supplier_SupplierDTO)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
+        //[Route(SupplierRoute.Create), HttpPost]
+        //public async Task<ActionResult<Supplier_SupplierDTO>> Create([FromBody] Supplier_SupplierDTO Supplier_SupplierDTO)
+        //{
+        //    if (!ModelState.IsValid)
+        //        throw new BindException(ModelState);
 
-            if (!await HasPermission(Supplier_SupplierDTO.Id))
-                return Forbid();
+        //    if (!await HasPermission(Supplier_SupplierDTO.Id))
+        //        return Forbid();
 
-            Supplier Supplier = ConvertDTOToEntity(Supplier_SupplierDTO);
-            Supplier = await SupplierService.Create(Supplier);
-            Supplier_SupplierDTO = new Supplier_SupplierDTO(Supplier);
-            if (Supplier.IsValidated)
-                return Supplier_SupplierDTO;
-            else
-                return BadRequest(Supplier_SupplierDTO);
-        }
+        //    Supplier Supplier = ConvertDTOToEntity(Supplier_SupplierDTO);
+        //    Supplier = await SupplierService.Create(Supplier);
+        //    Supplier_SupplierDTO = new Supplier_SupplierDTO(Supplier);
+        //    if (Supplier.IsValidated)
+        //        return Supplier_SupplierDTO;
+        //    else
+        //        return BadRequest(Supplier_SupplierDTO);
+        //}
 
-        [Route(SupplierRoute.Update), HttpPost]
-        public async Task<ActionResult<Supplier_SupplierDTO>> Update([FromBody] Supplier_SupplierDTO Supplier_SupplierDTO)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
+        //[Route(SupplierRoute.Update), HttpPost]
+        //public async Task<ActionResult<Supplier_SupplierDTO>> Update([FromBody] Supplier_SupplierDTO Supplier_SupplierDTO)
+        //{
+        //    if (!ModelState.IsValid)
+        //        throw new BindException(ModelState);
 
-            if (!await HasPermission(Supplier_SupplierDTO.Id))
-                return Forbid();
+        //    if (!await HasPermission(Supplier_SupplierDTO.Id))
+        //        return Forbid();
 
-            Supplier Supplier = ConvertDTOToEntity(Supplier_SupplierDTO);
-            Supplier = await SupplierService.Update(Supplier);
-            Supplier_SupplierDTO = new Supplier_SupplierDTO(Supplier);
-            if (Supplier.IsValidated)
-                return Supplier_SupplierDTO;
-            else
-                return BadRequest(Supplier_SupplierDTO);
-        }
+        //    Supplier Supplier = ConvertDTOToEntity(Supplier_SupplierDTO);
+        //    Supplier = await SupplierService.Update(Supplier);
+        //    Supplier_SupplierDTO = new Supplier_SupplierDTO(Supplier);
+        //    if (Supplier.IsValidated)
+        //        return Supplier_SupplierDTO;
+        //    else
+        //        return BadRequest(Supplier_SupplierDTO);
+        //}
 
-        [Route(SupplierRoute.Delete), HttpPost]
-        public async Task<ActionResult<Supplier_SupplierDTO>> Delete([FromBody] Supplier_SupplierDTO Supplier_SupplierDTO)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
+        //[Route(SupplierRoute.Delete), HttpPost]
+        //public async Task<ActionResult<Supplier_SupplierDTO>> Delete([FromBody] Supplier_SupplierDTO Supplier_SupplierDTO)
+        //{
+        //    if (!ModelState.IsValid)
+        //        throw new BindException(ModelState);
 
-            if (!await HasPermission(Supplier_SupplierDTO.Id))
-                return Forbid();
+        //    if (!await HasPermission(Supplier_SupplierDTO.Id))
+        //        return Forbid();
 
-            Supplier Supplier = ConvertDTOToEntity(Supplier_SupplierDTO);
-            Supplier = await SupplierService.Delete(Supplier);
-            Supplier_SupplierDTO = new Supplier_SupplierDTO(Supplier);
-            if (Supplier.IsValidated)
-                return Supplier_SupplierDTO;
-            else
-                return BadRequest(Supplier_SupplierDTO);
-        }
+        //    Supplier Supplier = ConvertDTOToEntity(Supplier_SupplierDTO);
+        //    Supplier = await SupplierService.Delete(Supplier);
+        //    Supplier_SupplierDTO = new Supplier_SupplierDTO(Supplier);
+        //    if (Supplier.IsValidated)
+        //        return Supplier_SupplierDTO;
+        //    else
+        //        return BadRequest(Supplier_SupplierDTO);
+        //}
 
-        [Route(SupplierRoute.BulkDelete), HttpPost]
-        public async Task<ActionResult<bool>> BulkDelete([FromBody] List<long> Ids)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
+        //[Route(SupplierRoute.BulkDelete), HttpPost]
+        //public async Task<ActionResult<bool>> BulkDelete([FromBody] List<long> Ids)
+        //{
+        //    if (!ModelState.IsValid)
+        //        throw new BindException(ModelState);
 
-            SupplierFilter SupplierFilter = new SupplierFilter();
-            SupplierFilter.Id = new IdFilter { In = Ids };
-            SupplierFilter.Selects = SupplierSelect.Id;
-            SupplierFilter.Skip = 0;
-            SupplierFilter.Take = int.MaxValue;
+        //    SupplierFilter SupplierFilter = new SupplierFilter();
+        //    SupplierFilter.Id = new IdFilter { In = Ids };
+        //    SupplierFilter.Selects = SupplierSelect.Id;
+        //    SupplierFilter.Skip = 0;
+        //    SupplierFilter.Take = int.MaxValue;
 
-            List<Supplier> Suppliers = await SupplierService.List(SupplierFilter);
-            Suppliers = await SupplierService.BulkDelete(Suppliers);
-            if (Suppliers.Any(x => !x.IsValidated))
-                return BadRequest(Suppliers.Where(x => !x.IsValidated));
-            return true;
-        }
+        //    List<Supplier> Suppliers = await SupplierService.List(SupplierFilter);
+        //    Suppliers = await SupplierService.BulkDelete(Suppliers);
+        //    if (Suppliers.Any(x => !x.IsValidated))
+        //        return BadRequest(Suppliers.Where(x => !x.IsValidated));
+        //    return true;
+        //}
 
         private async Task<bool> HasPermission(long Id)
         {

@@ -29,214 +29,214 @@ namespace DMS.Rpc.brand
             this.CurrentContext = CurrentContext;
         }
 
-        [Route(BrandRoute.Count), HttpPost]
-        public async Task<ActionResult<int>> Count([FromBody] Brand_BrandFilterDTO Brand_BrandFilterDTO)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
+        //[Route(BrandRoute.Count), HttpPost]
+        //public async Task<ActionResult<int>> Count([FromBody] Brand_BrandFilterDTO Brand_BrandFilterDTO)
+        //{
+        //    if (!ModelState.IsValid)
+        //        throw new BindException(ModelState);
 
-            BrandFilter BrandFilter = ConvertFilterDTOToFilterEntity(Brand_BrandFilterDTO);
-            int count = await BrandService.Count(BrandFilter);
-            return count;
-        }
+        //    BrandFilter BrandFilter = ConvertFilterDTOToFilterEntity(Brand_BrandFilterDTO);
+        //    int count = await BrandService.Count(BrandFilter);
+        //    return count;
+        //}
 
-        [Route(BrandRoute.List), HttpPost]
-        public async Task<ActionResult<List<Brand_BrandDTO>>> List([FromBody] Brand_BrandFilterDTO Brand_BrandFilterDTO)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
+        //[Route(BrandRoute.List), HttpPost]
+        //public async Task<ActionResult<List<Brand_BrandDTO>>> List([FromBody] Brand_BrandFilterDTO Brand_BrandFilterDTO)
+        //{
+        //    if (!ModelState.IsValid)
+        //        throw new BindException(ModelState);
 
-            BrandFilter BrandFilter = ConvertFilterDTOToFilterEntity(Brand_BrandFilterDTO);
-            List<Brand> Brands = await BrandService.List(BrandFilter);
-            List<Brand_BrandDTO> Brand_BrandDTOs = Brands
-                .Select(c => new Brand_BrandDTO(c)).ToList();
-            return Brand_BrandDTOs;
-        }
+        //    BrandFilter BrandFilter = ConvertFilterDTOToFilterEntity(Brand_BrandFilterDTO);
+        //    List<Brand> Brands = await BrandService.List(BrandFilter);
+        //    List<Brand_BrandDTO> Brand_BrandDTOs = Brands
+        //        .Select(c => new Brand_BrandDTO(c)).ToList();
+        //    return Brand_BrandDTOs;
+        //}
 
-        [Route(BrandRoute.Get), HttpPost]
-        public async Task<ActionResult<Brand_BrandDTO>> Get([FromBody]Brand_BrandDTO Brand_BrandDTO)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
+        //[Route(BrandRoute.Get), HttpPost]
+        //public async Task<ActionResult<Brand_BrandDTO>> Get([FromBody]Brand_BrandDTO Brand_BrandDTO)
+        //{
+        //    if (!ModelState.IsValid)
+        //        throw new BindException(ModelState);
 
-            if (!await HasPermission(Brand_BrandDTO.Id))
-                return Forbid();
+        //    if (!await HasPermission(Brand_BrandDTO.Id))
+        //        return Forbid();
 
-            Brand Brand = await BrandService.Get(Brand_BrandDTO.Id);
-            return new Brand_BrandDTO(Brand);
-        }
+        //    Brand Brand = await BrandService.Get(Brand_BrandDTO.Id);
+        //    return new Brand_BrandDTO(Brand);
+        //}
 
-        [Route(BrandRoute.Create), HttpPost]
-        public async Task<ActionResult<Brand_BrandDTO>> Create([FromBody] Brand_BrandDTO Brand_BrandDTO)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
+        //[Route(BrandRoute.Create), HttpPost]
+        //public async Task<ActionResult<Brand_BrandDTO>> Create([FromBody] Brand_BrandDTO Brand_BrandDTO)
+        //{
+        //    if (!ModelState.IsValid)
+        //        throw new BindException(ModelState);
 
-            if (!await HasPermission(Brand_BrandDTO.Id))
-                return Forbid();
+        //    if (!await HasPermission(Brand_BrandDTO.Id))
+        //        return Forbid();
 
-            Brand Brand = ConvertDTOToEntity(Brand_BrandDTO);
-            Brand = await BrandService.Create(Brand);
-            Brand_BrandDTO = new Brand_BrandDTO(Brand);
-            if (Brand.IsValidated)
-                return Brand_BrandDTO;
-            else
-                return BadRequest(Brand_BrandDTO);
-        }
+        //    Brand Brand = ConvertDTOToEntity(Brand_BrandDTO);
+        //    Brand = await BrandService.Create(Brand);
+        //    Brand_BrandDTO = new Brand_BrandDTO(Brand);
+        //    if (Brand.IsValidated)
+        //        return Brand_BrandDTO;
+        //    else
+        //        return BadRequest(Brand_BrandDTO);
+        //}
 
-        [Route(BrandRoute.Update), HttpPost]
-        public async Task<ActionResult<Brand_BrandDTO>> Update([FromBody] Brand_BrandDTO Brand_BrandDTO)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
+        //[Route(BrandRoute.Update), HttpPost]
+        //public async Task<ActionResult<Brand_BrandDTO>> Update([FromBody] Brand_BrandDTO Brand_BrandDTO)
+        //{
+        //    if (!ModelState.IsValid)
+        //        throw new BindException(ModelState);
 
-            if (!await HasPermission(Brand_BrandDTO.Id))
-                return Forbid();
+        //    if (!await HasPermission(Brand_BrandDTO.Id))
+        //        return Forbid();
 
-            Brand Brand = ConvertDTOToEntity(Brand_BrandDTO);
-            Brand = await BrandService.Update(Brand);
-            Brand_BrandDTO = new Brand_BrandDTO(Brand);
-            if (Brand.IsValidated)
-                return Brand_BrandDTO;
-            else
-                return BadRequest(Brand_BrandDTO);
-        }
+        //    Brand Brand = ConvertDTOToEntity(Brand_BrandDTO);
+        //    Brand = await BrandService.Update(Brand);
+        //    Brand_BrandDTO = new Brand_BrandDTO(Brand);
+        //    if (Brand.IsValidated)
+        //        return Brand_BrandDTO;
+        //    else
+        //        return BadRequest(Brand_BrandDTO);
+        //}
 
-        [Route(BrandRoute.Delete), HttpPost]
-        public async Task<ActionResult<Brand_BrandDTO>> Delete([FromBody] Brand_BrandDTO Brand_BrandDTO)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
+        //[Route(BrandRoute.Delete), HttpPost]
+        //public async Task<ActionResult<Brand_BrandDTO>> Delete([FromBody] Brand_BrandDTO Brand_BrandDTO)
+        //{
+        //    if (!ModelState.IsValid)
+        //        throw new BindException(ModelState);
 
-            if (!await HasPermission(Brand_BrandDTO.Id))
-                return Forbid();
+        //    if (!await HasPermission(Brand_BrandDTO.Id))
+        //        return Forbid();
 
-            Brand Brand = ConvertDTOToEntity(Brand_BrandDTO);
-            Brand = await BrandService.Delete(Brand);
-            Brand_BrandDTO = new Brand_BrandDTO(Brand);
-            if (Brand.IsValidated)
-                return Brand_BrandDTO;
-            else
-                return BadRequest(Brand_BrandDTO);
-        }
+        //    Brand Brand = ConvertDTOToEntity(Brand_BrandDTO);
+        //    Brand = await BrandService.Delete(Brand);
+        //    Brand_BrandDTO = new Brand_BrandDTO(Brand);
+        //    if (Brand.IsValidated)
+        //        return Brand_BrandDTO;
+        //    else
+        //        return BadRequest(Brand_BrandDTO);
+        //}
 
-        [Route(BrandRoute.Import), HttpPost]
-        public async Task<ActionResult<List<Brand_BrandDTO>>> Import(IFormFile file)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
-            DataFile DataFile = new DataFile
-            {
-                Name = file.FileName,
-                Content = file.OpenReadStream(),
-            };
-            List<Brand> Brands = new List<Brand>();
-            using (ExcelPackage excelPackage = new ExcelPackage(DataFile.Content))
-            {
-                ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets.FirstOrDefault();
-                int StartColumn = 1;
-                int StartRow = 1;
+        //[Route(BrandRoute.Import), HttpPost]
+        //public async Task<ActionResult<List<Brand_BrandDTO>>> Import(IFormFile file)
+        //{
+        //    if (!ModelState.IsValid)
+        //        throw new BindException(ModelState);
+        //    DataFile DataFile = new DataFile
+        //    {
+        //        Name = file.FileName,
+        //        Content = file.OpenReadStream(),
+        //    };
+        //    List<Brand> Brands = new List<Brand>();
+        //    using (ExcelPackage excelPackage = new ExcelPackage(DataFile.Content))
+        //    {
+        //        ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets.FirstOrDefault();
+        //        int StartColumn = 1;
+        //        int StartRow = 1;
 
-                int CodeColumn = 1 + StartColumn;
-                int NameColumn = 2 + StartColumn;
-                int DescriptionColumn = 3 + StartColumn;
+        //        int CodeColumn = 1 + StartColumn;
+        //        int NameColumn = 2 + StartColumn;
+        //        int DescriptionColumn = 3 + StartColumn;
 
-                for (int i = StartRow; i <= worksheet.Dimension.End.Row; i++)
-                {
-                    if (string.IsNullOrEmpty(worksheet.Cells[i + StartRow, CodeColumn].Value?.ToString()))
-                        break;
+        //        for (int i = StartRow; i <= worksheet.Dimension.End.Row; i++)
+        //        {
+        //            if (string.IsNullOrEmpty(worksheet.Cells[i + StartRow, CodeColumn].Value?.ToString()))
+        //                break;
 
-                    string CodeValue = worksheet.Cells[i + StartRow, CodeColumn].Value?.ToString();
-                    string NameValue = worksheet.Cells[i + StartRow, NameColumn].Value?.ToString();
-                    string DescriptionValue = worksheet.Cells[i + StartRow, DescriptionColumn].Value?.ToString();
+        //            string CodeValue = worksheet.Cells[i + StartRow, CodeColumn].Value?.ToString();
+        //            string NameValue = worksheet.Cells[i + StartRow, NameColumn].Value?.ToString();
+        //            string DescriptionValue = worksheet.Cells[i + StartRow, DescriptionColumn].Value?.ToString();
 
-                    Brand Brand = new Brand();
+        //            Brand Brand = new Brand();
 
-                    Brand.Code = CodeValue;
-                    Brand.Name = NameValue;
-                    Brand.Description = DescriptionValue;
+        //            Brand.Code = CodeValue;
+        //            Brand.Name = NameValue;
+        //            Brand.Description = DescriptionValue;
 
-                    Brands.Add(Brand);
-                }
-            }
-            Brands = await BrandService.Import(Brands);
+        //            Brands.Add(Brand);
+        //        }
+        //    }
+        //    Brands = await BrandService.Import(Brands);
 
-            List<Brand_BrandDTO> Brand_BrandDTOs = Brands
-                .Select(c => new Brand_BrandDTO(c)).ToList();
-            return Brand_BrandDTOs;
-        }
+        //    List<Brand_BrandDTO> Brand_BrandDTOs = Brands
+        //        .Select(c => new Brand_BrandDTO(c)).ToList();
+        //    return Brand_BrandDTOs;
+        //}
 
-        [Route(BrandRoute.Export), HttpPost]
-        public async Task<ActionResult> Export([FromBody] Brand_BrandFilterDTO Brand_BrandFilterDTO)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
+        //[Route(BrandRoute.Export), HttpPost]
+        //public async Task<ActionResult> Export([FromBody] Brand_BrandFilterDTO Brand_BrandFilterDTO)
+        //{
+        //    if (!ModelState.IsValid)
+        //        throw new BindException(ModelState);
 
-            BrandFilter BrandFilter = ConvertFilterDTOToFilterEntity(Brand_BrandFilterDTO);
+        //    BrandFilter BrandFilter = ConvertFilterDTOToFilterEntity(Brand_BrandFilterDTO);
 
-            BrandFilter.Skip = 0;
-            BrandFilter.Take = int.MaxValue;
+        //    BrandFilter.Skip = 0;
+        //    BrandFilter.Take = int.MaxValue;
 
-            List<Brand> Brands = await BrandService.List(BrandFilter);
-            MemoryStream memoryStream = new MemoryStream();
-            using (ExcelPackage excel = new ExcelPackage(memoryStream))
-            {
-                var BrandHeaders = new List<string[]>()
-                {
-                    new string[] {  "Mã nhãn hiệu", "Tên nhãn hiệu", "Mô tả"}
-                };
-                List<object[]> data = new List<object[]>();
-                for (int i = 0; i < Brands.Count; i++)
-                {
-                    var Brand = Brands[i];
-                    data.Add(new Object[]
-                    {
-                        Brand.Code,
-                        Brand.Name,
-                        Brand.Description
-                    });
-                }
-                excel.GenerateWorksheet("Brand", BrandHeaders, data);
-                excel.Save();
-            }
-            return File(memoryStream.ToArray(), "application/octet-stream", "Brand.xlsx");
-        }
+        //    List<Brand> Brands = await BrandService.List(BrandFilter);
+        //    MemoryStream memoryStream = new MemoryStream();
+        //    using (ExcelPackage excel = new ExcelPackage(memoryStream))
+        //    {
+        //        var BrandHeaders = new List<string[]>()
+        //        {
+        //            new string[] {  "Mã nhãn hiệu", "Tên nhãn hiệu", "Mô tả"}
+        //        };
+        //        List<object[]> data = new List<object[]>();
+        //        for (int i = 0; i < Brands.Count; i++)
+        //        {
+        //            var Brand = Brands[i];
+        //            data.Add(new Object[]
+        //            {
+        //                Brand.Code,
+        //                Brand.Name,
+        //                Brand.Description
+        //            });
+        //        }
+        //        excel.GenerateWorksheet("Brand", BrandHeaders, data);
+        //        excel.Save();
+        //    }
+        //    return File(memoryStream.ToArray(), "application/octet-stream", "Brand.xlsx");
+        //}
 
-        [Route(BrandRoute.ExportTemplate), HttpPost]
-        public async Task<ActionResult> ExportTemplate()
-        {
-            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
-            MemoryStream MemoryStream = new MemoryStream();
-            string tempPath = "Templates/Brand_Export.xlsx";
-            using (var xlPackage = new ExcelPackage(new FileInfo(tempPath)))
-            {
-                xlPackage.Workbook.CalcMode = ExcelCalcMode.Manual;
-                var nameexcel = "Export nhãn hiệu" + DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss.fff");
-                xlPackage.Workbook.Properties.Title = string.Format("{0}", nameexcel);
-                xlPackage.SaveAs(MemoryStream);
-            }
+        //[Route(BrandRoute.ExportTemplate), HttpPost]
+        //public async Task<ActionResult> ExportTemplate()
+        //{
+        //    ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+        //    MemoryStream MemoryStream = new MemoryStream();
+        //    string tempPath = "Templates/Brand_Export.xlsx";
+        //    using (var xlPackage = new ExcelPackage(new FileInfo(tempPath)))
+        //    {
+        //        xlPackage.Workbook.CalcMode = ExcelCalcMode.Manual;
+        //        var nameexcel = "Export nhãn hiệu" + DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss.fff");
+        //        xlPackage.Workbook.Properties.Title = string.Format("{0}", nameexcel);
+        //        xlPackage.SaveAs(MemoryStream);
+        //    }
 
-            return File(MemoryStream.ToArray(), "application/octet-stream", "Brand" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".xlsx");
-        }
+        //    return File(MemoryStream.ToArray(), "application/octet-stream", "Brand" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".xlsx");
+        //}
 
-        [Route(BrandRoute.BulkDelete), HttpPost]
-        public async Task<ActionResult<bool>> BulkDelete([FromBody] List<long> Ids)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
+        //[Route(BrandRoute.BulkDelete), HttpPost]
+        //public async Task<ActionResult<bool>> BulkDelete([FromBody] List<long> Ids)
+        //{
+        //    if (!ModelState.IsValid)
+        //        throw new BindException(ModelState);
 
-            BrandFilter BrandFilter = new BrandFilter();
-            BrandFilter.Id = new IdFilter { In = Ids };
-            BrandFilter.Selects = BrandSelect.Id;
-            BrandFilter.Skip = 0;
-            BrandFilter.Take = int.MaxValue;
+        //    BrandFilter BrandFilter = new BrandFilter();
+        //    BrandFilter.Id = new IdFilter { In = Ids };
+        //    BrandFilter.Selects = BrandSelect.Id;
+        //    BrandFilter.Skip = 0;
+        //    BrandFilter.Take = int.MaxValue;
 
-            List<Brand> Brands = await BrandService.List(BrandFilter);
-            Brands = await BrandService.BulkDelete(Brands);
-            if (Brands.Any(x => !x.IsValidated))
-                return BadRequest(Brands.Where(x => !x.IsValidated));
-            return true;
-        }
+        //    List<Brand> Brands = await BrandService.List(BrandFilter);
+        //    Brands = await BrandService.BulkDelete(Brands);
+        //    if (Brands.Any(x => !x.IsValidated))
+        //        return BadRequest(Brands.Where(x => !x.IsValidated));
+        //    return true;
+        //}
 
         private async Task<bool> HasPermission(long Id)
         {

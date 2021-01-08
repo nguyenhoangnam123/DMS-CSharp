@@ -64,78 +64,78 @@ namespace DMS.Rpc.product_type
             return new ProductType_ProductTypeDTO(ProductType);
         }
 
-        [Route(ProductTypeRoute.Create), HttpPost]
-        public async Task<ActionResult<ProductType_ProductTypeDTO>> Create([FromBody] ProductType_ProductTypeDTO ProductType_ProductTypeDTO)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
+        //[Route(ProductTypeRoute.Create), HttpPost]
+        //public async Task<ActionResult<ProductType_ProductTypeDTO>> Create([FromBody] ProductType_ProductTypeDTO ProductType_ProductTypeDTO)
+        //{
+        //    if (!ModelState.IsValid)
+        //        throw new BindException(ModelState);
 
-            if (!await HasPermission(ProductType_ProductTypeDTO.Id))
-                return Forbid();
+        //    if (!await HasPermission(ProductType_ProductTypeDTO.Id))
+        //        return Forbid();
 
-            ProductType ProductType = ConvertDTOToEntity(ProductType_ProductTypeDTO);
-            ProductType = await ProductTypeService.Create(ProductType);
-            ProductType_ProductTypeDTO = new ProductType_ProductTypeDTO(ProductType);
-            if (ProductType.IsValidated)
-                return ProductType_ProductTypeDTO;
-            else
-                return BadRequest(ProductType_ProductTypeDTO);
-        }
+        //    ProductType ProductType = ConvertDTOToEntity(ProductType_ProductTypeDTO);
+        //    ProductType = await ProductTypeService.Create(ProductType);
+        //    ProductType_ProductTypeDTO = new ProductType_ProductTypeDTO(ProductType);
+        //    if (ProductType.IsValidated)
+        //        return ProductType_ProductTypeDTO;
+        //    else
+        //        return BadRequest(ProductType_ProductTypeDTO);
+        //}
 
-        [Route(ProductTypeRoute.Update), HttpPost]
-        public async Task<ActionResult<ProductType_ProductTypeDTO>> Update([FromBody] ProductType_ProductTypeDTO ProductType_ProductTypeDTO)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
+        //[Route(ProductTypeRoute.Update), HttpPost]
+        //public async Task<ActionResult<ProductType_ProductTypeDTO>> Update([FromBody] ProductType_ProductTypeDTO ProductType_ProductTypeDTO)
+        //{
+        //    if (!ModelState.IsValid)
+        //        throw new BindException(ModelState);
 
-            if (!await HasPermission(ProductType_ProductTypeDTO.Id))
-                return Forbid();
+        //    if (!await HasPermission(ProductType_ProductTypeDTO.Id))
+        //        return Forbid();
 
-            ProductType ProductType = ConvertDTOToEntity(ProductType_ProductTypeDTO);
-            ProductType = await ProductTypeService.Update(ProductType);
-            ProductType_ProductTypeDTO = new ProductType_ProductTypeDTO(ProductType);
-            if (ProductType.IsValidated)
-                return ProductType_ProductTypeDTO;
-            else
-                return BadRequest(ProductType_ProductTypeDTO);
-        }
+        //    ProductType ProductType = ConvertDTOToEntity(ProductType_ProductTypeDTO);
+        //    ProductType = await ProductTypeService.Update(ProductType);
+        //    ProductType_ProductTypeDTO = new ProductType_ProductTypeDTO(ProductType);
+        //    if (ProductType.IsValidated)
+        //        return ProductType_ProductTypeDTO;
+        //    else
+        //        return BadRequest(ProductType_ProductTypeDTO);
+        //}
 
-        [Route(ProductTypeRoute.Delete), HttpPost]
-        public async Task<ActionResult<ProductType_ProductTypeDTO>> Delete([FromBody] ProductType_ProductTypeDTO ProductType_ProductTypeDTO)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
+        //[Route(ProductTypeRoute.Delete), HttpPost]
+        //public async Task<ActionResult<ProductType_ProductTypeDTO>> Delete([FromBody] ProductType_ProductTypeDTO ProductType_ProductTypeDTO)
+        //{
+        //    if (!ModelState.IsValid)
+        //        throw new BindException(ModelState);
 
-            if (!await HasPermission(ProductType_ProductTypeDTO.Id))
-                return Forbid();
+        //    if (!await HasPermission(ProductType_ProductTypeDTO.Id))
+        //        return Forbid();
 
-            ProductType ProductType = ConvertDTOToEntity(ProductType_ProductTypeDTO);
-            ProductType = await ProductTypeService.Delete(ProductType);
-            ProductType_ProductTypeDTO = new ProductType_ProductTypeDTO(ProductType);
-            if (ProductType.IsValidated)
-                return ProductType_ProductTypeDTO;
-            else
-                return BadRequest(ProductType_ProductTypeDTO);
-        }
+        //    ProductType ProductType = ConvertDTOToEntity(ProductType_ProductTypeDTO);
+        //    ProductType = await ProductTypeService.Delete(ProductType);
+        //    ProductType_ProductTypeDTO = new ProductType_ProductTypeDTO(ProductType);
+        //    if (ProductType.IsValidated)
+        //        return ProductType_ProductTypeDTO;
+        //    else
+        //        return BadRequest(ProductType_ProductTypeDTO);
+        //}
 
-        [Route(ProductTypeRoute.BulkDelete), HttpPost]
-        public async Task<ActionResult<bool>> BulkDelete([FromBody] List<long> Ids)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
+        //[Route(ProductTypeRoute.BulkDelete), HttpPost]
+        //public async Task<ActionResult<bool>> BulkDelete([FromBody] List<long> Ids)
+        //{
+        //    if (!ModelState.IsValid)
+        //        throw new BindException(ModelState);
 
-            ProductTypeFilter ProductTypeFilter = new ProductTypeFilter();
-            ProductTypeFilter.Id = new IdFilter { In = Ids };
-            ProductTypeFilter.Selects = ProductTypeSelect.Id;
-            ProductTypeFilter.Skip = 0;
-            ProductTypeFilter.Take = int.MaxValue;
+        //    ProductTypeFilter ProductTypeFilter = new ProductTypeFilter();
+        //    ProductTypeFilter.Id = new IdFilter { In = Ids };
+        //    ProductTypeFilter.Selects = ProductTypeSelect.Id;
+        //    ProductTypeFilter.Skip = 0;
+        //    ProductTypeFilter.Take = int.MaxValue;
 
-            List<ProductType> ProductTypes = await ProductTypeService.List(ProductTypeFilter);
-            ProductTypes = await ProductTypeService.BulkDelete(ProductTypes);
-            if (ProductTypes.Any(x => !x.IsValidated))
-                return BadRequest(ProductTypes.Where(x => !x.IsValidated));
-            return true;
-        }
+        //    List<ProductType> ProductTypes = await ProductTypeService.List(ProductTypeFilter);
+        //    ProductTypes = await ProductTypeService.BulkDelete(ProductTypes);
+        //    if (ProductTypes.Any(x => !x.IsValidated))
+        //        return BadRequest(ProductTypes.Where(x => !x.IsValidated));
+        //    return true;
+        //}
 
         private async Task<bool> HasPermission(long Id)
         {

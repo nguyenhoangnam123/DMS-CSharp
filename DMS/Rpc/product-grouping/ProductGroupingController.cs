@@ -67,112 +67,112 @@ namespace DMS.Rpc.product_grouping
             return new ProductGrouping_ProductGroupingDTO(ProductGrouping);
         }
 
-        [Route(ProductGroupingRoute.Create), HttpPost]
-        public async Task<ActionResult<ProductGrouping_ProductGroupingDTO>> Create([FromBody] ProductGrouping_ProductGroupingDTO ProductGrouping_ProductGroupingDTO)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
+        //[Route(ProductGroupingRoute.Create), HttpPost]
+        //public async Task<ActionResult<ProductGrouping_ProductGroupingDTO>> Create([FromBody] ProductGrouping_ProductGroupingDTO ProductGrouping_ProductGroupingDTO)
+        //{
+        //    if (!ModelState.IsValid)
+        //        throw new BindException(ModelState);
 
-            if (!await HasPermission(ProductGrouping_ProductGroupingDTO.Id))
-                return Forbid();
+        //    if (!await HasPermission(ProductGrouping_ProductGroupingDTO.Id))
+        //        return Forbid();
 
-            ProductGrouping ProductGrouping = ConvertDTOToEntity(ProductGrouping_ProductGroupingDTO);
-            ProductGrouping = await ProductGroupingService.Create(ProductGrouping);
-            ProductGrouping_ProductGroupingDTO = new ProductGrouping_ProductGroupingDTO(ProductGrouping);
-            if (ProductGrouping.IsValidated)
-                return ProductGrouping_ProductGroupingDTO;
-            else
-                return BadRequest(ProductGrouping_ProductGroupingDTO);
-        }
+        //    ProductGrouping ProductGrouping = ConvertDTOToEntity(ProductGrouping_ProductGroupingDTO);
+        //    ProductGrouping = await ProductGroupingService.Create(ProductGrouping);
+        //    ProductGrouping_ProductGroupingDTO = new ProductGrouping_ProductGroupingDTO(ProductGrouping);
+        //    if (ProductGrouping.IsValidated)
+        //        return ProductGrouping_ProductGroupingDTO;
+        //    else
+        //        return BadRequest(ProductGrouping_ProductGroupingDTO);
+        //}
 
-        [Route(ProductGroupingRoute.Update), HttpPost]
-        public async Task<ActionResult<ProductGrouping_ProductGroupingDTO>> Update([FromBody] ProductGrouping_ProductGroupingDTO ProductGrouping_ProductGroupingDTO)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
+        //[Route(ProductGroupingRoute.Update), HttpPost]
+        //public async Task<ActionResult<ProductGrouping_ProductGroupingDTO>> Update([FromBody] ProductGrouping_ProductGroupingDTO ProductGrouping_ProductGroupingDTO)
+        //{
+        //    if (!ModelState.IsValid)
+        //        throw new BindException(ModelState);
 
-            if (!await HasPermission(ProductGrouping_ProductGroupingDTO.Id))
-                return Forbid();
+        //    if (!await HasPermission(ProductGrouping_ProductGroupingDTO.Id))
+        //        return Forbid();
 
-            ProductGrouping ProductGrouping = ConvertDTOToEntity(ProductGrouping_ProductGroupingDTO);
-            ProductGrouping = await ProductGroupingService.Update(ProductGrouping);
-            ProductGrouping_ProductGroupingDTO = new ProductGrouping_ProductGroupingDTO(ProductGrouping);
-            if (ProductGrouping.IsValidated)
-                return ProductGrouping_ProductGroupingDTO;
-            else
-                return BadRequest(ProductGrouping_ProductGroupingDTO);
-        }
+        //    ProductGrouping ProductGrouping = ConvertDTOToEntity(ProductGrouping_ProductGroupingDTO);
+        //    ProductGrouping = await ProductGroupingService.Update(ProductGrouping);
+        //    ProductGrouping_ProductGroupingDTO = new ProductGrouping_ProductGroupingDTO(ProductGrouping);
+        //    if (ProductGrouping.IsValidated)
+        //        return ProductGrouping_ProductGroupingDTO;
+        //    else
+        //        return BadRequest(ProductGrouping_ProductGroupingDTO);
+        //}
 
-        [Route(ProductGroupingRoute.Delete), HttpPost]
-        public async Task<ActionResult<ProductGrouping_ProductGroupingDTO>> Delete([FromBody] ProductGrouping_ProductGroupingDTO ProductGrouping_ProductGroupingDTO)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
+        //[Route(ProductGroupingRoute.Delete), HttpPost]
+        //public async Task<ActionResult<ProductGrouping_ProductGroupingDTO>> Delete([FromBody] ProductGrouping_ProductGroupingDTO ProductGrouping_ProductGroupingDTO)
+        //{
+        //    if (!ModelState.IsValid)
+        //        throw new BindException(ModelState);
 
-            if (!await HasPermission(ProductGrouping_ProductGroupingDTO.Id))
-                return Forbid();
+        //    if (!await HasPermission(ProductGrouping_ProductGroupingDTO.Id))
+        //        return Forbid();
 
-            ProductGrouping ProductGrouping = ConvertDTOToEntity(ProductGrouping_ProductGroupingDTO);
-            ProductGrouping = await ProductGroupingService.Delete(ProductGrouping);
-            ProductGrouping_ProductGroupingDTO = new ProductGrouping_ProductGroupingDTO(ProductGrouping);
-            if (ProductGrouping.IsValidated)
-                return ProductGrouping_ProductGroupingDTO;
-            else
-                return BadRequest(ProductGrouping_ProductGroupingDTO);
-        }
+        //    ProductGrouping ProductGrouping = ConvertDTOToEntity(ProductGrouping_ProductGroupingDTO);
+        //    ProductGrouping = await ProductGroupingService.Delete(ProductGrouping);
+        //    ProductGrouping_ProductGroupingDTO = new ProductGrouping_ProductGroupingDTO(ProductGrouping);
+        //    if (ProductGrouping.IsValidated)
+        //        return ProductGrouping_ProductGroupingDTO;
+        //    else
+        //        return BadRequest(ProductGrouping_ProductGroupingDTO);
+        //}
 
-        [Route(ProductGroupingRoute.Import), HttpPost]
-        public async Task<ActionResult<List<ProductGrouping_ProductGroupingDTO>>> Import(IFormFile file)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
+        //[Route(ProductGroupingRoute.Import), HttpPost]
+        //public async Task<ActionResult<List<ProductGrouping_ProductGroupingDTO>>> Import(IFormFile file)
+        //{
+        //    if (!ModelState.IsValid)
+        //        throw new BindException(ModelState);
 
-            DataFile DataFile = new DataFile
-            {
-                Name = file.FileName,
-                Content = file.OpenReadStream(),
-            };
+        //    DataFile DataFile = new DataFile
+        //    {
+        //        Name = file.FileName,
+        //        Content = file.OpenReadStream(),
+        //    };
 
-            List<ProductGrouping> ProductGroupings = await ProductGroupingService.Import(DataFile);
-            List<ProductGrouping_ProductGroupingDTO> ProductGrouping_ProductGroupingDTOs = ProductGroupings
-                .Select(c => new ProductGrouping_ProductGroupingDTO(c)).ToList();
-            return ProductGrouping_ProductGroupingDTOs;
-        }
+        //    List<ProductGrouping> ProductGroupings = await ProductGroupingService.Import(DataFile);
+        //    List<ProductGrouping_ProductGroupingDTO> ProductGrouping_ProductGroupingDTOs = ProductGroupings
+        //        .Select(c => new ProductGrouping_ProductGroupingDTO(c)).ToList();
+        //    return ProductGrouping_ProductGroupingDTOs;
+        //}
 
-        [Route(ProductGroupingRoute.Export), HttpPost]
-        public async Task<ActionResult> Export([FromBody] ProductGrouping_ProductGroupingFilterDTO ProductGrouping_ProductGroupingFilterDTO)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
+        //[Route(ProductGroupingRoute.Export), HttpPost]
+        //public async Task<ActionResult> Export([FromBody] ProductGrouping_ProductGroupingFilterDTO ProductGrouping_ProductGroupingFilterDTO)
+        //{
+        //    if (!ModelState.IsValid)
+        //        throw new BindException(ModelState);
 
-            ProductGroupingFilter ProductGroupingFilter = ConvertFilterDTOToFilterEntity(ProductGrouping_ProductGroupingFilterDTO);
-            ProductGroupingFilter = ProductGroupingService.ToFilter(ProductGroupingFilter);
-            DataFile DataFile = await ProductGroupingService.Export(ProductGroupingFilter);
-            return new FileStreamResult(DataFile.Content, StaticParams.ExcelFileType)
-            {
-                FileDownloadName = DataFile.Name ?? "File export.xlsx",
-            };
-        }
+        //    ProductGroupingFilter ProductGroupingFilter = ConvertFilterDTOToFilterEntity(ProductGrouping_ProductGroupingFilterDTO);
+        //    ProductGroupingFilter = ProductGroupingService.ToFilter(ProductGroupingFilter);
+        //    DataFile DataFile = await ProductGroupingService.Export(ProductGroupingFilter);
+        //    return new FileStreamResult(DataFile.Content, StaticParams.ExcelFileType)
+        //    {
+        //        FileDownloadName = DataFile.Name ?? "File export.xlsx",
+        //    };
+        //}
 
-        [Route(ProductGroupingRoute.BulkDelete), HttpPost]
-        public async Task<ActionResult<bool>> BulkDelete([FromBody] List<long> Ids)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
+        //[Route(ProductGroupingRoute.BulkDelete), HttpPost]
+        //public async Task<ActionResult<bool>> BulkDelete([FromBody] List<long> Ids)
+        //{
+        //    if (!ModelState.IsValid)
+        //        throw new BindException(ModelState);
 
-            ProductGroupingFilter ProductGroupingFilter = new ProductGroupingFilter();
-            ProductGroupingFilter = ProductGroupingService.ToFilter(ProductGroupingFilter);
-            ProductGroupingFilter.Id = new IdFilter { In = Ids };
-            ProductGroupingFilter.Selects = ProductGroupingSelect.Id;
-            ProductGroupingFilter.Skip = 0;
-            ProductGroupingFilter.Take = int.MaxValue;
+        //    ProductGroupingFilter ProductGroupingFilter = new ProductGroupingFilter();
+        //    ProductGroupingFilter = ProductGroupingService.ToFilter(ProductGroupingFilter);
+        //    ProductGroupingFilter.Id = new IdFilter { In = Ids };
+        //    ProductGroupingFilter.Selects = ProductGroupingSelect.Id;
+        //    ProductGroupingFilter.Skip = 0;
+        //    ProductGroupingFilter.Take = int.MaxValue;
 
-            List<ProductGrouping> ProductGroupings = await ProductGroupingService.List(ProductGroupingFilter);
-            ProductGroupings = await ProductGroupingService.BulkDelete(ProductGroupings);
-            if (ProductGroupings.Any(x => !x.IsValidated))
-                return BadRequest(ProductGroupings.Where(x => !x.IsValidated));
-            return true;
-        }
+        //    List<ProductGrouping> ProductGroupings = await ProductGroupingService.List(ProductGroupingFilter);
+        //    ProductGroupings = await ProductGroupingService.BulkDelete(ProductGroupings);
+        //    if (ProductGroupings.Any(x => !x.IsValidated))
+        //        return BadRequest(ProductGroupings.Where(x => !x.IsValidated));
+        //    return true;
+        //}
 
         private async Task<bool> HasPermission(long Id)
         {
