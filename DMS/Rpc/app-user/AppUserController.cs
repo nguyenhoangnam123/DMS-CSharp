@@ -174,6 +174,7 @@ namespace DMS.Rpc.app_user
             });
 
             List<AppUser> AppUsers = new List<AppUser>();
+            Dictionary<string, Store> dictStore = Stores.ToDictionary(x => x.Code.ToLower(), y => y);
             StringBuilder errorContent = new StringBuilder();
             using (ExcelPackage excelPackage = new ExcelPackage(file.OpenReadStream()))
             {
@@ -214,7 +215,7 @@ namespace DMS.Rpc.app_user
                         continue;
                     }
 
-                    Store Store = Stores.Where(x => x.CodeDraft == StoreCodeValue.Trim()).FirstOrDefault();
+                    Store Store = dictStore[StoreCodeValue.Trim().ToLower()];
                     if (Store == null)
                     {
                         errorContent.AppendLine($"Lỗi dòng thứ {i + 1}: Đại lý không tồn tại");
