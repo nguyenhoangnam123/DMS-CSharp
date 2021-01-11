@@ -35,8 +35,6 @@ namespace DMS.Services.MDirectSalesOrder
         Task<DirectSalesOrder> Send(DirectSalesOrder DirectSalesOrder);
         Task<DirectSalesOrder> Approve(DirectSalesOrder DirectSalesOrder);
         Task<DirectSalesOrder> Reject(DirectSalesOrder DirectSalesOrder);
-        Task<List<DirectSalesOrder>> BulkDelete(List<DirectSalesOrder> DirectSalesOrders);
-        Task<List<DirectSalesOrder>> Import(List<DirectSalesOrder> DirectSalesOrders);
         Task<DirectSalesOrderFilter> ToFilter(DirectSalesOrderFilter DirectSalesOrderFilter);
     }
 
@@ -445,7 +443,8 @@ namespace DMS.Services.MDirectSalesOrder
                 List<EventMessage<UserNotification>> EventUserNotifications = UserNotifications.Select(x => new EventMessage<UserNotification>(x, x.RowId)).ToList();
                 RabbitManager.PublishList(EventUserNotifications, RoutingKeyEnum.UserNotificationSend);
 
-                NotifyUsed(DirectSalesOrder);
+                DirectSalesOrder = await UOW.DirectSalesOrderRepository.Get(DirectSalesOrder.Id);
+                Sync(DirectSalesOrder);
                 await Logging.CreateAuditLog(DirectSalesOrder, new { }, nameof(DirectSalesOrderService));
                 return DirectSalesOrder;
             }
@@ -504,7 +503,7 @@ namespace DMS.Services.MDirectSalesOrder
                 RabbitManager.PublishList(EventUserNotifications, RoutingKeyEnum.UserNotificationSend);
 
                 DirectSalesOrder = await UOW.DirectSalesOrderRepository.Get(DirectSalesOrder.Id);
-                NotifyUsed(DirectSalesOrder);
+                Sync(DirectSalesOrder);
                 await Logging.CreateAuditLog(DirectSalesOrder, oldData, nameof(DirectSalesOrderService));
                 return DirectSalesOrder;
             }
@@ -561,66 +560,10 @@ namespace DMS.Services.MDirectSalesOrder
                 List<EventMessage<UserNotification>> EventUserNotifications = UserNotifications.Select(x => new EventMessage<UserNotification>(x, x.RowId)).ToList();
                 RabbitManager.PublishList(EventUserNotifications, RoutingKeyEnum.UserNotificationSend);
 
+                DirectSalesOrder = await UOW.DirectSalesOrderRepository.Get(DirectSalesOrder.Id);
+                Sync(DirectSalesOrder);
                 await Logging.CreateAuditLog(new { }, DirectSalesOrder, nameof(DirectSalesOrderService));
                 return DirectSalesOrder;
-            }
-            catch (Exception ex)
-            {
-                await UOW.Rollback();
-                if (ex.InnerException == null)
-                {
-                    await Logging.CreateSystemLog(ex, nameof(DirectSalesOrderService));
-                    throw new MessageException(ex);
-                }
-                else
-                {
-                    await Logging.CreateSystemLog(ex.InnerException, nameof(DirectSalesOrderService));
-                    throw new MessageException(ex.InnerException);
-                }
-            }
-        }
-
-        public async Task<List<DirectSalesOrder>> BulkDelete(List<DirectSalesOrder> DirectSalesOrders)
-        {
-            if (!await DirectSalesOrderValidator.BulkDelete(DirectSalesOrders))
-                return DirectSalesOrders;
-
-            try
-            {
-                await UOW.Begin();
-                await UOW.DirectSalesOrderRepository.BulkDelete(DirectSalesOrders);
-                await UOW.Commit();
-                await Logging.CreateAuditLog(new { }, DirectSalesOrders, nameof(DirectSalesOrderService));
-                return DirectSalesOrders;
-            }
-            catch (Exception ex)
-            {
-                await UOW.Rollback();
-                if (ex.InnerException == null)
-                {
-                    await Logging.CreateSystemLog(ex, nameof(DirectSalesOrderService));
-                    throw new MessageException(ex);
-                }
-                else
-                {
-                    await Logging.CreateSystemLog(ex.InnerException, nameof(DirectSalesOrderService));
-                    throw new MessageException(ex.InnerException);
-                }
-            }
-        }
-
-        public async Task<List<DirectSalesOrder>> Import(List<DirectSalesOrder> DirectSalesOrders)
-        {
-            if (!await DirectSalesOrderValidator.Import(DirectSalesOrders))
-                return DirectSalesOrders;
-            try
-            {
-                await UOW.Begin();
-                await UOW.DirectSalesOrderRepository.BulkMerge(DirectSalesOrders);
-                await UOW.Commit();
-
-                await Logging.CreateAuditLog(DirectSalesOrders, new { }, nameof(DirectSalesOrderService));
-                return DirectSalesOrders;
             }
             catch (Exception ex)
             {
@@ -1131,7 +1074,11 @@ namespace DMS.Services.MDirectSalesOrder
             GenericEnum RequestState = await WorkflowService.Send(DirectSalesOrder.RowId, WorkflowTypeEnum.DIRECT_SALES_ORDER.Id, DirectSalesOrder.OrganizationId, Parameters);
             DirectSalesOrder.RequestStateId = RequestState.Id;
             await UOW.DirectSalesOrderRepository.UpdateState(DirectSalesOrder);
-            return await Get(DirectSalesOrder.Id);
+
+            DirectSalesOrder = await UOW.DirectSalesOrderRepository.Get(DirectSalesOrder.Id);
+            Sync(DirectSalesOrder);
+
+            return DirectSalesOrder;
         }
 
         public async Task<DirectSalesOrder> Approve(DirectSalesOrder DirectSalesOrder)
@@ -1145,7 +1092,11 @@ namespace DMS.Services.MDirectSalesOrder
             RequestState RequestState = await WorkflowService.GetRequestState(DirectSalesOrder.RowId);
             DirectSalesOrder.RequestStateId = RequestState.Id;
             await UOW.DirectSalesOrderRepository.UpdateState(DirectSalesOrder);
-            return await Get(DirectSalesOrder.Id);
+
+            DirectSalesOrder = await UOW.DirectSalesOrderRepository.Get(DirectSalesOrder.Id);
+            Sync(DirectSalesOrder);
+
+            return DirectSalesOrder;
         }
 
         public async Task<DirectSalesOrder> Reject(DirectSalesOrder DirectSalesOrder)
@@ -1156,7 +1107,11 @@ namespace DMS.Services.MDirectSalesOrder
             RequestState RequestState = await WorkflowService.GetRequestState(DirectSalesOrder.RowId);
             DirectSalesOrder.RequestStateId = RequestState.Id;
             await UOW.DirectSalesOrderRepository.UpdateState(DirectSalesOrder);
-            return await Get(DirectSalesOrder.Id);
+
+            DirectSalesOrder = await UOW.DirectSalesOrderRepository.Get(DirectSalesOrder.Id);
+            Sync(DirectSalesOrder);
+
+            return DirectSalesOrder;
         }
 
         private async Task<Dictionary<string, string>> MapParameters(DirectSalesOrder DirectSalesOrder)
@@ -1214,8 +1169,9 @@ namespace DMS.Services.MDirectSalesOrder
             return AppUserIds;
         }
 
-        private void NotifyUsed(DirectSalesOrder DirectSalesOrder)
+        private void Sync(DirectSalesOrder DirectSalesOrder)
         {
+            List<EventMessage<DirectSalesOrder>> EventMessageDirectSalesOrders = new List<EventMessage<DirectSalesOrder>>();
             {
                 List<long> ItemIds = DirectSalesOrder.DirectSalesOrderContents.Select(i => i.ItemId).ToList();
                 List<EventMessage<Item>> itemMessages = ItemIds.Select(i => new EventMessage<Item>
@@ -1278,8 +1234,11 @@ namespace DMS.Services.MDirectSalesOrder
                     };
                     RabbitManager.PublishList(PromotionCodeMessages, RoutingKeyEnum.PromotionCodeUsed);
                 }
-                
             }
+
+            EventMessage<DirectSalesOrder> EventMessageDirectSalesOrder = new EventMessage<DirectSalesOrder>(DirectSalesOrder, DirectSalesOrder.RowId);
+            EventMessageDirectSalesOrders.Add(EventMessageDirectSalesOrder);
+            RabbitManager.PublishList(EventMessageDirectSalesOrders, RoutingKeyEnum.DirectSalesOrderSync);
         }
     }
 }

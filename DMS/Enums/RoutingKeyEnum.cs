@@ -12,6 +12,7 @@ namespace DMS.Enums
         public static GenericEnum StoreStatusSync = new GenericEnum { Id = 5, Code = "StoreStatus.Sync", Name = "Đồng bộ StoreStatus" };
         public static GenericEnum StoreGroupingSync = new GenericEnum { Id = 6, Code = "StoreGrouping.Sync", Name = "Đồng bộ StoreGrouping" };
         public static GenericEnum StoreTypeSync = new GenericEnum { Id = 7, Code = "StoreType.Sync", Name = "Đồng bộ StoreType" };
+        public static GenericEnum DirectSalesOrderSync = new GenericEnum { Id = 8, Code = "DirectSalesOrder.Sync", Name = "Đồng bộ DirectSalesOrder" };
 
         public static GenericEnum MailSend = new GenericEnum { Id = 4, Code = "Mail.Send", Name = "Gửi Mail" };
         public static GenericEnum AuditLogSend = new GenericEnum { Id = 5, Code = "AuditLog.Send", Name = "Audit Log" };
