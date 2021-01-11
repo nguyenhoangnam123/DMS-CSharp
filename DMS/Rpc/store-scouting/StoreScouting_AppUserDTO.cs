@@ -33,7 +33,7 @@ namespace DMS.Rpc.store_scouting
         
         public long? ProvinceId { get; set; }
         
-        public long? SexId { get; set; }
+        public long SexId { get; set; }
         
         public DateTime? Birthday { get; set; }
         

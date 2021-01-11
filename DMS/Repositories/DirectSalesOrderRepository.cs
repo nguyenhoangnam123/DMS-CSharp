@@ -653,6 +653,7 @@ namespace DMS.Repositories
                 Total = x.Total,
                 RowId = x.RowId,
                 StoreCheckingId = x.StoreCheckingId,
+                CreatorId = x.CreatorId,
                 BuyerStore = x.BuyerStore == null ? null : new Store
                 {
                     Id = x.BuyerStore.Id,

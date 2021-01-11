@@ -31,7 +31,7 @@ namespace DMS.Rpc.monitor_store_problems
 
         public long? ProvinceId { get; set; }
 
-        public long? SexId { get; set; }
+        public long SexId { get; set; }
 
         public DateTime? Birthday { get; set; }
 

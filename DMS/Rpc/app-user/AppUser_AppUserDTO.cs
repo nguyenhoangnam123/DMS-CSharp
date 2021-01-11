@@ -24,7 +24,7 @@ namespace DMS.Rpc.app_user
         public long OrganizationId { get; set; }
         public long? ERouteScopeId { get; set; }
         public long? ProvinceId { get; set; }
-        public long? SexId { get; set; }
+        public long SexId { get; set; }
         public long StatusId { get; set; }
         public AppUser_OrganizationDTO Organization { get; set; }
         public AppUser_OrganizationDTO ERouteScope { get; set; }

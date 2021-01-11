@@ -28,7 +28,7 @@ namespace DMS.Rpc.e_route
         public long OrganizationId { get; set; }
         public long? ERouteScopeId { get; set; }
 
-        public long? SexId { get; set; }
+        public long SexId { get; set; }
 
         public long StatusId { get; set; }
 

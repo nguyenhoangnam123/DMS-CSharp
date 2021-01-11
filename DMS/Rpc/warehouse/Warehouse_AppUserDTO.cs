@@ -15,7 +15,7 @@ namespace DMS.Rpc.warehouse
         public long? PositionId { get; set; }
         public string Department { get; set; }
         public long? OrganizationId { get; set; }
-        public long? SexId { get; set; }
+        public long SexId { get; set; }
         public long StatusId { get; set; }
         public Warehouse_AppUserDTO() { }
         public Warehouse_AppUserDTO(AppUser AppUser)

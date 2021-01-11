@@ -28,7 +28,7 @@ namespace DMS.Rpc.mobile_sync
 
         public long OrganizationId { get; set; }
 
-        public long? SexId { get; set; }
+        public long SexId { get; set; }
 
         public long StatusId { get; set; }
 

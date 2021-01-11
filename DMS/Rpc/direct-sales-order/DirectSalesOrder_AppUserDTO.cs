@@ -27,7 +27,7 @@ namespace DMS.Rpc.direct_sales_order
 
         public long OrganizationId { get; set; }
 
-        public long? SexId { get; set; }
+        public long SexId { get; set; }
 
         public long StatusId { get; set; }
 

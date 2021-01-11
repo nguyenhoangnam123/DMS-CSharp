@@ -17,7 +17,7 @@ namespace DMS.Rpc.role
         public long? PositionId { get; set; }
         public string Department { get; set; }
         public long? OrganizationId { get; set; }
-        public long? SexId { get; set; }
+        public long SexId { get; set; }
         public long StatusId { get; set; }
         public Role_OrganizationDTO Organization { get; set; }
 

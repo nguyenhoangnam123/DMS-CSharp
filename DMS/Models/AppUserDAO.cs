@@ -68,7 +68,7 @@ namespace DMS.Models
         /// Số điện thoại liên hệ
         /// </summary>
         public string Phone { get; set; }
-        public long? SexId { get; set; }
+        public long SexId { get; set; }
         /// <summary>
         /// Ngày sinh
         /// </summary>

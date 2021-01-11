@@ -31,7 +31,7 @@ namespace DMS.Rpc.workflow_definition
 
         public long? ProvinceId { get; set; }
 
-        public long? SexId { get; set; }
+        public long SexId { get; set; }
 
         public DateTime? Birthday { get; set; }
 

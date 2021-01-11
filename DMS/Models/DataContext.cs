@@ -361,6 +361,7 @@ namespace DMS.Models
                 entity.HasOne(d => d.Sex)
                     .WithMany(p => p.AppUsers)
                     .HasForeignKey(d => d.SexId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_AppUser_Sex");
 
                 entity.HasOne(d => d.Status)
