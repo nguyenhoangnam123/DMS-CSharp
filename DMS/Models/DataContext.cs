@@ -1882,8 +1882,6 @@ namespace DMS.Models
 
             modelBuilder.Entity<NotificationDAO>(entity =>
             {
-                entity.Property(e => e.Content).HasMaxLength(4000);
-
                 entity.Property(e => e.Title)
                     .IsRequired()
                     .HasMaxLength(500);
