@@ -361,15 +361,23 @@ namespace DMS.Services.MERoute
             {
                 var CurrentUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
                 var oldData = await UOW.ERouteRepository.Get(ERoute.Id);
-                if (oldData.SaleEmployeeId != ERoute.SaleEmployeeId)
+                if(oldData.RequestStateId == RequestStateEnum.APPROVED.Id)
                 {
-                    var SaleEmployee = await UOW.AppUserRepository.Get(ERoute.SaleEmployeeId);
-                    ERoute.OrganizationId = SaleEmployee.OrganizationId;
+                    oldData.StatusId = ERoute.StatusId;
+                    await UOW.ERouteRepository.Update(oldData);
                 }
-                ERoute = await CalculateTime(ERoute);
-                await UOW.Begin();
-                await UOW.ERouteRepository.Update(ERoute);
-                await UOW.Commit();
+                else
+                {
+                    if (oldData.SaleEmployeeId != ERoute.SaleEmployeeId)
+                    {
+                        var SaleEmployee = await UOW.AppUserRepository.Get(ERoute.SaleEmployeeId);
+                        ERoute.OrganizationId = SaleEmployee.OrganizationId;
+                    }
+                    ERoute = await CalculateTime(ERoute);
+                    await UOW.Begin();
+                    await UOW.ERouteRepository.Update(ERoute);
+                    await UOW.Commit();
+                }
 
                 DateTime Now = StaticParams.DateTimeNow;
                 UserNotification UserNotifications = new UserNotification

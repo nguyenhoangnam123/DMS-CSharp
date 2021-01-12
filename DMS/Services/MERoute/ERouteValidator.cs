@@ -274,14 +274,18 @@ namespace DMS.Services.MERoute
         {
             if (await ValidateId(ERoute))
             {
-                await ValidateCode(ERoute);
-                await ValidateName(ERoute);
-                await ValidateSaleEmployee(ERoute);
-                await ValidateOrganization(ERoute);
-                await ValidateERouteType(ERoute);
-                await ValidateStatusId(ERoute);
-                await ValidateStartDateAndEndDate(ERoute);
-                await ValidateStore(ERoute);
+                var oldData = await UOW.ERouteRepository.Get(ERoute.Id);
+                if (oldData.RequestStateId != RequestStateEnum.APPROVED.Id)
+                {
+                    await ValidateCode(ERoute);
+                    await ValidateName(ERoute);
+                    await ValidateSaleEmployee(ERoute);
+                    await ValidateOrganization(ERoute);
+                    await ValidateERouteType(ERoute);
+                    await ValidateStatusId(ERoute);
+                    await ValidateStartDateAndEndDate(ERoute);
+                    await ValidateStore(ERoute);
+                }
             }
             return ERoute.IsValidated;
         }

@@ -315,12 +315,20 @@ namespace DMS.Services.MPriceList
             try
             {
                 var oldData = await UOW.PriceListRepository.Get(PriceList.Id);
-                PriceList.RequestStateId = oldData.RequestStateId;
-                await BuildData(PriceList);
+                if (oldData.RequestStateId == RequestStateEnum.APPROVED.Id)
+                {
+                    oldData.StatusId = PriceList.StatusId;
+                    await UOW.PriceListRepository.Update(oldData);
+                }
+                else
+                {
+                    PriceList.RequestStateId = oldData.RequestStateId;
+                    await BuildData(PriceList);
 
-                await UOW.Begin();
-                await UOW.PriceListRepository.Update(PriceList);
-                await UOW.Commit();
+                    await UOW.Begin();
+                    await UOW.PriceListRepository.Update(PriceList);
+                    await UOW.Commit();
+                }
 
                 var newData = await UOW.PriceListRepository.Get(PriceList.Id);
                 await Logging.CreateAuditLog(newData, oldData, nameof(PriceListService));

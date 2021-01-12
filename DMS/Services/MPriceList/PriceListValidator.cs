@@ -290,14 +290,18 @@ namespace DMS.Services.MPriceList
         {
             if (await ValidateId(PriceList))
             {
-                await ValidateCode(PriceList);
-                await ValidateName(PriceList);
-                await ValidateDate(PriceList);
-                await ValidateOrganization(PriceList);
-                await ValidateStatus(PriceList);
-                await ValidatePriceListType(PriceList);
-                await ValidateSalesOrderType(PriceList);
-                await ValidateMapping(PriceList);
+                var oldData = await UOW.PriceListRepository.Get(PriceList.Id);
+                if (oldData.RequestStateId != RequestStateEnum.APPROVED.Id)
+                {
+                    await ValidateCode(PriceList);
+                    await ValidateName(PriceList);
+                    await ValidateDate(PriceList);
+                    await ValidateOrganization(PriceList);
+                    await ValidateStatus(PriceList);
+                    await ValidatePriceListType(PriceList);
+                    await ValidateSalesOrderType(PriceList);
+                    await ValidateMapping(PriceList);
+                }
             }
             return PriceList.IsValidated;
         }
