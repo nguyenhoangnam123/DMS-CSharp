@@ -155,7 +155,8 @@ namespace DMS.Services.MNotification
                         Time = StaticParams.DateTimeNow,
                         Unread = false,
                         SenderId = CurrentContext.UserId,
-                        RecipientId = x
+                        RecipientId = x,
+                        RowId = Guid.NewGuid(),
                     }).ToList();
 
                     List<EventMessage<UserNotification>> EventUserNotifications = UserNotifications.Select(x => new EventMessage<UserNotification>(x, x.RowId)).ToList();
