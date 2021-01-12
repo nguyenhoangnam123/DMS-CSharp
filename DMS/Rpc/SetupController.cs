@@ -1193,7 +1193,7 @@ namespace DMS.Rpc
             Menus.ForEach(m => m.IsDeleted = true);
             foreach (Type type in routeTypes)
             {
-                MenuDAO Menu = Menus.Where(m => m.Name == type.Name).FirstOrDefault();
+                MenuDAO Menu = Menus.Where(m => m.Name == type.Name && m.Name != "Root").FirstOrDefault();
                 if (Menu == null)
                 {
                     Menu = new MenuDAO
