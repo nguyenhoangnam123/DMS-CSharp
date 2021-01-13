@@ -181,7 +181,7 @@ namespace DMS.Repositories
                 if(filter.StoreStatusId.Equal == StoreStatusEnum.DRAFT.Id)
                 {
                     query = query.Where(q => q.StoreStatusId, filter.StoreStatusId);
-                    if (filter.StoreDraftTypeId.HasValue && filter.StoreDraftTypeId.Equal == StoreDraftTypeEnum.MINE.Id && filter.SalesEmployeeId.HasValue)
+                    if (filter.StoreDraftTypeId != null && filter.StoreDraftTypeId.HasValue && filter.StoreDraftTypeId.Equal == StoreDraftTypeEnum.MINE.Id && filter.SalesEmployeeId.HasValue)
                         query = query.Where(q => q.AppUserId.Value == filter.SalesEmployeeId.Equal);
                 }
                 if (filter.StoreStatusId.Equal == StoreStatusEnum.OFFICIAL.Id)
