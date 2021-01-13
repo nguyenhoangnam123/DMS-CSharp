@@ -466,6 +466,7 @@ namespace DMS.Repositories
                 SaleEmployeeId = x.SaleEmployeeId,
                 OrganizationId = x.OrganizationId,
                 StartDate = x.StartDate,
+                RealStartDate = x.RealStartDate,
                 EndDate = x.EndDate,
                 ERouteTypeId = x.ERouteTypeId,
                 StatusId = x.StatusId,

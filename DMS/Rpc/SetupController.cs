@@ -103,13 +103,6 @@ namespace DMS.Rpc
         //    await DataContext.SaveChangesAsync();
         //}
 
-        [HttpGet, Route("rpc/dms/setup/job")]
-        public async Task TestJob()
-        {
-            await MaintenanceService.CreateStoreUnchecking();
-            //await MaintenanceService.AutoInactive();
-        }
-
         [HttpGet, Route("rpc/dms/setup/year/{year}")]
         public bool ChangeYear(int year)
         {
