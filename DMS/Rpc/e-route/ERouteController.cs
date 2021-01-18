@@ -577,9 +577,13 @@ namespace DMS.Rpc.e_route
                 Skip = 0,
                 Take = int.MaxValue,
                 StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id },
-                
+                OrganizationId = new IdFilter { Equal = appUser.OrganizationId }
             };
-            var Stores = await StoreCheckingService.ListStoreInScope(StoreFilter, null);
+            if (StoreIds.Any())
+            {
+                StoreFilter.Id = new IdFilter { In = StoreIds };
+            }
+            var Stores = await StoreService.List(StoreFilter);
             List<ERoute_StoreExportDTO> ERoute_StoreExportDTOs = Stores.Select(x => new ERoute_StoreExportDTO(x)).ToList();
             var stt = 1;
             foreach (var ERoute_StoreExportDTO in ERoute_StoreExportDTOs)

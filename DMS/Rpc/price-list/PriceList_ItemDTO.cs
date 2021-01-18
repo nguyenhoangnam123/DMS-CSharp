@@ -51,24 +51,16 @@ namespace DMS.Rpc.price_list
 
     public class PriceList_ItemFilterDTO : FilterDTO
     {
-
         public IdFilter Id { get; set; }
-
         public IdFilter ProductId { get; set; }
         public IdFilter ProductGroupingId { get; set; }
         public IdFilter ProductTypeId { get; set; }
-
         public StringFilter Code { get; set; }
-
         public StringFilter Name { get; set; }
-
         public StringFilter ScanCode { get; set; }
         public StringFilter OtherName { get; set; }
-
         public DecimalFilter SalePrice { get; set; }
-
         public DecimalFilter RetailPrice { get; set; }
-
         public IdFilter StatusId { get; set; }
         public string Search { get; set; }
 
