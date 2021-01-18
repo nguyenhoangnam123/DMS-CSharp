@@ -526,7 +526,7 @@ namespace DMS.Rpc.indirect_sales_order
             IndirectSalesOrder_IndirectSalesOrderFilterDTO.Take = int.MaxValue;
             List<IndirectSalesOrder_IndirectSalesOrderDTO> IndirectSalesOrder_IndirectSalesOrderDTOs = (await List(IndirectSalesOrder_IndirectSalesOrderFilterDTO)).Value;
             var Ids = IndirectSalesOrder_IndirectSalesOrderDTOs.Select(x => x.Id).ToList();
-            var RowIds = IndirectSalesOrder_IndirectSalesOrderDTOs.Select(x => x.RowId).ToList();
+            var RowIds = IndirectSalesOrder_IndirectSalesOrderDTOs.Where(x => x.RequestStateId == RequestStateEnum.APPROVED.Id).Select(x => x.RowId).ToList();
             var queryContent = from c in DataContext.IndirectSalesOrderContent
                                join u in DataContext.UnitOfMeasure on c.UnitOfMeasureId equals u.Id
                                join i in DataContext.Item on c.ItemId equals i.Id
@@ -612,15 +612,6 @@ namespace DMS.Rpc.indirect_sales_order
             List<IndirectSalesOrder_IndirectSalesOrderContentDTO> IndirectSalesOrder_IndirectSalesOrderContentDTOs = await queryContent.ToListAsync();
             List<IndirectSalesOrder_IndirectSalesOrderPromotionDTO> IndirectSalesOrder_IndirectSalesOrderPromotionDTOs = await queryPromotion.ToListAsync();
             List<IndirectSalesOrder_RequestWorkflowStepMappingDTO> IndirectSalesOrder_RequestWorkflowStepMappingDTOs = await queryRequestWorkflowStepMapping.ToListAsync();
-            foreach (var IndirectSalesOrder_RequestWorkflowStepMappingDTO in IndirectSalesOrder_RequestWorkflowStepMappingDTOs)
-            {
-                var WorkflowState = WorkflowStateEnum.WorkflowStateEnumList.Where(x => x.Id == IndirectSalesOrder_RequestWorkflowStepMappingDTO.WorkflowStateId).FirstOrDefault();
-                if (WorkflowState != null)
-                    IndirectSalesOrder_RequestWorkflowStepMappingDTO.WorkflowState = new IndirectSalesOrder_WorkflowStateDTO
-                    {
-                        Name = WorkflowState.Name
-                    };
-            }
 
             var OrganizationIds = IndirectSalesOrder_IndirectSalesOrderDTOs.Select(x => x.OrganizationId).Distinct().ToList();
             var Organizations = await DataContext.Organization.Where(x => OrganizationIds.Contains(x.Id)).Select(x => new Organization
@@ -633,6 +624,7 @@ namespace DMS.Rpc.indirect_sales_order
             {
                 OrganizationId = x.OrganizationId,
                 Id = x.Id,
+                RequestStateId = x.RequestStateId,
                 Code = x.Code,
                 Note = x.Note,
                 Discount = x.GeneralDiscountAmount.GetValueOrDefault(0),
@@ -647,6 +639,7 @@ namespace DMS.Rpc.indirect_sales_order
                 SalesEmployeeUserName = x.SaleEmployee.Username,
                 SellerStoreCode = x.SellerStore.Code,
                 SellerStoreName = x.SellerStore.Name,
+                RequestStateName = x.RequestState.Name,
                 SubTotal = x.SubTotal,
                 Total = x.Total,
                 RowId = x.RowId,
@@ -660,16 +653,19 @@ namespace DMS.Rpc.indirect_sales_order
                 if (Organization != null)
                     Export.OrganizationName = Organization.Name;
 
-                var RequestWorkflowStepMapping = IndirectSalesOrder_RequestWorkflowStepMappingDTOs
+                if(Export.RequestStateId == RequestStateEnum.APPROVED.Id)
+                {
+                    var RequestWorkflowStepMapping = IndirectSalesOrder_RequestWorkflowStepMappingDTOs
                     .Where(x => x.RequestId == Export.RowId)
                     .OrderByDescending(x => x.UpdatedAt)
                     .FirstOrDefault();
-                if(RequestWorkflowStepMapping != null)
-                {
-                    Export.ApprovedAt = RequestWorkflowStepMapping.UpdatedAt.Value.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy");
-                    Export.MonitorName = RequestWorkflowStepMapping.AppUser.DisplayName;
-                    Export.MonitorUserName = RequestWorkflowStepMapping.AppUser.Username;
-                    Export.RequestStateName = RequestWorkflowStepMapping.WorkflowState.Name;
+                    if (RequestWorkflowStepMapping != null)
+                    {
+                        Export.ApprovedAt = RequestWorkflowStepMapping.UpdatedAt.Value.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy");
+                        Export.MonitorName = RequestWorkflowStepMapping.AppUser.DisplayName;
+                        Export.MonitorUserName = RequestWorkflowStepMapping.AppUser.Username;
+                        Export.RequestStateName = RequestStateEnum.APPROVED.Name;
+                    }
                 }
 
                 var Contents = IndirectSalesOrder_IndirectSalesOrderContentDTOs.Where(x => x.IndirectSalesOrderId == Export.Id).ToList();

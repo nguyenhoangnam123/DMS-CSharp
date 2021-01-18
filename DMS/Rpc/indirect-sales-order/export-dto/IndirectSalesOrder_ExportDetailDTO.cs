@@ -11,6 +11,7 @@ namespace DMS.Rpc.indirect_sales_order
         public long STT { get; set; }
         public long Id { get; set; }
         public long OrganizationId { get; set; }
+        public long RequestStateId { get; set; }
         public string Code { get; set; }
         public string OrderDate { get; set; }
         public string ApprovedAt { get; set; }
