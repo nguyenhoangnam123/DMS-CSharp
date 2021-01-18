@@ -508,6 +508,222 @@ namespace DMS.Rpc.indirect_sales_order
             return File(output.ToArray(), "application/octet-stream", "ListIndirectSalesOrder.xlsx");
         }
 
+        [Route(IndirectSalesOrderRoute.ExportDetail), HttpPost]
+        public async Task<ActionResult> ExportDetail([FromBody] IndirectSalesOrder_IndirectSalesOrderFilterDTO IndirectSalesOrder_IndirectSalesOrderFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            DateTime Start = IndirectSalesOrder_IndirectSalesOrderFilterDTO.OrderDate?.GreaterEqual == null ?
+                    LocalStartDay(CurrentContext) :
+                    IndirectSalesOrder_IndirectSalesOrderFilterDTO.OrderDate.GreaterEqual.Value;
+
+            DateTime End = IndirectSalesOrder_IndirectSalesOrderFilterDTO.OrderDate?.LessEqual == null ?
+                    LocalEndDay(CurrentContext) :
+                    IndirectSalesOrder_IndirectSalesOrderFilterDTO.OrderDate.LessEqual.Value;
+
+            IndirectSalesOrder_IndirectSalesOrderFilterDTO.Skip = 0;
+            IndirectSalesOrder_IndirectSalesOrderFilterDTO.Take = int.MaxValue;
+            List<IndirectSalesOrder_IndirectSalesOrderDTO> IndirectSalesOrder_IndirectSalesOrderDTOs = (await List(IndirectSalesOrder_IndirectSalesOrderFilterDTO)).Value;
+            var Ids = IndirectSalesOrder_IndirectSalesOrderDTOs.Select(x => x.Id).ToList();
+            var RowIds = IndirectSalesOrder_IndirectSalesOrderDTOs.Select(x => x.RowId).ToList();
+            var queryContent = from c in DataContext.IndirectSalesOrderContent
+                               join u in DataContext.UnitOfMeasure on c.UnitOfMeasureId equals u.Id
+                               join i in DataContext.Item on c.ItemId equals i.Id
+                               join p in DataContext.Product on i.ProductId equals p.Id
+                               join ct in DataContext.Category on p.CategoryId equals ct.Id
+                               where Ids.Contains(c.IndirectSalesOrderId)
+                               select new IndirectSalesOrder_IndirectSalesOrderContentDTO
+                               {
+                                   Id = c.Id,
+                                   IndirectSalesOrderId = c.IndirectSalesOrderId,
+                                   ItemId = c.ItemId,
+                                   UnitOfMeasureId = c.UnitOfMeasureId,
+                                   SalePrice = c.SalePrice,
+                                   RequestedQuantity = c.RequestedQuantity,
+                                   Quantity = c.Quantity,
+                                   Amount = c.Amount,
+                                   UnitOfMeasure = new IndirectSalesOrder_UnitOfMeasureDTO
+                                   {
+                                       Name = u.Name
+                                   },
+                                   Item = new IndirectSalesOrder_ItemDTO
+                                   {
+                                       Code = i.Code,
+                                       Name = i.Name,
+                                       Product = new IndirectSalesOrder_ProductDTO
+                                       {
+                                           Category = new IndirectSalesOrder_CategoryDTO
+                                           {
+                                               Name = ct.Name
+                                           }
+                                       }
+                                   }
+                               };
+
+            var queryPromotion = from c in DataContext.IndirectSalesOrderPromotion
+                                 join u in DataContext.UnitOfMeasure on c.UnitOfMeasureId equals u.Id
+                                 join i in DataContext.Item on c.ItemId equals i.Id
+                                 join p in DataContext.Product on i.ProductId equals p.Id
+                                 join ct in DataContext.Category on p.CategoryId equals ct.Id
+                                 where Ids.Contains(c.IndirectSalesOrderId)
+                                 select new IndirectSalesOrder_IndirectSalesOrderPromotionDTO
+                                 {
+                                     Id = c.Id,
+                                     IndirectSalesOrderId = c.IndirectSalesOrderId,
+                                     ItemId = c.ItemId,
+                                     UnitOfMeasureId = c.UnitOfMeasureId,
+                                     RequestedQuantity = c.RequestedQuantity,
+                                     Quantity = c.Quantity,
+                                     UnitOfMeasure = new IndirectSalesOrder_UnitOfMeasureDTO
+                                     {
+                                         Name = u.Name
+                                     },
+                                     Item = new IndirectSalesOrder_ItemDTO
+                                     {
+                                         Code = i.Code,
+                                         Name = i.Name,
+                                         Product = new IndirectSalesOrder_ProductDTO
+                                         {
+                                             Category = new IndirectSalesOrder_CategoryDTO
+                                             {
+                                                 Name = ct.Name
+                                             }
+                                         }
+                                     }
+                                 };
+
+            var queryRequestWorkflowStepMapping = from r in DataContext.RequestWorkflowStepMapping
+                                                  join a in DataContext.AppUser on r.AppUserId equals a.Id
+                                                  where RowIds.Contains(r.RequestId)
+                                                  select new IndirectSalesOrder_RequestWorkflowStepMappingDTO
+                                                  {
+                                                      AppUserId = r.AppUserId,
+                                                      UpdatedAt = r.UpdatedAt,
+                                                      RequestId = r.RequestId,
+                                                      WorkflowStateId = r.WorkflowStateId,
+                                                      AppUser = new IndirectSalesOrder_AppUserDTO
+                                                      {
+                                                          Username = a.Username,
+                                                          DisplayName = a.DisplayName,
+                                                      }
+                                                  };
+
+            List<IndirectSalesOrder_IndirectSalesOrderContentDTO> IndirectSalesOrder_IndirectSalesOrderContentDTOs = await queryContent.ToListAsync();
+            List<IndirectSalesOrder_IndirectSalesOrderPromotionDTO> IndirectSalesOrder_IndirectSalesOrderPromotionDTOs = await queryPromotion.ToListAsync();
+            List<IndirectSalesOrder_RequestWorkflowStepMappingDTO> IndirectSalesOrder_RequestWorkflowStepMappingDTOs = await queryRequestWorkflowStepMapping.ToListAsync();
+            foreach (var IndirectSalesOrder_RequestWorkflowStepMappingDTO in IndirectSalesOrder_RequestWorkflowStepMappingDTOs)
+            {
+                var WorkflowState = WorkflowStateEnum.WorkflowStateEnumList.Where(x => x.Id == IndirectSalesOrder_RequestWorkflowStepMappingDTO.WorkflowStateId).FirstOrDefault();
+                if (WorkflowState != null)
+                    IndirectSalesOrder_RequestWorkflowStepMappingDTO.WorkflowState = new IndirectSalesOrder_WorkflowStateDTO
+                    {
+                        Name = WorkflowState.Name
+                    };
+            }
+
+            var OrganizationIds = IndirectSalesOrder_IndirectSalesOrderDTOs.Select(x => x.OrganizationId).Distinct().ToList();
+            var Organizations = await DataContext.Organization.Where(x => OrganizationIds.Contains(x.Id)).Select(x => new Organization
+            {
+                Id = x.Id,
+                Name = x.Name,
+            }).ToListAsync();
+
+            List<IndirectSalesOrder_ExportDetailDTO> Exports = IndirectSalesOrder_IndirectSalesOrderDTOs.Select(x => new IndirectSalesOrder_ExportDetailDTO
+            {
+                OrganizationId = x.OrganizationId,
+                Id = x.Id,
+                Code = x.Code,
+                Note = x.Note,
+                Discount = x.GeneralDiscountAmount.GetValueOrDefault(0),
+                OrderDate = x.OrderDate.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy"),
+                DeliveryDate = x.DeliveryDate?.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy"),
+                BuyerStoreAddress = x.BuyerStore.Address,
+                BuyerStoreCode = x.BuyerStore.Code,
+                BuyerStoreName = x.BuyerStore.Name,
+                BuyerStoreGroupingName = x.BuyerStore.StoreGrouping?.Name,
+                BuyerStoreTypeName = x.BuyerStore.StoreType.Name,
+                SalesEmployeeName = x.SaleEmployee.DisplayName,
+                SalesEmployeeUserName = x.SaleEmployee.Username,
+                SellerStoreCode = x.SellerStore.Code,
+                SellerStoreName = x.SellerStore.Name,
+                SubTotal = x.SubTotal,
+                Total = x.Total,
+                RowId = x.RowId,
+                Contents = new List<IndirectSalesOrder_ExportDetailContentDTO>()
+            }).ToList();
+            long stt = 1;
+            foreach (var Export in Exports)
+            {
+                Export.STT = stt++;
+                var Organization = Organizations.Where(x => x.Id == Export.OrganizationId).FirstOrDefault();
+                if (Organization != null)
+                    Export.OrganizationName = Organization.Name;
+
+                var RequestWorkflowStepMapping = IndirectSalesOrder_RequestWorkflowStepMappingDTOs
+                    .Where(x => x.RequestId == Export.RowId)
+                    .OrderByDescending(x => x.UpdatedAt)
+                    .FirstOrDefault();
+                if(RequestWorkflowStepMapping != null)
+                {
+                    Export.ApprovedAt = RequestWorkflowStepMapping.UpdatedAt.Value.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy");
+                    Export.MonitorName = RequestWorkflowStepMapping.AppUser.DisplayName;
+                    Export.MonitorUserName = RequestWorkflowStepMapping.AppUser.Username;
+                    Export.RequestStateName = RequestWorkflowStepMapping.WorkflowState.Name;
+                }
+
+                var Contents = IndirectSalesOrder_IndirectSalesOrderContentDTOs.Where(x => x.IndirectSalesOrderId == Export.Id).ToList();
+                var Promotions = IndirectSalesOrder_IndirectSalesOrderPromotionDTOs.Where(x => x.IndirectSalesOrderId == Export.Id).ToList();
+
+                foreach (var Content in Contents)
+                {
+                    IndirectSalesOrder_ExportDetailContentDTO IndirectSalesOrder_ExportDetailContentDTO = new IndirectSalesOrder_ExportDetailContentDTO
+                    {
+                        Amount = Content.Amount,
+                        CategoryName = Content.Item.Product.Category.Name,
+                        Code = Content.Item.Code,
+                        Name = Content.Item.Name,
+                        UnitOfMeasureName = Content.UnitOfMeasure.Name,
+                        ItemOrderType = "Sản phẩm bán",
+                        Quantity = Content.Quantity,
+                        SalePrice = Content.SalePrice,
+                    };
+                    Export.Contents.Add(IndirectSalesOrder_ExportDetailContentDTO);
+                }
+
+                foreach (var Promotion in Promotions)
+                {
+                    IndirectSalesOrder_ExportDetailContentDTO IndirectSalesOrder_ExportDetailContentDTO = new IndirectSalesOrder_ExportDetailContentDTO
+                    {
+                        CategoryName = Promotion.Item.Product.Category.Name,
+                        Code = Promotion.Item.Code,
+                        Name = Promotion.Item.Name,
+                        UnitOfMeasureName = Promotion.UnitOfMeasure.Name,
+                        ItemOrderType = "Sản phẩm khuyến mại",
+                        Quantity = Promotion.Quantity,
+                        Amount = 0,
+                        SalePrice = 0,
+                    };
+                    Export.Contents.Add(IndirectSalesOrder_ExportDetailContentDTO);
+                }
+            }
+
+            string path = "Templates/Indirect_Order_Detail_Export.xlsx";
+            byte[] arr = System.IO.File.ReadAllBytes(path);
+            MemoryStream input = new MemoryStream(arr);
+            MemoryStream output = new MemoryStream();
+            dynamic Data = new ExpandoObject();
+            Data.Start = Start == LocalStartDay(CurrentContext) ? "" : Start.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy");
+            Data.End = End.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy");
+            Data.Exports = Exports;
+            using (var document = StaticParams.DocumentFactory.Open(input, output, "xlsx"))
+            {
+                document.Process(Data);
+            };
+
+            return File(output.ToArray(), "application/octet-stream", "ListIndirectSalesOrder.xlsx");
+        }
+
         private async Task<bool> HasPermission(long Id)
         {
             IndirectSalesOrderFilter IndirectSalesOrderFilter = new IndirectSalesOrderFilter();

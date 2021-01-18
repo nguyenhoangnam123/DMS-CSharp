@@ -34,6 +34,7 @@ namespace DMS.Rpc.indirect_sales_order
         public const string BulkApprove = Default + "/bulk-approve";
         public const string BulkReject = Default + "/bulk-reject";
         public const string Export = Default + "/export";
+        public const string ExportDetail = Default + "/export-detail";
         public const string Print = Default + "/print";
 
         public const string FilterListAppUser = Default + "/filter-list-app-user";
@@ -130,7 +131,7 @@ namespace DMS.Rpc.indirect_sales_order
                 Master, Count, List,
                 CountNew, ListNew, CountPending, ListPending, CountCompleted, ListCompleted,
                 FilterListStore, FilterListStoreStatus, FilterListEditedPriceStatus, FilterListRequestState, FilterListAppUser, FilterListItem, FilterListUnitOfMeasure, FilterListOrganization,
-                Export } },
+                Export, ExportDetail } },
             { "Phê duyệt", new List<string> {
                 Parent,
                 Master, Count, List, Get, Print,
