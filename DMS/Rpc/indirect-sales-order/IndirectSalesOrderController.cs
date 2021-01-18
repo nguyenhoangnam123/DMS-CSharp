@@ -645,10 +645,9 @@ namespace DMS.Rpc.indirect_sales_order
                 RowId = x.RowId,
                 Contents = new List<IndirectSalesOrder_ExportDetailContentDTO>()
             }).ToList();
-            long stt = 1;
+            
             foreach (var Export in Exports)
             {
-                Export.STT = stt++;
                 var Organization = Organizations.Where(x => x.Id == Export.OrganizationId).FirstOrDefault();
                 if (Organization != null)
                     Export.OrganizationName = Organization.Name;
@@ -677,8 +676,8 @@ namespace DMS.Rpc.indirect_sales_order
                     {
                         Amount = Content.Amount,
                         CategoryName = Content.Item.Product.Category.Name,
-                        Code = Content.Item.Code,
-                        Name = Content.Item.Name,
+                        ItemCode = Content.Item.Code,
+                        ItemName = Content.Item.Name,
                         UnitOfMeasureName = Content.UnitOfMeasure.Name,
                         ItemOrderType = "Sản phẩm bán",
                         Quantity = Content.Quantity,
@@ -692,8 +691,8 @@ namespace DMS.Rpc.indirect_sales_order
                     IndirectSalesOrder_ExportDetailContentDTO IndirectSalesOrder_ExportDetailContentDTO = new IndirectSalesOrder_ExportDetailContentDTO
                     {
                         CategoryName = Promotion.Item.Product.Category.Name,
-                        Code = Promotion.Item.Code,
-                        Name = Promotion.Item.Name,
+                        ItemCode = Promotion.Item.Code,
+                        ItemName = Promotion.Item.Name,
                         UnitOfMeasureName = Promotion.UnitOfMeasure.Name,
                         ItemOrderType = "Sản phẩm khuyến mại",
                         Quantity = Promotion.Quantity,
@@ -704,6 +703,55 @@ namespace DMS.Rpc.indirect_sales_order
                 }
             }
 
+            long stt = 1;
+            var Datas = new List<IndirectSalesOrder_ExportDetailContentDTO>();
+            foreach (var Export in Exports)
+            {
+                foreach (var Content in Export.Contents)
+                {
+                    IndirectSalesOrder_ExportDetailContentDTO IndirectSalesOrder_ExportDetailContentDTO = new IndirectSalesOrder_ExportDetailContentDTO
+                    {
+                        STT = stt++,
+                        OrganizationId = Export.OrganizationId,
+                        Id = Export.Id,
+                        RequestStateId = Export.RequestStateId,
+                        Code = Export.Code,
+                        Note = Export.Note,
+                        Discount = Export.Discount,
+                        OrderDate = Export.OrderDate,
+                        DeliveryDate = Export.DeliveryDate,
+                        BuyerStoreAddress = Export.BuyerStoreAddress,
+                        BuyerStoreCode = Export.BuyerStoreCode,
+                        BuyerStoreName = Export.BuyerStoreName,
+                        BuyerStoreGroupingName = Export.BuyerStoreGroupingName,
+                        BuyerStoreTypeName = Export.BuyerStoreTypeName,
+                        SalesEmployeeName = Export.SalesEmployeeName,
+                        SalesEmployeeUserName = Export.SalesEmployeeUserName,
+                        SellerStoreCode = Export.SellerStoreCode,
+                        SellerStoreName = Export.SellerStoreName,
+                        RequestStateName = Export.RequestStateName,
+                        SubTotal = Export.SubTotal,
+                        Total = Export.Total,
+                        RowId = Export.RowId,
+                        ApprovedAt = Export.ApprovedAt,
+                        ERouteCode = Export.ERouteCode,
+                        ERouteName = Export.ERouteName,
+                        MonitorName = Export.MonitorName,
+                        MonitorUserName = Export.MonitorUserName,
+                        OrganizationName = Export.OrganizationName,
+                        Amount = Content.Amount,
+                        CategoryName = Content.CategoryName,
+                        ItemCode = Content.ItemCode,
+                        ItemName = Content.ItemName,
+                        UnitOfMeasureName = Content.UnitOfMeasureName,
+                        ItemOrderType = Content.ItemOrderType,
+                        Quantity = Content.Quantity,
+                        SalePrice = Content.SalePrice,
+                    };
+                    Datas.Add(IndirectSalesOrder_ExportDetailContentDTO);
+                }
+            }
+
             string path = "Templates/Indirect_Order_Detail_Export.xlsx";
             byte[] arr = System.IO.File.ReadAllBytes(path);
             MemoryStream input = new MemoryStream(arr);
@@ -711,7 +759,10 @@ namespace DMS.Rpc.indirect_sales_order
             dynamic Data = new ExpandoObject();
             Data.Start = Start == LocalStartDay(CurrentContext) ? "" : Start.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy");
             Data.End = End.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy");
-            Data.Exports = Exports;
+            Data.Exports = Datas;
+            Data.SubTotal = Exports.Sum(x => x.SubTotal);
+            Data.Discount = Exports.Sum(x => x.Discount);
+            Data.Total = Exports.Sum(x => x.Total);
             using (var document = StaticParams.DocumentFactory.Open(input, output, "xlsx"))
             {
                 document.Process(Data);
