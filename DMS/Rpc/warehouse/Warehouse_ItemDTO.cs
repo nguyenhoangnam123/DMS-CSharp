@@ -18,7 +18,7 @@ namespace DMS.Rpc.warehouse
 
         public string ScanCode { get; set; }
 
-        public decimal SalePrice { get; set; }
+        public decimal? SalePrice { get; set; }
 
         public decimal? RetailPrice { get; set; }
         public Warehouse_ProductDTO Product { get; set; }

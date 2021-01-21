@@ -19,7 +19,7 @@ namespace DMS.Rpc.promotion
 
         public string ScanCode { get; set; }
 
-        public decimal SalePrice { get; set; }
+        public decimal? SalePrice { get; set; }
 
         public decimal? RetailPrice { get; set; }
 

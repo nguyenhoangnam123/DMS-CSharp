@@ -17,18 +17,16 @@ namespace DMS.Models
 
         public long Id { get; set; }
         public string Code { get; set; }
-        public string SupplierCode { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
         public string ScanCode { get; set; }
         public string ERPCode { get; set; }
         public long CategoryId { get; set; }
         public long ProductTypeId { get; set; }
-        public long? SupplierId { get; set; }
         public long? BrandId { get; set; }
         public long UnitOfMeasureId { get; set; }
         public long? UnitOfMeasureGroupingId { get; set; }
-        public decimal SalePrice { get; set; }
+        public decimal? SalePrice { get; set; }
         public decimal? RetailPrice { get; set; }
         public long TaxTypeId { get; set; }
         public long StatusId { get; set; }
@@ -47,7 +45,6 @@ namespace DMS.Models
         public virtual CategoryDAO Category { get; set; }
         public virtual ProductTypeDAO ProductType { get; set; }
         public virtual StatusDAO Status { get; set; }
-        public virtual SupplierDAO Supplier { get; set; }
         public virtual TaxTypeDAO TaxType { get; set; }
         public virtual UnitOfMeasureDAO UnitOfMeasure { get; set; }
         public virtual UnitOfMeasureGroupingDAO UnitOfMeasureGrouping { get; set; }

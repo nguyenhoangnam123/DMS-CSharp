@@ -17,7 +17,7 @@ namespace DMS.Rpc.price_list
         public string ScanCode { get; set; }
         public string OtherName { get; set; }
 
-        public decimal SalePrice { get; set; }
+        public decimal? SalePrice { get; set; }
 
         public decimal? RetailPrice { get; set; }
 

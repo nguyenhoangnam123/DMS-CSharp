@@ -19,6 +19,7 @@ namespace DMS.Models
             KpiGenerals = new HashSet<KpiGeneralDAO>();
             KpiItems = new HashSet<KpiItemDAO>();
             LuckyNumberGroupings = new HashSet<LuckyNumberGroupingDAO>();
+            Nations = new HashSet<NationDAO>();
             Organizations = new HashSet<OrganizationDAO>();
             Permissions = new HashSet<PermissionDAO>();
             Positions = new HashSet<PositionDAO>();
@@ -62,6 +63,7 @@ namespace DMS.Models
         public virtual ICollection<KpiGeneralDAO> KpiGenerals { get; set; }
         public virtual ICollection<KpiItemDAO> KpiItems { get; set; }
         public virtual ICollection<LuckyNumberGroupingDAO> LuckyNumberGroupings { get; set; }
+        public virtual ICollection<NationDAO> Nations { get; set; }
         public virtual ICollection<OrganizationDAO> Organizations { get; set; }
         public virtual ICollection<PermissionDAO> Permissions { get; set; }
         public virtual ICollection<PositionDAO> Positions { get; set; }

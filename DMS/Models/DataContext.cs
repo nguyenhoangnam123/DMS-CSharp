@@ -59,6 +59,7 @@ namespace DMS.Models
         public virtual DbSet<LuckyNumberDAO> LuckyNumber { get; set; }
         public virtual DbSet<LuckyNumberGroupingDAO> LuckyNumberGrouping { get; set; }
         public virtual DbSet<MenuDAO> Menu { get; set; }
+        public virtual DbSet<NationDAO> Nation { get; set; }
         public virtual DbSet<NotificationDAO> Notification { get; set; }
         public virtual DbSet<NotificationStatusDAO> NotificationStatus { get; set; }
         public virtual DbSet<OrganizationDAO> Organization { get; set; }
@@ -1880,6 +1881,33 @@ namespace DMS.Models
                 entity.Property(e => e.Path).HasMaxLength(3000);
             });
 
+            modelBuilder.Entity<NationDAO>(entity =>
+            {
+                entity.ToTable("Nation", "MDM");
+
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.HasOne(d => d.Status)
+                    .WithMany(p => p.Nations)
+                    .HasForeignKey(d => d.StatusId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Nation_Status");
+            });
+
             modelBuilder.Entity<NotificationDAO>(entity =>
             {
                 entity.Property(e => e.Title)
@@ -2409,8 +2437,6 @@ namespace DMS.Models
 
                 entity.Property(e => e.ScanCode).HasMaxLength(500);
 
-                entity.Property(e => e.SupplierCode).HasMaxLength(500);
-
                 entity.Property(e => e.TechnicalName).HasMaxLength(1000);
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
@@ -2437,11 +2463,6 @@ namespace DMS.Models
                     .HasForeignKey(d => d.StatusId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Product_Status");
-
-                entity.HasOne(d => d.Supplier)
-                    .WithMany(p => p.Products)
-                    .HasForeignKey(d => d.SupplierId)
-                    .HasConstraintName("FK_Product_Supplier");
 
                 entity.HasOne(d => d.TaxType)
                     .WithMany(p => p.Products)
@@ -4131,6 +4152,11 @@ namespace DMS.Models
                     .WithMany(p => p.Suppliers)
                     .HasForeignKey(d => d.DistrictId)
                     .HasConstraintName("FK_Supplier_District");
+
+                entity.HasOne(d => d.Nation)
+                    .WithMany(p => p.Suppliers)
+                    .HasForeignKey(d => d.NationId)
+                    .HasConstraintName("FK_Supplier_Nation");
 
                 entity.HasOne(d => d.PersonInCharge)
                     .WithMany(p => p.Suppliers)

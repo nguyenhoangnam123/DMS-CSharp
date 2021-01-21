@@ -115,10 +115,6 @@ namespace DMS.Repositories
             if (filter.ProductTypeId != null && filter.ProductTypeId.HasValue)
                 query = query.Where(q => q.Product.ProductTypeId, filter.ProductTypeId);
 
-            if (filter.SupplierId != null && filter.SupplierId.HasValue)
-                query = query.Where(q => q.Product.SupplierId.HasValue)
-                    .Where(q => q.Product.SupplierId.Value, filter.SupplierId);
-
             if (filter.StatusId != null && filter.StatusId.HasValue)
                 query = query.Where(q => q.StatusId, filter.StatusId);
 
@@ -273,12 +269,10 @@ namespace DMS.Repositories
                 {
                     Id = q.Product.Id,
                     Code = q.Product.Code,
-                    SupplierCode = q.Product.SupplierCode,
                     Name = q.Product.Name,
                     Description = q.Product.Description,
                     ScanCode = q.Product.ScanCode,
                     ProductTypeId = q.Product.ProductTypeId,
-                    SupplierId = q.Product.SupplierId,
                     BrandId = q.Product.BrandId,
                     UnitOfMeasureId = q.Product.UnitOfMeasureId,
                     UnitOfMeasureGroupingId = q.Product.UnitOfMeasureGroupingId,
@@ -304,24 +298,6 @@ namespace DMS.Repositories
                         Description = q.Product.ProductType.Description,
                         StatusId = q.Product.ProductType.StatusId,
                         UpdatedAt = q.Product.ProductType.UpdatedAt,
-                    },
-                    Supplier = new Supplier
-                    {
-                        Id = q.Product.Supplier.Id,
-                        Code = q.Product.Supplier.Code,
-                        Name = q.Product.Supplier.Name,
-                        Address = q.Product.Supplier.Address,
-                        Description = q.Product.Supplier.Description,
-                        DistrictId = q.Product.Supplier.DistrictId,
-                        Email = q.Product.Supplier.Email,
-                        OwnerName = q.Product.Supplier.OwnerName,
-                        PersonInChargeId = q.Product.Supplier.PersonInChargeId,
-                        Phone = q.Product.Supplier.Phone,
-                        ProvinceId = q.Product.Supplier.ProvinceId,
-                        StatusId = q.Product.Supplier.StatusId,
-                        TaxCode = q.Product.Supplier.TaxCode,
-                        UpdatedTime = q.Product.Supplier.UpdatedAt,
-                        WardId = q.Product.Supplier.WardId,
                     },
                     TaxType = new TaxType
                     {
@@ -448,12 +424,10 @@ namespace DMS.Repositories
                 {
                     Id = x.Product.Id,
                     Code = x.Product.Code,
-                    SupplierCode = x.Product.SupplierCode,
                     Name = x.Product.Name,
                     Description = x.Product.Description,
                     ScanCode = x.Product.ScanCode,
                     ProductTypeId = x.Product.ProductTypeId,
-                    SupplierId = x.Product.SupplierId,
                     BrandId = x.Product.BrandId,
                     UnitOfMeasureId = x.Product.UnitOfMeasureId,
                     UnitOfMeasureGroupingId = x.Product.UnitOfMeasureGroupingId,
@@ -510,12 +484,6 @@ namespace DMS.Repositories
                         Id = x.Product.Brand.Id,
                         Code = x.Product.Brand.Code,
                         Name = x.Product.Brand.Name,
-                    },
-                    Supplier = x.Product.Supplier == null ? null : new Supplier
-                    {
-                        Id = x.Product.Supplier.Id,
-                        Code = x.Product.Supplier.Code,
-                        Name = x.Product.Supplier.Name,
                     },
                 },
             }).FirstOrDefaultAsync();

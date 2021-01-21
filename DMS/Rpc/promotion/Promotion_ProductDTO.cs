@@ -33,7 +33,7 @@ namespace DMS.Rpc.promotion
         
         public long? UnitOfMeasureGroupingId { get; set; }
         
-        public decimal SalePrice { get; set; }
+        public decimal? SalePrice { get; set; }
         
         public decimal? RetailPrice { get; set; }
         

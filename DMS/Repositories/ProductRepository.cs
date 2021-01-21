@@ -33,8 +33,6 @@ namespace DMS.Repositories
                 query = query.Where(q => q.Id, filter.Id);
             if (filter.Code != null)
                 query = query.Where(q => q.Code, filter.Code);
-            if (filter.SupplierCode != null)
-                query = query.Where(q => q.SupplierCode, filter.SupplierCode);
             if (filter.Name != null)
                 query = query.Where(q => q.Name, filter.Name);
             if (filter.Description != null)
@@ -45,8 +43,6 @@ namespace DMS.Repositories
                 query = query.Where(q => q.CategoryId, filter.CategoryId);
             if (filter.ProductTypeId != null)
                 query = query.Where(q => q.ProductTypeId, filter.ProductTypeId);
-            if (filter.SupplierId != null)
-                query = query.Where(q => q.SupplierId, filter.SupplierId);
             if (filter.BrandId != null)
                 query = query.Where(q => q.BrandId, filter.BrandId);
             if (filter.UnitOfMeasureId != null)
@@ -223,9 +219,6 @@ namespace DMS.Repositories
                         case ProductOrder.Code:
                             query = query.OrderBy(q => q.Code);
                             break;
-                        case ProductOrder.SupplierCode:
-                            query = query.OrderBy(q => q.SupplierCode);
-                            break;
                         case ProductOrder.Name:
                             query = query.OrderBy(q => q.Name);
                             break;
@@ -240,9 +233,6 @@ namespace DMS.Repositories
                             break;
                         case ProductOrder.ProductType:
                             query = query.OrderBy(q => q.ProductType.Name);
-                            break;
-                        case ProductOrder.Supplier:
-                            query = query.OrderBy(q => q.Supplier.Name);
                             break;
                         case ProductOrder.Brand:
                             query = query.OrderBy(q => q.Brand.Name);
@@ -291,9 +281,6 @@ namespace DMS.Repositories
                         case ProductOrder.Code:
                             query = query.OrderByDescending(q => q.Code);
                             break;
-                        case ProductOrder.SupplierCode:
-                            query = query.OrderByDescending(q => q.SupplierCode);
-                            break;
                         case ProductOrder.Name:
                             query = query.OrderByDescending(q => q.Name);
                             break;
@@ -308,9 +295,6 @@ namespace DMS.Repositories
                             break;
                         case ProductOrder.ProductType:
                             query = query.OrderByDescending(q => q.ProductType.Name);
-                            break;
-                        case ProductOrder.Supplier:
-                            query = query.OrderByDescending(q => q.Supplier.Name);
                             break;
                         case ProductOrder.Brand:
                             query = query.OrderByDescending(q => q.Brand.Name);
@@ -361,14 +345,12 @@ namespace DMS.Repositories
             {
                 Id = filter.Selects.Contains(ProductSelect.Id) ? q.Id : default(long),
                 Code = filter.Selects.Contains(ProductSelect.Code) ? q.Code : default(string),
-                SupplierCode = filter.Selects.Contains(ProductSelect.SupplierCode) ? q.SupplierCode : default(string),
                 Name = filter.Selects.Contains(ProductSelect.Name) ? q.Name : default(string),
                 Description = filter.Selects.Contains(ProductSelect.Description) ? q.Description : default(string),
                 ScanCode = filter.Selects.Contains(ProductSelect.ScanCode) ? q.ScanCode : default(string),
                 ERPCode = filter.Selects.Contains(ProductSelect.ERPCode) ? q.ERPCode : default(string),
                 CategoryId = filter.Selects.Contains(ProductSelect.Category) ? q.CategoryId : default(long),
                 ProductTypeId = filter.Selects.Contains(ProductSelect.ProductType) ? q.ProductTypeId : default(long),
-                SupplierId = filter.Selects.Contains(ProductSelect.Supplier) ? q.SupplierId : default(long?),
                 BrandId = filter.Selects.Contains(ProductSelect.Brand) ? q.BrandId : default(long?),
                 UnitOfMeasureId = filter.Selects.Contains(ProductSelect.UnitOfMeasure) ? q.UnitOfMeasureId : default(long),
                 UnitOfMeasureGroupingId = filter.Selects.Contains(ProductSelect.UnitOfMeasureGrouping) ? q.UnitOfMeasureGroupingId : default(long?),
@@ -412,14 +394,6 @@ namespace DMS.Repositories
                     Id = q.Status.Id,
                     Code = q.Status.Code,
                     Name = q.Status.Name,
-                } : null,
-                Supplier = filter.Selects.Contains(ProductSelect.Supplier) && q.Supplier != null ? new Supplier
-                {
-                    Id = q.Supplier.Id,
-                    Code = q.Supplier.Code,
-                    Name = q.Supplier.Name,
-                    TaxCode = q.Supplier.TaxCode,
-                    StatusId = q.Supplier.StatusId,
                 } : null,
                 TaxType = filter.Selects.Contains(ProductSelect.TaxType) && q.TaxType != null ? new TaxType
                 {
@@ -552,7 +526,6 @@ namespace DMS.Repositories
                 {
                     Id = x.Id,
                     Code = x.Code,
-                    SupplierCode = x.SupplierCode,
                     Name = x.Name,
                     ERPCode = x.ERPCode,
                     TechnicalName = x.TechnicalName,
@@ -561,7 +534,6 @@ namespace DMS.Repositories
                     ScanCode = x.ScanCode,
                     CategoryId = x.CategoryId,
                     ProductTypeId = x.ProductTypeId,
-                    SupplierId = x.SupplierId,
                     BrandId = x.BrandId,
                     UnitOfMeasureId = x.UnitOfMeasureId,
                     UnitOfMeasureGroupingId = x.UnitOfMeasureGroupingId,
@@ -608,14 +580,6 @@ namespace DMS.Repositories
                         Id = x.Status.Id,
                         Code = x.Status.Code,
                         Name = x.Status.Name,
-                    },
-                    Supplier = x.Supplier == null ? null : new Supplier
-                    {
-                        Id = x.Supplier.Id,
-                        Code = x.Supplier.Code,
-                        Name = x.Supplier.Name,
-                        TaxCode = x.Supplier.TaxCode,
-                        StatusId = x.Supplier.StatusId,
                     },
                     TaxType = x.TaxType == null ? null : new TaxType
                     {

@@ -244,7 +244,7 @@ namespace DMS.Services.MIndirectSalesOrder
                                     decimal SalePrice = 0;
                                     if (IndirectSalesOrder.EditedPriceStatusId == EditedPriceStatusEnum.INACTIVE.Id)
                                     {
-                                        SalePrice = Item.SalePrice * UOM.Factor.Value;
+                                        SalePrice = Item.SalePrice.GetValueOrDefault(0) * UOM.Factor.Value;
                                         //làm tròn số
                                         var surplus = SalePrice % 1000;
                                         if (surplus >= 500)

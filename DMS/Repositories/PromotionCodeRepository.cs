@@ -419,13 +419,11 @@ namespace DMS.Repositories
                     {
                         Id = x.Product.Id,
                         Code = x.Product.Code,
-                        SupplierCode = x.Product.SupplierCode,
                         Name = x.Product.Name,
                         Description = x.Product.Description,
                         ScanCode = x.Product.ScanCode,
                         ERPCode = x.Product.ERPCode,
                         ProductTypeId = x.Product.ProductTypeId,
-                        SupplierId = x.Product.SupplierId,
                         BrandId = x.Product.BrandId,
                         UnitOfMeasureId = x.Product.UnitOfMeasureId,
                         UnitOfMeasureGroupingId = x.Product.UnitOfMeasureGroupingId,

@@ -51,6 +51,7 @@ namespace DMS.Repositories
         IInventoryRepository InventoryRepository { get; }
         IInventoryHistoryRepository InventoryHistoryRepository { get; }
         IMenuRepository MenuRepository { get; }
+        INationRepository NationRepository { get; }
         INotificationRepository NotificationRepository { get; }
         INotificationStatusRepository NotificationStatusRepository { get; }
         IOrganizationRepository OrganizationRepository { get; }
@@ -175,6 +176,7 @@ namespace DMS.Repositories
         public ILuckyNumberRepository LuckyNumberRepository { get; private set; }
         public ILuckyNumberGroupingRepository LuckyNumberGroupingRepository { get; private set; }
         public IMenuRepository MenuRepository { get; private set; }
+        public INationRepository NationRepository { get; private set; }
         public INotificationRepository NotificationRepository { get; private set; }
         public INotificationStatusRepository NotificationStatusRepository { get; private set; }
         public IOrganizationRepository OrganizationRepository { get; private set; }
@@ -297,6 +299,7 @@ namespace DMS.Repositories
             LuckyNumberRepository = new LuckyNumberRepository(DataContext);
             LuckyNumberGroupingRepository = new LuckyNumberGroupingRepository(DataContext);
             MenuRepository = new MenuRepository(DataContext);
+            NationRepository = new NationRepository(DataContext);
             NotificationRepository = new NotificationRepository(DataContext);
             NotificationStatusRepository = new NotificationStatusRepository(DataContext);
             OrganizationRepository = new OrganizationRepository(DataContext);

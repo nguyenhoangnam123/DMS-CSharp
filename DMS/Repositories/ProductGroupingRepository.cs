@@ -199,12 +199,10 @@ namespace DMS.Repositories
                     {
                         Id = x.Product.Id,
                         Code = x.Product.Code,
-                        SupplierCode = x.Product.SupplierCode,
                         Name = x.Product.Name,
                         Description = x.Product.Description,
                         ScanCode = x.Product.ScanCode,
                         ProductTypeId = x.Product.ProductTypeId,
-                        SupplierId = x.Product.SupplierId,
                         BrandId = x.Product.BrandId,
                         UnitOfMeasureId = x.Product.UnitOfMeasureId,
                         UnitOfMeasureGroupingId = x.Product.UnitOfMeasureGroupingId,
@@ -234,14 +232,6 @@ namespace DMS.Repositories
                             Id = x.Product.Status.Id,
                             Code = x.Product.Status.Code,
                             Name = x.Product.Status.Name,
-                        },
-                        Supplier = x.Product.Supplier == null ? null : new Supplier
-                        {
-                            Id = x.Product.Supplier.Id,
-                            Code = x.Product.Supplier.Code,
-                            Name = x.Product.Supplier.Name,
-                            TaxCode = x.Product.Supplier.TaxCode,
-                            StatusId = x.Product.Supplier.StatusId,
                         },
                         TaxType = x.Product.TaxType == null ? null : new TaxType
                         {

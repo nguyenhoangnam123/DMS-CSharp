@@ -63,13 +63,11 @@ namespace DMS.Handlers
                     ProductDAO.DeletedAt = Product.DeletedAt;
                     ProductDAO.Code = Product.Code;
                     ProductDAO.Name = Product.Name;
-                    ProductDAO.SupplierCode = Product.SupplierCode;
                     ProductDAO.Description = Product.Description;
                     ProductDAO.ScanCode = Product.ScanCode;
                     ProductDAO.ERPCode = Product.ERPCode;
                     ProductDAO.CategoryId = Product.CategoryId;
                     ProductDAO.ProductTypeId = Product.ProductTypeId;
-                    ProductDAO.SupplierId = Product.SupplierId;
                     ProductDAO.BrandId = Product.BrandId;
                     ProductDAO.UnitOfMeasureId = Product.UnitOfMeasureId;
                     ProductDAO.UnitOfMeasureGroupingId = Product.UnitOfMeasureGroupingId;

@@ -625,6 +625,7 @@ namespace DMS.Rpc
                             SupplierDAO.Phone = Supplier.Phone;
                             SupplierDAO.Email = Supplier.Email;
                             SupplierDAO.Address = Supplier.Address;
+                            SupplierDAO.NationId = Supplier.NationId;
                             SupplierDAO.ProvinceId = Supplier.ProvinceId;
                             SupplierDAO.DistrictId = Supplier.DistrictId;
                             SupplierDAO.WardId = Supplier.WardId;
@@ -919,13 +920,11 @@ namespace DMS.Rpc
                             ProductDAO.Id = Product.Id;
                             ProductDAO.Code = Product.Code;
                             ProductDAO.Name = Product.Name;
-                            ProductDAO.SupplierCode = Product.SupplierCode;
                             ProductDAO.Description = Product.Description;
                             ProductDAO.ScanCode = Product.ScanCode;
                             ProductDAO.ERPCode = Product.ERPCode;
                             ProductDAO.CategoryId = Product.CategoryId;
                             ProductDAO.ProductTypeId = Product.ProductTypeId;
-                            ProductDAO.SupplierId = Product.SupplierId;
                             ProductDAO.BrandId = Product.BrandId;
                             ProductDAO.UnitOfMeasureId = Product.UnitOfMeasureId;
                             ProductDAO.UnitOfMeasureGroupingId = Product.UnitOfMeasureGroupingId;

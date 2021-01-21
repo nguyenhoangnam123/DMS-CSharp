@@ -43,6 +43,8 @@ namespace DMS.Repositories
                 query = query.Where(q => q.Email, filter.Email);
             if (filter.Address != null)
                 query = query.Where(q => q.Address, filter.Address);
+            if (filter.NationId != null)
+                query = query.Where(q => q.NationId, filter.NationId);
             if (filter.ProvinceId != null)
                 query = query.Where(q => q.ProvinceId, filter.ProvinceId);
             if (filter.DistrictId != null)
@@ -85,6 +87,8 @@ namespace DMS.Repositories
                     queryable = queryable.Where(q => q.Email, SupplierFilter.Email);
                 if (SupplierFilter.Address != null)
                     queryable = queryable.Where(q => q.Address, SupplierFilter.Address);
+                if (SupplierFilter.NationId != null)
+                    queryable = queryable.Where(q => q.NationId, SupplierFilter.NationId);
                 if (SupplierFilter.ProvinceId != null)
                     queryable = queryable.Where(q => q.ProvinceId, SupplierFilter.ProvinceId);
                 if (SupplierFilter.DistrictId != null)
@@ -137,6 +141,9 @@ namespace DMS.Repositories
                         case SupplierOrder.Province:
                             query = query.OrderBy(q => q.ProvinceId);
                             break;
+                        case SupplierOrder.Nation:
+                            query = query.OrderBy(q => q.NationId);
+                            break;
                         case SupplierOrder.District:
                             query = query.OrderBy(q => q.DistrictId);
                             break;
@@ -157,6 +164,9 @@ namespace DMS.Repositories
                             break;
                         case SupplierOrder.UpdatedTime:
                             query = query.OrderBy(q => q.UpdatedAt);
+                            break;
+                        default:
+                            query = query.OrderBy(q => q.CreatedAt);
                             break;
                     }
                     break;
@@ -183,6 +193,9 @@ namespace DMS.Repositories
                             break;
                         case SupplierOrder.Address:
                             query = query.OrderByDescending(q => q.Address);
+                            break;
+                        case SupplierOrder.Nation:
+                            query = query.OrderByDescending(q => q.NationId);
                             break;
                         case SupplierOrder.Province:
                             query = query.OrderByDescending(q => q.ProvinceId);
@@ -226,14 +239,15 @@ namespace DMS.Repositories
                 Phone = filter.Selects.Contains(SupplierSelect.Phone) ? q.Phone : default(string),
                 Email = filter.Selects.Contains(SupplierSelect.Email) ? q.Email : default(string),
                 Address = filter.Selects.Contains(SupplierSelect.Address) ? q.Address : default(string),
-                ProvinceId = filter.Selects.Contains(SupplierSelect.Province) ? q.ProvinceId : default(long),
-                DistrictId = filter.Selects.Contains(SupplierSelect.District) ? q.DistrictId : default(long),
-                WardId = filter.Selects.Contains(SupplierSelect.Ward) ? q.WardId : default(long),
-                PersonInChargeId = filter.Selects.Contains(SupplierSelect.PersonInCharge) ? q.PersonInChargeId : default(long),
+                NationId = filter.Selects.Contains(SupplierSelect.Nation) ? q.NationId : default(long?),
+                ProvinceId = filter.Selects.Contains(SupplierSelect.Province) ? q.ProvinceId : default(long?),
+                DistrictId = filter.Selects.Contains(SupplierSelect.District) ? q.DistrictId : default(long?),
+                WardId = filter.Selects.Contains(SupplierSelect.Ward) ? q.WardId : default(long?),
+                PersonInChargeId = filter.Selects.Contains(SupplierSelect.PersonInCharge) ? q.PersonInChargeId : default(long?),
                 OwnerName = filter.Selects.Contains(SupplierSelect.OwnerName) ? q.OwnerName : default(string),
                 Description = filter.Selects.Contains(SupplierSelect.Description) ? q.Description : default(string),
                 StatusId = filter.Selects.Contains(SupplierSelect.Status) ? q.StatusId : default(long),
-                UpdatedTime = filter.Selects.Contains(SupplierSelect.UpdatedTime) ? q.UpdatedAt : default(DateTime),
+                UpdatedAt = filter.Selects.Contains(SupplierSelect.UpdatedAt) ? q.UpdatedAt : default(DateTime),
                 District = filter.Selects.Contains(SupplierSelect.District) && q.District != null ? new District
                 {
                     Id = q.District.Id,
@@ -251,6 +265,13 @@ namespace DMS.Repositories
                     Email = q.Email,
                     SexId = q.PersonInCharge.SexId,
                     StatusId = q.StatusId
+                } : null,
+                Nation = filter.Selects.Contains(SupplierSelect.Nation) && q.Nation != null ? new Nation
+                {
+                    Id = q.Nation.Id,
+                    Code = q.Nation.Code,
+                    Name = q.Nation.Name,
+                    StatusId = q.Nation.StatusId,
                 } : null,
                 Province = filter.Selects.Contains(SupplierSelect.Province) && q.Province != null ? new Province
                 {
@@ -307,6 +328,7 @@ namespace DMS.Repositories
                     Phone = x.Phone,
                     Email = x.Email,
                     Address = x.Address,
+                    NationId = x.NationId,
                     ProvinceId = x.ProvinceId,
                     DistrictId = x.DistrictId,
                     WardId = x.WardId,
@@ -314,8 +336,11 @@ namespace DMS.Repositories
                     PersonInChargeId = x.PersonInChargeId,
                     Description = x.Description,
                     StatusId = x.StatusId,
-                    UpdatedTime = x.UpdatedAt,
+                    UpdatedAt = x.UpdatedAt,
+                    CreatedAt = x.CreatedAt,
+                    DeletedAt = x.DeletedAt,
                     Used = x.Used,
+                    RowId = x.RowId,
                     District = x.District == null ? null : new District
                     {
                         Id = x.District.Id,
@@ -323,6 +348,13 @@ namespace DMS.Repositories
                         Priority = x.District.Priority,
                         ProvinceId = x.District.ProvinceId,
                         StatusId = x.District.StatusId,
+                    },
+                    Nation = x.Nation == null ? null : new Nation
+                    {
+                        Id = x.Nation.Id,
+                        Code = x.Nation.Code,
+                        Name = x.Nation.Name,
+                        StatusId = x.Nation.StatusId,
                     },
                     PersonInCharge = x.PersonInCharge == null ? null : new AppUser
                     {

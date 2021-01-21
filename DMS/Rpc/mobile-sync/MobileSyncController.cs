@@ -97,7 +97,6 @@ namespace DMS.Rpc.mobile_sync
                 .Where(x => x.UpdatedAt >= Timestamp && x.StatusId == StatusEnum.ACTIVE.Id)
                 .Include(x => x.ProductType)
                 .Include(x => x.Brand)
-                .Include(x => x.Supplier)
                 .Include(x => x.TaxType)
                 .Include(x => x.UnitOfMeasure)
                 .Include(x => x.UsedVariation)
@@ -161,8 +160,6 @@ namespace DMS.Rpc.mobile_sync
                     SalePrice = ProductDAO.SalePrice,
                     ScanCode = ProductDAO.ScanCode,
                     StatusId = ProductDAO.StatusId,
-                    SupplierCode = ProductDAO.SupplierCode,
-                    SupplierId = ProductDAO.SupplierId,
                     TaxTypeId = ProductDAO.TaxTypeId,
                     TechnicalName = ProductDAO.TechnicalName,
                     UnitOfMeasureGroupingId = ProductDAO.UnitOfMeasureGroupingId,
@@ -189,12 +186,6 @@ namespace DMS.Rpc.mobile_sync
                         Name = ProductDAO.ProductType.Name,
                         StatusId = ProductDAO.ProductType.StatusId,
                         UpdatedAt = ProductDAO.ProductType.UpdatedAt,
-                    },
-                    Supplier = ProductDAO.Supplier == null ? null : new MobileSync_SupplierDTO
-                    {
-                        Id = ProductDAO.Supplier.Id,
-                        Code = ProductDAO.Supplier.Code,
-                        Name = ProductDAO.Supplier.Name,
                     },
                     TaxType = ProductDAO.TaxType == null ? null : new MobileSync_TaxTypeDTO
                     {
@@ -267,7 +258,6 @@ namespace DMS.Rpc.mobile_sync
                                                  .Include(x => x.UnitOfMeasure)
                                                  .Include(x => x.Brand)
                                                  .Include(x => x.ProductType)
-                                                 .Include(x => x.Supplier)
                                                  .Include(x => x.UnitOfMeasure)
                                                  .ToListAsync();
             List<ProductImageMappingDAO> ProductImageMappingDAOs = await DataContext.ProductImageMapping
@@ -342,8 +332,6 @@ namespace DMS.Rpc.mobile_sync
                         SalePrice = ItemDAO.Product.SalePrice,
                         ScanCode = ItemDAO.Product.ScanCode,
                         StatusId = ItemDAO.Product.StatusId,
-                        SupplierCode = ItemDAO.Product.SupplierCode,
-                        SupplierId = ItemDAO.Product.SupplierId,
                         TaxTypeId = ItemDAO.Product.TaxTypeId,
                         TechnicalName = ItemDAO.Product.TechnicalName,
                         UnitOfMeasureGroupingId = ItemDAO.Product.UnitOfMeasureGroupingId,
@@ -390,12 +378,6 @@ namespace DMS.Rpc.mobile_sync
                             Id = ItemDAO.Product.ProductType.Id,
                             Code = ItemDAO.Product.ProductType.Code,
                             Name = ItemDAO.Product.ProductType.Name,
-                        },
-                        Supplier = ItemDAO.Product.Supplier == null ? null : new MobileSync_SupplierDTO
-                        {
-                            Id = ItemDAO.Product.Supplier.Id,
-                            Code = ItemDAO.Product.Supplier.Code,
-                            Name = ItemDAO.Product.Supplier.Name,
                         },
                         TaxType = ItemDAO.Product.TaxType == null ? null : new MobileSync_TaxTypeDTO
                         {

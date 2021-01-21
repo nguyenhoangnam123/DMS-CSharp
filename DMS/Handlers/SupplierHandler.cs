@@ -48,6 +48,7 @@ namespace DMS.Handlers
                         Phone = x.Phone,
                         Email = x.Email,
                         Address = x.Address,
+                        NationId = x.NationId,
                         ProvinceId = x.ProvinceId,
                         DistrictId = x.DistrictId,
                         WardId = x.WardId,

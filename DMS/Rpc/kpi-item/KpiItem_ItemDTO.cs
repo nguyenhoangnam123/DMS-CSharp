@@ -19,7 +19,7 @@ namespace DMS.Rpc.kpi_item
 
         public string ScanCode { get; set; }
 
-        public decimal SalePrice { get; set; }
+        public decimal? SalePrice { get; set; }
 
         public decimal? RetailPrice { get; set; }
 

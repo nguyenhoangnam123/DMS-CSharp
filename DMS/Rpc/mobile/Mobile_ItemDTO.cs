@@ -13,7 +13,7 @@ namespace DMS.Rpc.mobile
         public string Code { get; set; }
         public string Name { get; set; }
         public string ScanCode { get; set; }
-        public decimal SalePrice { get; set; }
+        public decimal? SalePrice { get; set; }
         public decimal? RetailPrice { get; set; }
         public long SaleStock { get; set; }
         public long StatusId { get; set; }
