@@ -3646,12 +3646,16 @@ namespace DMS.Models
             {
                 entity.ToTable("Store", "MDM");
 
+                entity.HasIndex(e => e.Code)
+                    .HasName("IX_Store")
+                    .IsUnique();
+
                 entity.HasIndex(e => e.OrganizationId)
                     .HasName("IX_Store_Organization");
 
                 entity.Property(e => e.Address).HasMaxLength(3000);
 
-                entity.Property(e => e.Code).HasMaxLength(500);
+                entity.Property(e => e.Code).HasMaxLength(400);
 
                 entity.Property(e => e.CodeDraft).HasMaxLength(500);
 

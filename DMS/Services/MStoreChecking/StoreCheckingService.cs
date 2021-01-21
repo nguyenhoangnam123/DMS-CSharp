@@ -239,7 +239,14 @@ namespace DMS.Services.MStoreChecking
             {
                 var oldData = await UOW.StoreCheckingRepository.Get(StoreChecking.Id);
                 StoreChecking.CheckInAt = oldData.CheckInAt;
-                StoreChecking.CheckOutAt = StaticParams.DateTimeNow;
+                if(oldData.CheckOutAt.HasValue == false)
+                {
+                    StoreChecking.CheckOutAt = StaticParams.DateTimeNow;
+                }
+                else
+                {
+                    StoreChecking.CheckOutAt = oldData.CheckOutAt;
+                }
                 StoreChecking.ImageCounter = StoreChecking.StoreCheckingImageMappings?.Count() ?? 0;
                 await UOW.Begin();
                 await UOW.StoreCheckingRepository.Update(StoreChecking);
