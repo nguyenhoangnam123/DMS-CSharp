@@ -15,7 +15,6 @@ namespace DMS.Entities
         public string Phone { get; set; }
         public string Email { get; set; }
         public string Address { get; set; }
-        public long? NationTypeId { get; set; }
         public long? NationId { get; set; }
         public long? ProvinceId { get; set; }
         public long? DistrictId { get; set; }
@@ -24,13 +23,13 @@ namespace DMS.Entities
         public string Description { get; set; }
         public long? PersonInChargeId { get; set; }
         public long StatusId { get; set; }
+        public bool Used { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public DateTime? DeletedAt { get; set; }
-        public bool Used { get; set; }
         public Guid RowId { get; set; }
+        public DateTime UpdatedTime { get; set; }
         public District District { get; set; }
-        public NationType NationType { get; set; }
         public Nation Nation { get; set; }
         public Province Province { get; set; }
         public Ward Ward { get; set; }
@@ -112,6 +111,5 @@ namespace DMS.Entities
         Status = E._13,
         UpdatedAt = E._14,
         Nation = E._15,
-        NationType = E._16,
     }
 }
