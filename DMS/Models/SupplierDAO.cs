@@ -12,6 +12,7 @@ namespace DMS.Models
         public string Phone { get; set; }
         public string Email { get; set; }
         public string Address { get; set; }
+        public long? NationTypeId { get; set; }
         public long? NationId { get; set; }
         public long? ProvinceId { get; set; }
         public long? DistrictId { get; set; }
@@ -28,6 +29,7 @@ namespace DMS.Models
 
         public virtual DistrictDAO District { get; set; }
         public virtual NationDAO Nation { get; set; }
+        public virtual NationTypeDAO NationType { get; set; }
         public virtual AppUserDAO PersonInCharge { get; set; }
         public virtual ProvinceDAO Province { get; set; }
         public virtual StatusDAO Status { get; set; }

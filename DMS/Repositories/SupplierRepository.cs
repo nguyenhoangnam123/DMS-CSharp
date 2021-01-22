@@ -247,6 +247,7 @@ namespace DMS.Repositories
                 OwnerName = filter.Selects.Contains(SupplierSelect.OwnerName) ? q.OwnerName : default(string),
                 Description = filter.Selects.Contains(SupplierSelect.Description) ? q.Description : default(string),
                 StatusId = filter.Selects.Contains(SupplierSelect.Status) ? q.StatusId : default(long),
+                NationTypeId = filter.Selects.Contains(SupplierSelect.NationType) ? q.NationTypeId : default(long?),
                 UpdatedAt = filter.Selects.Contains(SupplierSelect.UpdatedAt) ? q.UpdatedAt : default(DateTime),
                 District = filter.Selects.Contains(SupplierSelect.District) && q.District != null ? new District
                 {
@@ -285,6 +286,12 @@ namespace DMS.Repositories
                     Id = q.Status.Id,
                     Code = q.Status.Code,
                     Name = q.Status.Name,
+                } : null,
+                NationType = filter.Selects.Contains(SupplierSelect.NationType) && q.NationType != null ? new NationType
+                {
+                    Id = q.NationType.Id,
+                    Code = q.NationType.Code,
+                    Name = q.NationType.Name,
                 } : null,
                 Ward = filter.Selects.Contains(SupplierSelect.Ward) && q.Ward != null ? new Ward
                 {
@@ -336,6 +343,7 @@ namespace DMS.Repositories
                     PersonInChargeId = x.PersonInChargeId,
                     Description = x.Description,
                     StatusId = x.StatusId,
+                    NationTypeId = x.NationTypeId,
                     UpdatedAt = x.UpdatedAt,
                     CreatedAt = x.CreatedAt,
                     DeletedAt = x.DeletedAt,
@@ -378,6 +386,12 @@ namespace DMS.Repositories
                         Id = x.Status.Id,
                         Code = x.Status.Code,
                         Name = x.Status.Name,
+                    },
+                    NationType = x.NationType == null ? null : new NationType
+                    {
+                        Id = x.NationType.Id,
+                        Code = x.NationType.Code,
+                        Name = x.NationType.Name,
                     },
                     Ward = x.Ward == null ? null : new Ward
                     {

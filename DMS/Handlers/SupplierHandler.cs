@@ -49,6 +49,7 @@ namespace DMS.Handlers
                         Email = x.Email,
                         Address = x.Address,
                         NationId = x.NationId,
+                        NationTypeId = x.NationTypeId,
                         ProvinceId = x.ProvinceId,
                         DistrictId = x.DistrictId,
                         WardId = x.WardId,

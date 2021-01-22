@@ -60,6 +60,7 @@ namespace DMS.Models
         public virtual DbSet<LuckyNumberGroupingDAO> LuckyNumberGrouping { get; set; }
         public virtual DbSet<MenuDAO> Menu { get; set; }
         public virtual DbSet<NationDAO> Nation { get; set; }
+        public virtual DbSet<NationTypeDAO> NationType { get; set; }
         public virtual DbSet<NotificationDAO> Notification { get; set; }
         public virtual DbSet<NotificationStatusDAO> NotificationStatus { get; set; }
         public virtual DbSet<OrganizationDAO> Organization { get; set; }
@@ -1906,6 +1907,21 @@ namespace DMS.Models
                     .HasForeignKey(d => d.StatusId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Nation_Status");
+            });
+
+            modelBuilder.Entity<NationTypeDAO>(entity =>
+            {
+                entity.ToTable("NationType", "ENUM");
+
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(50);
             });
 
             modelBuilder.Entity<NotificationDAO>(entity =>
@@ -4157,6 +4173,11 @@ namespace DMS.Models
                     .WithMany(p => p.Suppliers)
                     .HasForeignKey(d => d.NationId)
                     .HasConstraintName("FK_Supplier_Nation");
+
+                entity.HasOne(d => d.NationType)
+                    .WithMany(p => p.Suppliers)
+                    .HasForeignKey(d => d.NationTypeId)
+                    .HasConstraintName("FK_Supplier_NationType");
 
                 entity.HasOne(d => d.PersonInCharge)
                     .WithMany(p => p.Suppliers)

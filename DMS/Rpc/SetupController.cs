@@ -625,6 +625,7 @@ namespace DMS.Rpc
                             SupplierDAO.Phone = Supplier.Phone;
                             SupplierDAO.Email = Supplier.Email;
                             SupplierDAO.Address = Supplier.Address;
+                            SupplierDAO.NationTypeId = Supplier.NationTypeId;
                             SupplierDAO.NationId = Supplier.NationId;
                             SupplierDAO.ProvinceId = Supplier.ProvinceId;
                             SupplierDAO.DistrictId = Supplier.DistrictId;
