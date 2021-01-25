@@ -163,7 +163,7 @@ namespace DMS.Services.MStore
         #endregion
 
         #region Organization
-        private async Task<bool> ValidateOrganizationId(Store Store)
+        private async Task<bool> ValidateOrganization(Store Store)
         {
             if (Store.OrganizationId != 0)
             {
@@ -189,7 +189,7 @@ namespace DMS.Services.MStore
         #endregion
 
         #region Parent Store
-        private async Task<bool> ValidateParentStoreId(Store Store)
+        private async Task<bool> ValidateParentStore(Store Store)
         {
             if (Store.ParentStoreId.HasValue)
             {
@@ -211,7 +211,7 @@ namespace DMS.Services.MStore
         #endregion
 
         #region Store Type
-        private async Task<bool> ValidateStoreTypeId(Store Store)
+        private async Task<bool> ValidateStoreType(Store Store)
         {
             if (Store.StoreTypeId == 0)
             {
@@ -238,7 +238,7 @@ namespace DMS.Services.MStore
         #endregion
 
         #region Store Grouping
-        private async Task<bool> ValidateStoreGroupingId(Store Store)
+        private async Task<bool> ValidateStoreGrouping(Store Store)
         {
             if (Store.StoreGroupingId.HasValue)
             {
@@ -270,7 +270,7 @@ namespace DMS.Services.MStore
         #endregion
 
         #region Province + District + Ward
-        private async Task<bool> ValidateProvinceId(Store Store)
+        private async Task<bool> ValidateProvince(Store Store)
         {
             if (Store.ProvinceId.HasValue)
             {
@@ -289,7 +289,7 @@ namespace DMS.Services.MStore
             }
             return Store.IsValidated;
         }
-        private async Task<bool> ValidateDistrictId(Store Store)
+        private async Task<bool> ValidateDistrict(Store Store)
         {
             if (Store.DistrictId.HasValue)
             {
@@ -308,7 +308,7 @@ namespace DMS.Services.MStore
             }
             return Store.IsValidated;
         }
-        private async Task<bool> ValidateWardId(Store Store)
+        private async Task<bool> ValidateWard(Store Store)
         {
             if (Store.WardId.HasValue)
             {
@@ -433,17 +433,17 @@ namespace DMS.Services.MStore
         #endregion
 
         #region Status
-        private async Task<bool> ValidateStatusId(Store Store)
+        private async Task<bool> ValidateStatus(Store Store)
         {
             if (StatusEnum.ACTIVE.Id != Store.StatusId && StatusEnum.INACTIVE.Id != Store.StatusId)
                 Store.AddError(nameof(StoreValidator), nameof(Store.Status), ErrorCode.StatusNotExisted);
             return Store.IsValidated;
         }
-        private async Task<bool> ValidateStoreStatusId(Store Store)
+        private async Task<bool> ValidateStoreStatus(Store Store)
         {
             if (Store.StoreStatusId == 0)
                 Store.AddError(nameof(StoreValidator), nameof(Store.StoreStatus), ErrorCode.StoreStatusNotSelected);
-            else if (!StoreStatusEnum.StoreStatusEnumList.Any(x => x.Id == Store.StoreStatusId))
+            else if (Store.StoreStatusId != StoreStatusEnum.DRAFT.Id && Store.StoreStatusId != StoreStatusEnum.OFFICIAL.Id)
                 Store.AddError(nameof(StoreValidator), nameof(Store.StoreStatus), ErrorCode.StoreStatusNotExisted);
 
             return Store.IsValidated;
@@ -482,23 +482,23 @@ namespace DMS.Services.MStore
             //await ValidateCode(Store);
             await ValidateCodeDraft(Store);
             await ValidateName(Store);
-            await ValidateOrganizationId(Store);
-            await ValidateParentStoreId(Store);
-            await ValidateStoreTypeId(Store);
-            await ValidateStoreGroupingId(Store);
+            await ValidateOrganization(Store);
+            await ValidateParentStore(Store);
+            await ValidateStoreType(Store);
+            await ValidateStoreGrouping(Store);
             await ValidatePhone(Store);
             await ValidateTaxCode(Store);
-            await ValidateProvinceId(Store);
-            await ValidateDistrictId(Store);
-            await ValidateWardId(Store);
+            await ValidateProvince(Store);
+            await ValidateDistrict(Store);
+            await ValidateWard(Store);
             await ValidateAddress(Store);
             await ValidateDeliveryAddress(Store);
             await ValidateLocation(Store);
             await ValidateOwnerName(Store);
             await ValidateOwnerPhone(Store);
             await ValidateOwnerEmail(Store);
-            await ValidateStatusId(Store);
-            await ValidateStoreStatusId(Store);
+            await ValidateStatus(Store);
+            await ValidateStoreStatus(Store);
             await ValidateStoreScouting(Store);
             return Store.IsValidated;
         }
@@ -510,23 +510,23 @@ namespace DMS.Services.MStore
                 //await ValidateCode(Store);
                 await ValidateCodeDraft(Store);
                 await ValidateName(Store);
-                await ValidateOrganizationId(Store);
-                await ValidateParentStoreId(Store);
-                await ValidateStoreTypeId(Store);
-                await ValidateStoreGroupingId(Store);
+                await ValidateOrganization(Store);
+                await ValidateParentStore(Store);
+                await ValidateStoreType(Store);
+                await ValidateStoreGrouping(Store);
                 await ValidatePhone(Store);
                 await ValidateTaxCode(Store);
-                await ValidateProvinceId(Store);
-                await ValidateDistrictId(Store);
-                await ValidateWardId(Store);
+                await ValidateProvince(Store);
+                await ValidateDistrict(Store);
+                await ValidateWard(Store);
                 await ValidateAddress(Store);
                 await ValidateDeliveryAddress(Store);
                 await ValidateLocation(Store);
                 await ValidateOwnerName(Store);
                 await ValidateOwnerPhone(Store);
                 await ValidateOwnerEmail(Store);
-                await ValidateStatusId(Store);
-                await ValidateStoreStatusId(Store);
+                await ValidateStatus(Store);
+                await ValidateStoreStatus(Store);
             }
             return Store.IsValidated;
         }
@@ -639,6 +639,8 @@ namespace DMS.Services.MStore
                 await ValidateOwnerName(Store);
                 await ValidateOwnerPhone(Store);
                 await ValidateOwnerEmail(Store);
+                await ValidateStoreStatus(Store);
+                await ValidateStatus(Store);
 
             }
             return Stores.Any(s => !s.IsValidated) ? false : true;

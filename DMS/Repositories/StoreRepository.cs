@@ -1247,7 +1247,7 @@ namespace DMS.Repositories
                 StoreDAO.LegalEntity = Store.LegalEntity;
                 StoreDAO.StatusId = Store.StatusId;
                 StoreDAO.AppUserId = Store.AppUserId;
-                StoreDAO.StoreStatusId = StoreStatusEnum.OFFICIAL.Id;
+                StoreDAO.StoreStatusId = Store.StoreStatusId;
                 StoreDAO.StoreScoutingId = Store.StoreScoutingId;
                 StoreDAO.RowId = Store.RowId;
                 StoreDAO.CreatedAt = StaticParams.DateTimeNow;

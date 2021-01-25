@@ -27,6 +27,7 @@ namespace DMS.Services.MStoreScouting
         Task<StoreScouting> Update(StoreScouting StoreScouting);
         Task<StoreScouting> Delete(StoreScouting StoreScouting);
         Task<StoreScouting> Reject(StoreScouting StoreScouting);
+        Task<List<StoreScouting>> Import(List<StoreScouting> StoreScoutings);
         Task<StoreScoutingFilter> ToFilter(StoreScoutingFilter StoreScoutingFilter);
     }
 
@@ -279,6 +280,56 @@ namespace DMS.Services.MStoreScouting
                 if (ex.InnerException == null)
                 {
                     await Logging.CreateSystemLog(ex.InnerException, nameof(StoreScoutingService));
+                    throw new MessageException(ex);
+                }
+                else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(StoreScoutingService));
+                    throw new MessageException(ex.InnerException);
+                }
+            }
+        }
+
+        public async Task<List<StoreScouting>> Import(List<StoreScouting> StoreScoutings)
+        {
+            if (!await StoreScoutingValidator.Import(StoreScoutings))
+                return StoreScoutings;
+
+            try
+            {
+                await UOW.Begin();
+                StoreScoutingFilter StoreScoutingFilter = new StoreScoutingFilter
+                {
+                    Skip = 0,
+                    Take = int.MaxValue,
+                    Selects = StoreScoutingSelect.Id | StoreScoutingSelect.Code | StoreScoutingSelect.Name
+                };
+                List<StoreScouting> dbStoreScoutings = await UOW.StoreScoutingRepository.List(StoreScoutingFilter);
+                foreach (var StoreScouting in StoreScoutings)
+                {
+                    var oldData = dbStoreScoutings.Where(x => x.Id == StoreScouting.Id)
+                                .FirstOrDefault();
+                    if (oldData != null)
+                    {
+                        StoreScouting.RowId = oldData.RowId;
+                    }
+                    else
+                    {
+                        StoreScouting.RowId = Guid.NewGuid();
+                    }
+                }
+
+                await UOW.StoreScoutingRepository.BulkMerge(StoreScoutings);
+                await UOW.Commit();
+                await Logging.CreateAuditLog(StoreScoutings, new { }, nameof(StoreScoutingService));
+                return null;
+            }
+            catch (Exception ex)
+            {
+                await UOW.Rollback();
+                if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(StoreScoutingService));
                     throw new MessageException(ex);
                 }
                 else

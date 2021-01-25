@@ -43,6 +43,10 @@ namespace DMS.Services.MStoreScouting
             LatitudeInvalid,
             LongitudeEmpty,
             LatitudeEmpty,
+            StoreScoutingTypeNotExisted,
+            OrganizationNotExisted,
+            CreatorNotExisted,
+            StoreScoutingStatusNotExisted
         }
 
         private IUOW UOW;
@@ -264,7 +268,89 @@ namespace DMS.Services.MStoreScouting
 
         public async Task<bool> Import(List<StoreScouting> StoreScoutings)
         {
-            return true;
+            var listAppUserCodeInDB = (await UOW.AppUserRepository.List(new AppUserFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = AppUserSelect.Username
+            })).Select(e => e.Username);
+            var listOrganizationCodeInDB = (await UOW.OrganizationRepository.List(new OrganizationFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = OrganizationSelect.Code
+            })).Select(e => e.Code);
+            var listStoreScoutingTypeCodeInDB = (await UOW.StoreScoutingTypeRepository.List(new StoreScoutingTypeFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = StoreScoutingTypeSelect.Code
+            })).Select(e => e.Code);
+            var listProvinceCodeInDB = (await UOW.ProvinceRepository.List(new ProvinceFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = ProvinceSelect.Code
+            })).Select(e => e.Code);
+            var listDistrictCodeInDB = (await UOW.DistrictRepository.List(new DistrictFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = DistrictSelect.Code
+            })).Select(e => e.Code);
+            var listWardCodeInDB = (await UOW.WardRepository.List(new WardFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = WardSelect.Code
+            })).Select(e => e.Code);
+            var StoreScountingStatusIds = StoreScoutingStatusEnum.StoreScoutingStatusEnumList.Select(x => x.Id).ToList();
+            foreach (var StoreScouting in StoreScoutings)
+            {
+                if (!listStoreScoutingTypeCodeInDB.Contains(StoreScouting.StoreScoutingType.Code))
+                {
+                    StoreScouting.AddError(nameof(StoreScoutingValidator), nameof(StoreScouting.StoreScoutingType), ErrorCode.StoreScoutingTypeNotExisted);
+                }
+                if (!listOrganizationCodeInDB.Contains(StoreScouting.Organization.Code))
+                {
+                    StoreScouting.AddError(nameof(StoreScoutingValidator), nameof(StoreScouting.Organization), ErrorCode.OrganizationNotExisted);
+                }
+                if (StoreScouting.Province != null)
+                {
+                    if (!listProvinceCodeInDB.Contains(StoreScouting.Province.Code))
+                    {
+                        StoreScouting.AddError(nameof(StoreScoutingValidator), nameof(StoreScouting.Province), ErrorCode.ProvinceNotExisted);
+                    }
+                }
+                if (StoreScouting.District != null)
+                {
+                    if (!listDistrictCodeInDB.Contains(StoreScouting.District.Code))
+                    {
+                        StoreScouting.AddError(nameof(StoreScoutingValidator), nameof(StoreScouting.District), ErrorCode.DistrictNotExisted);
+                    }
+                }
+                if (StoreScouting.Ward != null)
+                {
+                    if (!listWardCodeInDB.Contains(StoreScouting.Ward.Code))
+                    {
+                        StoreScouting.AddError(nameof(StoreScoutingValidator), nameof(StoreScouting.Ward), ErrorCode.WardNotExisted);
+                    }
+                }
+                if (!listAppUserCodeInDB.Contains(StoreScouting.Creator.Username))
+                {
+                    StoreScouting.AddError(nameof(StoreScoutingValidator), nameof(StoreScouting.Creator), ErrorCode.CreatorNotExisted);
+                }
+                if (!StoreScountingStatusIds.Contains(StoreScouting.StoreScoutingStatusId))
+                {
+                    StoreScouting.AddError(nameof(StoreScoutingValidator), nameof(StoreScouting.StoreScoutingStatus), ErrorCode.StoreScoutingStatusNotExisted);
+                }
+
+                await ValidateName(StoreScouting);
+                await ValidateAddress(StoreScouting);
+                await ValidateLocation(StoreScouting);
+                await ValidateOwnerPhone(StoreScouting);
+            }
+            return StoreScoutings.Any(s => !s.IsValidated) ? false : true;
         }
     }
 }

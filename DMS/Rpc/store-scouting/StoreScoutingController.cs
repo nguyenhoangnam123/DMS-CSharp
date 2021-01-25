@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -21,6 +21,8 @@ using DMS.Services.MStoreScoutingType;
 using DMS.Services.MWard;
 using DMS.Enums;
 using System.Dynamic;
+using System.Text;
+using System.Globalization;
 
 namespace DMS.Rpc.store_scouting
 {
@@ -169,6 +171,253 @@ namespace DMS.Rpc.store_scouting
                 return BadRequest(StoreScouting_StoreScoutingDTO);
         }
 
+        [Route(StoreScoutingRoute.Import), HttpPost]
+        public async Task<ActionResult<List<StoreScouting_StoreScoutingDTO>>> Import(IFormFile file)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+            FileInfo FileInfo = new FileInfo(file.FileName);
+            if (!FileInfo.Extension.Equals(".xlsx"))
+                return BadRequest("Định dạng file không hợp lệ");
+
+            DataFile DataFile = new DataFile
+            {
+                Name = file.FileName,
+                Content = file.OpenReadStream(),
+            };
+            #region MDM
+            List<AppUser> AppUsers = await AppUserService.List(new AppUserFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = AppUserSelect.Id | AppUserSelect.Username
+            });
+            List<Organization> Organizations = await OrganizationService.List(new OrganizationFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = OrganizationSelect.Id | OrganizationSelect.Code
+            });
+
+            List<StoreScoutingType> StoreScoutingTypes = await StoreScoutingTypeService.List(new StoreScoutingTypeFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = StoreScoutingTypeSelect.Id | StoreScoutingTypeSelect.Code
+            });
+
+            List<Province> Provinces = await ProvinceService.List(new ProvinceFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = ProvinceSelect.Id | ProvinceSelect.Code
+            });
+
+            List<District> Districts = await DistrictService.List(new DistrictFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = DistrictSelect.Id | DistrictSelect.Code
+            });
+
+            List<Ward> Wards = await WardService.List(new WardFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = WardSelect.Id | WardSelect.Code
+            });
+
+            List<StoreScoutingStatus> StoreScoutingStatuses = await StoreScoutingStatusService.List(new StoreScoutingStatusFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = StoreScoutingStatusSelect.Id | StoreScoutingStatusSelect.Code | StoreScoutingStatusSelect.Name
+            });
+
+            List<StoreScouting> All = await StoreScoutingService.List(new StoreScoutingFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = StoreScoutingSelect.Id | StoreScoutingSelect.Code | StoreScoutingSelect.Name
+            });
+
+            Dictionary<string, StoreScouting> DictionaryAll = All.ToDictionary(x => x.Code, y => y);
+            #endregion
+            List<StoreScouting_ImportDTO> StoreScouting_ImportDTOs = new List<StoreScouting_ImportDTO>();
+
+            StringBuilder errorContent = new StringBuilder();
+            using (ExcelPackage excelPackage = new ExcelPackage(DataFile.Content))
+            {
+                ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets["StoreScouting"];
+                if (worksheet == null)
+                    return BadRequest("File không đúng biểu mẫu import");
+
+                #region khai báo các cột
+                int StartColumn = 1;
+                int StartRow = 1;
+                int SttColumnn = 0 + StartColumn;
+                int CodeColumn = 1 + StartColumn;
+                int NameColumn = 2 + StartColumn;
+                int StoreScoutingTypeCodeColumn = 3 + StartColumn;
+                int OrganizationCodeColumn = 4 + StartColumn;
+                int ProvinceCodeColumn = 5 + StartColumn;
+                int DistrictCodeColumn = 6 + StartColumn;
+                int WardCodeColumn = 7 + StartColumn;
+                int AddressColumn = 8 + StartColumn;
+                int LongitudeColumn = 9 + StartColumn;
+                int LatitudeColumn = 10 + StartColumn;
+                int OwnerPhoneColumn = 11 + StartColumn;
+                int SalesEmployeeColumn = 12 + StartColumn;
+                int StoreScoutingStatusColumn = 13 + StartColumn;
+                #endregion
+
+                for (int i = StartRow; i <= worksheet.Dimension.End.Row; i++)
+                {
+                    #region Lấy thông tin từng dòng
+                    string stt = worksheet.Cells[i + StartRow, SttColumnn].Value?.ToString();
+                    if (stt != null && stt.ToLower() == "END".ToLower())
+                        break;
+                    bool convert = long.TryParse(stt, out long Stt);
+                    if (convert == false)
+                        continue;
+                    StoreScouting_ImportDTO StoreScouting_ImportDTO = new StoreScouting_ImportDTO();
+                    StoreScouting_ImportDTOs.Add(StoreScouting_ImportDTO);
+                    StoreScouting_ImportDTO.Stt = Stt;
+                    StoreScouting_ImportDTO.CodeValue = worksheet.Cells[i + StartRow, CodeColumn].Value?.ToString();
+                    StoreScouting_ImportDTO.NameValue = worksheet.Cells[i + StartRow, NameColumn].Value?.ToString();
+                    StoreScouting_ImportDTO.StoreScoutingTypeCodeValue = worksheet.Cells[i + StartRow, StoreScoutingTypeCodeColumn].Value?.ToString();
+                    StoreScouting_ImportDTO.OrganizationCodeValue = worksheet.Cells[i + StartRow, OrganizationCodeColumn].Value?.ToString();
+                    StoreScouting_ImportDTO.ProvinceCodeValue = worksheet.Cells[i + StartRow, ProvinceCodeColumn].Value?.ToString();
+                    StoreScouting_ImportDTO.DistrictCodeValue = worksheet.Cells[i + StartRow, DistrictCodeColumn].Value?.ToString();
+                    StoreScouting_ImportDTO.WardCodeValue = worksheet.Cells[i + StartRow, WardCodeColumn].Value?.ToString();
+                    StoreScouting_ImportDTO.AddressValue = worksheet.Cells[i + StartRow, AddressColumn].Value?.ToString();
+                    StoreScouting_ImportDTO.LongitudeValue = worksheet.Cells[i + StartRow, LongitudeColumn].Value?.ToString();
+                    if (!string.IsNullOrWhiteSpace(StoreScouting_ImportDTO.LongitudeValue) && StoreScouting_ImportDTO.LongitudeValue.Contains(","))
+                        StoreScouting_ImportDTO.LongitudeValue = StoreScouting_ImportDTO.LongitudeValue.Replace(",", ".");
+                    StoreScouting_ImportDTO.LatitudeValue = worksheet.Cells[i + StartRow, LatitudeColumn].Value?.ToString();
+                    if (!string.IsNullOrWhiteSpace(StoreScouting_ImportDTO.LatitudeValue) && StoreScouting_ImportDTO.LatitudeValue.Contains(","))
+                        StoreScouting_ImportDTO.LatitudeValue = StoreScouting_ImportDTO.LatitudeValue.Replace(",", ".");
+
+                    StoreScouting_ImportDTO.OwnerPhoneValue = worksheet.Cells[i + StartRow, OwnerPhoneColumn].Value?.ToString();
+                    StoreScouting_ImportDTO.SalesEmployeeUsernameValue = worksheet.Cells[i + StartRow, SalesEmployeeColumn].Value?.ToString();
+                    StoreScouting_ImportDTO.StoreScoutingStatusNameValue = worksheet.Cells[i + StartRow, StoreScoutingStatusColumn].Value?.ToString();
+                    
+                    #endregion
+                }
+            }
+            Dictionary<long, StringBuilder> Errors = new Dictionary<long, StringBuilder>();
+            HashSet<string> StoreScoutingCodes = new HashSet<string>(All.Select(x => x.Code).Distinct().ToList());
+            foreach (StoreScouting_ImportDTO StoreScouting_ImportDTO in StoreScouting_ImportDTOs)
+            {
+                Errors.Add(StoreScouting_ImportDTO.Stt, new StringBuilder(""));
+                StoreScouting_ImportDTO.IsNew = false;
+            }
+            Parallel.ForEach(StoreScouting_ImportDTOs, StoreScouting_ImportDTO =>
+            {
+                if (!string.IsNullOrWhiteSpace(StoreScouting_ImportDTO.CodeValue))
+                {
+                    if (!StoreScoutingCodes.Contains(StoreScouting_ImportDTO.CodeValue))
+                    {
+                        Errors[StoreScouting_ImportDTO.Stt].AppendLine($"Lỗi dòng thứ {StoreScouting_ImportDTO.Stt}: Mã đại lý cắm cờ không tồn tại");
+                        return;
+                    }
+                }
+                else
+                {
+                    StoreScouting_ImportDTO.IsNew = true;
+                }
+                StoreScouting_ImportDTO.OrganizationId = Organizations.Where(x => x.Code.Equals(StoreScouting_ImportDTO.OrganizationCodeValue)).Select(x => x.Id).FirstOrDefault();
+                StoreScouting_ImportDTO.Longitude = decimal.TryParse(StoreScouting_ImportDTO.LongitudeValue, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal Longitude) ? Longitude : 106;
+                StoreScouting_ImportDTO.Latitude = decimal.TryParse(StoreScouting_ImportDTO.LatitudeValue, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal Latitude) ? Latitude : 21;
+                if (!string.IsNullOrWhiteSpace(StoreScouting_ImportDTO.StoreScoutingTypeCodeValue))
+                    StoreScouting_ImportDTO.StoreScoutingTypeId = StoreScoutingTypes.Where(x => x.Code.Equals(StoreScouting_ImportDTO.StoreScoutingTypeCodeValue)).Select(x => x.Id).FirstOrDefault();
+                if (!string.IsNullOrWhiteSpace(StoreScouting_ImportDTO.ProvinceCodeValue))
+                    StoreScouting_ImportDTO.ProvinceId = Provinces.Where(x => x.Code.Equals(StoreScouting_ImportDTO.ProvinceCodeValue)).Select(x => (long?)x.Id).FirstOrDefault();
+                if (!string.IsNullOrWhiteSpace(StoreScouting_ImportDTO.DistrictCodeValue))
+                    StoreScouting_ImportDTO.DistrictId = Districts.Where(x => x.Code.Equals(StoreScouting_ImportDTO.DistrictCodeValue)).Select(x => (long?)x.Id).FirstOrDefault();
+                if (!string.IsNullOrWhiteSpace(StoreScouting_ImportDTO.WardCodeValue))
+                    StoreScouting_ImportDTO.WardId = Wards.Where(x => x.Code.Equals(StoreScouting_ImportDTO.WardCodeValue)).Select(x => (long?)x.Id).FirstOrDefault();
+                if (string.IsNullOrEmpty(StoreScouting_ImportDTO.StoreScoutingStatusNameValue))
+                {
+                    StoreScouting_ImportDTO.StoreScoutingStatusId = -1;
+                }
+                else
+                {
+                    string StoreScoutingStatusNameValue = StoreScouting_ImportDTO.StoreScoutingStatusNameValue;
+                    StoreScouting_ImportDTO.StoreScoutingStatusId = StoreScoutingStatuses.Where(x => x.Name.ToLower().Equals(StoreScoutingStatusNameValue == null ? string.Empty : StoreScoutingStatusNameValue.Trim().ToLower())).Select(x => x.Id).FirstOrDefault();
+                }
+                if (!string.IsNullOrWhiteSpace(StoreScouting_ImportDTO.SalesEmployeeUsernameValue))
+                    StoreScouting_ImportDTO.SalesEmployeeId = AppUsers.Where(x => x.Username.Equals(StoreScouting_ImportDTO.SalesEmployeeUsernameValue)).Select(x => x.Id).FirstOrDefault();
+            });
+
+            string error = string.Join("\n", Errors.Where(x => !string.IsNullOrWhiteSpace(x.Value.ToString())).Select(x => x.Value.ToString()).ToList());
+            if (!string.IsNullOrWhiteSpace(error))
+                return BadRequest(error);
+
+            Dictionary<long, StoreScouting> DictionaryStoreScoutings = StoreScouting_ImportDTOs.ToDictionary(x => x.Stt, y => new StoreScouting());
+            Parallel.ForEach(StoreScouting_ImportDTOs, StoreScouting_ImportDTO =>
+            {
+                StoreScouting StoreScouting = DictionaryStoreScoutings[StoreScouting_ImportDTO.Stt];
+                if (StoreScouting_ImportDTO.IsNew == false)
+                {
+                    StoreScouting Old = DictionaryAll[StoreScouting_ImportDTO.CodeValue];
+                    StoreScouting.Id = Old.Id;
+                }
+                StoreScouting.Code = StoreScouting_ImportDTO.CodeValue;
+                StoreScouting.Name = StoreScouting_ImportDTO.NameValue;
+                StoreScouting.StoreScoutingTypeId = StoreScouting_ImportDTO.StoreScoutingTypeId;
+                StoreScouting.StoreScoutingType = new StoreScoutingType { Code = StoreScouting_ImportDTO.StoreScoutingTypeCodeValue };
+                StoreScouting.OrganizationId = StoreScouting_ImportDTO.OrganizationId;
+                StoreScouting.Organization = new Organization { Code = StoreScouting_ImportDTO.OrganizationCodeValue };
+                StoreScouting.ProvinceId = StoreScouting_ImportDTO.ProvinceId;
+                if (StoreScouting.ProvinceId.HasValue)
+                {
+                    StoreScouting.Province = new Province { Code = StoreScouting_ImportDTO.ProvinceCodeValue };
+                }
+                StoreScouting.DistrictId = StoreScouting_ImportDTO.DistrictId;
+                if (StoreScouting.DistrictId.HasValue)
+                {
+                    StoreScouting.District = new District { Code = StoreScouting_ImportDTO.DistrictCodeValue };
+                }
+                StoreScouting.WardId = StoreScouting_ImportDTO.WardId;
+                if (StoreScouting.WardId.HasValue)
+                {
+                    StoreScouting.Ward = new Ward { Code = StoreScouting_ImportDTO.WardCodeValue };
+                }
+                StoreScouting.Address = StoreScouting_ImportDTO.AddressValue;
+                StoreScouting.Longitude = StoreScouting_ImportDTO.Longitude;
+                StoreScouting.Latitude = StoreScouting_ImportDTO.Latitude;
+
+                StoreScouting.OwnerPhone = StoreScouting_ImportDTO.OwnerPhoneValue;
+                StoreScouting.CreatorId = StoreScouting_ImportDTO.SalesEmployeeId;
+                StoreScouting.Creator = new AppUser { Username = StoreScouting_ImportDTO.SalesEmployeeUsernameValue };
+                StoreScouting.StoreScoutingStatusId = StoreScouting_ImportDTO.StoreScoutingStatusId;
+                StoreScouting.BaseLanguage = CurrentContext.Language;
+            });
+            List<StoreScouting> StoreScoutings = DictionaryStoreScoutings.Select(x => x.Value).ToList();
+            errorContent = new StringBuilder(error);
+            StoreScoutings = await StoreScoutingService.Import(StoreScoutings);
+            if (StoreScoutings == null)
+                return Ok();
+            List<StoreScouting_StoreScoutingDTO> StoreScouting_StoreScoutingDTOs = StoreScoutings
+                .Select(c => new StoreScouting_StoreScoutingDTO(c)).ToList();
+            for (int i = 0; i < StoreScoutings.Count; i++)
+            {
+                if (!StoreScoutings[i].IsValidated)
+                {
+                    errorContent.Append($"Lỗi dòng thứ {i + 2}:");
+                    foreach (var Error in StoreScoutings[i].Errors)
+                    {
+                        errorContent.Append($" {Error.Value},");
+                    }
+                    errorContent.AppendLine("");
+                }
+            }
+            if (StoreScoutings.Any(s => !s.IsValidated))
+                return BadRequest(errorContent.ToString());
+            return Ok(StoreScouting_StoreScoutingDTOs);
+        }
+
         [Route(StoreScoutingRoute.Export), HttpPost]
         public async Task<ActionResult> Export([FromBody] StoreScouting_StoreScoutingFilterDTO StoreScouting_StoreScoutingFilterDTO)
         {
@@ -230,6 +479,105 @@ namespace DMS.Rpc.store_scouting
             };
 
             return File(output.ToArray(), "application/octet-stream", "StoreScouting_Export.xlsx");
+        }
+
+        [Route(StoreScoutingRoute.ExportTemplate), HttpPost]
+        public async Task<ActionResult> ExportTemplate()
+        {
+            List<Organization> Organizations = await OrganizationService.List(new OrganizationFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = OrganizationSelect.Code | OrganizationSelect.Name | OrganizationSelect.Path,
+                StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id }
+            });
+
+            List<Province> Provinces = await ProvinceService.List(new ProvinceFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = ProvinceSelect.Id | ProvinceSelect.Code | ProvinceSelect.Name,
+                StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id }
+            });
+
+            List<District> Districts = await DistrictService.List(new DistrictFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = DistrictSelect.Id | DistrictSelect.Code | DistrictSelect.Name | DistrictSelect.Province,
+                StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id }
+            });
+
+            List<Ward> Wards = await WardService.List(new WardFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = WardSelect.Id | WardSelect.Code | WardSelect.Name | WardSelect.District,
+                StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id }
+            });
+            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+            MemoryStream MemoryStream = new MemoryStream();
+            string tempPath = "Templates/StoreScouting_Template.xlsx";
+            using (var xlPackage = new ExcelPackage(new FileInfo(tempPath)))
+            {
+                #region sheet Organization 
+                var worksheet_Organization = xlPackage.Workbook.Worksheets["Org"];
+                xlPackage.Workbook.CalcMode = ExcelCalcMode.Manual;
+                int startRow_Organization = 2;
+                int numberCell_Organizations = 1;
+                for (var i = 0; i < Organizations.Count; i++)
+                {
+                    Organization Organization = Organizations[i];
+                    worksheet_Organization.Cells[startRow_Organization + i, numberCell_Organizations].Value = Organization.Code;
+                    worksheet_Organization.Cells[startRow_Organization + i, numberCell_Organizations + 1].Value = Organization.Name;
+                }
+                #endregion
+
+                #region sheet Province 
+                var worksheet_Province = xlPackage.Workbook.Worksheets["Province"];
+                xlPackage.Workbook.CalcMode = ExcelCalcMode.Manual;
+                int startRow_Province = 2;
+                int numberCell_Provinces = 1;
+                for (var i = 0; i < Provinces.Count; i++)
+                {
+                    Province Province = Provinces[i];
+                    worksheet_Province.Cells[startRow_Province + i, numberCell_Provinces].Value = Province.Code;
+                    worksheet_Province.Cells[startRow_Province + i, numberCell_Provinces + 1].Value = Province.Name;
+                }
+                #endregion
+
+                #region sheet District 
+                var worksheet_District = xlPackage.Workbook.Worksheets["District"];
+                xlPackage.Workbook.CalcMode = ExcelCalcMode.Manual;
+                int startRow_District = 2;
+                int numberCell_Districts = 1;
+                for (var i = 0; i < Districts.Count; i++)
+                {
+                    District District = Districts[i];
+                    worksheet_District.Cells[startRow_District + i, numberCell_Districts].Value = District.Code;
+                    worksheet_District.Cells[startRow_District + i, numberCell_Districts + 1].Value = District.Name;
+                    worksheet_District.Cells[startRow_District + i, numberCell_Districts + 2].Value = District.Province?.Name;
+                }
+                #endregion
+
+                #region sheet Ward 
+                var worksheet_Ward = xlPackage.Workbook.Worksheets["Ward"];
+                xlPackage.Workbook.CalcMode = ExcelCalcMode.Manual;
+                int startRow_Ward = 2;
+                int numberCell_Wards = 1;
+                for (var i = 0; i < Wards.Count; i++)
+                {
+                    Ward Ward = Wards[i];
+                    worksheet_Ward.Cells[startRow_Ward + i, numberCell_Wards].Value = Ward.Code;
+                    worksheet_Ward.Cells[startRow_Ward + i, numberCell_Wards + 1].Value = Ward.Name;
+                    worksheet_Ward.Cells[startRow_Ward + i, numberCell_Wards + 2].Value = Ward.District?.Name;
+                    worksheet_Ward.Cells[startRow_Ward + i, numberCell_Wards + 3].Value = Ward.District?.Province?.Name;
+                }
+                #endregion
+                xlPackage.SaveAs(MemoryStream);
+            }
+
+            return File(MemoryStream.ToArray(), "application/octet-stream", "Template_StoreScouting.xlsx");
         }
 
         private async Task<bool> HasPermission(long Id)

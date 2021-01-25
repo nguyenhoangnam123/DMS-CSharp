@@ -31,7 +31,8 @@
     },
     "StoreScoutingStatus": {
       "StoreScoutingHasOpened": "Yêu cầu cắm cờ đã được mở",
-      "StoreScoutingHasRejected": "Yêu cầu cắm cờ đã bị từ chối"
+      "StoreScoutingHasRejected": "Yêu cầu cắm cờ đã bị từ chối",
+      "StoreScoutingStatusNotExisted": "Chưa nhập trạng thái hoặc trạng thái không tồn tại"
     },
     "Longitude": {
       "LongitudeEmpty": "Chưa nhập kinh độ",
@@ -40,6 +41,15 @@
     "Latitude": {
       "LatitudeEmpty": "Chưa nhập vĩ độ",
       "LatitudeInvalid": "Vĩ độ không hợp lệ"
+    },
+    "StoreScoutingType": {
+      "StoreScoutingTypeNotExisted": "Chưa nhập loại đại lý cắm cờ hoặc loại đại lý cắm cờ không tồn tại"
+    },
+    "Organization": {
+      "OrganizationNotExisted": "Chưa nhập đơn vị tổ chức hoặc đơn vị tổ chức không tồn tại"
+    },
+    "Creator": {
+      "CreatorNotExisted": "Chưa nhập nhân viên kinh doanh hoặc nhân viên kinh doanh không tồn tại"
     }
   }
 }

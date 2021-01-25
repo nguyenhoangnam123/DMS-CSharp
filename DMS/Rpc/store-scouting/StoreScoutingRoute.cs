@@ -35,6 +35,8 @@ namespace DMS.Rpc.store_scouting
         public const string Update = Default + "/update";
         public const string Delete = Default + "/delete";
         public const string Reject = Default + "/reject";
+        public const string Import = Default + "/import";
+        public const string ExportTemplate = Default + "/export-template";
         public const string Export = Default + "/export";
         
         public const string FilterListAppUser = Default + "/filter-list-app-user";
@@ -94,13 +96,18 @@ namespace DMS.Rpc.store_scouting
                 Detail, Delete,
                 SingleListAppUser, SingleListDistrict, SingleListOrganization, SingleListProvince, SingleListStore, SingleListStoreScoutingStatus, SingleListWard, } },
 
-
             { "Từ chối", new List<string> {
                 Parent,
                 Master, Count, List, Get, 
                 FilterListAppUser, FilterListDistrict, FilterListOrganization, FilterListProvince, FilterListStore, FilterListStoreScoutingStatus, FilterListWard, FilterListStoreScoutingType,
                 Detail, Reject, 
                 SingleListAppUser, SingleListDistrict, SingleListOrganization, SingleListProvince, SingleListStore, SingleListStoreScoutingStatus, SingleListWard, } },
+
+            { "Nhập Excel", new List<string> {
+                Parent,
+                Master, Count, List, Get,
+                FilterListAppUser, FilterListDistrict, FilterListOrganization, FilterListProvince, FilterListStore, FilterListStoreScoutingStatus, FilterListWard, FilterListStoreScoutingType,
+                ExportTemplate, Import} },
 
             { "Xuất Excel", new List<string> {
                 Parent,

@@ -32,6 +32,7 @@ namespace DMS.Rpc.store
         public string OwnerNameValue { get; set; }
         public string OwnerPhoneValue { get; set; }
         public string OwnerEmailValue { get; set; }
+        public string StoreStatusNameValue { get; set; }
         public string StatusNameValue { get; set; }
         public bool IsNew { get; set; }
         public Store Store { get; set; }
@@ -45,6 +46,7 @@ namespace DMS.Rpc.store
         public long? ProvinceId { get; set; }
         public long? DistrictId { get; set; }
         public long? WardId { get; set; }
+        public long StoreStatusId { get; set; }
         public long StatusId { get; set; }
     }
 }

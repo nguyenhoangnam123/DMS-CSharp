@@ -281,6 +281,13 @@ namespace DMS.Rpc.store
                 Selects = WardSelect.Id | WardSelect.Code
             });
 
+            List<StoreStatus> StoreStatuses = await StoreStatusService.List(new StoreStatusFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = StoreStatusSelect.Id | StoreStatusSelect.Code | StoreStatusSelect.Name
+            });
+
             List<Status> Statuses = await StatusService.List(new StatusFilter
             {
                 Skip = 0,
@@ -332,7 +339,8 @@ namespace DMS.Rpc.store
                 int OwnerNameColumn = 20 + StartColumn;
                 int OwnerPhoneColumn = 21 + StartColumn;
                 int OwnerEmailColumn = 22 + StartColumn;
-                int StatusColumn = 23 + StartColumn;
+                int StoreStatusColumn = 23 + StartColumn;
+                int StatusColumn = 24 + StartColumn;
                 #endregion
 
                 for (int i = StartRow; i <= worksheet.Dimension.End.Row; i++)
@@ -378,6 +386,7 @@ namespace DMS.Rpc.store
                     Store_ImportDTO.OwnerNameValue = worksheet.Cells[i + StartRow, OwnerNameColumn].Value?.ToString();
                     Store_ImportDTO.OwnerPhoneValue = worksheet.Cells[i + StartRow, OwnerPhoneColumn].Value?.ToString();
                     Store_ImportDTO.OwnerEmailValue = worksheet.Cells[i + StartRow, OwnerEmailColumn].Value?.ToString();
+                    Store_ImportDTO.StoreStatusNameValue = worksheet.Cells[i + StartRow, StoreStatusColumn].Value?.ToString();
                     Store_ImportDTO.StatusNameValue = worksheet.Cells[i + StartRow, StatusColumn].Value?.ToString();
                     #endregion
                 }
@@ -418,6 +427,15 @@ namespace DMS.Rpc.store
                     Store_ImportDTO.DistrictId = Districts.Where(x => x.Code.Equals(Store_ImportDTO.DistrictCodeValue)).Select(x => (long?)x.Id).FirstOrDefault();
                 if (!string.IsNullOrWhiteSpace(Store_ImportDTO.WardCodeValue))
                     Store_ImportDTO.WardId = Wards.Where(x => x.Code.Equals(Store_ImportDTO.WardCodeValue)).Select(x => (long?)x.Id).FirstOrDefault();
+                if (string.IsNullOrEmpty(Store_ImportDTO.StoreStatusNameValue))
+                {
+                    Store_ImportDTO.StoreStatusId = -1;
+                }
+                else
+                {
+                    string StoreStatusNameValue = Store_ImportDTO.StoreStatusNameValue;
+                    Store_ImportDTO.StatusId = StoreStatuses.Where(x => x.Name.ToLower().Equals(StoreStatusNameValue == null ? string.Empty : StoreStatusNameValue.Trim().ToLower())).Select(x => x.Id).FirstOrDefault();
+                }
                 if (string.IsNullOrEmpty(Store_ImportDTO.StatusNameValue))
                 {
                     Store_ImportDTO.StatusId = -1;
@@ -494,6 +512,7 @@ namespace DMS.Rpc.store
                 Store.OwnerName = Store_ImportDTO.OwnerNameValue;
                 Store.OwnerPhone = Store_ImportDTO.OwnerPhoneValue;
                 Store.OwnerEmail = Store_ImportDTO.OwnerEmailValue;
+                Store.StoreStatusId = Store_ImportDTO.StoreStatusId;
                 Store.StatusId = Store_ImportDTO.StatusId;
                 Store.BaseLanguage = CurrentContext.Language;
             });
@@ -607,6 +626,7 @@ namespace DMS.Rpc.store
                         "Tên Chủ đại lý",
                         "Điện Thoại Liên Hệ",
                         "Email",
+                        "Trạng thái duyệt",
                         "Trạng thái"
                     }
                 };
@@ -639,6 +659,7 @@ namespace DMS.Rpc.store
                         Store.OwnerName,
                         Store.OwnerPhone,
                         Store.OwnerEmail,
+                        Store.StoreStatus?.Name,
                         Store.Status?.Name
                     });
                 }
