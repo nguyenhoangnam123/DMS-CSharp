@@ -13,6 +13,7 @@ namespace DMS.Rpc.organization
         public const string List = Default + "/list";
         public const string Get = Default + "/get";
         public const string Export = Default + "/export";
+        public const string ExportAppUser = Default + "/export-app-user";
 
         public const string FilterListOrganization = Default + "/filter-list-organization";
         public const string FilterListStatus = Default + "/filter-list-status";
@@ -34,7 +35,7 @@ namespace DMS.Rpc.organization
             { "Xuất excel", new List<string> {
                 Parent,
                 Master, Count, List, Get,
-                FilterListOrganization, FilterListStatus, FilterListAppUser, Export } },
+                FilterListOrganization, FilterListStatus, FilterListAppUser, Export, ExportAppUser } },
         };
     }
 }

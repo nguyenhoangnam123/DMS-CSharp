@@ -110,6 +110,53 @@ namespace DMS.Rpc.organization
             return File(memoryStream.ToArray(), "application/octet-stream", "Organization.xlsx");
 
         }
+
+        [Route(OrganizationRoute.ExportAppUser), HttpPost]
+        public async Task<FileResult> ExportAppUser([FromBody] Organization_AppUserFilterDTO Organization_AppUserFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            AppUserFilter AppUserFilter = new AppUserFilter();
+            AppUserFilter.Skip = 0;
+            AppUserFilter.Take = int.MaxValue;
+            AppUserFilter.Selects = AppUserSelect.Id | AppUserSelect.Username | AppUserSelect.Username | AppUserSelect.Address | AppUserSelect.Phone | AppUserSelect.Sex
+                | AppUserSelect.Birthday | AppUserSelect.Organization | AppUserSelect.Status;
+            AppUserFilter.OrganizationId = Organization_AppUserFilterDTO.OrganizationId;
+            AppUserFilter = AppUserService.ToFilter(AppUserFilter);
+
+            List<AppUser> AppUsers = await AppUserService.List(AppUserFilter);
+            MemoryStream memoryStream = new MemoryStream();
+            using (ExcelPackage excel = new ExcelPackage(memoryStream))
+            {
+                var AppUserHeaders = new List<string[]>()
+                {
+                    new string[] { "STT", "Tên đăng nhập","Tên hiển thị","Địa chỉ","Điện thoại","Email","Giới tính","Ngày sinh","Đơn vị quản lý", "Trạng thái"}
+                };
+                List<object[]> data = new List<object[]>();
+                for (int i = 0; i < AppUsers.Count; i++)
+                {
+                    var appUser = AppUsers[i];
+                    data.Add(new Object[]
+                    {
+                        i+1,
+                        appUser.Username,
+                        appUser.DisplayName,
+                        appUser.Address,
+                        appUser.Phone,
+                        appUser.Email,
+                        appUser.Sex.Name,
+                        appUser.Birthday?.ToString("dd-MM-yyyy"),
+                        appUser.Organization.Code,
+                        appUser.Status.Name,
+                    });
+                }
+                excel.GenerateWorksheet("Tài khoản", AppUserHeaders, data);
+                excel.Save();
+            }
+            return File(memoryStream.ToArray(), "application/octet-stream", "Organization_AppUser" + ".xlsx");
+        }
+
         private async Task<bool> HasPermission(long Id)
         {
             OrganizationFilter OrganizationFilter = new OrganizationFilter();
