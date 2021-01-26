@@ -1059,7 +1059,7 @@ namespace DMS.Rpc
         private ActionResult InitRoute()
         {
             List<Type> routeTypes = typeof(SetupController).Assembly.GetTypes()
-               .Where(x => typeof(Root).IsAssignableFrom(x) && x.IsClass)
+               .Where(x => typeof(Root).IsAssignableFrom(x) && x.IsClass && x.Name != "Root")
                .ToList();
 
             InitMenu(routeTypes);
@@ -1185,7 +1185,7 @@ namespace DMS.Rpc
             Menus.ForEach(m => m.IsDeleted = true);
             foreach (Type type in routeTypes)
             {
-                MenuDAO Menu = Menus.Where(m => m.Name == type.Name && m.Name != "Root").FirstOrDefault();
+                MenuDAO Menu = Menus.Where(m => m.Code == type.Name && m.Name != "Root").FirstOrDefault();
                 if (Menu == null)
                 {
                     Menu = new MenuDAO
