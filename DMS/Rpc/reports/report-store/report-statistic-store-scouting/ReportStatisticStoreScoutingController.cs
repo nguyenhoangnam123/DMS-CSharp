@@ -203,6 +203,79 @@ namespace DMS.Rpc.reports.report_store.report_statistic_store_scouting
             if (End.Subtract(Start).Days > 31)
                 return BadRequest(new { message = "Chỉ được phép xem tối đa trong vòng 31 ngày" });
 
+            List<ReportStatisticStoreScouting_ReportStatisticStoreScoutingDTO> ReportStatisticStoreScouting_ReportStatisticStoreScoutingDTOs = await ListData(ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO, Start, End);
+            return ReportStatisticStoreScouting_ReportStatisticStoreScoutingDTOs.OrderByDescending(x => x.StoreCoutingRate).ToList();
+        }
+
+        [Route(ReportStatisticStoreScoutingRoute.Total), HttpPost]
+        public async Task<ReportStatisticStoreScouting_TotalDTO> Total([FromBody] ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            DateTime Start = ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.Date?.GreaterEqual == null ?
+                    LocalStartDay(CurrentContext) :
+                    ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.Date.GreaterEqual.Value;
+
+            DateTime End = ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.Date?.LessEqual == null ?
+                    LocalEndDay(CurrentContext) :
+                    ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.Date.LessEqual.Value;
+
+            if (End.Subtract(Start).Days > 31)
+                return new ReportStatisticStoreScouting_TotalDTO();
+
+            ReportStatisticStoreScouting_TotalDTO ReportStatisticStoreScouting_TotalDTO = await TotalData(ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO, Start, End);
+            return ReportStatisticStoreScouting_TotalDTO;
+        }
+
+        [Route(ReportStatisticStoreScoutingRoute.Export), HttpPost]
+        public async Task<ActionResult> Export([FromBody] ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            DateTime Start = ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.Date?.GreaterEqual == null ?
+                    LocalStartDay(CurrentContext) :
+                    ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.Date.GreaterEqual.Value;
+
+            DateTime End = ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.Date?.LessEqual == null ?
+                    LocalEndDay(CurrentContext) :
+                    ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.Date.LessEqual.Value;
+
+            ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.Skip = 0;
+            ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.Take = int.MaxValue;
+            List<ReportStatisticStoreScouting_ReportStatisticStoreScoutingDTO> ReportStatisticStoreScouting_ReportStatisticStoreScoutingDTOs = await ListData(ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO, Start, End);
+
+            ReportStatisticStoreScouting_TotalDTO ReportStatisticStoreScouting_TotalDTO = await TotalData(ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO, Start, End);
+            long stt = 1;
+            foreach (ReportStatisticStoreScouting_ReportStatisticStoreScoutingDTO ReportStatisticStoreScouting_ReportStatisticStoreScoutingDTO in ReportStatisticStoreScouting_ReportStatisticStoreScoutingDTOs)
+            {
+                ReportStatisticStoreScouting_ReportStatisticStoreScoutingDTO.STT = stt;
+                stt++;
+            }
+            var StoreScoutingIds = ReportStatisticStoreScouting_ReportStatisticStoreScoutingDTOs.SelectMany(x => x.StoreScoutingIds).Distinct().ToList();
+            Start = await DataContext.StoreScouting.Where(x => StoreScoutingIds.Contains(x.Id)).OrderBy(x => x.CreatedAt).Select(x => x.CreatedAt).FirstOrDefaultAsync();
+            string path = "Templates/Report_Statistic_Store_Scouting.xlsx";
+            byte[] arr = System.IO.File.ReadAllBytes(path);
+            MemoryStream input = new MemoryStream(arr);
+            MemoryStream output = new MemoryStream();
+            dynamic Data = new ExpandoObject();
+            Data.Start = Start.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy");
+            Data.End = End.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy");
+            Data.ReportStatisticStoreScoutings = ReportStatisticStoreScouting_ReportStatisticStoreScoutingDTOs;
+            Data.Total = ReportStatisticStoreScouting_TotalDTO;
+            using (var document = StaticParams.DocumentFactory.Open(input, output, "xlsx"))
+            {
+                document.Process(Data);
+            };
+
+            return File(output.ToArray(), "application/octet-stream", "ReportStatisticStoreScouting.xlsx");
+        }
+
+        private async Task<List<ReportStatisticStoreScouting_ReportStatisticStoreScoutingDTO>> ListData(
+            ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO,
+            DateTime Start, DateTime End)
+        {
             long? ProvinceId = ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.ProvinceId?.Equal;
             long? DistrictId = ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.DistrictId?.Equal;
             long? WardId = ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.WardId?.Equal;
@@ -228,7 +301,7 @@ namespace DMS.Rpc.reports.report_store.report_statistic_store_scouting
                         (DistrictId.HasValue == false || (s.DistrictId.HasValue && s.DistrictId.Value == DistrictId.Value)) &&
                         (WardId.HasValue == false || (s.WardId.HasValue && s.WardId.Value == WardId.Value)) &&
                         s.DeletedAt == null
-                        select new StoreDAO 
+                        select new StoreDAO
                         {
                             Id = s.Id,
                             ProvinceId = s.ProvinceId,
@@ -237,7 +310,7 @@ namespace DMS.Rpc.reports.report_store.report_statistic_store_scouting
                             StoreScoutingId = s.StoreScoutingId,
                         };
 
-            var Stores  = await query.ToListAsync();
+            var Stores = await query.ToListAsync();
             var StoreScoutings = await DataContext.StoreScouting
                 .Where(x => ProvinceId.HasValue == false || (x.ProvinceId.HasValue && x.ProvinceId.Value == ProvinceId.Value))
                 .Where(x => DistrictId.HasValue == false || (x.DistrictId.HasValue && x.DistrictId.Value == DistrictId.Value))
@@ -252,7 +325,7 @@ namespace DMS.Rpc.reports.report_store.report_statistic_store_scouting
                 })
                 .ToListAsync();
 
-            List<ReportStatisticStoreScouting_ReportStatisticStoreScoutingDTO> 
+            List<ReportStatisticStoreScouting_ReportStatisticStoreScoutingDTO>
                 ReportStatisticStoreScouting_ReportStatisticStoreScoutingDTOs = new List<ReportStatisticStoreScouting_ReportStatisticStoreScoutingDTO>();
             if (ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.HasValue == false)
             {
@@ -351,23 +424,10 @@ namespace DMS.Rpc.reports.report_store.report_statistic_store_scouting
             return ReportStatisticStoreScouting_ReportStatisticStoreScoutingDTOs.OrderByDescending(x => x.StoreCoutingRate).ToList();
         }
 
-        [Route(ReportStatisticStoreScoutingRoute.Total), HttpPost]
-        public async Task<ReportStatisticStoreScouting_TotalDTO> Total([FromBody] ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO)
+        private async Task<ReportStatisticStoreScouting_TotalDTO> TotalData(
+            ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO,
+            DateTime Start, DateTime End)
         {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
-
-            DateTime Start = ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.Date?.GreaterEqual == null ?
-                    LocalStartDay(CurrentContext) :
-                    ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.Date.GreaterEqual.Value;
-
-            DateTime End = ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.Date?.LessEqual == null ?
-                    LocalEndDay(CurrentContext) :
-                    ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.Date.LessEqual.Value;
-
-            if (End.Subtract(Start).Days > 31)
-                return new ReportStatisticStoreScouting_TotalDTO();
-
             long? ProvinceId = ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.ProvinceId?.Equal;
             long? DistrictId = ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.DistrictId?.Equal;
             long? WardId = ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.WardId?.Equal;
@@ -525,50 +585,6 @@ namespace DMS.Rpc.reports.report_store.report_statistic_store_scouting
             ReportStatisticStoreScouting_TotalDTO.StoreScoutingCounter = ReportStatisticStoreScouting_ReportStatisticStoreScoutingDTOs.Select(x => x.StoreScoutingCounter).Sum();
             ReportStatisticStoreScouting_TotalDTO.StoreOpennedCounter = ReportStatisticStoreScouting_ReportStatisticStoreScoutingDTOs.Select(x => x.StoreOpennedCounter).Sum();
             return ReportStatisticStoreScouting_TotalDTO;
-        }
-
-        [Route(ReportStatisticStoreScoutingRoute.Export), HttpPost]
-        public async Task<ActionResult> Export([FromBody] ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
-
-            DateTime Start = ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.Date?.GreaterEqual == null ?
-                    LocalStartDay(CurrentContext) :
-                    ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.Date.GreaterEqual.Value;
-
-            DateTime End = ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.Date?.LessEqual == null ?
-                    LocalEndDay(CurrentContext) :
-                    ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.Date.LessEqual.Value;
-
-            ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.Skip = 0;
-            ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO.Take = int.MaxValue;
-            List<ReportStatisticStoreScouting_ReportStatisticStoreScoutingDTO> ReportStatisticStoreScouting_ReportStatisticStoreScoutingDTOs = (await List(ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO)).Value;
-
-            ReportStatisticStoreScouting_TotalDTO ReportStatisticStoreScouting_TotalDTO = await Total(ReportStatisticStoreScouting_ReportStatisticStoreScoutingFilterDTO);
-            long stt = 1;
-            foreach (ReportStatisticStoreScouting_ReportStatisticStoreScoutingDTO ReportStatisticStoreScouting_ReportStatisticStoreScoutingDTO in ReportStatisticStoreScouting_ReportStatisticStoreScoutingDTOs)
-            {
-                ReportStatisticStoreScouting_ReportStatisticStoreScoutingDTO.STT = stt;
-                stt++;
-            }
-            var StoreScoutingIds = ReportStatisticStoreScouting_ReportStatisticStoreScoutingDTOs.SelectMany(x => x.StoreScoutingIds).Distinct().ToList();
-            Start = await DataContext.StoreScouting.Where(x => StoreScoutingIds.Contains(x.Id)).OrderBy(x => x.CreatedAt).Select(x => x.CreatedAt).FirstOrDefaultAsync();
-            string path = "Templates/Report_Statistic_Store_Scouting.xlsx";
-            byte[] arr = System.IO.File.ReadAllBytes(path);
-            MemoryStream input = new MemoryStream(arr);
-            MemoryStream output = new MemoryStream();
-            dynamic Data = new ExpandoObject();
-            Data.Start = Start.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy");
-            Data.End = End.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy");
-            Data.ReportStatisticStoreScoutings = ReportStatisticStoreScouting_ReportStatisticStoreScoutingDTOs;
-            Data.Total = ReportStatisticStoreScouting_TotalDTO;
-            using (var document = StaticParams.DocumentFactory.Open(input, output, "xlsx"))
-            {
-                document.Process(Data);
-            };
-
-            return File(output.ToArray(), "application/octet-stream", "ReportStatisticStoreScouting.xlsx");
         }
     }
 }

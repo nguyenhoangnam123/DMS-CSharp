@@ -281,6 +281,84 @@ namespace DMS.Rpc.reports.report_store.report_statistic_problem
             if (End.Subtract(Start).Days > 31)
                 return BadRequest(new { message = "Chỉ được phép xem tối đa trong vòng 31 ngày" });
 
+            List<ReportStatisticProblem_ReportStatisticProblemDTO> ReportStatisticProblem_ReportStatisticProblemDTOs = await ListData(ReportStatisticProblem_ReportStatisticProblemFilterDTO, Start, End);
+            return ReportStatisticProblem_ReportStatisticProblemDTOs;
+        }
+
+        [Route(ReportStatisticProblemRoute.Total), HttpPost]
+        public async Task<ReportStatisticProblem_TotalDTO> Total([FromBody] ReportStatisticProblem_ReportStatisticProblemFilterDTO ReportStatisticProblem_ReportStatisticProblemFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            if (ReportStatisticProblem_ReportStatisticProblemFilterDTO.HasValue == false)
+                return new ReportStatisticProblem_TotalDTO();
+
+            DateTime Start = ReportStatisticProblem_ReportStatisticProblemFilterDTO.Date?.GreaterEqual == null ?
+               LocalStartDay(CurrentContext) :
+               ReportStatisticProblem_ReportStatisticProblemFilterDTO.Date.GreaterEqual.Value;
+
+            DateTime End = ReportStatisticProblem_ReportStatisticProblemFilterDTO.Date?.LessEqual == null ?
+                    LocalEndDay(CurrentContext) :
+                    ReportStatisticProblem_ReportStatisticProblemFilterDTO.Date.LessEqual.Value;
+
+            if (End.Subtract(Start).Days > 31)
+                return new ReportStatisticProblem_TotalDTO();
+
+            ReportStatisticProblem_TotalDTO ReportStatisticProblem_TotalDTO = await TotalData(ReportStatisticProblem_ReportStatisticProblemFilterDTO, Start, End);
+            return ReportStatisticProblem_TotalDTO;
+        }
+
+        [Route(ReportStatisticProblemRoute.Export), HttpPost]
+        public async Task<ActionResult> Export([FromBody] ReportStatisticProblem_ReportStatisticProblemFilterDTO ReportStatisticProblem_ReportStatisticProblemFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            DateTime Start = ReportStatisticProblem_ReportStatisticProblemFilterDTO.Date?.GreaterEqual == null ?
+               LocalStartDay(CurrentContext) :
+               ReportStatisticProblem_ReportStatisticProblemFilterDTO.Date.GreaterEqual.Value;
+
+            DateTime End = ReportStatisticProblem_ReportStatisticProblemFilterDTO.Date?.LessEqual == null ?
+                    LocalEndDay(CurrentContext) :
+                    ReportStatisticProblem_ReportStatisticProblemFilterDTO.Date.LessEqual.Value;
+
+            ReportStatisticProblem_ReportStatisticProblemFilterDTO.Skip = 0;
+            ReportStatisticProblem_ReportStatisticProblemFilterDTO.Take = int.MaxValue;
+            List<ReportStatisticProblem_ReportStatisticProblemDTO> ReportStatisticProblem_ReportStatisticProblemDTOs = await ListData(ReportStatisticProblem_ReportStatisticProblemFilterDTO, Start, End);
+
+            ReportStatisticProblem_TotalDTO ReportStatisticProblem_TotalDTO = await TotalData(ReportStatisticProblem_ReportStatisticProblemFilterDTO, Start, End);
+            long stt = 1;
+            foreach (ReportStatisticProblem_ReportStatisticProblemDTO ReportStatisticProblem_ReportStatisticProblemDTO in ReportStatisticProblem_ReportStatisticProblemDTOs)
+            {
+                foreach (var Store in ReportStatisticProblem_ReportStatisticProblemDTO.Stores)
+                {
+                    Store.STT = stt;
+                    stt++;
+                }
+            }
+
+            string path = "Templates/Report_Statistic_Problem.xlsx";
+            byte[] arr = System.IO.File.ReadAllBytes(path);
+            MemoryStream input = new MemoryStream(arr);
+            MemoryStream output = new MemoryStream();
+            dynamic Data = new ExpandoObject();
+            Data.Start = Start.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy");
+            Data.End = End.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy");
+            Data.ReportStatisticProblems = ReportStatisticProblem_ReportStatisticProblemDTOs;
+            Data.Total = ReportStatisticProblem_TotalDTO;
+            using (var document = StaticParams.DocumentFactory.Open(input, output, "xlsx"))
+            {
+                document.Process(Data);
+            };
+
+            return File(output.ToArray(), "application/octet-stream", "ReportStatisticProblem.xlsx");
+        }
+
+        private async Task<List<ReportStatisticProblem_ReportStatisticProblemDTO>> ListData(
+            ReportStatisticProblem_ReportStatisticProblemFilterDTO ReportStatisticProblem_ReportStatisticProblemFilterDTO,
+            DateTime Start, DateTime End)
+        {
             long? StoreId = ReportStatisticProblem_ReportStatisticProblemFilterDTO.StoreId?.Equal;
             long? StoreTypeId = ReportStatisticProblem_ReportStatisticProblemFilterDTO.StoreTypeId?.Equal;
             long? StoreGroupingId = ReportStatisticProblem_ReportStatisticProblemFilterDTO.StoreGroupingId?.Equal;
@@ -314,7 +392,7 @@ namespace DMS.Rpc.reports.report_store.report_statistic_problem
                 StoreGroupingIds = StoreGroupingIds.Intersect(listId).ToList();
             }
 
-            
+
             ITempTableQuery<TempTable<long>> tempTableQuery = await DataContext
                        .BulkInsertValuesIntoTempTableAsync<long>(StoreIds);
             var query = from p in DataContext.Problem
@@ -432,26 +510,10 @@ namespace DMS.Rpc.reports.report_store.report_statistic_problem
             return ReportStatisticProblem_ReportStatisticProblemDTOs;
         }
 
-        [Route(ReportStatisticProblemRoute.Total), HttpPost]
-        public async Task<ReportStatisticProblem_TotalDTO> Total([FromBody] ReportStatisticProblem_ReportStatisticProblemFilterDTO ReportStatisticProblem_ReportStatisticProblemFilterDTO)
+        private async Task<ReportStatisticProblem_TotalDTO> TotalData(
+            ReportStatisticProblem_ReportStatisticProblemFilterDTO ReportStatisticProblem_ReportStatisticProblemFilterDTO,
+            DateTime Start, DateTime End)
         {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
-
-            if (ReportStatisticProblem_ReportStatisticProblemFilterDTO.HasValue == false)
-                return new ReportStatisticProblem_TotalDTO();
-
-            DateTime Start = ReportStatisticProblem_ReportStatisticProblemFilterDTO.Date?.GreaterEqual == null ?
-               LocalStartDay(CurrentContext) :
-               ReportStatisticProblem_ReportStatisticProblemFilterDTO.Date.GreaterEqual.Value;
-
-            DateTime End = ReportStatisticProblem_ReportStatisticProblemFilterDTO.Date?.LessEqual == null ?
-                    LocalEndDay(CurrentContext) :
-                    ReportStatisticProblem_ReportStatisticProblemFilterDTO.Date.LessEqual.Value;
-
-            if (End.Subtract(Start).Days > 31)
-                return new ReportStatisticProblem_TotalDTO();
-
             long? StoreId = ReportStatisticProblem_ReportStatisticProblemFilterDTO.StoreId?.Equal;
             long? StoreTypeId = ReportStatisticProblem_ReportStatisticProblemFilterDTO.StoreTypeId?.Equal;
             long? StoreGroupingId = ReportStatisticProblem_ReportStatisticProblemFilterDTO.StoreGroupingId?.Equal;
@@ -592,50 +654,5 @@ namespace DMS.Rpc.reports.report_store.report_statistic_problem
             return ReportStatisticProblem_TotalDTO;
         }
 
-        [Route(ReportStatisticProblemRoute.Export), HttpPost]
-        public async Task<ActionResult> Export([FromBody] ReportStatisticProblem_ReportStatisticProblemFilterDTO ReportStatisticProblem_ReportStatisticProblemFilterDTO)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
-
-            DateTime Start = ReportStatisticProblem_ReportStatisticProblemFilterDTO.Date?.GreaterEqual == null ?
-               LocalStartDay(CurrentContext) :
-               ReportStatisticProblem_ReportStatisticProblemFilterDTO.Date.GreaterEqual.Value;
-
-            DateTime End = ReportStatisticProblem_ReportStatisticProblemFilterDTO.Date?.LessEqual == null ?
-                    LocalEndDay(CurrentContext) :
-                    ReportStatisticProblem_ReportStatisticProblemFilterDTO.Date.LessEqual.Value;
-
-            ReportStatisticProblem_ReportStatisticProblemFilterDTO.Skip = 0;
-            ReportStatisticProblem_ReportStatisticProblemFilterDTO.Take = int.MaxValue;
-            List<ReportStatisticProblem_ReportStatisticProblemDTO> ReportStatisticProblem_ReportStatisticProblemDTOs = (await List(ReportStatisticProblem_ReportStatisticProblemFilterDTO)).Value;
-
-            ReportStatisticProblem_TotalDTO ReportStatisticProblem_TotalDTO = await Total(ReportStatisticProblem_ReportStatisticProblemFilterDTO);
-            long stt = 1;
-            foreach (ReportStatisticProblem_ReportStatisticProblemDTO ReportStatisticProblem_ReportStatisticProblemDTO in ReportStatisticProblem_ReportStatisticProblemDTOs)
-            {
-                foreach (var Store in ReportStatisticProblem_ReportStatisticProblemDTO.Stores)
-                {
-                    Store.STT = stt;
-                    stt++;
-                }
-            }
-
-            string path = "Templates/Report_Statistic_Problem.xlsx";
-            byte[] arr = System.IO.File.ReadAllBytes(path);
-            MemoryStream input = new MemoryStream(arr);
-            MemoryStream output = new MemoryStream();
-            dynamic Data = new ExpandoObject();
-            Data.Start = Start.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy");
-            Data.End = End.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy");
-            Data.ReportStatisticProblems = ReportStatisticProblem_ReportStatisticProblemDTOs;
-            Data.Total = ReportStatisticProblem_TotalDTO;
-            using (var document = StaticParams.DocumentFactory.Open(input, output, "xlsx"))
-            {
-                document.Process(Data);
-            };
-
-            return File(output.ToArray(), "application/octet-stream", "ReportStatisticProblem.xlsx");
-        }
     }
 }

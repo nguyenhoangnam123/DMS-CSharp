@@ -230,6 +230,63 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_unchecked
             if (End.Subtract(Start).Days > 7)
                 return BadRequest(new { message = "Chỉ được phép xem tối đa trong vòng 7 ngày" });
 
+            List<ReportStoreUnchecked_ReportStoreUncheckedDTO> ReportStoreUnchecked_ReportStoreUncheckedDTOs = await ListData(ReportStoreUnchecked_ReportStoreUncheckedFilterDTO, Start, End);
+            return ReportStoreUnchecked_ReportStoreUncheckedDTOs;
+        }
+
+        [Route(ReportStoreUncheckedRoute.Export), HttpPost]
+        public async Task<ActionResult> Export([FromBody] ReportStoreUnchecked_ReportStoreUncheckedFilterDTO ReportStoreUnchecked_ReportStoreUncheckedFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+            ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.Skip = 0;
+            ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.Take = int.MaxValue;
+
+            DateTime Start = ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.Date?.GreaterEqual == null ?
+                  LocalStartDay(CurrentContext) :
+                  ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.Date.GreaterEqual.Value;
+
+            DateTime End = ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.Date?.LessEqual == null ?
+                    LocalEndDay(CurrentContext) :
+                    ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.Date.LessEqual.Value;
+
+            ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.Skip = 0;
+            ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.Take = int.MaxValue;
+            List<ReportStoreUnchecked_ReportStoreUncheckedDTO> ReportStoreUnchecked_ReportStoreUncheckedDTOs = await ListData(ReportStoreUnchecked_ReportStoreUncheckedFilterDTO,Start, End);
+
+            long stt = 1;
+            foreach (ReportStoreUnchecked_ReportStoreUncheckedDTO ReportStoreUnchecked_ReportStoreUncheckedDTO in ReportStoreUnchecked_ReportStoreUncheckedDTOs)
+            {
+                foreach (var SaleEmployee in ReportStoreUnchecked_ReportStoreUncheckedDTO.SaleEmployees)
+                {
+                    foreach (var Store in SaleEmployee.Stores)
+                    {
+                        Store.STT = stt;
+                        stt++;
+                    }
+                }
+            }
+
+            string path = "Templates/Report_Store_Unchecked.xlsx";
+            byte[] arr = System.IO.File.ReadAllBytes(path);
+            MemoryStream input = new MemoryStream(arr);
+            MemoryStream output = new MemoryStream();
+            dynamic Data = new ExpandoObject();
+            Data.Start = Start.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy");
+            Data.End = End.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy");
+            Data.ReportStoreUncheckeds = ReportStoreUnchecked_ReportStoreUncheckedDTOs;
+            using (var document = StaticParams.DocumentFactory.Open(input, output, "xlsx"))
+            {
+                document.Process(Data);
+            };
+
+            return File(output.ToArray(), "application/octet-stream", "ReportStoreUnchecked.xlsx");
+        }
+
+        private async Task<List<ReportStoreUnchecked_ReportStoreUncheckedDTO>> ListData(
+            ReportStoreUnchecked_ReportStoreUncheckedFilterDTO ReportStoreUnchecked_ReportStoreUncheckedFilterDTO,
+            DateTime Start, DateTime End)
+        {
             long? AppUserId = ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.AppUserId?.Equal;
             long? ERouteId = ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.ERouteId?.Equal;
             long? StoreStatusId = ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.StoreStatusId?.Equal;
@@ -287,43 +344,43 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_unchecked
                 }).ToListAsync();
 
             var storeUncheckingQuery = from su in DataContext.StoreUnchecking
-                             join s in DataContext.Store on su.StoreId equals s.Id
-                             join st in DataContext.StoreType on s.StoreTypeId equals st.Id
-                             join ss in DataContext.StoreStatus on s.StoreStatusId equals ss.Id
-                             where s.DeletedAt == null &&
-                             AppUserIds.Contains(su.AppUserId) &&
-                             OrganizationIds.Contains(su.OrganizationId) &&
-                             Start <= su.Date && su.Date <= End &&
-                             (StoreStatusId.HasValue == false || StoreStatusId.Value == StoreStatusEnum.ALL.Id || su.Store.StoreStatusId == StoreStatusId.Value)
-                             select new StoreUncheckingDAO
-                             {
-                                 Id = su.Id,
-                                 AppUserId = su.AppUserId,
-                                 Date = su.Date,
-                                 OrganizationId = su.OrganizationId,
-                                 StoreId = su.StoreId,
-                                 Store = new StoreDAO
-                                 {
-                                     Id = s.Id,
-                                     Code = s.Code,
-                                     CodeDraft = s.CodeDraft,
-                                     Name = s.Name,
-                                     Address = s.Address,
-                                     Telephone = s.Telephone,
-                                     StoreStatusId = s.StoreStatusId,
-                                     StoreTypeId = st.Id,
-                                     StoreType = new StoreTypeDAO
-                                     {
-                                         Code = st.Code,
-                                         Name = st.Name,
-                                     },
-                                     StoreStatus = new StoreStatusDAO
-                                     {
-                                         Code = ss.Code,
-                                         Name = ss.Name,
-                                     }
-                                 }
-                             };
+                                       join s in DataContext.Store on su.StoreId equals s.Id
+                                       join st in DataContext.StoreType on s.StoreTypeId equals st.Id
+                                       join ss in DataContext.StoreStatus on s.StoreStatusId equals ss.Id
+                                       where s.DeletedAt == null &&
+                                       AppUserIds.Contains(su.AppUserId) &&
+                                       OrganizationIds.Contains(su.OrganizationId) &&
+                                       Start <= su.Date && su.Date <= End &&
+                                       (StoreStatusId.HasValue == false || StoreStatusId.Value == StoreStatusEnum.ALL.Id || su.Store.StoreStatusId == StoreStatusId.Value)
+                                       select new StoreUncheckingDAO
+                                       {
+                                           Id = su.Id,
+                                           AppUserId = su.AppUserId,
+                                           Date = su.Date,
+                                           OrganizationId = su.OrganizationId,
+                                           StoreId = su.StoreId,
+                                           Store = new StoreDAO
+                                           {
+                                               Id = s.Id,
+                                               Code = s.Code,
+                                               CodeDraft = s.CodeDraft,
+                                               Name = s.Name,
+                                               Address = s.Address,
+                                               Telephone = s.Telephone,
+                                               StoreStatusId = s.StoreStatusId,
+                                               StoreTypeId = st.Id,
+                                               StoreType = new StoreTypeDAO
+                                               {
+                                                   Code = st.Code,
+                                                   Name = st.Name,
+                                               },
+                                               StoreStatus = new StoreStatusDAO
+                                               {
+                                                   Code = ss.Code,
+                                                   Name = ss.Name,
+                                               }
+                                           }
+                                       };
             List<StoreUncheckingDAO> StoreUncheckingDAOs = await storeUncheckingQuery.ToListAsync();
 
             List<ReportStoreUnchecked_ReportStoreUncheckedDTO> ReportStoreUnchecked_ReportStoreUncheckedDTOs = new List<ReportStoreUnchecked_ReportStoreUncheckedDTO>();
@@ -387,53 +444,5 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_unchecked
             return ReportStoreUnchecked_ReportStoreUncheckedDTOs;
         }
 
-        [Route(ReportStoreUncheckedRoute.Export), HttpPost]
-        public async Task<ActionResult> Export([FromBody] ReportStoreUnchecked_ReportStoreUncheckedFilterDTO ReportStoreUnchecked_ReportStoreUncheckedFilterDTO)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
-            ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.Skip = 0;
-            ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.Take = int.MaxValue;
-
-            DateTime Start = ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.Date?.GreaterEqual == null ?
-                  LocalStartDay(CurrentContext) :
-                  ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.Date.GreaterEqual.Value;
-
-            DateTime End = ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.Date?.LessEqual == null ?
-                    LocalEndDay(CurrentContext) :
-                    ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.Date.LessEqual.Value;
-
-            ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.Skip = 0;
-            ReportStoreUnchecked_ReportStoreUncheckedFilterDTO.Take = int.MaxValue;
-            List<ReportStoreUnchecked_ReportStoreUncheckedDTO> ReportStoreUnchecked_ReportStoreUncheckedDTOs = (await List(ReportStoreUnchecked_ReportStoreUncheckedFilterDTO)).Value;
-
-            long stt = 1;
-            foreach (ReportStoreUnchecked_ReportStoreUncheckedDTO ReportStoreUnchecked_ReportStoreUncheckedDTO in ReportStoreUnchecked_ReportStoreUncheckedDTOs)
-            {
-                foreach (var SaleEmployee in ReportStoreUnchecked_ReportStoreUncheckedDTO.SaleEmployees)
-                {
-                    foreach (var Store in SaleEmployee.Stores)
-                    {
-                        Store.STT = stt;
-                        stt++;
-                    }
-                }
-            }
-
-            string path = "Templates/Report_Store_Unchecked.xlsx";
-            byte[] arr = System.IO.File.ReadAllBytes(path);
-            MemoryStream input = new MemoryStream(arr);
-            MemoryStream output = new MemoryStream();
-            dynamic Data = new ExpandoObject();
-            Data.Start = Start.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy");
-            Data.End = End.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy");
-            Data.ReportStoreUncheckeds = ReportStoreUnchecked_ReportStoreUncheckedDTOs;
-            using (var document = StaticParams.DocumentFactory.Open(input, output, "xlsx"))
-            {
-                document.Process(Data);
-            };
-
-            return File(output.ToArray(), "application/octet-stream", "ReportStoreUnchecked.xlsx");
-        }
     }
 }

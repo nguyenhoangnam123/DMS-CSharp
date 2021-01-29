@@ -1,24 +1,20 @@
 ﻿using DMS.Common;
 using DMS.Entities;
 using DMS.Enums;
+using DMS.Helpers;
 using DMS.Models;
+using DMS.Services.MAppUser;
+using DMS.Services.MOrganization;
+using DMS.Services.MStore;
+using DMS.Services.MStoreStatus;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
+using System.Dynamic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using DMS.Services.MOrganization;
-using Microsoft.AspNetCore.Mvc;
-using DMS.Services.MStore;
-using DMS.Services.MStoreGrouping;
-using DMS.Services.MStoreType;
-using System;
-using DMS.Helpers;
-using Microsoft.EntityFrameworkCore;
-using DMS.Services.MProduct;
-using DMS.Services.MAppUser;
-using System.IO;
-using System.Dynamic;
-using NGS.Templater;
-using DMS.Services.MStoreStatus;
 
 namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_general
 {
@@ -228,6 +224,85 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_general
             if (End.Subtract(Start).Days > 31)
                 return BadRequest(new { message = "Chỉ được phép xem tối đa trong vòng 31 ngày" });
 
+            List<ReportDirectSalesOrderGeneral_ReportDirectSalesOrderGeneralDTO> ReportDirectSalesOrderGeneral_ReportDirectSalesOrderGeneralDTOs = await ListData(ReportDirectSalesOrderGeneral_ReportDirectSalesOrderGeneralFilterDTO, Start, End);
+            return ReportDirectSalesOrderGeneral_ReportDirectSalesOrderGeneralDTOs.Where(x => x.SalesOrders.Any()).ToList();
+        }
+
+        [Route(ReportDirectSalesOrderGeneralRoute.Total), HttpPost]
+        public async Task<ReportDirectSalesOrderGeneral_TotalDTO> Total([FromBody] ReportDirectSalesOrderGeneral_ReportDirectSalesOrderGeneralFilterDTO ReportDirectSalesOrderGeneral_ReportDirectSalesOrderGeneralFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            if (ReportDirectSalesOrderGeneral_ReportDirectSalesOrderGeneralFilterDTO.HasValue == false)
+                return new ReportDirectSalesOrderGeneral_TotalDTO();
+
+            DateTime Start = ReportDirectSalesOrderGeneral_ReportDirectSalesOrderGeneralFilterDTO.OrderDate?.GreaterEqual == null ?
+                    LocalStartDay(CurrentContext) :
+                    ReportDirectSalesOrderGeneral_ReportDirectSalesOrderGeneralFilterDTO.OrderDate.GreaterEqual.Value;
+
+            DateTime End = ReportDirectSalesOrderGeneral_ReportDirectSalesOrderGeneralFilterDTO.OrderDate?.LessEqual == null ?
+                    LocalEndDay(CurrentContext) :
+                    ReportDirectSalesOrderGeneral_ReportDirectSalesOrderGeneralFilterDTO.OrderDate.LessEqual.Value;
+
+            if (End.Subtract(Start).Days > 31)
+                return new ReportDirectSalesOrderGeneral_TotalDTO();
+
+            ReportDirectSalesOrderGeneral_TotalDTO ReportDirectSalesOrderGeneral_TotalDTO = await TotalData(ReportDirectSalesOrderGeneral_ReportDirectSalesOrderGeneralFilterDTO, Start, End);
+            return ReportDirectSalesOrderGeneral_TotalDTO;
+        }
+
+        [Route(ReportDirectSalesOrderGeneralRoute.Export), HttpPost]
+        public async Task<ActionResult> Export([FromBody] ReportDirectSalesOrderGeneral_ReportDirectSalesOrderGeneralFilterDTO ReportDirectSalesOrderGeneral_ReportDirectSalesOrderGeneralFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            DateTime Start = ReportDirectSalesOrderGeneral_ReportDirectSalesOrderGeneralFilterDTO.OrderDate?.GreaterEqual == null ?
+                    LocalStartDay(CurrentContext) :
+                    ReportDirectSalesOrderGeneral_ReportDirectSalesOrderGeneralFilterDTO.OrderDate.GreaterEqual.Value;
+
+            DateTime End = ReportDirectSalesOrderGeneral_ReportDirectSalesOrderGeneralFilterDTO.OrderDate?.LessEqual == null ?
+                    LocalEndDay(CurrentContext) :
+                    ReportDirectSalesOrderGeneral_ReportDirectSalesOrderGeneralFilterDTO.OrderDate.LessEqual.Value;
+
+            ReportDirectSalesOrderGeneral_ReportDirectSalesOrderGeneralFilterDTO.Skip = 0;
+            ReportDirectSalesOrderGeneral_ReportDirectSalesOrderGeneralFilterDTO.Take = int.MaxValue;
+            List<ReportDirectSalesOrderGeneral_ReportDirectSalesOrderGeneralDTO> ReportDirectSalesOrderGeneral_ReportDirectSalesOrderGeneralDTOs = await ListData(ReportDirectSalesOrderGeneral_ReportDirectSalesOrderGeneralFilterDTO, Start, End);
+
+            ReportDirectSalesOrderGeneral_TotalDTO ReportDirectSalesOrderGeneral_TotalDTO = await TotalData(ReportDirectSalesOrderGeneral_ReportDirectSalesOrderGeneralFilterDTO, Start, End);
+            long stt = 1;
+            foreach (ReportDirectSalesOrderGeneral_ReportDirectSalesOrderGeneralDTO ReportDirectSalesOrderGeneral_ReportDirectSalesOrderGeneralDTO in ReportDirectSalesOrderGeneral_ReportDirectSalesOrderGeneralDTOs)
+            {
+                foreach (var DirectSalesOrder in ReportDirectSalesOrderGeneral_ReportDirectSalesOrderGeneralDTO.SalesOrders)
+                {
+                    DirectSalesOrder.STT = stt;
+                    stt++;
+                    DirectSalesOrder.eOrderDate = DirectSalesOrder.OrderDate.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy");
+                }
+            }
+
+            string path = "Templates/Report_Direct_Sales_Order_General.xlsx";
+            byte[] arr = System.IO.File.ReadAllBytes(path);
+            MemoryStream input = new MemoryStream(arr);
+            MemoryStream output = new MemoryStream();
+            dynamic Data = new ExpandoObject();
+            Data.Start = Start.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy");
+            Data.End = End.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy");
+            Data.ReportSalesOrderGenerals = ReportDirectSalesOrderGeneral_ReportDirectSalesOrderGeneralDTOs;
+            Data.Total = ReportDirectSalesOrderGeneral_TotalDTO;
+            using (var document = StaticParams.DocumentFactory.Open(input, output, "xlsx"))
+            {
+                document.Process(Data);
+            };
+
+            return File(output.ToArray(), "application/octet-stream", "ReportDirectSalesOrderGeneral.xlsx");
+        }
+
+        private async Task<List<ReportDirectSalesOrderGeneral_ReportDirectSalesOrderGeneralDTO>> ListData(
+            ReportDirectSalesOrderGeneral_ReportDirectSalesOrderGeneralFilterDTO ReportDirectSalesOrderGeneral_ReportDirectSalesOrderGeneralFilterDTO,
+            DateTime Start, DateTime End)
+        {
             long? SaleEmployeeId = ReportDirectSalesOrderGeneral_ReportDirectSalesOrderGeneralFilterDTO.AppUserId?.Equal;
             long? BuyerStoreId = ReportDirectSalesOrderGeneral_ReportDirectSalesOrderGeneralFilterDTO.BuyerStoreId?.Equal;
             long? StoreStatusId = ReportDirectSalesOrderGeneral_ReportDirectSalesOrderGeneralFilterDTO.StoreStatusId?.Equal;
@@ -312,7 +387,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_general
             {
                 var Org = OrganizationDAOs.Where(x => x.Name == ReportDirectSalesOrderGeneral_ReportDirectSalesOrderGeneralDTO.OrganizationName).FirstOrDefault();
                 ReportDirectSalesOrderGeneral_ReportDirectSalesOrderGeneralDTO.SalesOrders = DirectSalesOrderDAOs
-                    .Where(x => x.OrganizationId==Org.Id)
+                    .Where(x => x.OrganizationId == Org.Id)
                     .Select(x => new ReportDirectSalesOrderGeneral_DirectSalesOrderDTO
                     {
                         Id = x.Id,
@@ -334,26 +409,10 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_general
             return ReportDirectSalesOrderGeneral_ReportDirectSalesOrderGeneralDTOs.Where(x => x.SalesOrders.Any()).ToList();
         }
 
-        [Route(ReportDirectSalesOrderGeneralRoute.Total), HttpPost]
-        public async Task<ReportDirectSalesOrderGeneral_TotalDTO> Total([FromBody] ReportDirectSalesOrderGeneral_ReportDirectSalesOrderGeneralFilterDTO ReportDirectSalesOrderGeneral_ReportDirectSalesOrderGeneralFilterDTO)
+        private async Task<ReportDirectSalesOrderGeneral_TotalDTO> TotalData(
+            ReportDirectSalesOrderGeneral_ReportDirectSalesOrderGeneralFilterDTO ReportDirectSalesOrderGeneral_ReportDirectSalesOrderGeneralFilterDTO,
+            DateTime Start, DateTime End)
         {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
-
-            if (ReportDirectSalesOrderGeneral_ReportDirectSalesOrderGeneralFilterDTO.HasValue == false)
-                return new ReportDirectSalesOrderGeneral_TotalDTO();
-
-            DateTime Start = ReportDirectSalesOrderGeneral_ReportDirectSalesOrderGeneralFilterDTO.OrderDate?.GreaterEqual == null ?
-                    LocalStartDay(CurrentContext) :
-                    ReportDirectSalesOrderGeneral_ReportDirectSalesOrderGeneralFilterDTO.OrderDate.GreaterEqual.Value;
-
-            DateTime End = ReportDirectSalesOrderGeneral_ReportDirectSalesOrderGeneralFilterDTO.OrderDate?.LessEqual == null ?
-                    LocalEndDay(CurrentContext) :
-                    ReportDirectSalesOrderGeneral_ReportDirectSalesOrderGeneralFilterDTO.OrderDate.LessEqual.Value;
-
-            if (End.Subtract(Start).Days > 31)
-                return new ReportDirectSalesOrderGeneral_TotalDTO();
-
             long? SaleEmployeeId = ReportDirectSalesOrderGeneral_ReportDirectSalesOrderGeneralFilterDTO.AppUserId?.Equal;
             long? BuyerStoreId = ReportDirectSalesOrderGeneral_ReportDirectSalesOrderGeneralFilterDTO.BuyerStoreId?.Equal;
             long? StoreStatusId = ReportDirectSalesOrderGeneral_ReportDirectSalesOrderGeneralFilterDTO.StoreStatusId?.Equal;
@@ -408,51 +467,5 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_general
             return ReportDirectSalesOrderGeneral_TotalDTO;
         }
 
-        [Route(ReportDirectSalesOrderGeneralRoute.Export), HttpPost]
-        public async Task<ActionResult> Export([FromBody] ReportDirectSalesOrderGeneral_ReportDirectSalesOrderGeneralFilterDTO ReportDirectSalesOrderGeneral_ReportDirectSalesOrderGeneralFilterDTO)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
-
-            DateTime Start = ReportDirectSalesOrderGeneral_ReportDirectSalesOrderGeneralFilterDTO.OrderDate?.GreaterEqual == null ?
-                    LocalStartDay(CurrentContext) :
-                    ReportDirectSalesOrderGeneral_ReportDirectSalesOrderGeneralFilterDTO.OrderDate.GreaterEqual.Value;
-
-            DateTime End = ReportDirectSalesOrderGeneral_ReportDirectSalesOrderGeneralFilterDTO.OrderDate?.LessEqual == null ?
-                    LocalEndDay(CurrentContext) :
-                    ReportDirectSalesOrderGeneral_ReportDirectSalesOrderGeneralFilterDTO.OrderDate.LessEqual.Value;
-
-            ReportDirectSalesOrderGeneral_ReportDirectSalesOrderGeneralFilterDTO.Skip = 0;
-            ReportDirectSalesOrderGeneral_ReportDirectSalesOrderGeneralFilterDTO.Take = int.MaxValue;
-            List<ReportDirectSalesOrderGeneral_ReportDirectSalesOrderGeneralDTO> ReportDirectSalesOrderGeneral_ReportDirectSalesOrderGeneralDTOs = (await List(ReportDirectSalesOrderGeneral_ReportDirectSalesOrderGeneralFilterDTO)).Value;
-
-            ReportDirectSalesOrderGeneral_TotalDTO ReportDirectSalesOrderGeneral_TotalDTO = await Total(ReportDirectSalesOrderGeneral_ReportDirectSalesOrderGeneralFilterDTO);
-            long stt = 1;
-            foreach (ReportDirectSalesOrderGeneral_ReportDirectSalesOrderGeneralDTO ReportDirectSalesOrderGeneral_ReportDirectSalesOrderGeneralDTO in ReportDirectSalesOrderGeneral_ReportDirectSalesOrderGeneralDTOs)
-            {
-                foreach (var DirectSalesOrder in ReportDirectSalesOrderGeneral_ReportDirectSalesOrderGeneralDTO.SalesOrders)
-                {
-                    DirectSalesOrder.STT = stt;
-                    stt++;
-                    DirectSalesOrder.eOrderDate = DirectSalesOrder.OrderDate.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy");
-                }
-            }
-
-            string path = "Templates/Report_Direct_Sales_Order_General.xlsx";
-            byte[] arr = System.IO.File.ReadAllBytes(path);
-            MemoryStream input = new MemoryStream(arr);
-            MemoryStream output = new MemoryStream();
-            dynamic Data = new ExpandoObject();
-            Data.Start = Start.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy");
-            Data.End = End.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy");
-            Data.ReportSalesOrderGenerals = ReportDirectSalesOrderGeneral_ReportDirectSalesOrderGeneralDTOs;
-            Data.Total = ReportDirectSalesOrderGeneral_TotalDTO;
-            using (var document = StaticParams.DocumentFactory.Open(input, output, "xlsx"))
-            {
-                document.Process(Data);
-            };
-
-            return File(output.ToArray(), "application/octet-stream", "ReportDirectSalesOrderGeneral.xlsx");
-        }
     }
 }

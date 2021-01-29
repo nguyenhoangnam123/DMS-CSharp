@@ -279,8 +279,6 @@ namespace DMS.Rpc.reports.report_store.report_store_general
             if (ReportStoreGeneral_ReportStoreGeneralFilterDTO.HasValue == false)
                 return new List<ReportStoreGeneral_ReportStoreGeneralDTO>();
 
-            var CurrentUser = await AppUserService.Get(CurrentContext.UserId);
-
             DateTime Start = ReportStoreGeneral_ReportStoreGeneralFilterDTO.CheckIn?.GreaterEqual == null ?
                     LocalStartDay(CurrentContext) :
                     ReportStoreGeneral_ReportStoreGeneralFilterDTO.CheckIn.GreaterEqual.Value;
@@ -291,6 +289,59 @@ namespace DMS.Rpc.reports.report_store.report_store_general
 
             if (End.Subtract(Start).Days > 31)
                 return BadRequest(new { message = "Chỉ được phép xem tối đa trong vòng 31 ngày" });
+            List<ReportStoreGeneral_ReportStoreGeneralDTO> ReportStoreGeneral_ReportStoreGeneralDTOs = await ListData(ReportStoreGeneral_ReportStoreGeneralFilterDTO, Start, End);
+            return ReportStoreGeneral_ReportStoreGeneralDTOs;
+        }
+
+        [Route(ReportStoreGeneralRoute.Export), HttpPost]
+        public async Task<ActionResult> Export([FromBody] ReportStoreGeneral_ReportStoreGeneralFilterDTO ReportStoreGeneral_ReportStoreGeneralFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            DateTime Start = ReportStoreGeneral_ReportStoreGeneralFilterDTO.CheckIn?.GreaterEqual == null ?
+                    LocalStartDay(CurrentContext) :
+                    ReportStoreGeneral_ReportStoreGeneralFilterDTO.CheckIn.GreaterEqual.Value;
+
+            DateTime End = ReportStoreGeneral_ReportStoreGeneralFilterDTO.CheckIn?.LessEqual == null ?
+                    LocalEndDay(CurrentContext) :
+                    ReportStoreGeneral_ReportStoreGeneralFilterDTO.CheckIn.LessEqual.Value;
+
+            ReportStoreGeneral_ReportStoreGeneralFilterDTO.Skip = 0;
+            ReportStoreGeneral_ReportStoreGeneralFilterDTO.Take = int.MaxValue;
+            List<ReportStoreGeneral_ReportStoreGeneralDTO> ReportStoreGeneral_ReportStoreGeneralDTOs = await ListData(ReportStoreGeneral_ReportStoreGeneralFilterDTO, Start, End);
+            ReportStoreGeneral_ReportStoreGeneralDTOs = ReportStoreGeneral_ReportStoreGeneralDTOs.OrderBy(x => x.OrganizationId).ToList();
+            long stt = 1;
+            foreach (ReportStoreGeneral_ReportStoreGeneralDTO ReportStoreGeneral_ReportStoreGeneralDTO in ReportStoreGeneral_ReportStoreGeneralDTOs)
+            {
+                foreach (var Store in ReportStoreGeneral_ReportStoreGeneralDTO.Stores)
+                {
+                    Store.STT = stt;
+                    stt++;
+                }
+            }
+
+            string path = "Templates/Report_Store_General.xlsx";
+            byte[] arr = System.IO.File.ReadAllBytes(path);
+            MemoryStream input = new MemoryStream(arr);
+            MemoryStream output = new MemoryStream();
+            dynamic Data = new ExpandoObject();
+            Data.Start = Start.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy");
+            Data.End = End.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy");
+            Data.ReportStoreGenerals = ReportStoreGeneral_ReportStoreGeneralDTOs;
+            using (var document = StaticParams.DocumentFactory.Open(input, output, "xlsx"))
+            {
+                document.Process(Data);
+            };
+
+            return File(output.ToArray(), "application/octet-stream", "ReportStoreGeneral.xlsx");
+        }
+
+        public async Task<List<ReportStoreGeneral_ReportStoreGeneralDTO>> ListData(
+            ReportStoreGeneral_ReportStoreGeneralFilterDTO ReportStoreGeneral_ReportStoreGeneralFilterDTO,
+            DateTime Start, DateTime End)
+        {
+            var CurrentUser = await AppUserService.Get(CurrentContext.UserId);
 
             long? StoreId = ReportStoreGeneral_ReportStoreGeneralFilterDTO.StoreId?.Equal;
             long? StoreTypeId = ReportStoreGeneral_ReportStoreGeneralFilterDTO.StoreTypeId?.Equal;
@@ -616,48 +667,5 @@ namespace DMS.Rpc.reports.report_store.report_store_general
             return ReportStoreGeneral_ReportStoreGeneralDTOs;
         }
 
-        [Route(ReportStoreGeneralRoute.Export), HttpPost]
-        public async Task<ActionResult> Export([FromBody] ReportStoreGeneral_ReportStoreGeneralFilterDTO ReportStoreGeneral_ReportStoreGeneralFilterDTO)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
-
-            DateTime Start = ReportStoreGeneral_ReportStoreGeneralFilterDTO.CheckIn?.GreaterEqual == null ?
-                    LocalStartDay(CurrentContext) :
-                    ReportStoreGeneral_ReportStoreGeneralFilterDTO.CheckIn.GreaterEqual.Value;
-
-            DateTime End = ReportStoreGeneral_ReportStoreGeneralFilterDTO.CheckIn?.LessEqual == null ?
-                    LocalEndDay(CurrentContext) :
-                    ReportStoreGeneral_ReportStoreGeneralFilterDTO.CheckIn.LessEqual.Value;
-
-            ReportStoreGeneral_ReportStoreGeneralFilterDTO.Skip = 0;
-            ReportStoreGeneral_ReportStoreGeneralFilterDTO.Take = int.MaxValue;
-            List<ReportStoreGeneral_ReportStoreGeneralDTO> ReportStoreGeneral_ReportStoreGeneralDTOs = (await List(ReportStoreGeneral_ReportStoreGeneralFilterDTO)).Value;
-            ReportStoreGeneral_ReportStoreGeneralDTOs = ReportStoreGeneral_ReportStoreGeneralDTOs.OrderBy(x => x.OrganizationId).ToList();
-            long stt = 1;
-            foreach (ReportStoreGeneral_ReportStoreGeneralDTO ReportStoreGeneral_ReportStoreGeneralDTO in ReportStoreGeneral_ReportStoreGeneralDTOs)
-            {
-                foreach (var Store in ReportStoreGeneral_ReportStoreGeneralDTO.Stores)
-                {
-                    Store.STT = stt;
-                    stt++;
-                }
-            }
-
-            string path = "Templates/Report_Store_General.xlsx";
-            byte[] arr = System.IO.File.ReadAllBytes(path);
-            MemoryStream input = new MemoryStream(arr);
-            MemoryStream output = new MemoryStream();
-            dynamic Data = new ExpandoObject();
-            Data.Start = Start.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy");
-            Data.End = End.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy");
-            Data.ReportStoreGenerals = ReportStoreGeneral_ReportStoreGeneralDTOs;
-            using (var document = StaticParams.DocumentFactory.Open(input, output, "xlsx"))
-            {
-                document.Process(Data);
-            };
-
-            return File(output.ToArray(), "application/octet-stream", "ReportStoreGeneral.xlsx");
-        }
     }
 }

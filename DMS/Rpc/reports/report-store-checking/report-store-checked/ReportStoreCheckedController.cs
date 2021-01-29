@@ -323,25 +323,98 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
         }
 
         [Route(ReportStoreCheckedRoute.List), HttpPost]
-        public async Task<ActionResult<List<ReportStoreChecked_ReportStoreCheckedDTO>>> List([FromBody] ReportStoreChecked_ReportStoreCheckedFilterDTO ReportStoreChecker_ReportStoreCheckedFilterDTO)
+        public async Task<ActionResult<List<ReportStoreChecked_ReportStoreCheckedDTO>>> List([FromBody] ReportStoreChecked_ReportStoreCheckedFilterDTO ReportStoreChecked_ReportStoreCheckedFilterDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
 
-            if (ReportStoreChecker_ReportStoreCheckedFilterDTO.HasValue == false)
+            if (ReportStoreChecked_ReportStoreCheckedFilterDTO.HasValue == false)
                 return new List<ReportStoreChecked_ReportStoreCheckedDTO>();
 
-            DateTime Start = ReportStoreChecker_ReportStoreCheckedFilterDTO.CheckIn?.GreaterEqual == null ?
+            DateTime Start = ReportStoreChecked_ReportStoreCheckedFilterDTO.CheckIn?.GreaterEqual == null ?
                     LocalStartDay(CurrentContext) :
-                    ReportStoreChecker_ReportStoreCheckedFilterDTO.CheckIn.GreaterEqual.Value;
+                    ReportStoreChecked_ReportStoreCheckedFilterDTO.CheckIn.GreaterEqual.Value;
 
-            DateTime End = ReportStoreChecker_ReportStoreCheckedFilterDTO.CheckIn?.LessEqual == null ?
+            DateTime End = ReportStoreChecked_ReportStoreCheckedFilterDTO.CheckIn?.LessEqual == null ?
                     LocalEndDay(CurrentContext) :
-                    ReportStoreChecker_ReportStoreCheckedFilterDTO.CheckIn.LessEqual.Value;
+                    ReportStoreChecked_ReportStoreCheckedFilterDTO.CheckIn.LessEqual.Value;
 
             if (End.Subtract(Start).Days > 31)
                 return BadRequest(new { message = "Chỉ được phép xem tối đa trong vòng 31 ngày" });
 
+            List<ReportStoreChecked_ReportStoreCheckedDTO> ReportStoreChecked_ReportStoreCheckedDTOs = await ListData(ReportStoreChecked_ReportStoreCheckedFilterDTO, Start, End);
+            return ReportStoreChecked_ReportStoreCheckedDTOs;
+        }
+
+        [Route(ReportStoreCheckedRoute.Export), HttpPost]
+        public async Task<ActionResult> Export([FromBody] ReportStoreChecked_ReportStoreCheckedFilterDTO ReportStoreChecked_ReportStoreCheckedFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            DateTime Start = ReportStoreChecked_ReportStoreCheckedFilterDTO.CheckIn?.GreaterEqual == null ?
+                LocalStartDay(CurrentContext) :
+                ReportStoreChecked_ReportStoreCheckedFilterDTO.CheckIn.GreaterEqual.Value;
+
+            DateTime End = ReportStoreChecked_ReportStoreCheckedFilterDTO.CheckIn?.LessEqual == null ?
+                LocalEndDay(CurrentContext) :
+                ReportStoreChecked_ReportStoreCheckedFilterDTO.CheckIn.LessEqual.Value;
+
+            ReportStoreChecked_ReportStoreCheckedFilterDTO.Skip = 0;
+            ReportStoreChecked_ReportStoreCheckedFilterDTO.Take = int.MaxValue;
+            List<ReportStoreChecked_ReportStoreCheckedDTO> ReportStoreChecked_ReportStoreCheckedDTOs = await ListData(ReportStoreChecked_ReportStoreCheckedFilterDTO, Start, End);
+
+            List<ReportStoreChecked_ExportDTO> ReportStoreChecked_ExportDTOs = new List<ReportStoreChecked_ExportDTO>();
+
+            foreach (ReportStoreChecked_ReportStoreCheckedDTO ReportStoreChecked_ReportStoreCheckedDTO in ReportStoreChecked_ReportStoreCheckedDTOs)
+            {
+                ReportStoreChecked_ExportDTO ReportStoreChecked_ExportDTO = new ReportStoreChecked_ExportDTO(ReportStoreChecked_ReportStoreCheckedDTO);
+                ReportStoreChecked_ExportDTOs.Add(ReportStoreChecked_ExportDTO);
+            }
+
+            var STT = 1;
+            foreach (ReportStoreChecked_ExportDTO ReportStoreChecked_ExportDTO in ReportStoreChecked_ExportDTOs)
+            {
+                foreach (var SaleEmployee in ReportStoreChecked_ExportDTO.SalesEmployees)
+                {
+                    foreach (var ReportStoreChecked_ExportGroupByDateDTO in SaleEmployee.Dates)
+                    {
+                        ReportStoreChecked_ExportGroupByDateDTO.Date = ReportStoreChecked_ExportGroupByDateDTO.Date.AddHours(CurrentContext.TimeZone);
+                        ReportStoreChecked_ExportGroupByDateDTO.DateString = ReportStoreChecked_ExportGroupByDateDTO.Date.ToString("dd-MM-yyyy");
+                        foreach (var Content in ReportStoreChecked_ExportGroupByDateDTO.Contents)
+                        {
+                            Content.STT = STT;
+                            STT++;
+                            Content.Username = SaleEmployee.Username;
+                            Content.DisplayName = SaleEmployee.DisplayName;
+                            Content.DateString = ReportStoreChecked_ExportGroupByDateDTO.DateString;
+                            Content.DayOfWeek = ReportStoreChecked_ExportGroupByDateDTO.DayOfWeek;
+                        }
+                    }
+
+                }
+            }
+
+            string path = "Templates/Report_Store_Checked.xlsx";
+            byte[] arr = System.IO.File.ReadAllBytes(path);
+            MemoryStream input = new MemoryStream(arr);
+            MemoryStream output = new MemoryStream();
+            dynamic Data = new ExpandoObject();
+            Data.Start = Start.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy");
+            Data.End = End.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy");
+            Data.ReportStoreCheckeds = ReportStoreChecked_ExportDTOs;
+            using (var document = StaticParams.DocumentFactory.Open(input, output, "xlsx"))
+            {
+                document.Process(Data);
+            };
+
+            return File(output.ToArray(), "application/octet-stream", "ReportStoreChecked.xlsx");
+        }
+
+        public async Task<List<ReportStoreChecked_ReportStoreCheckedDTO>> ListData(
+            ReportStoreChecked_ReportStoreCheckedFilterDTO ReportStoreChecker_ReportStoreCheckedFilterDTO,
+            DateTime Start, DateTime End)
+        {
             long? SaleEmployeeId = ReportStoreChecker_ReportStoreCheckedFilterDTO.AppUserId?.Equal;
             long? StoreId = ReportStoreChecker_ReportStoreCheckedFilterDTO.StoreId?.Equal;
             long? StoreTypeId = ReportStoreChecker_ReportStoreCheckedFilterDTO.StoreTypeId?.Equal;
@@ -613,69 +686,5 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_checked
             return ReportStoreChecked_ReportStoreCheckedDTOs;
         }
 
-        [Route(ReportStoreCheckedRoute.Export), HttpPost]
-        public async Task<ActionResult> Export([FromBody] ReportStoreChecked_ReportStoreCheckedFilterDTO ReportStoreChecked_ReportStoreCheckedFilterDTO)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
-
-            DateTime Start = ReportStoreChecked_ReportStoreCheckedFilterDTO.CheckIn?.GreaterEqual == null ?
-                LocalStartDay(CurrentContext) :
-                ReportStoreChecked_ReportStoreCheckedFilterDTO.CheckIn.GreaterEqual.Value;
-
-            DateTime End = ReportStoreChecked_ReportStoreCheckedFilterDTO.CheckIn?.LessEqual == null ?
-                LocalEndDay(CurrentContext) :
-                ReportStoreChecked_ReportStoreCheckedFilterDTO.CheckIn.LessEqual.Value;
-
-            ReportStoreChecked_ReportStoreCheckedFilterDTO.Skip = 0;
-            ReportStoreChecked_ReportStoreCheckedFilterDTO.Take = int.MaxValue;
-            List<ReportStoreChecked_ReportStoreCheckedDTO> ReportStoreChecked_ReportStoreCheckedDTOs = (await List(ReportStoreChecked_ReportStoreCheckedFilterDTO)).Value;
-
-            List<ReportStoreChecked_ExportDTO> ReportStoreChecked_ExportDTOs = new List<ReportStoreChecked_ExportDTO>();
-
-            foreach (ReportStoreChecked_ReportStoreCheckedDTO ReportStoreChecked_ReportStoreCheckedDTO in ReportStoreChecked_ReportStoreCheckedDTOs)
-            {
-                ReportStoreChecked_ExportDTO ReportStoreChecked_ExportDTO = new ReportStoreChecked_ExportDTO(ReportStoreChecked_ReportStoreCheckedDTO);
-                ReportStoreChecked_ExportDTOs.Add(ReportStoreChecked_ExportDTO);
-            }
-
-            var STT = 1;
-            foreach (ReportStoreChecked_ExportDTO ReportStoreChecked_ExportDTO in ReportStoreChecked_ExportDTOs)
-            {
-                foreach (var SaleEmployee in ReportStoreChecked_ExportDTO.SalesEmployees)
-                {
-                    foreach (var ReportStoreChecked_ExportGroupByDateDTO in SaleEmployee.Dates)
-                    {
-                        ReportStoreChecked_ExportGroupByDateDTO.Date = ReportStoreChecked_ExportGroupByDateDTO.Date.AddHours(CurrentContext.TimeZone);
-                        ReportStoreChecked_ExportGroupByDateDTO.DateString = ReportStoreChecked_ExportGroupByDateDTO.Date.ToString("dd-MM-yyyy");
-                        foreach (var Content in ReportStoreChecked_ExportGroupByDateDTO.Contents)
-                        {
-                            Content.STT = STT;
-                            STT++;
-                            Content.Username = SaleEmployee.Username;
-                            Content.DisplayName = SaleEmployee.DisplayName;
-                            Content.DateString = ReportStoreChecked_ExportGroupByDateDTO.DateString;
-                            Content.DayOfWeek = ReportStoreChecked_ExportGroupByDateDTO.DayOfWeek;
-                        }
-                    }
-
-                }
-            }
-
-            string path = "Templates/Report_Store_Checked.xlsx";
-            byte[] arr = System.IO.File.ReadAllBytes(path);
-            MemoryStream input = new MemoryStream(arr);
-            MemoryStream output = new MemoryStream();
-            dynamic Data = new ExpandoObject();
-            Data.Start = Start.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy");
-            Data.End = End.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy");
-            Data.ReportStoreCheckeds = ReportStoreChecked_ExportDTOs;
-            using (var document = StaticParams.DocumentFactory.Open(input, output, "xlsx"))
-            {
-                document.Process(Data);
-            };
-
-            return File(output.ToArray(), "application/octet-stream", "ReportStoreChecked.xlsx");
-        }
     }
 }

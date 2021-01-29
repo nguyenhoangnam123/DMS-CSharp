@@ -258,6 +258,88 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_by_item
             if (End.Subtract(Start).Days > 31)
                 return BadRequest(new { message = "Chỉ được phép xem tối đa trong vòng 31 ngày" });
 
+            List<ReportDirectSalesOrderByItem_ReportDirectSalesOrderByItemDTO> ReportDirectSalesOrderByItem_ReportDirectSalesOrderByItemDTOs = await ListData(ReportDirectSalesOrderByItem_ReportDirectSalesOrderByItemFilterDTO, Start, End);
+            return ReportDirectSalesOrderByItem_ReportDirectSalesOrderByItemDTOs;
+        }
+
+        [Route(ReportDirectSalesOrderByItemRoute.Total), HttpPost]
+        public async Task<ReportDirectSalesOrderByItem_TotalDTO> Total([FromBody] ReportDirectSalesOrderByItem_ReportDirectSalesOrderByItemFilterDTO ReportDirectSalesOrderByItem_ReportDirectSalesOrderByItemFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            if (ReportDirectSalesOrderByItem_ReportDirectSalesOrderByItemFilterDTO.HasValue == false)
+                return new ReportDirectSalesOrderByItem_TotalDTO();
+
+            DateTime Start = ReportDirectSalesOrderByItem_ReportDirectSalesOrderByItemFilterDTO.Date?.GreaterEqual == null ?
+                   LocalStartDay(CurrentContext) :
+                   ReportDirectSalesOrderByItem_ReportDirectSalesOrderByItemFilterDTO.Date.GreaterEqual.Value;
+
+            DateTime End = ReportDirectSalesOrderByItem_ReportDirectSalesOrderByItemFilterDTO.Date?.LessEqual == null ?
+                    LocalEndDay(CurrentContext) :
+                    ReportDirectSalesOrderByItem_ReportDirectSalesOrderByItemFilterDTO.Date.LessEqual.Value;
+
+            long? ItemId = ReportDirectSalesOrderByItem_ReportDirectSalesOrderByItemFilterDTO.ItemId?.Equal;
+            long? ProductTypeId = ReportDirectSalesOrderByItem_ReportDirectSalesOrderByItemFilterDTO.ProductTypeId?.Equal;
+            long? ProductGroupingId = ReportDirectSalesOrderByItem_ReportDirectSalesOrderByItemFilterDTO.ProductGroupingId?.Equal;
+
+            if (End.Subtract(Start).Days > 31)
+                return new ReportDirectSalesOrderByItem_TotalDTO();
+
+            ReportDirectSalesOrderByItem_TotalDTO ReportDirectSalesOrderByItem_TotalDTO = await TotalData(ReportDirectSalesOrderByItem_ReportDirectSalesOrderByItemFilterDTO, Start, End);
+            return ReportDirectSalesOrderByItem_TotalDTO;
+        }
+
+        [Route(ReportDirectSalesOrderByItemRoute.Export), HttpPost]
+        public async Task<ActionResult> Export([FromBody] ReportDirectSalesOrderByItem_ReportDirectSalesOrderByItemFilterDTO ReportDirectSalesOrderByItem_ReportDirectSalesOrderByItemFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            DateTime Start = ReportDirectSalesOrderByItem_ReportDirectSalesOrderByItemFilterDTO.Date?.GreaterEqual == null ?
+                    LocalStartDay(CurrentContext) :
+                    ReportDirectSalesOrderByItem_ReportDirectSalesOrderByItemFilterDTO.Date.GreaterEqual.Value;
+
+            DateTime End = ReportDirectSalesOrderByItem_ReportDirectSalesOrderByItemFilterDTO.Date?.LessEqual == null ?
+                    LocalEndDay(CurrentContext) :
+                    ReportDirectSalesOrderByItem_ReportDirectSalesOrderByItemFilterDTO.Date.LessEqual.Value;
+
+            ReportDirectSalesOrderByItem_ReportDirectSalesOrderByItemFilterDTO.Skip = 0;
+            ReportDirectSalesOrderByItem_ReportDirectSalesOrderByItemFilterDTO.Take = int.MaxValue;
+            List<ReportDirectSalesOrderByItem_ReportDirectSalesOrderByItemDTO> ReportDirectSalesOrderByItem_ReportDirectSalesOrderByItemDTOs = await ListData(ReportDirectSalesOrderByItem_ReportDirectSalesOrderByItemFilterDTO, Start, End);
+
+            ReportDirectSalesOrderByItem_TotalDTO ReportDirectSalesOrderByItem_TotalDTO = await TotalData(ReportDirectSalesOrderByItem_ReportDirectSalesOrderByItemFilterDTO, Start, End);
+            long stt = 1;
+            foreach (ReportDirectSalesOrderByItem_ReportDirectSalesOrderByItemDTO ReportDirectSalesOrderByItem_ReportDirectSalesOrderByItemDTO in ReportDirectSalesOrderByItem_ReportDirectSalesOrderByItemDTOs)
+            {
+                foreach (var Item in ReportDirectSalesOrderByItem_ReportDirectSalesOrderByItemDTO.ItemDetails)
+                {
+                    Item.STT = stt;
+                    stt++;
+                }
+            }
+
+            string path = "Templates/Report_Direct_Sales_Order_By_Item.xlsx";
+            byte[] arr = System.IO.File.ReadAllBytes(path);
+            MemoryStream input = new MemoryStream(arr);
+            MemoryStream output = new MemoryStream();
+            dynamic Data = new ExpandoObject();
+            Data.Start = Start.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy");
+            Data.End = End.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy");
+            Data.ReportSalesOrderByItems = ReportDirectSalesOrderByItem_ReportDirectSalesOrderByItemDTOs;
+            Data.Total = ReportDirectSalesOrderByItem_TotalDTO;
+            using (var document = StaticParams.DocumentFactory.Open(input, output, "xlsx"))
+            {
+                document.Process(Data);
+            };
+
+            return File(output.ToArray(), "application/octet-stream", "ReportDirectSalesOrderByItem.xlsx");
+        }
+
+        private async Task<List<ReportDirectSalesOrderByItem_ReportDirectSalesOrderByItemDTO>> ListData(
+            ReportDirectSalesOrderByItem_ReportDirectSalesOrderByItemFilterDTO ReportDirectSalesOrderByItem_ReportDirectSalesOrderByItemFilterDTO,
+            DateTime Start, DateTime End)
+        {
             long? ItemId = ReportDirectSalesOrderByItem_ReportDirectSalesOrderByItemFilterDTO.ItemId?.Equal;
             long? ProductTypeId = ReportDirectSalesOrderByItem_ReportDirectSalesOrderByItemFilterDTO.ProductTypeId?.Equal;
             long? ProductGroupingId = ReportDirectSalesOrderByItem_ReportDirectSalesOrderByItemFilterDTO.ProductGroupingId?.Equal;
@@ -387,7 +469,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_by_item
                 foreach (var Transaction in Transactions)
                 {
                     var ItemDetail = ReportDirectSalesOrderByItem_ReportDirectSalesOrderByItemDTO.ItemDetails.Where(x => x.ItemId == Transaction.ItemId).FirstOrDefault();
-                    if(ItemDetail == null)
+                    if (ItemDetail == null)
                     {
                         ItemDetail = new ReportDirectSalesOrderByItem_ItemDetailDTO();
                         ItemDetail.ItemId = Transaction.Item.Id;
@@ -398,7 +480,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_by_item
                         ItemDetail.BuyerStoreIds = new HashSet<long>();
                         ReportDirectSalesOrderByItem_ReportDirectSalesOrderByItemDTO.ItemDetails.Add(ItemDetail);
                     }
-                    if(Transaction.TypeId == TransactionTypeEnum.SALES_CONTENT.Id)
+                    if (Transaction.TypeId == TransactionTypeEnum.SALES_CONTENT.Id)
                     {
                         ItemDetail.SaleStock += Transaction.Quantity;
                     }
@@ -425,29 +507,13 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_by_item
             return ReportDirectSalesOrderByItem_ReportDirectSalesOrderByItemDTOs;
         }
 
-        [Route(ReportDirectSalesOrderByItemRoute.Total), HttpPost]
-        public async Task<ReportDirectSalesOrderByItem_TotalDTO> Total([FromBody] ReportDirectSalesOrderByItem_ReportDirectSalesOrderByItemFilterDTO ReportDirectSalesOrderByItem_ReportDirectSalesOrderByItemFilterDTO)
+        private async Task<ReportDirectSalesOrderByItem_TotalDTO> TotalData(
+            ReportDirectSalesOrderByItem_ReportDirectSalesOrderByItemFilterDTO ReportDirectSalesOrderByItem_ReportDirectSalesOrderByItemFilterDTO,
+            DateTime Start, DateTime End)
         {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
-
-            if (ReportDirectSalesOrderByItem_ReportDirectSalesOrderByItemFilterDTO.HasValue == false)
-                return new ReportDirectSalesOrderByItem_TotalDTO();
-
-            DateTime Start = ReportDirectSalesOrderByItem_ReportDirectSalesOrderByItemFilterDTO.Date?.GreaterEqual == null ?
-                   LocalStartDay(CurrentContext) :
-                   ReportDirectSalesOrderByItem_ReportDirectSalesOrderByItemFilterDTO.Date.GreaterEqual.Value;
-
-            DateTime End = ReportDirectSalesOrderByItem_ReportDirectSalesOrderByItemFilterDTO.Date?.LessEqual == null ?
-                    LocalEndDay(CurrentContext) :
-                    ReportDirectSalesOrderByItem_ReportDirectSalesOrderByItemFilterDTO.Date.LessEqual.Value;
-
             long? ItemId = ReportDirectSalesOrderByItem_ReportDirectSalesOrderByItemFilterDTO.ItemId?.Equal;
             long? ProductTypeId = ReportDirectSalesOrderByItem_ReportDirectSalesOrderByItemFilterDTO.ProductTypeId?.Equal;
             long? ProductGroupingId = ReportDirectSalesOrderByItem_ReportDirectSalesOrderByItemFilterDTO.ProductGroupingId?.Equal;
-
-            if (End.Subtract(Start).Days > 31)
-                return new ReportDirectSalesOrderByItem_TotalDTO();
 
             ReportDirectSalesOrderByItem_TotalDTO ReportDirectSalesOrderByItem_TotalDTO = new ReportDirectSalesOrderByItem_TotalDTO();
 
@@ -578,50 +644,5 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_by_item
             return ReportDirectSalesOrderByItem_TotalDTO;
         }
 
-        [Route(ReportDirectSalesOrderByItemRoute.Export), HttpPost]
-        public async Task<ActionResult> Export([FromBody] ReportDirectSalesOrderByItem_ReportDirectSalesOrderByItemFilterDTO ReportDirectSalesOrderByItem_ReportDirectSalesOrderByItemFilterDTO)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
-
-            DateTime Start = ReportDirectSalesOrderByItem_ReportDirectSalesOrderByItemFilterDTO.Date?.GreaterEqual == null ?
-                    LocalStartDay(CurrentContext) :
-                    ReportDirectSalesOrderByItem_ReportDirectSalesOrderByItemFilterDTO.Date.GreaterEqual.Value;
-
-            DateTime End = ReportDirectSalesOrderByItem_ReportDirectSalesOrderByItemFilterDTO.Date?.LessEqual == null ?
-                    LocalEndDay(CurrentContext) :
-                    ReportDirectSalesOrderByItem_ReportDirectSalesOrderByItemFilterDTO.Date.LessEqual.Value;
-
-            ReportDirectSalesOrderByItem_ReportDirectSalesOrderByItemFilterDTO.Skip = 0;
-            ReportDirectSalesOrderByItem_ReportDirectSalesOrderByItemFilterDTO.Take = int.MaxValue;
-            List<ReportDirectSalesOrderByItem_ReportDirectSalesOrderByItemDTO> ReportDirectSalesOrderByItem_ReportDirectSalesOrderByItemDTOs = (await List(ReportDirectSalesOrderByItem_ReportDirectSalesOrderByItemFilterDTO)).Value;
-
-            ReportDirectSalesOrderByItem_TotalDTO ReportDirectSalesOrderByItem_TotalDTO = await Total(ReportDirectSalesOrderByItem_ReportDirectSalesOrderByItemFilterDTO);
-            long stt = 1;
-            foreach (ReportDirectSalesOrderByItem_ReportDirectSalesOrderByItemDTO ReportDirectSalesOrderByItem_ReportDirectSalesOrderByItemDTO in ReportDirectSalesOrderByItem_ReportDirectSalesOrderByItemDTOs)
-            {
-                foreach (var Item in ReportDirectSalesOrderByItem_ReportDirectSalesOrderByItemDTO.ItemDetails)
-                {
-                    Item.STT = stt;
-                    stt++;
-                }
-            }
-
-            string path = "Templates/Report_Direct_Sales_Order_By_Item.xlsx";
-            byte[] arr = System.IO.File.ReadAllBytes(path);
-            MemoryStream input = new MemoryStream(arr);
-            MemoryStream output = new MemoryStream();
-            dynamic Data = new ExpandoObject();
-            Data.Start = Start.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy");
-            Data.End = End.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy");
-            Data.ReportSalesOrderByItems = ReportDirectSalesOrderByItem_ReportDirectSalesOrderByItemDTOs;
-            Data.Total = ReportDirectSalesOrderByItem_TotalDTO;
-            using (var document = StaticParams.DocumentFactory.Open(input, output, "xlsx"))
-            {
-                document.Process(Data);
-            };
-
-            return File(output.ToArray(), "application/octet-stream", "ReportDirectSalesOrderByItem.xlsx");
-        }
     }
 }

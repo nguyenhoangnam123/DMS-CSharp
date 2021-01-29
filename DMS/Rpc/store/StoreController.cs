@@ -434,7 +434,7 @@ namespace DMS.Rpc.store
                 else
                 {
                     string StoreStatusNameValue = Store_ImportDTO.StoreStatusNameValue;
-                    Store_ImportDTO.StatusId = StoreStatuses.Where(x => x.Name.ToLower().Equals(StoreStatusNameValue == null ? string.Empty : StoreStatusNameValue.Trim().ToLower())).Select(x => x.Id).FirstOrDefault();
+                    Store_ImportDTO.StoreStatusId = StoreStatuses.Where(x => x.Name.ToLower().Equals(StoreStatusNameValue == null ? string.Empty : StoreStatusNameValue.Trim().ToLower())).Select(x => x.Id).FirstOrDefault();
                 }
                 if (string.IsNullOrEmpty(Store_ImportDTO.StatusNameValue))
                 {

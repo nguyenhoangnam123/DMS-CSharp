@@ -82,7 +82,6 @@ namespace DMS.Rpc.reports.report_sales_order.report_indirect_sales_order_by_empl
             return ReportSalesOrderByEmployeeAndItem_AppUserDTOs;
         }
 
-
         [Route(ReportSalesOrderByEmployeeAndItemRoute.FilterListOrganization), HttpPost]
         public async Task<List<ReportSalesOrderByEmployeeAndItem_OrganizationDTO>> FilterListOrganization([FromBody] ReportSalesOrderByEmployeeAndItem_OrganizationFilterDTO ReportSalesOrderByEmployeeAndItem_OrganizationFilterDTO)
         {
@@ -223,6 +222,93 @@ namespace DMS.Rpc.reports.report_sales_order.report_indirect_sales_order_by_empl
 
             if (End.Subtract(Start).Days > 31)
                 return BadRequest(new { message = "Chỉ được phép xem tối đa trong vòng 31 ngày" });
+
+            var ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTOs = await ListData(ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO, Start, End);
+
+            return ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTOs;
+        }
+
+        [Route(ReportSalesOrderByEmployeeAndItemRoute.Total), HttpPost]
+        public async Task<ReportSalesOrderByEmployeeAndItem_TotalDTO> Total([FromBody] ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            if (ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO.HasValue == false)
+                return new ReportSalesOrderByEmployeeAndItem_TotalDTO();
+
+            DateTime Start = ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO.OrderDate?.GreaterEqual == null ?
+                     LocalStartDay(CurrentContext) :
+                     ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO.OrderDate.GreaterEqual.Value;
+
+            DateTime End = ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO.OrderDate?.LessEqual == null ?
+                    LocalEndDay(CurrentContext) :
+                    ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO.OrderDate.LessEqual.Value;
+
+            if (End.Subtract(Start).Days > 31)
+                return new ReportSalesOrderByEmployeeAndItem_TotalDTO();
+
+            ReportSalesOrderByEmployeeAndItem_TotalDTO ReportSalesOrderByEmployeeAndItem_TotalDTO = await TotalData(ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO, Start, End);
+
+            return ReportSalesOrderByEmployeeAndItem_TotalDTO;
+        }
+
+        [Route(ReportSalesOrderByEmployeeAndItemRoute.Export), HttpPost]
+        public async Task<ActionResult> Export([FromBody] ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            DateTime Start = ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO.OrderDate?.GreaterEqual == null ?
+                    LocalStartDay(CurrentContext) :
+                    ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO.OrderDate.GreaterEqual.Value;
+
+            DateTime End = ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO.OrderDate?.LessEqual == null ?
+                    LocalEndDay(CurrentContext) :
+                    ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO.OrderDate.LessEqual.Value;
+
+            ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO.Skip = 0;
+            ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO.Take = int.MaxValue;
+            var ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTOs = await ListData(ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO, Start, End);
+
+            ReportSalesOrderByEmployeeAndItem_TotalDTO ReportSalesOrderByEmployeeAndItem_TotalDTO = await TotalData(ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO, Start, End);
+            long stt = 1;
+            foreach (ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTO ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTO in ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTOs)
+            {
+                foreach (var SaleEmployee in ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTO.SaleEmployees)
+                {
+                    SaleEmployee.STT = stt;
+                    stt++;
+                }
+            }
+
+
+            string path = "Templates/Report_Sales_Order_By_Employee_And_Item.xlsx";
+            byte[] arr = System.IO.File.ReadAllBytes(path);
+            MemoryStream input = new MemoryStream(arr);
+            MemoryStream output = new MemoryStream();
+            dynamic Data = new ExpandoObject();
+            Data.Start = Start.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy");
+            Data.End = End.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy");
+            Data.ReportSalesOrderByEmployeeAndItems = ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTOs;
+            Data.Total = ReportSalesOrderByEmployeeAndItem_TotalDTO;
+            using (var document = StaticParams.DocumentFactory.Open(input, output, "xlsx"))
+            {
+                document.Process(Data);
+            };
+
+            return File(output.ToArray(), "application/octet-stream", "ReportSalesOrderByEmployeeAndItem.xlsx");
+        }
+
+        private async Task<List<ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTO>> ListData(
+            ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO,
+            DateTime Start, DateTime End)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            if (ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO.HasValue == false)
+                return new List<ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTO>();
 
             long? SaleEmployeeId = ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO.AppUserId?.Equal;
             List<long> ItemIds = ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO.ItemId?.In;
@@ -478,26 +564,10 @@ namespace DMS.Rpc.reports.report_sales_order.report_indirect_sales_order_by_empl
             return ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTOs;
         }
 
-        [Route(ReportSalesOrderByEmployeeAndItemRoute.Total), HttpPost]
-        public async Task<ReportSalesOrderByEmployeeAndItem_TotalDTO> Total([FromBody] ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO)
+        private async Task<ReportSalesOrderByEmployeeAndItem_TotalDTO> TotalData(
+            ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO, 
+            DateTime Start, DateTime End)
         {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
-
-            if (ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO.HasValue == false)
-                return new ReportSalesOrderByEmployeeAndItem_TotalDTO();
-
-            DateTime Start = ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO.OrderDate?.GreaterEqual == null ?
-                     LocalStartDay(CurrentContext) :
-                     ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO.OrderDate.GreaterEqual.Value;
-
-            DateTime End = ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO.OrderDate?.LessEqual == null ?
-                    LocalEndDay(CurrentContext) :
-                    ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO.OrderDate.LessEqual.Value;
-
-            if (End.Subtract(Start).Days > 31)
-                return new ReportSalesOrderByEmployeeAndItem_TotalDTO();
-
             long? SaleEmployeeId = ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO.AppUserId?.Equal;
             List<long> ItemIds = ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO.ItemId?.In;
 
@@ -601,7 +671,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_indirect_sales_order_by_empl
             ReportSalesOrderByEmployeeAndItem_TotalDTO.TotalPromotionStock = IndirectSalesOrderPromotionQuery.Select(x => x.RequestedQuantity).Sum();
 
             ReportSalesOrderByEmployeeAndItem_TotalDTO.TotalRevenue = Math.Round(IndirectSalesOrderContentQuery.Select(x => x.Amount).Sum()
-                - IndirectSalesOrderContentQuery.Where(x => x.GeneralDiscountAmount.HasValue).Select(x => x.GeneralDiscountAmount.Value).Sum(),0);
+                - IndirectSalesOrderContentQuery.Where(x => x.GeneralDiscountAmount.HasValue).Select(x => x.GeneralDiscountAmount.Value).Sum(), 0);
 
             ReportSalesOrderByEmployeeAndItem_TotalDTO.TotalDiscount = Math.Round(IndirectSalesOrderContentQuery.Where(x => x.GeneralDiscountAmount.HasValue).Select(x => x.GeneralDiscountAmount.Value).Sum()
                 + IndirectSalesOrderContentQuery.Where(x => x.DiscountAmount.HasValue).Select(x => x.DiscountAmount.Value).Sum(), 0);
@@ -609,51 +679,5 @@ namespace DMS.Rpc.reports.report_sales_order.report_indirect_sales_order_by_empl
             return ReportSalesOrderByEmployeeAndItem_TotalDTO;
         }
 
-        [Route(ReportSalesOrderByEmployeeAndItemRoute.Export), HttpPost]
-        public async Task<ActionResult> Export([FromBody] ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
-
-            DateTime Start = ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO.OrderDate?.GreaterEqual == null ?
-                    LocalStartDay(CurrentContext) :
-                    ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO.OrderDate.GreaterEqual.Value;
-
-            DateTime End = ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO.OrderDate?.LessEqual == null ?
-                    LocalEndDay(CurrentContext) :
-                    ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO.OrderDate.LessEqual.Value;
-
-            ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO.Skip = 0;
-            ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO.Take = int.MaxValue;
-            List<ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTO> ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTOs = (await List(ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO)).Value;
-
-            ReportSalesOrderByEmployeeAndItem_TotalDTO ReportSalesOrderByEmployeeAndItem_TotalDTO = await Total(ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO);
-            long stt = 1;
-            foreach (ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTO ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTO in ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTOs)
-            {
-                foreach (var SaleEmployee in ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTO.SaleEmployees)
-                {
-                    SaleEmployee.STT = stt;
-                    stt++;
-                }
-            }
-
-
-            string path = "Templates/Report_Sales_Order_By_Employee_And_Item.xlsx";
-            byte[] arr = System.IO.File.ReadAllBytes(path);
-            MemoryStream input = new MemoryStream(arr);
-            MemoryStream output = new MemoryStream();
-            dynamic Data = new ExpandoObject();
-            Data.Start = Start.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy");
-            Data.End = End.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy");
-            Data.ReportSalesOrderByEmployeeAndItems = ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTOs;
-            Data.Total = ReportSalesOrderByEmployeeAndItem_TotalDTO;
-            using (var document = StaticParams.DocumentFactory.Open(input, output, "xlsx"))
-            {
-                document.Process(Data);
-            };
-
-            return File(output.ToArray(), "application/octet-stream", "ReportSalesOrderByEmployeeAndItem.xlsx");
-        }
     }
 }
