@@ -256,7 +256,6 @@ namespace DMS.Rpc.store_scouting
                 int StartColumn = 1;
                 int StartRow = 1;
                 int SttColumnn = 0 + StartColumn;
-                int CodeColumn = 1 + StartColumn;
                 int NameColumn = 2 + StartColumn;
                 int StoreScoutingTypeCodeColumn = 3 + StartColumn;
                 int OrganizationCodeColumn = 4 + StartColumn;
@@ -283,7 +282,6 @@ namespace DMS.Rpc.store_scouting
                     StoreScouting_ImportDTO StoreScouting_ImportDTO = new StoreScouting_ImportDTO();
                     StoreScouting_ImportDTOs.Add(StoreScouting_ImportDTO);
                     StoreScouting_ImportDTO.Stt = Stt;
-                    StoreScouting_ImportDTO.CodeValue = worksheet.Cells[i + StartRow, CodeColumn].Value?.ToString();
                     StoreScouting_ImportDTO.NameValue = worksheet.Cells[i + StartRow, NameColumn].Value?.ToString();
                     StoreScouting_ImportDTO.StoreScoutingTypeCodeValue = worksheet.Cells[i + StartRow, StoreScoutingTypeCodeColumn].Value?.ToString();
                     StoreScouting_ImportDTO.OrganizationCodeValue = worksheet.Cells[i + StartRow, OrganizationCodeColumn].Value?.ToString();
@@ -301,12 +299,11 @@ namespace DMS.Rpc.store_scouting
                     StoreScouting_ImportDTO.OwnerPhoneValue = worksheet.Cells[i + StartRow, OwnerPhoneColumn].Value?.ToString();
                     StoreScouting_ImportDTO.SalesEmployeeUsernameValue = worksheet.Cells[i + StartRow, SalesEmployeeColumn].Value?.ToString();
                     StoreScouting_ImportDTO.StoreScoutingStatusNameValue = worksheet.Cells[i + StartRow, StoreScoutingStatusColumn].Value?.ToString();
-                    
+
                     #endregion
                 }
             }
             Dictionary<long, StringBuilder> Errors = new Dictionary<long, StringBuilder>();
-            HashSet<string> StoreScoutingCodes = new HashSet<string>(All.Select(x => x.Code).Distinct().ToList());
             foreach (StoreScouting_ImportDTO StoreScouting_ImportDTO in StoreScouting_ImportDTOs)
             {
                 Errors.Add(StoreScouting_ImportDTO.Stt, new StringBuilder(""));
@@ -314,18 +311,7 @@ namespace DMS.Rpc.store_scouting
             }
             Parallel.ForEach(StoreScouting_ImportDTOs, StoreScouting_ImportDTO =>
             {
-                if (!string.IsNullOrWhiteSpace(StoreScouting_ImportDTO.CodeValue))
-                {
-                    if (!StoreScoutingCodes.Contains(StoreScouting_ImportDTO.CodeValue))
-                    {
-                        Errors[StoreScouting_ImportDTO.Stt].AppendLine($"Lỗi dòng thứ {StoreScouting_ImportDTO.Stt}: Mã đại lý cắm cờ không tồn tại");
-                        return;
-                    }
-                }
-                else
-                {
-                    StoreScouting_ImportDTO.IsNew = true;
-                }
+                StoreScouting_ImportDTO.IsNew = true;
                 StoreScouting_ImportDTO.OrganizationId = Organizations.Where(x => x.Code.Equals(StoreScouting_ImportDTO.OrganizationCodeValue)).Select(x => x.Id).FirstOrDefault();
                 StoreScouting_ImportDTO.Longitude = decimal.TryParse(StoreScouting_ImportDTO.LongitudeValue, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal Longitude) ? Longitude : 106;
                 StoreScouting_ImportDTO.Latitude = decimal.TryParse(StoreScouting_ImportDTO.LatitudeValue, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal Latitude) ? Latitude : 21;
