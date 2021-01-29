@@ -169,13 +169,14 @@ namespace DMS.Services.MIndirectSalesOrder
             {
                 var ItemIds = IndirectSalesOrder.IndirectSalesOrderContents.Select(x => x.ItemId).ToList();
                 var ProductIds = IndirectSalesOrder.IndirectSalesOrderContents.Select(x => x.Item.ProductId).ToList();
-                List<Item> Items = await UOW.ItemRepository.List(new ItemFilter
+                ItemFilter ItemFilter = new ItemFilter
                 {
                     Skip = 0,
                     Take = int.MaxValue,
                     Id = new IdFilter { In = ItemIds },
-                    Selects = ItemSelect.Id | ItemSelect.SalePrice | ItemSelect.ProductId
-                });
+                    Selects = ItemSelect.Id | ItemSelect.SalePrice | ItemSelect.Product | ItemSelect.ProductId
+                };
+                var Items = await ListItem(ItemFilter, IndirectSalesOrder.SaleEmployeeId, IndirectSalesOrder.BuyerStoreId);
 
                 var Products = await UOW.ProductRepository.List(new ProductFilter
                 {
@@ -245,12 +246,6 @@ namespace DMS.Services.MIndirectSalesOrder
                                     if (IndirectSalesOrder.EditedPriceStatusId == EditedPriceStatusEnum.INACTIVE.Id)
                                     {
                                         SalePrice = Item.SalePrice.GetValueOrDefault(0) * UOM.Factor.Value;
-                                        //làm tròn số
-                                        var surplus = SalePrice % 1000;
-                                        if (surplus >= 500)
-                                            SalePrice = SalePrice + (1000 - surplus);
-                                        else
-                                            SalePrice = SalePrice - surplus;
                                     }
 
                                     if (IndirectSalesOrder.EditedPriceStatusId == EditedPriceStatusEnum.ACTIVE.Id)
@@ -400,6 +395,217 @@ namespace DMS.Services.MIndirectSalesOrder
         public async Task<bool> Import(List<IndirectSalesOrder> IndirectSalesOrders)
         {
             return true;
+        }
+
+        private async Task<List<Item>> ListItem(ItemFilter ItemFilter, long? SalesEmployeeId, long? StoreId)
+        {
+            try
+            {
+                List<Item> Items = await UOW.ItemRepository.List(ItemFilter);
+                var Ids = Items.Select(x => x.Id).ToList();
+                AppUser AppUser = await UOW.AppUserRepository.Get(SalesEmployeeId.Value);
+                if (AppUser != null)
+                {
+                    List<Warehouse> Warehouses = await UOW.WarehouseRepository.List(new WarehouseFilter
+                    {
+                        Skip = 0,
+                        Take = int.MaxValue,
+                        Selects = WarehouseSelect.Id,
+                        StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id },
+                        OrganizationId = new IdFilter { Equal = AppUser.OrganizationId }
+                    });
+                    var WarehouseIds = Warehouses.Select(x => x.Id).ToList();
+
+                    InventoryFilter InventoryFilter = new InventoryFilter
+                    {
+                        Skip = 0,
+                        Take = int.MaxValue,
+                        ItemId = new IdFilter { In = Ids },
+                        WarehouseId = new IdFilter { In = WarehouseIds },
+                        Selects = InventorySelect.SaleStock | InventorySelect.Item
+                    };
+
+                    var inventories = await UOW.InventoryRepository.List(InventoryFilter);
+                    var list = inventories.GroupBy(x => x.ItemId).Select(x => new { ItemId = x.Key, SaleStock = x.Sum(s => s.SaleStock) }).ToList();
+
+                    foreach (var item in Items)
+                    {
+                        item.SaleStock = list.Where(i => i.ItemId == item.Id).Select(i => i.SaleStock).FirstOrDefault();
+                        item.HasInventory = item.SaleStock > 0;
+                    }
+
+                    await ApplyPrice(Items, SalesEmployeeId, StoreId);
+                }
+                return Items;
+            }
+            catch (Exception ex)
+            {
+                if (ex.InnerException == null)
+                {
+                    throw new MessageException(ex);
+                }
+                else
+                {
+                    throw new MessageException(ex.InnerException);
+                }
+            }
+        }
+
+        private async Task<List<Item>> ApplyPrice(List<Item> Items, long? SalesEmployeeId, long? StoreId)
+        {
+            var SalesEmployee = await UOW.AppUserRepository.Get(SalesEmployeeId.Value);
+            SystemConfiguration SystemConfiguration = await UOW.SystemConfigurationRepository.Get();
+            OrganizationFilter OrganizationFilter = new OrganizationFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = OrganizationSelect.ALL,
+                StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id }
+            };
+
+            var Organizations = await UOW.OrganizationRepository.List(OrganizationFilter);
+            var OrganizationIds = Organizations
+                .Where(x => x.Path.StartsWith(SalesEmployee.Organization.Path) || SalesEmployee.Organization.Path.StartsWith(x.Path))
+                .Select(x => x.Id)
+                .ToList();
+
+            var ItemIds = Items.Select(x => x.Id).Distinct().ToList();
+            Dictionary<long, decimal> result = new Dictionary<long, decimal>();
+            PriceListItemMappingFilter PriceListItemMappingFilter = new PriceListItemMappingFilter
+            {
+                ItemId = new IdFilter { In = ItemIds },
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = PriceListItemMappingSelect.ALL,
+                PriceListTypeId = new IdFilter { Equal = PriceListTypeEnum.ALLSTORE.Id },
+                SalesOrderTypeId = new IdFilter { In = new List<long> { SalesOrderTypeEnum.INDIRECT.Id, SalesOrderTypeEnum.ALL.Id } },
+                OrganizationId = new IdFilter { In = OrganizationIds },
+                StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id }
+            };
+            var PriceListItemMappingAllStore = await UOW.PriceListItemMappingItemMappingRepository.List(PriceListItemMappingFilter);
+            List<PriceListItemMapping> PriceListItemMappings = new List<PriceListItemMapping>();
+            PriceListItemMappings.AddRange(PriceListItemMappingAllStore);
+
+            if (StoreId.HasValue)
+            {
+                var Store = await UOW.StoreRepository.Get(StoreId.Value);
+
+                PriceListItemMappingFilter = new PriceListItemMappingFilter
+                {
+                    ItemId = new IdFilter { In = ItemIds },
+                    Skip = 0,
+                    Take = int.MaxValue,
+                    Selects = PriceListItemMappingSelect.ALL,
+                    PriceListTypeId = new IdFilter { Equal = PriceListTypeEnum.STOREGROUPING.Id },
+                    SalesOrderTypeId = new IdFilter { In = new List<long> { SalesOrderTypeEnum.INDIRECT.Id, SalesOrderTypeEnum.ALL.Id } },
+                    StoreGroupingId = new IdFilter { Equal = Store.StoreGroupingId },
+                    OrganizationId = new IdFilter { In = OrganizationIds },
+                    StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id }
+                };
+                var PriceListItemMappingStoreGrouping = await UOW.PriceListItemMappingItemMappingRepository.List(PriceListItemMappingFilter);
+
+                PriceListItemMappingFilter = new PriceListItemMappingFilter
+                {
+                    ItemId = new IdFilter { In = ItemIds },
+                    Skip = 0,
+                    Take = int.MaxValue,
+                    Selects = PriceListItemMappingSelect.ALL,
+                    PriceListTypeId = new IdFilter { Equal = PriceListTypeEnum.STORETYPE.Id },
+                    SalesOrderTypeId = new IdFilter { In = new List<long> { SalesOrderTypeEnum.INDIRECT.Id, SalesOrderTypeEnum.ALL.Id } },
+                    StoreTypeId = new IdFilter { Equal = Store.StoreTypeId },
+                    OrganizationId = new IdFilter { In = OrganizationIds },
+                    StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id }
+                };
+                var PriceListItemMappingStoreType = await UOW.PriceListItemMappingItemMappingRepository.List(PriceListItemMappingFilter);
+
+                PriceListItemMappingFilter = new PriceListItemMappingFilter
+                {
+                    ItemId = new IdFilter { In = ItemIds },
+                    Skip = 0,
+                    Take = int.MaxValue,
+                    Selects = PriceListItemMappingSelect.ALL,
+                    PriceListTypeId = new IdFilter { Equal = PriceListTypeEnum.DETAILS.Id },
+                    SalesOrderTypeId = new IdFilter { In = new List<long> { SalesOrderTypeEnum.INDIRECT.Id, SalesOrderTypeEnum.ALL.Id } },
+                    StoreId = new IdFilter { Equal = StoreId },
+                    OrganizationId = new IdFilter { In = OrganizationIds },
+                    StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id }
+                };
+                var PriceListItemMappingStoreDetail = await UOW.PriceListItemMappingItemMappingRepository.List(PriceListItemMappingFilter);
+                PriceListItemMappings.AddRange(PriceListItemMappingStoreGrouping);
+                PriceListItemMappings.AddRange(PriceListItemMappingStoreType);
+                PriceListItemMappings.AddRange(PriceListItemMappingStoreDetail);
+            }
+
+            //Áp giá theo cấu hình
+            //Ưu tiên lấy giá thấp hơn
+            if (SystemConfiguration.PRIORITY_USE_PRICE_LIST == 0)
+            {
+                foreach (var ItemId in ItemIds)
+                {
+                    result.Add(ItemId, decimal.MaxValue);
+                }
+                foreach (var ItemId in ItemIds)
+                {
+                    foreach (var OrganizationId in OrganizationIds)
+                    {
+                        decimal targetPrice = decimal.MaxValue;
+                        targetPrice = PriceListItemMappings.Where(x => x.ItemId == ItemId && x.PriceList.OrganizationId == OrganizationId)
+                            .Select(x => x.Price)
+                            .DefaultIfEmpty(decimal.MaxValue)
+                            .Min();
+                        if (targetPrice < result[ItemId])
+                        {
+                            result[ItemId] = targetPrice;
+                        }
+                    }
+                }
+
+                foreach (var ItemId in ItemIds)
+                {
+                    if (result[ItemId] == decimal.MaxValue)
+                    {
+                        result[ItemId] = Items.Where(x => x.Id == ItemId).Select(x => x.SalePrice.GetValueOrDefault(0)).FirstOrDefault();
+                    }
+                }
+            }
+            //Ưu tiên lấy giá cao hơn
+            else if (SystemConfiguration.PRIORITY_USE_PRICE_LIST == 1)
+            {
+                foreach (var ItemId in ItemIds)
+                {
+                    result.Add(ItemId, decimal.MinValue);
+                }
+                foreach (var ItemId in ItemIds)
+                {
+                    foreach (var OrganizationId in OrganizationIds)
+                    {
+                        decimal targetPrice = decimal.MinValue;
+                        targetPrice = PriceListItemMappings.Where(x => x.ItemId == ItemId && x.PriceList.OrganizationId == OrganizationId)
+                            .Select(x => x.Price)
+                            .DefaultIfEmpty(decimal.MinValue)
+                            .Max();
+                        if (targetPrice > result[ItemId])
+                        {
+                            result[ItemId] = targetPrice;
+                        }
+                    }
+                }
+
+                foreach (var ItemId in ItemIds)
+                {
+                    if (result[ItemId] == decimal.MinValue)
+                    {
+                        result[ItemId] = Items.Where(x => x.Id == ItemId).Select(x => x.SalePrice.GetValueOrDefault(0)).FirstOrDefault();
+                    }
+                }
+            }
+
+            //nhân giá với thuế
+            foreach (var item in Items)
+            {
+                item.SalePrice = result[item.Id] * (1 + item.Product.TaxType.Percentage / 100);
+            }
+            return Items;
         }
     }
 }
