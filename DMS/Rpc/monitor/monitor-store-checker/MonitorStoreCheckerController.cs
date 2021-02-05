@@ -477,7 +477,11 @@ namespace DMS.Rpc.monitor.monitor_store_checker
             Ids.AddRange(Ids2);
             Ids.AddRange(Ids3);
             Ids.AddRange(Ids4);
-            Ids = Ids.Distinct().OrderBy(x => x.OrganizationId).ToList();
+            Ids = Ids.Distinct()
+                .OrderBy(x => x.OrganizationId)
+                .Skip(MonitorStoreChecker_MonitorStoreCheckerFilterDTO.Skip)
+                .Take(MonitorStoreChecker_MonitorStoreCheckerFilterDTO.Take)
+                .ToList();
 
             AppUserIds = Ids.Select(x => x.SalesEmployeeId).Distinct().ToList();
             List<AppUserDAO> AppUserDAOs = await DataContext.AppUser.Where(au =>

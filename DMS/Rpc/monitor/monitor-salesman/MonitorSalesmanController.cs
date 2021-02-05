@@ -623,7 +623,11 @@ namespace DMS.Rpc.monitor.monitor_salesman
             Ids.AddRange(Ids2);
             Ids.AddRange(Ids3);
             Ids.AddRange(Ids4);
-            Ids = Ids.Distinct().ToList();
+            Ids = Ids.Distinct()
+                .OrderBy(x => x.OrganizationId)
+                .Skip(MonitorSalesman_MonitorSalesmanFilterDTO.Skip)
+                .Take(MonitorSalesman_MonitorSalesmanFilterDTO.Take)
+                .ToList();
 
             AppUserIds = Ids.Select(x => x.SalesEmployeeId).Distinct().ToList();
 
