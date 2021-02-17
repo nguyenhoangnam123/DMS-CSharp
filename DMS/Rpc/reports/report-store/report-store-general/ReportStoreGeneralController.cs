@@ -638,7 +638,7 @@ namespace DMS.Rpc.reports.report_store.report_store_general
                 foreach (var Store in ReportStoreGeneral_ReportStoreGeneralDTO.Stores)
                 {
                     var indirectSalesOrderIds = IndirectSalesOrderDAOs.Where(x => x.BuyerStoreId == Store.Id).Select(x => x.Id).ToList();
-                    foreach (var Id in IndirectSalesOrderIds)
+                    foreach (var Id in indirectSalesOrderIds)
                     {
                         if (Store.SalesOrderIds == null)
                             Store.SalesOrderIds = new HashSet<long>();
@@ -651,7 +651,7 @@ namespace DMS.Rpc.reports.report_store.report_store_general
                     }
 
                     var directSalesOrderIds = DirectSalesOrderDAOs.Where(x => x.BuyerStoreId == Store.Id).Select(x => x.Id).ToList();
-                    foreach (var Id in DirectSalesOrderIds)
+                    foreach (var Id in directSalesOrderIds)
                     {
                         if (Store.SalesOrderIds == null)
                             Store.SalesOrderIds = new HashSet<long>();
