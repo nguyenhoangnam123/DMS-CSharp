@@ -68,7 +68,7 @@ namespace DMS.Rpc
         //                ImageId = Image.Id
         //            };
         //            ItemImageMappingDAOs.Add(ItemImageMappingDAO);
-                    
+
         //        }
         //    }
         //    await DataContext.ItemImageMapping.BulkMergeAsync(ItemImageMappingDAOs);
@@ -1817,7 +1817,7 @@ namespace DMS.Rpc
 
             DataContext.WorkflowParameter.BulkMerge(WorkflowParameterDAOs);
 
-           
+
             List<WorkflowStateDAO> WorkflowStateEnumList = WorkflowStateEnum.WorkflowStateEnumList.Select(item => new WorkflowStateDAO
             {
                 Id = item.Id,
@@ -1832,7 +1832,7 @@ namespace DMS.Rpc
                 Name = item.Name,
             }).ToList();
             DataContext.RequestState.BulkSynchronize(RequestStateEnumList);
-            
+
         }
 
         private void InitEntityTypeEnum()
@@ -1844,7 +1844,7 @@ namespace DMS.Rpc
                 Name = item.Name,
             }).ToList();
             DataContext.EntityType.BulkSynchronize(EntityTypeDAOs);
-        } // codeGenerator entityType
+        }
 
         private void InitEntityComponentEnum()
         {
@@ -1855,7 +1855,7 @@ namespace DMS.Rpc
                 Name = item.Name,
             }).ToList();
             DataContext.EntityComponent.BulkSynchronize(EntityComponentDAOs);
-        } // codeGenerator entityComponent
+        }
         #endregion
     }
 }
