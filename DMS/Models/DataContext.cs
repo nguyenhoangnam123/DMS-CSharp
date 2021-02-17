@@ -1,7 +1,6 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Thinktecture;
 
 namespace DMS.Models
 {
@@ -31,6 +30,8 @@ namespace DMS.Models
         public virtual DbSet<ERouteContentDayDAO> ERouteContentDay { get; set; }
         public virtual DbSet<ERouteTypeDAO> ERouteType { get; set; }
         public virtual DbSet<EditedPriceStatusDAO> EditedPriceStatus { get; set; }
+        public virtual DbSet<EntityComponentDAO> EntityComponent { get; set; }
+        public virtual DbSet<EntityTypeDAO> EntityType { get; set; }
         public virtual DbSet<EventMessageDAO> EventMessage { get; set; }
         public virtual DbSet<FieldDAO> Field { get; set; }
         public virtual DbSet<FieldTypeDAO> FieldType { get; set; }
@@ -191,7 +192,6 @@ namespace DMS.Models
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.ConfigureTempTable<long>();
             modelBuilder.Entity<ActionDAO>(entity =>
             {
                 entity.ToTable("Action", "PER");
@@ -1022,6 +1022,32 @@ namespace DMS.Models
                 entity.Property(e => e.Name)
                     .IsRequired()
                     .HasMaxLength(50);
+            });
+
+            modelBuilder.Entity<EntityComponentDAO>(entity =>
+            {
+                entity.ToTable("EntityComponent", "ENUM");
+
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(500);
+            });
+
+            modelBuilder.Entity<EntityTypeDAO>(entity =>
+            {
+                entity.ToTable("EntityType", "ENUM");
+
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(500);
             });
 
             modelBuilder.Entity<EventMessageDAO>(entity =>

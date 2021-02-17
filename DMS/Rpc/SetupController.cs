@@ -1379,6 +1379,8 @@ namespace DMS.Rpc
             InitPromotionDiscountTypeEnum();
             InitRewardStatusEnum();
             InitTransactionTypeEnum();
+            InitEntityTypeEnum();
+            InitEntityComponentEnum();
             return Ok();
         }
 
@@ -1832,6 +1834,28 @@ namespace DMS.Rpc
             DataContext.RequestState.BulkSynchronize(RequestStateEnumList);
             
         }
+
+        private void InitEntityTypeEnum()
+        {
+            List<EntityTypeDAO> EntityTypeDAOs = EntityTypeEnum.EntityTypeEnumList.Select(item => new EntityTypeDAO
+            {
+                Id = item.Id,
+                Code = item.Code,
+                Name = item.Name,
+            }).ToList();
+            DataContext.EntityType.BulkSynchronize(EntityTypeDAOs);
+        } // codeGenerator entityType
+
+        private void InitEntityComponentEnum()
+        {
+            List<EntityComponentDAO> EntityComponentDAOs = EntityComponentEnum.EntityComponentEnumList.Select(item => new EntityComponentDAO
+            {
+                Id = item.Id,
+                Code = item.Code,
+                Name = item.Name,
+            }).ToList();
+            DataContext.EntityComponent.BulkSynchronize(EntityComponentDAOs);
+        } // codeGenerator entityComponent
         #endregion
     }
 }
