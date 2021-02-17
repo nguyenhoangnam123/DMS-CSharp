@@ -12,6 +12,7 @@ namespace DMS.Models
             Banners = new HashSet<BannerDAO>();
             Brands = new HashSet<BrandDAO>();
             Categories = new HashSet<CategoryDAO>();
+            CodeGeneratorRules = new HashSet<CodeGeneratorRuleDAO>();
             Districts = new HashSet<DistrictDAO>();
             ERoutes = new HashSet<ERouteDAO>();
             Items = new HashSet<ItemDAO>();
@@ -56,6 +57,7 @@ namespace DMS.Models
         public virtual ICollection<BannerDAO> Banners { get; set; }
         public virtual ICollection<BrandDAO> Brands { get; set; }
         public virtual ICollection<CategoryDAO> Categories { get; set; }
+        public virtual ICollection<CodeGeneratorRuleDAO> CodeGeneratorRules { get; set; }
         public virtual ICollection<DistrictDAO> Districts { get; set; }
         public virtual ICollection<ERouteDAO> ERoutes { get; set; }
         public virtual ICollection<ItemDAO> Items { get; set; }

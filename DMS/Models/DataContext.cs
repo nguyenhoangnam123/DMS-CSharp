@@ -18,6 +18,8 @@ namespace DMS.Models
         public virtual DbSet<BannerDAO> Banner { get; set; }
         public virtual DbSet<BrandDAO> Brand { get; set; }
         public virtual DbSet<CategoryDAO> Category { get; set; }
+        public virtual DbSet<CodeGeneratorRuleDAO> CodeGeneratorRule { get; set; }
+        public virtual DbSet<CodeGeneratorRuleEntityComponentMappingDAO> CodeGeneratorRuleEntityComponentMapping { get; set; }
         public virtual DbSet<ColorDAO> Color { get; set; }
         public virtual DbSet<DirectSalesOrderDAO> DirectSalesOrder { get; set; }
         public virtual DbSet<DirectSalesOrderContentDAO> DirectSalesOrderContent { get; set; }
@@ -550,6 +552,50 @@ namespace DMS.Models
                     .HasForeignKey(d => d.StatusId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Category_Status");
+            });
+
+            modelBuilder.Entity<CodeGeneratorRuleDAO>(entity =>
+            {
+                entity.ToTable("CodeGeneratorRule", "MDM");
+
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.HasOne(d => d.EntityType)
+                    .WithMany(p => p.CodeGeneratorRules)
+                    .HasForeignKey(d => d.EntityTypeId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_CodeGeneratorRule_EntityType");
+
+                entity.HasOne(d => d.Status)
+                    .WithMany(p => p.CodeGeneratorRules)
+                    .HasForeignKey(d => d.StatusId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_CodeGeneratorRule_Status");
+            });
+
+            modelBuilder.Entity<CodeGeneratorRuleEntityComponentMappingDAO>(entity =>
+            {
+                entity.HasKey(e => new { e.CodeGeneratorRuleId, e.EntityComponentId });
+
+                entity.ToTable("CodeGeneratorRuleEntityComponentMapping", "MDM");
+
+                entity.Property(e => e.Value).HasMaxLength(500);
+
+                entity.HasOne(d => d.CodeGeneratorRule)
+                    .WithMany(p => p.CodeGeneratorRuleEntityComponentMappings)
+                    .HasForeignKey(d => d.CodeGeneratorRuleId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_CodeGeneratorRuleEntityComponentMapping_CodeGeneratorRule");
+
+                entity.HasOne(d => d.EntityComponent)
+                    .WithMany(p => p.CodeGeneratorRuleEntityComponentMappings)
+                    .HasForeignKey(d => d.EntityComponentId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_CodeGeneratorRuleEntityComponentMapping_EntityComponent");
             });
 
             modelBuilder.Entity<ColorDAO>(entity =>
