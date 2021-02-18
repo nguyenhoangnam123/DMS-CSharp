@@ -15,6 +15,8 @@ namespace DMS.Repositories
         Task<int> Count(ProductFilter ProductFilter);
         Task<List<Product>> List(ProductFilter ProductFilter);
         Task<Product> Get(long Id);
+        Task<bool> BulkInsertNewProduct(List<Product> Products);
+        Task<bool> BulkDeleteNewProduct(List<Product> Products);
     }
     public class ProductRepository : IProductRepository
     {
@@ -733,6 +735,29 @@ namespace DMS.Repositories
                 item.ItemHistories = ItemHistories.Where(x => x.ItemId == item.Id).ToList();
             }
             return Product;
+        }
+
+        public async Task<bool> BulkInsertNewProduct(List<Product> Products)
+        {
+            var ProductIds = Products.Select(x => x.Id).ToList();
+            await DataContext.Product.Where(x => ProductIds.Contains(x.Id)).UpdateFromQueryAsync(x => new ProductDAO
+            {
+                IsNew = true,
+                UpdatedAt = StaticParams.DateTimeNow
+            });
+
+            return true;
+        }
+
+        public async Task<bool> BulkDeleteNewProduct(List<Product> Products)
+        {
+            var ProductIds = Products.Select(x => x.Id).ToList();
+            await DataContext.Product.Where(x => ProductIds.Contains(x.Id)).UpdateFromQueryAsync(x => new ProductDAO
+            {
+                IsNew = false
+            });
+
+            return true;
         }
     }
 }
