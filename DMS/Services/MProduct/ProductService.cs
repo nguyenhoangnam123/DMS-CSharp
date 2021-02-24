@@ -1,8 +1,10 @@
 ﻿using DMS.Common;
 using DMS.Entities;
+using DMS.Enums;
 using DMS.Handlers;
 using DMS.Helpers;
 using DMS.Repositories;
+using DMS.Rpc.product;
 using DMS.Services.MImage;
 using DMS.Services.MNotification;
 using System;
@@ -18,6 +20,8 @@ namespace DMS.Services.MProduct
         Task<List<Product>> List(ProductFilter ProductFilter);
         Task<Product> Get(long Id);
         ProductFilter ToFilter(ProductFilter ProductFilter);
+        Task<List<Product>> BulkInsertNewProduct(List<Product> Products);
+        Task<List<Product>> BulkDeleteNewProduct(List<Product> Products);
     }
 
     public class ProductService : BaseService, IProductService
@@ -115,6 +119,98 @@ namespace DMS.Services.MProduct
                 Product.VariationCounter = Product.Items.Count;
             }
             return Product;
+        }
+
+        public async Task<List<Product>> BulkInsertNewProduct(List<Product> Products)
+        {
+            if (!await ProductValidator.BulkMergeNewProduct(Products))
+                return Products;
+
+            try
+            {
+                var CurrentUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
+                Products.ForEach(x => x.IsNew = true);
+                await UOW.Begin();
+                await UOW.ProductRepository.BulkInsertNewProduct(Products);
+                await UOW.Commit();
+                List<UserNotification> UserNotifications = new List<UserNotification>();
+                var RecipientIds = (await UOW.AppUserRepository.List(new AppUserFilter
+                {
+                    Skip = 0,
+                    Take = int.MaxValue,
+                    Selects = AppUserSelect.Id,
+                    OrganizationId = new IdFilter { }
+                })).Select(x => x.Id).ToList();
+                foreach (var Product in Products)
+                {
+                    foreach (var Id in RecipientIds)
+                    {
+                        UserNotification UserNotification = new UserNotification
+                        {
+                            TitleWeb = $"Thông báo từ DMS",
+                            ContentWeb = $"Sản phẩm {Product.Code} - {Product.Name} đã được đưa vào danh sách sản phẩm mới bởi {CurrentUser.DisplayName}.",
+                            LinkWebsite = $"{NewProductRoute.Master}/?id=*".Replace("*", Product.Id.ToString()),
+                            LinkMobile = $"{NewProductRoute.Mobile}".Replace("*", Product.Id.ToString()),
+                            RecipientId = Id,
+                            SenderId = CurrentContext.UserId,
+                            Time = StaticParams.DateTimeNow,
+                            Unread = false,
+                            RowId = Guid.NewGuid(),
+                        };
+                        UserNotifications.Add(UserNotification);
+                    }
+                }
+
+                List<EventMessage<UserNotification>> EventUserNotifications = UserNotifications.Select(x => new EventMessage<UserNotification>(x, x.RowId)).ToList();
+                RabbitManager.PublishList(EventUserNotifications, RoutingKeyEnum.UserNotificationSend);
+
+                await Logging.CreateAuditLog(new { }, Products, nameof(ProductService));
+                return Products;
+            }
+            catch (Exception ex)
+            {
+                await UOW.Rollback();
+                if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(ProductService));
+                    throw new MessageException(ex);
+                }
+                else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(ProductService));
+                    throw new MessageException(ex.InnerException);
+                };
+            }
+        }
+
+        public async Task<List<Product>> BulkDeleteNewProduct(List<Product> Products)
+        {
+            if (!await ProductValidator.BulkMergeNewProduct(Products))
+                return Products;
+
+            try
+            {
+                Products.ForEach(x => x.IsNew = false);
+                await UOW.Begin();
+                await UOW.ProductRepository.BulkDeleteNewProduct(Products);
+                await UOW.Commit();
+                await Logging.CreateAuditLog(new { }, Products, nameof(ProductService));
+                return Products;
+            }
+            catch (Exception ex)
+            {
+                await UOW.Rollback();
+                if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(ProductService));
+                    throw new MessageException(ex);
+                }
+                else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(ProductService));
+                    throw new MessageException(ex.InnerException);
+                };
+            }
         }
 
         public ProductFilter ToFilter(ProductFilter filter)

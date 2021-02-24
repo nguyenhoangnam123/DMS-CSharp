@@ -163,7 +163,7 @@ namespace DMS.Rpc.monitor.monitor_salesman
 
 
         [Route(MonitorSalesmanRoute.List), HttpPost]
-        public async Task<List<MonitorSalesman_MonitorSalesmanDTO>> List([FromBody] MonitorSalesman_MonitorSalesmanFilterDTO MonitorSalesman_MonitorSalesmanFilterDTO)
+        public async Task<ActionResult<List<MonitorSalesman_MonitorSalesmanDTO>>> List([FromBody] MonitorSalesman_MonitorSalesmanFilterDTO MonitorSalesman_MonitorSalesmanFilterDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
@@ -176,265 +176,10 @@ namespace DMS.Rpc.monitor.monitor_salesman
                     LocalEndDay(CurrentContext) :
                     MonitorSalesman_MonitorSalesmanFilterDTO.CheckIn.LessEqual.Value;
 
-            long? OrganizationId = MonitorSalesman_MonitorSalesmanFilterDTO.OrganizationId?.Equal;
-            long? SaleEmployeeId = MonitorSalesman_MonitorSalesmanFilterDTO.AppUserId?.Equal;
-            List<long> OrganizationIds = await FilterOrganization(OrganizationService, CurrentContext);
-            List<OrganizationDAO> OrganizationDAOs = await DataContext.Organization.Where(o => o.DeletedAt == null && (OrganizationIds.Count == 0 || OrganizationIds.Contains(o.Id))).ToListAsync();
-            OrganizationDAO OrganizationDAO = null;
-            if (MonitorSalesman_MonitorSalesmanFilterDTO.OrganizationId?.Equal != null)
-            {
-                OrganizationDAO = await DataContext.Organization.Where(o => o.Id == MonitorSalesman_MonitorSalesmanFilterDTO.OrganizationId.Equal.Value).FirstOrDefaultAsync();
-                OrganizationDAOs = OrganizationDAOs.Where(o => o.Path.StartsWith(OrganizationDAO.Path)).ToList();
-            }
-            OrganizationIds = OrganizationDAOs.Select(o => o.Id).ToList();
-            List<long> AppUserIds = await FilterAppUser(AppUserService, OrganizationService, CurrentContext);
-
-            var storeCheckingQuery = from sc in DataContext.StoreChecking
-                                     join au in DataContext.AppUser on sc.SaleEmployeeId equals au.Id
-                                     where AppUserIds.Contains(sc.SaleEmployeeId) &&
-                                     OrganizationIds.Contains(sc.OrganizationId) &&
-                                     (SaleEmployeeId == null || au.Id == SaleEmployeeId.Value) &&
-                                     au.DeletedAt == null &&
-                                     sc.CheckOutAt.HasValue && Start <= sc.CheckOutAt && sc.CheckOutAt <= End
-                                     select sc;
-
-            var storeImageQuery = from si in DataContext.StoreImage
-                                  join au in DataContext.AppUser on si.SaleEmployeeId equals au.Id
-                                  where si.SaleEmployeeId.HasValue && AppUserIds.Contains(si.SaleEmployeeId.Value) &&
-                                  OrganizationIds.Contains(si.OrganizationId) &&
-                                  (SaleEmployeeId == null || au.Id == SaleEmployeeId.Value) &&
-                                  au.DeletedAt == null &&
-                                  Start <= si.ShootingAt && si.ShootingAt <= End
-                                  select si;
-
-            var salesOrderQuery = from i in DataContext.IndirectSalesOrder
-                                  join au in DataContext.AppUser on i.SaleEmployeeId equals au.Id
-                                  where AppUserIds.Contains(i.SaleEmployeeId) &&
-                                  OrganizationIds.Contains(i.OrganizationId) &&
-                                  (SaleEmployeeId == null || au.Id == SaleEmployeeId.Value) &&
-                                  au.DeletedAt == null &&
-                                  Start <= i.OrderDate && i.OrderDate <= End &&
-                                  (i.RequestStateId == RequestStateEnum.APPROVED.Id || i.RequestStateId == RequestStateEnum.PENDING.Id)
-                                  select new IndirectSalesOrderDAO
-                                  {
-                                      Id = i.Id,
-                                      OrganizationId = i.OrganizationId,
-                                      SaleEmployeeId = i.SaleEmployeeId,
-                                      BuyerStoreId = i.BuyerStoreId,
-                                      Total = i.Total
-                                  };
-
-            var storeUncheckingQuery = from su in DataContext.StoreUnchecking
-                                       where AppUserIds.Contains(su.AppUserId) &&
-                                       OrganizationIds.Contains(su.OrganizationId) &&
-                                       (SaleEmployeeId == null || su.AppUserId == SaleEmployeeId.Value) &&
-                                       Start <= su.Date && su.Date <= End
-                                       select su;
-
-            var Ids1 = await storeCheckingQuery.Select(x => new
-            {
-                OrganizationId = x.OrganizationId,
-                SalesEmployeeId = x.SaleEmployeeId,
-            }).ToListAsync();
-            var Ids2 = await storeImageQuery.Select(x => new
-            {
-                OrganizationId = x.OrganizationId,
-                SalesEmployeeId = x.SaleEmployeeId.Value,
-            }).ToListAsync();
-            var Ids3 = await salesOrderQuery.Select(x => new
-            {
-                OrganizationId = x.OrganizationId,
-                SalesEmployeeId = x.SaleEmployeeId,
-            }).ToListAsync();
-            var Ids4 = await storeUncheckingQuery.Select(x => new
-            {
-                OrganizationId = x.OrganizationId,
-                SalesEmployeeId = x.AppUserId,
-            }).ToListAsync();
-            var Ids = Ids1;
-            Ids.AddRange(Ids2);
-            Ids.AddRange(Ids3);
-            Ids.AddRange(Ids4);
-            Ids = Ids.Distinct().ToList();
-
-            AppUserIds = Ids.Select(x => x.SalesEmployeeId).Distinct().ToList();
-
-            List<AppUserDAO> AppUserDAOs = await DataContext.AppUser
-                .Where(x => x.DeletedAt == null)
-                .Where(x => AppUserIds.Contains(x.Id))
-                .OrderBy(su => su.OrganizationId).ThenBy(x => x.DisplayName)
-                .Select(x => new AppUserDAO
-                {
-                    Id = x.Id,
-                    DisplayName = x.DisplayName,
-                    Username = x.Username,
-                    OrganizationId = x.OrganizationId
-                }).ToListAsync();
-
-            var Organizations = await DataContext.Organization
-                .Where(x => x.DeletedAt == null)
-                .OrderBy(x => x.Id)
-                .Select(x => new OrganizationDAO
-                {
-                    Id = x.Id,
-                    Name = x.Name
-                }).ToListAsync();
-
-            List<StoreCheckingDAO> StoreCheckingDAOs = await storeCheckingQuery.ToListAsync();
-            List<StoreImageDAO> StoreImageDAOs = await storeImageQuery.ToListAsync();
-            List<IndirectSalesOrderDAO> IndirectSalesOrderDAOs = await salesOrderQuery.ToListAsync();
-            List<StoreUncheckingDAO> StoreUncheckingDAOs = await storeUncheckingQuery.ToListAsync();
-
-            List<ProblemDAO> ProblemDAOs = await DataContext.Problem
-                .Where(p => AppUserIds.Contains(p.CreatorId) &&
-                Start <= p.NoteAt && p.NoteAt <= End)
-                .ToListAsync();
-
-            List<ERouteContentDAO> ERouteContentDAOs = await DataContext.ERouteContent
-                .Where(x => x.ERoute.DeletedAt == null && x.ERoute.StatusId == StatusEnum.ACTIVE.Id)
-                .Where(x => x.ERoute.RequestStateId == RequestStateEnum.APPROVED.Id)
-                .Where(ec => ec.ERoute.RealStartDate <= End && (ec.ERoute.EndDate == null || ec.ERoute.EndDate.Value >= Start) && AppUserIds.Contains(ec.ERoute.SaleEmployeeId))
-                .Include(ec => ec.ERouteContentDays)
-                .Include(ec => ec.ERoute)
-                .ToListAsync();
-
-            List<long> StoreIds = new List<long>();
-            StoreIds.AddRange(StoreCheckingDAOs.Select(x => x.StoreId).ToList());
-            StoreIds.AddRange(StoreImageDAOs.Select(x => x.StoreId).ToList());
-            StoreIds.AddRange(ProblemDAOs.Select(x => x.StoreId).ToList());
-            StoreIds.AddRange(IndirectSalesOrderDAOs.Select(x => x.BuyerStoreId).ToList());
-            StoreIds.AddRange(StoreUncheckingDAOs.Select(x => x.StoreId).ToList());
-            StoreIds = StoreIds.Distinct().ToList();
-
-            ITempTableQuery<TempTable<long>> tempTableQuery = await DataContext
-                     .BulkInsertValuesIntoTempTableAsync<long>(StoreIds);
-            var query2 = from s in DataContext.Store
-                         join tt in tempTableQuery.Query on s.Id equals tt.Column1
-                         select new StoreDAO
-                         {
-                             Id = s.Id,
-                             Code = s.Code,
-                             Name = s.Name,
-                             Address = s.Address,
-                         };
-            List<StoreDAO> StoreDAOs = await query2.ToListAsync();
-
-            List<MonitorSalesman_MonitorSalesmanDTO> MonitorSalesman_MonitorSalesmanDTOs = new List<MonitorSalesman_MonitorSalesmanDTO>();
-            foreach (var Organization in Organizations)
-            {
-                MonitorSalesman_MonitorSalesmanDTO MonitorSalesman_MonitorSalesmanDTO = new MonitorSalesman_MonitorSalesmanDTO()
-                {
-                    OrganizationId = Organization.Id,
-                    OrganizationName = Organization.Name,
-                    SaleEmployees = new List<MonitorSalesman_SaleEmployeeDTO>()
-                };
-                MonitorSalesman_MonitorSalesmanDTO.SaleEmployees = Ids
-                    .Where(x => x.OrganizationId == Organization.Id)
-                    .Select(x => new MonitorSalesman_SaleEmployeeDTO
-                    {
-                        SaleEmployeeId = x.SalesEmployeeId
-                    }).ToList();
-                MonitorSalesman_MonitorSalesmanDTOs.Add(MonitorSalesman_MonitorSalesmanDTO);
-            }
-
-            Parallel.ForEach(MonitorSalesman_MonitorSalesmanDTOs, MonitorSalesman_MonitorSalesmanDTO =>
-            {
-                foreach (var MonitorSalesman_SaleEmployeeDTO in MonitorSalesman_MonitorSalesmanDTO.SaleEmployees)
-                {
-                    var Employee = AppUserDAOs.Where(x => x.Id == MonitorSalesman_SaleEmployeeDTO.SaleEmployeeId).FirstOrDefault();
-                    if (Employee != null)
-                    {
-                        MonitorSalesman_SaleEmployeeDTO.Username = Employee.Username;
-                        MonitorSalesman_SaleEmployeeDTO.DisplayName = Employee.DisplayName;
-                    }
-
-                    if (MonitorSalesman_SaleEmployeeDTO.StoreCheckings == null)
-                        MonitorSalesman_SaleEmployeeDTO.StoreCheckings = new List<MonitorSalesman_StoreCheckingDTO>();
-                    MonitorSalesman_SaleEmployeeDTO.PlanCounter = CountPlan(Start, MonitorSalesman_SaleEmployeeDTO.SaleEmployeeId, ERouteContentDAOs);
-                    List<IndirectSalesOrderDAO> SubIndirectSalesOrderDAOs = IndirectSalesOrderDAOs.Where(i => i.SaleEmployeeId == MonitorSalesman_SaleEmployeeDTO.SaleEmployeeId).ToList();
-                    MonitorSalesman_SaleEmployeeDTO.SalesOrderCounter = SubIndirectSalesOrderDAOs.Count();
-                    MonitorSalesman_SaleEmployeeDTO.Revenue = SubIndirectSalesOrderDAOs.Select(o => o.Total).DefaultIfEmpty(0).Sum();
-                    MonitorSalesman_SaleEmployeeDTO.Unchecking = StoreUncheckingDAOs.Where(x => x.AppUserId == MonitorSalesman_SaleEmployeeDTO.SaleEmployeeId).Count();
-
-                    // Lấy tất cả các StoreChecking của AppUserId đang xét
-                    List<StoreCheckingDAO> ListChecked = StoreCheckingDAOs
-                           .Where(s => s.SaleEmployeeId == MonitorSalesman_SaleEmployeeDTO.SaleEmployeeId)
-                           .ToList();
-
-                    // Lất tất cả StoreIds với appuser đang xét
-                    foreach (StoreCheckingDAO Checked in ListChecked)
-                    {
-                        if (Checked.Planned)
-                        {
-                            if (MonitorSalesman_SaleEmployeeDTO.Internal == null)
-                                MonitorSalesman_SaleEmployeeDTO.Internal = new HashSet<long>();
-                            MonitorSalesman_SaleEmployeeDTO.Internal.Add(Checked.StoreId);
-                        }
-                        else
-                        {
-                            if (MonitorSalesman_SaleEmployeeDTO.External == null)
-                                MonitorSalesman_SaleEmployeeDTO.External = new HashSet<long>();
-                            MonitorSalesman_SaleEmployeeDTO.External.Add(Checked.StoreId);
-                        }
-                    }
-
-                    MonitorSalesman_SaleEmployeeDTO.ImageCounter = StoreImageDAOs
-                        .Where(x => x.SaleEmployeeId == MonitorSalesman_SaleEmployeeDTO.SaleEmployeeId).Count();
-                    foreach (long StoreId in StoreIds)
-                    {
-                        List<StoreCheckingDAO> SubStoreCheckingDAOs = StoreCheckingDAOs.Where(s => s.SaleEmployeeId == MonitorSalesman_SaleEmployeeDTO.SaleEmployeeId &&
-                                StoreId == s.StoreId &&
-                                Start <= s.CheckOutAt.Value && s.CheckOutAt.Value <= End).OrderByDescending(s => s.CheckInAt).ToList();
-                        StoreCheckingDAO Checked = SubStoreCheckingDAOs.FirstOrDefault();
-                        StoreDAO StoreDAO = StoreDAOs.Where(s => s.Id == StoreId).FirstOrDefault();
-                        MonitorSalesman_StoreCheckingDTO MonitorSalesman_StoreCheckingDTO = new MonitorSalesman_StoreCheckingDTO();
-                        MonitorSalesman_SaleEmployeeDTO.StoreCheckings.Add(MonitorSalesman_StoreCheckingDTO);
-                        if (Checked != null)
-                        {
-                            MonitorSalesman_StoreCheckingDTO.Id = Checked.Id;
-                            MonitorSalesman_StoreCheckingDTO.Latitude = Checked.Latitude ?? 0;
-                            MonitorSalesman_StoreCheckingDTO.Longitude = Checked.Longitude ?? 0;
-                            MonitorSalesman_StoreCheckingDTO.CheckIn = Checked.CheckInAt;
-                            MonitorSalesman_StoreCheckingDTO.CheckOut = Checked.CheckOutAt;
-                        }
-
-                        MonitorSalesman_StoreCheckingDTO.Image = StoreImageDAOs.Where(si => si.StoreId == StoreId).Select(si => si.Url).FirstOrDefault();
-                        MonitorSalesman_StoreCheckingDTO.StoreId = StoreDAO.Id;
-                        MonitorSalesman_StoreCheckingDTO.StoreCode = StoreDAO.Code;
-                        MonitorSalesman_StoreCheckingDTO.StoreName = StoreDAO.Name;
-                        MonitorSalesman_StoreCheckingDTO.Address = StoreDAO.Address;
-
-                        MonitorSalesman_StoreCheckingDTO.Problem = ProblemDAOs.Where(p => p.StoreId == StoreId)
-                         .OrderByDescending(x => x.NoteAt)
-                         .Select(p => new MonitorSalesman_ProblemDTO
-                         {
-                             Id = p.Id,
-                             Code = p.Code,
-                         }).FirstOrDefault();
-                        MonitorSalesman_StoreCheckingDTO.IndirectSalesOrder = IndirectSalesOrderDAOs.Where(i => i.BuyerStoreId == StoreId)
-                         .OrderByDescending(x => x.OrderDate)
-                         .Select(i => new MonitorSalesman_IndirectSalesOrderDTO
-                         {
-                             Id = i.Id,
-                             Code = i.Code,
-                         }).FirstOrDefault();
-
-                    };
-                }
-            });
-
-            AppUserDAOs = AppUserDAOs.Where(x => !Ids.Select(x => x.SalesEmployeeId).Contains(x.Id)).ToList();
-            Parallel.ForEach(AppUserDAOs, AppUserDAO =>
-            {
-                MonitorSalesman_SaleEmployeeDTO MonitorSalesman_SaleEmployeeDTO = new MonitorSalesman_SaleEmployeeDTO();
-                MonitorSalesman_SaleEmployeeDTO.SaleEmployeeId = AppUserDAO.Id;
-                MonitorSalesman_SaleEmployeeDTO.Username = AppUserDAO.Username;
-                MonitorSalesman_SaleEmployeeDTO.DisplayName = AppUserDAO.DisplayName;
-                var MonitorSalesman_MonitorSalesmanDTO = MonitorSalesman_MonitorSalesmanDTOs.Where(x => x.OrganizationId == AppUserDAO.OrganizationId).FirstOrDefault();
-                MonitorSalesman_MonitorSalesmanDTO.SaleEmployees.Add(MonitorSalesman_SaleEmployeeDTO);
-            });
-
-            return MonitorSalesman_MonitorSalesmanDTOs.Where(x => x.SaleEmployees.Any()).ToList();
+            if (End.Subtract(Start).Days > 31)
+                return BadRequest(new { message = "Chỉ được phép xem tối đa trong vòng 31 ngày" });
+            List<MonitorSalesman_MonitorSalesmanDTO> MonitorSalesman_MonitorSalesmanDTOs = await ListData(MonitorSalesman_MonitorSalesmanFilterDTO, Start, End);
+            return MonitorSalesman_MonitorSalesmanDTOs;
         }
 
         [Route(MonitorSalesmanRoute.Get), HttpPost]
@@ -595,9 +340,17 @@ namespace DMS.Rpc.monitor.monitor_salesman
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
+            DateTime Start = MonitorSalesman_MonitorSalesmanFilterDTO.CheckIn?.GreaterEqual == null ?
+                             LocalStartDay(CurrentContext) :
+                             MonitorSalesman_MonitorSalesmanFilterDTO.CheckIn.GreaterEqual.Value;
+
+            DateTime End = MonitorSalesman_MonitorSalesmanFilterDTO.CheckIn?.LessEqual == null ?
+                    LocalEndDay(CurrentContext) :
+                    MonitorSalesman_MonitorSalesmanFilterDTO.CheckIn.LessEqual.Value.AddDays(1).AddSeconds(-1);
+
             MonitorSalesman_MonitorSalesmanFilterDTO.Skip = 0;
             MonitorSalesman_MonitorSalesmanFilterDTO.Take = int.MaxValue;
-            List<MonitorSalesman_MonitorSalesmanDTO> MonitorSalesman_MonitorSalesmanDTOs = await List(MonitorSalesman_MonitorSalesmanFilterDTO);
+            List<MonitorSalesman_MonitorSalesmanDTO> MonitorSalesman_MonitorSalesmanDTOs = await ListData(MonitorSalesman_MonitorSalesmanFilterDTO, Start, End);
             int stt = 1;
             foreach (MonitorSalesman_MonitorSalesmanDTO MonitorSalesman_MonitorSalesmanDTO in MonitorSalesman_MonitorSalesmanDTOs)
             {
@@ -607,14 +360,6 @@ namespace DMS.Rpc.monitor.monitor_salesman
                     stt++;
                 }
             }
-
-            DateTime Start = MonitorSalesman_MonitorSalesmanFilterDTO.CheckIn?.GreaterEqual == null ?
-                             LocalStartDay(CurrentContext) :
-                             MonitorSalesman_MonitorSalesmanFilterDTO.CheckIn.GreaterEqual.Value;
-
-            DateTime End = MonitorSalesman_MonitorSalesmanFilterDTO.CheckIn?.LessEqual == null ?
-                    LocalEndDay(CurrentContext) :
-                    MonitorSalesman_MonitorSalesmanFilterDTO.CheckIn.LessEqual.Value.AddDays(1).AddSeconds(-1);
 
             string path = "Templates/Monitor_Salesman_Report.xlsx";
             byte[] arr = System.IO.File.ReadAllBytes(path);
@@ -795,5 +540,273 @@ namespace DMS.Rpc.monitor.monitor_salesman
             return File(output.ToArray(), "application/octet-stream", "Daily_Unchecking_Report.xlsx");
         }
 
+        private async Task<List<MonitorSalesman_MonitorSalesmanDTO>> ListData(
+            MonitorSalesman_MonitorSalesmanFilterDTO MonitorSalesman_MonitorSalesmanFilterDTO,
+            DateTime Start, DateTime End)
+        {
+            long? OrganizationId = MonitorSalesman_MonitorSalesmanFilterDTO.OrganizationId?.Equal;
+            long? SaleEmployeeId = MonitorSalesman_MonitorSalesmanFilterDTO.AppUserId?.Equal;
+            List<long> OrganizationIds = await FilterOrganization(OrganizationService, CurrentContext);
+            List<OrganizationDAO> OrganizationDAOs = await DataContext.Organization.Where(o => o.DeletedAt == null && (OrganizationIds.Count == 0 || OrganizationIds.Contains(o.Id))).ToListAsync();
+            OrganizationDAO OrganizationDAO = null;
+            if (MonitorSalesman_MonitorSalesmanFilterDTO.OrganizationId?.Equal != null)
+            {
+                OrganizationDAO = await DataContext.Organization.Where(o => o.Id == MonitorSalesman_MonitorSalesmanFilterDTO.OrganizationId.Equal.Value).FirstOrDefaultAsync();
+                OrganizationDAOs = OrganizationDAOs.Where(o => o.Path.StartsWith(OrganizationDAO.Path)).ToList();
+            }
+            OrganizationIds = OrganizationDAOs.Select(o => o.Id).ToList();
+            List<long> AppUserIds = await FilterAppUser(AppUserService, OrganizationService, CurrentContext);
+
+            var storeCheckingQuery = from sc in DataContext.StoreChecking
+                                     join au in DataContext.AppUser on sc.SaleEmployeeId equals au.Id
+                                     where AppUserIds.Contains(sc.SaleEmployeeId) &&
+                                     OrganizationIds.Contains(sc.OrganizationId) &&
+                                     (SaleEmployeeId == null || au.Id == SaleEmployeeId.Value) &&
+                                     au.DeletedAt == null &&
+                                     sc.CheckOutAt.HasValue && Start <= sc.CheckOutAt && sc.CheckOutAt <= End
+                                     select sc;
+
+            var storeImageQuery = from si in DataContext.StoreImage
+                                  join au in DataContext.AppUser on si.SaleEmployeeId equals au.Id
+                                  where si.SaleEmployeeId.HasValue && AppUserIds.Contains(si.SaleEmployeeId.Value) &&
+                                  OrganizationIds.Contains(si.OrganizationId) &&
+                                  (SaleEmployeeId == null || au.Id == SaleEmployeeId.Value) &&
+                                  au.DeletedAt == null &&
+                                  Start <= si.ShootingAt && si.ShootingAt <= End
+                                  select si;
+
+            var salesOrderQuery = from i in DataContext.IndirectSalesOrder
+                                  join au in DataContext.AppUser on i.SaleEmployeeId equals au.Id
+                                  where AppUserIds.Contains(i.SaleEmployeeId) &&
+                                  OrganizationIds.Contains(i.OrganizationId) &&
+                                  (SaleEmployeeId == null || au.Id == SaleEmployeeId.Value) &&
+                                  au.DeletedAt == null &&
+                                  Start <= i.OrderDate && i.OrderDate <= End &&
+                                  (i.RequestStateId == RequestStateEnum.APPROVED.Id || i.RequestStateId == RequestStateEnum.PENDING.Id)
+                                  select new IndirectSalesOrderDAO
+                                  {
+                                      Id = i.Id,
+                                      OrganizationId = i.OrganizationId,
+                                      SaleEmployeeId = i.SaleEmployeeId,
+                                      BuyerStoreId = i.BuyerStoreId,
+                                      Total = i.Total
+                                  };
+
+            var storeUncheckingQuery = from su in DataContext.StoreUnchecking
+                                       where AppUserIds.Contains(su.AppUserId) &&
+                                       OrganizationIds.Contains(su.OrganizationId) &&
+                                       (SaleEmployeeId == null || su.AppUserId == SaleEmployeeId.Value) &&
+                                       Start <= su.Date && su.Date <= End
+                                       select su;
+
+            var Ids1 = await storeCheckingQuery.Select(x => new
+            {
+                OrganizationId = x.OrganizationId,
+                SalesEmployeeId = x.SaleEmployeeId,
+            }).ToListAsync();
+            var Ids2 = await storeImageQuery.Select(x => new
+            {
+                OrganizationId = x.OrganizationId,
+                SalesEmployeeId = x.SaleEmployeeId.Value,
+            }).ToListAsync();
+            var Ids3 = await salesOrderQuery.Select(x => new
+            {
+                OrganizationId = x.OrganizationId,
+                SalesEmployeeId = x.SaleEmployeeId,
+            }).ToListAsync();
+            var Ids4 = await storeUncheckingQuery.Select(x => new
+            {
+                OrganizationId = x.OrganizationId,
+                SalesEmployeeId = x.AppUserId,
+            }).ToListAsync();
+            var Ids = Ids1;
+            Ids.AddRange(Ids2);
+            Ids.AddRange(Ids3);
+            Ids.AddRange(Ids4);
+            Ids = Ids.Distinct()
+                .OrderBy(x => x.OrganizationId)
+                .Skip(MonitorSalesman_MonitorSalesmanFilterDTO.Skip)
+                .Take(MonitorSalesman_MonitorSalesmanFilterDTO.Take)
+                .ToList();
+
+            AppUserIds = Ids.Select(x => x.SalesEmployeeId).Distinct().ToList();
+
+            List<AppUserDAO> AppUserDAOs = await DataContext.AppUser
+                .Where(x => x.DeletedAt == null)
+                .Where(x => AppUserIds.Contains(x.Id))
+                .OrderBy(su => su.OrganizationId).ThenBy(x => x.DisplayName)
+                .Select(x => new AppUserDAO
+                {
+                    Id = x.Id,
+                    DisplayName = x.DisplayName,
+                    Username = x.Username,
+                    OrganizationId = x.OrganizationId
+                }).ToListAsync();
+
+            var Organizations = await DataContext.Organization
+                .Where(x => x.DeletedAt == null)
+                .OrderBy(x => x.Id)
+                .Select(x => new OrganizationDAO
+                {
+                    Id = x.Id,
+                    Name = x.Name
+                }).ToListAsync();
+
+            List<StoreCheckingDAO> StoreCheckingDAOs = await storeCheckingQuery.ToListAsync();
+            List<StoreImageDAO> StoreImageDAOs = await storeImageQuery.ToListAsync();
+            List<IndirectSalesOrderDAO> IndirectSalesOrderDAOs = await salesOrderQuery.ToListAsync();
+            List<StoreUncheckingDAO> StoreUncheckingDAOs = await storeUncheckingQuery.ToListAsync();
+
+            List<ProblemDAO> ProblemDAOs = await DataContext.Problem
+                .Where(p => AppUserIds.Contains(p.CreatorId) &&
+                Start <= p.NoteAt && p.NoteAt <= End)
+                .ToListAsync();
+
+            List<ERouteContentDAO> ERouteContentDAOs = await DataContext.ERouteContent
+                .Where(x => x.ERoute.DeletedAt == null && x.ERoute.StatusId == StatusEnum.ACTIVE.Id)
+                .Where(x => x.ERoute.RequestStateId == RequestStateEnum.APPROVED.Id)
+                .Where(ec => ec.ERoute.RealStartDate <= End && (ec.ERoute.EndDate == null || ec.ERoute.EndDate.Value >= Start) && AppUserIds.Contains(ec.ERoute.SaleEmployeeId))
+                .Include(ec => ec.ERouteContentDays)
+                .Include(ec => ec.ERoute)
+                .ToListAsync();
+
+            List<long> StoreIds = new List<long>();
+            StoreIds.AddRange(StoreCheckingDAOs.Select(x => x.StoreId).ToList());
+            StoreIds.AddRange(StoreImageDAOs.Select(x => x.StoreId).ToList());
+            StoreIds.AddRange(ProblemDAOs.Select(x => x.StoreId).ToList());
+            StoreIds.AddRange(IndirectSalesOrderDAOs.Select(x => x.BuyerStoreId).ToList());
+            StoreIds.AddRange(StoreUncheckingDAOs.Select(x => x.StoreId).ToList());
+            StoreIds = StoreIds.Distinct().ToList();
+
+            ITempTableQuery<TempTable<long>> tempTableQuery = await DataContext
+                     .BulkInsertValuesIntoTempTableAsync<long>(StoreIds);
+            var query2 = from s in DataContext.Store
+                         join tt in tempTableQuery.Query on s.Id equals tt.Column1
+                         select new StoreDAO
+                         {
+                             Id = s.Id,
+                             Code = s.Code,
+                             Name = s.Name,
+                             Address = s.Address,
+                         };
+            List<StoreDAO> StoreDAOs = await query2.ToListAsync();
+
+            List<MonitorSalesman_MonitorSalesmanDTO> MonitorSalesman_MonitorSalesmanDTOs = new List<MonitorSalesman_MonitorSalesmanDTO>();
+            foreach (var Organization in Organizations)
+            {
+                MonitorSalesman_MonitorSalesmanDTO MonitorSalesman_MonitorSalesmanDTO = new MonitorSalesman_MonitorSalesmanDTO()
+                {
+                    OrganizationId = Organization.Id,
+                    OrganizationName = Organization.Name,
+                    SaleEmployees = new List<MonitorSalesman_SaleEmployeeDTO>()
+                };
+                MonitorSalesman_MonitorSalesmanDTO.SaleEmployees = Ids
+                    .Where(x => x.OrganizationId == Organization.Id)
+                    .Select(x => new MonitorSalesman_SaleEmployeeDTO
+                    {
+                        SaleEmployeeId = x.SalesEmployeeId
+                    }).ToList();
+                MonitorSalesman_MonitorSalesmanDTOs.Add(MonitorSalesman_MonitorSalesmanDTO);
+            }
+
+            Parallel.ForEach(MonitorSalesman_MonitorSalesmanDTOs, MonitorSalesman_MonitorSalesmanDTO =>
+            {
+                foreach (var MonitorSalesman_SaleEmployeeDTO in MonitorSalesman_MonitorSalesmanDTO.SaleEmployees)
+                {
+                    var Employee = AppUserDAOs.Where(x => x.Id == MonitorSalesman_SaleEmployeeDTO.SaleEmployeeId).FirstOrDefault();
+                    if (Employee != null)
+                    {
+                        MonitorSalesman_SaleEmployeeDTO.Username = Employee.Username;
+                        MonitorSalesman_SaleEmployeeDTO.DisplayName = Employee.DisplayName;
+                    }
+
+                    if (MonitorSalesman_SaleEmployeeDTO.StoreCheckings == null)
+                        MonitorSalesman_SaleEmployeeDTO.StoreCheckings = new List<MonitorSalesman_StoreCheckingDTO>();
+                    MonitorSalesman_SaleEmployeeDTO.PlanCounter = CountPlan(Start, MonitorSalesman_SaleEmployeeDTO.SaleEmployeeId, ERouteContentDAOs);
+                    List<IndirectSalesOrderDAO> SubIndirectSalesOrderDAOs = IndirectSalesOrderDAOs.Where(i => i.SaleEmployeeId == MonitorSalesman_SaleEmployeeDTO.SaleEmployeeId).ToList();
+                    MonitorSalesman_SaleEmployeeDTO.SalesOrderCounter = SubIndirectSalesOrderDAOs.Count();
+                    MonitorSalesman_SaleEmployeeDTO.Revenue = SubIndirectSalesOrderDAOs.Select(o => o.Total).DefaultIfEmpty(0).Sum();
+                    MonitorSalesman_SaleEmployeeDTO.Unchecking = StoreUncheckingDAOs.Where(x => x.AppUserId == MonitorSalesman_SaleEmployeeDTO.SaleEmployeeId).Count();
+
+                    // Lấy tất cả các StoreChecking của AppUserId đang xét
+                    List<StoreCheckingDAO> ListChecked = StoreCheckingDAOs
+                           .Where(s => s.SaleEmployeeId == MonitorSalesman_SaleEmployeeDTO.SaleEmployeeId)
+                           .ToList();
+
+                    // Lất tất cả StoreIds với appuser đang xét
+                    foreach (StoreCheckingDAO Checked in ListChecked)
+                    {
+                        if (Checked.Planned)
+                        {
+                            if (MonitorSalesman_SaleEmployeeDTO.Internal == null)
+                                MonitorSalesman_SaleEmployeeDTO.Internal = new HashSet<long>();
+                            MonitorSalesman_SaleEmployeeDTO.Internal.Add(Checked.StoreId);
+                        }
+                        else
+                        {
+                            if (MonitorSalesman_SaleEmployeeDTO.External == null)
+                                MonitorSalesman_SaleEmployeeDTO.External = new HashSet<long>();
+                            MonitorSalesman_SaleEmployeeDTO.External.Add(Checked.StoreId);
+                        }
+                    }
+
+                    MonitorSalesman_SaleEmployeeDTO.ImageCounter = StoreImageDAOs
+                        .Where(x => x.SaleEmployeeId == MonitorSalesman_SaleEmployeeDTO.SaleEmployeeId).Count();
+                    foreach (long StoreId in StoreIds)
+                    {
+                        List<StoreCheckingDAO> SubStoreCheckingDAOs = StoreCheckingDAOs.Where(s => s.SaleEmployeeId == MonitorSalesman_SaleEmployeeDTO.SaleEmployeeId &&
+                                StoreId == s.StoreId &&
+                                Start <= s.CheckOutAt.Value && s.CheckOutAt.Value <= End).OrderByDescending(s => s.CheckInAt).ToList();
+                        StoreCheckingDAO Checked = SubStoreCheckingDAOs.FirstOrDefault();
+                        StoreDAO StoreDAO = StoreDAOs.Where(s => s.Id == StoreId).FirstOrDefault();
+                        MonitorSalesman_StoreCheckingDTO MonitorSalesman_StoreCheckingDTO = new MonitorSalesman_StoreCheckingDTO();
+                        MonitorSalesman_SaleEmployeeDTO.StoreCheckings.Add(MonitorSalesman_StoreCheckingDTO);
+                        if (Checked != null)
+                        {
+                            MonitorSalesman_StoreCheckingDTO.Id = Checked.Id;
+                            MonitorSalesman_StoreCheckingDTO.Latitude = Checked.Latitude ?? 0;
+                            MonitorSalesman_StoreCheckingDTO.Longitude = Checked.Longitude ?? 0;
+                            MonitorSalesman_StoreCheckingDTO.CheckIn = Checked.CheckInAt;
+                            MonitorSalesman_StoreCheckingDTO.CheckOut = Checked.CheckOutAt;
+                        }
+
+                        MonitorSalesman_StoreCheckingDTO.Image = StoreImageDAOs.Where(si => si.StoreId == StoreId).Select(si => si.Url).FirstOrDefault();
+                        MonitorSalesman_StoreCheckingDTO.StoreId = StoreDAO.Id;
+                        MonitorSalesman_StoreCheckingDTO.StoreCode = StoreDAO.Code;
+                        MonitorSalesman_StoreCheckingDTO.StoreName = StoreDAO.Name;
+                        MonitorSalesman_StoreCheckingDTO.Address = StoreDAO.Address;
+
+                        MonitorSalesman_StoreCheckingDTO.Problem = ProblemDAOs.Where(p => p.StoreId == StoreId)
+                         .OrderByDescending(x => x.NoteAt)
+                         .Select(p => new MonitorSalesman_ProblemDTO
+                         {
+                             Id = p.Id,
+                             Code = p.Code,
+                         }).FirstOrDefault();
+                        MonitorSalesman_StoreCheckingDTO.IndirectSalesOrder = IndirectSalesOrderDAOs.Where(i => i.BuyerStoreId == StoreId)
+                         .OrderByDescending(x => x.OrderDate)
+                         .Select(i => new MonitorSalesman_IndirectSalesOrderDTO
+                         {
+                             Id = i.Id,
+                             Code = i.Code,
+                         }).FirstOrDefault();
+
+                    };
+                }
+            });
+
+            AppUserDAOs = AppUserDAOs.Where(x => !Ids.Select(x => x.SalesEmployeeId).Contains(x.Id)).ToList();
+            Parallel.ForEach(AppUserDAOs, AppUserDAO =>
+            {
+                MonitorSalesman_SaleEmployeeDTO MonitorSalesman_SaleEmployeeDTO = new MonitorSalesman_SaleEmployeeDTO();
+                MonitorSalesman_SaleEmployeeDTO.SaleEmployeeId = AppUserDAO.Id;
+                MonitorSalesman_SaleEmployeeDTO.Username = AppUserDAO.Username;
+                MonitorSalesman_SaleEmployeeDTO.DisplayName = AppUserDAO.DisplayName;
+                var MonitorSalesman_MonitorSalesmanDTO = MonitorSalesman_MonitorSalesmanDTOs.Where(x => x.OrganizationId == AppUserDAO.OrganizationId).FirstOrDefault();
+                MonitorSalesman_MonitorSalesmanDTO.SaleEmployees.Add(MonitorSalesman_SaleEmployeeDTO);
+            });
+
+            return MonitorSalesman_MonitorSalesmanDTOs.Where(x => x.SaleEmployees.Any()).ToList();
+        }
     }
 }

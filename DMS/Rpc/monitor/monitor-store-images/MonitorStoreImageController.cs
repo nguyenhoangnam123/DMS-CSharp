@@ -255,14 +255,10 @@ namespace DMS.Rpc.monitor.monitor_store_images
         }
 
         [Route(MonitorStoreImageRoute.List), HttpPost]
-        public async Task<List<MonitorStoreImage_MonitorStoreImageDTO>> List([FromBody] MonitorStoreImage_MonitorStoreImageFilterDTO MonitorStoreImage_MonitorStoreImageFilterDTO)
+        public async Task<ActionResult<List<MonitorStoreImage_MonitorStoreImageDTO>>> List([FromBody] MonitorStoreImage_MonitorStoreImageFilterDTO MonitorStoreImage_MonitorStoreImageFilterDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-
-            long? OrganizationId = MonitorStoreImage_MonitorStoreImageFilterDTO.OrganizationId?.Equal;
-            long? SaleEmployeeId = MonitorStoreImage_MonitorStoreImageFilterDTO.AppUserId?.Equal;
-            long? StoreId = MonitorStoreImage_MonitorStoreImageFilterDTO.StoreId?.Equal;
 
             DateTime Start = MonitorStoreImage_MonitorStoreImageFilterDTO.CheckIn?.GreaterEqual == null ?
                     LocalStartDay(CurrentContext) :
@@ -271,6 +267,145 @@ namespace DMS.Rpc.monitor.monitor_store_images
             DateTime End = MonitorStoreImage_MonitorStoreImageFilterDTO.CheckIn?.LessEqual == null ?
                     LocalEndDay(CurrentContext) :
                     MonitorStoreImage_MonitorStoreImageFilterDTO.CheckIn.LessEqual.Value;
+
+            if (End.Subtract(Start).Days > 31)
+                return BadRequest(new { message = "Chỉ được phép xem tối đa trong vòng 31 ngày" });
+            List<MonitorStoreImage_MonitorStoreImageDTO> MonitorStoreImage_MonitorStoreImageDTOs = await ListData(MonitorStoreImage_MonitorStoreImageFilterDTO, Start, End);
+            return MonitorStoreImage_MonitorStoreImageDTOs;
+        }
+
+        [Route(MonitorStoreImageRoute.Get), HttpPost]
+        public async Task<List<MonitorStoreImage_StoreCheckingImageMappingDTO>> Get([FromBody] MonitorStoreImage_DetailDTO MonitorStoreImage_StoreCheckingDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+            DateTime Start = MonitorStoreImage_StoreCheckingDTO.Date.AddHours(CurrentContext.TimeZone).Date.AddHours(0 - CurrentContext.TimeZone);
+            DateTime End = Start.AddDays(1).AddSeconds(-1);
+
+            var query = from si in DataContext.StoreImage
+                        where si.StoreId == MonitorStoreImage_StoreCheckingDTO.StoreId &&
+                        (si.SaleEmployeeId.HasValue && si.SaleEmployeeId.Value == MonitorStoreImage_StoreCheckingDTO.SaleEmployeeId) &&
+                        Start <= si.ShootingAt && si.ShootingAt <= End
+                        select new MonitorStoreImage_StoreCheckingImageMappingDTO
+                        {
+                            AlbumId = si.AlbumId,
+                            ImageId = si.ImageId,
+                            SaleEmployeeId = si.SaleEmployeeId.Value,
+                            ShootingAt = si.ShootingAt,
+                            StoreId = si.StoreId,
+                            Distance = si.Distance,
+                            Album = new MonitorStoreImage_AlbumDTO
+                            {
+                                Id = si.AlbumId,
+                                Name = si.AlbumName
+                            },
+                            Image = new MonitorStoreImage_ImageDTO
+                            {
+                                Id = si.ImageId,
+                                Url = si.Url
+                            },
+                            SaleEmployee = new MonitorStoreImage_AppUserDTO
+                            {
+                                Id = si.SaleEmployeeId.Value,
+                                DisplayName = si.DisplayName
+                            },
+                            Store = new MonitorStoreImage_StoreDTO
+                            {
+                                Id = si.StoreId,
+                                Address = si.StoreAddress,
+                                Name = si.StoreName
+                            }
+                        };
+            return await query.ToListAsync();
+        }
+
+        [Route(MonitorStoreImageRoute.UpdateAlbum), HttpPost]
+        public async Task<MonitorStoreImage_StoreCheckingImageMappingDTO> UpdateAlbum([FromBody] MonitorStoreImage_StoreCheckingImageMappingDTO MonitorStoreImage_StoreCheckingImageMappingDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            var AlbumImageMappingDAO = await DataContext
+                .AlbumImageMapping.Where(x => x.ImageId == MonitorStoreImage_StoreCheckingImageMappingDTO.ImageId)
+                .FirstOrDefaultAsync();
+            if (AlbumImageMappingDAO != null)
+            {
+                var newObj = Utils.Clone(AlbumImageMappingDAO);
+                await DataContext.AlbumImageMapping.Where(x => x.ImageId == MonitorStoreImage_StoreCheckingImageMappingDTO.ImageId).DeleteFromQueryAsync();
+                newObj.AlbumId = MonitorStoreImage_StoreCheckingImageMappingDTO.AlbumId;
+                await DataContext.AlbumImageMapping.AddAsync(newObj);
+                await DataContext.SaveChangesAsync();
+            }
+            else
+            {
+                var StoreCheckingImageMappingDAO = await DataContext
+                .StoreCheckingImageMapping.Where(x => x.ImageId == MonitorStoreImage_StoreCheckingImageMappingDTO.ImageId)
+                .FirstOrDefaultAsync();
+                if (StoreCheckingImageMappingDAO != null)
+                {
+                    await DataContext.StoreCheckingImageMapping.Where(x => x.ImageId == MonitorStoreImage_StoreCheckingImageMappingDTO.ImageId).UpdateFromQueryAsync(x => new StoreCheckingImageMappingDAO
+                    {
+                        AlbumId = MonitorStoreImage_StoreCheckingImageMappingDTO.AlbumId
+                    });
+                }
+            }
+
+            return MonitorStoreImage_StoreCheckingImageMappingDTO;
+        }
+
+        [Route(MonitorStoreImageRoute.Export), HttpPost]
+        public async Task<ActionResult> Export([FromBody] MonitorStoreImage_MonitorStoreImageFilterDTO MonitorStoreImage_MonitorStoreImageFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            DateTime Start = MonitorStoreImage_MonitorStoreImageFilterDTO.CheckIn?.GreaterEqual == null ?
+                    LocalStartDay(CurrentContext) :
+                    MonitorStoreImage_MonitorStoreImageFilterDTO.CheckIn.GreaterEqual.Value;
+
+            DateTime End = MonitorStoreImage_MonitorStoreImageFilterDTO.CheckIn?.LessEqual == null ?
+                    LocalEndDay(CurrentContext) :
+                    MonitorStoreImage_MonitorStoreImageFilterDTO.CheckIn.LessEqual.Value;
+
+            MonitorStoreImage_MonitorStoreImageFilterDTO.Skip = 0;
+            MonitorStoreImage_MonitorStoreImageFilterDTO.Take = int.MaxValue;
+            List<MonitorStoreImage_MonitorStoreImageDTO> MonitorStoreImage_MonitorStoreImageDTOs = await ListData(MonitorStoreImage_MonitorStoreImageFilterDTO, Start, End);
+            long stt = 1;
+            foreach (MonitorStoreImage_MonitorStoreImageDTO MonitorStoreImage_MonitorStoreImageDTO in MonitorStoreImage_MonitorStoreImageDTOs)
+            {
+                foreach (var SaleEmployee in MonitorStoreImage_MonitorStoreImageDTO.SaleEmployees)
+                {
+                    foreach (var StoreChecking in SaleEmployee.StoreCheckings)
+                    {
+                        StoreChecking.STT = stt;
+                        stt++;
+                    }
+                }
+            }
+
+            string path = "Templates/Monitor_Store_Image.xlsx";
+            byte[] arr = System.IO.File.ReadAllBytes(path);
+            MemoryStream input = new MemoryStream(arr);
+            MemoryStream output = new MemoryStream();
+            dynamic Data = new ExpandoObject();
+            Data.Start = Start.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy");
+            Data.End = End.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy");
+            Data.MonitorStoreImages = MonitorStoreImage_MonitorStoreImageDTOs;
+            using (var document = StaticParams.DocumentFactory.Open(input, output, "xlsx"))
+            {
+                document.Process(Data);
+            };
+
+            return File(output.ToArray(), "application/octet-stream", "Monitor_Store_Image.xlsx");
+        }
+
+        private async Task<List<MonitorStoreImage_MonitorStoreImageDTO>> ListData(
+            MonitorStoreImage_MonitorStoreImageFilterDTO MonitorStoreImage_MonitorStoreImageFilterDTO,
+            DateTime Start, DateTime End)
+        {
+            long? OrganizationId = MonitorStoreImage_MonitorStoreImageFilterDTO.OrganizationId?.Equal;
+            long? SaleEmployeeId = MonitorStoreImage_MonitorStoreImageFilterDTO.AppUserId?.Equal;
+            long? StoreId = MonitorStoreImage_MonitorStoreImageFilterDTO.StoreId?.Equal;
 
             List<long> OrganizationIds = await FilterOrganization(OrganizationService, CurrentContext);
             List<OrganizationDAO> OrganizationDAOs = await DataContext.Organization.Where(o => o.DeletedAt == null && OrganizationIds.Contains(o.Id)).ToListAsync();
@@ -472,131 +607,6 @@ namespace DMS.Rpc.monitor.monitor_store_images
 
             MonitorStoreImage_MonitorStoreImageDTOs = MonitorStoreImage_MonitorStoreImageDTOs.Where(si => si.SaleEmployees.Count > 0).ToList();
             return MonitorStoreImage_MonitorStoreImageDTOs;
-        }
-
-        [Route(MonitorStoreImageRoute.Get), HttpPost]
-        public async Task<List<MonitorStoreImage_StoreCheckingImageMappingDTO>> Get([FromBody] MonitorStoreImage_DetailDTO MonitorStoreImage_StoreCheckingDTO)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
-            DateTime Start = MonitorStoreImage_StoreCheckingDTO.Date.AddHours(CurrentContext.TimeZone).Date.AddHours(0 - CurrentContext.TimeZone);
-            DateTime End = Start.AddDays(1).AddSeconds(-1);
-
-            var query = from si in DataContext.StoreImage
-                        where si.StoreId == MonitorStoreImage_StoreCheckingDTO.StoreId &&
-                        (si.SaleEmployeeId.HasValue && si.SaleEmployeeId.Value == MonitorStoreImage_StoreCheckingDTO.SaleEmployeeId) &&
-                        Start <= si.ShootingAt && si.ShootingAt <= End
-                        select new MonitorStoreImage_StoreCheckingImageMappingDTO
-                        {
-                            AlbumId = si.AlbumId,
-                            ImageId = si.ImageId,
-                            SaleEmployeeId = si.SaleEmployeeId.Value,
-                            ShootingAt = si.ShootingAt,
-                            StoreId = si.StoreId,
-                            Distance = si.Distance,
-                            Album = new MonitorStoreImage_AlbumDTO
-                            {
-                                Id = si.AlbumId,
-                                Name = si.AlbumName
-                            },
-                            Image = new MonitorStoreImage_ImageDTO
-                            {
-                                Id = si.ImageId,
-                                Url = si.Url
-                            },
-                            SaleEmployee = new MonitorStoreImage_AppUserDTO
-                            {
-                                Id = si.SaleEmployeeId.Value,
-                                DisplayName = si.DisplayName
-                            },
-                            Store = new MonitorStoreImage_StoreDTO
-                            {
-                                Id = si.StoreId,
-                                Address = si.StoreAddress,
-                                Name = si.StoreName
-                            }
-                        };
-            return await query.ToListAsync();
-        }
-
-        [Route(MonitorStoreImageRoute.UpdateAlbum), HttpPost]
-        public async Task<MonitorStoreImage_StoreCheckingImageMappingDTO> UpdateAlbum([FromBody] MonitorStoreImage_StoreCheckingImageMappingDTO MonitorStoreImage_StoreCheckingImageMappingDTO)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
-
-            var AlbumImageMappingDAO = await DataContext
-                .AlbumImageMapping.Where(x => x.ImageId == MonitorStoreImage_StoreCheckingImageMappingDTO.ImageId)
-                .FirstOrDefaultAsync();
-            if (AlbumImageMappingDAO != null)
-            {
-                var newObj = Utils.Clone(AlbumImageMappingDAO);
-                await DataContext.AlbumImageMapping.Where(x => x.ImageId == MonitorStoreImage_StoreCheckingImageMappingDTO.ImageId).DeleteFromQueryAsync();
-                newObj.AlbumId = MonitorStoreImage_StoreCheckingImageMappingDTO.AlbumId;
-                await DataContext.AlbumImageMapping.AddAsync(newObj);
-                await DataContext.SaveChangesAsync();
-            }
-            else
-            {
-                var StoreCheckingImageMappingDAO = await DataContext
-                .StoreCheckingImageMapping.Where(x => x.ImageId == MonitorStoreImage_StoreCheckingImageMappingDTO.ImageId)
-                .FirstOrDefaultAsync();
-                if (StoreCheckingImageMappingDAO != null)
-                {
-                    await DataContext.StoreCheckingImageMapping.Where(x => x.ImageId == MonitorStoreImage_StoreCheckingImageMappingDTO.ImageId).UpdateFromQueryAsync(x => new StoreCheckingImageMappingDAO
-                    {
-                        AlbumId = MonitorStoreImage_StoreCheckingImageMappingDTO.AlbumId
-                    });
-                }
-            }
-
-            return MonitorStoreImage_StoreCheckingImageMappingDTO;
-        }
-
-        [Route(MonitorStoreImageRoute.Export), HttpPost]
-        public async Task<ActionResult> Export([FromBody] MonitorStoreImage_MonitorStoreImageFilterDTO MonitorStoreImage_MonitorStoreImageFilterDTO)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
-
-            MonitorStoreImage_MonitorStoreImageFilterDTO.Skip = 0;
-            MonitorStoreImage_MonitorStoreImageFilterDTO.Take = int.MaxValue;
-            List<MonitorStoreImage_MonitorStoreImageDTO> MonitorStoreImage_MonitorStoreImageDTOs = await List(MonitorStoreImage_MonitorStoreImageFilterDTO);
-            long stt = 1;
-            foreach (MonitorStoreImage_MonitorStoreImageDTO MonitorStoreImage_MonitorStoreImageDTO in MonitorStoreImage_MonitorStoreImageDTOs)
-            {
-                foreach (var SaleEmployee in MonitorStoreImage_MonitorStoreImageDTO.SaleEmployees)
-                {
-                    foreach (var StoreChecking in SaleEmployee.StoreCheckings)
-                    {
-                        StoreChecking.STT = stt;
-                        stt++;
-                    }
-                }
-            }
-
-            DateTime Start = MonitorStoreImage_MonitorStoreImageFilterDTO.CheckIn?.GreaterEqual == null ?
-                    LocalStartDay(CurrentContext) :
-                    MonitorStoreImage_MonitorStoreImageFilterDTO.CheckIn.GreaterEqual.Value;
-
-            DateTime End = MonitorStoreImage_MonitorStoreImageFilterDTO.CheckIn?.LessEqual == null ?
-                    LocalEndDay(CurrentContext) :
-                    MonitorStoreImage_MonitorStoreImageFilterDTO.CheckIn.LessEqual.Value;
-
-            string path = "Templates/Monitor_Store_Image.xlsx";
-            byte[] arr = System.IO.File.ReadAllBytes(path);
-            MemoryStream input = new MemoryStream(arr);
-            MemoryStream output = new MemoryStream();
-            dynamic Data = new ExpandoObject();
-            Data.Start = Start.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy");
-            Data.End = End.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy");
-            Data.MonitorStoreImages = MonitorStoreImage_MonitorStoreImageDTOs;
-            using (var document = StaticParams.DocumentFactory.Open(input, output, "xlsx"))
-            {
-                document.Process(Data);
-            };
-
-            return File(output.ToArray(), "application/octet-stream", "Monitor_Store_Image.xlsx");
         }
     }
 }

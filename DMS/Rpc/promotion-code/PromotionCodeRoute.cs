@@ -8,7 +8,7 @@ namespace DMS.Rpc.promotion_code
     {
         public const string Master = Module + "/price-list-and-promotion/promotion-code/promotion-code-master";
         public const string Detail = Module + "/price-list-and-promotion/promotion-code/promotion-code-detail/*";
-        public const string Preview = Module + "price-list-and-promotion/promotion-code/promotion-code-preview/*";
+        public const string Preview = Module + "/price-list-and-promotion/promotion-code/promotion-code-preview/*";
         private const string Default = Rpc + Module + "/promotion-code";
         public const string Count = Default + "/count";
         public const string List = Default + "/list";
