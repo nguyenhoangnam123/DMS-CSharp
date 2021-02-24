@@ -676,7 +676,8 @@ namespace DMS.Services.MStoreChecking
             foreach (var ERouteContent in ERouteContents)
             {
                 var index = (Now - ERouteContent.ERoute.RealStartDate).Days % 28;
-                if (ERouteContent.ERouteContentDays[index].Planned == true)
+                bool Planned = ERouteContent.ERouteContentDays.Where(x => x.OrderDay == index).Select(x => x.Planned).FirstOrDefault();
+                if (Planned == true)
                 {
                     long StoreId = StoreIds.Where(x => x.Key == ERouteContent.StoreId)
                         .Select(x => x.Key)
