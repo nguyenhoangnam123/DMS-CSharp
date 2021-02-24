@@ -6,5 +6,5 @@ sed -i "s/{SQL_USER}/${SQL_USER}/g" appsettings.json
 sed -i "s/{SQL_PASS}/${SQL_PASS}/g" appsettings.json
 
 PROJECT_NAME=DMS
-dotnet ${PROJECT_NAME}.dll --urls http://0.0.0.0:80 --launch-profile ${MODE}
+dotnet ${PROJECT_NAME}.dll --urls http://0.0.0.0:8080 --launch-profile ${MODE}
 
