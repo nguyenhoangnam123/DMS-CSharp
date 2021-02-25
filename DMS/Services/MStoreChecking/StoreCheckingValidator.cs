@@ -54,6 +54,15 @@ namespace DMS.Services.MStoreChecking
 
         public async Task<bool> ValidateGPS(StoreChecking StoreChecking)
         {
+            if(StoreChecking.Latitude.HasValue == false || StoreChecking.Longitude.HasValue == false)
+            {
+                StoreChecking.AddError(nameof(StoreCheckingValidator), nameof(StoreChecking.Latitude), ErrorCode.LocationEmpty);
+            }
+            return StoreChecking.IsValidated;
+        }
+
+        private async Task<bool> ValidateDistance(StoreChecking StoreChecking)
+        {
             var Store = await UOW.StoreRepository.Get(StoreChecking.StoreId);
             if (Store == null)
             {
@@ -76,6 +85,7 @@ namespace DMS.Services.MStoreChecking
         public async Task<bool> CheckIn(StoreChecking StoreChecking)
         {
             await ValidateGPS(StoreChecking);
+            await ValidateDistance(StoreChecking);
             return StoreChecking.IsValidated;
         }
 
@@ -94,6 +104,7 @@ namespace DMS.Services.MStoreChecking
         {
             if (await ValidateId(StoreChecking))
             {
+                await ValidateGPS(StoreChecking);
             }
             return StoreChecking.IsValidated;
         }

@@ -12,6 +12,9 @@
     },
     "CheckInAt": {
       "HasCheckin": "Đại lý đã viếng thăm"
+    },
+    "Latitude": {
+      "LocationEmpty": "Không lấy được vị trí hiện tại"
     }
   }
 }
