@@ -25,6 +25,7 @@ namespace DMS.Services.MStoreChecking
             DistanceOutOfRange,
             HasCheckOut,
             HasCheckin,
+            LocationEmpty,
         }
 
         private IUOW UOW;
