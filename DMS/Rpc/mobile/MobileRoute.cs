@@ -54,6 +54,7 @@ namespace DMS.Rpc.mobile
         public const string SingleListProductGrouping = Default + "/single-list-product-grouping";
         public const string SingleListStoreCheckingStatus = Default + "/single-list-store-checking-status";
         public const string SingleListStoreDraftType = Default + "/single-list-store-draft-type";
+        public const string SingleListAppUserKpi = Default + "/single-list-app-user-kpi"; // AppUserId hoặc CreatorId bằng Id của currentUser
 
         public const string CountBanner = Default + "/count-banner";
         public const string ListBanner = Default + "/list-banner";
@@ -81,6 +82,8 @@ namespace DMS.Rpc.mobile
         public const string ListSurvey = Default + "/list-survey";
         public const string GetSurveyForm = Default + "/get-survey-form";
         public const string SaveSurveyForm = Default + "/save-survey-form";
+        public const string ListCurrentKpiGeneral = Default + "/list-current-kpi-general";
+        public const string ListCurrentKpiItem = Default + "/list-current-kpi-item";
 
         public const string CountStoreScouting = Default + "/count-store-scouting";
         public const string ListStoreScouting = Default + "/list-store-scouting";
@@ -114,6 +117,9 @@ namespace DMS.Rpc.mobile
                 Detail, ListRewardHistory,  CountRewardHistory, GetRewardHistory, LuckyDraw, CreateRewardHistory,
                 CountItem, ListItem, CountStorePlanned, ListStorePlanned, CountStoreUnPlanned, ListStoreUnPlanned, CountStoreInScope, ListStoreInScope, CountProblem, ListProblem, CountSurvey, ListSurvey, CountStoreScouting, ListStoreScouting,
                 SingleListAlbum, SingleListAppUser, SingleListStore, SingleListStoreStatus, SingleListTaxType, SingleListUnitOfMeasure, SingleListProblemType, SingleListStoreScoutingType, SingleListProvince, SingleListDistrict, SingleListWard, SingleListStoreDraftType, } },
+            { "Thống kê Kpi nhân viên theo tháng", new List<string>{
+                ListCurrentKpiGeneral, ListCurrentKpiItem, SingleListAppUserKpi
+            } }
         };
     }
 }

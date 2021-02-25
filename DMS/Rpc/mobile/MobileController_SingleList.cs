@@ -82,6 +82,62 @@ namespace DMS.Rpc.mobile
             return Mobile_AppUserDTOs;
         }
 
+        [Route(MobileRoute.SingleListAppUserKpi), HttpPost]
+        public async Task<List<Mobile_AppUserDTO>> SingleListAppUserKpi([FromBody] Mobile_AppUserFilterDTO Mobile_AppUserFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            AppUserFilter AppUserFilter = new AppUserFilter();
+            AppUserFilter.Skip = 0;
+            AppUserFilter.Take = 20;
+            AppUserFilter.OrderBy = AppUserOrder.Id;
+            AppUserFilter.OrderType = OrderType.ASC;
+            AppUserFilter.Selects = AppUserSelect.ALL;
+            AppUserFilter.Username = Mobile_AppUserFilterDTO.Username;
+            AppUserFilter.DisplayName = Mobile_AppUserFilterDTO.DisplayName;
+
+            var AppUserId = CurrentContext.UserId;
+            var AppUserIds = new List<long>();
+            var KpiGeneralAppUsers = await DataContext.KpiGeneral.Where(x => x.CreatorId == AppUserId || x.EmployeeId == AppUserId).Select(x => new
+            {
+                CreatorId = x.CreatorId,
+                EmployeeId = x.EmployeeId
+            }).ToListAsync();
+
+            Parallel.ForEach(KpiGeneralAppUsers, KpiGeneralAppUser =>
+            {
+                if (KpiGeneralAppUser.CreatorId == AppUserId)  AppUserIds.Add(KpiGeneralAppUser.CreatorId);
+                AppUserIds.Add(KpiGeneralAppUser.EmployeeId);
+            });
+
+            var KpiItemAppUsers = await DataContext.KpiItem.Where(x => x.CreatorId == AppUserId || x.EmployeeId == AppUserId).Select(x => new
+            {
+                CreatorId = x.CreatorId,
+                EmployeeId = x.EmployeeId
+            }).ToListAsync();
+
+            Parallel.ForEach(KpiItemAppUsers, KpiItemAppUser =>
+            {
+                if (KpiItemAppUser.CreatorId == AppUserId)  AppUserIds.Add(KpiItemAppUser.CreatorId);
+                AppUserIds.Add(KpiItemAppUser.EmployeeId);
+            });
+
+            List<long> In = AppUserIds.Select(x => x).Distinct().ToList();
+
+            Mobile_AppUserFilterDTO.Id = new IdFilter
+            {
+                In = In
+            };
+            AppUserFilter.Id = Mobile_AppUserFilterDTO.Id; // filter ra các 
+
+            List<AppUser> AppUsers = await AppUserService.List(AppUserFilter);
+            List<Mobile_AppUserDTO> Mobile_AppUserDTOs = AppUsers
+                .Select(x => new Mobile_AppUserDTO(x)).ToList();
+            return Mobile_AppUserDTOs;
+        }
+
+
         [Route(MobileRoute.SingleListEroute), HttpPost]
         public async Task<List<Mobile_ERouteDTO>> SingleListEroute(Mobile_ERouteFilterDTO Mobile_ERouteFilterDTO)
         {

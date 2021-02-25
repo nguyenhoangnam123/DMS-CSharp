@@ -330,7 +330,7 @@ namespace DMS.Rpc.mobile
                     IndirectSalesOrderContent.TaxPercentageString = IndirectSalesOrderContent.TaxPercentage.HasValue ? IndirectSalesOrderContent.TaxPercentage.Value.ToString("N0", culture) + "%" : "";
                 }
             }
-            if(Mobile_PrintDTO.Promotions != null)
+            if (Mobile_PrintDTO.Promotions != null)
             {
                 foreach (var IndirectSalesOrderPromotion in Mobile_PrintDTO.Promotions)
                 {
@@ -834,7 +834,7 @@ namespace DMS.Rpc.mobile
             Mobile_StoreReportDTO Mobile_StoreReportDTO = new Mobile_StoreReportDTO();
             Mobile_StoreReportDTO.ProblemCounter = await DataContext.Problem
                 .Where(x => x.CreatorId == CurrentContext.UserId &&
-                Start <= x.NoteAt && x.NoteAt <= End && 
+                Start <= x.NoteAt && x.NoteAt <= End &&
                 x.StoreId == Mobile_StoreReportFilterDTO.StoreId.Equal.Value)
                 .CountAsync();
             Mobile_StoreReportDTO.ImageCounter = await DataContext.StoreImage

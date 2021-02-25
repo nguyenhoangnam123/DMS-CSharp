@@ -440,6 +440,17 @@ namespace DMS.Rpc
     [Authorize(Policy = "Simple")]
     public class SimpleController : ControllerBase
     {
+        protected DateTime LocalStartDay(ICurrentContext CurrentContext)
+        {
+            DateTime Start = StaticParams.DateTimeNow.AddHours(CurrentContext.TimeZone).Date.AddHours(0 - CurrentContext.TimeZone);
+            return Start;
+        }
+
+        protected DateTime LocalEndDay(ICurrentContext CurrentContext)
+        {
+            DateTime End = StaticParams.DateTimeNow.AddHours(CurrentContext.TimeZone).Date.AddHours(0 - CurrentContext.TimeZone).AddDays(1).AddSeconds(-1);
+            return End;
+        }
     }
 
     public class PermissionRequirement : IAuthorizationRequirement
