@@ -96,23 +96,22 @@ namespace DMS.Rpc.mobile
                 {
                     var KpiGeneral = new Mobile_EmployeeKpiGeneralReportDTO();
                     KpiGeneral.KpiCriticalGeneralName = KpiGeneralContentKpiPeriodMapping.KpiGeneralContent.KpiCriteriaGeneral.Name;
-                    KpiGeneral.PlannedValue = KpiGeneralContentKpiPeriodMapping.Value ?? 0;
+                    KpiGeneral.PlannedValue = KpiGeneralContentKpiPeriodMapping.Value ?? 0; // nếu số ké hoạch = 0 thì thực hiện = 0
                     if (KpiGeneralContentKpiPeriodMapping.KpiGeneralContent.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.TOTAL_INDIRECT_SALES_AMOUNT.Id)
                     {
-                        KpiGeneral.CurrentValue = TotalIndirectSalesAmount;
+                        KpiGeneral.CurrentValue = KpiGeneral.PlannedValue > 0 ? TotalIndirectSalesAmount : 0;
                     }
                     if (KpiGeneralContentKpiPeriodMapping.KpiGeneralContent.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.NEW_STORE_CREATED.Id)
                     {
-                        KpiGeneral.CurrentValue = NewStoreCreated;
-                        if (KpiGeneral.PlannedValue > 0) KpiGeneral.Percentage = NewStoreCreated / KpiGeneral.PlannedValue * 100;
+                        KpiGeneral.CurrentValue = KpiGeneral.PlannedValue > 0 ? NewStoreCreated: 0;
                     }
                     if (KpiGeneralContentKpiPeriodMapping.KpiGeneralContent.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.STORE_VISITED.Id)
                     {
-                        KpiGeneral.CurrentValue = NumberOfStoreVisit;
+                        KpiGeneral.CurrentValue = KpiGeneral.PlannedValue > 0 ?  NumberOfStoreVisit : 0;
                     }
                     if (KpiGeneralContentKpiPeriodMapping.KpiGeneralContent.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.NUMBER_OF_STORE_VISIT.Id)
                     {
-                        KpiGeneral.CurrentValue = StoreVisited;
+                        KpiGeneral.CurrentValue = KpiGeneral.PlannedValue > 0 ?  StoreVisited : 0;
                     }
                     KpiGeneral.Percentage = CalculatePercentage(KpiGeneral.PlannedValue, KpiGeneral.CurrentValue); // tính ra phần trăm thực hiện
                     KpiGenerals.Add(KpiGeneral);
@@ -161,14 +160,14 @@ namespace DMS.Rpc.mobile
                             var KpiItem = new Mobile_EmployeeKpiItem();
                             KpiItem.ItemId = KpiItemContentKpiCriteriaItemMapping.KpiItemContent.ItemId;
                             KpiItem.KpiCriteriaItemName = KpiItemContentKpiCriteriaItemMapping.KpiCriteriaItem.Name;
-                            KpiItem.PlannedValue = KpiItemContentKpiCriteriaItemMapping.Value ?? 0;
+                            KpiItem.PlannedValue = KpiItemContentKpiCriteriaItemMapping.Value ?? 0; // nếu số ké hoạch = 0 thì thực hiện = 0
                             if (KpiItemContentKpiCriteriaItemMapping.KpiCriteriaItemId == KpiCriteriaItemEnum.INDIRECT_REVENUE.Id)
                             {
-                                KpiItem.CurrentValue = IndirectRevenue;
+                                KpiItem.CurrentValue = KpiItem.PlannedValue > 0 ? IndirectRevenue : 0;
                             }
                             if (KpiItemContentKpiCriteriaItemMapping.KpiCriteriaItemId == KpiCriteriaItemEnum.INDIRECT_STORE.Id)
                             {
-                                KpiItem.CurrentValue = IndirectStore;
+                                KpiItem.CurrentValue = KpiItem.PlannedValue > 0 ?  IndirectStore : 0;
                             }
                             KpiItem.Percentage = CalculatePercentage(KpiItem.PlannedValue, KpiItem.CurrentValue); // tính ra phần trăm thực hiện
                             KpiItems.Add(KpiItem);
