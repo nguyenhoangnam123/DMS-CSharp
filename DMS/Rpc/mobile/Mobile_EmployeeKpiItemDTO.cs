@@ -1,11 +1,12 @@
-﻿using System;
+﻿using DMS.Common;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace DMS.Rpc.mobile
 {
-    public class Mobile_EmployeeKpiItemDTO
+    public class Mobile_EmployeeKpiItemReportDTO
     {
         public string ItemName { get; set; } // tên Item được áp dụng KPI
 
@@ -20,5 +21,10 @@ namespace DMS.Rpc.mobile
         public decimal CurrentValue { get; set; }
         public decimal Percentage { get; set; } // giá trị thực hiện 
 
+    }
+
+    public class Mobile_EmployeeKpiItemReportFilterDTO : FilterDTO
+    {
+        public IdFilter EmployeeId { get; set; }
     }
 }
