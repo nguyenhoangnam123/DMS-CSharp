@@ -99,17 +99,18 @@ namespace DMS.Rpc.mobile
 
             var AppUserId = CurrentContext.UserId;
             var AppUserIds = new List<long>();
+
             var KpiGeneralAppUsers = await DataContext.KpiGeneral.Where(x => x.CreatorId == AppUserId || x.EmployeeId == AppUserId).Select(x => new
             {
                 CreatorId = x.CreatorId,
                 EmployeeId = x.EmployeeId
             }).ToListAsync();
 
-            Parallel.ForEach(KpiGeneralAppUsers, KpiGeneralAppUser =>
+            foreach(var KpiGeneralAppUser in KpiGeneralAppUsers)
             {
-                if (KpiGeneralAppUser.CreatorId == AppUserId)  AppUserIds.Add(KpiGeneralAppUser.CreatorId);
+                if (KpiGeneralAppUser.CreatorId == AppUserId) AppUserIds.Add(KpiGeneralAppUser.CreatorId);
                 AppUserIds.Add(KpiGeneralAppUser.EmployeeId);
-            });
+            };
 
             var KpiItemAppUsers = await DataContext.KpiItem.Where(x => x.CreatorId == AppUserId || x.EmployeeId == AppUserId).Select(x => new
             {
@@ -117,11 +118,11 @@ namespace DMS.Rpc.mobile
                 EmployeeId = x.EmployeeId
             }).ToListAsync();
 
-            Parallel.ForEach(KpiItemAppUsers, KpiItemAppUser =>
+            foreach(var KpiItemAppUser in KpiItemAppUsers)
             {
-                if (KpiItemAppUser.CreatorId == AppUserId)  AppUserIds.Add(KpiItemAppUser.CreatorId);
+                if (KpiItemAppUser.CreatorId == AppUserId) AppUserIds.Add(KpiItemAppUser.CreatorId);
                 AppUserIds.Add(KpiItemAppUser.EmployeeId);
-            });
+            }
 
             List<long> In = AppUserIds.Select(x => x).Distinct().ToList();
 
