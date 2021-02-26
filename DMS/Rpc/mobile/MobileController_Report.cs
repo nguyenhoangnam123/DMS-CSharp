@@ -53,15 +53,15 @@ namespace DMS.Rpc.mobile
     {
 
         [Route(MobileRoute.ListCurrentKpiGeneral), HttpPost]
-        public async Task<List<Mobile_EmployeeKpiGeneralDTO>> GetCuGetCurrentKpiGeneralrentMonthKpi([FromBody] Mobile_EmployeeKpiFilterDTO Mobile_EmployeeKpiFilterDTO)
+        public async Task<List<Mobile_EmployeeKpiGeneralReportDTO>> GetCuGetCurrentKpiGeneralrentMonthKpi([FromBody] Mobile_EmployeeKpiGeneralReportFilterDTO Mobile_EmployeeKpiFilterDTO)
         {
-            var KpiGenerals = new List<Mobile_EmployeeKpiGeneralDTO>();
+            var KpiGenerals = new List<Mobile_EmployeeKpiGeneralReportDTO>();
             // lây ra tháng hiện tại + năm hiện tại
             DateTime Now = LocalStartDay(CurrentContext);
             int CurrentMonth = Now.Month;
             int CurrentYear = Now.Year;
-            DateTime FirstDayOfMonth = new DateTime(CurrentYear, CurrentMonth, 1).AddHours(CurrentContext.TimeZone).Date.AddHours(0 - CurrentContext.TimeZone); // lấy ra ngày đầu của tháng
-            DateTime LastDayOfMonth = FirstDayOfMonth.AddMonths(1).AddDays(-1).AddHours(CurrentContext.TimeZone).Date.AddHours(0 - CurrentContext.TimeZone).AddDays(1).AddSeconds(-1); // lấy ra ngày cuối của tháng
+            DateTime FirstDayOfMonth = GetFirstDayOfMonth(CurrentYear, CurrentMonth, CurrentContext.TimeZone); // lấy ra ngày đầu của tháng
+            DateTime LastDayOfMonth = GetLastDayOfMonth(CurrentYear, CurrentMonth, CurrentContext.TimeZone); ; // lấy ra ngày cuối của tháng
             int KpiPeriodId = CurrentMonth + 100;
             // lấy ra kpiYear, lấy ra kpiPeriod theo tháng hiện tại
             long CurrentKpiYearId = await DataContext.KpiYear.Where(x => x.Id == CurrentYear).Select(o => o.Id).FirstOrDefaultAsync();
@@ -95,43 +95,44 @@ namespace DMS.Rpc.mobile
                 // loops mappings và lấy ra giá trị kế hoạch
                 foreach (KpiGeneralContentKpiPeriodMappingDAO KpiGeneralContentKpiPeriodMapping in KpiGeneralContentKpiPeriodMappingDAOs)
                 {
-                    var KpiGeneral = new Mobile_EmployeeKpiGeneralDTO();
-                    long KpiCriteriaGeneralId = KpiGeneralContentDAOs.Where(x =>x.Id == KpiGeneralContentKpiPeriodMapping.KpiGeneralContentId).Select(x =>x.KpiCriteriaGeneralId).FirstOrDefault();
+                    Mobile_EmployeeKpiGeneralReportDTO Mobile_EmployeeKpiGeneralReportDTO = new Mobile_EmployeeKpiGeneralReportDTO();
+                    long KpiCriteriaGeneralId = KpiGeneralContentDAOs.Where(x => x.Id == KpiGeneralContentKpiPeriodMapping.KpiGeneralContentId).Select(x => x.KpiCriteriaGeneralId).FirstOrDefault();
                     var KpiCriteriaGeneralDAO = await DataContext.KpiCriteriaGeneral.Where(x => x.Id == KpiCriteriaGeneralId).FirstOrDefaultAsync();
-                    KpiGeneral.KpiCriticalGeneralName = KpiCriteriaGeneralDAO.Name;
-                    KpiGeneral.PlannedValue = KpiGeneralContentKpiPeriodMapping.Value ?? 0;
+                    Mobile_EmployeeKpiGeneralReportDTO.KpiCriticalGeneralName = KpiCriteriaGeneralDAO.Name;
+                    Mobile_EmployeeKpiGeneralReportDTO.PlannedValue = KpiGeneralContentKpiPeriodMapping.Value ?? 0;
                     if (KpiGeneralContentKpiPeriodMapping.KpiGeneralContent.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.TOTAL_INDIRECT_SALES_AMOUNT.Id)
                     {
-                        KpiGeneral.CurrentValue = TotalIndirectSalesAmount;
+                        Mobile_EmployeeKpiGeneralReportDTO.CurrentValue = Mobile_EmployeeKpiGeneralReportDTO.PlannedValue > 0 ? TotalIndirectSalesAmount : 0;
                     }
                     if (KpiGeneralContentKpiPeriodMapping.KpiGeneralContent.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.NEW_STORE_CREATED.Id)
                     {
-                        KpiGeneral.CurrentValue = NewStoreCreated;
+                        Mobile_EmployeeKpiGeneralReportDTO.CurrentValue = Mobile_EmployeeKpiGeneralReportDTO.PlannedValue > 0 ? NewStoreCreated : 0;
                     }
                     if (KpiGeneralContentKpiPeriodMapping.KpiGeneralContent.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.STORE_VISITED.Id)
                     {
-                        KpiGeneral.CurrentValue = NumberOfStoreVisit;
+                        Mobile_EmployeeKpiGeneralReportDTO.CurrentValue = Mobile_EmployeeKpiGeneralReportDTO.PlannedValue > 0 ? NumberOfStoreVisit : 0;
                     }
                     if (KpiGeneralContentKpiPeriodMapping.KpiGeneralContent.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.NUMBER_OF_STORE_VISIT.Id)
                     {
-                        KpiGeneral.CurrentValue = StoreVisited;
+                        Mobile_EmployeeKpiGeneralReportDTO.CurrentValue = Mobile_EmployeeKpiGeneralReportDTO.PlannedValue > 0 ? StoreVisited : 0;
                     }
-                    KpiGenerals.Add(KpiGeneral);
+                    Mobile_EmployeeKpiGeneralReportDTO.Percentage = CalculatePercentage(Mobile_EmployeeKpiGeneralReportDTO.PlannedValue, Mobile_EmployeeKpiGeneralReportDTO.CurrentValue); // tính ra phần trăm thực hiện
+                    KpiGenerals.Add(Mobile_EmployeeKpiGeneralReportDTO);
                 }
             } // nếu có kpi chung tương ứng với nhân viên + trạng thái + năm kpi
             return KpiGenerals;
         }
 
         [Route(MobileRoute.ListCurrentKpiItem), HttpPost]
-        public async Task<List<Mobile_EmployeeKpiItemDTO>> GetCurrentKpiItem([FromBody] Mobile_EmployeeKpiFilterDTO Mobile_EmployeeKpiFilterDTO)
+        public async Task<List<Mobile_EmployeeKpiItemReportDTO>> GetCurrentKpiItem([FromBody] Mobile_EmployeeKpiItemReportFilterDTO Mobile_EmployeeKpiFilterDTO)
         {
-            var KpiItemDTOs = new List<Mobile_EmployeeKpiItemDTO>();
+            var KpiItemDTOs = new List<Mobile_EmployeeKpiItemReportDTO>();
             // lây ra tháng hiện tại + năm hiện tại
             DateTime Now = LocalStartDay(CurrentContext);
             int CurrentMonth = Now.Month;
             int CurrentYear = Now.Year;
-            DateTime FirstDayOfMonth = new DateTime(CurrentYear, CurrentMonth, 1).AddHours(CurrentContext.TimeZone).Date.AddHours(0 - CurrentContext.TimeZone); // lấy ra ngày đầu của tháng
-            DateTime LastDayOfMonth = FirstDayOfMonth.AddMonths(1).AddDays(-1).AddHours(CurrentContext.TimeZone).Date.AddHours(0 - CurrentContext.TimeZone).AddDays(1).AddSeconds(-1); // lấy ra ngày cuối của tháng
+            DateTime FirstDayOfMonth = GetFirstDayOfMonth(CurrentYear, CurrentMonth, CurrentContext.TimeZone); // lấy ra ngày đầu của tháng
+            DateTime LastDayOfMonth = GetLastDayOfMonth(CurrentYear, CurrentMonth, CurrentContext.TimeZone); ; // lấy ra ngày cuối của tháng
             int KpiPeriodId = CurrentMonth + 100;
             // lấy ra kpiYear, lấy ra kpiPeriod theo tháng hiện tại
             long CurrentKpiYearId = await DataContext.KpiYear.Where(x => x.Id == CurrentYear).Select(o => o.Id).FirstOrDefaultAsync();
@@ -140,7 +141,7 @@ namespace DMS.Rpc.mobile
             if (KpiItemId > 0)
             {
                 List<KpiItemContentDAO> KpiItemContentDAOs = await DataContext.KpiItemContent.Where(x => x.KpiItemId == KpiItemId).ToListAsync();
-                List<long> KpiItemContentIds = KpiItemContentDAOs.Select(x =>x.Id).ToList();
+                List<long> KpiItemContentIds = KpiItemContentDAOs.Select(x => x.Id).ToList();
                 List<long> KpiCriticalGeneralListIds = new List<long>
                 {
                     KpiCriteriaItemEnum.INDIRECT_REVENUE.Id, // Doanh thu sản phẩm theo đơn hàng gián tiếp
@@ -148,7 +149,11 @@ namespace DMS.Rpc.mobile
                 };
                 if (KpiItemContentIds.Count > 0)
                 {
-                    List<KpiItemContentKpiCriteriaItemMappingDAO> KpiItemContentKpiCriteriaItemMappingDAOs = await DataContext.KpiItemContentKpiCriteriaItemMapping.Where(x => KpiItemContentIds.Contains(x.KpiItemContentId) && KpiCriticalGeneralListIds.Contains(x.KpiCriteriaItemId)).ToListAsync();
+                    List<KpiItemContentKpiCriteriaItemMappingDAO> KpiItemContentKpiCriteriaItemMappingDAOs = await DataContext.KpiItemContentKpiCriteriaItemMapping
+                        .Where(x => KpiItemContentIds.Contains(x.KpiItemContentId) && KpiCriticalGeneralListIds.Contains(x.KpiCriteriaItemId))
+                        .ToListAsync();
+                    List<long> KpiCriteriaItemIds = KpiItemContentKpiCriteriaItemMappingDAOs.Select(x => x.KpiCriteriaItemId).Distinct().ToList();
+                    List<KpiCriteriaItemDAO> KpiCriteriaItemDAOs = await DataContext.KpiCriteriaItem.Where(x => KpiCriteriaItemIds.Contains(x.Id)).ToListAsync();
                     var KpiItems = new List<Mobile_EmployeeKpiItem>();
                     if (KpiItemContentKpiCriteriaItemMappingDAOs.Count > 0)
                     {
@@ -161,27 +166,28 @@ namespace DMS.Rpc.mobile
                         int IndirectStore = IndirectSalesDAOs.GroupBy(i => i.BuyerStoreId).Count();
                         foreach (KpiItemContentKpiCriteriaItemMappingDAO KpiItemContentKpiCriteriaItemMapping in KpiItemContentKpiCriteriaItemMappingDAOs)
                         {
-                            var KpiItem = new Mobile_EmployeeKpiItem();
-                            KpiCriteriaItemDAO KpiCriteriaItem = await DataContext.KpiCriteriaItem.Where(x => x.Id == KpiItemContentKpiCriteriaItemMapping.KpiCriteriaItemId).FirstOrDefaultAsync();
-                            KpiItem.KpiCriteriaItemName = KpiCriteriaItem.Name;
-                            KpiItem.ItemId = KpiItemContentDAOs.Where(x =>x.Id == KpiItemContentKpiCriteriaItemMapping.KpiItemContentId).Select(p =>p.ItemId).FirstOrDefault(); // lấy ra itemId từ filter ContentDAO
-                            KpiItem.PlannedValue = KpiItemContentKpiCriteriaItemMapping.Value ?? 0;
+                            Mobile_EmployeeKpiItem Mobile_EmployeeKpiItem = new Mobile_EmployeeKpiItem();
+                            KpiCriteriaItemDAO KpiCriteriaItemDAO = KpiCriteriaItemDAOs.Where(x => x.Id == KpiItemContentKpiCriteriaItemMapping.KpiCriteriaItemId).FirstOrDefault();
+                            Mobile_EmployeeKpiItem.KpiCriteriaItemName = KpiCriteriaItemDAO.Name;
+                            Mobile_EmployeeKpiItem.ItemId = KpiItemContentDAOs.Where(x => x.Id == KpiItemContentKpiCriteriaItemMapping.KpiItemContentId).Select(p => p.ItemId).FirstOrDefault(); // lấy ra itemId từ filter ContentDAO
+                            Mobile_EmployeeKpiItem.PlannedValue = KpiItemContentKpiCriteriaItemMapping.Value ?? 0;
                             if (KpiItemContentKpiCriteriaItemMapping.KpiCriteriaItemId == KpiCriteriaItemEnum.INDIRECT_REVENUE.Id)
                             {
-                                KpiItem.CurrentValue = IndirectRevenue;
+                                Mobile_EmployeeKpiItem.CurrentValue = Mobile_EmployeeKpiItem.PlannedValue > 0 ? IndirectRevenue : 0;
                             }
                             if (KpiItemContentKpiCriteriaItemMapping.KpiCriteriaItemId == KpiCriteriaItemEnum.INDIRECT_STORE.Id)
                             {
-                                KpiItem.CurrentValue = IndirectStore;
+                                Mobile_EmployeeKpiItem.CurrentValue = Mobile_EmployeeKpiItem.PlannedValue > 0 ? IndirectStore : 0;
                             }
-                            KpiItems.Add(KpiItem);
+                            Mobile_EmployeeKpiItem.Percentage = CalculatePercentage(Mobile_EmployeeKpiItem.PlannedValue, Mobile_EmployeeKpiItem.CurrentValue); // tính ra phần trăm thực hiện
+                            KpiItems.Add(Mobile_EmployeeKpiItem);
                         }
                         foreach (var Item in ItemDAOs)
                         {
-                            var kpiItemDTO = new Mobile_EmployeeKpiItemDTO();
-                            kpiItemDTO.ItemName = Item.Name;
-                            kpiItemDTO.CurrentKpiItems = KpiItems.Where(x => x.ItemId == Item.Id).ToList();
-                            KpiItemDTOs.Add(kpiItemDTO);
+                            Mobile_EmployeeKpiItemReportDTO Mobile_EmployeeKpiItemReportDTO = new Mobile_EmployeeKpiItemReportDTO();
+                            Mobile_EmployeeKpiItemReportDTO.ItemName = Item.Name;
+                            Mobile_EmployeeKpiItemReportDTO.CurrentKpiItems = KpiItems.Where(x => x.ItemId == Item.Id).ToList();
+                            KpiItemDTOs.Add(Mobile_EmployeeKpiItemReportDTO);
                         } // group các chỉ tiêu kpi theo item
                     }
                 } // nếu có contents
@@ -189,6 +195,23 @@ namespace DMS.Rpc.mobile
 
             return KpiItemDTOs;
         }
+
+        private DateTime GetFirstDayOfMonth(int Year, int Month, int TimeZone)
+        {
+            return new DateTime(Year, Month, 1).AddHours(TimeZone).Date.AddHours(0 - TimeZone);
+        }
+
+        private DateTime GetLastDayOfMonth(int Year, int Month, int TimeZone)
+        {
+            DateTime FirstDayOfMonth = new DateTime(Year, Month, 1).AddHours(TimeZone).Date.AddHours(0 - TimeZone);
+            return FirstDayOfMonth.AddMonths(1).AddDays(-1).AddHours(TimeZone).Date.AddHours(0 - TimeZone).AddDays(1).AddSeconds(-1);
+        }
+
+        private decimal CalculatePercentage(decimal PlannedValue, decimal CurrentValue)
+        {
+            if (PlannedValue > 0) return CurrentValue / PlannedValue * 100;
+            return 0;
+        } // trả về phần trăm thực hiện kế hoạch
     }
 }
 
