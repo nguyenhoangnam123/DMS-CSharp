@@ -94,43 +94,7 @@ namespace DMS.Rpc.mobile
             AppUserFilter.OrderBy = AppUserOrder.Id;
             AppUserFilter.OrderType = OrderType.ASC;
             AppUserFilter.Selects = AppUserSelect.ALL;
-            AppUserFilter.Username = Mobile_AppUserFilterDTO.Username;
-            AppUserFilter.DisplayName = Mobile_AppUserFilterDTO.DisplayName;
-
-            var AppUserId = CurrentContext.UserId;
-            var AppUserIds = new List<long>();
-
-            var KpiGeneralAppUsers = await DataContext.KpiGeneral.Where(x => x.CreatorId == AppUserId || x.EmployeeId == AppUserId).Select(x => new
-            {
-                CreatorId = x.CreatorId,
-                EmployeeId = x.EmployeeId
-            }).ToListAsync();
-
-            foreach(var KpiGeneralAppUser in KpiGeneralAppUsers)
-            {
-                if (KpiGeneralAppUser.CreatorId == AppUserId) AppUserIds.Add(KpiGeneralAppUser.CreatorId);
-                AppUserIds.Add(KpiGeneralAppUser.EmployeeId);
-            };
-
-            var KpiItemAppUsers = await DataContext.KpiItem.Where(x => x.CreatorId == AppUserId || x.EmployeeId == AppUserId).Select(x => new
-            {
-                CreatorId = x.CreatorId,
-                EmployeeId = x.EmployeeId
-            }).ToListAsync();
-
-            foreach(var KpiItemAppUser in KpiItemAppUsers)
-            {
-                if (KpiItemAppUser.CreatorId == AppUserId) AppUserIds.Add(KpiItemAppUser.CreatorId);
-                AppUserIds.Add(KpiItemAppUser.EmployeeId);
-            }
-
-            List<long> In = AppUserIds.Select(x => x).Distinct().ToList();
-
-            Mobile_AppUserFilterDTO.Id = new IdFilter
-            {
-                In = In
-            };
-            AppUserFilter.Id = Mobile_AppUserFilterDTO.Id; // filter ra các 
+            AppUserFilter.Id = new IdFilter { Equal = CurrentContext.UserId };
 
             List<AppUser> AppUsers = await AppUserService.List(AppUserFilter);
             List<Mobile_AppUserDTO> Mobile_AppUserDTOs = AppUsers
