@@ -80,7 +80,8 @@ namespace DMS.Rpc.mobile
                     KpiCriteriaGeneralEnum.NUMBER_OF_STORE_VISIT.Id, // Số lần viếng thăm đại lý
 
                 };
-                List<long> KpiGeneralContentIds = await DataContext.KpiGeneralContent.Where(x => x.KpiGeneralId == KpiGeneralId && x.StatusId == StatusEnum.ACTIVE.Id && KpiCriticalGeneralListIds.Contains(x.KpiCriteriaGeneralId)).Select(x => x.Id).ToListAsync();
+                List<KpiGeneralContentDAO> KpiGeneralContentDAOs = await DataContext.KpiGeneralContent.Where(x => x.KpiGeneralId == KpiGeneralId && x.StatusId == StatusEnum.ACTIVE.Id && KpiCriticalGeneralListIds.Contains(x.KpiCriteriaGeneralId)).ToListAsync();
+                List<long> KpiGeneralContentIds = KpiGeneralContentDAOs.Select(x => x.Id).ToList();
                 // lấy ra toàn bộ kpiGeneralContentKpiPeriodMappings bằng filter theo kpiGeneralContent và theo kì
                 List<KpiGeneralContentKpiPeriodMappingDAO> KpiGeneralContentKpiPeriodMappingDAOs = await DataContext.KpiGeneralContentKpiPeriodMapping.Where(x => KpiGeneralContentIds.Contains(x.KpiGeneralContentId) && x.KpiPeriodId == KpiPeriodId).ToListAsync();
                 // lấy ra toàn bộ storeChecking để tính số liệu thực hiện bằng filter SaleEmployeeId
@@ -95,7 +96,9 @@ namespace DMS.Rpc.mobile
                 foreach (KpiGeneralContentKpiPeriodMappingDAO KpiGeneralContentKpiPeriodMapping in KpiGeneralContentKpiPeriodMappingDAOs)
                 {
                     var KpiGeneral = new Mobile_EmployeeKpiGeneralDTO();
-                    KpiGeneral.KpiCriticalGeneralName = KpiGeneralContentKpiPeriodMapping.KpiGeneralContent.KpiCriteriaGeneral.Name;
+                    long KpiCriteriaGeneralId = KpiGeneralContentDAOs.Where(x =>x.Id == KpiGeneralContentKpiPeriodMapping.KpiGeneralContentId).Select(x =>x.KpiCriteriaGeneralId).FirstOrDefault();
+                    var KpiCriteriaGeneralDAO = await DataContext.KpiCriteriaGeneral.Where(x => x.Id == KpiCriteriaGeneralId).FirstOrDefaultAsync();
+                    KpiGeneral.KpiCriticalGeneralName = KpiCriteriaGeneralDAO.Name;
                     KpiGeneral.PlannedValue = KpiGeneralContentKpiPeriodMapping.Value ?? 0;
                     if (KpiGeneralContentKpiPeriodMapping.KpiGeneralContent.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.TOTAL_INDIRECT_SALES_AMOUNT.Id)
                     {
@@ -136,7 +139,8 @@ namespace DMS.Rpc.mobile
             long KpiItemId = await DataContext.KpiItem.Where(x => x.EmployeeId == Mobile_EmployeeKpiFilterDTO.EmployeeId.Equal && x.StatusId == StatusEnum.ACTIVE.Id && x.KpiPeriodId == KpiPeriodId && x.KpiYearId == CurrentKpiYearId).Select(p => p.Id).FirstOrDefaultAsync();
             if (KpiItemId > 0)
             {
-                List<long> KpiItemContentIds = await DataContext.KpiItemContent.Where(x => x.KpiItemId == KpiItemId).Select(p => p.Id).ToListAsync();
+                List<KpiItemContentDAO> KpiItemContentDAOs = await DataContext.KpiItemContent.Where(x => x.KpiItemId == KpiItemId).ToListAsync();
+                List<long> KpiItemContentIds = KpiItemContentDAOs.Select(x =>x.Id).ToList();
                 List<long> KpiCriticalGeneralListIds = new List<long>
                 {
                     KpiCriteriaItemEnum.INDIRECT_REVENUE.Id, // Doanh thu sản phẩm theo đơn hàng gián tiếp
@@ -148,7 +152,8 @@ namespace DMS.Rpc.mobile
                     var KpiItems = new List<Mobile_EmployeeKpiItem>();
                     if (KpiItemContentKpiCriteriaItemMappingDAOs.Count > 0)
                     {
-                        List<long> ItemIds = KpiItemContentKpiCriteriaItemMappingDAOs.Select(x => x.KpiItemContent.ItemId).ToList(); // lẩy ra list itemId theo chỉ tiêu
+                        List<long> ItemIds = await DataContext.KpiItemContent.Select(x => x.ItemId).ToListAsync(); // lẩy ra list itemId theo chỉ tiêu
+                        List<ItemDAO> ItemDAOs = await DataContext.Item.Where(x => ItemIds.Contains(x.Id)).ToListAsync(); // lẩy ra list items 
                         List<long> IndirectSalesOrderIds = await DataContext.IndirectSalesOrderContent.Where(x => ItemIds.Contains(x.ItemId)).Select(p => p.IndirectSalesOrderId).ToListAsync(); // lấy ra list id của đơn hàng theo list itemId
                         // lấy ra các đơn hàng do user tạo + trong tháng + được ghi nhận + có id thuộc list id trên
                         List<IndirectSalesOrderDAO> IndirectSalesDAOs = await DataContext.IndirectSalesOrder.Where(x => x.CreatorId == Mobile_EmployeeKpiFilterDTO.EmployeeId.Equal && x.RequestStateId == RequestStateEnum.APPROVED.Id && x.CreatedAt >= FirstDayOfMonth && x.CreatedAt <= LastDayOfMonth && IndirectSalesOrderIds.Contains(x.Id)).ToListAsync();
@@ -157,8 +162,9 @@ namespace DMS.Rpc.mobile
                         foreach (KpiItemContentKpiCriteriaItemMappingDAO KpiItemContentKpiCriteriaItemMapping in KpiItemContentKpiCriteriaItemMappingDAOs)
                         {
                             var KpiItem = new Mobile_EmployeeKpiItem();
-                            KpiItem.ItemId = KpiItemContentKpiCriteriaItemMapping.KpiItemContent.ItemId;
-                            KpiItem.KpiCriteriaItemName = KpiItemContentKpiCriteriaItemMapping.KpiCriteriaItem.Name;
+                            KpiCriteriaItemDAO KpiCriteriaItem = await DataContext.KpiCriteriaItem.Where(x => x.Id == KpiItemContentKpiCriteriaItemMapping.KpiCriteriaItemId).FirstOrDefaultAsync();
+                            KpiItem.KpiCriteriaItemName = KpiCriteriaItem.Name;
+                            KpiItem.ItemId = KpiItemContentDAOs.Where(x =>x.Id == KpiItemContentKpiCriteriaItemMapping.KpiItemContentId).Select(p =>p.ItemId).FirstOrDefault(); // lấy ra itemId từ filter ContentDAO
                             KpiItem.PlannedValue = KpiItemContentKpiCriteriaItemMapping.Value ?? 0;
                             if (KpiItemContentKpiCriteriaItemMapping.KpiCriteriaItemId == KpiCriteriaItemEnum.INDIRECT_REVENUE.Id)
                             {
@@ -170,8 +176,6 @@ namespace DMS.Rpc.mobile
                             }
                             KpiItems.Add(KpiItem);
                         }
-
-                        var ItemDAOs = await DataContext.Item.Where(x => ItemIds.Contains(x.Id)).ToListAsync();
                         foreach (var Item in ItemDAOs)
                         {
                             var kpiItemDTO = new Mobile_EmployeeKpiItemDTO();
