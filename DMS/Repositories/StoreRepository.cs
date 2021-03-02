@@ -1153,6 +1153,7 @@ namespace DMS.Repositories
             StoreDAO.LegalEntity = Store.LegalEntity;
             StoreDAO.StatusId = Store.StatusId;
             StoreDAO.AppUserId = Store.AppUserId;
+            StoreDAO.CreatorId = Store.CreatorId;
             StoreDAO.StoreStatusId = Store.StoreStatusId;
             StoreDAO.StoreScoutingId = Store.StoreScoutingId;
             StoreDAO.RowId = Guid.NewGuid();
