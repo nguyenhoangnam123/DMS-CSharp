@@ -9,8 +9,8 @@ namespace DMS.Rpc.mobile.permission_mobile
     public class PermissionMobileRoute : Root
     {
         private const string Default = Rpc + Module + "/permission-mobile";
-        public const string FilterListAppUser = Default + "/filter-list-app-user";
-        public const string FilterListOrganization = Default + "/filter-list-organization";
+        public const string CountAppUser = Default + "/count-app-user";
+        public const string ListAppUser = Default + "/list-app-user";
 
         public const string ListCurrentKpiGeneral = Default + "/list-current-kpi-general";
         public const string ListCurrentKpiItem = Default + "/list-current-kpi-item";
@@ -25,7 +25,7 @@ namespace DMS.Rpc.mobile.permission_mobile
         public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
         {
             { "Thống kê Kpi nhân viên theo tháng", new List<string>{
-                ListCurrentKpiGeneral, ListCurrentKpiItem, FilterListAppUser
+                ListCurrentKpiGeneral, ListCurrentKpiItem, CountAppUser, ListAppUser
             } }
         };
     }

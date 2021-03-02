@@ -21,7 +21,7 @@ namespace DMS.Rpc.mobile.permission_mobile
         public PermissionMobileController(
             IAppUserService AppUserService,
             IOrganizationService OrganizationService,
-            ICurrentContext CurrentContext, 
+            ICurrentContext CurrentContext,
             DataContext DataContext)
         {
             this.AppUserService = AppUserService;
@@ -38,14 +38,28 @@ namespace DMS.Rpc.mobile.permission_mobile
             int CurrentMonth = Now.Month;
             int CurrentYear = Now.Year;
             DateTime FirstDayOfMonth = GetFirstDayOfMonth(CurrentYear, CurrentMonth, CurrentContext.TimeZone); // lấy ra ngày đầu của tháng
-            DateTime LastDayOfMonth = GetLastDayOfMonth(CurrentYear, CurrentMonth, CurrentContext.TimeZone); ; // lấy ra ngày cuối của tháng
+            DateTime LastDayOfMonth = GetLastDayOfMonth(CurrentYear, CurrentMonth, CurrentContext.TimeZone);  // lấy ra ngày cuối của tháng
             int KpiPeriodId = CurrentMonth + 100;
             // lấy ra kpiYear, lấy ra kpiPeriod theo tháng hiện tại
             long CurrentKpiYearId = await DataContext.KpiYear.Where(x => x.Id == CurrentYear).Select(o => o.Id).FirstOrDefaultAsync();
 
+            List<long> AppUserIds = new List<long>();
+            if (PermissionMobile_EmployeeKpiFilterDTO.EmployeeId.Equal.HasValue)
+            {
+                AppUserIds.Add(PermissionMobile_EmployeeKpiFilterDTO.EmployeeId.Equal.Value);
+            }
+            else
+            {
+                List<long> Ids = await FilterAppUser(AppUserService, OrganizationService, CurrentContext);
+                AppUserIds.AddRange(Ids);
+            }
             // lấy ra số KpiGeneral theo kế hoạch
             // lấy ra KpiGeneral bằng filter theo AppUserId, trạng thái = true, kpiYearId
-            long KpiGeneralId = await DataContext.KpiGeneral.Where(x => x.EmployeeId == PermissionMobile_EmployeeKpiFilterDTO.EmployeeId.Equal && x.StatusId == StatusEnum.ACTIVE.Id && x.KpiYearId == CurrentKpiYearId).Select(p => p.Id).FirstOrDefaultAsync();
+            long KpiGeneralId = await DataContext.KpiGeneral.Where(x => 
+                    AppUserIds.Contains(x.EmployeeId) && 
+                    x.StatusId == StatusEnum.ACTIVE.Id && 
+                    x.KpiYearId == CurrentKpiYearId
+                ).Select(p => p.Id).FirstOrDefaultAsync();
             if (KpiGeneralId > 0)
             {
                 // lấy ra toàn bộ KpiGeneralContent bằng filter KpiGeneral, KpiCriteriaGeneralId in [], trạng thái = true,
@@ -73,7 +87,7 @@ namespace DMS.Rpc.mobile.permission_mobile
                 // lấy ra toàn bộ storeChecking để tính số liệu thực hiện bằng filter SaleEmployeeId
                 List<StoreCheckingDAO> StoreCheckingDAOs = await DataContext.StoreChecking
                     .Where(x =>
-                        x.SaleEmployeeId == PermissionMobile_EmployeeKpiFilterDTO.EmployeeId.Equal &&
+                        AppUserIds.Contains(x.SaleEmployeeId) &&
                         x.CheckInAt >= FirstDayOfMonth &&
                         x.CheckOutAt <= LastDayOfMonth)
                     .ToListAsync();
@@ -83,7 +97,7 @@ namespace DMS.Rpc.mobile.permission_mobile
 
                 List<decimal> IndirectSalesOrderTotals = await DataContext.IndirectSalesOrder
                     .Where(x =>
-                        x.SaleEmployeeId == PermissionMobile_EmployeeKpiFilterDTO.EmployeeId.Equal &&
+                        AppUserIds.Contains(x.SaleEmployeeId) &&
                         x.RequestStateId == RequestStateEnum.APPROVED.Id &&
                         x.CreatedAt >= FirstDayOfMonth &&
                         x.CreatedAt <= LastDayOfMonth)
@@ -91,7 +105,12 @@ namespace DMS.Rpc.mobile.permission_mobile
 
 
                 decimal TotalIndirectSalesAmount = IndirectSalesOrderTotals.Sum(); // TOTAL_INDIRECT_SALES_AMOUNT
-                List<StoreDAO> StoreDAOs = await DataContext.Store.Where(x => x.AppUserId == PermissionMobile_EmployeeKpiFilterDTO.EmployeeId.Equal && x.CreatedAt >= FirstDayOfMonth && x.CreatedAt <= LastDayOfMonth).ToListAsync();
+                List<StoreDAO> StoreDAOs = await DataContext.Store.Where(x =>
+                        x.AppUserId.HasValue &&
+                        AppUserIds.Contains(x.AppUserId.Value) &&
+                        x.CreatedAt >= FirstDayOfMonth && 
+                        x.CreatedAt <= LastDayOfMonth)
+                    .ToListAsync();
                 var NewStoreCreated = StoreDAOs.Count(); // NEW_STORE_CREATED
 
                 List<KpiCriteriaGeneralDAO> KpiCriteriaGeneralDAOs = await DataContext.KpiCriteriaGeneral.ToListAsync();
@@ -144,8 +163,19 @@ namespace DMS.Rpc.mobile.permission_mobile
             // lấy ra kpiYear, lấy ra kpiPeriod theo tháng hiện tại
             long CurrentKpiYearId = await DataContext.KpiYear.Where(x => x.Id == CurrentYear).Select(o => o.Id).FirstOrDefaultAsync();
 
+            List<long> AppUserIds = new List<long>();
+            if (PermissionMobile_EmployeeKpiFilterDTO.EmployeeId.Equal.HasValue)
+            {
+                AppUserIds.Add(PermissionMobile_EmployeeKpiFilterDTO.EmployeeId.Equal.Value);
+            }
+            else
+            {
+                List<long> Ids = await FilterAppUser(AppUserService, OrganizationService, CurrentContext);
+                AppUserIds.AddRange(Ids);
+            }
+
             long KpiItemId = await DataContext.KpiItem.Where(x =>
-                    x.EmployeeId == PermissionMobile_EmployeeKpiFilterDTO.EmployeeId.Equal &&
+                    AppUserIds.Contains(x.EmployeeId) &&
                     x.StatusId == StatusEnum.ACTIVE.Id &&
                     x.KpiPeriodId == KpiPeriodId &&
                     x.KpiYearId == CurrentKpiYearId)
@@ -173,13 +203,11 @@ namespace DMS.Rpc.mobile.permission_mobile
                     {
                         List<long> ItemIds = KpiItemContentDAOs.Select(x => x.ItemId).ToList(); // lẩy ra list itemId theo chỉ tiêu
                         List<ItemDAO> ItemDAOs = await DataContext.Item.Where(x => ItemIds.Contains(x.Id)).ToListAsync(); // lẩy ra list items 
-                                                                                                                          // lấy ra các đơn hàng do user tạo + trong tháng + được ghi nhận + có id thuộc list id trên
-
 
                         List<IndirectSalesOrderContentDAO> IndirectSalesOrderContentDAOs = await DataContext.IndirectSalesOrderContent
                             .Where(x =>
                                 ItemIds.Contains(x.ItemId) &&
-                                x.IndirectSalesOrder.SaleEmployeeId == PermissionMobile_EmployeeKpiFilterDTO.EmployeeId.Equal &&
+                                AppUserIds.Contains(x.IndirectSalesOrder.SaleEmployeeId) &&
                                 x.IndirectSalesOrder.RequestStateId == RequestStateEnum.APPROVED.Id &&
                                 x.IndirectSalesOrder.CreatedAt >= FirstDayOfMonth &&
                                 x.IndirectSalesOrder.CreatedAt <= LastDayOfMonth
