@@ -35,6 +35,7 @@ namespace DMS.Entities
         public string TaxCode { get; set; }
         public string LegalEntity { get; set; }
         public long? AppUserId { get; set; }
+        public long? CreatorId { get; set; }
         public long StatusId { get; set; }
         public Guid RowId { get; set; }
         public long StoreStatusId { get; set; }
@@ -47,6 +48,7 @@ namespace DMS.Entities
         public DateTime UpdatedAt { get; set; }
         public DateTime? DeletedAt { get; set; }
         public AppUser AppUser { get; set; }
+        public AppUser Creator { get; set; }
         public District District { get; set; }
         public Organization Organization { get; set; }
         public Store ParentStore { get; set; }
@@ -103,6 +105,7 @@ namespace DMS.Entities
         public StringFilter OwnerPhone { get; set; }
         public StringFilter OwnerEmail { get; set; }
         public IdFilter AppUserId { get; set; }
+        public IdFilter CreatorId { get; set; }
         public IdFilter StatusId { get; set; }
         public IdFilter WorkflowDefinitionId { get; set; }
         public IdFilter StoreStatusId { get; set; }
@@ -142,6 +145,7 @@ namespace DMS.Entities
         AppUser = 25,
         StoreStatus = 26,
         CodeDraft = 27,
+        Creator = 28,
     }
 
     [Flags]
@@ -179,5 +183,6 @@ namespace DMS.Entities
         StoreStatus = E._26,
         HasChecking = E._27,
         CodeDraft = E._28,
+        Creator = E._29,
     }
 }

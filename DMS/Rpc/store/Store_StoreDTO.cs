@@ -35,9 +35,11 @@ namespace DMS.Rpc.store
         public bool HasChecking { get; set; }
         public bool Used { get; set; }
         public long? AppUserId { get; set; }
+        public long? CreatorId { get; set; }
         public long? StoreScoutingId { get; set; }
         public long StoreStatusId { get; set; }
         public Store_AppUserDTO AppUser { get; set; }
+        public Store_AppUserDTO Creator { get; set; }
         public Store_DistrictDTO District { get; set; }
         public Store_OrganizationDTO Organization { get; set; }
         public Store_StoreDTO ParentStore { get; set; }
@@ -82,6 +84,7 @@ namespace DMS.Rpc.store
             this.Used = Store.Used;
             this.StoreScoutingId = Store.StoreScoutingId;
             this.AppUserId = Store.AppUserId;
+            this.CreatorId = Store.CreatorId;
             this.StoreStatusId = Store.StoreStatusId;
             this.District = Store.District == null ? null : new Store_DistrictDTO(Store.District);
             this.Organization = Store.Organization == null ? null : new Store_OrganizationDTO(Store.Organization);
@@ -93,6 +96,7 @@ namespace DMS.Rpc.store
             this.Ward = Store.Ward == null ? null : new Store_WardDTO(Store.Ward);
             this.StoreScouting = Store.StoreScouting == null ? null : new Store_StoreScoutingDTO(Store.StoreScouting);
             this.AppUser = Store.AppUser == null ? null : new Store_AppUserDTO(Store.AppUser);
+            this.Creator = Store.Creator == null ? null : new Store_AppUserDTO(Store.Creator);
             this.StoreStatus = Store.StoreStatus == null ? null : new Store_StoreStatusDTO(Store.StoreStatus);
             this.StoreImageMappings = Store.StoreImageMappings?.Select(x => new Store_StoreImageMappingDTO(x)).ToList();
             this.StoreCheckings = Store.StoreCheckings?.Select(x => new Store_StoreCheckingDTO(x)).ToList();
@@ -125,6 +129,7 @@ namespace DMS.Rpc.store
         public StringFilter OwnerEmail { get; set; }
         public IdFilter StatusId { get; set; }
         public IdFilter AppUserId { get; set; }
+        public IdFilter CreatorId { get; set; }
         public IdFilter StoreStatusId { get; set; }
         public StoreOrder OrderBy { get; set; }
     }

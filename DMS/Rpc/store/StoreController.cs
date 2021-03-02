@@ -155,6 +155,7 @@ namespace DMS.Rpc.store
                 return Forbid();
 
             Store Store = ConvertDTOToEntity(Store_StoreDTO);
+            Store.CreatorId = CurrentContext.UserId;
             Store = await StoreService.Create(Store);
             Store_StoreDTO = new Store_StoreDTO(Store);
             if (Store.IsValidated)
