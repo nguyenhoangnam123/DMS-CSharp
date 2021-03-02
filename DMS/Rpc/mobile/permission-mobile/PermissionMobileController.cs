@@ -207,7 +207,7 @@ namespace DMS.Rpc.mobile.permission_mobile
                         List<IndirectSalesOrderContentDAO> IndirectSalesOrderContentDAOs = await DataContext.IndirectSalesOrderContent
                             .Where(x =>
                                 ItemIds.Contains(x.ItemId) &&
-                                AppUserIds.Contains(x.x.IndirectSalesOrder.SaleEmployeeId) &&
+                                AppUserIds.Contains(x.IndirectSalesOrder.SaleEmployeeId) &&
                                 x.IndirectSalesOrder.RequestStateId == RequestStateEnum.APPROVED.Id &&
                                 x.IndirectSalesOrder.CreatedAt >= FirstDayOfMonth &&
                                 x.IndirectSalesOrder.CreatedAt <= LastDayOfMonth
