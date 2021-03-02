@@ -251,13 +251,13 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
                 foreach (var SaleEmployee in KpiGeneralPeriodReport_KpiGeneralPeriodReportDTO.SaleEmployees)
                 {
                     var Employee = AppUserDAOs.Where(x => x.Id == SaleEmployee.SaleEmployeeId).FirstOrDefault();
-                    if(Employee != null)
+                    if (Employee != null)
                     {
                         SaleEmployee.Username = Employee.Username;
                         SaleEmployee.DisplayName = Employee.DisplayName;
                     }
                 }
-            });
+            }); // nhóm saleEmp theo Organization, lấy ra UserName và DisplayName
             // list toan bo mapping value and criteria
             var query_detail = from kcm in DataContext.KpiGeneralContentKpiPeriodMapping
                                join kc in DataContext.KpiGeneralContent on kcm.KpiGeneralContentId equals kc.Id
@@ -343,20 +343,9 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
                 })
                 .ToListAsync();
 
-
-            var StoreScoutingDAOs = await DataContext.StoreScouting
-                .Where(x => AppUserIds.Contains(x.CreatorId) &&
+            List<StoreDAO> Stores = await DataContext.Store.
+                Where(x => x.CreatorId.HasValue && AppUserIds.Contains(x.CreatorId.Value) &&
                 x.CreatedAt >= StartDate && x.CreatedAt <= EndDate)
-                .Select(x => new StoreScoutingDAO
-                {
-                    CreatorId = x.CreatorId,
-                    Id = x.Id,
-                    CreatedAt = x.CreatedAt,
-                    Stores = x.Stores.Select(c => new StoreDAO
-                    {
-                        StoreScoutingId = c.StoreScoutingId
-                    }).ToList()
-                })
                 .ToListAsync();
 
             Parallel.ForEach(KpiGeneralPeriodReport_KpiGeneralPeriodReportDTOs, KpiGeneralPeriodReport_KpiGeneralPeriodReportDTO =>
@@ -505,7 +494,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
                             ? null
                             : (decimal?)Math.Round((SaleEmployeeDTO.TotalDirectSalesAmount.Value / SaleEmployeeDTO.TotalDirectSalesAmountPlanned.Value) * 100, 2);
                     }
-                    
+
                     #endregion
 
                     #region SKU/Đơn hàng trực tiếp
@@ -574,18 +563,18 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
                         //thực hiện
                         SaleEmployeeDTO.NewStoreCreated = SaleEmployeeDTO.NewStoreCreatedPlanned == null || SaleEmployeeDTO.NewStoreCreatedPlanned == 0
                             ? null
-                            : (decimal?)StoreScoutingDAOs
-                            .Where(sc => sc.CreatorId == SaleEmployeeDTO.SaleEmployeeId)
-                            .SelectMany(sc => sc.Stores)
-                            .Where(x => x.StoreScoutingId.HasValue)
-                            .Select(z => z.StoreScoutingId.Value)
-                            .Count();
+                            : (decimal?)Stores
+                            .Where(st => st.CreatorId == SaleEmployeeDTO.SaleEmployeeId &&
+                                    (st.StoreStatusId == Enums.StoreStatusEnum.DRAFT.Id || st.StoreStatusId == Enums.StoreStatusEnum.OFFICIAL.Id)
+                                    && st.DeletedAt == null
+                            )
+                            .Count(); // lấy ra tất cả cửa hàng có người tạo là saleEmployee, trạng thái là dự thảo hoặc chính thức
                         //tỉ lệ
                         SaleEmployeeDTO.NewStoreCreatedRatio = SaleEmployeeDTO.NewStoreCreatedPlanned == null || SaleEmployeeDTO.NewStoreCreated == null || SaleEmployeeDTO.NewStoreCreatedPlanned.Value == 0
                             ? null
                             : (decimal?)Math.Round(SaleEmployeeDTO.NewStoreCreated.Value / SaleEmployeeDTO.NewStoreCreatedPlanned.Value * 100, 2);
                     }
-                    
+
                     #endregion
 
                     #region Số lần viếng thăm cửa hàng
