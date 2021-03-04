@@ -454,7 +454,7 @@ namespace DMS.Rpc.kpi_general
                     KpiGeneral_RowDTOs.Add(new KpiGeneral_RowDTO { AppUserId = KpiGeneral_ImportDTO.EmployeeId, KpiYearId = KpiGeneral_ImportDTO.KpiYearId });
                     KpiGeneral_ImportDTO.IsNew = true;
 
-                    var Employee = Employees.Where(x => x.Username == KpiGeneral_ImportDTO.UsernameValue).FirstOrDefault();
+                    var Employee = Employees.Where(x => x.Username.ToLower() == KpiGeneral_ImportDTO.UsernameValue.ToLower()).FirstOrDefault();
                     KpiGeneral_ImportDTO.OrganizationId = Employee.OrganizationId;
                     KpiGeneral_ImportDTO.EmployeeId = Employee.Id;
                 }
