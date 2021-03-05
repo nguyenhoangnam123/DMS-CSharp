@@ -165,7 +165,11 @@ namespace DMS.Services.MAppUser
         {
             try
             {
-                await UOW.AppUserRepository.SimpleUpdate(AppUser);
+                if(AppUser.Latitude.HasValue && AppUser.Longitude.HasValue)
+                {
+                    await UOW.AppUserRepository.SimpleUpdate(AppUser);
+                }
+                
                 AppUser = await UOW.AppUserRepository.Get(AppUser.Id);
                 return AppUser;
             }
