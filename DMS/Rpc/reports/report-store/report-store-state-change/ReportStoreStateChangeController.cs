@@ -14,6 +14,9 @@ using DMS.Services.MStore;
 using DMS.Services.MStoreGrouping;
 using DMS.Services.MStoreStatus;
 using Microsoft.EntityFrameworkCore;
+using System.IO;
+using System.Dynamic;
+using DMS.Helpers;
 
 namespace DMS.Rpc.reports.report_store.report_store_state_change
 {
@@ -161,6 +164,66 @@ namespace DMS.Rpc.reports.report_store.report_store_state_change
                 ReportStoreStateChange_ReportStoreStateChangeDTO.Total = ReportStoreStateChange_ReportStoreStateChangeDTO.Details.Count();
             }
             return ReportStoreStateChange_ReportStoreStateChangeDTOs;
+        }
+
+        [Route(ReportStoreStateChangeRoute.Export), HttpPost]
+        public async Task<ActionResult> Export([FromBody] ReportStoreStateChange_ReportStoreStateChangeFilterDTO ReportStoreStateChange_ReportStoreStateChangeFilterDTO)
+        {
+            DateTime Start = ReportStoreStateChange_ReportStoreStateChangeFilterDTO.CreatedAt?.GreaterEqual == null ?
+               LocalStartDay(CurrentContext) :
+               ReportStoreStateChange_ReportStoreStateChangeFilterDTO.CreatedAt.GreaterEqual.Value;
+
+            DateTime End = ReportStoreStateChange_ReportStoreStateChangeFilterDTO.CreatedAt?.LessEqual == null ?
+                LocalEndDay(CurrentContext) :
+                ReportStoreStateChange_ReportStoreStateChangeFilterDTO.CreatedAt.LessEqual.Value;
+
+            ReportStoreStateChange_ReportStoreStateChangeFilterDTO.Skip = 0;
+            ReportStoreStateChange_ReportStoreStateChangeFilterDTO.Take = int.MaxValue;
+            IQueryable<StoreHistoryDAO> StoreHistoryDAOs = await Filter(ReportStoreStateChange_ReportStoreStateChangeFilterDTO);
+            List<ReportStoreStateChange_ReportStoreStateChangeDetailDTO> ReportStoreStateChange_ReportStoreStateChangeDetailDTOs = await StoreHistoryDAOs
+                .Select(x => new ReportStoreStateChange_ReportStoreStateChangeDetailDTO
+                {
+                    CreatedAt = x.CreatedAt,
+                    OrganizationName = x.Store.Organization.Name,
+                    PreviousCreatedAt = x.PreviousCreatedAt,
+                    PreviousStoreStatus = x.PreviousStoreStatus.Name,
+                    StoreAddress = x.Store.Address,
+                    StoreCode = x.Store.Code,
+                    StoreName = x.Store.Name,
+                    StorePhoneNumber = x.Store.OwnerPhone,
+                    StoreStatus = x.StoreStatus.Name,
+                }).ToListAsync();
+
+            List<ReportStoreStateChange_ReportStoreStateChangeDTO> ReportStoreStateChange_ReportStoreStateChangeDTOs = ReportStoreStateChange_ReportStoreStateChangeDetailDTOs
+                .Select(x => x.OrganizationName).Distinct().Select(x => new ReportStoreStateChange_ReportStoreStateChangeDTO
+                {
+                    OrganizationName = x,
+                }).ToList();
+
+            foreach (ReportStoreStateChange_ReportStoreStateChangeDTO ReportStoreStateChange_ReportStoreStateChangeDTO in ReportStoreStateChange_ReportStoreStateChangeDTOs)
+            {
+                ReportStoreStateChange_ReportStoreStateChangeDTO.Details = ReportStoreStateChange_ReportStoreStateChangeDetailDTOs
+                    .Where(x => x.OrganizationName == ReportStoreStateChange_ReportStoreStateChangeDTO.OrganizationName).ToList();
+                ReportStoreStateChange_ReportStoreStateChangeDTO.Total = ReportStoreStateChange_ReportStoreStateChangeDTO.Details.Count();
+            }
+
+            long Total = ReportStoreStateChange_ReportStoreStateChangeDTOs.Select(x => x.Total).Sum();
+
+            string path = "Templates/Report_Store_State_Change.xlsx";
+            byte[] arr = System.IO.File.ReadAllBytes(path);
+            MemoryStream input = new MemoryStream(arr);
+            MemoryStream output = new MemoryStream();
+            dynamic Data = new ExpandoObject();
+            Data.Start = Start.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy");
+            Data.End = End.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy");
+            Data.ReportStoreStateChange = ReportStoreStateChange_ReportStoreStateChangeDTOs;
+            Data.Total = Total;
+            using (var document = StaticParams.DocumentFactory.Open(input, output, "xlsx"))
+            {
+                document.Process(Data);
+            };
+
+            return File(output.ToArray(), "application/octet-stream", "ReportStoreChecked.xlsx");
         }
 
         private async Task<IQueryable<StoreHistoryDAO>> Filter(ReportStoreStateChange_ReportStoreStateChangeFilterDTO ReportStoreStateChange_ReportStoreStateChangeFilterDTO)
