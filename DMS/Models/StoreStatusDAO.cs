@@ -7,6 +7,8 @@ namespace DMS.Models
     {
         public StoreStatusDAO()
         {
+            StoreHistoryPreviousStoreStatuses = new HashSet<StoreHistoryDAO>();
+            StoreHistoryStoreStatuses = new HashSet<StoreHistoryDAO>();
             Stores = new HashSet<StoreDAO>();
         }
 
@@ -14,6 +16,8 @@ namespace DMS.Models
         public string Code { get; set; }
         public string Name { get; set; }
 
+        public virtual ICollection<StoreHistoryDAO> StoreHistoryPreviousStoreStatuses { get; set; }
+        public virtual ICollection<StoreHistoryDAO> StoreHistoryStoreStatuses { get; set; }
         public virtual ICollection<StoreDAO> Stores { get; set; }
     }
 }

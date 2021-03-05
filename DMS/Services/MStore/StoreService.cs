@@ -196,6 +196,17 @@ namespace DMS.Services.MStore
                 Store.UnsignAddress = Store.Address.ChangeToEnglishChar();
                 var Counter = await UOW.IdGenerateRepository.GetCounter();
                 StoreCodeGenerate(Store, Counter);
+
+                StoreHistory StoreHistory = new StoreHistory
+                {
+                    StoreId = Store.Id,
+                    AppUserId = CurrentContext.UserId,
+                    PreviousStoreStatusId = null,
+                    StoreStatusId = Store.StoreStatusId,
+                    CreatedAt = DateTime.Now,
+                };
+                await UOW.StoreHistoryRepository.Create(StoreHistory);
+
                 await UOW.Begin();
                 await UOW.StoreRepository.Create(Store);
 
@@ -291,6 +302,18 @@ namespace DMS.Services.MStore
                 Store.UnsignName = Store.Name.ChangeToEnglishChar();
                 Store.UnsignAddress = Store.Address.ChangeToEnglishChar();
                 StoreCodeGenerate(Store);
+                if (Store.StoreStatusId  != oldData.StoreStatusId)
+                {
+                    StoreHistory StoreHistory = new StoreHistory
+                    {
+                        StoreId = Store.Id,
+                        AppUserId = CurrentContext.UserId,
+                        PreviousStoreStatusId = oldData.StoreStatusId,
+                        StoreStatusId = Store.StoreStatusId,
+                        CreatedAt = DateTime.Now,
+                    };
+                    await UOW.StoreHistoryRepository.Create(StoreHistory);
+                }    
                 await UOW.Begin();
                 await UOW.StoreRepository.Update(Store);
                 if(Store.StatusId == StatusEnum.INACTIVE.Id)

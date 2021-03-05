@@ -1,7 +1,6 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Thinktecture;
 
 namespace DMS.Models
 {
@@ -139,6 +138,7 @@ namespace DMS.Models
         public virtual DbSet<StoreCheckingDAO> StoreChecking { get; set; }
         public virtual DbSet<StoreCheckingImageMappingDAO> StoreCheckingImageMapping { get; set; }
         public virtual DbSet<StoreGroupingDAO> StoreGrouping { get; set; }
+        public virtual DbSet<StoreHistoryDAO> StoreHistory { get; set; }
         public virtual DbSet<StoreImageDAO> StoreImage { get; set; }
         public virtual DbSet<StoreImageMappingDAO> StoreImageMapping { get; set; }
         public virtual DbSet<StoreScoutingDAO> StoreScouting { get; set; }
@@ -195,7 +195,6 @@ namespace DMS.Models
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.ConfigureTempTable<long>();
             modelBuilder.Entity<ActionDAO>(entity =>
             {
                 entity.ToTable("Action", "PER");
@@ -3957,6 +3956,36 @@ namespace DMS.Models
                     .HasForeignKey(d => d.StatusId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_StoreGrouping_Status");
+            });
+
+            modelBuilder.Entity<StoreHistoryDAO>(entity =>
+            {
+                entity.ToTable("StoreHistory", "MDM");
+
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.HasOne(d => d.AppUser)
+                    .WithMany(p => p.StoreHistories)
+                    .HasForeignKey(d => d.AppUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_StoreHistory_AppUser");
+
+                entity.HasOne(d => d.PreviousStoreStatus)
+                    .WithMany(p => p.StoreHistoryPreviousStoreStatuses)
+                    .HasForeignKey(d => d.PreviousStoreStatusId)
+                    .HasConstraintName("FK_StoreHistory_StoreStatus1");
+
+                entity.HasOne(d => d.Store)
+                    .WithMany(p => p.StoreHistories)
+                    .HasForeignKey(d => d.StoreId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_StoreHistory_Store");
+
+                entity.HasOne(d => d.StoreStatus)
+                    .WithMany(p => p.StoreHistoryStoreStatuses)
+                    .HasForeignKey(d => d.StoreStatusId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_StoreHistory_StoreStatus");
             });
 
             modelBuilder.Entity<StoreImageDAO>(entity =>

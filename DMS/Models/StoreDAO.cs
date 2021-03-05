@@ -24,6 +24,7 @@ namespace DMS.Models
             RewardHistories = new HashSet<RewardHistoryDAO>();
             StoreCheckingImageMappings = new HashSet<StoreCheckingImageMappingDAO>();
             StoreCheckings = new HashSet<StoreCheckingDAO>();
+            StoreHistories = new HashSet<StoreHistoryDAO>();
             StoreImageMappings = new HashSet<StoreImageMappingDAO>();
             StoreUncheckings = new HashSet<StoreUncheckingDAO>();
             SurveyResults = new HashSet<SurveyResultDAO>();
@@ -66,7 +67,6 @@ namespace DMS.Models
         public long StoreStatusId { get; set; }
 
         public virtual AppUserDAO AppUser { get; set; }
-        public virtual AppUserDAO Creator { get; set; }
         public virtual DistrictDAO District { get; set; }
         public virtual OrganizationDAO Organization { get; set; }
         public virtual StoreDAO ParentStore { get; set; }
@@ -94,6 +94,7 @@ namespace DMS.Models
         public virtual ICollection<RewardHistoryDAO> RewardHistories { get; set; }
         public virtual ICollection<StoreCheckingImageMappingDAO> StoreCheckingImageMappings { get; set; }
         public virtual ICollection<StoreCheckingDAO> StoreCheckings { get; set; }
+        public virtual ICollection<StoreHistoryDAO> StoreHistories { get; set; }
         public virtual ICollection<StoreImageMappingDAO> StoreImageMappings { get; set; }
         public virtual ICollection<StoreUncheckingDAO> StoreUncheckings { get; set; }
         public virtual ICollection<SurveyResultDAO> SurveyResults { get; set; }
