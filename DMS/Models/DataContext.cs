@@ -3964,6 +3964,8 @@ namespace DMS.Models
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
+                entity.Property(e => e.PreviousCreatedAt).HasColumnType("datetime");
+
                 entity.HasOne(d => d.AppUser)
                     .WithMany(p => p.StoreHistories)
                     .HasForeignKey(d => d.AppUserId)

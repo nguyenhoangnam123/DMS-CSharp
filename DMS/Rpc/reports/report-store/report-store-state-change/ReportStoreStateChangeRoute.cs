@@ -25,8 +25,6 @@ namespace DMS.Rpc.reports.report_store.report_store_state_change
         public static Dictionary<string, long> Filters = new Dictionary<string, long>
         {
             { nameof(ReportStoreStateChange_ReportStoreStateChangeFilterDTO.OrganizationId), FieldTypeEnum.ID.Id },
-            { nameof(ReportStoreStateChange_ReportStoreStateChangeFilterDTO.StoreGroupingId), FieldTypeEnum.ID.Id },
-            { nameof(ReportStoreStateChange_ReportStoreStateChangeFilterDTO.StoreTypeId), FieldTypeEnum.ID.Id },
             { nameof(ReportStoreStateChange_ReportStoreStateChangeFilterDTO.StoreId), FieldTypeEnum.ID.Id },
             { nameof(CurrentContext.UserId), FieldTypeEnum.ID.Id },
         };
