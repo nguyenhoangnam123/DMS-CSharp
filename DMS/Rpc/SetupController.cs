@@ -1383,6 +1383,7 @@ namespace DMS.Rpc
             InitEntityComponentEnum();
             InitStoreApprovalStateEnum();
             InitErpApprovalStateEnum();
+            InitDirectSalesOrderSourceTypeEnum();
             return Ok();
         }
 
@@ -1893,6 +1894,24 @@ namespace DMS.Rpc
                 }
             }
             DataContext.ErpApprovalState.BulkSynchronize(ErpApprovalStateDAOs);
+        }
+
+        private void InitDirectSalesOrderSourceTypeEnum()
+        {
+            List<DirectSalesOrderSourceTypeDAO> DirectSalesOrderSourceTypeDAOs = DataContext.DirectSalesOrderSourceType.ToList();
+            foreach (GenericEnum item in DirectSalesOrderSourceTypeEnum.DirectSalesOrderSourceTypeEnumList)
+            {
+                DirectSalesOrderSourceTypeDAO DirectSalesOrderSourceTypeDAO = DirectSalesOrderSourceTypeDAOs.Where(sc => sc.Id == item.Id).FirstOrDefault();
+                if (DirectSalesOrderSourceTypeDAO == null)
+                {
+                    DirectSalesOrderSourceTypeDAO = new DirectSalesOrderSourceTypeDAO();
+                    DirectSalesOrderSourceTypeDAO.Id = item.Id;
+                    DirectSalesOrderSourceTypeDAO.Code = item.Code;
+                    DirectSalesOrderSourceTypeDAO.Name = item.Name;
+                    DirectSalesOrderSourceTypeDAOs.Add(DirectSalesOrderSourceTypeDAO);
+                }
+            }
+            DataContext.DirectSalesOrderSourceType.BulkSynchronize(DirectSalesOrderSourceTypeDAOs);
         }
         #endregion
     }
