@@ -13,6 +13,10 @@ using DMS.Services.MAppUser;
 using DMS.Services.MStore;
 using DMS.Services.MStoreGrouping;
 using DMS.Services.MStoreStatus;
+using Microsoft.EntityFrameworkCore;
+using System.IO;
+using System.Dynamic;
+using DMS.Helpers;
 
 namespace DMS.Rpc.reports.report_store.report_store_state_change
 {
@@ -22,21 +26,21 @@ namespace DMS.Rpc.reports.report_store.report_store_state_change
         private IOrganizationService OrganizationService;
         private IStoreService StoreService;
         private IStoreStatusService StoreStatusService;
-        private IUOW UOW;
+        private DataContext DataContext;
         private ICurrentContext CurrentContext;
         public ReportStoreStateChangeController(
-            IAppUserService AppUserService, 
+            IAppUserService AppUserService,
             IOrganizationService OrganizationService,
             IStoreService StoreService,
-            IStoreStatusService StoreStatusService, 
-            IUOW UOW,
+            IStoreStatusService StoreStatusService,
+            DataContext DataContext,
             ICurrentContext CurrentContext)
         {
             this.AppUserService = AppUserService;
             this.OrganizationService = OrganizationService;
             this.StoreService = StoreService;
             this.StoreStatusService = StoreStatusService;
-            this.UOW = UOW;
+            this.DataContext = DataContext;
             this.CurrentContext = CurrentContext;
         }
 
@@ -121,5 +125,139 @@ namespace DMS.Rpc.reports.report_store.report_store_state_change
             return ReportStoreStateChange_StoreStatusDTOs;
         }
         #endregion
+
+
+        [Route(ReportStoreStateChangeRoute.Count), HttpPost]
+        public async Task<int> Count([FromBody] ReportStoreStateChange_ReportStoreStateChangeFilterDTO ReportStoreStateChange_ReportStoreStateChangeFilterDTO)
+        {
+            IQueryable<StoreHistoryDAO> StoreHistoryDAOs = await Filter(ReportStoreStateChange_ReportStoreStateChangeFilterDTO);
+            return await StoreHistoryDAOs.CountAsync();
+        }
+        [Route(ReportStoreStateChangeRoute.List), HttpPost]
+        public async Task<List<ReportStoreStateChange_ReportStoreStateChangeDTO>> List([FromBody] ReportStoreStateChange_ReportStoreStateChangeFilterDTO ReportStoreStateChange_ReportStoreStateChangeFilterDTO)
+        {
+            IQueryable<StoreHistoryDAO> StoreHistoryDAOs = await Filter(ReportStoreStateChange_ReportStoreStateChangeFilterDTO);
+            List<ReportStoreStateChange_ReportStoreStateChangeDetailDTO> ReportStoreStateChange_ReportStoreStateChangeDetailDTOs = await StoreHistoryDAOs
+                .Select(x => new ReportStoreStateChange_ReportStoreStateChangeDetailDTO
+                {
+                    CreatedAt = x.CreatedAt,
+                    OrganizationName = x.Store.Organization.Name,
+                    PreviousCreatedAt = x.PreviousCreatedAt,
+                    PreviousStoreStatus = x.PreviousStoreStatus.Name,
+                    StoreAddress = x.Store.Address,
+                    StoreCode = x.Store.Code,
+                    StoreName = x.Store.Name,
+                    StorePhoneNumber = x.Store.OwnerPhone,
+                    StoreStatus = x.StoreStatus.Name,
+                }).ToListAsync();
+
+            List<ReportStoreStateChange_ReportStoreStateChangeDTO> ReportStoreStateChange_ReportStoreStateChangeDTOs = ReportStoreStateChange_ReportStoreStateChangeDetailDTOs
+                .Select(x => x.OrganizationName).Distinct().Select(x => new ReportStoreStateChange_ReportStoreStateChangeDTO
+                {
+                    OrganizationName = x,
+                }).ToList();
+
+            foreach (ReportStoreStateChange_ReportStoreStateChangeDTO ReportStoreStateChange_ReportStoreStateChangeDTO in ReportStoreStateChange_ReportStoreStateChangeDTOs)
+            {
+                ReportStoreStateChange_ReportStoreStateChangeDTO.Details = ReportStoreStateChange_ReportStoreStateChangeDetailDTOs
+                    .Where(x => x.OrganizationName == ReportStoreStateChange_ReportStoreStateChangeDTO.OrganizationName).ToList();
+                ReportStoreStateChange_ReportStoreStateChangeDTO.Total = ReportStoreStateChange_ReportStoreStateChangeDTO.Details.Count();
+            }
+            return ReportStoreStateChange_ReportStoreStateChangeDTOs;
+        }
+
+        [Route(ReportStoreStateChangeRoute.Export), HttpPost]
+        public async Task<ActionResult> Export([FromBody] ReportStoreStateChange_ReportStoreStateChangeFilterDTO ReportStoreStateChange_ReportStoreStateChangeFilterDTO)
+        {
+            DateTime Start = ReportStoreStateChange_ReportStoreStateChangeFilterDTO.CreatedAt?.GreaterEqual == null ?
+               LocalStartDay(CurrentContext) :
+               ReportStoreStateChange_ReportStoreStateChangeFilterDTO.CreatedAt.GreaterEqual.Value;
+
+            DateTime End = ReportStoreStateChange_ReportStoreStateChangeFilterDTO.CreatedAt?.LessEqual == null ?
+                LocalEndDay(CurrentContext) :
+                ReportStoreStateChange_ReportStoreStateChangeFilterDTO.CreatedAt.LessEqual.Value;
+
+            ReportStoreStateChange_ReportStoreStateChangeFilterDTO.Skip = 0;
+            ReportStoreStateChange_ReportStoreStateChangeFilterDTO.Take = int.MaxValue;
+            IQueryable<StoreHistoryDAO> StoreHistoryDAOs = await Filter(ReportStoreStateChange_ReportStoreStateChangeFilterDTO);
+            List<ReportStoreStateChange_ReportStoreStateChangeDetailDTO> ReportStoreStateChange_ReportStoreStateChangeDetailDTOs = await StoreHistoryDAOs
+                .Select(x => new ReportStoreStateChange_ReportStoreStateChangeDetailDTO
+                {
+                    CreatedAt = x.CreatedAt,
+                    OrganizationName = x.Store.Organization.Name,
+                    PreviousCreatedAt = x.PreviousCreatedAt,
+                    PreviousStoreStatus = x.PreviousStoreStatus.Name,
+                    StoreAddress = x.Store.Address,
+                    StoreCode = x.Store.Code,
+                    StoreName = x.Store.Name,
+                    StorePhoneNumber = x.Store.OwnerPhone,
+                    StoreStatus = x.StoreStatus.Name,
+                }).ToListAsync();
+
+            List<ReportStoreStateChange_ReportStoreStateChangeDTO> ReportStoreStateChange_ReportStoreStateChangeDTOs = ReportStoreStateChange_ReportStoreStateChangeDetailDTOs
+                .Select(x => x.OrganizationName).Distinct().Select(x => new ReportStoreStateChange_ReportStoreStateChangeDTO
+                {
+                    OrganizationName = x,
+                }).ToList();
+
+            foreach (ReportStoreStateChange_ReportStoreStateChangeDTO ReportStoreStateChange_ReportStoreStateChangeDTO in ReportStoreStateChange_ReportStoreStateChangeDTOs)
+            {
+                ReportStoreStateChange_ReportStoreStateChangeDTO.Details = ReportStoreStateChange_ReportStoreStateChangeDetailDTOs
+                    .Where(x => x.OrganizationName == ReportStoreStateChange_ReportStoreStateChangeDTO.OrganizationName).ToList();
+                ReportStoreStateChange_ReportStoreStateChangeDTO.Total = ReportStoreStateChange_ReportStoreStateChangeDTO.Details.Count();
+            }
+
+            long Total = ReportStoreStateChange_ReportStoreStateChangeDTOs.Select(x => x.Total).Sum();
+
+            string path = "Templates/Report_Store_State_Change.xlsx";
+            byte[] arr = System.IO.File.ReadAllBytes(path);
+            MemoryStream input = new MemoryStream(arr);
+            MemoryStream output = new MemoryStream();
+            dynamic Data = new ExpandoObject();
+            Data.Start = Start.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy");
+            Data.End = End.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy");
+            Data.ReportStoreStateChange = ReportStoreStateChange_ReportStoreStateChangeDTOs;
+            Data.Total = Total;
+            using (var document = StaticParams.DocumentFactory.Open(input, output, "xlsx"))
+            {
+                document.Process(Data);
+            };
+
+            return File(output.ToArray(), "application/octet-stream", "ReportStoreChecked.xlsx");
+        }
+
+        private async Task<IQueryable<StoreHistoryDAO>> Filter(ReportStoreStateChange_ReportStoreStateChangeFilterDTO ReportStoreStateChange_ReportStoreStateChangeFilterDTO)
+        {
+            long? OrganizationId = ReportStoreStateChange_ReportStoreStateChangeFilterDTO.OrganizationId?.Equal;
+            long? StoreId = ReportStoreStateChange_ReportStoreStateChangeFilterDTO.StoreId?.Equal;
+            long? StoreStatusId = ReportStoreStateChange_ReportStoreStateChangeFilterDTO.StoreStatusId?.Equal;
+            long? PreviousStoreStatusId = ReportStoreStateChange_ReportStoreStateChangeFilterDTO.PreviousStoreStatusId?.Equal;
+
+            IQueryable<StoreHistoryDAO> StoreHistoryDAOs = DataContext.StoreHistory.AsNoTracking();
+            if (ReportStoreStateChange_ReportStoreStateChangeFilterDTO.StoreAddress != null)
+                StoreHistoryDAOs = StoreHistoryDAOs.Where(x => x.Store.Address, ReportStoreStateChange_ReportStoreStateChangeFilterDTO.StoreAddress);
+
+            if (ReportStoreStateChange_ReportStoreStateChangeFilterDTO.CreatedAt.HasValue)
+                StoreHistoryDAOs = StoreHistoryDAOs.Where(x => x.CreatedAt, ReportStoreStateChange_ReportStoreStateChangeFilterDTO.CreatedAt);
+
+            List<long> OrganizationIds = await FilterOrganization(OrganizationService, CurrentContext);
+            List<OrganizationDAO> OrganizationDAOs = await DataContext.Organization.Where(o => o.DeletedAt == null && (OrganizationIds.Count == 0 || OrganizationIds.Contains(o.Id))).ToListAsync();
+            OrganizationDAO OrganizationDAO = null;
+            if (ReportStoreStateChange_ReportStoreStateChangeFilterDTO.OrganizationId?.Equal != null)
+            {
+                OrganizationDAO = await DataContext.Organization.Where(o => o.Id == ReportStoreStateChange_ReportStoreStateChangeFilterDTO.OrganizationId.Equal.Value).FirstOrDefaultAsync();
+                OrganizationDAOs = OrganizationDAOs.Where(o => o.Path.StartsWith(OrganizationDAO.Path)).ToList();
+            }
+            OrganizationIds = OrganizationDAOs.Select(o => o.Id).ToList();
+
+            StoreHistoryDAOs = StoreHistoryDAOs.Where(x => OrganizationIds.Contains(x.Store.OrganizationId));
+            if (StoreId.HasValue)
+                StoreHistoryDAOs = StoreHistoryDAOs.Where(x => x.StoreId == StoreId.Value);
+            if (StoreStatusId.HasValue)
+                StoreHistoryDAOs = StoreHistoryDAOs.Where(x => x.StoreStatusId == StoreStatusId.Value);
+            if (PreviousStoreStatusId.HasValue)
+                StoreHistoryDAOs = StoreHistoryDAOs.Where(x => x.PreviousStoreStatusId == PreviousStoreStatusId.Value);
+            return StoreHistoryDAOs;
+        }
     }
 }

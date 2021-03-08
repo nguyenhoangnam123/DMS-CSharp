@@ -70,6 +70,42 @@ namespace DMS.Rpc.dashboards.director
             return Dashborad_EnumLists;
         }
 
+        [Route(DashboardDirectorRoute.FilterListAppUser), HttpPost]
+        public async Task<List<DashboardDirector_AppUserDTO>> FilterListAppUser([FromBody] DashboardDirector_AppUserFilterDTO DashboardDirector_AppUserFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            AppUserFilter AppUserFilter = new AppUserFilter();
+            AppUserFilter.Skip = 0;
+            AppUserFilter.Take = 20;
+            AppUserFilter.OrderBy = AppUserOrder.Id;
+            AppUserFilter.OrderType = OrderType.ASC;
+            AppUserFilter.Selects = AppUserSelect.ALL;
+            AppUserFilter.Id = DashboardDirector_AppUserFilterDTO.Id;
+            AppUserFilter.Username = DashboardDirector_AppUserFilterDTO.Username;
+            AppUserFilter.Password = DashboardDirector_AppUserFilterDTO.Password;
+            AppUserFilter.DisplayName = DashboardDirector_AppUserFilterDTO.DisplayName;
+            AppUserFilter.Address = DashboardDirector_AppUserFilterDTO.Address;
+            AppUserFilter.Email = DashboardDirector_AppUserFilterDTO.Email;
+            AppUserFilter.Phone = DashboardDirector_AppUserFilterDTO.Phone;
+            AppUserFilter.PositionId = DashboardDirector_AppUserFilterDTO.PositionId;
+            AppUserFilter.Department = DashboardDirector_AppUserFilterDTO.Department;
+            AppUserFilter.OrganizationId = DashboardDirector_AppUserFilterDTO.OrganizationId;
+            AppUserFilter.SexId = DashboardDirector_AppUserFilterDTO.SexId;
+            AppUserFilter.StatusId = DashboardDirector_AppUserFilterDTO.StatusId;
+            AppUserFilter.Birthday = DashboardDirector_AppUserFilterDTO.Birthday;
+            AppUserFilter.ProvinceId = DashboardDirector_AppUserFilterDTO.ProvinceId;
+
+            if (AppUserFilter.Id == null) AppUserFilter.Id = new IdFilter();
+            AppUserFilter.Id.In = await FilterAppUser(AppUserService, OrganizationService, CurrentContext);
+
+            List<AppUser> AppUsers = await AppUserService.List(AppUserFilter);
+            List<DashboardDirector_AppUserDTO> DashboardDirector_AppUserDTOs = AppUsers
+                .Select(x => new DashboardDirector_AppUserDTO(x)).ToList();
+            return DashboardDirector_AppUserDTOs;
+        }
+
         [Route(DashboardDirectorRoute.FilterListOrganization), HttpPost]
         public async Task<List<DashboardDirector_OrganizationDTO>> FilterListOrganization([FromBody] DashboardDirector_OrganizationFilterDTO DashboardDirector_OrganizationFilterDTO)
         {
@@ -108,12 +144,21 @@ namespace DMS.Rpc.dashboards.director
         }
 
         [Route(DashboardDirectorRoute.CountStore), HttpPost]
-        public async Task<long> CountStore()
+        public async Task<long> CountStore([FromBody] DashboardDirector_StoreFilterDTO DashboardDirector_StoreFilterDTO)
         {
-            AppUser CurrentUser = await AppUserService.Get(CurrentContext.UserId);
+            List<long> OrganizationIds = await FilterOrganization(OrganizationService, CurrentContext);
+            List<OrganizationDAO> OrganizationDAOs = await DataContext.Organization.Where(o => o.DeletedAt == null && (OrganizationIds.Count == 0 || OrganizationIds.Contains(o.Id))).ToListAsync();
+            OrganizationDAO OrganizationDAO = null;
+            if (DashboardDirector_StoreFilterDTO.OrganizationId?.Equal != null)
+            {
+                OrganizationDAO = await DataContext.Organization.Where(o => o.Id == DashboardDirector_StoreFilterDTO.OrganizationId.Equal.Value).FirstOrDefaultAsync();
+                OrganizationDAOs = OrganizationDAOs.Where(o => o.Path.StartsWith(OrganizationDAO.Path)).ToList();
+            }
+            OrganizationIds = OrganizationDAOs.Select(o => o.Id).ToList();
+
             var query = from s in DataContext.Store
                         join o in DataContext.Organization on s.OrganizationId equals o.Id
-                        where o.Path.StartsWith(CurrentUser.Organization.Path) &&
+                        where OrganizationIds.Contains(s.OrganizationId) &&
                         s.DeletedAt == null
                         select s;
 
@@ -122,17 +167,42 @@ namespace DMS.Rpc.dashboards.director
         }
 
         [Route(DashboardDirectorRoute.CountIndirectSalesOrder), HttpPost]
-        public async Task<long> CountIndirectSalesOrder()
+        public async Task<long> CountIndirectSalesOrder([FromBody] DashboardDirector_IndirectSalesOrderFluctuationFilterDTO DashboardDirector_IndirectSalesOrderFluctuationFilterDTO)
         {
             DateTime Now = StaticParams.DateTimeNow;
             DateTime Start = new DateTime(Now.Year, Now.Month, 1).AddHours(0 - CurrentContext.TimeZone);
             DateTime End = Start.AddMonths(1).AddSeconds(-1);
-            AppUser CurrentUser = await AppUserService.Get(CurrentContext.UserId);
+
+            long? SaleEmployeeId = DashboardDirector_IndirectSalesOrderFluctuationFilterDTO.AppUserId?.Equal;
+            List<long> OrganizationIds = await FilterOrganization(OrganizationService, CurrentContext);
+            List<OrganizationDAO> OrganizationDAOs = await DataContext.Organization.Where(o => o.DeletedAt == null && OrganizationIds.Contains(o.Id)).ToListAsync();
+            OrganizationDAO OrganizationDAO = null;
+            if (DashboardDirector_IndirectSalesOrderFluctuationFilterDTO.OrganizationId?.Equal != null)
+            {
+                OrganizationDAO = await DataContext.Organization.Where(o => o.Id == DashboardDirector_IndirectSalesOrderFluctuationFilterDTO.OrganizationId.Equal.Value).FirstOrDefaultAsync();
+                OrganizationDAOs = OrganizationDAOs.Where(o => o.Path.StartsWith(OrganizationDAO.Path)).ToList();
+            }
+            OrganizationIds = OrganizationDAOs.Select(o => o.Id).ToList();
+
+            AppUserFilter AppUserFilter = new AppUserFilter
+            {
+                OrganizationId = new IdFilter { In = OrganizationIds },
+                Id = new IdFilter { },
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = AppUserSelect.Id | AppUserSelect.DisplayName | AppUserSelect.Organization
+            };
+            AppUserFilter.Id.In = await FilterAppUser(AppUserService, OrganizationService, CurrentContext);
+            var AppUsers = await AppUserService.List(AppUserFilter);
+            var AppUserIds = AppUsers.Select(x => x.Id).ToList();
+
             var query = from i in DataContext.IndirectSalesOrder
                         join au in DataContext.AppUser on i.SaleEmployeeId equals au.Id
                         join o in DataContext.Organization on au.OrganizationId equals o.Id
                         where i.OrderDate >= Start && i.OrderDate <= End &&
-                        o.Path.StartsWith(CurrentUser.Organization.Path) &&
+                        AppUserIds.Contains(au.Id) &&
+                        (SaleEmployeeId.HasValue == false || au.Id == SaleEmployeeId.Value) &&
+                        OrganizationIds.Contains(i.OrganizationId) &&
                         i.RequestStateId == RequestStateEnum.APPROVED.Id &&
                         au.DeletedAt == null && o.DeletedAt == null
                         select i;
@@ -141,17 +211,42 @@ namespace DMS.Rpc.dashboards.director
         }
 
         [Route(DashboardDirectorRoute.RevenueTotal), HttpPost]
-        public async Task<decimal> RevenueTotal()
+        public async Task<decimal> RevenueTotal([FromBody] DashboardDirector_SaledItemFluctuationFilterDTO DashboardDirector_SaledItemFluctuationFilterDTO)
         {
             DateTime Now = StaticParams.DateTimeNow;
             DateTime Start = new DateTime(Now.Year, Now.Month, 1).AddHours(0 - CurrentContext.TimeZone);
             DateTime End = Start.AddMonths(1).AddSeconds(-1);
-            AppUser CurrentUser = await AppUserService.Get(CurrentContext.UserId);
+
+            long? SaleEmployeeId = DashboardDirector_SaledItemFluctuationFilterDTO.AppUserId?.Equal;
+            List<long> OrganizationIds = await FilterOrganization(OrganizationService, CurrentContext);
+            List<OrganizationDAO> OrganizationDAOs = await DataContext.Organization.Where(o => o.DeletedAt == null && OrganizationIds.Contains(o.Id)).ToListAsync();
+            OrganizationDAO OrganizationDAO = null;
+            if (DashboardDirector_SaledItemFluctuationFilterDTO.OrganizationId?.Equal != null)
+            {
+                OrganizationDAO = await DataContext.Organization.Where(o => o.Id == DashboardDirector_SaledItemFluctuationFilterDTO.OrganizationId.Equal.Value).FirstOrDefaultAsync();
+                OrganizationDAOs = OrganizationDAOs.Where(o => o.Path.StartsWith(OrganizationDAO.Path)).ToList();
+            }
+            OrganizationIds = OrganizationDAOs.Select(o => o.Id).ToList();
+
+            AppUserFilter AppUserFilter = new AppUserFilter
+            {
+                OrganizationId = new IdFilter { In = OrganizationIds },
+                Id = new IdFilter { },
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = AppUserSelect.Id | AppUserSelect.DisplayName | AppUserSelect.Organization
+            };
+            AppUserFilter.Id.In = await FilterAppUser(AppUserService, OrganizationService, CurrentContext);
+            var AppUsers = await AppUserService.List(AppUserFilter);
+            var AppUserIds = AppUsers.Select(x => x.Id).ToList();
+
             var query = from i in DataContext.IndirectSalesOrder
                         join au in DataContext.AppUser on i.SaleEmployeeId equals au.Id
                         join o in DataContext.Organization on au.OrganizationId equals o.Id
                         where i.OrderDate >= Start && i.OrderDate <= End &&
-                        o.Path.StartsWith(CurrentUser.Organization.Path) &&
+                        AppUserIds.Contains(au.Id) &&
+                        (SaleEmployeeId.HasValue == false || au.Id == SaleEmployeeId.Value) &&
+                        OrganizationIds.Contains(i.OrganizationId) &&
                         i.RequestStateId == RequestStateEnum.APPROVED.Id &&
                         au.DeletedAt == null && o.DeletedAt == null
                         select i;
@@ -161,18 +256,43 @@ namespace DMS.Rpc.dashboards.director
         }
 
         [Route(DashboardDirectorRoute.ItemSalesTotal), HttpPost]
-        public async Task<long> ItemSalesTotal()
+        public async Task<long> ItemSalesTotal([FromBody] DashboardDirector_SaledItemFluctuationFilterDTO DashboardDirector_SaledItemFluctuationFilterDTO)
         {
             DateTime Now = StaticParams.DateTimeNow;
             DateTime Start = new DateTime(Now.Year, Now.Month, 1).AddHours(0 - CurrentContext.TimeZone);
             DateTime End = Start.AddMonths(1).AddSeconds(-1);
-            AppUser CurrentUser = await AppUserService.Get(CurrentContext.UserId);
+
+            long? SaleEmployeeId = DashboardDirector_SaledItemFluctuationFilterDTO.AppUserId?.Equal;
+            List<long> OrganizationIds = await FilterOrganization(OrganizationService, CurrentContext);
+            List<OrganizationDAO> OrganizationDAOs = await DataContext.Organization.Where(o => o.DeletedAt == null && OrganizationIds.Contains(o.Id)).ToListAsync();
+            OrganizationDAO OrganizationDAO = null;
+            if (DashboardDirector_SaledItemFluctuationFilterDTO.OrganizationId?.Equal != null)
+            {
+                OrganizationDAO = await DataContext.Organization.Where(o => o.Id == DashboardDirector_SaledItemFluctuationFilterDTO.OrganizationId.Equal.Value).FirstOrDefaultAsync();
+                OrganizationDAOs = OrganizationDAOs.Where(o => o.Path.StartsWith(OrganizationDAO.Path)).ToList();
+            }
+            OrganizationIds = OrganizationDAOs.Select(o => o.Id).ToList();
+
+            AppUserFilter AppUserFilter = new AppUserFilter
+            {
+                OrganizationId = new IdFilter { In = OrganizationIds },
+                Id = new IdFilter { },
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = AppUserSelect.Id | AppUserSelect.DisplayName | AppUserSelect.Organization
+            };
+            AppUserFilter.Id.In = await FilterAppUser(AppUserService, OrganizationService, CurrentContext);
+            var AppUsers = await AppUserService.List(AppUserFilter);
+            var AppUserIds = AppUsers.Select(x => x.Id).ToList();
+
             var query = from ic in DataContext.IndirectSalesOrderContent
                         join i in DataContext.IndirectSalesOrder on ic.IndirectSalesOrderId equals i.Id
                         join au in DataContext.AppUser on i.SaleEmployeeId equals au.Id
                         join o in DataContext.Organization on au.OrganizationId equals o.Id
                         where i.OrderDate >= Start && i.OrderDate <= End &&
-                        o.Path.StartsWith(CurrentUser.Organization.Path) &&
+                        AppUserIds.Contains(au.Id) &&
+                        (SaleEmployeeId.HasValue == false || au.Id == SaleEmployeeId.Value) &&
+                        OrganizationIds.Contains(i.OrganizationId) &&
                         i.RequestStateId == RequestStateEnum.APPROVED.Id &&
                         au.DeletedAt == null && o.DeletedAt == null
                         select ic;
@@ -182,18 +302,43 @@ namespace DMS.Rpc.dashboards.director
         }
 
         [Route(DashboardDirectorRoute.CountStoreChecking), HttpPost]
-        public async Task<long> CountStoreChecking()
+        public async Task<long> CountStoreChecking([FromBody] DashboardDirector_StoreFilterDTO DashboardDirector_StoreFilterDTO)
         {
             DateTime Now = StaticParams.DateTimeNow;
             DateTime Start = new DateTime(Now.Year, Now.Month, 1).AddHours(0 - CurrentContext.TimeZone);
             DateTime End = Start.AddMonths(1).AddSeconds(-1);
-            AppUser CurrentUser = await AppUserService.Get(CurrentContext.UserId);
+
+            long? SaleEmployeeId = DashboardDirector_StoreFilterDTO.AppUserId?.Equal;
+            List<long> OrganizationIds = await FilterOrganization(OrganizationService, CurrentContext);
+            List<OrganizationDAO> OrganizationDAOs = await DataContext.Organization.Where(o => o.DeletedAt == null && OrganizationIds.Contains(o.Id)).ToListAsync();
+            OrganizationDAO OrganizationDAO = null;
+            if (DashboardDirector_StoreFilterDTO.OrganizationId?.Equal != null)
+            {
+                OrganizationDAO = await DataContext.Organization.Where(o => o.Id == DashboardDirector_StoreFilterDTO.OrganizationId.Equal.Value).FirstOrDefaultAsync();
+                OrganizationDAOs = OrganizationDAOs.Where(o => o.Path.StartsWith(OrganizationDAO.Path)).ToList();
+            }
+            OrganizationIds = OrganizationDAOs.Select(o => o.Id).ToList();
+
+            AppUserFilter AppUserFilter = new AppUserFilter
+            {
+                OrganizationId = new IdFilter { In = OrganizationIds },
+                Id = new IdFilter { },
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = AppUserSelect.Id | AppUserSelect.DisplayName | AppUserSelect.Organization
+            };
+            AppUserFilter.Id.In = await FilterAppUser(AppUserService, OrganizationService, CurrentContext);
+            var AppUsers = await AppUserService.List(AppUserFilter);
+            var AppUserIds = AppUsers.Select(x => x.Id).ToList();
+
             var query = from sc in DataContext.StoreChecking
-                        join s in DataContext.Store on sc.StoreId equals s.Id 
+                        join s in DataContext.Store on sc.StoreId equals s.Id
                         join au in DataContext.AppUser on sc.SaleEmployeeId equals au.Id
                         join o in DataContext.Organization on au.OrganizationId equals o.Id
                         where sc.CheckOutAt.HasValue && sc.CheckOutAt >= Start && sc.CheckOutAt <= End &&
-                        o.Path.StartsWith(CurrentUser.Organization.Path) &&
+                        AppUserIds.Contains(au.Id) &&
+                        (SaleEmployeeId.HasValue == false || au.Id == SaleEmployeeId.Value) &&
+                        OrganizationIds.Contains(s.OrganizationId) &&
                         au.DeletedAt == null && o.DeletedAt == null && s.DeletedAt == null
                         select sc;
 
@@ -202,17 +347,41 @@ namespace DMS.Rpc.dashboards.director
         }
 
         [Route(DashboardDirectorRoute.StatisticToday), HttpPost]
-        public async Task<DashboardDirector_StatisticDailyDTO> StatisticToday()
+        public async Task<DashboardDirector_StatisticDailyDTO> StatisticToday([FromBody] DashboardDirector_StoreFilterDTO DashboardDirector_StoreFilterDTO)
         {
             DateTime Start = LocalStartDay(CurrentContext);
             DateTime End = Start.AddDays(1).AddSeconds(-1);
-            AppUser CurrentUser = await AppUserService.Get(CurrentContext.UserId);
+
+            long? SaleEmployeeId = DashboardDirector_StoreFilterDTO.AppUserId?.Equal;
+            List<long> OrganizationIds = await FilterOrganization(OrganizationService, CurrentContext);
+            List<OrganizationDAO> OrganizationDAOs = await DataContext.Organization.Where(o => o.DeletedAt == null && OrganizationIds.Contains(o.Id)).ToListAsync();
+            OrganizationDAO OrganizationDAO = null;
+            if (DashboardDirector_StoreFilterDTO.OrganizationId?.Equal != null)
+            {
+                OrganizationDAO = await DataContext.Organization.Where(o => o.Id == DashboardDirector_StoreFilterDTO.OrganizationId.Equal.Value).FirstOrDefaultAsync();
+                OrganizationDAOs = OrganizationDAOs.Where(o => o.Path.StartsWith(OrganizationDAO.Path)).ToList();
+            }
+            OrganizationIds = OrganizationDAOs.Select(o => o.Id).ToList();
+
+            AppUserFilter AppUserFilter = new AppUserFilter
+            {
+                OrganizationId = new IdFilter { In = OrganizationIds },
+                Id = new IdFilter { },
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = AppUserSelect.Id | AppUserSelect.DisplayName | AppUserSelect.Organization
+            };
+            AppUserFilter.Id.In = await FilterAppUser(AppUserService, OrganizationService, CurrentContext);
+            var AppUsers = await AppUserService.List(AppUserFilter);
+            var AppUserIds = AppUsers.Select(x => x.Id).ToList();
 
             var queryRevenue = from i in DataContext.IndirectSalesOrder
                                join au in DataContext.AppUser on i.SaleEmployeeId equals au.Id
                                join o in DataContext.Organization on au.OrganizationId equals o.Id
                                where i.OrderDate >= Start && i.OrderDate <= End &&
-                               o.Path.StartsWith(CurrentUser.Organization.Path) &&
+                               AppUserIds.Contains(au.Id) &&
+                               (SaleEmployeeId.HasValue == false || au.Id == SaleEmployeeId.Value) &&
+                               OrganizationIds.Contains(i.OrganizationId) &&
                                i.RequestStateId == RequestStateEnum.APPROVED.Id &&
                                au.DeletedAt == null && o.DeletedAt == null
                                select i;
@@ -221,7 +390,9 @@ namespace DMS.Rpc.dashboards.director
                                           join au in DataContext.AppUser on i.SaleEmployeeId equals au.Id
                                           join o in DataContext.Organization on au.OrganizationId equals o.Id
                                           where i.OrderDate >= Start && i.OrderDate <= End &&
-                                          o.Path.StartsWith(CurrentUser.Organization.Path) &&
+                                          AppUserIds.Contains(au.Id) &&
+                                          (SaleEmployeeId.HasValue == false || au.Id == SaleEmployeeId.Value) &&
+                                          OrganizationIds.Contains(i.OrganizationId) &&
                                           i.RequestStateId == RequestStateEnum.APPROVED.Id &&
                                           au.DeletedAt == null && o.DeletedAt == null
                                           select i;
@@ -231,7 +402,9 @@ namespace DMS.Rpc.dashboards.director
                             join au in DataContext.AppUser on i.SaleEmployeeId equals au.Id
                             join o in DataContext.Organization on au.OrganizationId equals o.Id
                             where i.OrderDate >= Start && i.OrderDate <= End &&
-                            o.Path.StartsWith(CurrentUser.Organization.Path) &&
+                            AppUserIds.Contains(au.Id) &&
+                            (SaleEmployeeId.HasValue == false || au.Id == SaleEmployeeId.Value) &&
+                            OrganizationIds.Contains(i.OrganizationId) &&
                             i.RequestStateId == RequestStateEnum.APPROVED.Id &&
                             au.DeletedAt == null && o.DeletedAt == null
                             select ic;
@@ -241,7 +414,9 @@ namespace DMS.Rpc.dashboards.director
                                      join au in DataContext.AppUser on sc.SaleEmployeeId equals au.Id
                                      join o in DataContext.Organization on au.OrganizationId equals o.Id
                                      where sc.CheckOutAt.HasValue && sc.CheckOutAt >= Start && sc.CheckOutAt <= End &&
-                                     o.Path.StartsWith(CurrentUser.Organization.Path) &&
+                                     AppUserIds.Contains(au.Id) &&
+                                     (SaleEmployeeId.HasValue == false || au.Id == SaleEmployeeId.Value) &&
+                                     OrganizationIds.Contains(s.OrganizationId) &&
                                      au.DeletedAt == null && o.DeletedAt == null && s.DeletedAt == null
                                      select sc;
 
@@ -261,18 +436,42 @@ namespace DMS.Rpc.dashboards.director
         }
 
         [Route(DashboardDirectorRoute.StatisticYesterday), HttpPost]
-        public async Task<DashboardDirector_StatisticDailyDTO> StatisticYesterday()
+        public async Task<DashboardDirector_StatisticDailyDTO> StatisticYesterday([FromBody] DashboardDirector_IndirectSalesOrderFluctuationFilterDTO DashboardDirector_IndirectSalesOrderFluctuationFilterDTO)
         {
             DateTime Now = StaticParams.DateTimeNow.Date;
             DateTime Start = LocalStartDay(CurrentContext).AddDays(-1);
             DateTime End = Start.AddDays(1).AddSeconds(-1);
-            AppUser CurrentUser = await AppUserService.Get(CurrentContext.UserId);
+
+            long? SaleEmployeeId = DashboardDirector_IndirectSalesOrderFluctuationFilterDTO.AppUserId?.Equal;
+            List<long> OrganizationIds = await FilterOrganization(OrganizationService, CurrentContext);
+            List<OrganizationDAO> OrganizationDAOs = await DataContext.Organization.Where(o => o.DeletedAt == null && OrganizationIds.Contains(o.Id)).ToListAsync();
+            OrganizationDAO OrganizationDAO = null;
+            if (DashboardDirector_IndirectSalesOrderFluctuationFilterDTO.OrganizationId?.Equal != null)
+            {
+                OrganizationDAO = await DataContext.Organization.Where(o => o.Id == DashboardDirector_IndirectSalesOrderFluctuationFilterDTO.OrganizationId.Equal.Value).FirstOrDefaultAsync();
+                OrganizationDAOs = OrganizationDAOs.Where(o => o.Path.StartsWith(OrganizationDAO.Path)).ToList();
+            }
+            OrganizationIds = OrganizationDAOs.Select(o => o.Id).ToList();
+
+            AppUserFilter AppUserFilter = new AppUserFilter
+            {
+                OrganizationId = new IdFilter { In = OrganizationIds },
+                Id = new IdFilter { },
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = AppUserSelect.Id | AppUserSelect.DisplayName | AppUserSelect.Organization
+            };
+            AppUserFilter.Id.In = await FilterAppUser(AppUserService, OrganizationService, CurrentContext);
+            var AppUsers = await AppUserService.List(AppUserFilter);
+            var AppUserIds = AppUsers.Select(x => x.Id).ToList();
 
             var queryRevenue = from i in DataContext.IndirectSalesOrder
                                join au in DataContext.AppUser on i.SaleEmployeeId equals au.Id
                                join o in DataContext.Organization on au.OrganizationId equals o.Id
                                where i.OrderDate >= Start && i.OrderDate <= End &&
-                               o.Path.StartsWith(CurrentUser.Organization.Path) &&
+                               AppUserIds.Contains(au.Id) &&
+                               (SaleEmployeeId.HasValue == false || au.Id == SaleEmployeeId.Value) &&
+                               OrganizationIds.Contains(i.OrganizationId) &&
                                i.RequestStateId == RequestStateEnum.APPROVED.Id &&
                                au.DeletedAt == null && o.DeletedAt == null
                                select i;
@@ -281,7 +480,9 @@ namespace DMS.Rpc.dashboards.director
                                           join au in DataContext.AppUser on i.SaleEmployeeId equals au.Id
                                           join o in DataContext.Organization on au.OrganizationId equals o.Id
                                           where i.OrderDate >= Start && i.OrderDate <= End &&
-                                          o.Path.StartsWith(CurrentUser.Organization.Path) &&
+                                          AppUserIds.Contains(au.Id) &&
+                                          (SaleEmployeeId.HasValue == false || au.Id == SaleEmployeeId.Value) &&
+                                          OrganizationIds.Contains(i.OrganizationId) &&
                                           i.RequestStateId == RequestStateEnum.APPROVED.Id &&
                                           au.DeletedAt == null && o.DeletedAt == null
                                           select i;
@@ -291,7 +492,9 @@ namespace DMS.Rpc.dashboards.director
                             join au in DataContext.AppUser on i.SaleEmployeeId equals au.Id
                             join o in DataContext.Organization on au.OrganizationId equals o.Id
                             where i.OrderDate >= Start && i.OrderDate <= End &&
-                            o.Path.StartsWith(CurrentUser.Organization.Path) &&
+                            AppUserIds.Contains(au.Id) &&
+                            (SaleEmployeeId.HasValue == false || au.Id == SaleEmployeeId.Value) &&
+                            OrganizationIds.Contains(i.OrganizationId) &&
                             i.RequestStateId == RequestStateEnum.APPROVED.Id &&
                             au.DeletedAt == null && o.DeletedAt == null
                             select ic;
@@ -301,7 +504,9 @@ namespace DMS.Rpc.dashboards.director
                                      join au in DataContext.AppUser on sc.SaleEmployeeId equals au.Id
                                      join o in DataContext.Organization on au.OrganizationId equals o.Id
                                      where sc.CheckOutAt.HasValue && sc.CheckOutAt >= Start && sc.CheckOutAt <= End &&
-                                     o.Path.StartsWith(CurrentUser.Organization.Path) &&
+                                     AppUserIds.Contains(au.Id) &&
+                                     (SaleEmployeeId.HasValue == false || au.Id == SaleEmployeeId.Value) &&
+                                     OrganizationIds.Contains(s.OrganizationId) &&
                                      au.DeletedAt == null && o.DeletedAt == null && s.DeletedAt == null
                                      select sc;
 
@@ -367,23 +572,38 @@ namespace DMS.Rpc.dashboards.director
         }
 
         [Route(DashboardDirectorRoute.SaleEmployeeLocation), HttpPost]
-        public async Task<List<DashboardDirector_AppUserDTO>> SaleEmployeeLocation([FromBody] DashboardDirector_AppUserFilterDTO DashboardDirector_AppUserFilterDTO)
+        public async Task<List<DashboardDirector_AppUserDTO>> SaleEmployeeLocation([FromBody] DashboardDirector_StoreFilterDTO DashboardDirector_StoreFilterDTO)
         {
             DateTime Start = LocalStartDay(CurrentContext);
             DateTime End = LocalEndDay(CurrentContext);
+            long? SaleEmployeeId = DashboardDirector_StoreFilterDTO.AppUserId?.Equal;
             List<long> OrganizationIds = await FilterOrganization(OrganizationService, CurrentContext);
-            List<OrganizationDAO> OrganizationDAOs = await DataContext.Organization.Where(o => o.DeletedAt == null && (OrganizationIds.Count == 0 || OrganizationIds.Contains(o.Id))).ToListAsync();
+            List<OrganizationDAO> OrganizationDAOs = await DataContext.Organization.Where(o => o.DeletedAt == null && OrganizationIds.Contains(o.Id)).ToListAsync();
             OrganizationDAO OrganizationDAO = null;
-            if (DashboardDirector_AppUserFilterDTO.OrganizationId?.Equal != null)
+            if (DashboardDirector_StoreFilterDTO.OrganizationId?.Equal != null)
             {
-                OrganizationDAO = await DataContext.Organization.Where(o => o.Id == DashboardDirector_AppUserFilterDTO.OrganizationId.Equal.Value).FirstOrDefaultAsync();
+                OrganizationDAO = await DataContext.Organization.Where(o => o.Id == DashboardDirector_StoreFilterDTO.OrganizationId.Equal.Value).FirstOrDefaultAsync();
                 OrganizationDAOs = OrganizationDAOs.Where(o => o.Path.StartsWith(OrganizationDAO.Path)).ToList();
             }
             OrganizationIds = OrganizationDAOs.Select(o => o.Id).ToList();
 
+            AppUserFilter AppUserFilter = new AppUserFilter
+            {
+                OrganizationId = new IdFilter { In = OrganizationIds },
+                Id = new IdFilter { },
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = AppUserSelect.Id | AppUserSelect.DisplayName | AppUserSelect.Organization
+            };
+            AppUserFilter.Id.In = await FilterAppUser(AppUserService, OrganizationService, CurrentContext);
+            var AppUsers = await AppUserService.List(AppUserFilter);
+            var AppUserIds = AppUsers.Select(x => x.Id).ToList();
+
             var query = from au in DataContext.AppUser
                         where au.StatusId == Enums.StatusEnum.ACTIVE.Id &&
-                        (OrganizationIds.Contains(au.OrganizationId)) &&
+                        AppUserIds.Contains(au.Id) &&
+                        (SaleEmployeeId.HasValue == false || au.Id == SaleEmployeeId.Value) &&
+                        OrganizationIds.Contains(au.OrganizationId) &&
                         au.DeletedAt == null &&
                         Start <= au.GPSUpdatedAt && au.GPSUpdatedAt <= End
                         select new DashboardDirector_AppUserDTO
@@ -400,14 +620,39 @@ namespace DMS.Rpc.dashboards.director
         }
 
         [Route(DashboardDirectorRoute.ListIndirectSalesOrder), HttpPost]
-        public async Task<List<DashboardDirector_IndirectSalesOrderDTO>> ListIndirectSalesOrder()
+        public async Task<List<DashboardDirector_IndirectSalesOrderDTO>> ListIndirectSalesOrder([FromBody] DashboardDirector_IndirectSalesOrderFluctuationFilterDTO DashboardDirector_IndirectSalesOrderFluctuationFilterDTO)
         {
+            long? SaleEmployeeId = DashboardDirector_IndirectSalesOrderFluctuationFilterDTO.AppUserId?.Equal;
+            List<long> OrganizationIds = await FilterOrganization(OrganizationService, CurrentContext);
+            List<OrganizationDAO> OrganizationDAOs = await DataContext.Organization.Where(o => o.DeletedAt == null && OrganizationIds.Contains(o.Id)).ToListAsync();
+            OrganizationDAO OrganizationDAO = null;
+            if (DashboardDirector_IndirectSalesOrderFluctuationFilterDTO.OrganizationId?.Equal != null)
+            {
+                OrganizationDAO = await DataContext.Organization.Where(o => o.Id == DashboardDirector_IndirectSalesOrderFluctuationFilterDTO.OrganizationId.Equal.Value).FirstOrDefaultAsync();
+                OrganizationDAOs = OrganizationDAOs.Where(o => o.Path.StartsWith(OrganizationDAO.Path)).ToList();
+            }
+            OrganizationIds = OrganizationDAOs.Select(o => o.Id).ToList();
+
+            AppUserFilter AppUserFilter = new AppUserFilter
+            {
+                OrganizationId = new IdFilter { In = OrganizationIds },
+                Id = new IdFilter { },
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = AppUserSelect.Id | AppUserSelect.DisplayName | AppUserSelect.Organization
+            };
+            AppUserFilter.Id.In = await FilterAppUser(AppUserService, OrganizationService, CurrentContext);
+            var AppUsers = await AppUserService.List(AppUserFilter);
+            var AppUserIds = AppUsers.Select(x => x.Id).ToList();
+
             var appUser = await AppUserService.Get(CurrentContext.UserId);
             var query = from i in DataContext.IndirectSalesOrder
                         join r in DataContext.RequestState on i.RequestStateId equals r.Id
                         join au in DataContext.AppUser on i.SaleEmployeeId equals au.Id
                         join o in DataContext.Organization on au.OrganizationId equals o.Id
-                        where o.Path.StartsWith(appUser.Organization.Path) &&
+                        where AppUserIds.Contains(i.SaleEmployeeId) &&
+                        (SaleEmployeeId.HasValue == false || i.SaleEmployeeId == SaleEmployeeId.Value) &&
+                        OrganizationIds.Contains(i.OrganizationId) &&
                         i.RequestStateId != RequestStateEnum.NEW.Id &&
                         au.DeletedAt == null && o.DeletedAt == null
                         orderby i.OrderDate descending
@@ -439,10 +684,32 @@ namespace DMS.Rpc.dashboards.director
         [Route(DashboardDirectorRoute.Top5RevenueByProduct), HttpPost]
         public async Task<List<DashboardDirector_Top5RevenueByProductDTO>> Top5RevenueByProduct([FromBody] DashboardDirector_Top5RevenueByProductFilterDTO DashboardDirector_Top5RevenueByProductFilterDTO)
         {
-            AppUser CurrentUser = await AppUserService.Get(CurrentContext.UserId);
             DateTime Now = StaticParams.DateTimeNow.Date;
             DateTime Start = new DateTime(Now.Year, Now.Month, Now.Day);
             DateTime End = new DateTime(Now.Year, Now.Month, Now.Day);
+
+            long? SaleEmployeeId = DashboardDirector_Top5RevenueByProductFilterDTO.AppUserId?.Equal;
+            List<long> OrganizationIds = await FilterOrganization(OrganizationService, CurrentContext);
+            List<OrganizationDAO> OrganizationDAOs = await DataContext.Organization.Where(o => o.DeletedAt == null && OrganizationIds.Contains(o.Id)).ToListAsync();
+            OrganizationDAO OrganizationDAO = null;
+            if (DashboardDirector_Top5RevenueByProductFilterDTO.OrganizationId?.Equal != null)
+            {
+                OrganizationDAO = await DataContext.Organization.Where(o => o.Id == DashboardDirector_Top5RevenueByProductFilterDTO.OrganizationId.Equal.Value).FirstOrDefaultAsync();
+                OrganizationDAOs = OrganizationDAOs.Where(o => o.Path.StartsWith(OrganizationDAO.Path)).ToList();
+            }
+            OrganizationIds = OrganizationDAOs.Select(o => o.Id).ToList();
+
+            AppUserFilter AppUserFilter = new AppUserFilter
+            {
+                OrganizationId = new IdFilter { In = OrganizationIds },
+                Id = new IdFilter { },
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = AppUserSelect.Id | AppUserSelect.DisplayName | AppUserSelect.Organization
+            };
+            AppUserFilter.Id.In = await FilterAppUser(AppUserService, OrganizationService, CurrentContext);
+            var AppUsers = await AppUserService.List(AppUserFilter);
+            var AppUserIds = AppUsers.Select(x => x.Id).ToList();
 
             if (DashboardDirector_Top5RevenueByProductFilterDTO.Time.Equal.HasValue == false)
             {
@@ -479,7 +746,9 @@ namespace DMS.Rpc.dashboards.director
                         join au in DataContext.AppUser on o.SaleEmployeeId equals au.Id
                         join org in DataContext.Organization on au.OrganizationId equals org.Id
                         where o.OrderDate >= Start && o.OrderDate <= End &&
-                        org.Path.StartsWith(CurrentUser.Organization.Path) &&
+                        AppUserIds.Contains(o.SaleEmployeeId) &&
+                        (SaleEmployeeId.HasValue == false || o.SaleEmployeeId == SaleEmployeeId.Value) &&
+                        OrganizationIds.Contains(o.OrganizationId) &&
                         o.RequestStateId == RequestStateEnum.APPROVED.Id &&
                         au.DeletedAt == null && o.DeletedAt == null && i.DeletedAt == null && p.DeletedAt == null
                         group oc by p.Name into x
@@ -498,10 +767,32 @@ namespace DMS.Rpc.dashboards.director
         [Route(DashboardDirectorRoute.Top5RevenueByStore), HttpPost]
         public async Task<List<DashboardDirector_Top5RevenueByStoreDTO>> Top5RevenueByStore([FromBody] DashboardDirector_Top5RevenueByStoreFilterDTO DashboardDirector_Top5RevenueByStoreFilterDTO)
         {
-            AppUser CurrentUser = await AppUserService.Get(CurrentContext.UserId);
             DateTime Now = StaticParams.DateTimeNow.Date;
             DateTime Start = new DateTime(Now.Year, Now.Month, Now.Day);
             DateTime End = new DateTime(Now.Year, Now.Month, Now.Day);
+
+            long? SaleEmployeeId = DashboardDirector_Top5RevenueByStoreFilterDTO.AppUserId?.Equal;
+            List<long> OrganizationIds = await FilterOrganization(OrganizationService, CurrentContext);
+            List<OrganizationDAO> OrganizationDAOs = await DataContext.Organization.Where(o => o.DeletedAt == null && OrganizationIds.Contains(o.Id)).ToListAsync();
+            OrganizationDAO OrganizationDAO = null;
+            if (DashboardDirector_Top5RevenueByStoreFilterDTO.OrganizationId?.Equal != null)
+            {
+                OrganizationDAO = await DataContext.Organization.Where(o => o.Id == DashboardDirector_Top5RevenueByStoreFilterDTO.OrganizationId.Equal.Value).FirstOrDefaultAsync();
+                OrganizationDAOs = OrganizationDAOs.Where(o => o.Path.StartsWith(OrganizationDAO.Path)).ToList();
+            }
+            OrganizationIds = OrganizationDAOs.Select(o => o.Id).ToList();
+
+            AppUserFilter AppUserFilter = new AppUserFilter
+            {
+                OrganizationId = new IdFilter { In = OrganizationIds },
+                Id = new IdFilter { },
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = AppUserSelect.Id | AppUserSelect.DisplayName | AppUserSelect.Organization
+            };
+            AppUserFilter.Id.In = await FilterAppUser(AppUserService, OrganizationService, CurrentContext);
+            var AppUsers = await AppUserService.List(AppUserFilter);
+            var AppUserIds = AppUsers.Select(x => x.Id).ToList();
 
             if (DashboardDirector_Top5RevenueByStoreFilterDTO.Time.Equal.HasValue == false)
             {
@@ -537,7 +828,9 @@ namespace DMS.Rpc.dashboards.director
                         join au in DataContext.AppUser on i.SaleEmployeeId equals au.Id
                         join o in DataContext.Organization on au.OrganizationId equals o.Id
                         where i.OrderDate >= Start && i.OrderDate <= End &&
-                        o.Path.StartsWith(CurrentUser.Organization.Path) &&
+                        AppUserIds.Contains(i.SaleEmployeeId) &&
+                        (SaleEmployeeId.HasValue == false || i.SaleEmployeeId == SaleEmployeeId.Value) &&
+                        OrganizationIds.Contains(i.OrganizationId) &&
                         i.RequestStateId == RequestStateEnum.APPROVED.Id &&
                         au.DeletedAt == null && o.DeletedAt == null && s.DeletedAt == null
                         group ic by s.Name into x
@@ -556,10 +849,32 @@ namespace DMS.Rpc.dashboards.director
         [Route(DashboardDirectorRoute.RevenueFluctuation), HttpPost]
         public async Task<DashboardDirector_RevenueFluctuationDTO> RevenueFluctuation([FromBody] DashboardDirector_RevenueFluctuationFilterDTO DashboardDirector_RevenueFluctuationFilterDTO)
         {
-            AppUser CurrentUser = await AppUserService.Get(CurrentContext.UserId);
             DateTime Now = StaticParams.DateTimeNow.Date;
             DateTime Start = LocalStartDay(CurrentContext);
             DateTime End = new DateTime(Now.Year, Now.Month, Now.Day);
+
+            long? SaleEmployeeId = DashboardDirector_RevenueFluctuationFilterDTO.AppUserId?.Equal;
+            List<long> OrganizationIds = await FilterOrganization(OrganizationService, CurrentContext);
+            List<OrganizationDAO> OrganizationDAOs = await DataContext.Organization.Where(o => o.DeletedAt == null && OrganizationIds.Contains(o.Id)).ToListAsync();
+            OrganizationDAO OrganizationDAO = null;
+            if (DashboardDirector_RevenueFluctuationFilterDTO.OrganizationId?.Equal != null)
+            {
+                OrganizationDAO = await DataContext.Organization.Where(o => o.Id == DashboardDirector_RevenueFluctuationFilterDTO.OrganizationId.Equal.Value).FirstOrDefaultAsync();
+                OrganizationDAOs = OrganizationDAOs.Where(o => o.Path.StartsWith(OrganizationDAO.Path)).ToList();
+            }
+            OrganizationIds = OrganizationDAOs.Select(o => o.Id).ToList();
+
+            AppUserFilter AppUserFilter = new AppUserFilter
+            {
+                OrganizationId = new IdFilter { In = OrganizationIds },
+                Id = new IdFilter { },
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = AppUserSelect.Id | AppUserSelect.DisplayName | AppUserSelect.Organization
+            };
+            AppUserFilter.Id.In = await FilterAppUser(AppUserService, OrganizationService, CurrentContext);
+            var AppUsers = await AppUserService.List(AppUserFilter);
+            var AppUserIds = AppUsers.Select(x => x.Id).ToList();
 
             if (DashboardDirector_RevenueFluctuationFilterDTO.Time.Equal.HasValue == false
                 || DashboardDirector_RevenueFluctuationFilterDTO.Time.Equal.Value == THIS_MONTH)
@@ -572,7 +887,9 @@ namespace DMS.Rpc.dashboards.director
                             join au in DataContext.AppUser on i.SaleEmployeeId equals au.Id
                             join o in DataContext.Organization on au.OrganizationId equals o.Id
                             where i.OrderDate >= Start && i.OrderDate <= End &&
-                            o.Path.StartsWith(CurrentUser.Organization.Path) &&
+                            AppUserIds.Contains(i.SaleEmployeeId) &&
+                            (SaleEmployeeId.HasValue == false || i.SaleEmployeeId == SaleEmployeeId.Value) &&
+                            OrganizationIds.Contains(i.OrganizationId) &&
                             i.RequestStateId == RequestStateEnum.APPROVED.Id &&
                             au.DeletedAt == null && o.DeletedAt == null
                             group ic by i.OrderDate.Day into x
@@ -615,7 +932,9 @@ namespace DMS.Rpc.dashboards.director
                             join au in DataContext.AppUser on i.SaleEmployeeId equals au.Id
                             join o in DataContext.Organization on au.OrganizationId equals o.Id
                             where i.OrderDate >= Start && i.OrderDate <= End &&
-                            o.Path.StartsWith(CurrentUser.Organization.Path) &&
+                            AppUserIds.Contains(i.SaleEmployeeId) &&
+                            (SaleEmployeeId.HasValue == false || i.SaleEmployeeId == SaleEmployeeId.Value) &&
+                            OrganizationIds.Contains(i.OrganizationId) &&
                             i.RequestStateId == RequestStateEnum.APPROVED.Id &&
                             au.DeletedAt == null && o.DeletedAt == null
                             group ic by i.OrderDate.Day into x
@@ -659,7 +978,9 @@ namespace DMS.Rpc.dashboards.director
                             join au in DataContext.AppUser on i.SaleEmployeeId equals au.Id
                             join o in DataContext.Organization on au.OrganizationId equals o.Id
                             where i.OrderDate >= Start && i.OrderDate <= End &&
-                            o.Path.StartsWith(CurrentUser.Organization.Path) &&
+                            AppUserIds.Contains(i.SaleEmployeeId) &&
+                            (SaleEmployeeId.HasValue == false || i.SaleEmployeeId == SaleEmployeeId.Value) &&
+                            OrganizationIds.Contains(i.OrganizationId) &&
                             i.RequestStateId == RequestStateEnum.APPROVED.Id &&
                             au.DeletedAt == null && o.DeletedAt == null
                             group ic by i.OrderDate.Month into x
@@ -704,7 +1025,9 @@ namespace DMS.Rpc.dashboards.director
                             join au in DataContext.AppUser on i.SaleEmployeeId equals au.Id
                             join o in DataContext.Organization on au.OrganizationId equals o.Id
                             where i.OrderDate >= Start && i.OrderDate <= End &&
-                            o.Path.StartsWith(CurrentUser.Organization.Path) &&
+                            AppUserIds.Contains(i.SaleEmployeeId) &&
+                            (SaleEmployeeId.HasValue == false || i.SaleEmployeeId == SaleEmployeeId.Value) &&
+                            OrganizationIds.Contains(i.OrganizationId) &&
                             i.RequestStateId == RequestStateEnum.APPROVED.Id &&
                             au.DeletedAt == null && o.DeletedAt == null
                             group ic by i.OrderDate.Month into x
@@ -748,7 +1071,9 @@ namespace DMS.Rpc.dashboards.director
                             join au in DataContext.AppUser on i.SaleEmployeeId equals au.Id
                             join o in DataContext.Organization on au.OrganizationId equals o.Id
                             where i.OrderDate >= Start && i.OrderDate <= End &&
-                            o.Path.StartsWith(CurrentUser.Organization.Path) &&
+                            AppUserIds.Contains(i.SaleEmployeeId) &&
+                            (SaleEmployeeId.HasValue == false || i.SaleEmployeeId == SaleEmployeeId.Value) &&
+                            OrganizationIds.Contains(i.OrganizationId) &&
                             i.RequestStateId == RequestStateEnum.APPROVED.Id &&
                             au.DeletedAt == null && o.DeletedAt == null
                             group ic by i.OrderDate.Month into x
@@ -786,10 +1111,32 @@ namespace DMS.Rpc.dashboards.director
         [Route(DashboardDirectorRoute.IndirectSalesOrderFluctuation), HttpPost]
         public async Task<DashboardDirector_IndirectSalesOrderFluctuationDTO> IndirectSalesOrderFluctuation([FromBody] DashboardDirector_IndirectSalesOrderFluctuationFilterDTO DashboardDirector_IndirectSalesOrderFluctuationFilterDTO)
         {
-            AppUser CurrentUser = await AppUserService.Get(CurrentContext.UserId);
             DateTime Now = StaticParams.DateTimeNow.Date;
             DateTime Start = LocalStartDay(CurrentContext);
             DateTime End = new DateTime(Now.Year, Now.Month, Now.Day);
+
+            long? SaleEmployeeId = DashboardDirector_IndirectSalesOrderFluctuationFilterDTO.AppUserId?.Equal;
+            List<long> OrganizationIds = await FilterOrganization(OrganizationService, CurrentContext);
+            List<OrganizationDAO> OrganizationDAOs = await DataContext.Organization.Where(o => o.DeletedAt == null && OrganizationIds.Contains(o.Id)).ToListAsync();
+            OrganizationDAO OrganizationDAO = null;
+            if (DashboardDirector_IndirectSalesOrderFluctuationFilterDTO.OrganizationId?.Equal != null)
+            {
+                OrganizationDAO = await DataContext.Organization.Where(o => o.Id == DashboardDirector_IndirectSalesOrderFluctuationFilterDTO.OrganizationId.Equal.Value).FirstOrDefaultAsync();
+                OrganizationDAOs = OrganizationDAOs.Where(o => o.Path.StartsWith(OrganizationDAO.Path)).ToList();
+            }
+            OrganizationIds = OrganizationDAOs.Select(o => o.Id).ToList();
+
+            AppUserFilter AppUserFilter = new AppUserFilter
+            {
+                OrganizationId = new IdFilter { In = OrganizationIds },
+                Id = new IdFilter { },
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = AppUserSelect.Id | AppUserSelect.DisplayName | AppUserSelect.Organization
+            };
+            AppUserFilter.Id.In = await FilterAppUser(AppUserService, OrganizationService, CurrentContext);
+            var AppUsers = await AppUserService.List(AppUserFilter);
+            var AppUserIds = AppUsers.Select(x => x.Id).ToList();
 
             if (DashboardDirector_IndirectSalesOrderFluctuationFilterDTO.Time.Equal.HasValue == false
                 || DashboardDirector_IndirectSalesOrderFluctuationFilterDTO.Time.Equal.Value == THIS_MONTH)
@@ -801,7 +1148,9 @@ namespace DMS.Rpc.dashboards.director
                             join au in DataContext.AppUser on i.SaleEmployeeId equals au.Id
                             join o in DataContext.Organization on au.OrganizationId equals o.Id
                             where i.OrderDate >= Start && i.OrderDate <= End &&
-                            o.Path.StartsWith(CurrentUser.Organization.Path) &&
+                            AppUserIds.Contains(i.SaleEmployeeId) &&
+                            (SaleEmployeeId.HasValue == false || i.SaleEmployeeId == SaleEmployeeId.Value) &&
+                            OrganizationIds.Contains(i.OrganizationId) &&
                             i.RequestStateId == RequestStateEnum.APPROVED.Id &&
                             au.DeletedAt == null && o.DeletedAt == null
                             group i by i.OrderDate.Day into x
@@ -843,7 +1192,9 @@ namespace DMS.Rpc.dashboards.director
                             join au in DataContext.AppUser on i.SaleEmployeeId equals au.Id
                             join o in DataContext.Organization on au.OrganizationId equals o.Id
                             where i.OrderDate >= Start && i.OrderDate <= End &&
-                            o.Path.StartsWith(CurrentUser.Organization.Path) &&
+                            AppUserIds.Contains(i.SaleEmployeeId) &&
+                            (SaleEmployeeId.HasValue == false || i.SaleEmployeeId == SaleEmployeeId.Value) &&
+                            OrganizationIds.Contains(i.OrganizationId) &&
                             i.RequestStateId == RequestStateEnum.APPROVED.Id &&
                             au.DeletedAt == null && o.DeletedAt == null
                             group i by i.OrderDate.Day into x
@@ -886,7 +1237,9 @@ namespace DMS.Rpc.dashboards.director
                             join au in DataContext.AppUser on i.SaleEmployeeId equals au.Id
                             join o in DataContext.Organization on au.OrganizationId equals o.Id
                             where i.OrderDate >= Start && i.OrderDate <= End &&
-                            o.Path.StartsWith(CurrentUser.Organization.Path) &&
+                            AppUserIds.Contains(i.SaleEmployeeId) &&
+                            (SaleEmployeeId.HasValue == false || i.SaleEmployeeId == SaleEmployeeId.Value) &&
+                            OrganizationIds.Contains(i.OrganizationId) &&
                             i.RequestStateId == RequestStateEnum.APPROVED.Id &&
                             au.DeletedAt == null && o.DeletedAt == null
                             group i by i.OrderDate.Month into x
@@ -930,7 +1283,9 @@ namespace DMS.Rpc.dashboards.director
                             join au in DataContext.AppUser on i.SaleEmployeeId equals au.Id
                             join o in DataContext.Organization on au.OrganizationId equals o.Id
                             where i.OrderDate >= Start && i.OrderDate <= End &&
-                            o.Path.StartsWith(CurrentUser.Organization.Path) &&
+                            AppUserIds.Contains(i.SaleEmployeeId) &&
+                            (SaleEmployeeId.HasValue == false || i.SaleEmployeeId == SaleEmployeeId.Value) &&
+                            OrganizationIds.Contains(i.OrganizationId) &&
                             i.RequestStateId == RequestStateEnum.APPROVED.Id &&
                             au.DeletedAt == null && o.DeletedAt == null
                             group i by i.OrderDate.Month into x
@@ -973,7 +1328,9 @@ namespace DMS.Rpc.dashboards.director
                             join au in DataContext.AppUser on i.SaleEmployeeId equals au.Id
                             join o in DataContext.Organization on au.OrganizationId equals o.Id
                             where i.OrderDate >= Start && i.OrderDate <= End &&
-                            o.Path.StartsWith(CurrentUser.Organization.Path) &&
+                            AppUserIds.Contains(i.SaleEmployeeId) &&
+                            (SaleEmployeeId.HasValue == false || i.SaleEmployeeId == SaleEmployeeId.Value) &&
+                            OrganizationIds.Contains(i.OrganizationId) &&
                             i.RequestStateId == RequestStateEnum.APPROVED.Id &&
                             au.DeletedAt == null && o.DeletedAt == null
                             group i by i.OrderDate.Month into x
@@ -1011,10 +1368,32 @@ namespace DMS.Rpc.dashboards.director
         [Route(DashboardDirectorRoute.SaledItemFluctuation), HttpPost]
         public async Task<DashboardDirector_SaledItemFluctuationDTO> SaledItemFluctuation([FromBody] DashboardDirector_SaledItemFluctuationFilterDTO DashboardDirector_SaledItemFluctuationFilterDTO)
         {
-            AppUser CurrentUser = await AppUserService.Get(CurrentContext.UserId);
             DateTime Now = StaticParams.DateTimeNow.Date;
             DateTime Start = LocalStartDay(CurrentContext);
             DateTime End = new DateTime(Now.Year, Now.Month, Now.Day);
+
+            long? SaleEmployeeId = DashboardDirector_SaledItemFluctuationFilterDTO.AppUserId?.Equal;
+            List<long> OrganizationIds = await FilterOrganization(OrganizationService, CurrentContext);
+            List<OrganizationDAO> OrganizationDAOs = await DataContext.Organization.Where(o => o.DeletedAt == null && OrganizationIds.Contains(o.Id)).ToListAsync();
+            OrganizationDAO OrganizationDAO = null;
+            if (DashboardDirector_SaledItemFluctuationFilterDTO.OrganizationId?.Equal != null)
+            {
+                OrganizationDAO = await DataContext.Organization.Where(o => o.Id == DashboardDirector_SaledItemFluctuationFilterDTO.OrganizationId.Equal.Value).FirstOrDefaultAsync();
+                OrganizationDAOs = OrganizationDAOs.Where(o => o.Path.StartsWith(OrganizationDAO.Path)).ToList();
+            }
+            OrganizationIds = OrganizationDAOs.Select(o => o.Id).ToList();
+
+            AppUserFilter AppUserFilter = new AppUserFilter
+            {
+                OrganizationId = new IdFilter { In = OrganizationIds },
+                Id = new IdFilter { },
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = AppUserSelect.Id | AppUserSelect.DisplayName | AppUserSelect.Organization
+            };
+            AppUserFilter.Id.In = await FilterAppUser(AppUserService, OrganizationService, CurrentContext);
+            var AppUsers = await AppUserService.List(AppUserFilter);
+            var AppUserIds = AppUsers.Select(x => x.Id).ToList();
 
             if (DashboardDirector_SaledItemFluctuationFilterDTO.Time.Equal.HasValue == false
                 || DashboardDirector_SaledItemFluctuationFilterDTO.Time.Equal.Value == THIS_MONTH)
@@ -1027,7 +1406,9 @@ namespace DMS.Rpc.dashboards.director
                             join au in DataContext.AppUser on i.SaleEmployeeId equals au.Id
                             join o in DataContext.Organization on au.OrganizationId equals o.Id
                             where i.OrderDate >= Start && i.OrderDate <= End &&
-                            o.Path.StartsWith(CurrentUser.Organization.Path) &&
+                            AppUserIds.Contains(i.SaleEmployeeId) &&
+                            (SaleEmployeeId.HasValue == false || i.SaleEmployeeId == SaleEmployeeId.Value) &&
+                            OrganizationIds.Contains(i.OrganizationId) &&
                             i.RequestStateId == RequestStateEnum.APPROVED.Id &&
                             au.DeletedAt == null && o.DeletedAt == null
                             group ic by i.OrderDate.Day into x
@@ -1070,7 +1451,9 @@ namespace DMS.Rpc.dashboards.director
                             join au in DataContext.AppUser on i.SaleEmployeeId equals au.Id
                             join o in DataContext.Organization on au.OrganizationId equals o.Id
                             where i.OrderDate >= Start && i.OrderDate <= End &&
-                            o.Path.StartsWith(CurrentUser.Organization.Path) &&
+                            AppUserIds.Contains(i.SaleEmployeeId) &&
+                            (SaleEmployeeId.HasValue == false || i.SaleEmployeeId == SaleEmployeeId.Value) &&
+                            OrganizationIds.Contains(i.OrganizationId) &&
                             i.RequestStateId == RequestStateEnum.APPROVED.Id &&
                             au.DeletedAt == null && o.DeletedAt == null
                             group ic by i.OrderDate.Day into x
@@ -1114,7 +1497,9 @@ namespace DMS.Rpc.dashboards.director
                             join au in DataContext.AppUser on i.SaleEmployeeId equals au.Id
                             join o in DataContext.Organization on au.OrganizationId equals o.Id
                             where i.OrderDate >= Start && i.OrderDate <= End &&
-                            o.Path.StartsWith(CurrentUser.Organization.Path) &&
+                            AppUserIds.Contains(i.SaleEmployeeId) &&
+                            (SaleEmployeeId.HasValue == false || i.SaleEmployeeId == SaleEmployeeId.Value) &&
+                            OrganizationIds.Contains(i.OrganizationId) &&
                             i.RequestStateId == RequestStateEnum.APPROVED.Id &&
                             au.DeletedAt == null && o.DeletedAt == null
                             group ic by i.OrderDate.Month into x
@@ -1159,7 +1544,9 @@ namespace DMS.Rpc.dashboards.director
                             join au in DataContext.AppUser on i.SaleEmployeeId equals au.Id
                             join o in DataContext.Organization on au.OrganizationId equals o.Id
                             where i.OrderDate >= Start && i.OrderDate <= End &&
-                            o.Path.StartsWith(CurrentUser.Organization.Path) &&
+                            AppUserIds.Contains(i.SaleEmployeeId) &&
+                            (SaleEmployeeId.HasValue == false || i.SaleEmployeeId == SaleEmployeeId.Value) &&
+                            OrganizationIds.Contains(i.OrganizationId) &&
                             i.RequestStateId == RequestStateEnum.APPROVED.Id &&
                             au.DeletedAt == null && o.DeletedAt == null
                             group ic by i.OrderDate.Month into x
@@ -1203,7 +1590,9 @@ namespace DMS.Rpc.dashboards.director
                             join au in DataContext.AppUser on i.SaleEmployeeId equals au.Id
                             join o in DataContext.Organization on au.OrganizationId equals o.Id
                             where i.OrderDate >= Start && i.OrderDate <= End &&
-                            o.Path.StartsWith(CurrentUser.Organization.Path) &&
+                            AppUserIds.Contains(i.SaleEmployeeId) &&
+                            (SaleEmployeeId.HasValue == false || i.SaleEmployeeId == SaleEmployeeId.Value) &&
+                            OrganizationIds.Contains(i.OrganizationId) &&
                             i.RequestStateId == RequestStateEnum.APPROVED.Id &&
                             au.DeletedAt == null && o.DeletedAt == null
                             group ic by i.OrderDate.Month into x
