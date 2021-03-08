@@ -19,6 +19,8 @@ namespace DMS.Enums
         public static GenericEnum DASH_BOARD_REFRESH_TIME = new GenericEnum { Id = 9, Code = "DASH_BOARD_REFRESH_TIME", Name = "Tần suất tự Reload dữ liệu trên màn hình Dashboard" };
         public static GenericEnum AMPLITUDE_PRICE_IN_DIRECT = new GenericEnum { Id = 10, Code = "AMPLITUDE_PRICE_IN_DIRECT", Name = "Biên độ cho phép sửa giá trên đơn hàng trực tiếp" };
         public static GenericEnum AMPLITUDE_PRICE_IN_INDIRECT = new GenericEnum { Id = 11, Code = "AMPLITUDE_PRICE_IN_INDIRECT", Name = "Biên độ cho phép sửa giá trên đơn hàng gián tiếp" };
+        public static GenericEnum USE_STORE_APPROVAL = new GenericEnum { Id = 12, Code = "USE_STORE_APPROVAL", Name = "Sử dụng cửa hàng phê duyệt" };
+        public static GenericEnum USE_ERP_APPROVAL = new GenericEnum { Id = 13, Code = "USE_ERP_APPROVAL", Name = "Sử dụng ERP phê duyệt" };
 
         public static List<GenericEnum> SystemConfigurationEnumList = new List<GenericEnum>
         {
@@ -33,6 +35,8 @@ namespace DMS.Enums
             DASH_BOARD_REFRESH_TIME,
             AMPLITUDE_PRICE_IN_DIRECT,
             AMPLITUDE_PRICE_IN_INDIRECT,
+            USE_STORE_APPROVAL,
+            USE_ERP_APPROVAL
         };
     }
 }

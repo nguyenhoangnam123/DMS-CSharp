@@ -35,6 +35,7 @@ namespace DMS.Models
         public virtual DbSet<EditedPriceStatusDAO> EditedPriceStatus { get; set; }
         public virtual DbSet<EntityComponentDAO> EntityComponent { get; set; }
         public virtual DbSet<EntityTypeDAO> EntityType { get; set; }
+        public virtual DbSet<ErpApprovalStateDAO> ErpApprovalState { get; set; }
         public virtual DbSet<EventMessageDAO> EventMessage { get; set; }
         public virtual DbSet<FieldDAO> Field { get; set; }
         public virtual DbSet<FieldTypeDAO> FieldType { get; set; }
@@ -136,6 +137,7 @@ namespace DMS.Models
         public virtual DbSet<SexDAO> Sex { get; set; }
         public virtual DbSet<StatusDAO> Status { get; set; }
         public virtual DbSet<StoreDAO> Store { get; set; }
+        public virtual DbSet<StoreApprovalStateDAO> StoreApprovalState { get; set; }
         public virtual DbSet<StoreCheckingDAO> StoreChecking { get; set; }
         public virtual DbSet<StoreCheckingImageMappingDAO> StoreCheckingImageMapping { get; set; }
         public virtual DbSet<StoreGroupingDAO> StoreGrouping { get; set; }
@@ -703,6 +705,11 @@ namespace DMS.Models
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_DirectSalesOrder_EditedPriceStatus");
 
+                entity.HasOne(d => d.ErpApprovalState)
+                    .WithMany(p => p.DirectSalesOrders)
+                    .HasForeignKey(d => d.ErpApprovalStateId)
+                    .HasConstraintName("FK_DirectSalesOrder_ErpApprovalState");
+
                 entity.HasOne(d => d.Organization)
                     .WithMany(p => p.DirectSalesOrders)
                     .HasForeignKey(d => d.OrganizationId)
@@ -720,6 +727,11 @@ namespace DMS.Models
                     .HasForeignKey(d => d.SaleEmployeeId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_DirectSalesOrder_AppUser");
+
+                entity.HasOne(d => d.StoreApprovalState)
+                    .WithMany(p => p.DirectSalesOrders)
+                    .HasForeignKey(d => d.StoreApprovalStateId)
+                    .HasConstraintName("FK_DirectSalesOrder_StoreApprovalState");
 
                 entity.HasOne(d => d.StoreChecking)
                     .WithMany(p => p.DirectSalesOrders)
@@ -1097,6 +1109,19 @@ namespace DMS.Models
                 entity.Property(e => e.Name)
                     .IsRequired()
                     .HasMaxLength(500);
+            });
+
+            modelBuilder.Entity<ErpApprovalStateDAO>(entity =>
+            {
+                entity.ToTable("ErpApprovalState", "ENUM");
+
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(50);
             });
 
             modelBuilder.Entity<EventMessageDAO>(entity =>
@@ -3853,6 +3878,19 @@ namespace DMS.Models
                     .HasConstraintName("FK_Store_Ward");
             });
 
+            modelBuilder.Entity<StoreApprovalStateDAO>(entity =>
+            {
+                entity.ToTable("StoreApprovalState", "ENUM");
+
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(50);
+            });
+
             modelBuilder.Entity<StoreCheckingDAO>(entity =>
             {
                 entity.Property(e => e.CheckInAt).HasColumnType("datetime");
@@ -3965,6 +4003,8 @@ namespace DMS.Models
                 entity.ToTable("StoreHistory", "MDM");
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.PreviousCreatedAt).HasColumnType("datetime");
 
                 entity.HasOne(d => d.AppUser)
                     .WithMany(p => p.StoreHistories)

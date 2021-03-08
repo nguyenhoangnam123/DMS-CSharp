@@ -46,6 +46,8 @@ namespace DMS.Models
         /// Ngày giao hàng
         /// </summary>
         public DateTime? DeliveryDate { get; set; }
+        public long? ErpApprovalStateId { get; set; }
+        public long? StoreApprovalStateId { get; set; }
         public long RequestStateId { get; set; }
         /// <summary>
         /// Sửa giá
@@ -91,9 +93,11 @@ namespace DMS.Models
         public virtual StoreDAO BuyerStore { get; set; }
         public virtual AppUserDAO Creator { get; set; }
         public virtual EditedPriceStatusDAO EditedPriceStatus { get; set; }
+        public virtual ErpApprovalStateDAO ErpApprovalState { get; set; }
         public virtual OrganizationDAO Organization { get; set; }
         public virtual RequestStateDAO RequestState { get; set; }
         public virtual AppUserDAO SaleEmployee { get; set; }
+        public virtual StoreApprovalStateDAO StoreApprovalState { get; set; }
         public virtual StoreCheckingDAO StoreChecking { get; set; }
         public virtual ICollection<DirectSalesOrderContentDAO> DirectSalesOrderContents { get; set; }
         public virtual ICollection<DirectSalesOrderPromotionDAO> DirectSalesOrderPromotions { get; set; }
