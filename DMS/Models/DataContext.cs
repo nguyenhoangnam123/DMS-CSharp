@@ -24,6 +24,7 @@ namespace DMS.Models
         public virtual DbSet<DirectSalesOrderDAO> DirectSalesOrder { get; set; }
         public virtual DbSet<DirectSalesOrderContentDAO> DirectSalesOrderContent { get; set; }
         public virtual DbSet<DirectSalesOrderPromotionDAO> DirectSalesOrderPromotion { get; set; }
+        public virtual DbSet<DirectSalesOrderSourceTypeDAO> DirectSalesOrderSourceType { get; set; }
         public virtual DbSet<DirectSalesOrderTransactionDAO> DirectSalesOrderTransaction { get; set; }
         public virtual DbSet<DistrictDAO> District { get; set; }
         public virtual DbSet<ERouteDAO> ERoute { get; set; }
@@ -699,6 +700,11 @@ namespace DMS.Models
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_DirectSalesOrder_AppUser1");
 
+                entity.HasOne(d => d.DirectSalesOrderSourceType)
+                    .WithMany(p => p.DirectSalesOrders)
+                    .HasForeignKey(d => d.DirectSalesOrderSourceTypeId)
+                    .HasConstraintName("FK_DirectSalesOrder_DirectSalesOrderSourceType");
+
                 entity.HasOne(d => d.EditedPriceStatus)
                     .WithMany(p => p.DirectSalesOrders)
                     .HasForeignKey(d => d.EditedPriceStatusId)
@@ -821,6 +827,21 @@ namespace DMS.Models
                     .HasForeignKey(d => d.UnitOfMeasureId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_DirectSalesOrderPromotion_UnitOfMeasure");
+            });
+
+            modelBuilder.Entity<DirectSalesOrderSourceTypeDAO>(entity =>
+            {
+                entity.ToTable("DirectSalesOrderSourceType", "ENUM");
+
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(50);
             });
 
             modelBuilder.Entity<DirectSalesOrderTransactionDAO>(entity =>
@@ -1114,6 +1135,8 @@ namespace DMS.Models
             modelBuilder.Entity<ErpApprovalStateDAO>(entity =>
             {
                 entity.ToTable("ErpApprovalState", "ENUM");
+
+                entity.Property(e => e.Id).ValueGeneratedNever();
 
                 entity.Property(e => e.Code)
                     .IsRequired()
@@ -3881,6 +3904,8 @@ namespace DMS.Models
             modelBuilder.Entity<StoreApprovalStateDAO>(entity =>
             {
                 entity.ToTable("StoreApprovalState", "ENUM");
+
+                entity.Property(e => e.Id).ValueGeneratedNever();
 
                 entity.Property(e => e.Code)
                     .IsRequired()

@@ -49,6 +49,7 @@ namespace DMS.Models
         public long? ErpApprovalStateId { get; set; }
         public long? StoreApprovalStateId { get; set; }
         public long RequestStateId { get; set; }
+        public long? DirectSalesOrderSourceTypeId { get; set; }
         /// <summary>
         /// Sửa giá
         /// </summary>
@@ -92,6 +93,7 @@ namespace DMS.Models
 
         public virtual StoreDAO BuyerStore { get; set; }
         public virtual AppUserDAO Creator { get; set; }
+        public virtual DirectSalesOrderSourceTypeDAO DirectSalesOrderSourceType { get; set; }
         public virtual EditedPriceStatusDAO EditedPriceStatus { get; set; }
         public virtual ErpApprovalStateDAO ErpApprovalState { get; set; }
         public virtual OrganizationDAO Organization { get; set; }
