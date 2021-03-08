@@ -545,6 +545,7 @@ namespace DMS.Rpc.dashboards.director
                         {
                             Id = s.Id,
                             Name = s.Name,
+                            Address = s.Address,
                             Latitude = s.Latitude,
                             Longitude = s.Longitude,
                             Telephone = s.Telephone,
@@ -561,6 +562,7 @@ namespace DMS.Rpc.dashboards.director
                                  {
                                      Id = ss.Id,
                                      Name = ss.Name,
+                                     Address = ss.Address,
                                      Latitude = ss.Latitude,
                                      Longitude = ss.Longitude,
                                      Telephone = ss.OwnerPhone,

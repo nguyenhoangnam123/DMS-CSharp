@@ -12,6 +12,7 @@ namespace DMS.Rpc.dashboards.director
         public long Id { get; set; }
         public decimal? Longitude { get; set; }
         public decimal? Latitude { get; set; }
+        public string Address { get; set; }
         public string Name { get; set; }
         public string Telephone { get; set; }
         public bool IsScouting { get; set; }
@@ -23,6 +24,7 @@ namespace DMS.Rpc.dashboards.director
             this.Longitude = Store.Longitude;
             this.Latitude = Store.Latitude;
             this.Name = Store.Name;
+            this.Address = Store.Address;
             this.StoreStatusId = Store.StoreStatusId;
             this.Telephone = Store.Telephone;
         }
