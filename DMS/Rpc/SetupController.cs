@@ -1284,8 +1284,8 @@ namespace DMS.Rpc
             {
                 MenuDAO Menu = Menus.Where(m => m.Code == type.Name).FirstOrDefault();
                 var value = type.GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy)
-               .Where(fi => !fi.IsInitOnly && fi.FieldType == typeof(Dictionary<string, List<string>>))
-               .Select(x => (Dictionary<string, List<string>>)x.GetValue(x))
+               .Where(fi => !fi.IsInitOnly && fi.FieldType == typeof(Dictionary<string, IEnumerable<string>>))
+               .Select(x => (Dictionary<string, IEnumerable<string>>)x.GetValue(x))
                .FirstOrDefault();
                 if (value == null)
                     continue;
@@ -1319,8 +1319,8 @@ namespace DMS.Rpc
             {
                 MenuDAO Menu = Menus.Where(m => m.Code == type.Name).FirstOrDefault();
                 var value = type.GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy)
-               .Where(fi => !fi.IsInitOnly && fi.FieldType == typeof(Dictionary<string, List<string>>))
-               .Select(x => (Dictionary<string, List<string>>)x.GetValue(x))
+               .Where(fi => !fi.IsInitOnly && fi.FieldType == typeof(Dictionary<string, IEnumerable<string>>))
+               .Select(x => (Dictionary<string, IEnumerable<string>>)x.GetValue(x))
                .FirstOrDefault();
                 if (value == null)
                     continue;
@@ -1332,7 +1332,7 @@ namespace DMS.Rpc
                         .FirstOrDefault();
                     if (action == null)
                         continue;
-                    List<string> pages = pair.Value;
+                    IEnumerable<string> pages = pair.Value;
                     foreach (string page in pages)
                     {
                         PageDAO PageDAO = PageDAOs.Where(p => p.Path == page).FirstOrDefault();

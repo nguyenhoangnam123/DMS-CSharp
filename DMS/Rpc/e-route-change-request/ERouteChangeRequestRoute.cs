@@ -47,7 +47,7 @@ namespace DMS.Rpc.e_route_change_request
             { nameof(StoreFilter.StoreTypeId), FieldTypeEnum.ID.Id },
         };
 
-        public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
+        public static Dictionary<string, IEnumerable<string>> Action = new Dictionary<string, IEnumerable<string>>
         {
             { "Tìm kiếm", new List<string> {
                 Parent,

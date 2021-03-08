@@ -41,7 +41,7 @@ namespace DMS.Rpc.survey
             { nameof(SurveyFilter.EndAt), FieldTypeEnum.DATE.Id },
         };
 
-        public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
+        public static Dictionary<string, IEnumerable<string>> Action = new Dictionary<string, IEnumerable<string>>
         {
             { "Tìm kiếm", new List<string> {
                 Parent,

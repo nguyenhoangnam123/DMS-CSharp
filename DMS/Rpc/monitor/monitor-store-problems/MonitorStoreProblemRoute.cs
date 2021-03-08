@@ -41,7 +41,7 @@ namespace DMS.Rpc.monitor_store_problems
             { nameof(CurrentContext.UserId), FieldTypeEnum.ID.Id },
         };
 
-        public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
+        public static Dictionary<string, IEnumerable<string>> Action = new Dictionary<string, IEnumerable<string>>
         {
             { "Tìm kiếm", new List<string> {
                 Parent,

@@ -48,7 +48,7 @@ namespace DMS.Rpc.lucky_number
             { nameof(LuckyNumberFilter.RowId), FieldTypeEnum.ID.Id },
         };
 
-        public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
+        public static Dictionary<string, IEnumerable<string>> Action = new Dictionary<string, IEnumerable<string>>
         {
             { "Tìm kiếm", new List<string> { 
                 Master, Count, List,
