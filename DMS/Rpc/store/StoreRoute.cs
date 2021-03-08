@@ -36,6 +36,7 @@ namespace DMS.Rpc.store
         public const string FilterListStoreType = Default + "/filter-list-store-type";
         public const string FilterListStatus = Default + "/filter-list-status";
         public const string FilterListStoreStatus = Default + "/filter-list-store-status";
+        public const string FilterListStoreUserStatus = Default + "/filter-list-store-user-status";
 
         public const string SingleListAppUser = Default + "/single-list-app-user";
         public const string SingleListOrganization = Default + "/single-list-organization";
@@ -50,6 +51,13 @@ namespace DMS.Rpc.store
 
         public const string ListReseller = Default + "/list-reseller";
         public const string CountReseller = Default + "/count-reseller";
+
+        public const string CreateDraft = Default + "/create-draft";
+        public const string CreateStoreUser = Default + "/create-store-user";
+        public const string BulkCreateStoreUser = Default + "/bulk-create-store-user";
+        public const string LockStoreUser = Default + "/lock-store-user";
+        public const string ResetPassword = Default + "/reset-password";
+
         public static Dictionary<string, long> Filters = new Dictionary<string, long>
         {
             { nameof(StoreFilter.OrganizationId), FieldTypeEnum.ID.Id },
@@ -101,6 +109,12 @@ namespace DMS.Rpc.store
                 FilterListAppUser, FilterListDistrict, FilterListOrganization, FilterListProvince, FilterListWard, FilterListStatus, FilterListParentStore, FilterListStoreStatus, FilterListStoreGrouping, FilterListStoreType,
                 Detail, Approve, 
                 SingleListAppUser, SingleListDistrict, SingleListOrganization, SingleListProvince, SingleListStatus, SingleListStoreGrouping, SingleListStoreType, SingleListWard, SingleListParentStore, SingleListStoreStatus} },
+
+             { "Tạo tài khoản cửa hàng", new List<string> {
+                Parent,
+                Master, Count, List, Get, CreateDraft, BulkCreateStoreUser,
+                CreateStoreUser, ResetPassword, LockStoreUser,
+                FilterListAppUser, FilterListDistrict, FilterListOrganization, FilterListProvince, FilterListWard, FilterListStatus, FilterListParentStore, FilterListStoreStatus, FilterListStoreUserStatus, FilterListStoreType } },
         };
     }
 }
