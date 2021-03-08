@@ -6,13 +6,14 @@ using Newtonsoft.Json.Converters;
 
 namespace DMS.Entities
 {
-    public class StoreUser : DataEntity,  IEquatable<StoreUser>
+    public class StoreUser : DataEntity, IEquatable<StoreUser>
     {
         public long Id { get; set; }
         public long StoreId { get; set; }
         public string Username { get; set; }
         public string DisplayName { get; set; }
         public string Password { get; set; }
+        public string NewPassword { get; set; }
         public string OtpCode { get; set; }
         public DateTime? OtpExpired { get; set; }
         public long StatusId { get; set; }
@@ -22,8 +23,7 @@ namespace DMS.Entities
         public Store Store { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
-        public DateTime? DeletedAt { get; set; }
-        
+        public string Token { get; set; }
         public bool Equals(StoreUser other)
         {
             return other != null && Id == other.Id;
@@ -41,15 +41,13 @@ namespace DMS.Entities
         public StringFilter Username { get; set; }
         public StringFilter DisplayName { get; set; }
         public StringFilter Password { get; set; }
-        public StringFilter OtpCode { get; set; }
-        public DateFilter OtpExpired { get; set; }
         public IdFilter StatusId { get; set; }
         public GuidFilter RowId { get; set; }
         public DateFilter CreatedAt { get; set; }
         public DateFilter UpdatedAt { get; set; }
         public List<StoreUserFilter> OrFilter { get; set; }
-        public StoreUserOrder OrderBy {get; set;}
-        public StoreUserSelect Selects {get; set;}
+        public StoreUserOrder OrderBy { get; set; }
+        public StoreUserSelect Selects { get; set; }
     }
 
     [JsonConverter(typeof(StringEnumConverter))]
@@ -60,17 +58,17 @@ namespace DMS.Entities
         Username = 2,
         DisplayName = 3,
         Password = 4,
-        OtpCode = 5,
-        OtpExpired = 6,
-        Status = 7,
-        Row = 11,
-        Used = 12,
+        Status = 5,
+        OtpCode = 6,
+        OtpExpired = 7,
+        Row = 9,
+        Used = 10,
         CreatedAt = 50,
         UpdatedAt = 51,
     }
 
     [Flags]
-    public enum StoreUserSelect:long
+    public enum StoreUserSelect : long
     {
         ALL = E.ALL,
         Id = E._0,
@@ -78,10 +76,10 @@ namespace DMS.Entities
         Username = E._2,
         DisplayName = E._3,
         Password = E._4,
-        OtpCode = E._5,
-        OtpExpired = E._6,
-        Status = E._7,
-        Row = E._11,
-        Used = E._12,
+        Status = E._5,
+        OtpCode = E._6,
+        OtpExpired = E._7,
+        Row = E._9,
+        Used = E._10,
     }
 }
