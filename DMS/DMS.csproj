@@ -185,6 +185,9 @@
     <None Update="Templates\Report_Store_General.xlsx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Templates\Report_Store_State_Change.xlsx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Templates\Report_Store_Unchecked.xlsx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
