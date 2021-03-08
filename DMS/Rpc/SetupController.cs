@@ -1381,6 +1381,8 @@ namespace DMS.Rpc
             InitTransactionTypeEnum();
             InitEntityTypeEnum();
             InitEntityComponentEnum();
+            InitStoreApprovalStateEnum();
+            InitErpApprovalStateEnum();
             return Ok();
         }
 
@@ -1855,6 +1857,42 @@ namespace DMS.Rpc
                 Name = item.Name,
             }).ToList();
             DataContext.EntityComponent.BulkSynchronize(EntityComponentDAOs);
+        }
+
+        private void InitStoreApprovalStateEnum()
+        {
+            List<StoreApprovalStateDAO> StoreApprovalStateDAOs = DataContext.StoreApprovalState.ToList();
+            foreach (GenericEnum item in StoreApprovalStateEnum.StoreApprovalStateEnumList)
+            {
+                StoreApprovalStateDAO StoreApprovalStateDAO = StoreApprovalStateDAOs.Where(sc => sc.Id == item.Id).FirstOrDefault();
+                if (StoreApprovalStateDAO == null)
+                {
+                    StoreApprovalStateDAO = new StoreApprovalStateDAO();
+                    StoreApprovalStateDAO.Id = item.Id;
+                    StoreApprovalStateDAO.Code = item.Code;
+                    StoreApprovalStateDAO.Name = item.Name;
+                    StoreApprovalStateDAOs.Add(StoreApprovalStateDAO);
+                }
+            }
+            DataContext.StoreApprovalState.BulkSynchronize(StoreApprovalStateDAOs);
+        }
+
+        private void InitErpApprovalStateEnum()
+        {
+            List<ErpApprovalStateDAO> ErpApprovalStateDAOs = DataContext.ErpApprovalState.ToList();
+            foreach (GenericEnum item in ErpApprovalStateEnum.ErpApprovalStateEnumList)
+            {
+                ErpApprovalStateDAO ErpApprovalStateDAO = ErpApprovalStateDAOs.Where(sc => sc.Id == item.Id).FirstOrDefault();
+                if (ErpApprovalStateDAO == null)
+                {
+                    ErpApprovalStateDAO = new ErpApprovalStateDAO();
+                    ErpApprovalStateDAO.Id = item.Id;
+                    ErpApprovalStateDAO.Code = item.Code;
+                    ErpApprovalStateDAO.Name = item.Name;
+                    ErpApprovalStateDAOs.Add(ErpApprovalStateDAO);
+                }
+            }
+            DataContext.ErpApprovalState.BulkSynchronize(ErpApprovalStateDAOs);
         }
         #endregion
     }
