@@ -47,12 +47,6 @@ namespace DMS.Repositories
                 query = query.Where(q => q.Username, filter.Username);
             if (filter.DisplayName != null && filter.DisplayName.HasValue)
                 query = query.Where(q => q.DisplayName, filter.DisplayName);
-            if (filter.Password != null && filter.Password.HasValue)
-                query = query.Where(q => q.Password, filter.Password);
-            if (filter.OtpCode != null && filter.OtpCode.HasValue)
-                query = query.Where(q => q.OtpCode, filter.OtpCode);
-            if (filter.OtpExpired != null && filter.OtpExpired.HasValue)
-                query = query.Where(q => q.OtpExpired == null).Union(query.Where(q => q.OtpExpired.HasValue).Where(q => q.OtpExpired, filter.OtpExpired));
             if (filter.StatusId != null && filter.StatusId.HasValue)
                 query = query.Where(q => q.StatusId, filter.StatusId);
             if (filter.RowId != null && filter.RowId.HasValue)
@@ -77,12 +71,6 @@ namespace DMS.Repositories
                     queryable = queryable.Where(q => q.Username, StoreUserFilter.Username);
                 if (StoreUserFilter.DisplayName != null && StoreUserFilter.DisplayName.HasValue)
                     queryable = queryable.Where(q => q.DisplayName, StoreUserFilter.DisplayName);
-                if (StoreUserFilter.Password != null && StoreUserFilter.Password.HasValue)
-                    queryable = queryable.Where(q => q.Password, StoreUserFilter.Password);
-                if (StoreUserFilter.OtpCode != null && StoreUserFilter.OtpCode.HasValue)
-                    queryable = queryable.Where(q => q.OtpCode, StoreUserFilter.OtpCode);
-                if (StoreUserFilter.OtpExpired != null && StoreUserFilter.OtpExpired.HasValue)
-                    queryable = queryable.Where(q => q.OtpExpired.HasValue).Where(q => q.OtpExpired, StoreUserFilter.OtpExpired);
                 if (StoreUserFilter.StatusId != null && StoreUserFilter.StatusId.HasValue)
                     queryable = queryable.Where(q => q.StatusId, StoreUserFilter.StatusId);
                 if (StoreUserFilter.RowId != null && StoreUserFilter.RowId.HasValue)
@@ -254,7 +242,6 @@ namespace DMS.Repositories
             {
                 CreatedAt = x.CreatedAt,
                 UpdatedAt = x.UpdatedAt,
-                DeletedAt = x.DeletedAt,
                 Id = x.Id,
                 StoreId = x.StoreId,
                 Username = x.Username,
