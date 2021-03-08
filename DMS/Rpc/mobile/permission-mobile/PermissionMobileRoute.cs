@@ -22,7 +22,7 @@ namespace DMS.Rpc.mobile.permission_mobile
             { nameof(CurrentContext.UserId), FieldTypeEnum.ID.Id },
         };
 
-        public static Dictionary<string, List<string>> Action = new Dictionary<string, List<string>>
+        public static Dictionary<string, IEnumerable<string>> Action = new Dictionary<string, IEnumerable<string>>
         {
             { "Thống kê Kpi nhân viên theo tháng", new List<string>{
                 ListCurrentKpiGeneral, ListCurrentKpiItem, CountAppUser, ListAppUser
