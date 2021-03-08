@@ -29,6 +29,7 @@ namespace DMS.Rpc.dashboards.director
 
         public const string FilterListTime1 = Default + "/filter-list-time-1";
         public const string FilterListTime2 = Default + "/filter-list-time-2";
+        public const string FilterListAppUser = Default + "/filter-list-app-user";
         public const string FilterListOrganization = Default + "/filter-list-organization";
 
         public static Dictionary<string, long> Filters = new Dictionary<string, long>
@@ -45,7 +46,7 @@ namespace DMS.Rpc.dashboards.director
                 Master,
                 CountStore, CountIndirectSalesOrder, RevenueTotal, ItemSalesTotal, CountStoreChecking, StatisticToday, StatisticYesterday,
                 StoreCoverage, SaleEmployeeLocation, ListIndirectSalesOrder, Top5RevenueByProduct, Top5RevenueByStore, RevenueFluctuation, SaledItemFluctuation,
-                IndirectSalesOrderFluctuation, FilterListTime1, FilterListTime2, FilterListOrganization,
+                IndirectSalesOrderFluctuation, FilterListTime1, FilterListTime2, FilterListAppUser, FilterListOrganization,
             } },
         };
     }

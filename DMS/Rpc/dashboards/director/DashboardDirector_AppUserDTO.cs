@@ -29,6 +29,36 @@ namespace DMS.Rpc.dashboards.director
 
     public class DashboardDirector_AppUserFilterDTO : FilterDTO
     {
+        public IdFilter Id { get; set; }
+
+        public StringFilter Username { get; set; }
+
+        public StringFilter Password { get; set; }
+
+        public StringFilter DisplayName { get; set; }
+
+        public StringFilter Address { get; set; }
+
+        public StringFilter Email { get; set; }
+
+        public StringFilter Phone { get; set; }
+
+        public IdFilter PositionId { get; set; }
+
+        public StringFilter Department { get; set; }
+
         public IdFilter OrganizationId { get; set; }
+
+        public IdFilter SexId { get; set; }
+
+        public IdFilter StatusId { get; set; }
+
+        public StringFilter Avatar { get; set; }
+
+        public DateFilter Birthday { get; set; }
+
+        public IdFilter ProvinceId { get; set; }
+
+        public AppUserOrder OrderBy { get; set; }
     }
 }

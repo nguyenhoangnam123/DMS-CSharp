@@ -14,6 +14,8 @@ namespace DMS.Rpc.dashboards.director
 
     public class DashboardDirector_Top5RevenueByProductFilterDTO : FilterDTO
     {
+        public IdFilter OrganizationId { get; set; }
+        public IdFilter AppUserId { get; set; }
         public IdFilter Time { get; set; }
     }
 }
