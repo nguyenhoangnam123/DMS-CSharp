@@ -516,6 +516,7 @@ namespace DMS.Rpc.kpi_item
             ItemFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
             ItemFilter.SupplierId = KpiItem_ItemFilterDTO.SupplierId;
             ItemFilter.Search = KpiItem_ItemFilterDTO.Search;
+            ItemFilter.IsNew = KpiItem_ItemFilterDTO.IsNew;
 
             return await ItemService.Count(ItemFilter);
         }
@@ -540,6 +541,7 @@ namespace DMS.Rpc.kpi_item
             ItemFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
             ItemFilter.SupplierId = KpiItem_ItemFilterDTO.SupplierId;
             ItemFilter.Search = KpiItem_ItemFilterDTO.Search;
+            ItemFilter.IsNew = KpiItem_ItemFilterDTO.IsNew;
 
             List<Item> Items = await ItemService.List(ItemFilter);
             List<KpiItem_ItemDTO> KpiItem_ItemDTOs = Items
