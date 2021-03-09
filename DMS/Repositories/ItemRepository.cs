@@ -280,6 +280,7 @@ namespace DMS.Repositories
                     RetailPrice = q.Product.RetailPrice,
                     TaxTypeId = q.Product.TaxTypeId,
                     StatusId = q.Product.StatusId,
+                    IsNew = q.Product.IsNew,
                     Category =  new Category
                     {
                         Id = q.Product.Category.Id,

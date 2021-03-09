@@ -2,7 +2,8 @@
   "KpiItem": {
     "Id": {
       "IdNotExisted": "Kpi chung không tồn tại",
-      "ValueCannotBeNull": "Chỉ tiêu không thể bỏ trống"
+      "ValueCannotBeNull": "Chỉ tiêu không thể bỏ trống",
+      "EmployeeHasKpi": "Nhân viên đã có KPI cùng loại"
     },
     "Organization": {
       "OrganizationIdNotExisted": "Đơn vị tổ chức không tồn tại",
@@ -18,14 +19,21 @@
     "KpiYear": {
       "KpiYearIdNotExisted": "Năm Kpi không tồn tại",
       "KpiYearExisted": "Chưa chọn năm Kpi",
-      "KpiYearAndKpiPeriodMustInTheFuture":  "Không thể chọn thời gian trong quá khứ"
+      "KpiYearAndKpiPeriodMustInTheFuture": "Không thể chọn thời gian trong quá khứ"
     },
     "KpiPeriod": {
       "KpiPeriodIdNotExisted": "Kì Kpi không tồn tại"
     },
+    "KpiItemType": {
+      "KpiItemTypeIdNotExisted": "Chưa chọn loại Kpi"
+    },
     "KpiItemContents": {
       "KpiItemContentsEmpty": "Chưa chọn sản phẩm kpi",
       "ItemIdNotExisted": "Chưa chọn sản phẩm"
+    },
+    "KpiItemContent": {
+      "ItemNotExisted": "Sản phẩm không tồn tại",
+      "ItemIsNotNew": "Sản phẩm này không phải sản phẩm mới"
     }
   }
 }

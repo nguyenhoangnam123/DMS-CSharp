@@ -10,6 +10,7 @@ namespace DMS.Rpc.kpi_item
     {
         public string Username { get; set; }
         public string DisplayName { get; set; }
+        public string KpiItemTypeName { get; set; }
         public List<KpiItem_ExportContentDTO> Contents { get; set; }
     }
 

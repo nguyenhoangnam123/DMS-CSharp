@@ -25,10 +25,11 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DMS.Services.MKpiItemType;
 
 namespace DMS.Rpc.kpi_item
 {
-    public class KpiItemController : RpcController
+    public partial class KpiItemController : RpcController
     {
         private IAppUserService AppUserService;
         private IKpiPeriodService KpiPeriodService;
@@ -39,6 +40,7 @@ namespace DMS.Rpc.kpi_item
         private IItemService ItemService;
         private IKpiItemContentService KpiItemContentService;
         private IKpiItemService KpiItemService;
+        private IKpiItemTypeService KpiItemTypeService;
         private ISupplierService SupplierService;
         private IProductTypeService ProductTypeService;
         private IProductGroupingService ProductGroupingService;
@@ -53,6 +55,7 @@ namespace DMS.Rpc.kpi_item
             IItemService ItemService,
             IKpiItemContentService KpiItemContentService,
             IKpiItemService KpiItemService,
+            IKpiItemTypeService KpiItemTypeService,
             ISupplierService SupplierService,
             IProductTypeService ProductTypeService,
             IProductGroupingService ProductGroupingService,
@@ -68,6 +71,7 @@ namespace DMS.Rpc.kpi_item
             this.ItemService = ItemService;
             this.KpiItemContentService = KpiItemContentService;
             this.KpiItemService = KpiItemService;
+            this.KpiItemTypeService = KpiItemTypeService;
             this.SupplierService = SupplierService;
             this.ProductTypeService = ProductTypeService;
             this.ProductGroupingService = ProductGroupingService;
@@ -351,21 +355,16 @@ namespace DMS.Rpc.kpi_item
                 int StartColumn = 1;
                 int StartRow = 5;
                 int UsernameColumn = 0 + StartColumn;
-                int ItemCodeColumn = 2 + StartColumn;
+                int KpiItemTypeColumn = 2 + StartColumn;
+                int ItemCodeColumn = 3 + StartColumn;
 
-                int QuantityColumn = 3 + StartColumn;
                 int RevenueColumn = 4 + StartColumn;
-                int SaleOrderColumn = 5 + StartColumn;
-                int StoreColumn = 6 + StartColumn;
-
-                int DirectQuantityColumn = 7 + StartColumn;
-                int DirectRevenueColumn = 8 + StartColumn;
-                int DirectSaleOrderColumn = 9 + StartColumn;
-                int DirectStoreColumn = 10 + StartColumn;
+                int StoreColumn = 5 + StartColumn;
 
                 for (int i = StartRow; i <= worksheet.Dimension.End.Row; i++)
                 {
                     string UsernameValue = worksheet.Cells[i, UsernameColumn].Value?.ToString();
+                    string KpiItemTypeValue = worksheet.Cells[i, KpiItemTypeColumn].Value?.ToString();
                     string ItemCodeValue = worksheet.Cells[i, ItemCodeColumn].Value?.ToString();
                     if (UsernameValue != null && UsernameValue.ToLower() == "END".ToLower())
                         break;
@@ -393,7 +392,25 @@ namespace DMS.Rpc.kpi_item
                     {
                         KpiItem_ImportDTO.EmployeeId = Employee.Id;
                     }
-
+                    GenericEnum KpiItemType;
+                    if (!string.IsNullOrWhiteSpace(KpiItemTypeValue))
+                    {
+                        KpiItemType = KpiItemTypeEnum.KpiItemTypeEnumList.Where(x => x.Name == KpiItemTypeValue.Trim()).FirstOrDefault();
+                        if(KpiItemType == null)
+                        {
+                            errorContent.AppendLine($"Lỗi dòng thứ {i + 1}: Loại KPI sản phẩm không tồn tại");
+                            continue;
+                        }
+                        else
+                        {
+                            KpiItem_ImportDTO.KpiItemTypeId = KpiItemType.Id;
+                        }
+                    }
+                    else
+                    {
+                        errorContent.AppendLine($"Lỗi dòng thứ {i}: Chưa chọn loại KPI sản phẩm");
+                        continue;
+                    }
                     Item Item;
                     if (!string.IsNullOrWhiteSpace(ItemCodeValue))
                     {
@@ -412,14 +429,8 @@ namespace DMS.Rpc.kpi_item
                     KpiItem_ImportDTO.Stt = i;
                     KpiItem_ImportDTO.UsernameValue = UsernameValue;
                     KpiItem_ImportDTO.ItemCodeValue = ItemCodeValue;
-                    KpiItem_ImportDTO.IndirectQuantity = worksheet.Cells[i, QuantityColumn].Value?.ToString();
                     KpiItem_ImportDTO.IndirectRevenue = worksheet.Cells[i, RevenueColumn].Value?.ToString();
-                    KpiItem_ImportDTO.IndirectCounter = worksheet.Cells[i, SaleOrderColumn].Value?.ToString();
                     KpiItem_ImportDTO.IndirectStoreCounter = worksheet.Cells[i, StoreColumn].Value?.ToString();
-                    KpiItem_ImportDTO.DirectQuantity = worksheet.Cells[i, DirectQuantityColumn].Value?.ToString();
-                    KpiItem_ImportDTO.DirectRevenue = worksheet.Cells[i, DirectRevenueColumn].Value?.ToString();
-                    KpiItem_ImportDTO.DirectCounter = worksheet.Cells[i, DirectSaleOrderColumn].Value?.ToString();
-                    KpiItem_ImportDTO.DirectStoreCounter = worksheet.Cells[i, DirectStoreColumn].Value?.ToString();
                     KpiItem_ImportDTO.KpiPeriodId = KpiPeriod.Id;
                     KpiItem_ImportDTO.KpiYearId = KpiYear.Id;
                     KpiItem_ImportDTOs.Add(KpiItem_ImportDTO);
@@ -431,15 +442,29 @@ namespace DMS.Rpc.kpi_item
             { 
                 AppUserId = x.EmployeeId, 
                 KpiPeriodId = x.KpiPeriodId, 
-                KpiYearId = x.KpiYearId 
+                KpiYearId = x.KpiYearId,
+                KpiItemTypeId = x.KpiItemTypeId
             }).ToList());
             foreach (KpiItem_ImportDTO KpiItem_ImportDTO in KpiItem_ImportDTOs)
             {
                 Errors.Add(KpiItem_ImportDTO.Stt, new StringBuilder(""));
                 KpiItem_ImportDTO.IsNew = false;
-                if (!KpiItem_RowDTOs.Contains(new KpiItem_RowDTO { AppUserId = KpiItem_ImportDTO.EmployeeId, KpiPeriodId = KpiItem_ImportDTO.KpiPeriodId, KpiYearId = KpiItem_ImportDTO.KpiYearId }))
+                if (!KpiItem_RowDTOs.Contains(new KpiItem_RowDTO 
+                                                { 
+                                                    AppUserId = KpiItem_ImportDTO.EmployeeId, 
+                                                    KpiPeriodId = KpiItem_ImportDTO.KpiPeriodId, 
+                                                    KpiYearId = KpiItem_ImportDTO.KpiYearId ,
+                                                    KpiItemTypeId = KpiItem_ImportDTO.KpiItemTypeId
+                                                }
+                ))
                 {
-                    KpiItem_RowDTOs.Add(new KpiItem_RowDTO { AppUserId = KpiItem_ImportDTO.EmployeeId, KpiPeriodId = KpiItem_ImportDTO.KpiPeriodId, KpiYearId = KpiItem_ImportDTO.KpiYearId });
+                    KpiItem_RowDTOs.Add(new KpiItem_RowDTO 
+                    { 
+                        AppUserId = KpiItem_ImportDTO.EmployeeId, 
+                        KpiPeriodId = KpiItem_ImportDTO.KpiPeriodId, 
+                        KpiYearId = KpiItem_ImportDTO.KpiYearId,
+                        KpiItemTypeId = KpiItem_ImportDTO.KpiItemTypeId
+                    });
                     KpiItem_ImportDTO.IsNew = true;
 
                     var Employee = Employees.Where(x => x.Username == KpiItem_ImportDTO.UsernameValue).FirstOrDefault();
@@ -466,6 +491,7 @@ namespace DMS.Rpc.kpi_item
                     KpiItem.OrganizationId = KpiItem_ImportDTO.OrganizationId;
                     KpiItem.KpiPeriodId = KpiItem_ImportDTO.KpiPeriodId;
                     KpiItem.KpiYearId = KpiItem_ImportDTO.KpiYearId;
+                    KpiItem.KpiItemTypeId = KpiItem_ImportDTO.KpiItemTypeId;
                     KpiItem.RowId = Guid.NewGuid();
                     KpiItem.KpiItemContents = new List<KpiItemContent>();
                     KpiItem.KpiItemContents.Add(new KpiItemContent
@@ -569,7 +595,6 @@ namespace DMS.Rpc.kpi_item
             long KpiPeriodId = KpiItem_KpiItemFilterDTO.KpiPeriodId.Equal.Value;
             var KpiPeriod = KpiPeriodEnum.KpiPeriodEnumList.Where(x => x.Id == KpiPeriodId).FirstOrDefault();
 
-
             KpiItem_KpiItemFilterDTO.Skip = 0;
             KpiItem_KpiItemFilterDTO.Take = int.MaxValue;
             KpiItem_KpiItemFilterDTO.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
@@ -591,6 +616,7 @@ namespace DMS.Rpc.kpi_item
                 KpiItem_ExportDTO KpiItem_ExportDTO = new KpiItem_ExportDTO();
                 KpiItem_ExportDTO.Username = KpiItem.Employee.Username;
                 KpiItem_ExportDTO.DisplayName = KpiItem.Employee.DisplayName;
+                KpiItem_ExportDTO.KpiItemTypeName = KpiItem.KpiItemType.Name;
 
                 KpiItem_ExportDTO.Contents = KpiItemContents.Where(x => x.KpiItemId == KpiItem.Id).Select(x => new KpiItem_ExportContentDTO
                 {
@@ -684,10 +710,12 @@ namespace DMS.Rpc.kpi_item
             {
                 Skip = 0,
                 Take = int.MaxValue,
-                Selects = ItemSelect.Code | ItemSelect.Name,
+                Selects = ItemSelect.Code | ItemSelect.Name | ItemSelect.Product,
                 OrderBy = ItemOrder.Id,
                 OrderType = OrderType.ASC
             });
+
+            List<Item> NewItems = Items.Where(x => x.Product.IsNew).ToList();
 
             List<KpiItem_ExportDTO> KpiItem_ExportDTOs = new List<KpiItem_ExportDTO>();
             foreach (var AppUser in AppUsers)
@@ -705,6 +733,7 @@ namespace DMS.Rpc.kpi_item
             dynamic Data = new ExpandoObject();
             Data.KpiItems = KpiItem_ExportDTOs;
             Data.Items = Items;
+            Data.NewItems = NewItems;
             using (var document = StaticParams.DocumentFactory.Open(input, output, "xlsx"))
             {
                 document.Process(Data);
@@ -795,6 +824,7 @@ namespace DMS.Rpc.kpi_item
             KpiItem.OrganizationId = KpiItem_KpiItemDTO.OrganizationId;
             KpiItem.KpiYearId = KpiItem_KpiItemDTO.KpiYearId;
             KpiItem.KpiPeriodId = KpiItem_KpiItemDTO.KpiPeriodId;
+            KpiItem.KpiItemTypeId = KpiItem_KpiItemDTO.KpiItemTypeId;
             KpiItem.StatusId = KpiItem_KpiItemDTO.StatusId;
             KpiItem.EmployeeId = KpiItem_KpiItemDTO.EmployeeId;
             KpiItem.CreatorId = KpiItem_KpiItemDTO.CreatorId;
@@ -827,6 +857,12 @@ namespace DMS.Rpc.kpi_item
                 Id = KpiItem_KpiItemDTO.KpiPeriod.Id,
                 Code = KpiItem_KpiItemDTO.KpiPeriod.Code,
                 Name = KpiItem_KpiItemDTO.KpiPeriod.Name,
+            };
+            KpiItem.KpiItemType = KpiItem_KpiItemDTO.KpiItemType == null ? null : new KpiItemType
+            {
+                Id = KpiItem_KpiItemDTO.KpiItemType.Id,
+                Code = KpiItem_KpiItemDTO.KpiItemType.Code,
+                Name = KpiItem_KpiItemDTO.KpiItemType.Name,
             };
             KpiItem.Organization = KpiItem_KpiItemDTO.Organization == null ? null : new Organization
             {
@@ -879,511 +915,13 @@ namespace DMS.Rpc.kpi_item
             KpiItemFilter.OrganizationId = KpiItem_KpiItemFilterDTO.OrganizationId;
             KpiItemFilter.KpiYearId = KpiItem_KpiItemFilterDTO.KpiYearId;
             KpiItemFilter.KpiPeriodId = KpiItem_KpiItemFilterDTO.KpiPeriodId;
+            KpiItemFilter.KpiItemTypeId = KpiItem_KpiItemFilterDTO.KpiItemTypeId;
             KpiItemFilter.StatusId = KpiItem_KpiItemFilterDTO.StatusId;
             KpiItemFilter.AppUserId = KpiItem_KpiItemFilterDTO.AppUserId;
             KpiItemFilter.CreatorId = KpiItem_KpiItemFilterDTO.CreatorId;
             KpiItemFilter.CreatedAt = KpiItem_KpiItemFilterDTO.CreatedAt;
             KpiItemFilter.UpdatedAt = KpiItem_KpiItemFilterDTO.UpdatedAt;
             return KpiItemFilter;
-        }
-
-        [Route(KpiItemRoute.FilterListAppUser), HttpPost]
-        public async Task<List<KpiItem_AppUserDTO>> FilterListAppUser([FromBody] KpiItem_AppUserFilterDTO KpiItem_AppUserFilterDTO)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
-
-            AppUserFilter AppUserFilter = new AppUserFilter();
-            AppUserFilter.Skip = 0;
-            AppUserFilter.Take = 20;
-            AppUserFilter.OrderBy = AppUserOrder.Id;
-            AppUserFilter.OrderType = OrderType.ASC;
-            AppUserFilter.Selects = AppUserSelect.ALL;
-            AppUserFilter.Id = KpiItem_AppUserFilterDTO.Id;
-            AppUserFilter.Username = KpiItem_AppUserFilterDTO.Username;
-            AppUserFilter.DisplayName = KpiItem_AppUserFilterDTO.DisplayName;
-            AppUserFilter.Address = KpiItem_AppUserFilterDTO.Address;
-            AppUserFilter.Email = KpiItem_AppUserFilterDTO.Email;
-
-            if (AppUserFilter.Id == null) AppUserFilter.Id = new IdFilter();
-            AppUserFilter.Id.In = await FilterAppUser(AppUserService, OrganizationService, CurrentContext);
-
-            List<AppUser> AppUsers = await AppUserService.List(AppUserFilter);
-            List<KpiItem_AppUserDTO> KpiItem_AppUserDTOs = AppUsers
-                .Select(x => new KpiItem_AppUserDTO(x)).ToList();
-            return KpiItem_AppUserDTOs;
-        }
-        [Route(KpiItemRoute.FilterListCreator), HttpPost]
-        public async Task<List<KpiItem_AppUserDTO>> FilterListCreator([FromBody] KpiItem_AppUserFilterDTO KpiItem_AppUserFilterDTO)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
-
-            var appUser = await AppUserService.Get(CurrentContext.UserId);
-
-            AppUserFilter AppUserFilter = new AppUserFilter();
-            AppUserFilter.Skip = 0;
-            AppUserFilter.Take = 20;
-            AppUserFilter.OrderBy = AppUserOrder.Id;
-            AppUserFilter.OrderType = OrderType.ASC;
-            AppUserFilter.Selects = AppUserSelect.ALL;
-            AppUserFilter.Id = KpiItem_AppUserFilterDTO.Id;
-            AppUserFilter.Username = KpiItem_AppUserFilterDTO.Username;
-            AppUserFilter.DisplayName = KpiItem_AppUserFilterDTO.DisplayName;
-            AppUserFilter.OrganizationId = new IdFilter { Equal = appUser.OrganizationId };
-
-            List<AppUser> AppUsers = await AppUserService.List(AppUserFilter);
-            List<KpiItem_AppUserDTO> KpiItem_AppUserDTOs = AppUsers
-                .Select(x => new KpiItem_AppUserDTO(x)).ToList();
-            return KpiItem_AppUserDTOs;
-        }
-        [Route(KpiItemRoute.FilterListKpiPeriod), HttpPost]
-        public async Task<List<KpiItem_KpiPeriodDTO>> FilterListKpiPeriod([FromBody] KpiItem_KpiPeriodFilterDTO KpiItem_KpiPeriodFilterDTO)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
-
-            KpiPeriodFilter KpiPeriodFilter = new KpiPeriodFilter();
-            KpiPeriodFilter.Skip = 0;
-            KpiPeriodFilter.Take = 20;
-            KpiPeriodFilter.OrderBy = KpiPeriodOrder.Id;
-            KpiPeriodFilter.OrderType = OrderType.ASC;
-            KpiPeriodFilter.Selects = KpiPeriodSelect.ALL;
-            KpiPeriodFilter.Id = KpiItem_KpiPeriodFilterDTO.Id;
-            KpiPeriodFilter.Code = KpiItem_KpiPeriodFilterDTO.Code;
-            KpiPeriodFilter.Name = KpiItem_KpiPeriodFilterDTO.Name;
-
-            List<KpiPeriod> KpiPeriods = await KpiPeriodService.List(KpiPeriodFilter);
-            List<KpiItem_KpiPeriodDTO> KpiItem_KpiPeriodDTOs = KpiPeriods
-                .Select(x => new KpiItem_KpiPeriodDTO(x)).ToList();
-            return KpiItem_KpiPeriodDTOs;
-        }
-
-        [Route(KpiItemRoute.FilterListKpiYear), HttpPost]
-        public async Task<List<KpiItem_KpiYearDTO>> FilterListKpiYear([FromBody] KpiItem_KpiYearFilterDTO KpiItem_KpiYearFilterDTO)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
-
-            KpiYearFilter KpiYearFilter = new KpiYearFilter();
-            KpiYearFilter.Skip = 0;
-            KpiYearFilter.Take = 20;
-            KpiYearFilter.OrderBy = KpiYearOrder.Id;
-            KpiYearFilter.OrderType = OrderType.ASC;
-            KpiYearFilter.Selects = KpiYearSelect.ALL;
-            KpiYearFilter.Id = KpiItem_KpiYearFilterDTO.Id;
-            KpiYearFilter.Code = KpiItem_KpiYearFilterDTO.Code;
-            KpiYearFilter.Name = KpiItem_KpiYearFilterDTO.Name;
-
-            List<KpiYear> KpiYears = await KpiYearService.List(KpiYearFilter);
-            List<KpiItem_KpiYearDTO> KpiItem_KpiYearDTOs = KpiYears
-                .Select(x => new KpiItem_KpiYearDTO(x)).ToList();
-            return KpiItem_KpiYearDTOs;
-        }
-
-        [Route(KpiItemRoute.FilterListOrganization), HttpPost]
-        public async Task<List<KpiItem_OrganizationDTO>> FilterListOrganization([FromBody] KpiItem_OrganizationFilterDTO KpiItem_OrganizationFilterDTO)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
-
-            OrganizationFilter OrganizationFilter = new OrganizationFilter();
-            OrganizationFilter.Skip = 0;
-            OrganizationFilter.Take = int.MaxValue;
-            OrganizationFilter.OrderBy = OrganizationOrder.Id;
-            OrganizationFilter.OrderType = OrderType.ASC;
-            OrganizationFilter.Selects = OrganizationSelect.ALL;
-            OrganizationFilter.Id = KpiItem_OrganizationFilterDTO.Id;
-            OrganizationFilter.Code = KpiItem_OrganizationFilterDTO.Code;
-            OrganizationFilter.Name = KpiItem_OrganizationFilterDTO.Name;
-
-            if (OrganizationFilter.Id == null) OrganizationFilter.Id = new IdFilter();
-            OrganizationFilter.Id.In = await FilterOrganization(OrganizationService, CurrentContext);
-
-            List<Organization> Organizations = await OrganizationService.List(OrganizationFilter);
-            List<KpiItem_OrganizationDTO> KpiItem_OrganizationDTOs = Organizations
-                .Select(x => new KpiItem_OrganizationDTO(x)).ToList();
-            return KpiItem_OrganizationDTOs;
-        }
-        [Route(KpiItemRoute.FilterListStatus), HttpPost]
-        public async Task<List<KpiItem_StatusDTO>> FilterListStatus()
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
-
-            StatusFilter StatusFilter = new StatusFilter();
-            StatusFilter.Skip = 0;
-            StatusFilter.Take = int.MaxValue;
-            StatusFilter.Take = 20;
-            StatusFilter.OrderBy = StatusOrder.Id;
-            StatusFilter.OrderType = OrderType.ASC;
-            StatusFilter.Selects = StatusSelect.ALL;
-
-            List<Status> Statuses = await StatusService.List(StatusFilter);
-            List<KpiItem_StatusDTO> KpiItem_StatusDTOs = Statuses
-                .Select(x => new KpiItem_StatusDTO(x)).ToList();
-            return KpiItem_StatusDTOs;
-        }
-
-        [Route(KpiItemRoute.FilterListKpiCriteriaItem), HttpPost]
-        public async Task<List<KpiItem_KpiCriteriaItemDTO>> FilterListKpiCriteriaItem()
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
-
-            KpiCriteriaItemFilter KpiCriteriaItemFilter = new KpiCriteriaItemFilter();
-            KpiCriteriaItemFilter.Skip = 0;
-            KpiCriteriaItemFilter.Take = int.MaxValue;
-            KpiCriteriaItemFilter.Take = 20;
-            KpiCriteriaItemFilter.OrderBy = KpiCriteriaItemOrder.Id;
-            KpiCriteriaItemFilter.OrderType = OrderType.ASC;
-            KpiCriteriaItemFilter.Selects = KpiCriteriaItemSelect.ALL;
-
-            List<KpiCriteriaItem> KpiCriteriaItemes = await KpiCriteriaItemService.List(KpiCriteriaItemFilter);
-            List<KpiItem_KpiCriteriaItemDTO> KpiItem_KpiCriteriaItemDTOs = KpiCriteriaItemes
-                .Select(x => new KpiItem_KpiCriteriaItemDTO(x)).ToList();
-            return KpiItem_KpiCriteriaItemDTOs;
-        }
-
-        [Route(KpiItemRoute.FilterListItem), HttpPost]
-        public async Task<List<KpiItem_ItemDTO>> FilterListItem([FromBody] KpiItem_ItemFilterDTO KpiItem_ItemFilterDTO)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
-
-            ItemFilter ItemFilter = new ItemFilter();
-            ItemFilter.Skip = 0;
-            ItemFilter.Take = 20;
-            ItemFilter.OrderBy = ItemOrder.Id;
-            ItemFilter.OrderType = OrderType.ASC;
-            ItemFilter.Selects = ItemSelect.ALL;
-            ItemFilter.Id = KpiItem_ItemFilterDTO.Id;
-            ItemFilter.ProductId = KpiItem_ItemFilterDTO.ProductId;
-            ItemFilter.Code = KpiItem_ItemFilterDTO.Code;
-            ItemFilter.Name = KpiItem_ItemFilterDTO.Name;
-            ItemFilter.ScanCode = KpiItem_ItemFilterDTO.ScanCode;
-            ItemFilter.SalePrice = KpiItem_ItemFilterDTO.SalePrice;
-            ItemFilter.RetailPrice = KpiItem_ItemFilterDTO.RetailPrice;
-            ItemFilter.StatusId = KpiItem_ItemFilterDTO.StatusId;
-            ItemFilter.Search = KpiItem_ItemFilterDTO.Search;
-
-            List<Item> Items = await ItemService.List(ItemFilter);
-            List<KpiItem_ItemDTO> KpiItem_ItemDTOs = Items
-                .Select(x => new KpiItem_ItemDTO(x)).ToList();
-            return KpiItem_ItemDTOs;
-        }
-
-        [Route(KpiItemRoute.FilterListSupplier), HttpPost]
-        public async Task<List<KpiItem_SupplierDTO>> FilterListSupplier([FromBody] KpiItem_SupplierFilterDTO KpiItem_SupplierFilterDTO)
-        {
-            SupplierFilter SupplierFilter = new SupplierFilter();
-            SupplierFilter.Skip = 0;
-            SupplierFilter.Take = 20;
-            SupplierFilter.OrderBy = SupplierOrder.Id;
-            SupplierFilter.OrderType = OrderType.ASC;
-            SupplierFilter.Selects = SupplierSelect.ALL;
-            SupplierFilter.Id = KpiItem_SupplierFilterDTO.Id;
-            SupplierFilter.Code = KpiItem_SupplierFilterDTO.Code;
-            SupplierFilter.Name = KpiItem_SupplierFilterDTO.Name;
-            SupplierFilter.TaxCode = KpiItem_SupplierFilterDTO.TaxCode;
-
-            List<Supplier> Suppliers = await SupplierService.List(SupplierFilter);
-            List<KpiItem_SupplierDTO> KpiItem_SupplierDTOs = Suppliers
-                .Select(x => new KpiItem_SupplierDTO(x)).ToList();
-            return KpiItem_SupplierDTOs;
-        }
-        [Route(KpiItemRoute.FilterListProductType), HttpPost]
-        public async Task<List<KpiItem_ProductTypeDTO>> FilterListProductType([FromBody] KpiItem_ProductTypeFilterDTO KpiItem_ProductTypeFilterDTO)
-        {
-            ProductTypeFilter ProductTypeFilter = new ProductTypeFilter();
-            ProductTypeFilter.Skip = 0;
-            ProductTypeFilter.Take = 20;
-            ProductTypeFilter.OrderBy = ProductTypeOrder.Id;
-            ProductTypeFilter.OrderType = OrderType.ASC;
-            ProductTypeFilter.Selects = ProductTypeSelect.ALL;
-            ProductTypeFilter.Id = KpiItem_ProductTypeFilterDTO.Id;
-            ProductTypeFilter.Code = KpiItem_ProductTypeFilterDTO.Code;
-            ProductTypeFilter.Name = KpiItem_ProductTypeFilterDTO.Name;
-            ProductTypeFilter.Description = KpiItem_ProductTypeFilterDTO.Description;
-
-            List<ProductType> ProductTypes = await ProductTypeService.List(ProductTypeFilter);
-            List<KpiItem_ProductTypeDTO> KpiItem_ProductTypeDTOs = ProductTypes
-                .Select(x => new KpiItem_ProductTypeDTO(x)).ToList();
-            return KpiItem_ProductTypeDTOs;
-        }
-
-        [Route(KpiItemRoute.FilterListProductGrouping), HttpPost]
-        public async Task<List<KpiItem_ProductGroupingDTO>> FilterListProductGrouping([FromBody] KpiItem_ProductGroupingFilterDTO KpiItem_ProductGroupingFilterDTO)
-        {
-            ProductGroupingFilter ProductGroupingFilter = new ProductGroupingFilter();
-            ProductGroupingFilter.Skip = 0;
-            ProductGroupingFilter.Take = int.MaxValue;
-            ProductGroupingFilter.OrderBy = ProductGroupingOrder.Id;
-            ProductGroupingFilter.OrderType = OrderType.ASC;
-            ProductGroupingFilter.Selects = ProductGroupingSelect.Id | ProductGroupingSelect.Code
-                | ProductGroupingSelect.Name | ProductGroupingSelect.Parent;
-
-            List<ProductGrouping> ProductGroupings = await ProductGroupingService.List(ProductGroupingFilter);
-            List<KpiItem_ProductGroupingDTO> KpiItem_ProductGroupingDTOs = ProductGroupings
-                .Select(x => new KpiItem_ProductGroupingDTO(x)).ToList();
-            return KpiItem_ProductGroupingDTOs;
-        }
-
-        [Route(KpiItemRoute.SingleListAppUser), HttpPost]
-        public async Task<List<KpiItem_AppUserDTO>> SingleListAppUser([FromBody] KpiItem_AppUserFilterDTO KpiItem_AppUserFilterDTO)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
-
-            AppUserFilter AppUserFilter = new AppUserFilter();
-            AppUserFilter.Skip = 0;
-            AppUserFilter.Take = 20;
-            AppUserFilter.OrderBy = AppUserOrder.Id;
-            AppUserFilter.OrderType = OrderType.ASC;
-            AppUserFilter.Selects = AppUserSelect.ALL;
-            AppUserFilter.Id = KpiItem_AppUserFilterDTO.Id;
-            AppUserFilter.Username = KpiItem_AppUserFilterDTO.Username;
-            AppUserFilter.DisplayName = KpiItem_AppUserFilterDTO.DisplayName;
-            AppUserFilter.Address = KpiItem_AppUserFilterDTO.Address;
-            AppUserFilter.Email = KpiItem_AppUserFilterDTO.Email;
-
-            if (AppUserFilter.Id == null) AppUserFilter.Id = new IdFilter();
-            AppUserFilter.Id.In = await FilterAppUser(AppUserService, OrganizationService, CurrentContext);
-
-            List<AppUser> AppUsers = await AppUserService.List(AppUserFilter);
-            List<KpiItem_AppUserDTO> KpiItem_AppUserDTOs = AppUsers
-                .Select(x => new KpiItem_AppUserDTO(x)).ToList();
-            return KpiItem_AppUserDTOs;
-        }
-        [Route(KpiItemRoute.SingleListKpiPeriod), HttpPost]
-        public async Task<List<KpiItem_KpiPeriodDTO>> SingleListKpiPeriod([FromBody] KpiItem_KpiPeriodFilterDTO KpiItem_KpiPeriodFilterDTO)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
-
-            KpiPeriodFilter KpiPeriodFilter = new KpiPeriodFilter();
-            KpiPeriodFilter.Skip = 0;
-            KpiPeriodFilter.Take = 20;
-            KpiPeriodFilter.OrderBy = KpiPeriodOrder.Id;
-            KpiPeriodFilter.OrderType = OrderType.ASC;
-            KpiPeriodFilter.Selects = KpiPeriodSelect.ALL;
-            KpiPeriodFilter.Id = KpiItem_KpiPeriodFilterDTO.Id;
-            KpiPeriodFilter.Code = KpiItem_KpiPeriodFilterDTO.Code;
-            KpiPeriodFilter.Name = KpiItem_KpiPeriodFilterDTO.Name;
-
-            List<KpiPeriod> KpiPeriods = await KpiPeriodService.List(KpiPeriodFilter);
-            List<KpiItem_KpiPeriodDTO> KpiItem_KpiPeriodDTOs = KpiPeriods
-                .Select(x => new KpiItem_KpiPeriodDTO(x)).ToList();
-            return KpiItem_KpiPeriodDTOs;
-        }
-        [Route(KpiItemRoute.SingleListKpiYear), HttpPost]
-        public async Task<List<KpiItem_KpiYearDTO>> SingleListKpiYear([FromBody] KpiItem_KpiYearFilterDTO KpiItem_KpiYearFilterDTO)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
-
-            KpiYearFilter KpiYearFilter = new KpiYearFilter();
-            KpiYearFilter.Skip = 0;
-            KpiYearFilter.Take = 20;
-            KpiYearFilter.OrderBy = KpiYearOrder.Id;
-            KpiYearFilter.OrderType = OrderType.ASC;
-            KpiYearFilter.Selects = KpiYearSelect.ALL;
-            KpiYearFilter.Id = KpiItem_KpiYearFilterDTO.Id;
-            KpiYearFilter.Code = KpiItem_KpiYearFilterDTO.Code;
-            KpiYearFilter.Name = KpiItem_KpiYearFilterDTO.Name;
-
-            List<KpiYear> KpiYears = await KpiYearService.List(KpiYearFilter);
-            List<KpiItem_KpiYearDTO> KpiItem_KpiYearDTOs = KpiYears
-                .Select(x => new KpiItem_KpiYearDTO(x)).ToList();
-            return KpiItem_KpiYearDTOs;
-        }
-        [Route(KpiItemRoute.SingleListOrganization), HttpPost]
-        public async Task<List<KpiItem_OrganizationDTO>> SingleListOrganization([FromBody] KpiItem_OrganizationFilterDTO KpiItem_OrganizationFilterDTO)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
-
-            OrganizationFilter OrganizationFilter = new OrganizationFilter();
-            OrganizationFilter.Skip = 0;
-            OrganizationFilter.Take = int.MaxValue;
-            OrganizationFilter.OrderBy = OrganizationOrder.Id;
-            OrganizationFilter.OrderType = OrderType.ASC;
-            OrganizationFilter.Selects = OrganizationSelect.ALL;
-            OrganizationFilter.Id = KpiItem_OrganizationFilterDTO.Id;
-            OrganizationFilter.Code = KpiItem_OrganizationFilterDTO.Code;
-            OrganizationFilter.Name = KpiItem_OrganizationFilterDTO.Name;
-
-            if (OrganizationFilter.Id == null) OrganizationFilter.Id = new IdFilter();
-            OrganizationFilter.Id.In = await FilterOrganization(OrganizationService, CurrentContext);
-
-            List<Organization> Organizations = await OrganizationService.List(OrganizationFilter);
-            List<KpiItem_OrganizationDTO> KpiItem_OrganizationDTOs = Organizations
-                .Select(x => new KpiItem_OrganizationDTO(x)).ToList();
-            return KpiItem_OrganizationDTOs;
-        }
-        [Route(KpiItemRoute.SingleListStatus), HttpPost]
-        public async Task<List<KpiItem_StatusDTO>> SingleListStatus()
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
-
-            StatusFilter StatusFilter = new StatusFilter();
-            StatusFilter.Skip = 0;
-            StatusFilter.Take = int.MaxValue;
-            StatusFilter.Take = 20;
-            StatusFilter.OrderBy = StatusOrder.Id;
-            StatusFilter.OrderType = OrderType.ASC;
-            StatusFilter.Selects = StatusSelect.ALL;
-
-            List<Status> Statuses = await StatusService.List(StatusFilter);
-            List<KpiItem_StatusDTO> KpiItem_StatusDTOs = Statuses
-                .Select(x => new KpiItem_StatusDTO(x)).ToList();
-            return KpiItem_StatusDTOs;
-        }
-
-        [Route(KpiItemRoute.SingleListKpiCriteriaItem), HttpPost]
-        public async Task<List<KpiItem_KpiCriteriaItemDTO>> SingleListKpiCriteriaItem()
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
-
-            KpiCriteriaItemFilter KpiCriteriaItemFilter = new KpiCriteriaItemFilter();
-            KpiCriteriaItemFilter.Skip = 0;
-            KpiCriteriaItemFilter.Take = int.MaxValue;
-            KpiCriteriaItemFilter.Take = 20;
-            KpiCriteriaItemFilter.OrderBy = KpiCriteriaItemOrder.Id;
-            KpiCriteriaItemFilter.OrderType = OrderType.ASC;
-            KpiCriteriaItemFilter.Selects = KpiCriteriaItemSelect.ALL;
-
-            List<KpiCriteriaItem> KpiCriteriaItemes = await KpiCriteriaItemService.List(KpiCriteriaItemFilter);
-            List<KpiItem_KpiCriteriaItemDTO> KpiItem_KpiCriteriaItemDTOs = KpiCriteriaItemes
-                .Select(x => new KpiItem_KpiCriteriaItemDTO(x)).ToList();
-            return KpiItem_KpiCriteriaItemDTOs;
-        }
-
-
-        [Route(KpiItemRoute.SingleListItem), HttpPost]
-        public async Task<List<KpiItem_ItemDTO>> SingleListItem([FromBody] KpiItem_ItemFilterDTO KpiItem_ItemFilterDTO)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
-
-            ItemFilter ItemFilter = new ItemFilter();
-            ItemFilter.Skip = 0;
-            ItemFilter.Take = 20;
-            ItemFilter.OrderBy = ItemOrder.Id;
-            ItemFilter.OrderType = OrderType.ASC;
-            ItemFilter.Selects = ItemSelect.ALL;
-            ItemFilter.Id = KpiItem_ItemFilterDTO.Id;
-            ItemFilter.ProductId = KpiItem_ItemFilterDTO.ProductId;
-            ItemFilter.Code = KpiItem_ItemFilterDTO.Code;
-            ItemFilter.Name = KpiItem_ItemFilterDTO.Name;
-            ItemFilter.ScanCode = KpiItem_ItemFilterDTO.ScanCode;
-            ItemFilter.SalePrice = KpiItem_ItemFilterDTO.SalePrice;
-            ItemFilter.RetailPrice = KpiItem_ItemFilterDTO.RetailPrice;
-            ItemFilter.StatusId = KpiItem_ItemFilterDTO.StatusId;
-            ItemFilter.Search = KpiItem_ItemFilterDTO.Search;
-
-            List<Item> Items = await ItemService.List(ItemFilter);
-            List<KpiItem_ItemDTO> KpiItem_ItemDTOs = Items
-                .Select(x => new KpiItem_ItemDTO(x)).ToList();
-            return KpiItem_ItemDTOs;
-        }
-
-        [Route(KpiItemRoute.CountAppUser), HttpPost]
-        public async Task<long> CountAppUser([FromBody] KpiItem_AppUserFilterDTO KpiItem_AppUserFilterDTO)
-        {
-            AppUserFilter AppUserFilter = new AppUserFilter();
-            AppUserFilter.Id = KpiItem_AppUserFilterDTO.Id;
-            AppUserFilter.Username = KpiItem_AppUserFilterDTO.Username;
-            AppUserFilter.DisplayName = KpiItem_AppUserFilterDTO.DisplayName;
-            AppUserFilter.Email = KpiItem_AppUserFilterDTO.Email;
-            AppUserFilter.Phone = KpiItem_AppUserFilterDTO.Phone;
-            AppUserFilter.OrganizationId = KpiItem_AppUserFilterDTO.OrganizationId;
-            AppUserFilter.StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id };
-
-            if (AppUserFilter.Id == null) AppUserFilter.Id = new IdFilter();
-            {
-                if (AppUserFilter.Id.In == null) AppUserFilter.Id.In = new List<long>();
-                AppUserFilter.Id.In.AddRange(await FilterAppUser(AppUserService, OrganizationService, CurrentContext));
-            }
-
-            return await KpiItemService.CountAppUser(AppUserFilter, KpiItem_AppUserFilterDTO.KpiYearId, KpiItem_AppUserFilterDTO.KpiPeriodId);
-        }
-
-        [Route(KpiItemRoute.ListAppUser), HttpPost]
-        public async Task<List<KpiItem_AppUserDTO>> ListAppUser([FromBody] KpiItem_AppUserFilterDTO KpiItem_AppUserFilterDTO)
-        {
-            AppUserFilter AppUserFilter = new AppUserFilter();
-            AppUserFilter.Skip = KpiItem_AppUserFilterDTO.Skip;
-            AppUserFilter.Take = KpiItem_AppUserFilterDTO.Take;
-            AppUserFilter.OrderBy = AppUserOrder.Id;
-            AppUserFilter.OrderType = OrderType.ASC;
-            AppUserFilter.Selects = AppUserSelect.ALL;
-            AppUserFilter.Id = KpiItem_AppUserFilterDTO.Id;
-            AppUserFilter.Username = KpiItem_AppUserFilterDTO.Username;
-            AppUserFilter.DisplayName = KpiItem_AppUserFilterDTO.DisplayName;
-            AppUserFilter.Email = KpiItem_AppUserFilterDTO.Email;
-            AppUserFilter.OrganizationId = KpiItem_AppUserFilterDTO.OrganizationId;
-            AppUserFilter.Phone = KpiItem_AppUserFilterDTO.Phone;
-            AppUserFilter.StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id };
-
-            if (AppUserFilter.Id == null) AppUserFilter.Id = new IdFilter();
-            {
-                if (AppUserFilter.Id.In == null) AppUserFilter.Id.In = new List<long>();
-                AppUserFilter.Id.In.AddRange(await FilterAppUser(AppUserService, OrganizationService, CurrentContext));
-            }
-
-            List<AppUser> AppUsers = await KpiItemService.ListAppUser(AppUserFilter, KpiItem_AppUserFilterDTO.KpiYearId, KpiItem_AppUserFilterDTO.KpiPeriodId);
-            List<KpiItem_AppUserDTO> KpiItem_AppUserDTOs = AppUsers
-                .Select(x => new KpiItem_AppUserDTO(x)).ToList();
-            return KpiItem_AppUserDTOs;
-        }
-
-        [Route(KpiItemRoute.CountItem), HttpPost]
-        public async Task<long> CountItem([FromBody] KpiItem_ItemFilterDTO KpiItem_ItemFilterDTO)
-        {
-            ItemFilter ItemFilter = new ItemFilter();
-            ItemFilter.Code = KpiItem_ItemFilterDTO.Code;
-            ItemFilter.Name = KpiItem_ItemFilterDTO.Name;
-            ItemFilter.ProductGroupingId = KpiItem_ItemFilterDTO.ProductGroupingId;
-            ItemFilter.ProductId = KpiItem_ItemFilterDTO.ProductId;
-            ItemFilter.ProductTypeId = KpiItem_ItemFilterDTO.ProductTypeId;
-            ItemFilter.RetailPrice = KpiItem_ItemFilterDTO.RetailPrice;
-            ItemFilter.SalePrice = KpiItem_ItemFilterDTO.SalePrice;
-            ItemFilter.ScanCode = KpiItem_ItemFilterDTO.ScanCode;
-            ItemFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
-            ItemFilter.SupplierId = KpiItem_ItemFilterDTO.SupplierId;
-            ItemFilter.Search = KpiItem_ItemFilterDTO.Search;
-
-            return await ItemService.Count(ItemFilter);
-        }
-        [Route(KpiItemRoute.ListItem), HttpPost]
-        public async Task<List<KpiItem_ItemDTO>> ListItem([FromBody] KpiItem_ItemFilterDTO KpiItem_ItemFilterDTO)
-        {
-            ItemFilter ItemFilter = new ItemFilter();
-            ItemFilter.Skip = KpiItem_ItemFilterDTO.Skip;
-            ItemFilter.Take = KpiItem_ItemFilterDTO.Take;
-            ItemFilter.OrderBy = ItemOrder.Id;
-            ItemFilter.OrderType = OrderType.ASC;
-            ItemFilter.Selects = ItemSelect.ALL;
-            ItemFilter.Id = KpiItem_ItemFilterDTO.Id;
-            ItemFilter.Code = KpiItem_ItemFilterDTO.Code;
-            ItemFilter.Name = KpiItem_ItemFilterDTO.Name;
-            ItemFilter.ProductGroupingId = KpiItem_ItemFilterDTO.ProductGroupingId;
-            ItemFilter.ProductId = KpiItem_ItemFilterDTO.ProductId;
-            ItemFilter.ProductTypeId = KpiItem_ItemFilterDTO.ProductTypeId;
-            ItemFilter.RetailPrice = KpiItem_ItemFilterDTO.RetailPrice;
-            ItemFilter.SalePrice = KpiItem_ItemFilterDTO.SalePrice;
-            ItemFilter.ScanCode = KpiItem_ItemFilterDTO.ScanCode;
-            ItemFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
-            ItemFilter.SupplierId = KpiItem_ItemFilterDTO.SupplierId;
-            ItemFilter.Search = KpiItem_ItemFilterDTO.Search;
-
-            List<Item> Items = await ItemService.List(ItemFilter);
-            List<KpiItem_ItemDTO> KpiItem_ItemDTOs = Items
-                .Select(x => new KpiItem_ItemDTO(x)).ToList();
-            return KpiItem_ItemDTOs;
         }
     }
 }

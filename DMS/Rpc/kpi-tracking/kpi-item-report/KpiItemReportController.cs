@@ -20,6 +20,7 @@ using System.Dynamic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using DMS.Services.MKpiItemType;
 
 namespace DMS.Rpc.kpi_tracking.kpi_item_report
 {
@@ -31,6 +32,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_item_report
         private IKpiYearService KpiYearService;
         private IKpiPeriodService KpiPeriodService;
         private IItemService ItemService;
+        private IKpiItemTypeService KpiItemTypeService;
         private ICurrentContext CurrentContext;
         public KpiItemReportController(DataContext DataContext,
             IOrganizationService OrganizationService,
@@ -38,6 +40,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_item_report
             IKpiYearService KpiYearService,
             IKpiPeriodService KpiPeriodService,
             IItemService ItemService,
+            IKpiItemTypeService KpiItemTypeService,
             ICurrentContext CurrentContext)
         {
             this.DataContext = DataContext;
@@ -46,6 +49,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_item_report
             this.KpiPeriodService = KpiPeriodService;
             this.KpiYearService = KpiYearService;
             this.ItemService = ItemService;
+            this.KpiItemTypeService = KpiItemTypeService;
             this.CurrentContext = CurrentContext;
         }
 
@@ -168,6 +172,28 @@ namespace DMS.Rpc.kpi_tracking.kpi_item_report
             return KpiItemReport_KpiYearDTOs;
         }
 
+        [Route(KpiItemReportRoute.FilterListKpiItemType), HttpPost]
+        public async Task<List<KpiItemReport_KpiItemTypeDTO>> FilterListKpiItemType([FromBody] KpiItemReport_KpiItemTypeFilterDTO KpiItemReport_KpiItemTypeFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            KpiItemTypeFilter KpiItemTypeFilter = new KpiItemTypeFilter();
+            KpiItemTypeFilter.Skip = 0;
+            KpiItemTypeFilter.Take = 20;
+            KpiItemTypeFilter.OrderBy = KpiItemTypeOrder.Id;
+            KpiItemTypeFilter.OrderType = OrderType.ASC;
+            KpiItemTypeFilter.Selects = KpiItemTypeSelect.ALL;
+            KpiItemTypeFilter.Id = KpiItemReport_KpiItemTypeFilterDTO.Id;
+            KpiItemTypeFilter.Code = KpiItemReport_KpiItemTypeFilterDTO.Code;
+            KpiItemTypeFilter.Name = KpiItemReport_KpiItemTypeFilterDTO.Name;
+
+            List<KpiItemType> KpiItemTypes = await KpiItemTypeService.List(KpiItemTypeFilter);
+            List<KpiItemReport_KpiItemTypeDTO> KpiItemReport_KpiItemTypeDTOs = KpiItemTypes
+                .Select(x => new KpiItemReport_KpiItemTypeDTO(x)).ToList();
+            return KpiItemReport_KpiItemTypeDTOs;
+        }
+
         [Route(KpiItemReportRoute.Count), HttpPost]
         public async Task<int> Count([FromBody] KpiItemReport_KpiItemReportFilterDTO KpiItemReport_KpiItemReportFilterDTO)
         {
@@ -214,12 +240,15 @@ namespace DMS.Rpc.kpi_tracking.kpi_item_report
                 return BadRequest(new { message = "Chưa chọn kì KPI" });
             if (KpiItemReport_KpiItemReportFilterDTO.KpiYearId?.Equal.HasValue == false)
                 return BadRequest(new { message = "Chưa chọn năm KPI" });
+            if (KpiItemReport_KpiItemReportFilterDTO.KpiItemTypeId?.Equal.HasValue == false)
+                return BadRequest(new { message = "Chưa chọn loại KPI" });
 
             DateTime StartDate, EndDate;
             long? SaleEmployeeId = KpiItemReport_KpiItemReportFilterDTO.AppUserId?.Equal;
             long? ItemId = KpiItemReport_KpiItemReportFilterDTO.ItemId?.Equal;
             long? KpiPeriodId = KpiItemReport_KpiItemReportFilterDTO.KpiPeriodId?.Equal.Value;
             long? KpiYearId = KpiItemReport_KpiItemReportFilterDTO.KpiYearId?.Equal.Value;
+            long? KpiItemTypeId = KpiItemReport_KpiItemReportFilterDTO.KpiItemTypeId?.Equal.Value;
             (StartDate, EndDate) = DateTimeConvert(KpiPeriodId.Value, KpiYearId.Value);
 
             List<long> AppUserIds, OrganizationIds;
@@ -236,6 +265,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_item_report
                         (ItemId.HasValue == false || i.Id == ItemId.Value) &&
                         (ki.KpiPeriodId == KpiPeriodId.Value) &&
                         (ki.KpiYearId == KpiYearId.Value) &&
+                        (ki.KpiItemTypeId == KpiYearId.Value) &&
                         ki.DeletedAt == null &&
                         ki.StatusId == StatusEnum.ACTIVE.Id
                         select new

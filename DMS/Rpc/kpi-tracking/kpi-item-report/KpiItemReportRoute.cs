@@ -18,6 +18,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_item_report
         public const string FilterListItem = Default + "/filter-list-item";
         public const string FilterListKpiPeriod = Default + "/filter-list-kpi-period";
         public const string FilterListKpiYear = Default + "/filter-list-kpi-year";
+        public const string FilterListKpiItemType = Default + "/filter-list-kpi-item-type";
 
         public static Dictionary<string, long> Filters = new Dictionary<string, long>
         {
@@ -31,7 +32,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_item_report
             { "Tìm kiếm", new List<string> {
                 Parent,
                 Master, Count, List, Export,
-                FilterListOrganization,FilterListAppUser,FilterListKpiYear, FilterListKpiPeriod, FilterListItem} },
+                FilterListOrganization,FilterListAppUser,FilterListKpiYear, FilterListKpiPeriod, FilterListItem, FilterListKpiItemType} },
 
         };
     }

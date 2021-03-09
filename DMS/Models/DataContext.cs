@@ -59,6 +59,7 @@ namespace DMS.Models
         public virtual DbSet<KpiItemDAO> KpiItem { get; set; }
         public virtual DbSet<KpiItemContentDAO> KpiItemContent { get; set; }
         public virtual DbSet<KpiItemContentKpiCriteriaItemMappingDAO> KpiItemContentKpiCriteriaItemMapping { get; set; }
+        public virtual DbSet<KpiItemTypeDAO> KpiItemType { get; set; }
         public virtual DbSet<KpiPeriodDAO> KpiPeriod { get; set; }
         public virtual DbSet<KpiYearDAO> KpiYear { get; set; }
         public virtual DbSet<LastestEventMessageDAO> LastestEventMessage { get; set; }
@@ -1803,6 +1804,8 @@ namespace DMS.Models
 
                 entity.Property(e => e.DeletedAt).HasColumnType("datetime");
 
+                entity.Property(e => e.KpiItemTypeId).HasDefaultValueSql("((2))");
+
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
                 entity.HasOne(d => d.Creator)
@@ -1816,6 +1819,12 @@ namespace DMS.Models
                     .HasForeignKey(d => d.EmployeeId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_KpiItem_AppUser");
+
+                entity.HasOne(d => d.KpiItemType)
+                    .WithMany(p => p.KpiItems)
+                    .HasForeignKey(d => d.KpiItemTypeId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_KpiItem_KpiItemType");
 
                 entity.HasOne(d => d.KpiPeriod)
                     .WithMany(p => p.KpiItems)
@@ -1873,6 +1882,21 @@ namespace DMS.Models
                     .HasForeignKey(d => d.KpiItemContentId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_KpiItemContentKpiCriteriaItemMapping_KpiItemContent");
+            });
+
+            modelBuilder.Entity<KpiItemTypeDAO>(entity =>
+            {
+                entity.ToTable("KpiItemType", "ENUM");
+
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(50);
             });
 
             modelBuilder.Entity<KpiPeriodDAO>(entity =>

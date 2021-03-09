@@ -30,10 +30,14 @@ namespace DMS.Services.MKpiItem
             StatusNotExisted,
             KpiPeriodIdNotExisted,
             KpiYearIdNotExisted,
+            KpiItemTypeIdNotExisted,
             KpiItemContentsEmpty,
             ItemIdNotExisted,
             ValueCannotBeNull,
-            KpiYearAndKpiPeriodMustInTheFuture
+            KpiYearAndKpiPeriodMustInTheFuture,
+            ItemNotExisted,
+            ItemIsNotNew,
+            EmployeeHasKpi
         }
 
         private IUOW UOW;
@@ -132,6 +136,19 @@ namespace DMS.Services.MKpiItem
             return KpiItem.IsValidated;
         }
 
+        private async Task<bool> ValidateKpiItemType(KpiItem KpiItem)
+        {
+            KpiItemTypeFilter KpiItemTypeFilter = new KpiItemTypeFilter
+            {
+                Id = new IdFilter { Equal = KpiItem.KpiItemTypeId }
+            };
+
+            int count = await UOW.KpiItemTypeRepository.Count(KpiItemTypeFilter);
+            if (count == 0)
+                KpiItem.AddError(nameof(KpiItemValidator), nameof(KpiItem.KpiItemType), ErrorCode.KpiItemTypeIdNotExisted);
+            return KpiItem.IsValidated;
+        }
+
         private async Task<bool> ValidateKpiYear(KpiItem KpiItem)
         {
             KpiYearFilter KpiYearFilter = new KpiYearFilter
@@ -156,20 +173,49 @@ namespace DMS.Services.MKpiItem
                 {
                     Skip = 0,
                     Take = int.MaxValue,
-                    Selects = ItemSelect.Id,
-                    Id = new IdFilter { In = ItemIds }
+                    Selects = ItemSelect.Id | ItemSelect.Product,
+                    Id = new IdFilter { In = ItemIds },
+                    StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id }
                 };
 
-                var ItemIdsInDB = (await UOW.ItemRepository.List(ItemFilter)).Select(x => x.Id).ToList();
-                var ItemIdsNotExisted = ItemIds.Except(ItemIdsInDB).ToList();
-                if (ItemIdsNotExisted != null && ItemIdsNotExisted.Any())
+                var ItemInDB = await UOW.ItemRepository.List(ItemFilter);
+                foreach (var KpiItemContent in KpiItem.KpiItemContents)
                 {
-                    foreach (var Id in ItemIdsNotExisted)
+                    Item Item = ItemInDB.Where(x => x.Id == KpiItemContent.ItemId).FirstOrDefault();
+                    if(Item == null)
                     {
-                        KpiItem.AddError(nameof(KpiItemValidator), nameof(KpiItem.KpiItemContents), ErrorCode.ItemIdNotExisted);
+                        KpiItemContent.AddError(nameof(KpiItemValidator), nameof(KpiItemContent.Item), ErrorCode.ItemNotExisted);
+                    }
+                    else if(KpiItem.KpiItemTypeId == KpiItemTypeEnum.NEW_PRODUCT.Id && Item.Product.IsNew == false)
+                    {
+                        KpiItemContent.AddError(nameof(KpiItemValidator), nameof(KpiItemContent.Item), ErrorCode.ItemIsNotNew);
                     }
                 }
             }
+            return KpiItem.IsValidated;
+        }
+
+        private async Task<bool> ValidateOldKpi(KpiItem KpiItem)
+        {
+            KpiItemFilter KpiItemFilter = new KpiItemFilter
+            {
+                AppUserId = new IdFilter { Equal = CurrentContext.UserId },
+                StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id },
+                KpiPeriodId = new IdFilter { Equal = KpiItem.KpiPeriodId },
+                KpiYearId = new IdFilter { Equal = KpiItem.KpiYearId },
+            };
+
+            if (KpiItem.KpiItemTypeId == KpiItemTypeEnum.NEW_PRODUCT.Id)
+                KpiItemFilter.KpiItemTypeId = new IdFilter { Equal = KpiItemTypeEnum.NEW_PRODUCT.Id };
+            else
+                KpiItemFilter.KpiItemTypeId = new IdFilter { Equal = KpiItemTypeEnum.ALL_PRODUCT.Id };
+
+            var count = await UOW.KpiItemRepository.Count(KpiItemFilter);
+            if(count > 0)
+            {
+                KpiItem.AddError(nameof(KpiItemValidator), nameof(KpiItem.Id), ErrorCode.EmployeeHasKpi);
+            }
+
             return KpiItem.IsValidated;
         }
 
@@ -244,6 +290,7 @@ namespace DMS.Services.MKpiItem
 
         public async Task<bool> Create(KpiItem KpiItem)
         {
+            await ValidateKpiItemType(KpiItem);
             await ValidateTime(KpiItem);
             await ValidateOrganization(KpiItem);
             await ValidateEmployees(KpiItem);
@@ -257,6 +304,7 @@ namespace DMS.Services.MKpiItem
         {
             if (await ValidateId(KpiItem))
             {
+                await ValidateKpiItemType(KpiItem);
                 await ValidateTime(KpiItem);
                 await ValidateOrganization(KpiItem);
                 await ValidateStatus(KpiItem);

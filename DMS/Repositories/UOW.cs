@@ -44,6 +44,7 @@ namespace DMS.Repositories
         IKpiGeneralContentRepository KpiGeneralContentRepository { get; }
         IKpiItemContentRepository KpiItemContentRepository { get; }
         IKpiItemRepository KpiItemRepository { get; }
+        IKpiItemTypeRepository KpiItemTypeRepository { get; }
         IKpiPeriodRepository KpiPeriodRepository { get; }
         IKpiYearRepository KpiYearRepository { get; }
         ILuckyNumberRepository LuckyNumberRepository { get; }
@@ -175,6 +176,7 @@ namespace DMS.Repositories
         public IKpiItemRepository KpiItemRepository { get; private set; }
         public IKpiPeriodRepository KpiPeriodRepository { get; private set; }
         public IKpiYearRepository KpiYearRepository { get; private set; }
+        public IKpiItemTypeRepository KpiItemTypeRepository { get; private set; }
         public ILuckyNumberRepository LuckyNumberRepository { get; private set; }
         public ILuckyNumberGroupingRepository LuckyNumberGroupingRepository { get; private set; }
         public IMenuRepository MenuRepository { get; private set; }
@@ -301,6 +303,7 @@ namespace DMS.Repositories
             KpiItemRepository = new KpiItemRepository(DataContext);
             KpiPeriodRepository = new KpiPeriodRepository(DataContext);
             KpiYearRepository = new KpiYearRepository(DataContext);
+            KpiItemTypeRepository = new KpiItemTypeRepository(DataContext);
             LuckyNumberRepository = new LuckyNumberRepository(DataContext);
             LuckyNumberGroupingRepository = new LuckyNumberGroupingRepository(DataContext);
             MenuRepository = new MenuRepository(DataContext);

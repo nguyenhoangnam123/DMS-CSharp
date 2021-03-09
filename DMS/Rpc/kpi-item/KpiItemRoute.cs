@@ -23,7 +23,6 @@ namespace DMS.Rpc.kpi_item
         public const string BulkDelete = Default + "/bulk-delete";
 
         public const string FilterListAppUser = Default + "/filter-list-app-user";
-        public const string FilterListCreator = Default + "/filter-list-creator";
         public const string FilterListKpiPeriod = Default + "/filter-list-kpi-period";
         public const string FilterListKpiYear = Default + "/filter-list-kpi-year";
         public const string FilterListOrganization = Default + "/filter-list-organization";
@@ -32,6 +31,7 @@ namespace DMS.Rpc.kpi_item
         public const string FilterListItem = Default + "/filter-list-item";
         public const string FilterListKpiCriteriaItem = Default + "/filter-list-criteria-item";
         public const string FilterListKpiCriteriaTotal = Default + "/filter-list-criteria-total";
+        public const string FilterListKpiItemType = Default + "/filter-list-kpi-item-type";
         public const string FilterListProductGrouping = Default + "/filter-list-product-grouping";
         public const string FilterListProductType = Default + "/filter-list-product-type";
         public const string FilterListSupplier = Default + "/filter-list-supplier";
@@ -39,6 +39,7 @@ namespace DMS.Rpc.kpi_item
         public const string SingleListAppUser = Default + "/single-list-app-user";
         public const string SingleListKpiPeriod = Default + "/single-list-kpi-period";
         public const string SingleListKpiYear = Default + "/single-list-kpi-year";
+        public const string SingleListKpiItemType = Default + "/single-kpi-item-type";
         public const string SingleListOrganization = Default + "/single-list-organization";
         public const string SingleListStatus = Default + "/single-list-status";
         public const string SingleListKpiItemContent = Default + "/single-list-kpi-item-content";
@@ -62,45 +63,55 @@ namespace DMS.Rpc.kpi_item
             { "Tìm kiếm", new List<string> {
                 Parent,
                 Master, Count, List, Get,
-                FilterListAppUser, FilterListCreator, FilterListKpiPeriod,FilterListKpiYear, FilterListOrganization, FilterListStatus, FilterListKpiItemContent, FilterListItem, FilterListKpiCriteriaItem, FilterListKpiCriteriaTotal, FilterListProductGrouping, FilterListProductType, FilterListSupplier} },
+                FilterListAppUser, FilterListKpiPeriod,FilterListKpiYear, FilterListKpiItemType, FilterListOrganization, FilterListStatus, FilterListKpiItemContent, 
+                FilterListItem, FilterListKpiCriteriaItem, FilterListKpiCriteriaTotal, FilterListProductGrouping, FilterListProductType, FilterListSupplier} },
 
             { "Thêm", new List<string> {
                 Parent,
                 Master, Count, List, Get, CountAppUser, ListAppUser, ListItem, CountItem,
-                FilterListAppUser, FilterListCreator, FilterListKpiPeriod, FilterListKpiYear, FilterListOrganization, FilterListStatus, FilterListKpiItemContent, FilterListItem, FilterListKpiCriteriaItem, FilterListKpiCriteriaTotal, FilterListProductGrouping, FilterListProductType, FilterListSupplier,
+                FilterListAppUser, FilterListKpiPeriod,FilterListKpiYear, FilterListKpiItemType, FilterListOrganization, FilterListStatus, FilterListKpiItemContent,
+                FilterListItem, FilterListKpiCriteriaItem, FilterListKpiCriteriaTotal, FilterListProductGrouping, FilterListProductType, FilterListSupplier,
                 Detail, Create, GetDraft,
-                SingleListAppUser, SingleListKpiPeriod, SingleListKpiYear, SingleListOrganization, SingleListStatus, SingleListKpiItemContent, SingleListItem, SingleListKpiCriteriaItem, SingleListKpiCriteriaTotal, } },
+                SingleListAppUser, SingleListKpiPeriod, SingleListKpiYear, SingleListOrganization, SingleListStatus, SingleListKpiItemContent, SingleListItem, 
+                SingleListKpiCriteriaItem, SingleListKpiCriteriaTotal, SingleListKpiItemType } },
 
             { "Sửa", new List<string> {
                 Parent,
                 Master, Count, List, Get, CountAppUser, ListAppUser, ListItem, CountItem,
-                FilterListAppUser, FilterListCreator, FilterListKpiPeriod, FilterListKpiYear, FilterListOrganization, FilterListStatus, FilterListKpiItemContent, FilterListItem, FilterListKpiCriteriaItem, FilterListKpiCriteriaTotal, FilterListProductGrouping, FilterListProductType, FilterListSupplier,
+                FilterListAppUser, FilterListKpiPeriod,FilterListKpiYear, FilterListKpiItemType, FilterListOrganization, FilterListStatus, FilterListKpiItemContent,
+                FilterListItem, FilterListKpiCriteriaItem, FilterListKpiCriteriaTotal, FilterListProductGrouping, FilterListProductType, FilterListSupplier,
                 Detail, Update, GetDraft,
-                SingleListAppUser, SingleListKpiPeriod, SingleListKpiYear, SingleListOrganization, SingleListStatus, SingleListKpiItemContent, SingleListItem, SingleListKpiCriteriaItem, SingleListKpiCriteriaTotal, } },
+                SingleListAppUser, SingleListKpiPeriod, SingleListKpiYear, SingleListOrganization, SingleListStatus, SingleListKpiItemContent, SingleListItem,
+                SingleListKpiCriteriaItem, SingleListKpiCriteriaTotal, SingleListKpiItemType } },
 
             { "Xoá", new List<string> {
                 Parent,
                 Master, Count, List, Get,
-                FilterListAppUser, FilterListCreator, FilterListKpiPeriod, FilterListKpiYear, FilterListOrganization, FilterListStatus, FilterListKpiItemContent, FilterListItem, FilterListKpiCriteriaItem, FilterListKpiCriteriaTotal, FilterListProductGrouping, FilterListProductType, FilterListSupplier,
+                FilterListAppUser, FilterListKpiPeriod,FilterListKpiYear, FilterListKpiItemType, FilterListOrganization, FilterListStatus, FilterListKpiItemContent,
+                FilterListItem, FilterListKpiCriteriaItem, FilterListKpiCriteriaTotal, FilterListProductGrouping, FilterListProductType, FilterListSupplier,
                 Detail, Delete,
-                 SingleListAppUser, SingleListKpiPeriod, SingleListKpiYear, SingleListOrganization, SingleListStatus, SingleListKpiItemContent, SingleListItem, } },
+                SingleListAppUser, SingleListKpiPeriod, SingleListKpiYear, SingleListOrganization, SingleListStatus, SingleListKpiItemContent, SingleListItem,
+                SingleListKpiCriteriaItem, SingleListKpiCriteriaTotal, SingleListKpiItemType } },
 
             { "Xoá nhiều", new List<string> {
                 Parent,
                 Master, Count, List, Get,
-                FilterListAppUser, FilterListCreator, FilterListKpiPeriod, FilterListKpiYear, FilterListOrganization, FilterListStatus, FilterListKpiItemContent, FilterListItem, FilterListKpiCriteriaItem, FilterListKpiCriteriaTotal, FilterListProductGrouping, FilterListProductType, FilterListSupplier,
+                FilterListAppUser, FilterListKpiPeriod,FilterListKpiYear, FilterListKpiItemType, FilterListOrganization, FilterListStatus, FilterListKpiItemContent,
+                FilterListItem, FilterListKpiCriteriaItem, FilterListKpiCriteriaTotal, FilterListProductGrouping, FilterListProductType, FilterListSupplier,
                 BulkDelete } },
 
             { "Xuất excel", new List<string> {
                 Parent,
                 Master, Count, List, Get,
-                FilterListAppUser, FilterListCreator, FilterListKpiPeriod, FilterListKpiYear, FilterListOrganization, FilterListStatus, FilterListKpiItemContent, FilterListItem, FilterListKpiCriteriaItem, FilterListKpiCriteriaTotal, FilterListProductGrouping, FilterListProductType, FilterListSupplier,
+                FilterListAppUser, FilterListKpiPeriod,FilterListKpiYear, FilterListKpiItemType, FilterListOrganization, FilterListStatus, FilterListKpiItemContent,
+                FilterListItem, FilterListKpiCriteriaItem, FilterListKpiCriteriaTotal, FilterListProductGrouping, FilterListProductType, FilterListSupplier,
                 Export } },
 
             { "Nhập excel", new List<string> {
                 Parent,
                 Master, Count, List, Get,
-                FilterListAppUser, FilterListCreator, FilterListKpiPeriod, FilterListKpiYear, FilterListOrganization, FilterListStatus, FilterListKpiItemContent, FilterListItem, FilterListKpiCriteriaItem, FilterListKpiCriteriaTotal, FilterListProductGrouping, FilterListProductType, FilterListSupplier,
+                FilterListAppUser, FilterListKpiPeriod,FilterListKpiYear, FilterListKpiItemType, FilterListOrganization, FilterListStatus, FilterListKpiItemContent,
+                FilterListItem, FilterListKpiCriteriaItem, FilterListKpiCriteriaTotal, FilterListProductGrouping, FilterListProductType, FilterListSupplier,
                 ExportTemplate, Import } },
         };
     }

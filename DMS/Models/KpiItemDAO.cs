@@ -14,6 +14,7 @@ namespace DMS.Models
         public long OrganizationId { get; set; }
         public long KpiYearId { get; set; }
         public long KpiPeriodId { get; set; }
+        public long KpiItemTypeId { get; set; }
         public long StatusId { get; set; }
         public long EmployeeId { get; set; }
         public long CreatorId { get; set; }
@@ -24,6 +25,7 @@ namespace DMS.Models
 
         public virtual AppUserDAO Creator { get; set; }
         public virtual AppUserDAO Employee { get; set; }
+        public virtual KpiItemTypeDAO KpiItemType { get; set; }
         public virtual KpiPeriodDAO KpiPeriod { get; set; }
         public virtual KpiYearDAO KpiYear { get; set; }
         public virtual OrganizationDAO Organization { get; set; }

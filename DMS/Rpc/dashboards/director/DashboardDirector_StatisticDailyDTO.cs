@@ -10,7 +10,7 @@ namespace DMS.Rpc.dashboards.director
     {
         public decimal Revenue { get; set; }
         public long IndirectSalesOrderCounter { get; set; }
-        public long SaledItemCounter { get; set; }
+        public long StoreHasCheckedCounter { get; set; }
         public long StoreCheckingCounter { get; set; }
     }
 }

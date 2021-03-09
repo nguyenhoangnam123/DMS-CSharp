@@ -20,6 +20,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_item_report
         public IdFilter AppUserId { get; set; }
         public IdFilter KpiPeriodId { get; set; }
         public IdFilter KpiYearId { get; set; }
+        public IdFilter KpiItemTypeId { get; set; }
         public IdFilter ItemId { get; set; }
     }
 }

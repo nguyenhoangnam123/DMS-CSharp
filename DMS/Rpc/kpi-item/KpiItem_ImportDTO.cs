@@ -42,6 +42,7 @@ namespace DMS.Rpc.kpi_item
         public long ItemId { get; set; }
         public long KpiYearId { get; set; }
         public long KpiPeriodId { get; set; }
+        public long KpiItemTypeId { get; set; }
         public long OrganizationId { get; set; }
     }
 
@@ -50,13 +51,14 @@ namespace DMS.Rpc.kpi_item
         public long AppUserId { get; set; }
         public long KpiYearId { get; set; }
         public long KpiPeriodId { get; set; }
+        public long KpiItemTypeId { get; set; }
         public bool Equals(KpiItem_RowDTO other)
         {
-            return other != null && this.AppUserId == other.AppUserId && this.KpiYearId == other.KpiYearId && this.KpiPeriodId == other.KpiPeriodId;
+            return other != null && this.AppUserId == other.AppUserId && this.KpiYearId == other.KpiYearId && this.KpiPeriodId == other.KpiPeriodId && this.KpiItemTypeId == other.KpiItemTypeId;
         }
         public override int GetHashCode()
         {
-            return AppUserId.GetHashCode() ^ KpiYearId.GetHashCode() ^ KpiPeriodId.GetHashCode();
+            return AppUserId.GetHashCode() ^ KpiYearId.GetHashCode() ^ KpiPeriodId.GetHashCode() ^ KpiItemTypeId.GetHashCode();
         }
     }
 }

@@ -14,7 +14,7 @@ namespace DMS.Rpc.dashboards.director
         public const string CountStore = Default + "/count-store";
         public const string CountIndirectSalesOrder = Default + "/indirect-sales-order-counter";
         public const string RevenueTotal = Default + "/revenue-total";
-        public const string ItemSalesTotal = Default + "/item-sales-total";
+        public const string StoreHasCheckedCounter = Default + "/store-has-checked-counter";
         public const string CountStoreChecking = Default + "/store-checking-couter";
         public const string StatisticToday = Default + "/statistic-today";
         public const string StatisticYesterday = Default + "/statistic-yesterday";
@@ -22,7 +22,7 @@ namespace DMS.Rpc.dashboards.director
         public const string SaleEmployeeLocation = Default + "/sale-employee-location";
         public const string ListIndirectSalesOrder = Default + "/list-indirect-sales-order";
         public const string Top5RevenueByProduct = Default + "/top-5-revenue-by-product";
-        public const string Top5RevenueByStore = Default + "/top-5-revenue-by-store";
+        public const string Top5RevenueByEmployee = Default + "/top-5-revenue-by-employee";
         public const string RevenueFluctuation = Default + "/revenue-fluctuation";
         public const string SaledItemFluctuation = Default + "/saled-item-fluctuation";
         public const string IndirectSalesOrderFluctuation = Default + "/indirect-sales-order-fluctuation";
@@ -44,8 +44,8 @@ namespace DMS.Rpc.dashboards.director
             { "Hiển thị", new List<string> {
                 Parent,
                 Master,
-                CountStore, CountIndirectSalesOrder, RevenueTotal, ItemSalesTotal, CountStoreChecking, StatisticToday, StatisticYesterday,
-                StoreCoverage, SaleEmployeeLocation, ListIndirectSalesOrder, Top5RevenueByProduct, Top5RevenueByStore, RevenueFluctuation, SaledItemFluctuation,
+                CountStore, CountIndirectSalesOrder, RevenueTotal, StoreHasCheckedCounter, CountStoreChecking, StatisticToday, StatisticYesterday,
+                StoreCoverage, SaleEmployeeLocation, ListIndirectSalesOrder, Top5RevenueByProduct, Top5RevenueByEmployee, RevenueFluctuation, SaledItemFluctuation,
                 IndirectSalesOrderFluctuation, FilterListTime1, FilterListTime2, FilterListAppUser, FilterListOrganization,
             } },
         };

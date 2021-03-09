@@ -77,6 +77,8 @@ namespace DMS.Repositories
                 query = query.Where(q => q.KpiYearId, filter.KpiYearId);
             if (filter.KpiPeriodId != null)
                 query = query.Where(q => q.KpiPeriodId, filter.KpiPeriodId);
+            if (filter.KpiItemTypeId != null)
+                query = query.Where(q => q.KpiItemTypeId, filter.KpiItemTypeId);
             if (filter.StatusId != null)
                 query = query.Where(q => q.StatusId, filter.StatusId);
             if (filter.AppUserId != null)
@@ -134,6 +136,8 @@ namespace DMS.Repositories
                     queryable = queryable.Where(q => q.KpiYearId, KpiItemFilter.KpiYearId);
                 if (KpiItemFilter.KpiPeriodId != null)
                     queryable = queryable.Where(q => q.KpiPeriodId, KpiItemFilter.KpiPeriodId);
+                if (KpiItemFilter.KpiItemTypeId != null)
+                    queryable = queryable.Where(q => q.KpiItemTypeId, KpiItemFilter.KpiItemTypeId);
                 if (KpiItemFilter.StatusId != null)
                     queryable = queryable.Where(q => q.StatusId, KpiItemFilter.StatusId);
                 if (KpiItemFilter.AppUserId != null)
@@ -164,6 +168,9 @@ namespace DMS.Repositories
                         case KpiItemOrder.KpiPeriod:
                             query = query.OrderBy(q => q.KpiPeriodId);
                             break;
+                        case KpiItemOrder.KpiItemType:
+                            query = query.OrderBy(q => q.KpiItemTypeId);
+                            break;
                         case KpiItemOrder.Status:
                             query = query.OrderBy(q => q.StatusId);
                             break;
@@ -190,6 +197,9 @@ namespace DMS.Repositories
                         case KpiItemOrder.KpiPeriod:
                             query = query.OrderByDescending(q => q.KpiPeriodId);
                             break;
+                        case KpiItemOrder.KpiItemType:
+                            query = query.OrderByDescending(q => q.KpiItemTypeId);
+                            break;
                         case KpiItemOrder.Status:
                             query = query.OrderByDescending(q => q.StatusId);
                             break;
@@ -214,6 +224,7 @@ namespace DMS.Repositories
                 OrganizationId = filter.Selects.Contains(KpiItemSelect.Organization) ? q.OrganizationId : default(long),
                 KpiYearId = filter.Selects.Contains(KpiItemSelect.KpiYear) ? q.KpiYearId : default(long),
                 KpiPeriodId = filter.Selects.Contains(KpiItemSelect.KpiPeriod) ? q.KpiPeriodId : default(long),
+                KpiItemTypeId = filter.Selects.Contains(KpiItemSelect.KpiItemType) ? q.KpiItemTypeId : default(long),
                 StatusId = filter.Selects.Contains(KpiItemSelect.Status) ? q.StatusId : default(long),
                 EmployeeId = filter.Selects.Contains(KpiItemSelect.Employee) ? q.EmployeeId : default(long),
                 CreatorId = filter.Selects.Contains(KpiItemSelect.Creator) ? q.CreatorId : default(long),
@@ -256,6 +267,12 @@ namespace DMS.Repositories
                     Id = q.KpiPeriod.Id,
                     Code = q.KpiPeriod.Code,
                     Name = q.KpiPeriod.Name,
+                } : null,
+                KpiItemType = filter.Selects.Contains(KpiItemSelect.KpiItemType) && q.KpiItemType != null ? new KpiItemType
+                {
+                    Id = q.KpiItemType.Id,
+                    Code = q.KpiItemType.Code,
+                    Name = q.KpiItemType.Name,
                 } : null,
                 KpiYear = filter.Selects.Contains(KpiItemSelect.KpiYear) && q.KpiYear != null ? new KpiYear
                 {
@@ -317,6 +334,7 @@ namespace DMS.Repositories
                 OrganizationId = x.OrganizationId,
                 KpiYearId = x.KpiYearId,
                 KpiPeriodId = x.KpiPeriodId,
+                KpiItemTypeId = x.KpiItemTypeId,
                 StatusId = x.StatusId,
                 EmployeeId = x.EmployeeId,
                 CreatorId = x.CreatorId,
@@ -366,6 +384,12 @@ namespace DMS.Repositories
                     Id = x.KpiPeriod.Id,
                     Code = x.KpiPeriod.Code,
                     Name = x.KpiPeriod.Name,
+                },
+                KpiItemType = x.KpiItemType == null ? null : new KpiItemType
+                {
+                    Id = x.KpiItemType.Id,
+                    Code = x.KpiItemType.Code,
+                    Name = x.KpiItemType.Name,
                 },
                 Organization = x.Organization == null ? null : new Organization
                 {
@@ -450,6 +474,7 @@ namespace DMS.Repositories
             KpiItemDAO.OrganizationId = KpiItem.OrganizationId;
             KpiItemDAO.KpiYearId = KpiItem.KpiYearId;
             KpiItemDAO.KpiPeriodId = KpiItem.KpiPeriodId;
+            KpiItemDAO.KpiItemTypeId = KpiItem.KpiItemTypeId;
             KpiItemDAO.StatusId = KpiItem.StatusId;
             KpiItemDAO.EmployeeId = KpiItem.EmployeeId;
             KpiItemDAO.CreatorId = KpiItem.CreatorId;
@@ -473,6 +498,7 @@ namespace DMS.Repositories
             KpiItemDAO.OrganizationId = KpiItem.OrganizationId;
             KpiItemDAO.KpiYearId = KpiItem.KpiYearId;
             KpiItemDAO.KpiPeriodId = KpiItem.KpiPeriodId;
+            KpiItemDAO.KpiItemTypeId = KpiItem.KpiItemTypeId;
             KpiItemDAO.StatusId = KpiItem.StatusId;
             KpiItemDAO.EmployeeId = KpiItem.EmployeeId;
             KpiItemDAO.CreatorId = KpiItem.CreatorId;
@@ -500,6 +526,7 @@ namespace DMS.Repositories
                 KpiItemDAO.OrganizationId = KpiItem.OrganizationId;
                 KpiItemDAO.KpiYearId = KpiItem.KpiYearId;
                 KpiItemDAO.KpiPeriodId = KpiItem.KpiPeriodId;
+                KpiItemDAO.KpiItemTypeId = KpiItem.KpiItemTypeId;
                 KpiItemDAO.StatusId = KpiItem.StatusId;
                 KpiItemDAO.EmployeeId = KpiItem.EmployeeId;
                 KpiItemDAO.CreatorId = KpiItem.CreatorId;

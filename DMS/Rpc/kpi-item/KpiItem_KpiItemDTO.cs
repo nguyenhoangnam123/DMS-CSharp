@@ -12,6 +12,7 @@ namespace DMS.Rpc.kpi_item
         public long OrganizationId { get; set; }
         public long KpiYearId { get; set; }
         public long KpiPeriodId { get; set; }
+        public long KpiItemTypeId { get; set; }
         public long StatusId { get; set; }
         public long EmployeeId { get; set; }
         public long CreatorId { get; set; }
@@ -23,6 +24,7 @@ namespace DMS.Rpc.kpi_item
         public KpiItem_AppUserDTO Employee { get; set; }
         public KpiItem_KpiYearDTO KpiYear { get; set; }
         public KpiItem_KpiPeriodDTO KpiPeriod { get; set; }
+        public KpiItem_KpiItemTypeDTO KpiItemType { get; set; }
         public KpiItem_OrganizationDTO Organization { get; set; }
         public KpiItem_StatusDTO Status { get; set; }
         public List<KpiItem_KpiItemContentDTO> KpiItemContents { get; set; }
@@ -37,6 +39,7 @@ namespace DMS.Rpc.kpi_item
             this.OrganizationId = KpiItem.OrganizationId;
             this.KpiPeriodId = KpiItem.KpiPeriodId;
             this.KpiYearId = KpiItem.KpiYearId;
+            this.KpiItemTypeId = KpiItem.KpiItemTypeId;
             this.StatusId = KpiItem.StatusId;
             this.EmployeeId = KpiItem.EmployeeId;
             this.CreatorId = KpiItem.CreatorId;
@@ -45,6 +48,7 @@ namespace DMS.Rpc.kpi_item
             this.Employee = KpiItem.Employee == null ? null : new KpiItem_AppUserDTO(KpiItem.Employee);
             this.KpiPeriod = KpiItem.KpiPeriod == null ? null : new KpiItem_KpiPeriodDTO(KpiItem.KpiPeriod);
             this.KpiYear = KpiItem.KpiYear == null ? null : new KpiItem_KpiYearDTO(KpiItem.KpiYear);
+            this.KpiItemType = KpiItem.KpiItemType == null ? null : new KpiItem_KpiItemTypeDTO(KpiItem.KpiItemType);
             this.Organization = KpiItem.Organization == null ? null : new KpiItem_OrganizationDTO(KpiItem.Organization);
             this.Status = KpiItem.Status == null ? null : new KpiItem_StatusDTO(KpiItem.Status);
             this.KpiItemContents = KpiItem.KpiItemContents?.Select(x => new KpiItem_KpiItemContentDTO(x)).ToList();
@@ -61,6 +65,7 @@ namespace DMS.Rpc.kpi_item
         public IdFilter OrganizationId { get; set; }
         public IdFilter KpiYearId { get; set; }
         public IdFilter KpiPeriodId { get; set; }
+        public IdFilter KpiItemTypeId { get; set; }
         public IdFilter StatusId { get; set; }
         public IdFilter AppUserId { get; set; }
         public IdFilter CreatorId { get; set; }

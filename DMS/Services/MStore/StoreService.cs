@@ -197,6 +197,9 @@ namespace DMS.Services.MStore
                 var Counter = await UOW.IdGenerateRepository.GetCounter();
                 StoreCodeGenerate(Store, Counter);
 
+                await UOW.Begin();
+                await UOW.StoreRepository.Create(Store);
+
                 StoreHistory StoreHistory = new StoreHistory
                 {
                     StoreId = Store.Id,
@@ -206,9 +209,6 @@ namespace DMS.Services.MStore
                     CreatedAt = DateTime.Now,
                 };
                 await UOW.StoreHistoryRepository.Create(StoreHistory);
-
-                await UOW.Begin();
-                await UOW.StoreRepository.Create(Store);
 
                 List<UserNotification> UserNotifications = new List<UserNotification>();
                 if (Store.StoreScoutingId.HasValue)
