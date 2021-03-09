@@ -1,7 +1,6 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Thinktecture;
 
 namespace DMS.Models
 {
@@ -59,6 +58,7 @@ namespace DMS.Models
         public virtual DbSet<KpiItemDAO> KpiItem { get; set; }
         public virtual DbSet<KpiItemContentDAO> KpiItemContent { get; set; }
         public virtual DbSet<KpiItemContentKpiCriteriaItemMappingDAO> KpiItemContentKpiCriteriaItemMapping { get; set; }
+        public virtual DbSet<KpiItemTypeDAO> KpiItemType { get; set; }
         public virtual DbSet<KpiPeriodDAO> KpiPeriod { get; set; }
         public virtual DbSet<KpiYearDAO> KpiYear { get; set; }
         public virtual DbSet<LastestEventMessageDAO> LastestEventMessage { get; set; }
@@ -152,6 +152,7 @@ namespace DMS.Models
         public virtual DbSet<StoreStatusDAO> StoreStatus { get; set; }
         public virtual DbSet<StoreTypeDAO> StoreType { get; set; }
         public virtual DbSet<StoreUncheckingDAO> StoreUnchecking { get; set; }
+        public virtual DbSet<StoreUserDAO> StoreUser { get; set; }
         public virtual DbSet<SupplierDAO> Supplier { get; set; }
         public virtual DbSet<SurveyDAO> Survey { get; set; }
         public virtual DbSet<SurveyOptionDAO> SurveyOption { get; set; }
@@ -199,7 +200,6 @@ namespace DMS.Models
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.ConfigureTempTable<long>();
             modelBuilder.Entity<ActionDAO>(entity =>
             {
                 entity.ToTable("Action", "PER");
@@ -1802,6 +1802,8 @@ namespace DMS.Models
 
                 entity.Property(e => e.DeletedAt).HasColumnType("datetime");
 
+                entity.Property(e => e.KpiItemTypeId).HasDefaultValueSql("((2))");
+
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
                 entity.HasOne(d => d.Creator)
@@ -1815,6 +1817,12 @@ namespace DMS.Models
                     .HasForeignKey(d => d.EmployeeId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_KpiItem_AppUser");
+
+                entity.HasOne(d => d.KpiItemType)
+                    .WithMany(p => p.KpiItems)
+                    .HasForeignKey(d => d.KpiItemTypeId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_KpiItem_KpiItemType");
 
                 entity.HasOne(d => d.KpiPeriod)
                     .WithMany(p => p.KpiItems)
@@ -1872,6 +1880,21 @@ namespace DMS.Models
                     .HasForeignKey(d => d.KpiItemContentId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_KpiItemContentKpiCriteriaItemMapping_KpiItemContent");
+            });
+
+            modelBuilder.Entity<KpiItemTypeDAO>(entity =>
+            {
+                entity.ToTable("KpiItemType", "ENUM");
+
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(50);
             });
 
             modelBuilder.Entity<KpiPeriodDAO>(entity =>
@@ -4284,6 +4307,45 @@ namespace DMS.Models
                     .HasForeignKey(d => d.StoreId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_StoreUnchecking_Store");
+            });
+
+            modelBuilder.Entity<StoreUserDAO>(entity =>
+            {
+                entity.ToTable("StoreUser", "MDM");
+
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.DisplayName)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.OtpCode).HasMaxLength(50);
+
+                entity.Property(e => e.OtpExpired).HasColumnType("datetime");
+
+                entity.Property(e => e.Password)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.Username)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.HasOne(d => d.Status)
+                    .WithMany(p => p.StoreUsers)
+                    .HasForeignKey(d => d.StatusId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_StoreUser_Status");
+
+                entity.HasOne(d => d.Store)
+                    .WithMany(p => p.StoreUsers)
+                    .HasForeignKey(d => d.StoreId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_StoreUser_Store");
             });
 
             modelBuilder.Entity<SupplierDAO>(entity =>

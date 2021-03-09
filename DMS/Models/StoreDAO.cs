@@ -27,6 +27,7 @@ namespace DMS.Models
             StoreHistories = new HashSet<StoreHistoryDAO>();
             StoreImageMappings = new HashSet<StoreImageMappingDAO>();
             StoreUncheckings = new HashSet<StoreUncheckingDAO>();
+            StoreUsers = new HashSet<StoreUserDAO>();
             SurveyResults = new HashSet<SurveyResultDAO>();
         }
 
@@ -97,6 +98,7 @@ namespace DMS.Models
         public virtual ICollection<StoreHistoryDAO> StoreHistories { get; set; }
         public virtual ICollection<StoreImageMappingDAO> StoreImageMappings { get; set; }
         public virtual ICollection<StoreUncheckingDAO> StoreUncheckings { get; set; }
+        public virtual ICollection<StoreUserDAO> StoreUsers { get; set; }
         public virtual ICollection<SurveyResultDAO> SurveyResults { get; set; }
     }
 }

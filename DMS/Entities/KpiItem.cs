@@ -12,6 +12,7 @@ namespace DMS.Entities
         public long OrganizationId { get; set; }
         public long KpiYearId { get; set; }
         public long KpiPeriodId { get; set; }
+        public long KpiItemTypeId { get; set; }
         public long StatusId { get; set; }
         public long EmployeeId { get; set; }
         public long CreatorId { get; set; }
@@ -20,6 +21,7 @@ namespace DMS.Entities
         public AppUser Employee { get; set; }
         public KpiYear KpiYear { get; set; }
         public KpiPeriod KpiPeriod { get; set; }
+        public KpiItemType KpiItemType { get; set; }
         public Organization Organization { get; set; }
         public Status Status { get; set; }
         public List<long> EmployeeIds { get; set; }
@@ -43,6 +45,7 @@ namespace DMS.Entities
         public IdFilter OrganizationId { get; set; }
         public IdFilter KpiYearId { get; set; }
         public IdFilter KpiPeriodId { get; set; }
+        public IdFilter KpiItemTypeId { get; set; }
         public IdFilter StatusId { get; set; }
         public IdFilter AppUserId { get; set; }
         public IdFilter CreatorId { get; set; }
@@ -63,6 +66,7 @@ namespace DMS.Entities
         Employee = 4,
         Creator = 5,
         KpiYear = 6,
+        KpiItemType = 7,
         CreatedAt = 50,
         UpdatedAt = 51,
     }
@@ -78,5 +82,6 @@ namespace DMS.Entities
         Employee = E._4,
         Creator = E._5,
         KpiYear = E._6,
+        KpiItemType = E._7,
     }
 }
