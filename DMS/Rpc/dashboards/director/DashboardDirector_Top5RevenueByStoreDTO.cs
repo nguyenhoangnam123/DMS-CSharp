@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 
 namespace DMS.Rpc.dashboards.director
 {
-    public class DashboardDirector_Top5RevenueByStoreDTO : DataDTO
+    public class DashboardDirector_Top5RevenueByEmployeeDTO : DataDTO
     {
-        public string StoreName { get; set; }
+        public string EmployeeName { get; set; }
         public decimal Revenue { get; set; }
     }
 
-    public class DashboardDirector_Top5RevenueByStoreFilterDTO: FilterDTO
+    public class DashboardDirector_Top5RevenueByEmployeeFilterDTO : FilterDTO
     {
         public IdFilter OrganizationId { get; set; }
         public IdFilter AppUserId { get; set; }

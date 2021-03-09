@@ -397,17 +397,16 @@ namespace DMS.Rpc.dashboards.director
                                           au.DeletedAt == null && o.DeletedAt == null
                                           select i;
 
-            var queryItem = from ic in DataContext.IndirectSalesOrderContent
-                            join i in DataContext.IndirectSalesOrder on ic.IndirectSalesOrderId equals i.Id
-                            join au in DataContext.AppUser on i.SaleEmployeeId equals au.Id
-                            join o in DataContext.Organization on au.OrganizationId equals o.Id
-                            where i.OrderDate >= Start && i.OrderDate <= End &&
-                            AppUserIds.Contains(au.Id) &&
-                            (SaleEmployeeId.HasValue == false || au.Id == SaleEmployeeId.Value) &&
-                            OrganizationIds.Contains(i.OrganizationId) &&
-                            i.RequestStateId == RequestStateEnum.APPROVED.Id &&
-                            au.DeletedAt == null && o.DeletedAt == null
-                            select ic;
+            var queryStoreHasCheckedCounter = from sc in DataContext.StoreChecking
+                                        join s in DataContext.Store on sc.StoreId equals s.Id
+                                        join au in DataContext.AppUser on sc.SaleEmployeeId equals au.Id
+                                        join o in DataContext.Organization on au.OrganizationId equals o.Id
+                                        where sc.CheckOutAt.HasValue && sc.CheckOutAt >= Start && sc.CheckOutAt <= End &&
+                                        AppUserIds.Contains(au.Id) &&
+                                        (SaleEmployeeId.HasValue == false || au.Id == SaleEmployeeId.Value) &&
+                                        OrganizationIds.Contains(s.OrganizationId) &&
+                                        au.DeletedAt == null && o.DeletedAt == null && s.DeletedAt == null
+                                        select s;
 
             var queryStoreChecking = from sc in DataContext.StoreChecking
                                      join s in DataContext.Store on sc.StoreId equals s.Id
@@ -422,14 +421,14 @@ namespace DMS.Rpc.dashboards.director
 
             var RevenueTotal = queryRevenue.Select(x => x.Total).Sum();
             var IndirectSalesOrderCounter = queryIndirectSalesOrder.Count();
-            var SaledItemCounter = queryItem.Select(x => x.RequestedQuantity).Sum();
+            var StoreHasCheckedCounter = queryStoreHasCheckedCounter.Select(x => x.Id).Distinct().Count();
             var StoreCheckingCounter = queryStoreChecking.Count();
 
             DashboardDirector_StatisticDailyDTO DashboardDirector_StatisticDailyDTO = new DashboardDirector_StatisticDailyDTO()
             {
                 Revenue = RevenueTotal,
                 IndirectSalesOrderCounter = IndirectSalesOrderCounter,
-                SaledItemCounter = SaledItemCounter,
+                StoreHasCheckedCounter = StoreHasCheckedCounter,
                 StoreCheckingCounter = StoreCheckingCounter
             };
             return DashboardDirector_StatisticDailyDTO;
@@ -487,17 +486,16 @@ namespace DMS.Rpc.dashboards.director
                                           au.DeletedAt == null && o.DeletedAt == null
                                           select i;
 
-            var queryItem = from ic in DataContext.IndirectSalesOrderContent
-                            join i in DataContext.IndirectSalesOrder on ic.IndirectSalesOrderId equals i.Id
-                            join au in DataContext.AppUser on i.SaleEmployeeId equals au.Id
-                            join o in DataContext.Organization on au.OrganizationId equals o.Id
-                            where i.OrderDate >= Start && i.OrderDate <= End &&
-                            AppUserIds.Contains(au.Id) &&
-                            (SaleEmployeeId.HasValue == false || au.Id == SaleEmployeeId.Value) &&
-                            OrganizationIds.Contains(i.OrganizationId) &&
-                            i.RequestStateId == RequestStateEnum.APPROVED.Id &&
-                            au.DeletedAt == null && o.DeletedAt == null
-                            select ic;
+            var queryStoreHasCheckedCounter = from sc in DataContext.StoreChecking
+                                              join s in DataContext.Store on sc.StoreId equals s.Id
+                                              join au in DataContext.AppUser on sc.SaleEmployeeId equals au.Id
+                                              join o in DataContext.Organization on au.OrganizationId equals o.Id
+                                              where sc.CheckOutAt.HasValue && sc.CheckOutAt >= Start && sc.CheckOutAt <= End &&
+                                              AppUserIds.Contains(au.Id) &&
+                                              (SaleEmployeeId.HasValue == false || au.Id == SaleEmployeeId.Value) &&
+                                              OrganizationIds.Contains(s.OrganizationId) &&
+                                              au.DeletedAt == null && o.DeletedAt == null && s.DeletedAt == null
+                                              select s;
 
             var queryStoreChecking = from sc in DataContext.StoreChecking
                                      join s in DataContext.Store on sc.StoreId equals s.Id
@@ -512,14 +510,14 @@ namespace DMS.Rpc.dashboards.director
 
             var RevenueTotal = queryRevenue.Select(x => x.Total).Sum();
             var IndirectSalesOrderCounter = queryIndirectSalesOrder.Count();
-            var SaledItemCounter = queryItem.Select(x => x.RequestedQuantity).Sum();
+            var StoreHasCheckedCounter = queryStoreHasCheckedCounter.Select(x => x.Id).Distinct().Count();
             var StoreCheckingCounter = queryStoreChecking.Count();
 
             DashboardDirector_StatisticDailyDTO DashboardDirector_StatisticDailyDTO = new DashboardDirector_StatisticDailyDTO()
             {
                 Revenue = RevenueTotal,
                 IndirectSalesOrderCounter = IndirectSalesOrderCounter,
-                SaledItemCounter = SaledItemCounter,
+                StoreHasCheckedCounter = StoreHasCheckedCounter,
                 StoreCheckingCounter = StoreCheckingCounter
             };
             return DashboardDirector_StatisticDailyDTO;
@@ -766,20 +764,20 @@ namespace DMS.Rpc.dashboards.director
             return DashboardDirector_Top5RevenueByProductDTOs;
         }
 
-        [Route(DashboardDirectorRoute.Top5RevenueByStore), HttpPost]
-        public async Task<List<DashboardDirector_Top5RevenueByStoreDTO>> Top5RevenueByStore([FromBody] DashboardDirector_Top5RevenueByStoreFilterDTO DashboardDirector_Top5RevenueByStoreFilterDTO)
+        [Route(DashboardDirectorRoute.Top5RevenueByEmployee), HttpPost]
+        public async Task<List<DashboardDirector_Top5RevenueByEmployeeDTO>> Top5RevenueByEmployee([FromBody] DashboardDirector_Top5RevenueByEmployeeFilterDTO DashboardDirector_Top5RevenueByEmployeeFilterDTO)
         {
             DateTime Now = StaticParams.DateTimeNow.Date;
             DateTime Start = new DateTime(Now.Year, Now.Month, Now.Day);
             DateTime End = new DateTime(Now.Year, Now.Month, Now.Day);
 
-            long? SaleEmployeeId = DashboardDirector_Top5RevenueByStoreFilterDTO.AppUserId?.Equal;
+            long? SaleEmployeeId = DashboardDirector_Top5RevenueByEmployeeFilterDTO.AppUserId?.Equal;
             List<long> OrganizationIds = await FilterOrganization(OrganizationService, CurrentContext);
             List<OrganizationDAO> OrganizationDAOs = await DataContext.Organization.Where(o => o.DeletedAt == null && OrganizationIds.Contains(o.Id)).ToListAsync();
             OrganizationDAO OrganizationDAO = null;
-            if (DashboardDirector_Top5RevenueByStoreFilterDTO.OrganizationId?.Equal != null)
+            if (DashboardDirector_Top5RevenueByEmployeeFilterDTO.OrganizationId?.Equal != null)
             {
-                OrganizationDAO = await DataContext.Organization.Where(o => o.Id == DashboardDirector_Top5RevenueByStoreFilterDTO.OrganizationId.Equal.Value).FirstOrDefaultAsync();
+                OrganizationDAO = await DataContext.Organization.Where(o => o.Id == DashboardDirector_Top5RevenueByEmployeeFilterDTO.OrganizationId.Equal.Value).FirstOrDefaultAsync();
                 OrganizationDAOs = OrganizationDAOs.Where(o => o.Path.StartsWith(OrganizationDAO.Path)).ToList();
             }
             OrganizationIds = OrganizationDAOs.Select(o => o.Id).ToList();
@@ -796,29 +794,29 @@ namespace DMS.Rpc.dashboards.director
             var AppUsers = await AppUserService.List(AppUserFilter);
             var AppUserIds = AppUsers.Select(x => x.Id).ToList();
 
-            if (DashboardDirector_Top5RevenueByStoreFilterDTO.Time.Equal.HasValue == false)
+            if (DashboardDirector_Top5RevenueByEmployeeFilterDTO.Time.Equal.HasValue == false)
             {
-                DashboardDirector_Top5RevenueByStoreFilterDTO.Time.Equal = 0;
+                DashboardDirector_Top5RevenueByEmployeeFilterDTO.Time.Equal = 0;
                 Start = LocalStartDay(CurrentContext);
                 End = Start.AddDays(1).AddSeconds(-1);
             }
-            else if (DashboardDirector_Top5RevenueByStoreFilterDTO.Time.Equal.Value == TODAY)
+            else if (DashboardDirector_Top5RevenueByEmployeeFilterDTO.Time.Equal.Value == TODAY)
             {
                 Start = LocalStartDay(CurrentContext);
                 End = Start.AddDays(1).AddSeconds(-1);
             }
-            else if (DashboardDirector_Top5RevenueByStoreFilterDTO.Time.Equal.Value == THIS_WEEK)
+            else if (DashboardDirector_Top5RevenueByEmployeeFilterDTO.Time.Equal.Value == THIS_WEEK)
             {
                 int diff = (7 + (Now.DayOfWeek - DayOfWeek.Monday)) % 7;
                 Start = LocalStartDay(CurrentContext).AddDays(-1 * diff);
                 End = Start.AddDays(7).AddSeconds(-1);
             }
-            else if (DashboardDirector_Top5RevenueByStoreFilterDTO.Time.Equal.Value == THIS_MONTH)
+            else if (DashboardDirector_Top5RevenueByEmployeeFilterDTO.Time.Equal.Value == THIS_MONTH)
             {
                 Start = new DateTime(Now.Year, Now.Month, 1).AddHours(0 - CurrentContext.TimeZone);
                 End = Start.AddMonths(1).AddSeconds(-1);
             }
-            else if (DashboardDirector_Top5RevenueByStoreFilterDTO.Time.Equal.Value == LAST_MONTH)
+            else if (DashboardDirector_Top5RevenueByEmployeeFilterDTO.Time.Equal.Value == LAST_MONTH)
             {
                 Start = new DateTime(Now.Year, Now.Month, 1).AddMonths(-1).AddHours(0 - CurrentContext.TimeZone);
                 End = Start.AddMonths(1).AddSeconds(-1);
@@ -835,17 +833,17 @@ namespace DMS.Rpc.dashboards.director
                         OrganizationIds.Contains(i.OrganizationId) &&
                         i.RequestStateId == RequestStateEnum.APPROVED.Id &&
                         au.DeletedAt == null && o.DeletedAt == null && s.DeletedAt == null
-                        group ic by s.Name into x
-                        select new DashboardDirector_Top5RevenueByStoreDTO
+                        group ic by au.DisplayName into x
+                        select new DashboardDirector_Top5RevenueByEmployeeDTO
                         {
-                            StoreName = x.Key,
+                            EmployeeName = x.Key,
                             Revenue = x.Sum(y => y.Amount + y.TaxAmount ?? 0)
                         };
 
-            List<DashboardDirector_Top5RevenueByStoreDTO>
-                DashboardDirector_Top5RevenueByStoreDTOs = await query.OrderByDescending(x => x.Revenue)
+            List<DashboardDirector_Top5RevenueByEmployeeDTO>
+                DashboardDirector_Top5RevenueByEmployeeDTOs = await query.OrderByDescending(x => x.Revenue)
                 .Skip(0).Take(5).ToListAsync();
-            return DashboardDirector_Top5RevenueByStoreDTOs;
+            return DashboardDirector_Top5RevenueByEmployeeDTOs;
         }
 
         [Route(DashboardDirectorRoute.RevenueFluctuation), HttpPost]
