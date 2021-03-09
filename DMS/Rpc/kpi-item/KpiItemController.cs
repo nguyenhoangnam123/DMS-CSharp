@@ -355,21 +355,16 @@ namespace DMS.Rpc.kpi_item
                 int StartColumn = 1;
                 int StartRow = 5;
                 int UsernameColumn = 0 + StartColumn;
-                int ItemCodeColumn = 2 + StartColumn;
+                int KpiItemTypeColumn = 2 + StartColumn;
+                int ItemCodeColumn = 3 + StartColumn;
 
-                int QuantityColumn = 3 + StartColumn;
                 int RevenueColumn = 4 + StartColumn;
-                int SaleOrderColumn = 5 + StartColumn;
-                int StoreColumn = 6 + StartColumn;
-
-                int DirectQuantityColumn = 7 + StartColumn;
-                int DirectRevenueColumn = 8 + StartColumn;
-                int DirectSaleOrderColumn = 9 + StartColumn;
-                int DirectStoreColumn = 10 + StartColumn;
+                int StoreColumn = 5 + StartColumn;
 
                 for (int i = StartRow; i <= worksheet.Dimension.End.Row; i++)
                 {
                     string UsernameValue = worksheet.Cells[i, UsernameColumn].Value?.ToString();
+                    string KpiItemTypeValue = worksheet.Cells[i, KpiItemTypeColumn].Value?.ToString();
                     string ItemCodeValue = worksheet.Cells[i, ItemCodeColumn].Value?.ToString();
                     if (UsernameValue != null && UsernameValue.ToLower() == "END".ToLower())
                         break;
@@ -397,7 +392,25 @@ namespace DMS.Rpc.kpi_item
                     {
                         KpiItem_ImportDTO.EmployeeId = Employee.Id;
                     }
-
+                    GenericEnum KpiItemType;
+                    if (!string.IsNullOrWhiteSpace(KpiItemTypeValue))
+                    {
+                        KpiItemType = KpiItemTypeEnum.KpiItemTypeEnumList.Where(x => x.Name == KpiItemTypeValue.Trim()).FirstOrDefault();
+                        if(KpiItemType == null)
+                        {
+                            errorContent.AppendLine($"Lỗi dòng thứ {i + 1}: Loại KPI sản phẩm không tồn tại");
+                            continue;
+                        }
+                        else
+                        {
+                            KpiItem_ImportDTO.KpiItemTypeId = KpiItemType.Id;
+                        }
+                    }
+                    else
+                    {
+                        errorContent.AppendLine($"Lỗi dòng thứ {i}: Chưa chọn loại KPI sản phẩm");
+                        continue;
+                    }
                     Item Item;
                     if (!string.IsNullOrWhiteSpace(ItemCodeValue))
                     {
@@ -416,14 +429,8 @@ namespace DMS.Rpc.kpi_item
                     KpiItem_ImportDTO.Stt = i;
                     KpiItem_ImportDTO.UsernameValue = UsernameValue;
                     KpiItem_ImportDTO.ItemCodeValue = ItemCodeValue;
-                    KpiItem_ImportDTO.IndirectQuantity = worksheet.Cells[i, QuantityColumn].Value?.ToString();
                     KpiItem_ImportDTO.IndirectRevenue = worksheet.Cells[i, RevenueColumn].Value?.ToString();
-                    KpiItem_ImportDTO.IndirectCounter = worksheet.Cells[i, SaleOrderColumn].Value?.ToString();
                     KpiItem_ImportDTO.IndirectStoreCounter = worksheet.Cells[i, StoreColumn].Value?.ToString();
-                    KpiItem_ImportDTO.DirectQuantity = worksheet.Cells[i, DirectQuantityColumn].Value?.ToString();
-                    KpiItem_ImportDTO.DirectRevenue = worksheet.Cells[i, DirectRevenueColumn].Value?.ToString();
-                    KpiItem_ImportDTO.DirectCounter = worksheet.Cells[i, DirectSaleOrderColumn].Value?.ToString();
-                    KpiItem_ImportDTO.DirectStoreCounter = worksheet.Cells[i, DirectStoreColumn].Value?.ToString();
                     KpiItem_ImportDTO.KpiPeriodId = KpiPeriod.Id;
                     KpiItem_ImportDTO.KpiYearId = KpiYear.Id;
                     KpiItem_ImportDTOs.Add(KpiItem_ImportDTO);
@@ -435,15 +442,29 @@ namespace DMS.Rpc.kpi_item
             { 
                 AppUserId = x.EmployeeId, 
                 KpiPeriodId = x.KpiPeriodId, 
-                KpiYearId = x.KpiYearId 
+                KpiYearId = x.KpiYearId,
+                KpiItemTypeId = x.KpiItemTypeId
             }).ToList());
             foreach (KpiItem_ImportDTO KpiItem_ImportDTO in KpiItem_ImportDTOs)
             {
                 Errors.Add(KpiItem_ImportDTO.Stt, new StringBuilder(""));
                 KpiItem_ImportDTO.IsNew = false;
-                if (!KpiItem_RowDTOs.Contains(new KpiItem_RowDTO { AppUserId = KpiItem_ImportDTO.EmployeeId, KpiPeriodId = KpiItem_ImportDTO.KpiPeriodId, KpiYearId = KpiItem_ImportDTO.KpiYearId }))
+                if (!KpiItem_RowDTOs.Contains(new KpiItem_RowDTO 
+                                                { 
+                                                    AppUserId = KpiItem_ImportDTO.EmployeeId, 
+                                                    KpiPeriodId = KpiItem_ImportDTO.KpiPeriodId, 
+                                                    KpiYearId = KpiItem_ImportDTO.KpiYearId ,
+                                                    KpiItemTypeId = KpiItem_ImportDTO.KpiItemTypeId
+                                                }
+                ))
                 {
-                    KpiItem_RowDTOs.Add(new KpiItem_RowDTO { AppUserId = KpiItem_ImportDTO.EmployeeId, KpiPeriodId = KpiItem_ImportDTO.KpiPeriodId, KpiYearId = KpiItem_ImportDTO.KpiYearId });
+                    KpiItem_RowDTOs.Add(new KpiItem_RowDTO 
+                    { 
+                        AppUserId = KpiItem_ImportDTO.EmployeeId, 
+                        KpiPeriodId = KpiItem_ImportDTO.KpiPeriodId, 
+                        KpiYearId = KpiItem_ImportDTO.KpiYearId,
+                        KpiItemTypeId = KpiItem_ImportDTO.KpiItemTypeId
+                    });
                     KpiItem_ImportDTO.IsNew = true;
 
                     var Employee = Employees.Where(x => x.Username == KpiItem_ImportDTO.UsernameValue).FirstOrDefault();
@@ -470,6 +491,7 @@ namespace DMS.Rpc.kpi_item
                     KpiItem.OrganizationId = KpiItem_ImportDTO.OrganizationId;
                     KpiItem.KpiPeriodId = KpiItem_ImportDTO.KpiPeriodId;
                     KpiItem.KpiYearId = KpiItem_ImportDTO.KpiYearId;
+                    KpiItem.KpiItemTypeId = KpiItem_ImportDTO.KpiItemTypeId;
                     KpiItem.RowId = Guid.NewGuid();
                     KpiItem.KpiItemContents = new List<KpiItemContent>();
                     KpiItem.KpiItemContents.Add(new KpiItemContent
@@ -573,7 +595,6 @@ namespace DMS.Rpc.kpi_item
             long KpiPeriodId = KpiItem_KpiItemFilterDTO.KpiPeriodId.Equal.Value;
             var KpiPeriod = KpiPeriodEnum.KpiPeriodEnumList.Where(x => x.Id == KpiPeriodId).FirstOrDefault();
 
-
             KpiItem_KpiItemFilterDTO.Skip = 0;
             KpiItem_KpiItemFilterDTO.Take = int.MaxValue;
             KpiItem_KpiItemFilterDTO.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
@@ -595,6 +616,7 @@ namespace DMS.Rpc.kpi_item
                 KpiItem_ExportDTO KpiItem_ExportDTO = new KpiItem_ExportDTO();
                 KpiItem_ExportDTO.Username = KpiItem.Employee.Username;
                 KpiItem_ExportDTO.DisplayName = KpiItem.Employee.DisplayName;
+                KpiItem_ExportDTO.KpiItemTypeName = KpiItem.KpiItemType.Name;
 
                 KpiItem_ExportDTO.Contents = KpiItemContents.Where(x => x.KpiItemId == KpiItem.Id).Select(x => new KpiItem_ExportContentDTO
                 {
@@ -688,10 +710,12 @@ namespace DMS.Rpc.kpi_item
             {
                 Skip = 0,
                 Take = int.MaxValue,
-                Selects = ItemSelect.Code | ItemSelect.Name,
+                Selects = ItemSelect.Code | ItemSelect.Name | ItemSelect.Product,
                 OrderBy = ItemOrder.Id,
                 OrderType = OrderType.ASC
             });
+
+            List<Item> NewItems = Items.Where(x => x.Product.IsNew).ToList();
 
             List<KpiItem_ExportDTO> KpiItem_ExportDTOs = new List<KpiItem_ExportDTO>();
             foreach (var AppUser in AppUsers)
@@ -709,6 +733,7 @@ namespace DMS.Rpc.kpi_item
             dynamic Data = new ExpandoObject();
             Data.KpiItems = KpiItem_ExportDTOs;
             Data.Items = Items;
+            Data.NewItems = NewItems;
             using (var document = StaticParams.DocumentFactory.Open(input, output, "xlsx"))
             {
                 document.Process(Data);
