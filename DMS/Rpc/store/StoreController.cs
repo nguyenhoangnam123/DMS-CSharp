@@ -11,6 +11,7 @@ using DMS.Services.MStoreGrouping;
 using DMS.Services.MStoreScouting;
 using DMS.Services.MStoreStatus;
 using DMS.Services.MStoreType;
+using DMS.Services.MStoreUser;
 using DMS.Services.MWard;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -38,6 +39,7 @@ namespace DMS.Rpc.store
         private IStoreTypeService StoreTypeService;
         private IWardService WardService;
         private IStoreService StoreService;
+        private IStoreUserService StoreUserService;
         private ICurrentContext CurrentContext;
         public StoreController(
             IAppUserService AppUserService,
@@ -51,6 +53,7 @@ namespace DMS.Rpc.store
             IStoreTypeService StoreTypeService,
             IWardService WardService,
             IStoreService StoreService,
+            IStoreUserService StoreUserService,
             ICurrentContext CurrentContext
         )
         {
@@ -65,6 +68,7 @@ namespace DMS.Rpc.store
             this.StoreTypeService = StoreTypeService;
             this.WardService = WardService;
             this.StoreService = StoreService;
+            this.StoreUserService = StoreUserService;
             this.CurrentContext = CurrentContext;
         }
 
@@ -1036,6 +1040,124 @@ namespace DMS.Rpc.store
             }
             return true;
         }
+
+        #region StoreUser
+        [Route(StoreRoute.CreateDraft), HttpPost]
+        public async Task<ActionResult<Store_StoreUserDTO>> CreateDraft([FromBody] Store_StoreUserDTO Store_StoreUserDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            StoreUser StoreUser = new StoreUser
+            {
+                Id = Store_StoreUserDTO.Id,
+                StatusId = Store_StoreUserDTO.StatusId,
+                StoreId = Store_StoreUserDTO.StoreId,
+                CreatedAt = Store_StoreUserDTO.CreatedAt,
+                UpdatedAt = Store_StoreUserDTO.UpdatedAt,
+                DisplayName = Store_StoreUserDTO.DisplayName,
+                Password = Store_StoreUserDTO.Password,
+                Username = Store_StoreUserDTO.Username,
+            };
+            StoreUser = await StoreUserService.CreateDraft(StoreUser);
+            Store_StoreUserDTO = new Store_StoreUserDTO(StoreUser);
+            if (StoreUser.IsValidated)
+                return Store_StoreUserDTO;
+            else
+                return BadRequest(Store_StoreUserDTO);
+        }
+
+        [Route(StoreRoute.CreateStoreUser), HttpPost]
+        public async Task<ActionResult<Store_StoreUserDTO>> CreateStoreUser([FromBody] Store_StoreUserDTO Store_StoreUserDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            StoreUser StoreUser = new StoreUser
+            {
+                Id = Store_StoreUserDTO.Id,
+                StatusId = Store_StoreUserDTO.StatusId,
+                StoreId = Store_StoreUserDTO.StoreId,
+                CreatedAt = Store_StoreUserDTO.CreatedAt,
+                UpdatedAt = Store_StoreUserDTO.UpdatedAt,
+                DisplayName = Store_StoreUserDTO.DisplayName,
+                Password = Store_StoreUserDTO.Password,
+                Username = Store_StoreUserDTO.Username,
+            };
+            StoreUser = await StoreUserService.Create(StoreUser);
+            Store_StoreUserDTO = new Store_StoreUserDTO(StoreUser);
+            if (StoreUser.IsValidated)
+                return Store_StoreUserDTO;
+            else
+                return BadRequest(Store_StoreUserDTO);
+        }
+
+        [Route(StoreRoute.BulkCreateStoreUser), HttpPost]
+        public async Task<ActionResult<Store_StoreUserDTO>> BulkCreateStoreUser([FromBody] List<long> Ids)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            StoreFilter StoreFilter = new StoreFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = StoreSelect.Id | StoreSelect.Code | StoreSelect.Name,
+                Id = new IdFilter { In = Ids },
+                StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id }
+            };
+
+            List<Store> Stores = await StoreService.List(StoreFilter);
+            var StoreUsers = Stores.Select(x => new StoreUser
+            {
+                StoreId = x.Id,
+                DisplayName = x.Name,
+                Username = x.Code.Split('.')[2],
+                Password = "appdailyrangdong"
+            }).ToList();
+
+            StoreUsers = await StoreUserService.BulkCreateStoreUser(StoreUsers);
+            List<Store_StoreUserDTO> Store_StoreUserDTOs = StoreUsers
+                .Select(c => new Store_StoreUserDTO(c)).ToList();
+            return Ok(Store_StoreUserDTOs);
+        }
+
+        [Route(StoreRoute.ResetPassword), HttpPost]
+        public async Task<ActionResult<Store_StoreUserDTO>> ResetPassword([FromBody] Store_ChangePasswordDTO Store_ChangePasswordDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            StoreUser StoreUser = new StoreUser
+            {
+                Id = Store_ChangePasswordDTO.Id
+            };
+            StoreUser = await StoreUserService.ResetPassword(StoreUser);
+            Store_StoreUserDTO Store_StoreUserDTO = new Store_StoreUserDTO(StoreUser);
+            if (StoreUser.IsValidated)
+                return Store_StoreUserDTO;
+            else
+                return BadRequest(Store_StoreUserDTO);
+        }
+
+        [Route(StoreRoute.LockStoreUser), HttpPost]
+        public async Task<ActionResult<Store_StoreUserDTO>> LockStoreUser([FromBody] Store_StoreUserDTO Store_StoreUserDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            StoreUser StoreUser = await StoreUserService.Get(Store_StoreUserDTO.Id);
+            StoreUser.StatusId = Store_StoreUserDTO.StatusId;
+            StoreUser = await StoreUserService.LockStoreUser(StoreUser);
+            Store_StoreUserDTO = new Store_StoreUserDTO(StoreUser);
+            if (StoreUser.IsValidated)
+                return Store_StoreUserDTO;
+            else
+                return BadRequest(Store_StoreUserDTO);
+        }
+
+
+        #endregion
 
         private Store ConvertDTOToEntity(Store_StoreDTO Store_StoreDTO)
         {

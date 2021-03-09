@@ -11,6 +11,7 @@ namespace DMS.Common
         string Token { get; set; }
         decimal? Latitude { get; set; }
         decimal? Longitude { get; set; }
+        long StoreUserId { get; set; }
         List<long> RoleIds { get; set; }
         Dictionary<long, List<FilterPermissionDefinition>> Filters { get; set; }
     }
@@ -21,6 +22,7 @@ namespace DMS.Common
         public int TimeZone { get; set; }
         public string Language { get; set; } = "vi";
         public string Token { get; set; }
+        public long StoreUserId { get; set; }
         public List<long> RoleIds { get; set; }
         public Dictionary<long, List<FilterPermissionDefinition>> Filters { get; set; }
         public decimal? Latitude { get; set; }

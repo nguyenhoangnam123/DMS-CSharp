@@ -36,6 +36,7 @@ namespace DMS.Entities
         public string LegalEntity { get; set; }
         public long? AppUserId { get; set; }
         public long? CreatorId { get; set; }
+        public long? StoreUserId { get; set; }
         public long StatusId { get; set; }
         public Guid RowId { get; set; }
         public long StoreStatusId { get; set; }
@@ -48,6 +49,7 @@ namespace DMS.Entities
         public DateTime UpdatedAt { get; set; }
         public DateTime? DeletedAt { get; set; }
         public AppUser AppUser { get; set; }
+        public StoreUser StoreUser { get; set; }
         public AppUser Creator { get; set; }
         public District District { get; set; }
         public Organization Organization { get; set; }

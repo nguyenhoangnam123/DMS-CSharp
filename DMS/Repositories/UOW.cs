@@ -132,6 +132,7 @@ namespace DMS.Repositories
         IWorkflowStateRepository WorkflowStateRepository { get; }
         IWorkflowStepRepository WorkflowStepRepository { get; }
         IWorkflowTypeRepository WorkflowTypeRepository { get; }
+        IStoreUserRepository StoreUserRepository { get; }
     }
 
     public class UOW : IUOW
@@ -259,6 +260,8 @@ namespace DMS.Repositories
         public IWorkflowStateRepository WorkflowStateRepository { get; private set; }
         public IWorkflowStepRepository WorkflowStepRepository { get; private set; }
         public IWorkflowTypeRepository WorkflowTypeRepository { get; private set; }
+        public IStoreUserRepository StoreUserRepository { get; private set; }
+
         public UOW(DataContext DataContext)
         {
             this.DataContext = DataContext;
@@ -384,6 +387,7 @@ namespace DMS.Repositories
             WorkflowStateRepository = new WorkflowStateRepository(DataContext);
             WorkflowStepRepository = new WorkflowStepRepository(DataContext);
             WorkflowTypeRepository = new WorkflowTypeRepository(DataContext);
+            StoreUserRepository = new StoreUserRepository(DataContext);
         }
         public async Task Begin()
         {
