@@ -240,12 +240,15 @@ namespace DMS.Rpc.kpi_tracking.kpi_item_report
                 return BadRequest(new { message = "Chưa chọn kì KPI" });
             if (KpiItemReport_KpiItemReportFilterDTO.KpiYearId?.Equal.HasValue == false)
                 return BadRequest(new { message = "Chưa chọn năm KPI" });
+            if (KpiItemReport_KpiItemReportFilterDTO.KpiItemTypeId?.Equal.HasValue == false)
+                return BadRequest(new { message = "Chưa chọn loại KPI" });
 
             DateTime StartDate, EndDate;
             long? SaleEmployeeId = KpiItemReport_KpiItemReportFilterDTO.AppUserId?.Equal;
             long? ItemId = KpiItemReport_KpiItemReportFilterDTO.ItemId?.Equal;
             long? KpiPeriodId = KpiItemReport_KpiItemReportFilterDTO.KpiPeriodId?.Equal.Value;
             long? KpiYearId = KpiItemReport_KpiItemReportFilterDTO.KpiYearId?.Equal.Value;
+            long? KpiItemTypeId = KpiItemReport_KpiItemReportFilterDTO.KpiItemTypeId?.Equal.Value;
             (StartDate, EndDate) = DateTimeConvert(KpiPeriodId.Value, KpiYearId.Value);
 
             List<long> AppUserIds, OrganizationIds;
@@ -262,6 +265,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_item_report
                         (ItemId.HasValue == false || i.Id == ItemId.Value) &&
                         (ki.KpiPeriodId == KpiPeriodId.Value) &&
                         (ki.KpiYearId == KpiYearId.Value) &&
+                        (ki.KpiItemTypeId == KpiYearId.Value) &&
                         ki.DeletedAt == null &&
                         ki.StatusId == StatusEnum.ACTIVE.Id
                         select new
