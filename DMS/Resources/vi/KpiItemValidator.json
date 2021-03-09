@@ -18,10 +18,13 @@
     "KpiYear": {
       "KpiYearIdNotExisted": "Năm Kpi không tồn tại",
       "KpiYearExisted": "Chưa chọn năm Kpi",
-      "KpiYearAndKpiPeriodMustInTheFuture":  "Không thể chọn thời gian trong quá khứ"
+      "KpiYearAndKpiPeriodMustInTheFuture": "Không thể chọn thời gian trong quá khứ"
     },
     "KpiPeriod": {
       "KpiPeriodIdNotExisted": "Kì Kpi không tồn tại"
+    },
+    "KpiItemType": {
+      "KpiItemTypeIdNotExisted": "Chưa chọn loại Kpi"
     },
     "KpiItemContents": {
       "KpiItemContentsEmpty": "Chưa chọn sản phẩm kpi",

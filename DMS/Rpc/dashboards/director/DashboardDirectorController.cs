@@ -255,8 +255,8 @@ namespace DMS.Rpc.dashboards.director
             return RevenueTotal;
         }
 
-        [Route(DashboardDirectorRoute.ItemSalesTotal), HttpPost]
-        public async Task<long> ItemSalesTotal([FromBody] DashboardDirector_SaledItemFluctuationFilterDTO DashboardDirector_SaledItemFluctuationFilterDTO)
+        [Route(DashboardDirectorRoute.StoreHasCheckedCounter), HttpPost]
+        public async Task<long> StoreHasCheckedCounter([FromBody] DashboardDirector_SaledItemFluctuationFilterDTO DashboardDirector_SaledItemFluctuationFilterDTO)
         {
             DateTime Now = StaticParams.DateTimeNow;
             DateTime Start = new DateTime(Now.Year, Now.Month, 1).AddHours(0 - CurrentContext.TimeZone);
@@ -285,20 +285,19 @@ namespace DMS.Rpc.dashboards.director
             var AppUsers = await AppUserService.List(AppUserFilter);
             var AppUserIds = AppUsers.Select(x => x.Id).ToList();
 
-            var query = from ic in DataContext.IndirectSalesOrderContent
-                        join i in DataContext.IndirectSalesOrder on ic.IndirectSalesOrderId equals i.Id
-                        join au in DataContext.AppUser on i.SaleEmployeeId equals au.Id
-                        join o in DataContext.Organization on au.OrganizationId equals o.Id
-                        where i.OrderDate >= Start && i.OrderDate <= End &&
-                        AppUserIds.Contains(au.Id) &&
-                        (SaleEmployeeId.HasValue == false || au.Id == SaleEmployeeId.Value) &&
-                        OrganizationIds.Contains(i.OrganizationId) &&
-                        i.RequestStateId == RequestStateEnum.APPROVED.Id &&
-                        au.DeletedAt == null && o.DeletedAt == null
-                        select ic;
+            var queryStoreHasCheckedCounter = from sc in DataContext.StoreChecking
+                                              join s in DataContext.Store on sc.StoreId equals s.Id
+                                              join au in DataContext.AppUser on sc.SaleEmployeeId equals au.Id
+                                              join o in DataContext.Organization on au.OrganizationId equals o.Id
+                                              where sc.CheckOutAt.HasValue && sc.CheckOutAt >= Start && sc.CheckOutAt <= End &&
+                                              AppUserIds.Contains(au.Id) &&
+                                              (SaleEmployeeId.HasValue == false || au.Id == SaleEmployeeId.Value) &&
+                                              OrganizationIds.Contains(s.OrganizationId) &&
+                                              au.DeletedAt == null && o.DeletedAt == null && s.DeletedAt == null
+                                              select s;
 
-            var ItemSalesTotal = query.Select(x => x.RequestedQuantity).Sum();
-            return ItemSalesTotal;
+            var StoreHasCheckedCounter = queryStoreHasCheckedCounter.Select(x => x.Id).Sum();
+            return StoreHasCheckedCounter;
         }
 
         [Route(DashboardDirectorRoute.CountStoreChecking), HttpPost]

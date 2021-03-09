@@ -14,7 +14,7 @@ namespace DMS.Rpc.dashboards.director
         public const string CountStore = Default + "/count-store";
         public const string CountIndirectSalesOrder = Default + "/indirect-sales-order-counter";
         public const string RevenueTotal = Default + "/revenue-total";
-        public const string ItemSalesTotal = Default + "/item-sales-total";
+        public const string StoreHasCheckedCounter = Default + "/store-has-checked-counter";
         public const string CountStoreChecking = Default + "/store-checking-couter";
         public const string StatisticToday = Default + "/statistic-today";
         public const string StatisticYesterday = Default + "/statistic-yesterday";
@@ -44,7 +44,7 @@ namespace DMS.Rpc.dashboards.director
             { "Hiển thị", new List<string> {
                 Parent,
                 Master,
-                CountStore, CountIndirectSalesOrder, RevenueTotal, ItemSalesTotal, CountStoreChecking, StatisticToday, StatisticYesterday,
+                CountStore, CountIndirectSalesOrder, RevenueTotal, StoreHasCheckedCounter, CountStoreChecking, StatisticToday, StatisticYesterday,
                 StoreCoverage, SaleEmployeeLocation, ListIndirectSalesOrder, Top5RevenueByProduct, Top5RevenueByEmployee, RevenueFluctuation, SaledItemFluctuation,
                 IndirectSalesOrderFluctuation, FilterListTime1, FilterListTime2, FilterListAppUser, FilterListOrganization,
             } },

@@ -30,6 +30,7 @@ namespace DMS.Services.MKpiItem
             StatusNotExisted,
             KpiPeriodIdNotExisted,
             KpiYearIdNotExisted,
+            KpiItemTypeIdNotExisted,
             KpiItemContentsEmpty,
             ItemIdNotExisted,
             ValueCannotBeNull,
@@ -129,6 +130,19 @@ namespace DMS.Services.MKpiItem
             int count = await UOW.KpiPeriodRepository.Count(KpiPeriodFilter);
             if (count == 0)
                 KpiItem.AddError(nameof(KpiItemValidator), nameof(KpiItem.KpiPeriod), ErrorCode.KpiPeriodIdNotExisted);
+            return KpiItem.IsValidated;
+        }
+
+        private async Task<bool> ValidateKpiItemType(KpiItem KpiItem)
+        {
+            KpiItemTypeFilter KpiItemTypeFilter = new KpiItemTypeFilter
+            {
+                Id = new IdFilter { Equal = KpiItem.KpiItemTypeId }
+            };
+
+            int count = await UOW.KpiItemTypeRepository.Count(KpiItemTypeFilter);
+            if (count == 0)
+                KpiItem.AddError(nameof(KpiItemValidator), nameof(KpiItem.KpiItemType), ErrorCode.KpiItemTypeIdNotExisted);
             return KpiItem.IsValidated;
         }
 
@@ -244,6 +258,7 @@ namespace DMS.Services.MKpiItem
 
         public async Task<bool> Create(KpiItem KpiItem)
         {
+            await ValidateKpiItemType(KpiItem);
             await ValidateTime(KpiItem);
             await ValidateOrganization(KpiItem);
             await ValidateEmployees(KpiItem);
@@ -257,6 +272,7 @@ namespace DMS.Services.MKpiItem
         {
             if (await ValidateId(KpiItem))
             {
+                await ValidateKpiItemType(KpiItem);
                 await ValidateTime(KpiItem);
                 await ValidateOrganization(KpiItem);
                 await ValidateStatus(KpiItem);
