@@ -59,7 +59,7 @@ namespace DMS.Handlers
                     DirectSalesOrderDAO.TotalAfterTax = DirectSalesOrder.TotalAfterTax;
                     DirectSalesOrderDAO.Total = DirectSalesOrder.Total;
                     DirectSalesOrderDAO.RowId = DirectSalesOrder.RowId;
-                    DirectSalesOrderDAO.CreatorId = DirectSalesOrder.CreatorId;
+                    DirectSalesOrderDAO.StoreUserCreatorId = DirectSalesOrder.StoreUserCreatorId; // luu acc cua store tao don hang
                     DirectSalesOrderDAO.OrderDate = DirectSalesOrder.OrderDate; // ams.abe tao ra neu client ko gui ve
                     DirectSalesOrderDAO.CreatedAt = DirectSalesOrder.CreatedAt; // lay tu ams.abe ra neu client ko gui ve
                 }
@@ -96,7 +96,7 @@ namespace DMS.Handlers
                     DirectSalesOrderDAO.TotalAfterTax = DirectSalesOrder.TotalAfterTax;
                     DirectSalesOrderDAO.Total = DirectSalesOrder.Total;
                     DirectSalesOrderDAO.RowId = DirectSalesOrder.RowId;
-                    DirectSalesOrderDAO.CreatorId = DirectSalesOrder.CreatorId;
+                    DirectSalesOrderDAO.StoreUserCreatorId = DirectSalesOrder.StoreUserCreatorId; // luu acc cua store tao don hang
                     DirectSalesOrderDAO.OrderDate = DirectSalesOrder.OrderDate; // ams.abe tao ra neu client ko gui ve
                     DirectSalesOrderDAO.CreatedAt = DirectSalesOrder.CreatedAt; // lay tu ams.abe ra neu client ko gui ve
                 }
