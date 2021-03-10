@@ -2,10 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Thinktecture;
-<<<<<<< HEAD
-=======
 
->>>>>>> d8f7555b414f1ce9fd2b856f72c5c256b49e1fb9
 namespace DMS.Models
 {
     public partial class DataContext : DbContext
