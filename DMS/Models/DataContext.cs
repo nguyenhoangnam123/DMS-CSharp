@@ -2,6 +2,10 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Thinktecture;
+<<<<<<< HEAD
+=======
+
+>>>>>>> d8f7555b414f1ce9fd2b856f72c5c256b49e1fb9
 namespace DMS.Models
 {
     public partial class DataContext : DbContext
@@ -201,6 +205,7 @@ namespace DMS.Models
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.ConfigureTempTable<long>();
             modelBuilder.Entity<ActionDAO>(entity =>
             {
                 entity.ToTable("Action", "PER");
@@ -698,7 +703,6 @@ namespace DMS.Models
                 entity.HasOne(d => d.Creator)
                     .WithMany(p => p.DirectSalesOrderCreators)
                     .HasForeignKey(d => d.CreatorId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_DirectSalesOrder_AppUser1");
 
                 entity.HasOne(d => d.DirectSalesOrderSourceType)
@@ -744,6 +748,11 @@ namespace DMS.Models
                     .WithMany(p => p.DirectSalesOrders)
                     .HasForeignKey(d => d.StoreCheckingId)
                     .HasConstraintName("FK_DirectSalesOrder_StoreChecking");
+
+                entity.HasOne(d => d.StoreUserCreator)
+                    .WithMany(p => p.DirectSalesOrders)
+                    .HasForeignKey(d => d.StoreUserCreatorId)
+                    .HasConstraintName("FK_DirectSalesOrder_StoreUser");
             });
 
             modelBuilder.Entity<DirectSalesOrderContentDAO>(entity =>

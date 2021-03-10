@@ -5,6 +5,11 @@ namespace DMS.Models
 {
     public partial class StoreUserDAO
     {
+        public StoreUserDAO()
+        {
+            DirectSalesOrders = new HashSet<DirectSalesOrderDAO>();
+        }
+
         public long Id { get; set; }
         public long StoreId { get; set; }
         public string Username { get; set; }
@@ -21,5 +26,6 @@ namespace DMS.Models
 
         public virtual StatusDAO Status { get; set; }
         public virtual StoreDAO Store { get; set; }
+        public virtual ICollection<DirectSalesOrderDAO> DirectSalesOrders { get; set; }
     }
 }

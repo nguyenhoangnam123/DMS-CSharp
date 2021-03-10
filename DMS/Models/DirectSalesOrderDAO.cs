@@ -86,7 +86,8 @@ namespace DMS.Models
         /// </summary>
         public Guid RowId { get; set; }
         public long? StoreCheckingId { get; set; }
-        public long CreatorId { get; set; }
+        public long? StoreUserCreatorId { get; set; }
+        public long? CreatorId { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public DateTime? DeletedAt { get; set; }
@@ -101,6 +102,7 @@ namespace DMS.Models
         public virtual AppUserDAO SaleEmployee { get; set; }
         public virtual StoreApprovalStateDAO StoreApprovalState { get; set; }
         public virtual StoreCheckingDAO StoreChecking { get; set; }
+        public virtual StoreUserDAO StoreUserCreator { get; set; }
         public virtual ICollection<DirectSalesOrderContentDAO> DirectSalesOrderContents { get; set; }
         public virtual ICollection<DirectSalesOrderPromotionDAO> DirectSalesOrderPromotions { get; set; }
         public virtual ICollection<DirectSalesOrderTransactionDAO> DirectSalesOrderTransactions { get; set; }
