@@ -21,7 +21,7 @@ namespace DMS.Rpc.reports.report_store.report_store_state_change
         public long StoreStatusId { get; set; }
         public long StatusId { get; set; }
         public ReportStoreStateChange_OrganizationDTO Organization { get; set; }
-        public ReportStoreStateChange_StoreStatusDTO StoreStatus { get; set; }
+        public ReportStoreStateChange_StoreStatusHistoryTypeDTO StoreStatus { get; set; }
         public ReportStoreStateChange_StoreDTO() { }
         public ReportStoreStateChange_StoreDTO(Store Store)
         {
@@ -36,7 +36,7 @@ namespace DMS.Rpc.reports.report_store.report_store_state_change
             this.StoreGroupingId = Store.StoreGroupingId;
             this.StoreStatusId = Store.StoreStatusId;
             this.Organization = Store.Organization == null ? null : new ReportStoreStateChange_OrganizationDTO(Store.Organization);
-            this.StoreStatus = Store.StoreStatus == null ? null : new ReportStoreStateChange_StoreStatusDTO(Store.StoreStatus);
+            this.StoreStatus = Store.StoreStatus == null ? null : new ReportStoreStateChange_StoreStatusHistoryTypeDTO(Store.StoreStatus);
             this.StatusId = Store.StatusId;
         }
     }

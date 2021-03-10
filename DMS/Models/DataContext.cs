@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
-
+using Thinktecture;
 namespace DMS.Models
 {
     public partial class DataContext : DbContext
