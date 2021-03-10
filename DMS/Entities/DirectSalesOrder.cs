@@ -42,7 +42,7 @@ namespace DMS.Entities
         public RequestState RequestState { get; set; }
         public AppUser SaleEmployee { get; set; }
         public AppUser Creator { get; set; }
-        public StoreUser StoreAppCreator { get; set; }
+        public StoreUser StoreUserCreator { get; set; }
         public Guid RowId { get; set; }
         public long? StoreCheckingId { get; set; }
         public List<DirectSalesOrderContent> DirectSalesOrderContents { get; set; }
