@@ -250,6 +250,14 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_employee_report
                     Total = x.Total,
                     SaleEmployeeId = x.SaleEmployeeId,
                     OrderDate = x.OrderDate,
+                    BuyerStoreId = x.BuyerStoreId,
+                    BuyerStore = x.BuyerStore == null ? null : new StoreDAO
+                    {
+                        StoreType = x.BuyerStore.StoreType == null ? null : new StoreTypeDAO
+                        {
+                            Code = x.BuyerStore.StoreType.Code
+                        }
+                    },
                     IndirectSalesOrderContents = x.IndirectSalesOrderContents.Select(c => new IndirectSalesOrderContentDAO
                     {
                         IndirectSalesOrderId = x.Id,
@@ -259,29 +267,29 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_employee_report
                 })
                 .ToListAsync();
 
-            var DirectSalesOrderDAOs = await DataContext.DirectSalesOrder
-                .Where(x => x.SaleEmployeeId == SaleEmployeeId &&
-                x.OrderDate >= StartDate && x.OrderDate <= EndDate &&
-                x.RequestStateId == RequestStateEnum.APPROVED.Id)
-                .Select(x => new DirectSalesOrderDAO
-                {
-                    Id = x.Id,
-                    Total = x.Total,
-                    SaleEmployeeId = x.SaleEmployeeId,
-                    OrderDate = x.OrderDate,
-                    DirectSalesOrderContents = x.DirectSalesOrderContents.Select(c => new DirectSalesOrderContentDAO
-                    {
-                        DirectSalesOrderId = x.Id,
-                        RequestedQuantity = c.RequestedQuantity,
-                        ItemId = c.ItemId,
-                    }).ToList(),
-                    DirectSalesOrderPromotions = x.DirectSalesOrderPromotions.Select(x => new DirectSalesOrderPromotionDAO
-                    {
-                        RequestedQuantity = x.RequestedQuantity,
-                        ItemId = x.ItemId
-                    }).ToList()
-                })
-                .ToListAsync();
+            //var DirectSalesOrderDAOs = await DataContext.DirectSalesOrder
+            //    .Where(x => x.SaleEmployeeId == SaleEmployeeId &&
+            //    x.OrderDate >= StartDate && x.OrderDate <= EndDate &&
+            //    x.RequestStateId == RequestStateEnum.APPROVED.Id)
+            //    .Select(x => new DirectSalesOrderDAO
+            //    {
+            //        Id = x.Id,
+            //        Total = x.Total,
+            //        SaleEmployeeId = x.SaleEmployeeId,
+            //        OrderDate = x.OrderDate,
+            //        DirectSalesOrderContents = x.DirectSalesOrderContents.Select(c => new DirectSalesOrderContentDAO
+            //        {
+            //            DirectSalesOrderId = x.Id,
+            //            RequestedQuantity = c.RequestedQuantity,
+            //            ItemId = c.ItemId,
+            //        }).ToList(),
+            //        DirectSalesOrderPromotions = x.DirectSalesOrderPromotions.Select(x => new DirectSalesOrderPromotionDAO
+            //        {
+            //            RequestedQuantity = x.RequestedQuantity,
+            //            ItemId = x.ItemId
+            //        }).ToList()
+            //    })
+            //    .ToListAsync();
 
             var StoreCheckingDAOs = await DataContext.StoreChecking
                 .Where(x => x.SaleEmployeeId == SaleEmployeeId &&
@@ -306,9 +314,25 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_employee_report
                     Stores = x.Stores.Select(c => new StoreDAO
                     {
                         Id = c.Id,
-                        StoreScoutingId = c.StoreScoutingId
+                        StoreScoutingId = c.StoreScoutingId,
+                        StoreType = c.StoreType == null ? null : new StoreTypeDAO
+                        {
+                            Code = c.StoreType.Code
+                        }
                     }).ToList()
                 })
+                .ToListAsync();
+
+            var ProblemDAOs = await DataContext.Problem
+                 .Where(x => x.CreatorId == SaleEmployeeId &&
+                x.NoteAt >= StartDate && x.NoteAt <= EndDate)
+                 .Select(x => new ProblemDAO
+                 {
+                     Id = x.Id
+                 }).ToListAsync();
+            var StoreImages = await DataContext.StoreImage
+                .Where(x => x.SaleEmployeeId == SaleEmployeeId &&
+                x.ShootingAt >= StartDate && x.ShootingAt <= EndDate)
                 .ToListAsync();
 
             Parallel.ForEach(KpiGeneralEmployeeReport_KpiGeneralEmployeeReportDTOs, Period =>
@@ -327,10 +351,10 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_employee_report
                     x.OrderDate >= Start && x.OrderDate <= End)
                     .ToList();
 
-                var DirectSalesOrders = DirectSalesOrderDAOs
-                    .Where(x => x.SaleEmployeeId == SaleEmployeeId &&
-                    x.OrderDate >= Start && x.OrderDate <= End)
-                    .ToList();
+                //var DirectSalesOrders = DirectSalesOrderDAOs
+                //    .Where(x => x.SaleEmployeeId == SaleEmployeeId &&
+                //    x.OrderDate >= Start && x.OrderDate <= End)
+                //    .ToList();
 
                 //lấy tất cả lượt checking trong kì đang xét
                 var StoreCheckings = StoreCheckingDAOs
@@ -338,6 +362,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_employee_report
                     x.CheckOutAt.HasValue && x.CheckOutAt.Value >= Start && x.CheckOutAt.Value <= End)
                     .ToList();
 
+                #region các chỉ tiêu tạm ẩn
                 //#region Số đơn hàng gián tiếp
                 ////kế hoạch
                 //Period.TotalIndirectOrdersPLanned = KpiGeneralContentKpiPeriodMappings
@@ -380,24 +405,6 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_employee_report
                 //        Math.Round((Period.TotalIndirectQuantity.Value / Period.TotalIndirectQuantityPlanned.Value) * 100, 2);
                 //}
                 //#endregion
-
-                #region Doanh thu theo đơn hàng gián tiếp
-                //kế hoạch
-                Period.TotalIndirectSalesAmountPlanned = KpiGeneralContentKpiPeriodMappings
-                        .Where(x => x.KpiPeriodId == Period.KpiPeriodId &&
-                        x.KpiGeneralContent.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.TOTAL_INDIRECT_SALES_AMOUNT.Id)
-                        .Select(x => x.Value)
-                        .FirstOrDefault();
-                if (Period.TotalIndirectSalesAmountPlanned.HasValue)
-                {
-                    //thực hiện
-                    Period.TotalIndirectSalesAmount = Period.TotalIndirectSalesAmountPlanned == null ? null : (decimal?)IndirectSalesOrders.Sum(x => x.Total);
-                    //tỉ lệ
-                    Period.TotalIndirectSalesAmountRatio = Period.TotalIndirectSalesAmountPlanned == null || Period.TotalIndirectSalesAmount == null || Period.TotalIndirectSalesAmountPlanned == 0 ? null :
-                        (decimal?)
-                        Math.Round((Period.TotalIndirectSalesAmount.Value / Period.TotalIndirectSalesAmountPlanned.Value) * 100, 2);
-                }
-                #endregion
 
                 //#region SKU/Đơn hàng gián tiếp
                 ////kế hoạch
@@ -508,8 +515,27 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_employee_report
                 //        Math.Round((Period.SkuDirectOrder.Value / Period.SkuDirectOrderPlanned.Value) * 100, 2);
                 //}
                 //#endregion
+                #endregion
 
-                #region Số cửa hàng viếng thăm
+                #region Tổng doanh thu đơn hàng
+                //kế hoạch
+                Period.TotalIndirectSalesAmountPlanned = KpiGeneralContentKpiPeriodMappings
+                        .Where(x => x.KpiPeriodId == Period.KpiPeriodId &&
+                        x.KpiGeneralContent.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.TOTAL_INDIRECT_SALES_AMOUNT.Id)
+                        .Select(x => x.Value)
+                        .FirstOrDefault();
+                if (Period.TotalIndirectSalesAmountPlanned.HasValue)
+                {
+                    //thực hiện
+                    Period.TotalIndirectSalesAmount = Period.TotalIndirectSalesAmountPlanned == null ? null : (decimal?)IndirectSalesOrders.Sum(x => x.Total);
+                    //tỉ lệ
+                    Period.TotalIndirectSalesAmountRatio = Period.TotalIndirectSalesAmountPlanned == null || Period.TotalIndirectSalesAmount == null || Period.TotalIndirectSalesAmountPlanned == 0 ? null :
+                        (decimal?)
+                        Math.Round((Period.TotalIndirectSalesAmount.Value / Period.TotalIndirectSalesAmountPlanned.Value) * 100, 2);
+                }
+                #endregion
+
+                #region Số đại lý ghé thăm
                 //kế hoạch
                 Period.StoresVisitedPLanned = KpiGeneralContentKpiPeriodMappings
                        .Where(x => x.KpiPeriodId == Period.KpiPeriodId &&
@@ -533,7 +559,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_employee_report
                 }
                 #endregion
 
-                #region Số cửa hàng tạo mới
+                #region Tổng số đại lý mở mới
                 //kế hoạch
                 Period.NewStoreCreatedPlanned = KpiGeneralContentKpiPeriodMappings
                         .Where(x => x.KpiPeriodId == Period.KpiPeriodId &&
@@ -559,7 +585,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_employee_report
                 }
                 #endregion
 
-                #region Số lần viếng thăm cửa hàng
+                #region Tổng số lượt ghé thăm
                 //kế hoạch
                 Period.NumberOfStoreVisitsPlanned = KpiGeneralContentKpiPeriodMappings
                         .Where(x => x.KpiPeriodId == Period.KpiPeriodId &&
@@ -576,6 +602,126 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_employee_report
                     Period.NumberOfStoreVisitsRatio = Period.NumberOfStoreVisitsPlanned == null || Period.NumberOfStoreVisits == null || Period.NumberOfStoreVisitsPlanned == 0 ? null :
                         (decimal?)
                         Math.Round((Period.NumberOfStoreVisits.Value / Period.NumberOfStoreVisitsPlanned.Value) * 100, 2);
+                }
+                #endregion
+
+                #region Doanh thu C2 Trọng điểm
+                //kế hoạch
+                Period.RevenueC2TDPlanned = KpiGeneralContentKpiPeriodMappings
+                        .Where(x => x.KpiPeriodId == Period.KpiPeriodId &&
+                        x.KpiGeneralContent.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.REVENUE_C2_TD.Id)
+                        .Select(x => x.Value)
+                        .FirstOrDefault();
+                if (Period.RevenueC2TDPlanned.HasValue)
+                {
+                    //thực hiện
+                    Period.RevenueC2TD = Period.RevenueC2TDPlanned == null ? 
+                    null : (decimal?)IndirectSalesOrders.Where(x => x.BuyerStore.StoreType.Code == StaticParams.C2TD).Sum(x => x.Total);
+                    //tỉ lệ
+                    Period.RevenueC2TDRatio = Period.RevenueC2TDPlanned == null || Period.RevenueC2TD == null || Period.RevenueC2TDPlanned == 0 ? null :
+                        (decimal?)
+                        Math.Round((Period.RevenueC2TD.Value / Period.RevenueC2TDPlanned.Value) * 100, 2);
+                }
+                #endregion
+
+                #region Doanh thu C2 Siêu lớn
+                //kế hoạch
+                Period.RevenueC2SLPlanned = KpiGeneralContentKpiPeriodMappings
+                        .Where(x => x.KpiPeriodId == Period.KpiPeriodId &&
+                        x.KpiGeneralContent.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.REVENUE_C2_BIG.Id)
+                        .Select(x => x.Value)
+                        .FirstOrDefault();
+                if (Period.RevenueC2SLPlanned.HasValue)
+                {
+                    //thực hiện
+                    Period.RevenueC2SL = Period.RevenueC2SLPlanned == null ?
+                    null : (decimal?)IndirectSalesOrders.Where(x => x.BuyerStore.StoreType.Code == StaticParams.C2SL).Sum(x => x.Total);
+                    //tỉ lệ
+                    Period.RevenueC2SLRatio = Period.RevenueC2SLPlanned == null || Period.RevenueC2SL == null || Period.RevenueC2SLPlanned == 0 ? null :
+                        (decimal?)
+                        Math.Round((Period.RevenueC2SL.Value / Period.RevenueC2SLPlanned.Value) * 100, 2);
+                }
+                #endregion
+
+                #region Doanh thu C2
+                //kế hoạch
+                Period.RevenueC2Planned = KpiGeneralContentKpiPeriodMappings
+                        .Where(x => x.KpiPeriodId == Period.KpiPeriodId &&
+                        x.KpiGeneralContent.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.REVENUE_C2.Id)
+                        .Select(x => x.Value)
+                        .FirstOrDefault();
+                if (Period.RevenueC2Planned.HasValue)
+                {
+                    //thực hiện
+                    Period.RevenueC2 = Period.RevenueC2Planned == null ?
+                    null : (decimal?)IndirectSalesOrders.Where(x => x.BuyerStore.StoreType.Code == StaticParams.C2).Sum(x => x.Total);
+                    //tỉ lệ
+                    Period.RevenueC2Ratio = Period.RevenueC2Planned == null || Period.RevenueC2 == null || Period.RevenueC2Planned == 0 ? null :
+                        (decimal?)
+                        Math.Round((Period.RevenueC2.Value / Period.RevenueC2Planned.Value) * 100, 2);
+                }
+                #endregion
+
+                #region Số đại lý trọng điểm mở mới
+                //kế hoạch
+                Period.NewStoreC2CreatedPlanned = KpiGeneralContentKpiPeriodMappings
+                        .Where(x => x.KpiPeriodId == Period.KpiPeriodId &&
+                        x.KpiGeneralContent.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.NEW_STORE_C2_CREATED.Id)
+                        .Select(x => x.Value)
+                        .FirstOrDefault();
+                if (Period.NewStoreC2CreatedPlanned.HasValue)
+                {
+                    //thực hiện
+                    Period.NewStoreCreated = Period.NewStoreC2CreatedPlanned == null ? null :
+                        (decimal?)
+                        StoreScoutingDAOs
+                        .Where(sc => sc.CreatorId == Period.SaleEmployeeId &&
+                        sc.CreatedAt >= Start && sc.CreatedAt <= End)
+                        .SelectMany(sc => sc.Stores)
+                        .Where(x => x.StoreScoutingId.HasValue)
+                        .Where(x => x.StoreType.Code == StaticParams.C2TD)
+                        .Select(z => z.StoreScoutingId.Value)
+                        .Count();
+                    //tỉ lệ
+                    Period.NewStoreCreatedRatio = Period.NewStoreC2CreatedPlanned == null || Period.NewStoreCreated == null || Period.NewStoreC2CreatedPlanned == 0 ? null :
+                        (decimal?)
+                        Math.Round((Period.NewStoreCreated.Value / Period.NewStoreC2CreatedPlanned.Value) * 100, 2);
+                }
+                #endregion
+
+                #region Số thông tin phản ảnh
+                //kế hoạch
+                Period.TotalProblemPlanned = KpiGeneralContentKpiPeriodMappings
+                        .Where(x => x.KpiPeriodId == Period.KpiPeriodId &&
+                        x.KpiGeneralContent.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.TOTAL_PROBLEM.Id)
+                        .Select(x => x.Value)
+                        .FirstOrDefault();
+                if (Period.TotalProblemPlanned.HasValue)
+                {
+                    //thực hiện
+                    Period.TotalProblem = Period.TotalProblemPlanned == null ? null : (decimal?)IndirectSalesOrders.Sum(x => x.Total);
+                    //tỉ lệ
+                    Period.TotalProblemRatio = Period.TotalProblemPlanned == null || Period.TotalProblem == null || Period.TotalProblemPlanned == 0 ? null :
+                        (decimal?)
+                        Math.Round((Period.TotalProblem.Value / Period.TotalProblemPlanned.Value) * 100, 2);
+                }
+                #endregion
+
+                #region Tổng doanh thu đơn hàng
+                //kế hoạch
+                Period.TotalImagePlanned = KpiGeneralContentKpiPeriodMappings
+                        .Where(x => x.KpiPeriodId == Period.KpiPeriodId &&
+                        x.KpiGeneralContent.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.TOTAL_IMAGE.Id)
+                        .Select(x => x.Value)
+                        .FirstOrDefault();
+                if (Period.TotalImagePlanned.HasValue)
+                {
+                    //thực hiện
+                    Period.TotalImage = Period.TotalImagePlanned == null ? null : (decimal?)IndirectSalesOrders.Sum(x => x.Total);
+                    //tỉ lệ
+                    Period.TotalImageRatio = Period.TotalImagePlanned == null || Period.TotalImage == null || Period.TotalImagePlanned == 0 ? null :
+                        (decimal?)
+                        Math.Round((Period.TotalImage.Value / Period.TotalImagePlanned.Value) * 100, 2);
                 }
                 #endregion
             });

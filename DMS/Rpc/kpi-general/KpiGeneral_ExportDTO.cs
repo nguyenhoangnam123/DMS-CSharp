@@ -10,17 +10,26 @@ namespace DMS.Rpc.kpi_general
     {
         public string Username { get; set; }
         public string DisplayName { get; set; }
-        public KpiGeneral_ExportCriterialDTO TotalIndirectOrders { get; set; }
-        public KpiGeneral_ExportCriterialDTO TotalIndirectQuantity { get; set; }
         public KpiGeneral_ExportCriterialDTO TotalIndirectSalesAmount { get; set; }
-        public KpiGeneral_ExportCriterialDTO SKUIndirectOrder { get; set; }
         public KpiGeneral_ExportCriterialDTO StoresVisited { get; set; }
         public KpiGeneral_ExportCriterialDTO NewStoresCreated { get; set; }
         public KpiGeneral_ExportCriterialDTO NumberOfStoreVisits { get; set; }
-        public KpiGeneral_ExportCriterialDTO TotalDirectOrders { get; set; }
-        public KpiGeneral_ExportCriterialDTO TotalDirectQuantity { get; set; }
-        public KpiGeneral_ExportCriterialDTO TotalDirectSalesAmount { get; set; }
-        public KpiGeneral_ExportCriterialDTO SKUDirectOrder { get; set; }
+        public KpiGeneral_ExportCriterialDTO RevenueC2TD { get; set; }
+        public KpiGeneral_ExportCriterialDTO RevenueC2SL { get; set; }
+        public KpiGeneral_ExportCriterialDTO RevenueC2 { get; set; }
+        public KpiGeneral_ExportCriterialDTO NewStoresC2Created { get; set; }
+        public KpiGeneral_ExportCriterialDTO TotalProblem { get; set; }
+        public KpiGeneral_ExportCriterialDTO TotalImage { get; set; }
+
+        #region các chỉ tiêu tạm ẩn
+        //public KpiGeneral_ExportCriterialDTO TotalIndirectOrders { get; set; }
+        //public KpiGeneral_ExportCriterialDTO TotalIndirectQuantity { get; set; }
+        //public KpiGeneral_ExportCriterialDTO SKUIndirectOrder { get; set; }
+        //public KpiGeneral_ExportCriterialDTO TotalDirectOrders { get; set; }
+        //public KpiGeneral_ExportCriterialDTO TotalDirectQuantity { get; set; }
+        //public KpiGeneral_ExportCriterialDTO TotalDirectSalesAmount { get; set; }
+        //public KpiGeneral_ExportCriterialDTO SKUDirectOrder { get; set; }
+        #endregion
     }
 
     public class KpiGeneral_ExportCriterialDTO : DataDTO
