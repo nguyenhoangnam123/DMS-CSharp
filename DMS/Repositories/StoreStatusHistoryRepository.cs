@@ -143,12 +143,17 @@ namespace DMS.Repositories
 
         public async Task<bool> Create(StoreStatusHistory StoreStatusHistory)
         {
+            StoreStatusHistoryDAO Old = await DataContext.StoreStatusHistory
+                .Where(x => x.StoreId == StoreStatusHistory.StoreId)
+                .OrderByDescending(x => x.CreatedAt)
+                .FirstOrDefaultAsync();
             StoreStatusHistoryDAO StoreStatusHistoryDAO = new StoreStatusHistoryDAO();
             StoreStatusHistoryDAO.Id = StoreStatusHistory.Id;
             StoreStatusHistoryDAO.StoreId = StoreStatusHistory.StoreId;
             StoreStatusHistoryDAO.AppUserId = StoreStatusHistory.AppUserId;
             StoreStatusHistoryDAO.PreviousStoreStatusId = StoreStatusHistory.PreviousStoreStatusId;
             StoreStatusHistoryDAO.StoreStatusId = StoreStatusHistory.StoreStatusId;
+            StoreStatusHistoryDAO.PreviousCreatedAt = Old?.CreatedAt;
             StoreStatusHistoryDAO.CreatedAt = StaticParams.DateTimeNow;
             DataContext.StoreStatusHistory.Add(StoreStatusHistoryDAO);
             await DataContext.SaveChangesAsync();

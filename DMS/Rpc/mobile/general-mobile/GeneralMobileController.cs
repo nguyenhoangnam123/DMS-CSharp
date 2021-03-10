@@ -110,7 +110,8 @@ namespace DMS.Rpc.mobile.general_mobile
             IProductGroupingService ProductGroupingService,
             INotificationService NotificationService,
             IRewardHistoryService RewardHistoryService,
-            ICurrentContext CurrentContext
+            ICurrentContext CurrentContext,
+            DataContext DataContext
         )
         {
             this.AlbumService = AlbumService;
@@ -142,6 +143,7 @@ namespace DMS.Rpc.mobile.general_mobile
             this.NotificationService = NotificationService;
             this.RewardHistoryService = RewardHistoryService;
             this.CurrentContext = CurrentContext;
+            this.DataContext = DataContext;
         }
 
         [Route(GeneralMobileRoute.CountStoreChecking), HttpPost]

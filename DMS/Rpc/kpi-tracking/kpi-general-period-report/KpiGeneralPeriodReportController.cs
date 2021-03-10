@@ -294,6 +294,13 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
                     Total = x.Total,
                     SaleEmployeeId = x.SaleEmployeeId,
                     OrderDate = x.OrderDate,
+                    BuyerStore = x.BuyerStore == null ? null : new StoreDAO
+                    {
+                        StoreType = x.BuyerStore.StoreType == null ? null : new StoreTypeDAO
+                        {
+                            Code = x.BuyerStore.StoreType.Code
+                        }
+                    },
                     IndirectSalesOrderContents = x.IndirectSalesOrderContents.Select(c => new IndirectSalesOrderContentDAO
                     {
                         RequestedQuantity = c.RequestedQuantity,
@@ -307,28 +314,36 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
                 })
                 .ToListAsync();
 
-            var DirectSalesOrderDAOs = await DataContext.DirectSalesOrder
-               .Where(x => AppUserIds.Contains(x.SaleEmployeeId) &&
-               x.OrderDate >= StartDate && x.OrderDate <= EndDate &&
-               x.RequestStateId == RequestStateEnum.APPROVED.Id)
-               .Select(x => new DirectSalesOrderDAO
-               {
-                   Id = x.Id,
-                   Total = x.Total,
-                   SaleEmployeeId = x.SaleEmployeeId,
-                   OrderDate = x.OrderDate,
-                   DirectSalesOrderContents = x.DirectSalesOrderContents.Select(c => new DirectSalesOrderContentDAO
-                   {
-                       RequestedQuantity = c.RequestedQuantity,
-                       ItemId = c.ItemId
-                   }).ToList(),
-                   DirectSalesOrderPromotions = x.DirectSalesOrderPromotions.Select(x => new DirectSalesOrderPromotionDAO
-                   {
-                       RequestedQuantity = x.RequestedQuantity,
-                       ItemId = x.ItemId
-                   }).ToList()
-               })
-               .ToListAsync();
+            //var DirectSalesOrderDAOs = await DataContext.DirectSalesOrder
+            //   .Where(x => AppUserIds.Contains(x.SaleEmployeeId) &&
+            //   x.OrderDate >= StartDate && x.OrderDate <= EndDate &&
+            //   x.RequestStateId == RequestStateEnum.APPROVED.Id)
+            //   .Select(x => new DirectSalesOrderDAO
+            //   {
+            //       Id = x.Id,
+            //       Total = x.Total,
+            //       SaleEmployeeId = x.SaleEmployeeId,
+            //       OrderDate = x.OrderDate,
+            //       BuyerStoreId = x.BuyerStoreId,
+            //       BuyerStore = x.BuyerStore == null ? null : new StoreDAO
+            //       {
+            //           StoreType = x.BuyerStore.StoreType == null ? null : new StoreTypeDAO
+            //           {
+            //               Code = x.BuyerStore.StoreType.Code
+            //           }
+            //       },
+            //       DirectSalesOrderContents = x.DirectSalesOrderContents.Select(c => new DirectSalesOrderContentDAO
+            //       {
+            //           RequestedQuantity = c.RequestedQuantity,
+            //           ItemId = c.ItemId
+            //       }).ToList(),
+            //       DirectSalesOrderPromotions = x.DirectSalesOrderPromotions.Select(x => new DirectSalesOrderPromotionDAO
+            //       {
+            //           RequestedQuantity = x.RequestedQuantity,
+            //           ItemId = x.ItemId
+            //       }).ToList()
+            //   })
+            //   .ToListAsync();
 
             var StoreCheckingDAOs = await DataContext.StoreChecking
                 .Where(x => AppUserIds.Contains(x.SaleEmployeeId) &&
@@ -343,10 +358,30 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
                 })
                 .ToListAsync();
 
+            var ProblemDAOs = await DataContext.Problem
+                 .Where(x => AppUserIds.Contains(x.CreatorId) &&
+                x.NoteAt >= StartDate && x.NoteAt <= EndDate)
+                 .Select(x => new ProblemDAO
+                 {
+                     Id = x.Id
+                 }).ToListAsync();
+            var StoreImages = await DataContext.StoreImage
+                .Where(x => AppUserIds.Contains(x.SaleEmployeeId.Value) &&
+                x.ShootingAt >= StartDate && x.ShootingAt <= EndDate)
+                .ToListAsync();
+
             List<StoreDAO> Stores = await DataContext.Store.
                 Where(x => x.CreatorId.HasValue && AppUserIds.Contains(x.CreatorId.Value) &&
                 x.CreatedAt >= StartDate && x.CreatedAt <= EndDate)
-                .ToListAsync();
+                .Select(x => new StoreDAO
+                {
+                    Id = x.Id,
+                    StoreScoutingId = x.StoreScoutingId,
+                    StoreType = x.StoreType == null ? null : new StoreTypeDAO
+                    {
+                        Code = x.StoreType.Code
+                    }
+                }).ToListAsync();
 
             Parallel.ForEach(KpiGeneralPeriodReport_KpiGeneralPeriodReportDTOs, KpiGeneralPeriodReport_KpiGeneralPeriodReportDTO =>
             {
@@ -357,47 +392,161 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
                     var IndirectSalesOrders = IndirectSalesOrderDAOs
                         .Where(x => x.SaleEmployeeId == SaleEmployeeDTO.SaleEmployeeId)
                         .ToList();
-                    var DirectSalesOrders = DirectSalesOrderDAOs
-                        .Where(x => x.SaleEmployeeId == SaleEmployeeDTO.SaleEmployeeId)
-                        .ToList();
-                    #region Số đơn hàng gián tiếp
-                    //kế hoạch
-                    SaleEmployeeDTO.TotalIndirectOrdersPLanned = KpiGeneralPeriodReport_SaleEmployeeDetailDTOs
-                            .Where(x => x.SaleEmployeeId == SaleEmployeeDTO.SaleEmployeeId &&
-                             x.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.TOTAL_INDIRECT_SALES_ORDER.Id)
-                            .Select(x => x.Value).FirstOrDefault();
-                    if (SaleEmployeeDTO.TotalIndirectOrdersPLanned.HasValue)
-                    {
-                        //thực hiện
-                        SaleEmployeeDTO.TotalIndirectOrders = SaleEmployeeDTO.TotalIndirectOrdersPLanned == null ? null : (decimal?)IndirectSalesOrders.Count();
-                        //tỉ lệ
-                        SaleEmployeeDTO.TotalIndirectOrdersRatio = (SaleEmployeeDTO.TotalIndirectOrdersPLanned == null || SaleEmployeeDTO.TotalIndirectOrders == null || SaleEmployeeDTO.TotalIndirectOrdersPLanned.Value == 0)
-                            ? null
-                            : (decimal?)Math.Round(SaleEmployeeDTO.TotalIndirectOrders.Value / SaleEmployeeDTO.TotalIndirectOrdersPLanned.Value * 100, 2);
-                    }
+                    //var DirectSalesOrders = DirectSalesOrderDAOs
+                    //    .Where(x => x.SaleEmployeeId == SaleEmployeeDTO.SaleEmployeeId)
+                    //    .ToList();
+
+                    #region các chỉ tiêu tạm ẩn
+                    //#region Số đơn hàng gián tiếp
+                    ////kế hoạch
+                    //SaleEmployeeDTO.TotalIndirectOrdersPLanned = KpiGeneralPeriodReport_SaleEmployeeDetailDTOs
+                    //        .Where(x => x.SaleEmployeeId == SaleEmployeeDTO.SaleEmployeeId &&
+                    //         x.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.TOTAL_INDIRECT_SALES_ORDER.Id)
+                    //        .Select(x => x.Value).FirstOrDefault();
+                    //if (SaleEmployeeDTO.TotalIndirectOrdersPLanned.HasValue)
+                    //{
+                    //    //thực hiện
+                    //    SaleEmployeeDTO.TotalIndirectOrders = SaleEmployeeDTO.TotalIndirectOrdersPLanned == null ? null : (decimal?)IndirectSalesOrders.Count();
+                    //    //tỉ lệ
+                    //    SaleEmployeeDTO.TotalIndirectOrdersRatio = (SaleEmployeeDTO.TotalIndirectOrdersPLanned == null || SaleEmployeeDTO.TotalIndirectOrders == null || SaleEmployeeDTO.TotalIndirectOrdersPLanned.Value == 0)
+                    //        ? null
+                    //        : (decimal?)Math.Round(SaleEmployeeDTO.TotalIndirectOrders.Value / SaleEmployeeDTO.TotalIndirectOrdersPLanned.Value * 100, 2);
+                    //}
+                    //#endregion
+
+                    //#region Tổng sản lượng theo đơn gián tiếp
+                    ////kế hoạch
+                    //SaleEmployeeDTO.TotalIndirectQuantityPlanned = KpiGeneralPeriodReport_SaleEmployeeDetailDTOs
+                    //        .Where(x => x.SaleEmployeeId == SaleEmployeeDTO.SaleEmployeeId &&
+                    //         x.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.TOTAL_INDIRECT_SALES_QUANTITY.Id)
+                    //        .Select(x => x.Value).FirstOrDefault();
+                    //if (SaleEmployeeDTO.TotalIndirectQuantityPlanned.HasValue)
+                    //{
+                    //    //thực hiện
+                    //    SaleEmployeeDTO.TotalIndirectQuantity = SaleEmployeeDTO.TotalIndirectQuantityPlanned == null ? null : (decimal?)IndirectSalesOrders
+                    //        .SelectMany(c => c.IndirectSalesOrderContents)
+                    //        .Select(q => q.RequestedQuantity)
+                    //        .DefaultIfEmpty(0).Sum();
+                    //    //tỉ lệ
+                    //    SaleEmployeeDTO.TotalIndirectQuantityRatio = SaleEmployeeDTO.TotalIndirectQuantityPlanned == null || SaleEmployeeDTO.TotalIndirectQuantity == null || SaleEmployeeDTO.TotalIndirectQuantityPlanned.Value == 0
+                    //        ? null
+                    //        : (decimal?)Math.Round(SaleEmployeeDTO.TotalIndirectQuantity.Value / SaleEmployeeDTO.TotalIndirectQuantityPlanned.Value * 100, 2);
+                    //}
+                    //#endregion
+
+                    //#region SKU/Đơn hàng gián tiếp
+                    ////kế hoạch
+                    //SaleEmployeeDTO.SkuIndirectOrderPlanned = KpiGeneralPeriodReport_SaleEmployeeDetailDTOs
+                    //        .Where(x => x.SaleEmployeeId == SaleEmployeeDTO.SaleEmployeeId &&
+                    //        x.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.SKU_INDIRECT_SALES_ORDER.Id)
+                    //        .Select(x => x.Value).FirstOrDefault();
+                    //if (SaleEmployeeDTO.SkuIndirectOrderPlanned.HasValue)
+                    //{
+                    //    //thực hiện
+                    //    SaleEmployeeDTO.SKUIndirectItems = new List<long>();
+                    //    foreach (var IndirectSalesOrder in IndirectSalesOrders)
+                    //    {
+                    //        var itemIds = IndirectSalesOrder.IndirectSalesOrderContents.Select(x => x.ItemId).Distinct().ToList();
+                    //        SaleEmployeeDTO.SKUIndirectItems.AddRange(itemIds);
+                    //    }
+
+                    //    SaleEmployeeDTO.SkuIndirectOrder = IndirectSalesOrders.Count() == 0 || SaleEmployeeDTO.SKUIndirectItems == null
+                    //        ? null
+                    //        : (decimal?)Math.Round((decimal)SaleEmployeeDTO.SKUIndirectItems.Count() / IndirectSalesOrders.Count(), 2);
+                    //    if (SaleEmployeeDTO.SkuIndirectOrderPlanned != null && SaleEmployeeDTO.SkuIndirectOrder == null)
+                    //        SaleEmployeeDTO.SkuIndirectOrder = 0;
+                    //    //tỉ lệ
+                    //    SaleEmployeeDTO.SkuIndirectOrderRatio = SaleEmployeeDTO.SkuIndirectOrderPlanned == null || SaleEmployeeDTO.SkuIndirectOrder == null || SaleEmployeeDTO.SkuIndirectOrderPlanned.Value == 0
+                    //        ? null
+                    //        : (decimal?)Math.Round((SaleEmployeeDTO.SkuIndirectOrder.Value / SaleEmployeeDTO.SkuIndirectOrderPlanned.Value) * 100, 2);
+                    //}
+                    //#endregion
+
+                    //#region Số đơn hàng trực tiếp
+                    ////kế hoạch
+                    //SaleEmployeeDTO.TotalDirectOrdersPLanned = KpiGeneralPeriodReport_SaleEmployeeDetailDTOs
+                    //        .Where(x => x.SaleEmployeeId == SaleEmployeeDTO.SaleEmployeeId &&
+                    //         x.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.TOTAL_DIRECT_SALES_ORDER.Id)
+                    //        .Select(x => x.Value).FirstOrDefault();
+                    //if (SaleEmployeeDTO.TotalDirectOrdersPLanned.HasValue)
+                    //{
+                    //    //thực hiện
+                    //    SaleEmployeeDTO.TotalDirectOrders = SaleEmployeeDTO.TotalDirectOrdersPLanned == null ? null : (decimal?)DirectSalesOrders.Count();
+                    //    //tỉ lệ
+                    //    SaleEmployeeDTO.TotalDirectOrdersRatio = (SaleEmployeeDTO.TotalDirectOrdersPLanned == null || SaleEmployeeDTO.TotalDirectOrders == null || SaleEmployeeDTO.TotalDirectOrdersPLanned.Value == 0)
+                    //        ? null
+                    //        : (decimal?)Math.Round(SaleEmployeeDTO.TotalDirectOrders.Value / SaleEmployeeDTO.TotalDirectOrdersPLanned.Value * 100, 2);
+                    //}
+                    //#endregion
+
+                    //#region Tổng sản lượng theo đơn trực tiếp
+                    ////kế hoạch
+                    //SaleEmployeeDTO.TotalDirectQuantityPlanned = KpiGeneralPeriodReport_SaleEmployeeDetailDTOs
+                    //        .Where(x => x.SaleEmployeeId == SaleEmployeeDTO.SaleEmployeeId &&
+                    //         x.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.TOTAL_DIRECT_SALES_QUANTITY.Id)
+                    //        .Select(x => x.Value).FirstOrDefault();
+                    //if (SaleEmployeeDTO.TotalDirectQuantityPlanned.HasValue)
+                    //{
+                    //    //thực hiện
+                    //    SaleEmployeeDTO.TotalDirectQuantity = SaleEmployeeDTO.TotalDirectQuantityPlanned == null ? null : (decimal?)DirectSalesOrders
+                    //        .SelectMany(c => c.DirectSalesOrderContents)
+                    //        .Select(q => q.RequestedQuantity)
+                    //        .DefaultIfEmpty(0).Sum();
+                    //    //tỉ lệ
+                    //    SaleEmployeeDTO.TotalDirectQuantityRatio = SaleEmployeeDTO.TotalDirectQuantityPlanned == null || SaleEmployeeDTO.TotalDirectQuantity == null || SaleEmployeeDTO.TotalDirectQuantityPlanned.Value == 0
+                    //        ? null
+                    //        : (decimal?)Math.Round(SaleEmployeeDTO.TotalDirectQuantity.Value / SaleEmployeeDTO.TotalDirectQuantityPlanned.Value * 100, 2);
+                    //}
+                    //#endregion
+
+                    //#region Doanh thu theo đơn hàng trực tiếp
+                    ////kế hoạch
+                    //SaleEmployeeDTO.TotalDirectSalesAmountPlanned = KpiGeneralPeriodReport_SaleEmployeeDetailDTOs
+                    //        .Where(x => x.SaleEmployeeId == SaleEmployeeDTO.SaleEmployeeId &&
+                    //         x.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.TOTAL_DIRECT_SALES_AMOUNT.Id)
+                    //        .Select(x => x.Value).FirstOrDefault();
+                    //if (SaleEmployeeDTO.TotalDirectSalesAmountPlanned.HasValue)
+                    //{
+                    //    //thực hiện
+                    //    SaleEmployeeDTO.TotalDirectSalesAmount = SaleEmployeeDTO.TotalDirectSalesAmountPlanned == null ? null : (decimal?)DirectSalesOrders.Sum(iso => iso.Total);
+                    //    //tỉ lệ
+                    //    SaleEmployeeDTO.TotalDirectSalesAmountRatio = SaleEmployeeDTO.TotalDirectSalesAmountPlanned == null || SaleEmployeeDTO.TotalDirectSalesAmount == null || SaleEmployeeDTO.TotalDirectSalesAmountPlanned.Value == 0
+                    //        ? null
+                    //        : (decimal?)Math.Round((SaleEmployeeDTO.TotalDirectSalesAmount.Value / SaleEmployeeDTO.TotalDirectSalesAmountPlanned.Value) * 100, 2);
+                    //}
+
+                    //#endregion
+
+                    //#region SKU/Đơn hàng trực tiếp
+                    ////kế hoạch
+                    //SaleEmployeeDTO.SkuDirectOrderPlanned = KpiGeneralPeriodReport_SaleEmployeeDetailDTOs
+                    //        .Where(x => x.SaleEmployeeId == SaleEmployeeDTO.SaleEmployeeId &&
+                    //        x.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.SKU_DIRECT_SALES_ORDER.Id)
+                    //        .Select(x => x.Value).FirstOrDefault();
+                    //if (SaleEmployeeDTO.SkuDirectOrderPlanned.HasValue)
+                    //{
+                    //    //thực hiện
+                    //    SaleEmployeeDTO.SKUDirectItems = new List<long>();
+                    //    foreach (var DirectSalesOrder in DirectSalesOrders)
+                    //    {
+                    //        var itemIds = DirectSalesOrder.DirectSalesOrderContents.Select(x => x.ItemId).Distinct().ToList();
+                    //        SaleEmployeeDTO.SKUDirectItems.AddRange(itemIds);
+                    //    }
+
+                    //    SaleEmployeeDTO.SkuDirectOrder = DirectSalesOrders.Count() == 0 || SaleEmployeeDTO.SKUDirectItems == null
+                    //        ? null
+                    //        : (decimal?)Math.Round((decimal)SaleEmployeeDTO.SKUDirectItems.Count() / DirectSalesOrders.Count(), 2);
+                    //    if (SaleEmployeeDTO.SkuDirectOrderPlanned != null && SaleEmployeeDTO.SkuDirectOrder == null)
+                    //        SaleEmployeeDTO.SkuDirectOrder = 0;
+                    //    //tỉ lệ
+                    //    SaleEmployeeDTO.SkuDirectOrderRatio = SaleEmployeeDTO.SkuDirectOrderPlanned == null || SaleEmployeeDTO.SkuDirectOrder == null || SaleEmployeeDTO.SkuDirectOrderPlanned.Value == 0
+                    //        ? null
+                    //        : (decimal?)Math.Round((SaleEmployeeDTO.SkuDirectOrder.Value / SaleEmployeeDTO.SkuDirectOrderPlanned.Value) * 100, 2);
+                    //}
+                    //#endregion
                     #endregion
 
-                    #region Tổng sản lượng theo đơn gián tiếp
-                    //kế hoạch
-                    SaleEmployeeDTO.TotalIndirectQuantityPlanned = KpiGeneralPeriodReport_SaleEmployeeDetailDTOs
-                            .Where(x => x.SaleEmployeeId == SaleEmployeeDTO.SaleEmployeeId &&
-                             x.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.TOTAL_INDIRECT_SALES_QUANTITY.Id)
-                            .Select(x => x.Value).FirstOrDefault();
-                    if (SaleEmployeeDTO.TotalIndirectQuantityPlanned.HasValue)
-                    {
-                        //thực hiện
-                        SaleEmployeeDTO.TotalIndirectQuantity = SaleEmployeeDTO.TotalIndirectQuantityPlanned == null ? null : (decimal?)IndirectSalesOrders
-                            .SelectMany(c => c.IndirectSalesOrderContents)
-                            .Select(q => q.RequestedQuantity)
-                            .DefaultIfEmpty(0).Sum();
-                        //tỉ lệ
-                        SaleEmployeeDTO.TotalIndirectQuantityRatio = SaleEmployeeDTO.TotalIndirectQuantityPlanned == null || SaleEmployeeDTO.TotalIndirectQuantity == null || SaleEmployeeDTO.TotalIndirectQuantityPlanned.Value == 0
-                            ? null
-                            : (decimal?)Math.Round(SaleEmployeeDTO.TotalIndirectQuantity.Value / SaleEmployeeDTO.TotalIndirectQuantityPlanned.Value * 100, 2);
-                    }
-                    #endregion
-
-                    #region Doanh thu theo đơn hàng gián tiếp
+                    #region Tổng doanh thu đơn hàng
                     //kế hoạch
                     SaleEmployeeDTO.TotalIndirectSalesAmountPlanned = KpiGeneralPeriodReport_SaleEmployeeDetailDTOs
                             .Where(x => x.SaleEmployeeId == SaleEmployeeDTO.SaleEmployeeId &&
@@ -414,118 +563,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
                     }
                     #endregion
 
-                    #region SKU/Đơn hàng gián tiếp
-                    //kế hoạch
-                    SaleEmployeeDTO.SkuIndirectOrderPlanned = KpiGeneralPeriodReport_SaleEmployeeDetailDTOs
-                            .Where(x => x.SaleEmployeeId == SaleEmployeeDTO.SaleEmployeeId &&
-                            x.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.SKU_INDIRECT_SALES_ORDER.Id)
-                            .Select(x => x.Value).FirstOrDefault();
-                    if (SaleEmployeeDTO.SkuIndirectOrderPlanned.HasValue)
-                    {
-                        //thực hiện
-                        SaleEmployeeDTO.SKUIndirectItems = new List<long>();
-                        foreach (var IndirectSalesOrder in IndirectSalesOrders)
-                        {
-                            var itemIds = IndirectSalesOrder.IndirectSalesOrderContents.Select(x => x.ItemId).Distinct().ToList();
-                            SaleEmployeeDTO.SKUIndirectItems.AddRange(itemIds);
-                        }
-
-                        SaleEmployeeDTO.SkuIndirectOrder = IndirectSalesOrders.Count() == 0 || SaleEmployeeDTO.SKUIndirectItems == null
-                            ? null
-                            : (decimal?)Math.Round((decimal)SaleEmployeeDTO.SKUIndirectItems.Count() / IndirectSalesOrders.Count(), 2);
-                        if (SaleEmployeeDTO.SkuIndirectOrderPlanned != null && SaleEmployeeDTO.SkuIndirectOrder == null)
-                            SaleEmployeeDTO.SkuIndirectOrder = 0;
-                        //tỉ lệ
-                        SaleEmployeeDTO.SkuIndirectOrderRatio = SaleEmployeeDTO.SkuIndirectOrderPlanned == null || SaleEmployeeDTO.SkuIndirectOrder == null || SaleEmployeeDTO.SkuIndirectOrderPlanned.Value == 0
-                            ? null
-                            : (decimal?)Math.Round((SaleEmployeeDTO.SkuIndirectOrder.Value / SaleEmployeeDTO.SkuIndirectOrderPlanned.Value) * 100, 2);
-                    }
-                    #endregion
-
-                    #region Số đơn hàng trực tiếp
-                    //kế hoạch
-                    SaleEmployeeDTO.TotalDirectOrdersPLanned = KpiGeneralPeriodReport_SaleEmployeeDetailDTOs
-                            .Where(x => x.SaleEmployeeId == SaleEmployeeDTO.SaleEmployeeId &&
-                             x.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.TOTAL_DIRECT_SALES_ORDER.Id)
-                            .Select(x => x.Value).FirstOrDefault();
-                    if (SaleEmployeeDTO.TotalDirectOrdersPLanned.HasValue)
-                    {
-                        //thực hiện
-                        SaleEmployeeDTO.TotalDirectOrders = SaleEmployeeDTO.TotalDirectOrdersPLanned == null ? null : (decimal?)DirectSalesOrders.Count();
-                        //tỉ lệ
-                        SaleEmployeeDTO.TotalDirectOrdersRatio = (SaleEmployeeDTO.TotalDirectOrdersPLanned == null || SaleEmployeeDTO.TotalDirectOrders == null || SaleEmployeeDTO.TotalDirectOrdersPLanned.Value == 0)
-                            ? null
-                            : (decimal?)Math.Round(SaleEmployeeDTO.TotalDirectOrders.Value / SaleEmployeeDTO.TotalDirectOrdersPLanned.Value * 100, 2);
-                    }
-                    #endregion
-
-                    #region Tổng sản lượng theo đơn trực tiếp
-                    //kế hoạch
-                    SaleEmployeeDTO.TotalDirectQuantityPlanned = KpiGeneralPeriodReport_SaleEmployeeDetailDTOs
-                            .Where(x => x.SaleEmployeeId == SaleEmployeeDTO.SaleEmployeeId &&
-                             x.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.TOTAL_DIRECT_SALES_QUANTITY.Id)
-                            .Select(x => x.Value).FirstOrDefault();
-                    if (SaleEmployeeDTO.TotalDirectQuantityPlanned.HasValue)
-                    {
-                        //thực hiện
-                        SaleEmployeeDTO.TotalDirectQuantity = SaleEmployeeDTO.TotalDirectQuantityPlanned == null ? null : (decimal?)DirectSalesOrders
-                            .SelectMany(c => c.DirectSalesOrderContents)
-                            .Select(q => q.RequestedQuantity)
-                            .DefaultIfEmpty(0).Sum();
-                        //tỉ lệ
-                        SaleEmployeeDTO.TotalDirectQuantityRatio = SaleEmployeeDTO.TotalDirectQuantityPlanned == null || SaleEmployeeDTO.TotalDirectQuantity == null || SaleEmployeeDTO.TotalDirectQuantityPlanned.Value == 0
-                            ? null
-                            : (decimal?)Math.Round(SaleEmployeeDTO.TotalDirectQuantity.Value / SaleEmployeeDTO.TotalDirectQuantityPlanned.Value * 100, 2);
-                    }
-                    #endregion
-
-                    #region Doanh thu theo đơn hàng trực tiếp
-                    //kế hoạch
-                    SaleEmployeeDTO.TotalDirectSalesAmountPlanned = KpiGeneralPeriodReport_SaleEmployeeDetailDTOs
-                            .Where(x => x.SaleEmployeeId == SaleEmployeeDTO.SaleEmployeeId &&
-                             x.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.TOTAL_DIRECT_SALES_AMOUNT.Id)
-                            .Select(x => x.Value).FirstOrDefault();
-                    if (SaleEmployeeDTO.TotalDirectSalesAmountPlanned.HasValue)
-                    {
-                        //thực hiện
-                        SaleEmployeeDTO.TotalDirectSalesAmount = SaleEmployeeDTO.TotalDirectSalesAmountPlanned == null ? null : (decimal?)DirectSalesOrders.Sum(iso => iso.Total);
-                        //tỉ lệ
-                        SaleEmployeeDTO.TotalDirectSalesAmountRatio = SaleEmployeeDTO.TotalDirectSalesAmountPlanned == null || SaleEmployeeDTO.TotalDirectSalesAmount == null || SaleEmployeeDTO.TotalDirectSalesAmountPlanned.Value == 0
-                            ? null
-                            : (decimal?)Math.Round((SaleEmployeeDTO.TotalDirectSalesAmount.Value / SaleEmployeeDTO.TotalDirectSalesAmountPlanned.Value) * 100, 2);
-                    }
-
-                    #endregion
-
-                    #region SKU/Đơn hàng trực tiếp
-                    //kế hoạch
-                    SaleEmployeeDTO.SkuDirectOrderPlanned = KpiGeneralPeriodReport_SaleEmployeeDetailDTOs
-                            .Where(x => x.SaleEmployeeId == SaleEmployeeDTO.SaleEmployeeId &&
-                            x.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.SKU_DIRECT_SALES_ORDER.Id)
-                            .Select(x => x.Value).FirstOrDefault();
-                    if (SaleEmployeeDTO.SkuDirectOrderPlanned.HasValue)
-                    {
-                        //thực hiện
-                        SaleEmployeeDTO.SKUDirectItems = new List<long>();
-                        foreach (var DirectSalesOrder in DirectSalesOrders)
-                        {
-                            var itemIds = DirectSalesOrder.DirectSalesOrderContents.Select(x => x.ItemId).Distinct().ToList();
-                            SaleEmployeeDTO.SKUDirectItems.AddRange(itemIds);
-                        }
-
-                        SaleEmployeeDTO.SkuDirectOrder = DirectSalesOrders.Count() == 0 || SaleEmployeeDTO.SKUDirectItems == null
-                            ? null
-                            : (decimal?)Math.Round((decimal)SaleEmployeeDTO.SKUDirectItems.Count() / DirectSalesOrders.Count(), 2);
-                        if (SaleEmployeeDTO.SkuDirectOrderPlanned != null && SaleEmployeeDTO.SkuDirectOrder == null)
-                            SaleEmployeeDTO.SkuDirectOrder = 0;
-                        //tỉ lệ
-                        SaleEmployeeDTO.SkuDirectOrderRatio = SaleEmployeeDTO.SkuDirectOrderPlanned == null || SaleEmployeeDTO.SkuDirectOrder == null || SaleEmployeeDTO.SkuDirectOrderPlanned.Value == 0
-                            ? null
-                            : (decimal?)Math.Round((SaleEmployeeDTO.SkuDirectOrder.Value / SaleEmployeeDTO.SkuDirectOrderPlanned.Value) * 100, 2);
-                    }
-                    #endregion
-
-                    #region Số cửa hàng viếng thăm
+                    #region Số đại lý ghé thăm
                     //kế hoạch
                     SaleEmployeeDTO.StoresVisitedPLanned = KpiGeneralPeriodReport_SaleEmployeeDetailDTOs
                            .Where(x => x.SaleEmployeeId == SaleEmployeeDTO.SaleEmployeeId &&
@@ -552,7 +590,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
                     }
                     #endregion
 
-                    #region Số cửa hàng tạo mới
+                    #region Tổng số đại lý mở mới
                     //kế hoạch
                     SaleEmployeeDTO.NewStoreCreatedPlanned = KpiGeneralPeriodReport_SaleEmployeeDetailDTOs
                             .Where(x => x.SaleEmployeeId == SaleEmployeeDTO.SaleEmployeeId
@@ -566,18 +604,16 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
                             : (decimal?)Stores
                             .Where(st => st.CreatorId == SaleEmployeeDTO.SaleEmployeeId &&
                                     (st.StoreStatusId == Enums.StoreStatusEnum.DRAFT.Id || st.StoreStatusId == Enums.StoreStatusEnum.OFFICIAL.Id)
-                                    && st.DeletedAt == null
-                            )
+                                    && st.DeletedAt == null)
                             .Count(); // lấy ra tất cả cửa hàng có người tạo là saleEmployee, trạng thái là dự thảo hoặc chính thức
                         //tỉ lệ
                         SaleEmployeeDTO.NewStoreCreatedRatio = SaleEmployeeDTO.NewStoreCreatedPlanned == null || SaleEmployeeDTO.NewStoreCreated == null || SaleEmployeeDTO.NewStoreCreatedPlanned.Value == 0
                             ? null
                             : (decimal?)Math.Round(SaleEmployeeDTO.NewStoreCreated.Value / SaleEmployeeDTO.NewStoreCreatedPlanned.Value * 100, 2);
                     }
-
                     #endregion
 
-                    #region Số lần viếng thăm cửa hàng
+                    #region Tổng số lượt ghé thăm
                     //kế hoạch
                     SaleEmployeeDTO.NumberOfStoreVisitsPlanned = KpiGeneralPeriodReport_SaleEmployeeDetailDTOs
                             .Where(x => x.SaleEmployeeId == SaleEmployeeDTO.SaleEmployeeId &&
@@ -595,6 +631,120 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
                         SaleEmployeeDTO.NumberOfStoreVisitsRatio = SaleEmployeeDTO.NumberOfStoreVisitsPlanned == null || SaleEmployeeDTO.NumberOfStoreVisits == null || SaleEmployeeDTO.NumberOfStoreVisitsPlanned.Value == 0
                             ? null
                             : (decimal?)Math.Round(SaleEmployeeDTO.NumberOfStoreVisits.Value / SaleEmployeeDTO.NumberOfStoreVisitsPlanned.Value * 100, 2);
+                    }
+                    #endregion
+
+                    #region Doanh thu C2 Trọng điểm
+                    //kế hoạch
+                    SaleEmployeeDTO.RevenueC2TDPlanned = KpiGeneralPeriodReport_SaleEmployeeDetailDTOs
+                            .Where(x => x.SaleEmployeeId == SaleEmployeeDTO.SaleEmployeeId &&
+                             x.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.REVENUE_C2_TD.Id)
+                            .Select(x => x.Value).FirstOrDefault();
+                    if (SaleEmployeeDTO.RevenueC2TDPlanned.HasValue)
+                    {
+                        //thực hiện
+                        SaleEmployeeDTO.RevenueC2TD = SaleEmployeeDTO.RevenueC2TDPlanned == null ?
+                        null : (decimal?)IndirectSalesOrders.Where(x => x.BuyerStore.StoreType.Code == StaticParams.C2TD).Sum(iso => iso.Total);
+                        //tỉ lệ
+                        SaleEmployeeDTO.RevenueC2TDRatio = SaleEmployeeDTO.RevenueC2TDPlanned == null || SaleEmployeeDTO.RevenueC2TD == null || SaleEmployeeDTO.RevenueC2TDPlanned.Value == 0
+                            ? null
+                            : (decimal?)Math.Round((SaleEmployeeDTO.RevenueC2TD.Value / SaleEmployeeDTO.RevenueC2TDPlanned.Value) * 100, 2);
+                    }
+                    #endregion
+
+                    #region Doanh thu C2 Siêu lớn
+                    //kế hoạch
+                    SaleEmployeeDTO.RevenueC2SLPlanned = KpiGeneralPeriodReport_SaleEmployeeDetailDTOs
+                            .Where(x => x.SaleEmployeeId == SaleEmployeeDTO.SaleEmployeeId &&
+                             x.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.REVENUE_C2_BIG.Id)
+                            .Select(x => x.Value).FirstOrDefault();
+                    if (SaleEmployeeDTO.RevenueC2SLPlanned.HasValue)
+                    {
+                        //thực hiện
+                        SaleEmployeeDTO.RevenueC2SL = SaleEmployeeDTO.RevenueC2SLPlanned == null ?
+                        null : (decimal?)IndirectSalesOrders.Where(x => x.BuyerStore.StoreType.Code == StaticParams.C2SL).Sum(iso => iso.Total);
+                        //tỉ lệ
+                        SaleEmployeeDTO.RevenueC2SLRatio = SaleEmployeeDTO.RevenueC2SLPlanned == null || SaleEmployeeDTO.RevenueC2SL == null || SaleEmployeeDTO.RevenueC2SLPlanned.Value == 0
+                            ? null
+                            : (decimal?)Math.Round((SaleEmployeeDTO.RevenueC2SL.Value / SaleEmployeeDTO.RevenueC2SLPlanned.Value) * 100, 2);
+                    }
+                    #endregion
+
+                    #region Doanh thu C2
+                    //kế hoạch
+                    SaleEmployeeDTO.RevenueC2Planned = KpiGeneralPeriodReport_SaleEmployeeDetailDTOs
+                            .Where(x => x.SaleEmployeeId == SaleEmployeeDTO.SaleEmployeeId &&
+                             x.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.REVENUE_C2.Id)
+                            .Select(x => x.Value).FirstOrDefault();
+                    if (SaleEmployeeDTO.RevenueC2Planned.HasValue)
+                    {
+                        //thực hiện
+                        SaleEmployeeDTO.RevenueC2 = SaleEmployeeDTO.RevenueC2Planned == null ?
+                        null : (decimal?)IndirectSalesOrders.Where(x => x.BuyerStore.StoreType.Code == StaticParams.C2).Sum(iso => iso.Total);
+                        //tỉ lệ
+                        SaleEmployeeDTO.RevenueC2Ratio = SaleEmployeeDTO.RevenueC2Planned == null || SaleEmployeeDTO.RevenueC2 == null || SaleEmployeeDTO.RevenueC2Planned.Value == 0
+                            ? null
+                            : (decimal?)Math.Round((SaleEmployeeDTO.RevenueC2.Value / SaleEmployeeDTO.RevenueC2Planned.Value) * 100, 2);
+                    }
+                    #endregion
+
+                    #region Số đại lý trọng điểm mở mới
+                    //kế hoạch
+                    SaleEmployeeDTO.NewStoreC2CreatedPlanned = KpiGeneralPeriodReport_SaleEmployeeDetailDTOs
+                            .Where(x => x.SaleEmployeeId == SaleEmployeeDTO.SaleEmployeeId
+                             && x.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.NEW_STORE_C2_CREATED.Id)
+                            .Select(x => x.Value).FirstOrDefault();
+                    if (SaleEmployeeDTO.NewStoreC2CreatedPlanned.HasValue)
+                    {
+                        //thực hiện
+                        SaleEmployeeDTO.NewStoreC2Created = SaleEmployeeDTO.NewStoreC2CreatedPlanned == null || SaleEmployeeDTO.NewStoreC2CreatedPlanned == 0
+                            ? null
+                            : (decimal?)Stores
+                            .Where(st => st.CreatorId == SaleEmployeeDTO.SaleEmployeeId &&
+                            st.StoreType.Code == StaticParams.C2TD &&
+                            (st.StoreStatusId == Enums.StoreStatusEnum.DRAFT.Id || st.StoreStatusId == Enums.StoreStatusEnum.OFFICIAL.Id)
+                            && st.DeletedAt == null)
+                            .Count(); // lấy ra tất cả cửa hàng có người tạo là saleEmployee, trạng thái là dự thảo hoặc chính thức
+                        //tỉ lệ
+                        SaleEmployeeDTO.NewStoreC2CreatedRatio = SaleEmployeeDTO.NewStoreC2CreatedPlanned == null || SaleEmployeeDTO.NewStoreC2Created == null || SaleEmployeeDTO.NewStoreC2CreatedPlanned.Value == 0
+                            ? null
+                            : (decimal?)Math.Round(SaleEmployeeDTO.NewStoreC2Created.Value / SaleEmployeeDTO.NewStoreC2CreatedPlanned.Value * 100, 2);
+                    }
+                    #endregion
+
+                    #region Số thông tin phản ánh
+                    //kế hoạch
+                    SaleEmployeeDTO.TotalProblemPlanned = KpiGeneralPeriodReport_SaleEmployeeDetailDTOs
+                            .Where(x => x.SaleEmployeeId == SaleEmployeeDTO.SaleEmployeeId &&
+                             x.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.TOTAL_PROBLEM.Id)
+                            .Select(x => x.Value).FirstOrDefault();
+                    if (SaleEmployeeDTO.TotalProblemPlanned.HasValue)
+                    {
+                        //thực hiện
+                        SaleEmployeeDTO.TotalProblem = SaleEmployeeDTO.TotalProblemPlanned == null ? 
+                        null : (decimal?)ProblemDAOs.Where(x => x.CreatorId == SaleEmployeeDTO.SaleEmployeeId).Count();
+                        //tỉ lệ
+                        SaleEmployeeDTO.TotalProblemRatio = SaleEmployeeDTO.TotalProblemPlanned == null || SaleEmployeeDTO.TotalProblem == null || SaleEmployeeDTO.TotalProblemPlanned.Value == 0
+                            ? null
+                            : (decimal?)Math.Round((SaleEmployeeDTO.TotalProblem.Value / SaleEmployeeDTO.TotalProblemPlanned.Value) * 100, 2);
+                    }
+                    #endregion
+
+                    #region Số hình ảnh chụp
+                    //kế hoạch
+                    SaleEmployeeDTO.TotalImagePlanned = KpiGeneralPeriodReport_SaleEmployeeDetailDTOs
+                            .Where(x => x.SaleEmployeeId == SaleEmployeeDTO.SaleEmployeeId &&
+                             x.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.TOTAL_IMAGE.Id)
+                            .Select(x => x.Value).FirstOrDefault();
+                    if (SaleEmployeeDTO.TotalImagePlanned.HasValue)
+                    {
+                        //thực hiện
+                        SaleEmployeeDTO.TotalImage = SaleEmployeeDTO.TotalImagePlanned == null ? 
+                        null : (decimal?)StoreImages.Where(x => x.SaleEmployeeId == SaleEmployeeDTO.SaleEmployeeId).Count();
+                        //tỉ lệ
+                        SaleEmployeeDTO.TotalImageRatio = SaleEmployeeDTO.TotalImagePlanned == null || SaleEmployeeDTO.TotalImage == null || SaleEmployeeDTO.TotalImagePlanned.Value == 0
+                            ? null
+                            : (decimal?)Math.Round((SaleEmployeeDTO.TotalImage.Value / SaleEmployeeDTO.TotalImagePlanned.Value) * 100, 2);
                     }
                     #endregion
                 }

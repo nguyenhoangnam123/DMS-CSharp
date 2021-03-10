@@ -219,6 +219,14 @@ namespace DMS.Rpc.dashboards.mobile
                     Total = x.Total,
                     SaleEmployeeId = x.SaleEmployeeId,
                     OrderDate = x.OrderDate,
+                    BuyerStoreId = x.BuyerStoreId,
+                    BuyerStore = x.BuyerStore == null ? null : new StoreDAO
+                    {
+                        StoreType = x.BuyerStore.StoreType == null ? null : new StoreTypeDAO
+                        {
+                            Code = x.BuyerStore.StoreType.Code
+                        }
+                    },
                     IndirectSalesOrderContents = x.IndirectSalesOrderContents.Select(c => new IndirectSalesOrderContentDAO
                     {
                         RequestedQuantity = c.RequestedQuantity,
@@ -238,34 +246,34 @@ namespace DMS.Rpc.dashboards.mobile
                 .SelectMany(x => x.IndirectSalesOrderPromotions)
                 .ToList();
 
-            var DirectSalesOrderDAOs = await DataContext.DirectSalesOrder
-               .Where(x => x.SaleEmployeeId == SaleEmployeeId &&
-               x.OrderDate >= StartDate && x.OrderDate <= EndDate &&
-               x.RequestStateId == RequestStateEnum.APPROVED.Id)
-               .Select(x => new DirectSalesOrderDAO
-               {
-                   Id = x.Id,
-                   Total = x.Total,
-                   SaleEmployeeId = x.SaleEmployeeId,
-                   OrderDate = x.OrderDate,
-                   DirectSalesOrderContents = x.DirectSalesOrderContents.Select(c => new DirectSalesOrderContentDAO
-                   {
-                       RequestedQuantity = c.RequestedQuantity,
-                       ItemId = c.ItemId
-                   }).ToList(),
-                   DirectSalesOrderPromotions = x.DirectSalesOrderPromotions.Select(x => new DirectSalesOrderPromotionDAO
-                   {
-                       RequestedQuantity = x.RequestedQuantity,
-                       ItemId = x.ItemId
-                   }).ToList()
-               })
-               .ToListAsync();
-            var DirectSalesOrderContents = DirectSalesOrderDAOs
-                        .SelectMany(x => x.DirectSalesOrderContents)
-                        .ToList();
-            var DirectSalesOrderPromotions = DirectSalesOrderDAOs
-                .SelectMany(x => x.DirectSalesOrderPromotions)
-                .ToList();
+            //var DirectSalesOrderDAOs = await DataContext.DirectSalesOrder
+            //   .Where(x => x.SaleEmployeeId == SaleEmployeeId &&
+            //   x.OrderDate >= StartDate && x.OrderDate <= EndDate &&
+            //   x.RequestStateId == RequestStateEnum.APPROVED.Id)
+            //   .Select(x => new DirectSalesOrderDAO
+            //   {
+            //       Id = x.Id,
+            //       Total = x.Total,
+            //       SaleEmployeeId = x.SaleEmployeeId,
+            //       OrderDate = x.OrderDate,
+            //       DirectSalesOrderContents = x.DirectSalesOrderContents.Select(c => new DirectSalesOrderContentDAO
+            //       {
+            //           RequestedQuantity = c.RequestedQuantity,
+            //           ItemId = c.ItemId
+            //       }).ToList(),
+            //       DirectSalesOrderPromotions = x.DirectSalesOrderPromotions.Select(x => new DirectSalesOrderPromotionDAO
+            //       {
+            //           RequestedQuantity = x.RequestedQuantity,
+            //           ItemId = x.ItemId
+            //       }).ToList()
+            //   })
+            //   .ToListAsync();
+            //var DirectSalesOrderContents = DirectSalesOrderDAOs
+            //            .SelectMany(x => x.DirectSalesOrderContents)
+            //            .ToList();
+            //var DirectSalesOrderPromotions = DirectSalesOrderDAOs
+            //    .SelectMany(x => x.DirectSalesOrderPromotions)
+            //    .ToList();
 
             var StoreCheckingDAOs = await DataContext.StoreChecking
                 .Where(x => x.SaleEmployeeId == SaleEmployeeId &&
@@ -290,33 +298,120 @@ namespace DMS.Rpc.dashboards.mobile
                     CreatedAt = x.CreatedAt,
                     Stores = x.Stores.Select(c => new StoreDAO
                     {
-                        StoreScoutingId = c.StoreScoutingId
+                        StoreScoutingId = c.StoreScoutingId,
+                        StoreType = c.StoreType == null ? null : new StoreTypeDAO
+                        {
+                            Code = c.StoreType.Code
+                        }
                     }).ToList()
                 })
                 .ToListAsync();
 
+            var ProblemDAOs = await DataContext.Problem
+                 .Where(x => x.CreatorId == SaleEmployeeId &&
+                x.NoteAt >= StartDate && x.NoteAt <= EndDate)
+                 .Select(x => new ProblemDAO
+                 {
+                     Id = x.Id
+                 }).ToListAsync();
+            var StoreImages = await DataContext.StoreImage
+                .Where(x => x.SaleEmployeeId == SaleEmployeeId &&
+                x.ShootingAt >= StartDate && x.ShootingAt <= EndDate)
+                .ToListAsync();
             foreach (var DashboardMobile_KpiGeneralCriterialDTO in DashboardMobile_KpiGeneralCriterialDTOs)
             {
-                #region Số đơn hàng gián tiếp
-                if (DashboardMobile_KpiGeneralCriterialDTO.KpiCriterialId == KpiCriteriaGeneralEnum.TOTAL_INDIRECT_SALES_ORDER.Id || DashboardMobile_KpiGeneralCriterialDTO.Plan.HasValue)
-                {
-                    DashboardMobile_KpiGeneralCriterialDTO.Value = IndirectSalesOrderDAOs.Count();
-                    DashboardMobile_KpiGeneralCriterialDTO.KpiCriterialName = KpiCriteriaGeneralEnum.TOTAL_INDIRECT_SALES_ORDER.Name;
-                }
+                #region các chỉ tiêu tạm ẩn
+                //#region Số đơn hàng gián tiếp
+                //if (DashboardMobile_KpiGeneralCriterialDTO.KpiCriterialId == KpiCriteriaGeneralEnum.TOTAL_INDIRECT_SALES_ORDER.Id || DashboardMobile_KpiGeneralCriterialDTO.Plan.HasValue)
+                //{
+                //    DashboardMobile_KpiGeneralCriterialDTO.Value = IndirectSalesOrderDAOs.Count();
+                //    DashboardMobile_KpiGeneralCriterialDTO.KpiCriterialName = KpiCriteriaGeneralEnum.TOTAL_INDIRECT_SALES_ORDER.Name;
+                //}
+                //#endregion
+
+                //#region Tổng sản lượng theo đơn gián tiếp
+                //if (DashboardMobile_KpiGeneralCriterialDTO.KpiCriterialId == KpiCriteriaGeneralEnum.TOTAL_INDIRECT_SALES_QUANTITY.Id || DashboardMobile_KpiGeneralCriterialDTO.Plan.HasValue)
+                //{
+                //    DashboardMobile_KpiGeneralCriterialDTO.Value = IndirectSalesOrderDAOs
+                //        .SelectMany(c => c.IndirectSalesOrderContents)
+                //        .Select(q => q.RequestedQuantity)
+                //        .DefaultIfEmpty(0).Sum();
+                //    DashboardMobile_KpiGeneralCriterialDTO.KpiCriterialName = KpiCriteriaGeneralEnum.TOTAL_INDIRECT_SALES_QUANTITY.Name;
+                //}
+                //#endregion
+
+                //#region SKU/Đơn hàng gián tiếp
+                //if (DashboardMobile_KpiGeneralCriterialDTO.KpiCriterialId == KpiCriteriaGeneralEnum.SKU_INDIRECT_SALES_ORDER.Id || DashboardMobile_KpiGeneralCriterialDTO.Plan.HasValue)
+                //{
+                //    var TotalIndirectOrders = IndirectSalesOrderDAOs.Count();
+                //    HashSet<long> SKUIndirectItems = new HashSet<long>();
+                //    foreach (var content in IndirectSalesOrderContents)
+                //    {
+                //        SKUIndirectItems.Add(content.ItemId);
+                //    }
+                //    foreach (var content in IndirectSalesOrderPromotions)
+                //    {
+                //        SKUIndirectItems.Add(content.ItemId);
+                //    }
+                //    DashboardMobile_KpiGeneralCriterialDTO.Value = TotalIndirectOrders == 0 ? 
+                //        0 : SKUIndirectItems.Count();
+
+                //    DashboardMobile_KpiGeneralCriterialDTO.Value = IndirectSalesOrderDAOs
+                //        .Sum(iso => iso.Total);
+                //    DashboardMobile_KpiGeneralCriterialDTO.KpiCriterialName = KpiCriteriaGeneralEnum.SKU_INDIRECT_SALES_ORDER.Name;
+                //}
+                //#endregion
+
+                //#region Số đơn hàng trực tiếp
+                //if (DashboardMobile_KpiGeneralCriterialDTO.KpiCriterialId == KpiCriteriaGeneralEnum.TOTAL_DIRECT_SALES_ORDER.Id || DashboardMobile_KpiGeneralCriterialDTO.Plan.HasValue)
+                //{
+                //    DashboardMobile_KpiGeneralCriterialDTO.Value = DirectSalesOrderDAOs.Count();
+                //    DashboardMobile_KpiGeneralCriterialDTO.KpiCriterialName = KpiCriteriaGeneralEnum.TOTAL_DIRECT_SALES_ORDER.Name;
+                //}
+                //#endregion
+
+                //#region Tổng sản lượng theo đơn trực tiếp
+                //if (DashboardMobile_KpiGeneralCriterialDTO.KpiCriterialId == KpiCriteriaGeneralEnum.TOTAL_DIRECT_SALES_QUANTITY.Id || DashboardMobile_KpiGeneralCriterialDTO.Plan.HasValue)
+                //{
+                //    DashboardMobile_KpiGeneralCriterialDTO.Value = DirectSalesOrderDAOs
+                //        .SelectMany(c => c.DirectSalesOrderContents)
+                //        .Select(q => q.RequestedQuantity)
+                //        .DefaultIfEmpty(0).Sum();
+                //    DashboardMobile_KpiGeneralCriterialDTO.KpiCriterialName = KpiCriteriaGeneralEnum.TOTAL_DIRECT_SALES_QUANTITY.Name;
+                //}
+                //#endregion
+
+                //#region Doanh thu theo đơn hàng trực tiếp
+                //if (DashboardMobile_KpiGeneralCriterialDTO.KpiCriterialId == KpiCriteriaGeneralEnum.TOTAL_DIRECT_SALES_AMOUNT.Id || DashboardMobile_KpiGeneralCriterialDTO.Plan.HasValue)
+                //{
+                //    DashboardMobile_KpiGeneralCriterialDTO.Value = DirectSalesOrderDAOs
+                //        .Sum(iso => iso.Total);
+                //    DashboardMobile_KpiGeneralCriterialDTO.KpiCriterialName = KpiCriteriaGeneralEnum.TOTAL_DIRECT_SALES_AMOUNT.Name;
+                //}
+                //#endregion
+
+                //#region SKU/Đơn hàng trực tiếp
+                //if (DashboardMobile_KpiGeneralCriterialDTO.KpiCriterialId == KpiCriteriaGeneralEnum.SKU_DIRECT_SALES_ORDER.Id || DashboardMobile_KpiGeneralCriterialDTO.Plan.HasValue)
+                //{
+                //    var TotalDirectOrders = DirectSalesOrderDAOs.Count();
+                //    HashSet<long> SKUDirectItems = new HashSet<long>();
+                //    foreach (var content in DirectSalesOrderContents)
+                //    {
+                //        SKUDirectItems.Add(content.ItemId);
+                //    }
+                //    foreach (var content in DirectSalesOrderPromotions)
+                //    {
+                //        SKUDirectItems.Add(content.ItemId);
+                //    }
+                //    DashboardMobile_KpiGeneralCriterialDTO.Value = TotalDirectOrders == 0 ?
+                //        0 : SKUDirectItems.Count();
+
+                //    DashboardMobile_KpiGeneralCriterialDTO.KpiCriterialName = KpiCriteriaGeneralEnum.SKU_DIRECT_SALES_ORDER.Name;
+                //}
+                //#endregion
                 #endregion
 
-                #region Tổng sản lượng theo đơn gián tiếp
-                if (DashboardMobile_KpiGeneralCriterialDTO.KpiCriterialId == KpiCriteriaGeneralEnum.TOTAL_INDIRECT_SALES_QUANTITY.Id || DashboardMobile_KpiGeneralCriterialDTO.Plan.HasValue)
-                {
-                    DashboardMobile_KpiGeneralCriterialDTO.Value = IndirectSalesOrderDAOs
-                        .SelectMany(c => c.IndirectSalesOrderContents)
-                        .Select(q => q.RequestedQuantity)
-                        .DefaultIfEmpty(0).Sum();
-                    DashboardMobile_KpiGeneralCriterialDTO.KpiCriterialName = KpiCriteriaGeneralEnum.TOTAL_INDIRECT_SALES_QUANTITY.Name;
-                }
-                #endregion
-
-                #region Doanh thu theo đơn hàng gián tiếp
+                #region Tổng doanh thu đơn hàng
                 if (DashboardMobile_KpiGeneralCriterialDTO.KpiCriterialId == KpiCriteriaGeneralEnum.TOTAL_INDIRECT_SALES_AMOUNT.Id || DashboardMobile_KpiGeneralCriterialDTO.Plan.HasValue)
                 {
                     DashboardMobile_KpiGeneralCriterialDTO.Value = IndirectSalesOrderDAOs
@@ -325,77 +420,7 @@ namespace DMS.Rpc.dashboards.mobile
                 }
                 #endregion
 
-                #region SKU/Đơn hàng gián tiếp
-                if (DashboardMobile_KpiGeneralCriterialDTO.KpiCriterialId == KpiCriteriaGeneralEnum.SKU_INDIRECT_SALES_ORDER.Id || DashboardMobile_KpiGeneralCriterialDTO.Plan.HasValue)
-                {
-                    var TotalIndirectOrders = IndirectSalesOrderDAOs.Count();
-                    HashSet<long> SKUIndirectItems = new HashSet<long>();
-                    foreach (var content in IndirectSalesOrderContents)
-                    {
-                        SKUIndirectItems.Add(content.ItemId);
-                    }
-                    foreach (var content in IndirectSalesOrderPromotions)
-                    {
-                        SKUIndirectItems.Add(content.ItemId);
-                    }
-                    DashboardMobile_KpiGeneralCriterialDTO.Value = TotalIndirectOrders == 0 ? 
-                        0 : SKUIndirectItems.Count();
-
-                    DashboardMobile_KpiGeneralCriterialDTO.Value = IndirectSalesOrderDAOs
-                        .Sum(iso => iso.Total);
-                    DashboardMobile_KpiGeneralCriterialDTO.KpiCriterialName = KpiCriteriaGeneralEnum.SKU_INDIRECT_SALES_ORDER.Name;
-                }
-                #endregion
-
-                #region Số đơn hàng trực tiếp
-                if (DashboardMobile_KpiGeneralCriterialDTO.KpiCriterialId == KpiCriteriaGeneralEnum.TOTAL_DIRECT_SALES_ORDER.Id || DashboardMobile_KpiGeneralCriterialDTO.Plan.HasValue)
-                {
-                    DashboardMobile_KpiGeneralCriterialDTO.Value = DirectSalesOrderDAOs.Count();
-                    DashboardMobile_KpiGeneralCriterialDTO.KpiCriterialName = KpiCriteriaGeneralEnum.TOTAL_DIRECT_SALES_ORDER.Name;
-                }
-                #endregion
-
-                #region Tổng sản lượng theo đơn trực tiếp
-                if (DashboardMobile_KpiGeneralCriterialDTO.KpiCriterialId == KpiCriteriaGeneralEnum.TOTAL_DIRECT_SALES_QUANTITY.Id || DashboardMobile_KpiGeneralCriterialDTO.Plan.HasValue)
-                {
-                    DashboardMobile_KpiGeneralCriterialDTO.Value = DirectSalesOrderDAOs
-                        .SelectMany(c => c.DirectSalesOrderContents)
-                        .Select(q => q.RequestedQuantity)
-                        .DefaultIfEmpty(0).Sum();
-                    DashboardMobile_KpiGeneralCriterialDTO.KpiCriterialName = KpiCriteriaGeneralEnum.TOTAL_DIRECT_SALES_QUANTITY.Name;
-                }
-                #endregion
-
-                #region Doanh thu theo đơn hàng trực tiếp
-                if (DashboardMobile_KpiGeneralCriterialDTO.KpiCriterialId == KpiCriteriaGeneralEnum.TOTAL_DIRECT_SALES_AMOUNT.Id || DashboardMobile_KpiGeneralCriterialDTO.Plan.HasValue)
-                {
-                    DashboardMobile_KpiGeneralCriterialDTO.Value = DirectSalesOrderDAOs
-                        .Sum(iso => iso.Total);
-                    DashboardMobile_KpiGeneralCriterialDTO.KpiCriterialName = KpiCriteriaGeneralEnum.TOTAL_DIRECT_SALES_AMOUNT.Name;
-                }
-                #endregion
-
-                #region SKU/Đơn hàng trực tiếp
-                if (DashboardMobile_KpiGeneralCriterialDTO.KpiCriterialId == KpiCriteriaGeneralEnum.SKU_DIRECT_SALES_ORDER.Id || DashboardMobile_KpiGeneralCriterialDTO.Plan.HasValue)
-                {
-                    var TotalDirectOrders = DirectSalesOrderDAOs.Count();
-                    HashSet<long> SKUDirectItems = new HashSet<long>();
-                    foreach (var content in DirectSalesOrderContents)
-                    {
-                        SKUDirectItems.Add(content.ItemId);
-                    }
-                    foreach (var content in DirectSalesOrderPromotions)
-                    {
-                        SKUDirectItems.Add(content.ItemId);
-                    }
-                    DashboardMobile_KpiGeneralCriterialDTO.Value = TotalDirectOrders == 0 ?
-                        0 : SKUDirectItems.Count();
-
-                    DashboardMobile_KpiGeneralCriterialDTO.KpiCriterialName = KpiCriteriaGeneralEnum.SKU_DIRECT_SALES_ORDER.Name;
-                }
-                #endregion
-
-                #region Số cửa hàng viếng thăm
+                #region Số đại lý ghé thăm
                 if (DashboardMobile_KpiGeneralCriterialDTO.KpiCriterialId == KpiCriteriaGeneralEnum.STORE_VISITED.Id || DashboardMobile_KpiGeneralCriterialDTO.Plan.HasValue)
                 {
                     DashboardMobile_KpiGeneralCriterialDTO.Value = StoreCheckingDAOs.Select(x => x.StoreId).Distinct().Count() == 0 ? 
@@ -404,7 +429,7 @@ namespace DMS.Rpc.dashboards.mobile
                 }
                 #endregion
 
-                #region Số cửa hàng tạo mới
+                #region Tổng số đại lý mở mới
                 if (DashboardMobile_KpiGeneralCriterialDTO.KpiCriterialId == KpiCriteriaGeneralEnum.NEW_STORE_CREATED.Id || DashboardMobile_KpiGeneralCriterialDTO.Plan.HasValue)
                 {
                     DashboardMobile_KpiGeneralCriterialDTO.Value = StoreScoutingDAOs
@@ -420,13 +445,79 @@ namespace DMS.Rpc.dashboards.mobile
                 }
                 #endregion
 
-                #region Số lần viếng thăm cửa hàng
+                #region Tổng số lượt ghé thăm
                 if (DashboardMobile_KpiGeneralCriterialDTO.KpiCriterialId == KpiCriteriaGeneralEnum.NUMBER_OF_STORE_VISIT.Id || DashboardMobile_KpiGeneralCriterialDTO.Plan.HasValue)
                 {
                     DashboardMobile_KpiGeneralCriterialDTO.Value = StoreCheckingDAOs
                         .Count() == 0 ?
                         0 : StoreScoutingDAOs.Count();
                     DashboardMobile_KpiGeneralCriterialDTO.KpiCriterialName = KpiCriteriaGeneralEnum.NUMBER_OF_STORE_VISIT.Name;
+                }
+                #endregion
+
+                #region Doanh thu C2 Trọng điểm
+                if (DashboardMobile_KpiGeneralCriterialDTO.KpiCriterialId == KpiCriteriaGeneralEnum.TOTAL_INDIRECT_SALES_AMOUNT.Id || DashboardMobile_KpiGeneralCriterialDTO.Plan.HasValue)
+                {
+                    DashboardMobile_KpiGeneralCriterialDTO.Value = IndirectSalesOrderDAOs
+                        .Where(x => x.BuyerStore.StoreType.Code == StaticParams.C2TD)
+                        .Sum(iso => iso.Total);
+                    DashboardMobile_KpiGeneralCriterialDTO.KpiCriterialName = KpiCriteriaGeneralEnum.TOTAL_INDIRECT_SALES_AMOUNT.Name;
+                }
+                #endregion
+
+                #region Doanh thu C2 Siêu lớn
+                if (DashboardMobile_KpiGeneralCriterialDTO.KpiCriterialId == KpiCriteriaGeneralEnum.TOTAL_INDIRECT_SALES_AMOUNT.Id || DashboardMobile_KpiGeneralCriterialDTO.Plan.HasValue)
+                {
+                    DashboardMobile_KpiGeneralCriterialDTO.Value = IndirectSalesOrderDAOs
+                        .Where(x => x.BuyerStore.StoreType.Code == StaticParams.C2SL)
+                        .Sum(iso => iso.Total);
+                    DashboardMobile_KpiGeneralCriterialDTO.KpiCriterialName = KpiCriteriaGeneralEnum.TOTAL_INDIRECT_SALES_AMOUNT.Name;
+                }
+                #endregion
+
+                #region Doanh thu C2
+                if (DashboardMobile_KpiGeneralCriterialDTO.KpiCriterialId == KpiCriteriaGeneralEnum.TOTAL_INDIRECT_SALES_AMOUNT.Id || DashboardMobile_KpiGeneralCriterialDTO.Plan.HasValue)
+                {
+                    DashboardMobile_KpiGeneralCriterialDTO.Value = IndirectSalesOrderDAOs
+                        .Where(x => x.BuyerStore.StoreType.Code == StaticParams.C2)
+                        .Sum(iso => iso.Total);
+                    DashboardMobile_KpiGeneralCriterialDTO.KpiCriterialName = KpiCriteriaGeneralEnum.TOTAL_INDIRECT_SALES_AMOUNT.Name;
+                }
+                #endregion
+
+                #region Số đại lý trọng điểm mở mới
+                if (DashboardMobile_KpiGeneralCriterialDTO.KpiCriterialId == KpiCriteriaGeneralEnum.NEW_STORE_C2_CREATED.Id || DashboardMobile_KpiGeneralCriterialDTO.Plan.HasValue)
+                {
+                    DashboardMobile_KpiGeneralCriterialDTO.Value = StoreScoutingDAOs
+                        .SelectMany(sc => sc.Stores)
+                        .Where(x => x.StoreScoutingId.HasValue)
+                        .Where(x => x.StoreType.Code == StaticParams.C2TD)
+                        .Select(z => z.StoreScoutingId.Value)
+                        .Count() == 0 ?
+                        0 : StoreScoutingDAOs.SelectMany(sc => sc.Stores)
+                        .Where(x => x.StoreScoutingId.HasValue)
+                        .Where(x => x.StoreType.Code == StaticParams.C2TD)
+                        .Select(z => z.StoreScoutingId.Value)
+                        .Count();
+                    DashboardMobile_KpiGeneralCriterialDTO.KpiCriterialName = KpiCriteriaGeneralEnum.NEW_STORE_C2_CREATED.Name;
+                }
+                #endregion
+
+                #region Số thông tin phản ánh
+                if (DashboardMobile_KpiGeneralCriterialDTO.KpiCriterialId == KpiCriteriaGeneralEnum.TOTAL_PROBLEM.Id || DashboardMobile_KpiGeneralCriterialDTO.Plan.HasValue)
+                {
+                    DashboardMobile_KpiGeneralCriterialDTO.Value = ProblemDAOs
+                        .Count();
+                    DashboardMobile_KpiGeneralCriterialDTO.KpiCriterialName = KpiCriteriaGeneralEnum.TOTAL_PROBLEM.Name;
+                }
+                #endregion
+
+                #region Số hình ảnh chụp
+                if (DashboardMobile_KpiGeneralCriterialDTO.KpiCriterialId == KpiCriteriaGeneralEnum.TOTAL_IMAGE.Id || DashboardMobile_KpiGeneralCriterialDTO.Plan.HasValue)
+                {
+                    DashboardMobile_KpiGeneralCriterialDTO.Value = StoreImages
+                        .Count();
+                    DashboardMobile_KpiGeneralCriterialDTO.KpiCriterialName = KpiCriteriaGeneralEnum.TOTAL_IMAGE.Name;
                 }
                 #endregion
             }
