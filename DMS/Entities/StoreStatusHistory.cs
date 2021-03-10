@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace DMS.Entities
 {
-    public class StoreHistory : DataEntity
+    public class StoreStatusHistory : DataEntity
     {
         public long Id { get; set; }
         public long StoreId { get; set; }
@@ -21,7 +21,7 @@ namespace DMS.Entities
         public StoreStatus PreviousStoreStatus { get; set; }
         public StoreStatus StoreStatus { get; set; }
 
-        public bool Equals(StoreHistory other)
+        public bool Equals(StoreStatusHistory other)
         {
             return other != null && Id == other.Id;
         }
@@ -31,7 +31,7 @@ namespace DMS.Entities
         }
     }
 
-    public class StoreHistoryFilter : FilterEntity
+    public class StoreStatusHistoryFilter : FilterEntity
     {
         public IdFilter Id { get; set; }
         public IdFilter StoreId { get; set; }
@@ -39,12 +39,12 @@ namespace DMS.Entities
         public IdFilter AppUserId { get; set; }
         public IdFilter StoreStatusId { get; set; }
         public IdFilter PreviousStoreStatusId { get; set; }
-        public StoreHistoryOrder OrderBy { get; set; }
-        public StoreHistorySelect Selects { get; set; }
+        public StoreStatusHistoryOrder OrderBy { get; set; }
+        public StoreStatusHistorySelect Selects { get; set; }
     }
 
     [JsonConverter(typeof(StringEnumConverter))]
-    public enum StoreHistoryOrder
+    public enum StoreStatusHistoryOrder
     {
         Id = 0,
         Store = 1,
@@ -56,7 +56,7 @@ namespace DMS.Entities
     }
 
     [Flags]
-    public enum StoreHistorySelect : long
+    public enum StoreStatusHistorySelect : long
     {
         ALL = E.ALL,
         Id = E._0,

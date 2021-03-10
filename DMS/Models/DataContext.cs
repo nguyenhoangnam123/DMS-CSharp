@@ -1,7 +1,6 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Thinktecture;
 
 namespace DMS.Models
 {
@@ -143,7 +142,6 @@ namespace DMS.Models
         public virtual DbSet<StoreCheckingDAO> StoreChecking { get; set; }
         public virtual DbSet<StoreCheckingImageMappingDAO> StoreCheckingImageMapping { get; set; }
         public virtual DbSet<StoreGroupingDAO> StoreGrouping { get; set; }
-        public virtual DbSet<StoreHistoryDAO> StoreHistory { get; set; }
         public virtual DbSet<StoreImageDAO> StoreImage { get; set; }
         public virtual DbSet<StoreImageMappingDAO> StoreImageMapping { get; set; }
         public virtual DbSet<StoreScoutingDAO> StoreScouting { get; set; }
@@ -151,6 +149,8 @@ namespace DMS.Models
         public virtual DbSet<StoreScoutingStatusDAO> StoreScoutingStatus { get; set; }
         public virtual DbSet<StoreScoutingTypeDAO> StoreScoutingType { get; set; }
         public virtual DbSet<StoreStatusDAO> StoreStatus { get; set; }
+        public virtual DbSet<StoreStatusHistoryDAO> StoreStatusHistory { get; set; }
+        public virtual DbSet<StoreStatusHistoryTypeDAO> StoreStatusHistoryType { get; set; }
         public virtual DbSet<StoreTypeDAO> StoreType { get; set; }
         public virtual DbSet<StoreUncheckingDAO> StoreUnchecking { get; set; }
         public virtual DbSet<StoreUserDAO> StoreUser { get; set; }
@@ -201,7 +201,6 @@ namespace DMS.Models
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.ConfigureTempTable<long>();
             modelBuilder.Entity<ActionDAO>(entity =>
             {
                 entity.ToTable("Action", "PER");
@@ -4048,38 +4047,6 @@ namespace DMS.Models
                     .HasConstraintName("FK_StoreGrouping_Status");
             });
 
-            modelBuilder.Entity<StoreHistoryDAO>(entity =>
-            {
-                entity.ToTable("StoreHistory", "MDM");
-
-                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
-
-                entity.Property(e => e.PreviousCreatedAt).HasColumnType("datetime");
-
-                entity.HasOne(d => d.AppUser)
-                    .WithMany(p => p.StoreHistories)
-                    .HasForeignKey(d => d.AppUserId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_StoreHistory_AppUser");
-
-                entity.HasOne(d => d.PreviousStoreStatus)
-                    .WithMany(p => p.StoreHistoryPreviousStoreStatuses)
-                    .HasForeignKey(d => d.PreviousStoreStatusId)
-                    .HasConstraintName("FK_StoreHistory_StoreStatus1");
-
-                entity.HasOne(d => d.Store)
-                    .WithMany(p => p.StoreHistories)
-                    .HasForeignKey(d => d.StoreId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_StoreHistory_Store");
-
-                entity.HasOne(d => d.StoreStatus)
-                    .WithMany(p => p.StoreHistoryStoreStatuses)
-                    .HasForeignKey(d => d.StoreStatusId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_StoreHistory_StoreStatus");
-            });
-
             modelBuilder.Entity<StoreImageDAO>(entity =>
             {
                 entity.HasNoKey();
@@ -4246,6 +4213,53 @@ namespace DMS.Models
             modelBuilder.Entity<StoreStatusDAO>(entity =>
             {
                 entity.ToTable("StoreStatus", "ENUM");
+
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(50);
+            });
+
+            modelBuilder.Entity<StoreStatusHistoryDAO>(entity =>
+            {
+                entity.ToTable("StoreStatusHistory", "MDM");
+
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.PreviousCreatedAt).HasColumnType("datetime");
+
+                entity.HasOne(d => d.AppUser)
+                    .WithMany(p => p.StoreStatusHistories)
+                    .HasForeignKey(d => d.AppUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_StoreHistory_AppUser");
+
+                entity.HasOne(d => d.PreviousStoreStatus)
+                    .WithMany(p => p.StoreStatusHistoryPreviousStoreStatuses)
+                    .HasForeignKey(d => d.PreviousStoreStatusId)
+                    .HasConstraintName("FK_StoreStatusHistory_StoreStatusHistoryType");
+
+                entity.HasOne(d => d.Store)
+                    .WithMany(p => p.StoreStatusHistories)
+                    .HasForeignKey(d => d.StoreId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_StoreHistory_Store");
+
+                entity.HasOne(d => d.StoreStatus)
+                    .WithMany(p => p.StoreStatusHistoryStoreStatuses)
+                    .HasForeignKey(d => d.StoreStatusId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_StoreStatusHistory_StoreStatusHistoryType1");
+            });
+
+            modelBuilder.Entity<StoreStatusHistoryTypeDAO>(entity =>
+            {
+                entity.ToTable("StoreStatusHistoryType", "ENUM");
 
                 entity.Property(e => e.Id).ValueGeneratedNever();
 

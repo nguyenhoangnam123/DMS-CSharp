@@ -105,7 +105,7 @@ namespace DMS.Repositories
         IStoreRepository StoreRepository { get; }
         IStoreCheckingRepository StoreCheckingRepository { get; }
         IStoreGroupingRepository StoreGroupingRepository { get; }
-        IStoreHistoryRepository StoreHistoryRepository { get; }
+        IStoreStatusHistoryRepository StoreStatusHistoryRepository { get; }
         IStoreTypeRepository StoreTypeRepository { get; }
         IStoreStatusRepository StoreStatusRepository { get; }
         ISupplierRepository SupplierRepository { get; }
@@ -233,7 +233,7 @@ namespace DMS.Repositories
         public IStoreRepository StoreRepository { get; private set; }
         public IStoreCheckingRepository StoreCheckingRepository { get; private set; }
         public IStoreGroupingRepository StoreGroupingRepository { get; private set; }
-        public IStoreHistoryRepository StoreHistoryRepository { get; private set; }
+        public IStoreStatusHistoryRepository StoreStatusHistoryRepository { get; private set; }
         public IStoreTypeRepository StoreTypeRepository { get; private set; }
         public IStoreStatusRepository StoreStatusRepository { get; private set; }
         public ISupplierRepository SupplierRepository { get; private set; }
@@ -360,7 +360,7 @@ namespace DMS.Repositories
             StoreRepository = new StoreRepository(DataContext);
             StoreCheckingRepository = new StoreCheckingRepository(DataContext);
             StoreGroupingRepository = new StoreGroupingRepository(DataContext);
-            StoreHistoryRepository = new StoreHistoryRepository(DataContext);
+            StoreStatusHistoryRepository = new StoreStatusHistoryRepository(DataContext);
             StoreTypeRepository = new StoreTypeRepository(DataContext);
             StoreStatusRepository = new StoreStatusRepository(DataContext);
             SupplierRepository = new SupplierRepository(DataContext);

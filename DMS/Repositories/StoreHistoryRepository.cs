@@ -10,21 +10,21 @@ using System.Threading.Tasks;
 
 namespace DMS.Repositories
 {
-    public interface IStoreHistoryRepository
+    public interface IStoreStatusHistoryRepository
     {
-        Task<int> Count(StoreHistoryFilter StoreHistoryFilter);
-        Task<List<StoreHistory>> List(StoreHistoryFilter StoreHistoryFilter);
-        Task<bool> Create(StoreHistory StoreHistory);
+        Task<int> Count(StoreStatusHistoryFilter StoreStatusHistoryFilter);
+        Task<List<StoreStatusHistory>> List(StoreStatusHistoryFilter StoreStatusHistoryFilter);
+        Task<bool> Create(StoreStatusHistory StoreStatusHistory);
     }
-    public class StoreHistoryRepository : IStoreHistoryRepository
+    public class StoreStatusHistoryRepository : IStoreStatusHistoryRepository
     {
         private DataContext DataContext;
-        public StoreHistoryRepository(DataContext DataContext)
+        public StoreStatusHistoryRepository(DataContext DataContext)
         {
             this.DataContext = DataContext;
         }
 
-        private IQueryable<StoreHistoryDAO> DynamicFilter(IQueryable<StoreHistoryDAO> query, StoreHistoryFilter filter)
+        private IQueryable<StoreStatusHistoryDAO> DynamicFilter(IQueryable<StoreStatusHistoryDAO> query, StoreStatusHistoryFilter filter)
         {
             if (filter == null)
                 return query.Where(q => false);
@@ -44,26 +44,26 @@ namespace DMS.Repositories
         }
 
 
-        private IQueryable<StoreHistoryDAO> DynamicOrder(IQueryable<StoreHistoryDAO> query, StoreHistoryFilter filter)
+        private IQueryable<StoreStatusHistoryDAO> DynamicOrder(IQueryable<StoreStatusHistoryDAO> query, StoreStatusHistoryFilter filter)
         {
             switch (filter.OrderType)
             {
                 case OrderType.ASC:
                     switch (filter.OrderBy)
                     {
-                        case StoreHistoryOrder.Id:
+                        case StoreStatusHistoryOrder.Id:
                             query = query.OrderBy(q => q.Id);
                             break;
-                        case StoreHistoryOrder.Store:
+                        case StoreStatusHistoryOrder.Store:
                             query = query.OrderBy(q => q.StoreId);
                             break;
-                        case StoreHistoryOrder.AppUser:
+                        case StoreStatusHistoryOrder.AppUser:
                             query = query.OrderBy(q => q.AppUserId);
                             break;
-                        case StoreHistoryOrder.StoreStatus:
+                        case StoreStatusHistoryOrder.StoreStatus:
                             query = query.OrderBy(q => q.StoreStatusId);
                             break;
-                        case StoreHistoryOrder.PreviousStoreStatus:
+                        case StoreStatusHistoryOrder.PreviousStoreStatus:
                             query = query.OrderBy(q => q.PreviousStoreStatusId);
                             break;
                     }
@@ -71,19 +71,19 @@ namespace DMS.Repositories
                 case OrderType.DESC:
                     switch (filter.OrderBy)
                     {
-                        case StoreHistoryOrder.Id:
+                        case StoreStatusHistoryOrder.Id:
                             query = query.OrderByDescending(q => q.Id);
                             break;
-                        case StoreHistoryOrder.Store:
+                        case StoreStatusHistoryOrder.Store:
                             query = query.OrderByDescending(q => q.StoreId);
                             break;
-                        case StoreHistoryOrder.AppUser:
+                        case StoreStatusHistoryOrder.AppUser:
                             query = query.OrderByDescending(q => q.AppUserId);
                             break;
-                        case StoreHistoryOrder.StoreStatus:
+                        case StoreStatusHistoryOrder.StoreStatus:
                             query = query.OrderByDescending(q => q.StoreStatusId);
                             break;
-                        case StoreHistoryOrder.PreviousStoreStatus:
+                        case StoreStatusHistoryOrder.PreviousStoreStatus:
                             query = query.OrderByDescending(q => q.PreviousStoreStatusId);
                             break;
                     }
@@ -93,27 +93,27 @@ namespace DMS.Repositories
             return query;
         }
 
-        private async Task<List<StoreHistory>> DynamicSelect(IQueryable<StoreHistoryDAO> query, StoreHistoryFilter filter)
+        private async Task<List<StoreStatusHistory>> DynamicSelect(IQueryable<StoreStatusHistoryDAO> query, StoreStatusHistoryFilter filter)
         {
-            List<StoreHistory> StoreHistories = await query.Select(q => new StoreHistory()
+            List<StoreStatusHistory> StoreHistories = await query.Select(q => new StoreStatusHistory()
             {
-                Id = filter.Selects.Contains(StoreHistorySelect.Id) ? q.Id : default(long),
-                StoreId = filter.Selects.Contains(StoreHistorySelect.Store) ? q.StoreId : default(long),
-                AppUserId = filter.Selects.Contains(StoreHistorySelect.AppUser) ? q.AppUserId : default(long),
-                StoreStatusId = filter.Selects.Contains(StoreHistorySelect.StoreStatus) ? q.StoreStatusId : default(long),
-                AppUser = filter.Selects.Contains(StoreHistorySelect.AppUser) && q.AppUser != null ? new AppUser
+                Id = filter.Selects.Contains(StoreStatusHistorySelect.Id) ? q.Id : default(long),
+                StoreId = filter.Selects.Contains(StoreStatusHistorySelect.Store) ? q.StoreId : default(long),
+                AppUserId = filter.Selects.Contains(StoreStatusHistorySelect.AppUser) ? q.AppUserId : default(long),
+                StoreStatusId = filter.Selects.Contains(StoreStatusHistorySelect.StoreStatus) ? q.StoreStatusId : default(long),
+                AppUser = filter.Selects.Contains(StoreStatusHistorySelect.AppUser) && q.AppUser != null ? new AppUser
                 {
                     Id = q.AppUser.Id,
                     Username = q.AppUser.Username,
                     DisplayName = q.AppUser.DisplayName,
                 } : null,
-                PreviousStoreStatus = filter.Selects.Contains(StoreHistorySelect.PreviousStoreStatus) && q.StoreStatus != null ? new StoreStatus
+                PreviousStoreStatus = filter.Selects.Contains(StoreStatusHistorySelect.PreviousStoreStatus) && q.StoreStatus != null ? new StoreStatus
                 {
                     Id = q.StoreStatus.Id,
                     Code = q.StoreStatus.Code,
                     Name = q.StoreStatus.Name,
                 } : null,
-                StoreStatus = filter.Selects.Contains(StoreHistorySelect.StoreStatus) && q.StoreStatus != null ? new StoreStatus
+                StoreStatus = filter.Selects.Contains(StoreStatusHistorySelect.StoreStatus) && q.StoreStatus != null ? new StoreStatus
                 {
                     Id = q.StoreStatus.Id,
                     Code = q.StoreStatus.Code,
@@ -123,36 +123,36 @@ namespace DMS.Repositories
             return StoreHistories;
         }
 
-        public async Task<int> Count(StoreHistoryFilter filter)
+        public async Task<int> Count(StoreStatusHistoryFilter filter)
         {
-            IQueryable<StoreHistoryDAO> StoreHistories = DataContext.StoreHistory.AsNoTracking();
+            IQueryable<StoreStatusHistoryDAO> StoreHistories = DataContext.StoreStatusHistory.AsNoTracking();
             StoreHistories = DynamicFilter(StoreHistories, filter);
             return await StoreHistories.CountAsync();
         }
 
-        public async Task<List<StoreHistory>> List(StoreHistoryFilter filter)
+        public async Task<List<StoreStatusHistory>> List(StoreStatusHistoryFilter filter)
         {
-            if (filter == null) return new List<StoreHistory>();
-            IQueryable<StoreHistoryDAO> StoreHistoryDAOs = DataContext.StoreHistory.AsNoTracking();
-            StoreHistoryDAOs = DynamicFilter(StoreHistoryDAOs, filter);
-            StoreHistoryDAOs = DynamicOrder(StoreHistoryDAOs, filter);
-            List<StoreHistory> StoreHistories = await DynamicSelect(StoreHistoryDAOs, filter);
+            if (filter == null) return new List<StoreStatusHistory>();
+            IQueryable<StoreStatusHistoryDAO> StoreStatusHistoryDAOs = DataContext.StoreStatusHistory.AsNoTracking();
+            StoreStatusHistoryDAOs = DynamicFilter(StoreStatusHistoryDAOs, filter);
+            StoreStatusHistoryDAOs = DynamicOrder(StoreStatusHistoryDAOs, filter);
+            List<StoreStatusHistory> StoreHistories = await DynamicSelect(StoreStatusHistoryDAOs, filter);
             return StoreHistories;
         }
 
 
-        public async Task<bool> Create(StoreHistory StoreHistory)
+        public async Task<bool> Create(StoreStatusHistory StoreStatusHistory)
         {
-            StoreHistoryDAO StoreHistoryDAO = new StoreHistoryDAO();
-            StoreHistoryDAO.Id = StoreHistory.Id;
-            StoreHistoryDAO.StoreId = StoreHistory.StoreId;
-            StoreHistoryDAO.AppUserId = StoreHistory.AppUserId;
-            StoreHistoryDAO.PreviousStoreStatusId = StoreHistory.PreviousStoreStatusId;
-            StoreHistoryDAO.StoreStatusId = StoreHistory.StoreStatusId;
-            StoreHistoryDAO.CreatedAt = StaticParams.DateTimeNow;
-            DataContext.StoreHistory.Add(StoreHistoryDAO);
+            StoreStatusHistoryDAO StoreStatusHistoryDAO = new StoreStatusHistoryDAO();
+            StoreStatusHistoryDAO.Id = StoreStatusHistory.Id;
+            StoreStatusHistoryDAO.StoreId = StoreStatusHistory.StoreId;
+            StoreStatusHistoryDAO.AppUserId = StoreStatusHistory.AppUserId;
+            StoreStatusHistoryDAO.PreviousStoreStatusId = StoreStatusHistory.PreviousStoreStatusId;
+            StoreStatusHistoryDAO.StoreStatusId = StoreStatusHistory.StoreStatusId;
+            StoreStatusHistoryDAO.CreatedAt = StaticParams.DateTimeNow;
+            DataContext.StoreStatusHistory.Add(StoreStatusHistoryDAO);
             await DataContext.SaveChangesAsync();
-            StoreHistory.Id = StoreHistoryDAO.Id;
+            StoreStatusHistory.Id = StoreStatusHistoryDAO.Id;
             return true;
         }
 

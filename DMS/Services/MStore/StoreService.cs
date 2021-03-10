@@ -200,15 +200,23 @@ namespace DMS.Services.MStore
                 await UOW.Begin();
                 await UOW.StoreRepository.Create(Store);
 
-                StoreHistory StoreHistory = new StoreHistory
+                StoreStatusHistory StoreStatusHistory = new StoreStatusHistory
                 {
                     StoreId = Store.Id,
                     AppUserId = CurrentContext.UserId,
-                    PreviousStoreStatusId = null,
-                    StoreStatusId = Store.StoreStatusId,
                     CreatedAt = DateTime.Now,
                 };
-                await UOW.StoreHistoryRepository.Create(StoreHistory);
+                if (Store.StoreScoutingId.HasValue)
+                    StoreStatusHistory.PreviousStoreStatusId = StoreStatusHistoryTypeEnum.STORE_SCOUTING.Id;
+                else
+                    StoreStatusHistory.PreviousStoreStatusId = StoreStatusHistoryTypeEnum.NEW.Id;
+
+                if (Store.StoreStatusId == StoreStatusEnum.OFFICIAL.Id)
+                    StoreStatusHistory.StoreStatusId = StoreStatusHistoryTypeEnum.OFFICIAL.Id;
+                if (Store.StoreStatusId == StoreStatusEnum.DRAFT.Id)
+                    StoreStatusHistory.StoreStatusId = StoreStatusHistoryTypeEnum.DRAFT.Id;
+
+                await UOW.StoreStatusHistoryRepository.Create(StoreStatusHistory);
 
                 List<UserNotification> UserNotifications = new List<UserNotification>();
                 if (Store.StoreScoutingId.HasValue)
@@ -304,16 +312,25 @@ namespace DMS.Services.MStore
                 StoreCodeGenerate(Store);
                 if (Store.StoreStatusId  != oldData.StoreStatusId)
                 {
-                    StoreHistory StoreHistory = new StoreHistory
+                    StoreStatusHistory StoreStatusHistory = new StoreStatusHistory
                     {
                         StoreId = Store.Id,
                         AppUserId = CurrentContext.UserId,
-                        PreviousStoreStatusId = oldData.StoreStatusId,
-                        StoreStatusId = Store.StoreStatusId,
                         CreatedAt = DateTime.Now,
                     };
-                    await UOW.StoreHistoryRepository.Create(StoreHistory);
-                }    
+                    if (oldData.StoreStatusId == StoreStatusEnum.OFFICIAL.Id)
+                        StoreStatusHistory.PreviousStoreStatusId = StoreStatusHistoryTypeEnum.OFFICIAL.Id;
+                    if (oldData.StoreStatusId == StoreStatusEnum.DRAFT.Id)
+                        StoreStatusHistory.PreviousStoreStatusId = StoreStatusHistoryTypeEnum.DRAFT.Id;
+
+                    if (Store.StoreStatusId == StoreStatusEnum.OFFICIAL.Id)
+                        StoreStatusHistory.StoreStatusId = StoreStatusHistoryTypeEnum.OFFICIAL.Id;
+                    if (Store.StoreStatusId == StoreStatusEnum.DRAFT.Id)
+                        StoreStatusHistory.StoreStatusId = StoreStatusHistoryTypeEnum.DRAFT.Id;
+
+                    await UOW.StoreStatusHistoryRepository.Create(StoreStatusHistory);
+                }
+
                 await UOW.Begin();
                 await UOW.StoreRepository.Update(Store);
                 if(Store.StatusId == StatusEnum.INACTIVE.Id)

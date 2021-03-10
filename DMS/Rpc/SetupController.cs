@@ -1360,6 +1360,7 @@ namespace DMS.Rpc
         private ActionResult InitEnum()
         {
             InitStoreStatusEnum();
+            InitStoreStatusHistoryTypeEnum();
             InitPriceListTypeEnum();
             InitSalesOrderTypeEnum();
             InitEditedPriceStatusEnum();
@@ -1372,7 +1373,6 @@ namespace DMS.Rpc
             InitStoreScoutingStatusEnum();
             InitSystemConfigurationEnum();
             InitWorkflowEnum();
-            InitIdGenerate();
             InitPromotionTypeEnum();
             InitPromotionProductAppliedTypeEnum();
             InitPromotionPolicyEnum();
@@ -1387,25 +1387,15 @@ namespace DMS.Rpc
             return Ok();
         }
 
-        private void InitIdGenerate()
+        private void InitStoreStatusHistoryTypeEnum()
         {
-            //Store
-            var count = DataContext.IdGenerator.Where(x => x.IdGenerateTypeId == IdGenerateTypeEnum.STORE.Id).Count();
-            if (count == 0)
+            List<StoreStatusHistoryTypeDAO> StoreStatusHistoryTypeDAOs = StoreStatusHistoryTypeEnum.StoreStatusHistoryTypeEnumList.Select(x => new StoreStatusHistoryTypeDAO
             {
-                List<IdGeneratorDAO> StoreIds = new List<IdGeneratorDAO>();
-                for (int i = 1; i < 10000000; i++)
-                {
-                    IdGeneratorDAO IdGenerateDAO = new IdGeneratorDAO
-                    {
-                        IdGenerateTypeId = IdGenerateTypeEnum.STORE.Id,
-                        Counter = i,
-                        Used = false
-                    };
-                    StoreIds.Add(IdGenerateDAO);
-                }
-                DataContext.IdGenerator.BulkSynchronize(StoreIds);
-            }
+                Id = x.Id,
+                Code = x.Code,
+                Name = x.Name,
+            }).ToList();
+            DataContext.StoreStatusHistoryType.BulkSynchronize(StoreStatusHistoryTypeDAOs);
         }
 
         private void InitStoreStatusEnum()
