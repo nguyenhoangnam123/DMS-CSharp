@@ -537,8 +537,9 @@ namespace DMS.Rpc.dashboards.director
             OrganizationIds = OrganizationDAOs.Select(o => o.Id).ToList();
 
             var query = from s in DataContext.Store
-                        where OrganizationIds.Contains(s.OrganizationId) &&
-                        s.DeletedAt == null
+                        where OrganizationIds.Contains(s.OrganizationId)
+                        && s.StatusId == StatusEnum.ACTIVE.Id
+                        && s.DeletedAt == null
                         select new DashboardDirector_StoreDTO
                         {
                             Id = s.Id,
