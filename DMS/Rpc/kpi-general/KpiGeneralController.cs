@@ -776,38 +776,38 @@ namespace DMS.Rpc.kpi_general
                 }
                 #endregion
 
-                #region SKU/ Đơn hàng gián tiếp
-                var SKUIndirectOrderContent = KpiGeneral_KpiGeneralContentDTOs
-                    .Where(x => x.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.SKU_INDIRECT_SALES_ORDER.Id)
-                    .Where(x => x.KpiGeneralId == KpiGeneral.Id)
-                    .Select(x => x.KpiGeneralContentKpiPeriodMappings)
-                    .FirstOrDefault();
-                KpiGeneral_ExportDTO.SKUIndirectOrder = new KpiGeneral_ExportCriterialDTO
-                {
-                    Id = KpiCriteriaGeneralEnum.SKU_INDIRECT_SALES_ORDER.Id,
-                    Name = KpiCriteriaGeneralEnum.SKU_INDIRECT_SALES_ORDER.Name
-                };
-                if (SKUIndirectOrderContent != null)
-                {
-                    KpiGeneral_ExportDTO.SKUIndirectOrder.M1Value = SKUIndirectOrderContent[KpiPeriodEnum.PERIOD_MONTH01.Id];
-                    KpiGeneral_ExportDTO.SKUIndirectOrder.M2Value = SKUIndirectOrderContent[KpiPeriodEnum.PERIOD_MONTH02.Id];
-                    KpiGeneral_ExportDTO.SKUIndirectOrder.M3Value = SKUIndirectOrderContent[KpiPeriodEnum.PERIOD_MONTH03.Id];
-                    KpiGeneral_ExportDTO.SKUIndirectOrder.M4Value = SKUIndirectOrderContent[KpiPeriodEnum.PERIOD_MONTH04.Id];
-                    KpiGeneral_ExportDTO.SKUIndirectOrder.M5Value = SKUIndirectOrderContent[KpiPeriodEnum.PERIOD_MONTH05.Id];
-                    KpiGeneral_ExportDTO.SKUIndirectOrder.M6Value = SKUIndirectOrderContent[KpiPeriodEnum.PERIOD_MONTH06.Id];
-                    KpiGeneral_ExportDTO.SKUIndirectOrder.M7Value = SKUIndirectOrderContent[KpiPeriodEnum.PERIOD_MONTH07.Id];
-                    KpiGeneral_ExportDTO.SKUIndirectOrder.M8Value = SKUIndirectOrderContent[KpiPeriodEnum.PERIOD_MONTH08.Id];
-                    KpiGeneral_ExportDTO.SKUIndirectOrder.M9Value = SKUIndirectOrderContent[KpiPeriodEnum.PERIOD_MONTH09.Id];
-                    KpiGeneral_ExportDTO.SKUIndirectOrder.M10Value = SKUIndirectOrderContent[KpiPeriodEnum.PERIOD_MONTH10.Id];
-                    KpiGeneral_ExportDTO.SKUIndirectOrder.M11Value = SKUIndirectOrderContent[KpiPeriodEnum.PERIOD_MONTH11.Id];
-                    KpiGeneral_ExportDTO.SKUIndirectOrder.M12Value = SKUIndirectOrderContent[KpiPeriodEnum.PERIOD_MONTH12.Id];
-                    KpiGeneral_ExportDTO.SKUIndirectOrder.Q1Value = SKUIndirectOrderContent[KpiPeriodEnum.PERIOD_QUATER01.Id];
-                    KpiGeneral_ExportDTO.SKUIndirectOrder.Q2Value = SKUIndirectOrderContent[KpiPeriodEnum.PERIOD_QUATER02.Id];
-                    KpiGeneral_ExportDTO.SKUIndirectOrder.Q3Value = SKUIndirectOrderContent[KpiPeriodEnum.PERIOD_QUATER03.Id];
-                    KpiGeneral_ExportDTO.SKUIndirectOrder.Q4Value = SKUIndirectOrderContent[KpiPeriodEnum.PERIOD_QUATER04.Id];
-                    KpiGeneral_ExportDTO.SKUIndirectOrder.YValue = SKUIndirectOrderContent[KpiPeriodEnum.PERIOD_YEAR01.Id];
-                }
-                #endregion
+                //#region SKU/ Đơn hàng gián tiếp
+                //var SKUIndirectOrderContent = KpiGeneral_KpiGeneralContentDTOs
+                //    .Where(x => x.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.SKU_INDIRECT_SALES_ORDER.Id)
+                //    .Where(x => x.KpiGeneralId == KpiGeneral.Id)
+                //    .Select(x => x.KpiGeneralContentKpiPeriodMappings)
+                //    .FirstOrDefault();
+                //KpiGeneral_ExportDTO.SKUIndirectOrder = new KpiGeneral_ExportCriterialDTO
+                //{
+                //    Id = KpiCriteriaGeneralEnum.SKU_INDIRECT_SALES_ORDER.Id,
+                //    Name = KpiCriteriaGeneralEnum.SKU_INDIRECT_SALES_ORDER.Name
+                //};
+                //if (SKUIndirectOrderContent != null)
+                //{
+                //    KpiGeneral_ExportDTO.SKUIndirectOrder.M1Value = SKUIndirectOrderContent[KpiPeriodEnum.PERIOD_MONTH01.Id];
+                //    KpiGeneral_ExportDTO.SKUIndirectOrder.M2Value = SKUIndirectOrderContent[KpiPeriodEnum.PERIOD_MONTH02.Id];
+                //    KpiGeneral_ExportDTO.SKUIndirectOrder.M3Value = SKUIndirectOrderContent[KpiPeriodEnum.PERIOD_MONTH03.Id];
+                //    KpiGeneral_ExportDTO.SKUIndirectOrder.M4Value = SKUIndirectOrderContent[KpiPeriodEnum.PERIOD_MONTH04.Id];
+                //    KpiGeneral_ExportDTO.SKUIndirectOrder.M5Value = SKUIndirectOrderContent[KpiPeriodEnum.PERIOD_MONTH05.Id];
+                //    KpiGeneral_ExportDTO.SKUIndirectOrder.M6Value = SKUIndirectOrderContent[KpiPeriodEnum.PERIOD_MONTH06.Id];
+                //    KpiGeneral_ExportDTO.SKUIndirectOrder.M7Value = SKUIndirectOrderContent[KpiPeriodEnum.PERIOD_MONTH07.Id];
+                //    KpiGeneral_ExportDTO.SKUIndirectOrder.M8Value = SKUIndirectOrderContent[KpiPeriodEnum.PERIOD_MONTH08.Id];
+                //    KpiGeneral_ExportDTO.SKUIndirectOrder.M9Value = SKUIndirectOrderContent[KpiPeriodEnum.PERIOD_MONTH09.Id];
+                //    KpiGeneral_ExportDTO.SKUIndirectOrder.M10Value = SKUIndirectOrderContent[KpiPeriodEnum.PERIOD_MONTH10.Id];
+                //    KpiGeneral_ExportDTO.SKUIndirectOrder.M11Value = SKUIndirectOrderContent[KpiPeriodEnum.PERIOD_MONTH11.Id];
+                //    KpiGeneral_ExportDTO.SKUIndirectOrder.M12Value = SKUIndirectOrderContent[KpiPeriodEnum.PERIOD_MONTH12.Id];
+                //    KpiGeneral_ExportDTO.SKUIndirectOrder.Q1Value = SKUIndirectOrderContent[KpiPeriodEnum.PERIOD_QUATER01.Id];
+                //    KpiGeneral_ExportDTO.SKUIndirectOrder.Q2Value = SKUIndirectOrderContent[KpiPeriodEnum.PERIOD_QUATER02.Id];
+                //    KpiGeneral_ExportDTO.SKUIndirectOrder.Q3Value = SKUIndirectOrderContent[KpiPeriodEnum.PERIOD_QUATER03.Id];
+                //    KpiGeneral_ExportDTO.SKUIndirectOrder.Q4Value = SKUIndirectOrderContent[KpiPeriodEnum.PERIOD_QUATER04.Id];
+                //    KpiGeneral_ExportDTO.SKUIndirectOrder.YValue = SKUIndirectOrderContent[KpiPeriodEnum.PERIOD_YEAR01.Id];
+                //}
+                //#endregion
 
                 #region Doanh thu đơn hàng gián tiếp
                 var TotalIndirectSalesAmountContent = KpiGeneral_KpiGeneralContentDTOs
@@ -842,203 +842,203 @@ namespace DMS.Rpc.kpi_general
                 }
                 #endregion
 
-                #region Tổng sản lượng đơn hàng gián tiếp
-                var TotalIndirectQuantityContent = KpiGeneral_KpiGeneralContentDTOs
-                    .Where(x => x.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.TOTAL_INDIRECT_SALES_QUANTITY.Id)
-                    .Where(x => x.KpiGeneralId == KpiGeneral.Id)
-                    .Select(x => x.KpiGeneralContentKpiPeriodMappings)
-                    .FirstOrDefault();
-                KpiGeneral_ExportDTO.TotalIndirectQuantity = new KpiGeneral_ExportCriterialDTO
-                {
-                    Id = KpiCriteriaGeneralEnum.TOTAL_INDIRECT_SALES_QUANTITY.Id,
-                    Name = KpiCriteriaGeneralEnum.TOTAL_INDIRECT_SALES_QUANTITY.Name
-                };
-                if (TotalIndirectQuantityContent != null)
-                {
-                    KpiGeneral_ExportDTO.TotalIndirectQuantity.M1Value = TotalIndirectQuantityContent[KpiPeriodEnum.PERIOD_MONTH01.Id];
-                    KpiGeneral_ExportDTO.TotalIndirectQuantity.M2Value = TotalIndirectQuantityContent[KpiPeriodEnum.PERIOD_MONTH02.Id];
-                    KpiGeneral_ExportDTO.TotalIndirectQuantity.M3Value = TotalIndirectQuantityContent[KpiPeriodEnum.PERIOD_MONTH03.Id];
-                    KpiGeneral_ExportDTO.TotalIndirectQuantity.M4Value = TotalIndirectQuantityContent[KpiPeriodEnum.PERIOD_MONTH04.Id];
-                    KpiGeneral_ExportDTO.TotalIndirectQuantity.M5Value = TotalIndirectQuantityContent[KpiPeriodEnum.PERIOD_MONTH05.Id];
-                    KpiGeneral_ExportDTO.TotalIndirectQuantity.M6Value = TotalIndirectQuantityContent[KpiPeriodEnum.PERIOD_MONTH06.Id];
-                    KpiGeneral_ExportDTO.TotalIndirectQuantity.M7Value = TotalIndirectQuantityContent[KpiPeriodEnum.PERIOD_MONTH07.Id];
-                    KpiGeneral_ExportDTO.TotalIndirectQuantity.M8Value = TotalIndirectQuantityContent[KpiPeriodEnum.PERIOD_MONTH08.Id];
-                    KpiGeneral_ExportDTO.TotalIndirectQuantity.M9Value = TotalIndirectQuantityContent[KpiPeriodEnum.PERIOD_MONTH09.Id];
-                    KpiGeneral_ExportDTO.TotalIndirectQuantity.M10Value = TotalIndirectQuantityContent[KpiPeriodEnum.PERIOD_MONTH10.Id];
-                    KpiGeneral_ExportDTO.TotalIndirectQuantity.M11Value = TotalIndirectQuantityContent[KpiPeriodEnum.PERIOD_MONTH11.Id];
-                    KpiGeneral_ExportDTO.TotalIndirectQuantity.M12Value = TotalIndirectQuantityContent[KpiPeriodEnum.PERIOD_MONTH12.Id];
-                    KpiGeneral_ExportDTO.TotalIndirectQuantity.Q1Value = TotalIndirectQuantityContent[KpiPeriodEnum.PERIOD_QUATER01.Id];
-                    KpiGeneral_ExportDTO.TotalIndirectQuantity.Q2Value = TotalIndirectQuantityContent[KpiPeriodEnum.PERIOD_QUATER02.Id];
-                    KpiGeneral_ExportDTO.TotalIndirectQuantity.Q3Value = TotalIndirectQuantityContent[KpiPeriodEnum.PERIOD_QUATER03.Id];
-                    KpiGeneral_ExportDTO.TotalIndirectQuantity.Q4Value = TotalIndirectQuantityContent[KpiPeriodEnum.PERIOD_QUATER04.Id];
-                    KpiGeneral_ExportDTO.TotalIndirectQuantity.YValue = TotalIndirectQuantityContent[KpiPeriodEnum.PERIOD_YEAR01.Id];
-                }
-                #endregion
+                //#region Tổng sản lượng đơn hàng gián tiếp
+                //var TotalIndirectQuantityContent = KpiGeneral_KpiGeneralContentDTOs
+                //    .Where(x => x.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.TOTAL_INDIRECT_SALES_QUANTITY.Id)
+                //    .Where(x => x.KpiGeneralId == KpiGeneral.Id)
+                //    .Select(x => x.KpiGeneralContentKpiPeriodMappings)
+                //    .FirstOrDefault();
+                //KpiGeneral_ExportDTO.TotalIndirectQuantity = new KpiGeneral_ExportCriterialDTO
+                //{
+                //    Id = KpiCriteriaGeneralEnum.TOTAL_INDIRECT_SALES_QUANTITY.Id,
+                //    Name = KpiCriteriaGeneralEnum.TOTAL_INDIRECT_SALES_QUANTITY.Name
+                //};
+                //if (TotalIndirectQuantityContent != null)
+                //{
+                //    KpiGeneral_ExportDTO.TotalIndirectQuantity.M1Value = TotalIndirectQuantityContent[KpiPeriodEnum.PERIOD_MONTH01.Id];
+                //    KpiGeneral_ExportDTO.TotalIndirectQuantity.M2Value = TotalIndirectQuantityContent[KpiPeriodEnum.PERIOD_MONTH02.Id];
+                //    KpiGeneral_ExportDTO.TotalIndirectQuantity.M3Value = TotalIndirectQuantityContent[KpiPeriodEnum.PERIOD_MONTH03.Id];
+                //    KpiGeneral_ExportDTO.TotalIndirectQuantity.M4Value = TotalIndirectQuantityContent[KpiPeriodEnum.PERIOD_MONTH04.Id];
+                //    KpiGeneral_ExportDTO.TotalIndirectQuantity.M5Value = TotalIndirectQuantityContent[KpiPeriodEnum.PERIOD_MONTH05.Id];
+                //    KpiGeneral_ExportDTO.TotalIndirectQuantity.M6Value = TotalIndirectQuantityContent[KpiPeriodEnum.PERIOD_MONTH06.Id];
+                //    KpiGeneral_ExportDTO.TotalIndirectQuantity.M7Value = TotalIndirectQuantityContent[KpiPeriodEnum.PERIOD_MONTH07.Id];
+                //    KpiGeneral_ExportDTO.TotalIndirectQuantity.M8Value = TotalIndirectQuantityContent[KpiPeriodEnum.PERIOD_MONTH08.Id];
+                //    KpiGeneral_ExportDTO.TotalIndirectQuantity.M9Value = TotalIndirectQuantityContent[KpiPeriodEnum.PERIOD_MONTH09.Id];
+                //    KpiGeneral_ExportDTO.TotalIndirectQuantity.M10Value = TotalIndirectQuantityContent[KpiPeriodEnum.PERIOD_MONTH10.Id];
+                //    KpiGeneral_ExportDTO.TotalIndirectQuantity.M11Value = TotalIndirectQuantityContent[KpiPeriodEnum.PERIOD_MONTH11.Id];
+                //    KpiGeneral_ExportDTO.TotalIndirectQuantity.M12Value = TotalIndirectQuantityContent[KpiPeriodEnum.PERIOD_MONTH12.Id];
+                //    KpiGeneral_ExportDTO.TotalIndirectQuantity.Q1Value = TotalIndirectQuantityContent[KpiPeriodEnum.PERIOD_QUATER01.Id];
+                //    KpiGeneral_ExportDTO.TotalIndirectQuantity.Q2Value = TotalIndirectQuantityContent[KpiPeriodEnum.PERIOD_QUATER02.Id];
+                //    KpiGeneral_ExportDTO.TotalIndirectQuantity.Q3Value = TotalIndirectQuantityContent[KpiPeriodEnum.PERIOD_QUATER03.Id];
+                //    KpiGeneral_ExportDTO.TotalIndirectQuantity.Q4Value = TotalIndirectQuantityContent[KpiPeriodEnum.PERIOD_QUATER04.Id];
+                //    KpiGeneral_ExportDTO.TotalIndirectQuantity.YValue = TotalIndirectQuantityContent[KpiPeriodEnum.PERIOD_YEAR01.Id];
+                //}
+                //#endregion
 
-                #region Số đơn hàng gián tiếp
-                var TotalIndirectOrdersContent = KpiGeneral_KpiGeneralContentDTOs
-                    .Where(x => x.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.TOTAL_INDIRECT_SALES_ORDER.Id)
-                    .Where(x => x.KpiGeneralId == KpiGeneral.Id)
-                    .Select(x => x.KpiGeneralContentKpiPeriodMappings)
-                    .FirstOrDefault();
-                KpiGeneral_ExportDTO.TotalIndirectOrders = new KpiGeneral_ExportCriterialDTO
-                {
-                    Id = KpiCriteriaGeneralEnum.TOTAL_INDIRECT_SALES_ORDER.Id,
-                    Name = KpiCriteriaGeneralEnum.TOTAL_INDIRECT_SALES_ORDER.Name
-                };
-                if (TotalIndirectOrdersContent != null)
-                {
-                    KpiGeneral_ExportDTO.TotalIndirectOrders.M1Value = TotalIndirectOrdersContent[KpiPeriodEnum.PERIOD_MONTH01.Id];
-                    KpiGeneral_ExportDTO.TotalIndirectOrders.M2Value = TotalIndirectOrdersContent[KpiPeriodEnum.PERIOD_MONTH02.Id];
-                    KpiGeneral_ExportDTO.TotalIndirectOrders.M3Value = TotalIndirectOrdersContent[KpiPeriodEnum.PERIOD_MONTH03.Id];
-                    KpiGeneral_ExportDTO.TotalIndirectOrders.M4Value = TotalIndirectOrdersContent[KpiPeriodEnum.PERIOD_MONTH04.Id];
-                    KpiGeneral_ExportDTO.TotalIndirectOrders.M5Value = TotalIndirectOrdersContent[KpiPeriodEnum.PERIOD_MONTH05.Id];
-                    KpiGeneral_ExportDTO.TotalIndirectOrders.M6Value = TotalIndirectOrdersContent[KpiPeriodEnum.PERIOD_MONTH06.Id];
-                    KpiGeneral_ExportDTO.TotalIndirectOrders.M7Value = TotalIndirectOrdersContent[KpiPeriodEnum.PERIOD_MONTH07.Id];
-                    KpiGeneral_ExportDTO.TotalIndirectOrders.M8Value = TotalIndirectOrdersContent[KpiPeriodEnum.PERIOD_MONTH08.Id];
-                    KpiGeneral_ExportDTO.TotalIndirectOrders.M9Value = TotalIndirectOrdersContent[KpiPeriodEnum.PERIOD_MONTH09.Id];
-                    KpiGeneral_ExportDTO.TotalIndirectOrders.M10Value = TotalIndirectOrdersContent[KpiPeriodEnum.PERIOD_MONTH10.Id];
-                    KpiGeneral_ExportDTO.TotalIndirectOrders.M11Value = TotalIndirectOrdersContent[KpiPeriodEnum.PERIOD_MONTH11.Id];
-                    KpiGeneral_ExportDTO.TotalIndirectOrders.M12Value = TotalIndirectOrdersContent[KpiPeriodEnum.PERIOD_MONTH12.Id];
-                    KpiGeneral_ExportDTO.TotalIndirectOrders.Q1Value = TotalIndirectOrdersContent[KpiPeriodEnum.PERIOD_QUATER01.Id];
-                    KpiGeneral_ExportDTO.TotalIndirectOrders.Q2Value = TotalIndirectOrdersContent[KpiPeriodEnum.PERIOD_QUATER02.Id];
-                    KpiGeneral_ExportDTO.TotalIndirectOrders.Q3Value = TotalIndirectOrdersContent[KpiPeriodEnum.PERIOD_QUATER03.Id];
-                    KpiGeneral_ExportDTO.TotalIndirectOrders.Q4Value = TotalIndirectOrdersContent[KpiPeriodEnum.PERIOD_QUATER04.Id];
-                    KpiGeneral_ExportDTO.TotalIndirectOrders.YValue = TotalIndirectOrdersContent[KpiPeriodEnum.PERIOD_YEAR01.Id];
-                }
-                #endregion
+                //#region Số đơn hàng gián tiếp
+                //var TotalIndirectOrdersContent = KpiGeneral_KpiGeneralContentDTOs
+                //    .Where(x => x.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.TOTAL_INDIRECT_SALES_ORDER.Id)
+                //    .Where(x => x.KpiGeneralId == KpiGeneral.Id)
+                //    .Select(x => x.KpiGeneralContentKpiPeriodMappings)
+                //    .FirstOrDefault();
+                //KpiGeneral_ExportDTO.TotalIndirectOrders = new KpiGeneral_ExportCriterialDTO
+                //{
+                //    Id = KpiCriteriaGeneralEnum.TOTAL_INDIRECT_SALES_ORDER.Id,
+                //    Name = KpiCriteriaGeneralEnum.TOTAL_INDIRECT_SALES_ORDER.Name
+                //};
+                //if (TotalIndirectOrdersContent != null)
+                //{
+                //    KpiGeneral_ExportDTO.TotalIndirectOrders.M1Value = TotalIndirectOrdersContent[KpiPeriodEnum.PERIOD_MONTH01.Id];
+                //    KpiGeneral_ExportDTO.TotalIndirectOrders.M2Value = TotalIndirectOrdersContent[KpiPeriodEnum.PERIOD_MONTH02.Id];
+                //    KpiGeneral_ExportDTO.TotalIndirectOrders.M3Value = TotalIndirectOrdersContent[KpiPeriodEnum.PERIOD_MONTH03.Id];
+                //    KpiGeneral_ExportDTO.TotalIndirectOrders.M4Value = TotalIndirectOrdersContent[KpiPeriodEnum.PERIOD_MONTH04.Id];
+                //    KpiGeneral_ExportDTO.TotalIndirectOrders.M5Value = TotalIndirectOrdersContent[KpiPeriodEnum.PERIOD_MONTH05.Id];
+                //    KpiGeneral_ExportDTO.TotalIndirectOrders.M6Value = TotalIndirectOrdersContent[KpiPeriodEnum.PERIOD_MONTH06.Id];
+                //    KpiGeneral_ExportDTO.TotalIndirectOrders.M7Value = TotalIndirectOrdersContent[KpiPeriodEnum.PERIOD_MONTH07.Id];
+                //    KpiGeneral_ExportDTO.TotalIndirectOrders.M8Value = TotalIndirectOrdersContent[KpiPeriodEnum.PERIOD_MONTH08.Id];
+                //    KpiGeneral_ExportDTO.TotalIndirectOrders.M9Value = TotalIndirectOrdersContent[KpiPeriodEnum.PERIOD_MONTH09.Id];
+                //    KpiGeneral_ExportDTO.TotalIndirectOrders.M10Value = TotalIndirectOrdersContent[KpiPeriodEnum.PERIOD_MONTH10.Id];
+                //    KpiGeneral_ExportDTO.TotalIndirectOrders.M11Value = TotalIndirectOrdersContent[KpiPeriodEnum.PERIOD_MONTH11.Id];
+                //    KpiGeneral_ExportDTO.TotalIndirectOrders.M12Value = TotalIndirectOrdersContent[KpiPeriodEnum.PERIOD_MONTH12.Id];
+                //    KpiGeneral_ExportDTO.TotalIndirectOrders.Q1Value = TotalIndirectOrdersContent[KpiPeriodEnum.PERIOD_QUATER01.Id];
+                //    KpiGeneral_ExportDTO.TotalIndirectOrders.Q2Value = TotalIndirectOrdersContent[KpiPeriodEnum.PERIOD_QUATER02.Id];
+                //    KpiGeneral_ExportDTO.TotalIndirectOrders.Q3Value = TotalIndirectOrdersContent[KpiPeriodEnum.PERIOD_QUATER03.Id];
+                //    KpiGeneral_ExportDTO.TotalIndirectOrders.Q4Value = TotalIndirectOrdersContent[KpiPeriodEnum.PERIOD_QUATER04.Id];
+                //    KpiGeneral_ExportDTO.TotalIndirectOrders.YValue = TotalIndirectOrdersContent[KpiPeriodEnum.PERIOD_YEAR01.Id];
+                //}
+                //#endregion
 
-                #region SKU/ Đơn hàng trực tiếp
-                var SKUDirectOrderContent = KpiGeneral_KpiGeneralContentDTOs
-                    .Where(x => x.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.SKU_DIRECT_SALES_ORDER.Id)
-                    .Where(x => x.KpiGeneralId == KpiGeneral.Id)
-                    .Select(x => x.KpiGeneralContentKpiPeriodMappings)
-                    .FirstOrDefault();
-                KpiGeneral_ExportDTO.SKUDirectOrder = new KpiGeneral_ExportCriterialDTO
-                {
-                    Id = KpiCriteriaGeneralEnum.SKU_DIRECT_SALES_ORDER.Id,
-                    Name = KpiCriteriaGeneralEnum.SKU_DIRECT_SALES_ORDER.Name
-                };
-                if (SKUDirectOrderContent != null)
-                {
-                    KpiGeneral_ExportDTO.SKUDirectOrder.M1Value = SKUDirectOrderContent[KpiPeriodEnum.PERIOD_MONTH01.Id];
-                    KpiGeneral_ExportDTO.SKUDirectOrder.M2Value = SKUDirectOrderContent[KpiPeriodEnum.PERIOD_MONTH02.Id];
-                    KpiGeneral_ExportDTO.SKUDirectOrder.M3Value = SKUDirectOrderContent[KpiPeriodEnum.PERIOD_MONTH03.Id];
-                    KpiGeneral_ExportDTO.SKUDirectOrder.M4Value = SKUDirectOrderContent[KpiPeriodEnum.PERIOD_MONTH04.Id];
-                    KpiGeneral_ExportDTO.SKUDirectOrder.M5Value = SKUDirectOrderContent[KpiPeriodEnum.PERIOD_MONTH05.Id];
-                    KpiGeneral_ExportDTO.SKUDirectOrder.M6Value = SKUDirectOrderContent[KpiPeriodEnum.PERIOD_MONTH06.Id];
-                    KpiGeneral_ExportDTO.SKUDirectOrder.M7Value = SKUDirectOrderContent[KpiPeriodEnum.PERIOD_MONTH07.Id];
-                    KpiGeneral_ExportDTO.SKUDirectOrder.M8Value = SKUDirectOrderContent[KpiPeriodEnum.PERIOD_MONTH08.Id];
-                    KpiGeneral_ExportDTO.SKUDirectOrder.M9Value = SKUDirectOrderContent[KpiPeriodEnum.PERIOD_MONTH09.Id];
-                    KpiGeneral_ExportDTO.SKUDirectOrder.M10Value = SKUDirectOrderContent[KpiPeriodEnum.PERIOD_MONTH10.Id];
-                    KpiGeneral_ExportDTO.SKUDirectOrder.M11Value = SKUDirectOrderContent[KpiPeriodEnum.PERIOD_MONTH11.Id];
-                    KpiGeneral_ExportDTO.SKUDirectOrder.M12Value = SKUDirectOrderContent[KpiPeriodEnum.PERIOD_MONTH12.Id];
-                    KpiGeneral_ExportDTO.SKUDirectOrder.Q1Value = SKUDirectOrderContent[KpiPeriodEnum.PERIOD_QUATER01.Id];
-                    KpiGeneral_ExportDTO.SKUDirectOrder.Q2Value = SKUDirectOrderContent[KpiPeriodEnum.PERIOD_QUATER02.Id];
-                    KpiGeneral_ExportDTO.SKUDirectOrder.Q3Value = SKUDirectOrderContent[KpiPeriodEnum.PERIOD_QUATER03.Id];
-                    KpiGeneral_ExportDTO.SKUDirectOrder.Q4Value = SKUDirectOrderContent[KpiPeriodEnum.PERIOD_QUATER04.Id];
-                    KpiGeneral_ExportDTO.SKUDirectOrder.YValue = SKUDirectOrderContent[KpiPeriodEnum.PERIOD_YEAR01.Id];
-                }
-                #endregion
+                //#region SKU/ Đơn hàng trực tiếp
+                //var SKUDirectOrderContent = KpiGeneral_KpiGeneralContentDTOs
+                //    .Where(x => x.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.SKU_DIRECT_SALES_ORDER.Id)
+                //    .Where(x => x.KpiGeneralId == KpiGeneral.Id)
+                //    .Select(x => x.KpiGeneralContentKpiPeriodMappings)
+                //    .FirstOrDefault();
+                //KpiGeneral_ExportDTO.SKUDirectOrder = new KpiGeneral_ExportCriterialDTO
+                //{
+                //    Id = KpiCriteriaGeneralEnum.SKU_DIRECT_SALES_ORDER.Id,
+                //    Name = KpiCriteriaGeneralEnum.SKU_DIRECT_SALES_ORDER.Name
+                //};
+                //if (SKUDirectOrderContent != null)
+                //{
+                //    KpiGeneral_ExportDTO.SKUDirectOrder.M1Value = SKUDirectOrderContent[KpiPeriodEnum.PERIOD_MONTH01.Id];
+                //    KpiGeneral_ExportDTO.SKUDirectOrder.M2Value = SKUDirectOrderContent[KpiPeriodEnum.PERIOD_MONTH02.Id];
+                //    KpiGeneral_ExportDTO.SKUDirectOrder.M3Value = SKUDirectOrderContent[KpiPeriodEnum.PERIOD_MONTH03.Id];
+                //    KpiGeneral_ExportDTO.SKUDirectOrder.M4Value = SKUDirectOrderContent[KpiPeriodEnum.PERIOD_MONTH04.Id];
+                //    KpiGeneral_ExportDTO.SKUDirectOrder.M5Value = SKUDirectOrderContent[KpiPeriodEnum.PERIOD_MONTH05.Id];
+                //    KpiGeneral_ExportDTO.SKUDirectOrder.M6Value = SKUDirectOrderContent[KpiPeriodEnum.PERIOD_MONTH06.Id];
+                //    KpiGeneral_ExportDTO.SKUDirectOrder.M7Value = SKUDirectOrderContent[KpiPeriodEnum.PERIOD_MONTH07.Id];
+                //    KpiGeneral_ExportDTO.SKUDirectOrder.M8Value = SKUDirectOrderContent[KpiPeriodEnum.PERIOD_MONTH08.Id];
+                //    KpiGeneral_ExportDTO.SKUDirectOrder.M9Value = SKUDirectOrderContent[KpiPeriodEnum.PERIOD_MONTH09.Id];
+                //    KpiGeneral_ExportDTO.SKUDirectOrder.M10Value = SKUDirectOrderContent[KpiPeriodEnum.PERIOD_MONTH10.Id];
+                //    KpiGeneral_ExportDTO.SKUDirectOrder.M11Value = SKUDirectOrderContent[KpiPeriodEnum.PERIOD_MONTH11.Id];
+                //    KpiGeneral_ExportDTO.SKUDirectOrder.M12Value = SKUDirectOrderContent[KpiPeriodEnum.PERIOD_MONTH12.Id];
+                //    KpiGeneral_ExportDTO.SKUDirectOrder.Q1Value = SKUDirectOrderContent[KpiPeriodEnum.PERIOD_QUATER01.Id];
+                //    KpiGeneral_ExportDTO.SKUDirectOrder.Q2Value = SKUDirectOrderContent[KpiPeriodEnum.PERIOD_QUATER02.Id];
+                //    KpiGeneral_ExportDTO.SKUDirectOrder.Q3Value = SKUDirectOrderContent[KpiPeriodEnum.PERIOD_QUATER03.Id];
+                //    KpiGeneral_ExportDTO.SKUDirectOrder.Q4Value = SKUDirectOrderContent[KpiPeriodEnum.PERIOD_QUATER04.Id];
+                //    KpiGeneral_ExportDTO.SKUDirectOrder.YValue = SKUDirectOrderContent[KpiPeriodEnum.PERIOD_YEAR01.Id];
+                //}
+                //#endregion
 
-                #region Doanh thu đơn hàng trực tiếp
-                var TotalDirectSalesAmountContent = KpiGeneral_KpiGeneralContentDTOs
-                    .Where(x => x.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.TOTAL_DIRECT_SALES_AMOUNT.Id)
-                    .Where(x => x.KpiGeneralId == KpiGeneral.Id)
-                    .Select(x => x.KpiGeneralContentKpiPeriodMappings)
-                    .FirstOrDefault();
-                KpiGeneral_ExportDTO.TotalDirectSalesAmount = new KpiGeneral_ExportCriterialDTO
-                {
-                    Id = KpiCriteriaGeneralEnum.TOTAL_DIRECT_SALES_AMOUNT.Id,
-                    Name = KpiCriteriaGeneralEnum.TOTAL_DIRECT_SALES_AMOUNT.Name
-                };
-                if (TotalDirectSalesAmountContent != null)
-                {
-                    KpiGeneral_ExportDTO.TotalDirectSalesAmount.M1Value = TotalDirectSalesAmountContent[KpiPeriodEnum.PERIOD_MONTH01.Id];
-                    KpiGeneral_ExportDTO.TotalDirectSalesAmount.M2Value = TotalDirectSalesAmountContent[KpiPeriodEnum.PERIOD_MONTH02.Id];
-                    KpiGeneral_ExportDTO.TotalDirectSalesAmount.M3Value = TotalDirectSalesAmountContent[KpiPeriodEnum.PERIOD_MONTH03.Id];
-                    KpiGeneral_ExportDTO.TotalDirectSalesAmount.M4Value = TotalDirectSalesAmountContent[KpiPeriodEnum.PERIOD_MONTH04.Id];
-                    KpiGeneral_ExportDTO.TotalDirectSalesAmount.M5Value = TotalDirectSalesAmountContent[KpiPeriodEnum.PERIOD_MONTH05.Id];
-                    KpiGeneral_ExportDTO.TotalDirectSalesAmount.M6Value = TotalDirectSalesAmountContent[KpiPeriodEnum.PERIOD_MONTH06.Id];
-                    KpiGeneral_ExportDTO.TotalDirectSalesAmount.M7Value = TotalDirectSalesAmountContent[KpiPeriodEnum.PERIOD_MONTH07.Id];
-                    KpiGeneral_ExportDTO.TotalDirectSalesAmount.M8Value = TotalDirectSalesAmountContent[KpiPeriodEnum.PERIOD_MONTH08.Id];
-                    KpiGeneral_ExportDTO.TotalDirectSalesAmount.M9Value = TotalDirectSalesAmountContent[KpiPeriodEnum.PERIOD_MONTH09.Id];
-                    KpiGeneral_ExportDTO.TotalDirectSalesAmount.M10Value = TotalDirectSalesAmountContent[KpiPeriodEnum.PERIOD_MONTH10.Id];
-                    KpiGeneral_ExportDTO.TotalDirectSalesAmount.M11Value = TotalDirectSalesAmountContent[KpiPeriodEnum.PERIOD_MONTH11.Id];
-                    KpiGeneral_ExportDTO.TotalDirectSalesAmount.M12Value = TotalDirectSalesAmountContent[KpiPeriodEnum.PERIOD_MONTH12.Id];
-                    KpiGeneral_ExportDTO.TotalDirectSalesAmount.Q1Value = TotalDirectSalesAmountContent[KpiPeriodEnum.PERIOD_QUATER01.Id];
-                    KpiGeneral_ExportDTO.TotalDirectSalesAmount.Q2Value = TotalDirectSalesAmountContent[KpiPeriodEnum.PERIOD_QUATER02.Id];
-                    KpiGeneral_ExportDTO.TotalDirectSalesAmount.Q3Value = TotalDirectSalesAmountContent[KpiPeriodEnum.PERIOD_QUATER03.Id];
-                    KpiGeneral_ExportDTO.TotalDirectSalesAmount.Q4Value = TotalDirectSalesAmountContent[KpiPeriodEnum.PERIOD_QUATER04.Id];
-                    KpiGeneral_ExportDTO.TotalDirectSalesAmount.YValue = TotalDirectSalesAmountContent[KpiPeriodEnum.PERIOD_YEAR01.Id];
-                }
-                #endregion
+                //#region Doanh thu đơn hàng trực tiếp
+                //var TotalDirectSalesAmountContent = KpiGeneral_KpiGeneralContentDTOs
+                //    .Where(x => x.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.TOTAL_DIRECT_SALES_AMOUNT.Id)
+                //    .Where(x => x.KpiGeneralId == KpiGeneral.Id)
+                //    .Select(x => x.KpiGeneralContentKpiPeriodMappings)
+                //    .FirstOrDefault();
+                //KpiGeneral_ExportDTO.TotalDirectSalesAmount = new KpiGeneral_ExportCriterialDTO
+                //{
+                //    Id = KpiCriteriaGeneralEnum.TOTAL_DIRECT_SALES_AMOUNT.Id,
+                //    Name = KpiCriteriaGeneralEnum.TOTAL_DIRECT_SALES_AMOUNT.Name
+                //};
+                //if (TotalDirectSalesAmountContent != null)
+                //{
+                //    KpiGeneral_ExportDTO.TotalDirectSalesAmount.M1Value = TotalDirectSalesAmountContent[KpiPeriodEnum.PERIOD_MONTH01.Id];
+                //    KpiGeneral_ExportDTO.TotalDirectSalesAmount.M2Value = TotalDirectSalesAmountContent[KpiPeriodEnum.PERIOD_MONTH02.Id];
+                //    KpiGeneral_ExportDTO.TotalDirectSalesAmount.M3Value = TotalDirectSalesAmountContent[KpiPeriodEnum.PERIOD_MONTH03.Id];
+                //    KpiGeneral_ExportDTO.TotalDirectSalesAmount.M4Value = TotalDirectSalesAmountContent[KpiPeriodEnum.PERIOD_MONTH04.Id];
+                //    KpiGeneral_ExportDTO.TotalDirectSalesAmount.M5Value = TotalDirectSalesAmountContent[KpiPeriodEnum.PERIOD_MONTH05.Id];
+                //    KpiGeneral_ExportDTO.TotalDirectSalesAmount.M6Value = TotalDirectSalesAmountContent[KpiPeriodEnum.PERIOD_MONTH06.Id];
+                //    KpiGeneral_ExportDTO.TotalDirectSalesAmount.M7Value = TotalDirectSalesAmountContent[KpiPeriodEnum.PERIOD_MONTH07.Id];
+                //    KpiGeneral_ExportDTO.TotalDirectSalesAmount.M8Value = TotalDirectSalesAmountContent[KpiPeriodEnum.PERIOD_MONTH08.Id];
+                //    KpiGeneral_ExportDTO.TotalDirectSalesAmount.M9Value = TotalDirectSalesAmountContent[KpiPeriodEnum.PERIOD_MONTH09.Id];
+                //    KpiGeneral_ExportDTO.TotalDirectSalesAmount.M10Value = TotalDirectSalesAmountContent[KpiPeriodEnum.PERIOD_MONTH10.Id];
+                //    KpiGeneral_ExportDTO.TotalDirectSalesAmount.M11Value = TotalDirectSalesAmountContent[KpiPeriodEnum.PERIOD_MONTH11.Id];
+                //    KpiGeneral_ExportDTO.TotalDirectSalesAmount.M12Value = TotalDirectSalesAmountContent[KpiPeriodEnum.PERIOD_MONTH12.Id];
+                //    KpiGeneral_ExportDTO.TotalDirectSalesAmount.Q1Value = TotalDirectSalesAmountContent[KpiPeriodEnum.PERIOD_QUATER01.Id];
+                //    KpiGeneral_ExportDTO.TotalDirectSalesAmount.Q2Value = TotalDirectSalesAmountContent[KpiPeriodEnum.PERIOD_QUATER02.Id];
+                //    KpiGeneral_ExportDTO.TotalDirectSalesAmount.Q3Value = TotalDirectSalesAmountContent[KpiPeriodEnum.PERIOD_QUATER03.Id];
+                //    KpiGeneral_ExportDTO.TotalDirectSalesAmount.Q4Value = TotalDirectSalesAmountContent[KpiPeriodEnum.PERIOD_QUATER04.Id];
+                //    KpiGeneral_ExportDTO.TotalDirectSalesAmount.YValue = TotalDirectSalesAmountContent[KpiPeriodEnum.PERIOD_YEAR01.Id];
+                //}
+                //#endregion
 
-                #region Tổng sản lượng đơn hàng trực tiếp
-                var TotalDirectQuantityContent = KpiGeneral_KpiGeneralContentDTOs
-                    .Where(x => x.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.TOTAL_DIRECT_SALES_QUANTITY.Id)
-                    .Where(x => x.KpiGeneralId == KpiGeneral.Id)
-                    .Select(x => x.KpiGeneralContentKpiPeriodMappings)
-                    .FirstOrDefault();
-                KpiGeneral_ExportDTO.TotalDirectQuantity = new KpiGeneral_ExportCriterialDTO
-                {
-                    Id = KpiCriteriaGeneralEnum.TOTAL_DIRECT_SALES_QUANTITY.Id,
-                    Name = KpiCriteriaGeneralEnum.TOTAL_DIRECT_SALES_QUANTITY.Name
-                };
-                if (TotalDirectQuantityContent != null)
-                {
-                    KpiGeneral_ExportDTO.TotalDirectQuantity.M1Value = TotalDirectQuantityContent[KpiPeriodEnum.PERIOD_MONTH01.Id];
-                    KpiGeneral_ExportDTO.TotalDirectQuantity.M2Value = TotalDirectQuantityContent[KpiPeriodEnum.PERIOD_MONTH02.Id];
-                    KpiGeneral_ExportDTO.TotalDirectQuantity.M3Value = TotalDirectQuantityContent[KpiPeriodEnum.PERIOD_MONTH03.Id];
-                    KpiGeneral_ExportDTO.TotalDirectQuantity.M4Value = TotalDirectQuantityContent[KpiPeriodEnum.PERIOD_MONTH04.Id];
-                    KpiGeneral_ExportDTO.TotalDirectQuantity.M5Value = TotalDirectQuantityContent[KpiPeriodEnum.PERIOD_MONTH05.Id];
-                    KpiGeneral_ExportDTO.TotalDirectQuantity.M6Value = TotalDirectQuantityContent[KpiPeriodEnum.PERIOD_MONTH06.Id];
-                    KpiGeneral_ExportDTO.TotalDirectQuantity.M7Value = TotalDirectQuantityContent[KpiPeriodEnum.PERIOD_MONTH07.Id];
-                    KpiGeneral_ExportDTO.TotalDirectQuantity.M8Value = TotalDirectQuantityContent[KpiPeriodEnum.PERIOD_MONTH08.Id];
-                    KpiGeneral_ExportDTO.TotalDirectQuantity.M9Value = TotalDirectQuantityContent[KpiPeriodEnum.PERIOD_MONTH09.Id];
-                    KpiGeneral_ExportDTO.TotalDirectQuantity.M10Value = TotalDirectQuantityContent[KpiPeriodEnum.PERIOD_MONTH10.Id];
-                    KpiGeneral_ExportDTO.TotalDirectQuantity.M11Value = TotalDirectQuantityContent[KpiPeriodEnum.PERIOD_MONTH11.Id];
-                    KpiGeneral_ExportDTO.TotalDirectQuantity.M12Value = TotalDirectQuantityContent[KpiPeriodEnum.PERIOD_MONTH12.Id];
-                    KpiGeneral_ExportDTO.TotalDirectQuantity.Q1Value = TotalDirectQuantityContent[KpiPeriodEnum.PERIOD_QUATER01.Id];
-                    KpiGeneral_ExportDTO.TotalDirectQuantity.Q2Value = TotalDirectQuantityContent[KpiPeriodEnum.PERIOD_QUATER02.Id];
-                    KpiGeneral_ExportDTO.TotalDirectQuantity.Q3Value = TotalDirectQuantityContent[KpiPeriodEnum.PERIOD_QUATER03.Id];
-                    KpiGeneral_ExportDTO.TotalDirectQuantity.Q4Value = TotalDirectQuantityContent[KpiPeriodEnum.PERIOD_QUATER04.Id];
-                    KpiGeneral_ExportDTO.TotalDirectQuantity.YValue = TotalDirectQuantityContent[KpiPeriodEnum.PERIOD_YEAR01.Id];
-                }
-                #endregion
+                //#region Tổng sản lượng đơn hàng trực tiếp
+                //var TotalDirectQuantityContent = KpiGeneral_KpiGeneralContentDTOs
+                //    .Where(x => x.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.TOTAL_DIRECT_SALES_QUANTITY.Id)
+                //    .Where(x => x.KpiGeneralId == KpiGeneral.Id)
+                //    .Select(x => x.KpiGeneralContentKpiPeriodMappings)
+                //    .FirstOrDefault();
+                //KpiGeneral_ExportDTO.TotalDirectQuantity = new KpiGeneral_ExportCriterialDTO
+                //{
+                //    Id = KpiCriteriaGeneralEnum.TOTAL_DIRECT_SALES_QUANTITY.Id,
+                //    Name = KpiCriteriaGeneralEnum.TOTAL_DIRECT_SALES_QUANTITY.Name
+                //};
+                //if (TotalDirectQuantityContent != null)
+                //{
+                //    KpiGeneral_ExportDTO.TotalDirectQuantity.M1Value = TotalDirectQuantityContent[KpiPeriodEnum.PERIOD_MONTH01.Id];
+                //    KpiGeneral_ExportDTO.TotalDirectQuantity.M2Value = TotalDirectQuantityContent[KpiPeriodEnum.PERIOD_MONTH02.Id];
+                //    KpiGeneral_ExportDTO.TotalDirectQuantity.M3Value = TotalDirectQuantityContent[KpiPeriodEnum.PERIOD_MONTH03.Id];
+                //    KpiGeneral_ExportDTO.TotalDirectQuantity.M4Value = TotalDirectQuantityContent[KpiPeriodEnum.PERIOD_MONTH04.Id];
+                //    KpiGeneral_ExportDTO.TotalDirectQuantity.M5Value = TotalDirectQuantityContent[KpiPeriodEnum.PERIOD_MONTH05.Id];
+                //    KpiGeneral_ExportDTO.TotalDirectQuantity.M6Value = TotalDirectQuantityContent[KpiPeriodEnum.PERIOD_MONTH06.Id];
+                //    KpiGeneral_ExportDTO.TotalDirectQuantity.M7Value = TotalDirectQuantityContent[KpiPeriodEnum.PERIOD_MONTH07.Id];
+                //    KpiGeneral_ExportDTO.TotalDirectQuantity.M8Value = TotalDirectQuantityContent[KpiPeriodEnum.PERIOD_MONTH08.Id];
+                //    KpiGeneral_ExportDTO.TotalDirectQuantity.M9Value = TotalDirectQuantityContent[KpiPeriodEnum.PERIOD_MONTH09.Id];
+                //    KpiGeneral_ExportDTO.TotalDirectQuantity.M10Value = TotalDirectQuantityContent[KpiPeriodEnum.PERIOD_MONTH10.Id];
+                //    KpiGeneral_ExportDTO.TotalDirectQuantity.M11Value = TotalDirectQuantityContent[KpiPeriodEnum.PERIOD_MONTH11.Id];
+                //    KpiGeneral_ExportDTO.TotalDirectQuantity.M12Value = TotalDirectQuantityContent[KpiPeriodEnum.PERIOD_MONTH12.Id];
+                //    KpiGeneral_ExportDTO.TotalDirectQuantity.Q1Value = TotalDirectQuantityContent[KpiPeriodEnum.PERIOD_QUATER01.Id];
+                //    KpiGeneral_ExportDTO.TotalDirectQuantity.Q2Value = TotalDirectQuantityContent[KpiPeriodEnum.PERIOD_QUATER02.Id];
+                //    KpiGeneral_ExportDTO.TotalDirectQuantity.Q3Value = TotalDirectQuantityContent[KpiPeriodEnum.PERIOD_QUATER03.Id];
+                //    KpiGeneral_ExportDTO.TotalDirectQuantity.Q4Value = TotalDirectQuantityContent[KpiPeriodEnum.PERIOD_QUATER04.Id];
+                //    KpiGeneral_ExportDTO.TotalDirectQuantity.YValue = TotalDirectQuantityContent[KpiPeriodEnum.PERIOD_YEAR01.Id];
+                //}
+                //#endregion
 
-                #region Số đơn hàng trực tiếp
-                var TotalDirectOrdersContent = KpiGeneral_KpiGeneralContentDTOs
-                    .Where(x => x.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.TOTAL_DIRECT_SALES_ORDER.Id)
-                    .Where(x => x.KpiGeneralId == KpiGeneral.Id)
-                    .Select(x => x.KpiGeneralContentKpiPeriodMappings)
-                    .FirstOrDefault();
-                KpiGeneral_ExportDTO.TotalDirectOrders = new KpiGeneral_ExportCriterialDTO
-                {
-                    Id = KpiCriteriaGeneralEnum.TOTAL_DIRECT_SALES_ORDER.Id,
-                    Name = KpiCriteriaGeneralEnum.TOTAL_DIRECT_SALES_ORDER.Name
-                };
-                if (TotalDirectOrdersContent != null)
-                {
-                    KpiGeneral_ExportDTO.TotalDirectOrders.M1Value = TotalDirectOrdersContent[KpiPeriodEnum.PERIOD_MONTH01.Id];
-                    KpiGeneral_ExportDTO.TotalDirectOrders.M2Value = TotalDirectOrdersContent[KpiPeriodEnum.PERIOD_MONTH02.Id];
-                    KpiGeneral_ExportDTO.TotalDirectOrders.M3Value = TotalDirectOrdersContent[KpiPeriodEnum.PERIOD_MONTH03.Id];
-                    KpiGeneral_ExportDTO.TotalDirectOrders.M4Value = TotalDirectOrdersContent[KpiPeriodEnum.PERIOD_MONTH04.Id];
-                    KpiGeneral_ExportDTO.TotalDirectOrders.M5Value = TotalDirectOrdersContent[KpiPeriodEnum.PERIOD_MONTH05.Id];
-                    KpiGeneral_ExportDTO.TotalDirectOrders.M6Value = TotalDirectOrdersContent[KpiPeriodEnum.PERIOD_MONTH06.Id];
-                    KpiGeneral_ExportDTO.TotalDirectOrders.M7Value = TotalDirectOrdersContent[KpiPeriodEnum.PERIOD_MONTH07.Id];
-                    KpiGeneral_ExportDTO.TotalDirectOrders.M8Value = TotalDirectOrdersContent[KpiPeriodEnum.PERIOD_MONTH08.Id];
-                    KpiGeneral_ExportDTO.TotalDirectOrders.M9Value = TotalDirectOrdersContent[KpiPeriodEnum.PERIOD_MONTH09.Id];
-                    KpiGeneral_ExportDTO.TotalDirectOrders.M10Value = TotalDirectOrdersContent[KpiPeriodEnum.PERIOD_MONTH10.Id];
-                    KpiGeneral_ExportDTO.TotalDirectOrders.M11Value = TotalDirectOrdersContent[KpiPeriodEnum.PERIOD_MONTH11.Id];
-                    KpiGeneral_ExportDTO.TotalDirectOrders.M12Value = TotalDirectOrdersContent[KpiPeriodEnum.PERIOD_MONTH12.Id];
-                    KpiGeneral_ExportDTO.TotalDirectOrders.Q1Value = TotalDirectOrdersContent[KpiPeriodEnum.PERIOD_QUATER01.Id];
-                    KpiGeneral_ExportDTO.TotalDirectOrders.Q2Value = TotalDirectOrdersContent[KpiPeriodEnum.PERIOD_QUATER02.Id];
-                    KpiGeneral_ExportDTO.TotalDirectOrders.Q3Value = TotalDirectOrdersContent[KpiPeriodEnum.PERIOD_QUATER03.Id];
-                    KpiGeneral_ExportDTO.TotalDirectOrders.Q4Value = TotalDirectOrdersContent[KpiPeriodEnum.PERIOD_QUATER04.Id];
-                    KpiGeneral_ExportDTO.TotalDirectOrders.YValue = TotalDirectOrdersContent[KpiPeriodEnum.PERIOD_YEAR01.Id];
-                }
-                #endregion
+                //#region Số đơn hàng trực tiếp
+                //var TotalDirectOrdersContent = KpiGeneral_KpiGeneralContentDTOs
+                //    .Where(x => x.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.TOTAL_DIRECT_SALES_ORDER.Id)
+                //    .Where(x => x.KpiGeneralId == KpiGeneral.Id)
+                //    .Select(x => x.KpiGeneralContentKpiPeriodMappings)
+                //    .FirstOrDefault();
+                //KpiGeneral_ExportDTO.TotalDirectOrders = new KpiGeneral_ExportCriterialDTO
+                //{
+                //    Id = KpiCriteriaGeneralEnum.TOTAL_DIRECT_SALES_ORDER.Id,
+                //    Name = KpiCriteriaGeneralEnum.TOTAL_DIRECT_SALES_ORDER.Name
+                //};
+                //if (TotalDirectOrdersContent != null)
+                //{
+                //    KpiGeneral_ExportDTO.TotalDirectOrders.M1Value = TotalDirectOrdersContent[KpiPeriodEnum.PERIOD_MONTH01.Id];
+                //    KpiGeneral_ExportDTO.TotalDirectOrders.M2Value = TotalDirectOrdersContent[KpiPeriodEnum.PERIOD_MONTH02.Id];
+                //    KpiGeneral_ExportDTO.TotalDirectOrders.M3Value = TotalDirectOrdersContent[KpiPeriodEnum.PERIOD_MONTH03.Id];
+                //    KpiGeneral_ExportDTO.TotalDirectOrders.M4Value = TotalDirectOrdersContent[KpiPeriodEnum.PERIOD_MONTH04.Id];
+                //    KpiGeneral_ExportDTO.TotalDirectOrders.M5Value = TotalDirectOrdersContent[KpiPeriodEnum.PERIOD_MONTH05.Id];
+                //    KpiGeneral_ExportDTO.TotalDirectOrders.M6Value = TotalDirectOrdersContent[KpiPeriodEnum.PERIOD_MONTH06.Id];
+                //    KpiGeneral_ExportDTO.TotalDirectOrders.M7Value = TotalDirectOrdersContent[KpiPeriodEnum.PERIOD_MONTH07.Id];
+                //    KpiGeneral_ExportDTO.TotalDirectOrders.M8Value = TotalDirectOrdersContent[KpiPeriodEnum.PERIOD_MONTH08.Id];
+                //    KpiGeneral_ExportDTO.TotalDirectOrders.M9Value = TotalDirectOrdersContent[KpiPeriodEnum.PERIOD_MONTH09.Id];
+                //    KpiGeneral_ExportDTO.TotalDirectOrders.M10Value = TotalDirectOrdersContent[KpiPeriodEnum.PERIOD_MONTH10.Id];
+                //    KpiGeneral_ExportDTO.TotalDirectOrders.M11Value = TotalDirectOrdersContent[KpiPeriodEnum.PERIOD_MONTH11.Id];
+                //    KpiGeneral_ExportDTO.TotalDirectOrders.M12Value = TotalDirectOrdersContent[KpiPeriodEnum.PERIOD_MONTH12.Id];
+                //    KpiGeneral_ExportDTO.TotalDirectOrders.Q1Value = TotalDirectOrdersContent[KpiPeriodEnum.PERIOD_QUATER01.Id];
+                //    KpiGeneral_ExportDTO.TotalDirectOrders.Q2Value = TotalDirectOrdersContent[KpiPeriodEnum.PERIOD_QUATER02.Id];
+                //    KpiGeneral_ExportDTO.TotalDirectOrders.Q3Value = TotalDirectOrdersContent[KpiPeriodEnum.PERIOD_QUATER03.Id];
+                //    KpiGeneral_ExportDTO.TotalDirectOrders.Q4Value = TotalDirectOrdersContent[KpiPeriodEnum.PERIOD_QUATER04.Id];
+                //    KpiGeneral_ExportDTO.TotalDirectOrders.YValue = TotalDirectOrdersContent[KpiPeriodEnum.PERIOD_YEAR01.Id];
+                //}
+                //#endregion
                 KpiGeneral_ExportDTOs.Add(KpiGeneral_ExportDTO);
             }
 
@@ -1121,13 +1121,13 @@ namespace DMS.Rpc.kpi_general
                 };
                 #endregion
 
-                #region SKU/ Đơn hàng gián tiếp
-                KpiGeneral_ExportDTO.SKUIndirectOrder = new KpiGeneral_ExportCriterialDTO
-                {
-                    Id = KpiCriteriaGeneralEnum.SKU_INDIRECT_SALES_ORDER.Id,
-                    Name = KpiCriteriaGeneralEnum.SKU_INDIRECT_SALES_ORDER.Name
-                };
-                #endregion
+                //#region SKU/ Đơn hàng gián tiếp
+                //KpiGeneral_ExportDTO.SKUIndirectOrder = new KpiGeneral_ExportCriterialDTO
+                //{
+                //    Id = KpiCriteriaGeneralEnum.SKU_INDIRECT_SALES_ORDER.Id,
+                //    Name = KpiCriteriaGeneralEnum.SKU_INDIRECT_SALES_ORDER.Name
+                //};
+                //#endregion
 
                 #region Doanh thu đơn hàng gián tiếp
                 KpiGeneral_ExportDTO.TotalIndirectSalesAmount = new KpiGeneral_ExportCriterialDTO
@@ -1137,53 +1137,53 @@ namespace DMS.Rpc.kpi_general
                 };
                 #endregion
 
-                #region Tổng sản lượng đơn hàng gián tiếp
-                KpiGeneral_ExportDTO.TotalIndirectQuantity = new KpiGeneral_ExportCriterialDTO
-                {
-                    Id = KpiCriteriaGeneralEnum.TOTAL_INDIRECT_SALES_QUANTITY.Id,
-                    Name = KpiCriteriaGeneralEnum.TOTAL_INDIRECT_SALES_QUANTITY.Name
-                };
-                #endregion
+                //#region Tổng sản lượng đơn hàng gián tiếp
+                //KpiGeneral_ExportDTO.TotalIndirectQuantity = new KpiGeneral_ExportCriterialDTO
+                //{
+                //    Id = KpiCriteriaGeneralEnum.TOTAL_INDIRECT_SALES_QUANTITY.Id,
+                //    Name = KpiCriteriaGeneralEnum.TOTAL_INDIRECT_SALES_QUANTITY.Name
+                //};
+                //#endregion
 
-                #region Số đơn hàng gián tiếp
-                KpiGeneral_ExportDTO.TotalIndirectOrders = new KpiGeneral_ExportCriterialDTO
-                {
-                    Id = KpiCriteriaGeneralEnum.TOTAL_INDIRECT_SALES_ORDER.Id,
-                    Name = KpiCriteriaGeneralEnum.TOTAL_INDIRECT_SALES_ORDER.Name
-                };
-                #endregion
+                //#region Số đơn hàng gián tiếp
+                //KpiGeneral_ExportDTO.TotalIndirectOrders = new KpiGeneral_ExportCriterialDTO
+                //{
+                //    Id = KpiCriteriaGeneralEnum.TOTAL_INDIRECT_SALES_ORDER.Id,
+                //    Name = KpiCriteriaGeneralEnum.TOTAL_INDIRECT_SALES_ORDER.Name
+                //};
+                //#endregion
 
-                #region SKU/ Đơn hàng trực tiếp
-                KpiGeneral_ExportDTO.SKUDirectOrder = new KpiGeneral_ExportCriterialDTO
-                {
-                    Id = KpiCriteriaGeneralEnum.SKU_DIRECT_SALES_ORDER.Id,
-                    Name = KpiCriteriaGeneralEnum.SKU_DIRECT_SALES_ORDER.Name
-                };
-                #endregion
+                //#region SKU/ Đơn hàng trực tiếp
+                //KpiGeneral_ExportDTO.SKUDirectOrder = new KpiGeneral_ExportCriterialDTO
+                //{
+                //    Id = KpiCriteriaGeneralEnum.SKU_DIRECT_SALES_ORDER.Id,
+                //    Name = KpiCriteriaGeneralEnum.SKU_DIRECT_SALES_ORDER.Name
+                //};
+                //#endregion
 
-                #region Doanh thu đơn hàng trực tiếp
-                KpiGeneral_ExportDTO.TotalDirectSalesAmount = new KpiGeneral_ExportCriterialDTO
-                {
-                    Id = KpiCriteriaGeneralEnum.TOTAL_DIRECT_SALES_AMOUNT.Id,
-                    Name = KpiCriteriaGeneralEnum.TOTAL_DIRECT_SALES_AMOUNT.Name
-                };
-                #endregion
+                //#region Doanh thu đơn hàng trực tiếp
+                //KpiGeneral_ExportDTO.TotalDirectSalesAmount = new KpiGeneral_ExportCriterialDTO
+                //{
+                //    Id = KpiCriteriaGeneralEnum.TOTAL_DIRECT_SALES_AMOUNT.Id,
+                //    Name = KpiCriteriaGeneralEnum.TOTAL_DIRECT_SALES_AMOUNT.Name
+                //};
+                //#endregion
 
-                #region Tổng sản lượng đơn hàng trực tiếp
-                KpiGeneral_ExportDTO.TotalDirectQuantity = new KpiGeneral_ExportCriterialDTO
-                {
-                    Id = KpiCriteriaGeneralEnum.TOTAL_DIRECT_SALES_QUANTITY.Id,
-                    Name = KpiCriteriaGeneralEnum.TOTAL_DIRECT_SALES_QUANTITY.Name
-                };
-                #endregion
+                //#region Tổng sản lượng đơn hàng trực tiếp
+                //KpiGeneral_ExportDTO.TotalDirectQuantity = new KpiGeneral_ExportCriterialDTO
+                //{
+                //    Id = KpiCriteriaGeneralEnum.TOTAL_DIRECT_SALES_QUANTITY.Id,
+                //    Name = KpiCriteriaGeneralEnum.TOTAL_DIRECT_SALES_QUANTITY.Name
+                //};
+                //#endregion
 
-                #region Số đơn hàng trực tiếp
-                KpiGeneral_ExportDTO.TotalDirectOrders = new KpiGeneral_ExportCriterialDTO
-                {
-                    Id = KpiCriteriaGeneralEnum.TOTAL_DIRECT_SALES_ORDER.Id,
-                    Name = KpiCriteriaGeneralEnum.TOTAL_DIRECT_SALES_ORDER.Name
-                };
-                #endregion
+                //#region Số đơn hàng trực tiếp
+                //KpiGeneral_ExportDTO.TotalDirectOrders = new KpiGeneral_ExportCriterialDTO
+                //{
+                //    Id = KpiCriteriaGeneralEnum.TOTAL_DIRECT_SALES_ORDER.Id,
+                //    Name = KpiCriteriaGeneralEnum.TOTAL_DIRECT_SALES_ORDER.Name
+                //};
+                //#endregion
                 KpiGeneral_ExportDTOs.Add(KpiGeneral_ExportDTO);
             }
 
