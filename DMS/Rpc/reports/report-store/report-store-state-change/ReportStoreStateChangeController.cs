@@ -148,7 +148,7 @@ namespace DMS.Rpc.reports.report_store.report_store_state_change
                     StoreAddress = x.Store.Address,
                     StoreCode = x.Store.Code,
                     StoreName = x.Store.Name,
-                    StorePhoneNumber = x.Store.OwnerPhone,
+                    StorePhoneNumber = x.Store.OwnerPhone ?? "",
                     StoreStatus = x.StoreStatus.Name,
                 }).ToListAsync();
 
