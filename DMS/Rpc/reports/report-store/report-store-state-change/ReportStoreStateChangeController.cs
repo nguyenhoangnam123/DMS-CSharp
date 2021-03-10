@@ -17,6 +17,7 @@ using Microsoft.EntityFrameworkCore;
 using System.IO;
 using System.Dynamic;
 using DMS.Helpers;
+using DMS.Services.MStoreStatusHistoryTypeHistoryType;
 
 namespace DMS.Rpc.reports.report_store.report_store_state_change
 {
@@ -25,21 +26,21 @@ namespace DMS.Rpc.reports.report_store.report_store_state_change
         private IAppUserService AppUserService;
         private IOrganizationService OrganizationService;
         private IStoreService StoreService;
-        private IStoreStatusService StoreStatusService;
+        private IStoreStatusHistoryTypeService StoreStatusHistoryTypeService;
         private DataContext DataContext;
         private ICurrentContext CurrentContext;
         public ReportStoreStateChangeController(
             IAppUserService AppUserService,
             IOrganizationService OrganizationService,
             IStoreService StoreService,
-            IStoreStatusService StoreStatusService,
+            IStoreStatusHistoryTypeService StoreStatusHistoryTypeService,
             DataContext DataContext,
             ICurrentContext CurrentContext)
         {
             this.AppUserService = AppUserService;
             this.OrganizationService = OrganizationService;
             this.StoreService = StoreService;
-            this.StoreStatusService = StoreStatusService;
+            this.StoreStatusHistoryTypeService = StoreStatusHistoryTypeService;
             this.DataContext = DataContext;
             this.CurrentContext = CurrentContext;
         }
@@ -103,26 +104,26 @@ namespace DMS.Rpc.reports.report_store.report_store_state_change
             return ReportStoreStateChange_StoreDTOs;
         }
 
-        [Route(ReportStoreStateChangeRoute.FilterListStoreStatus), HttpPost]
-        public async Task<List<ReportStoreStateChange_StoreStatusDTO>> FilterListStoreStatus([FromBody] ReportStoreStateChange_StoreStatusFilterDTO ReportStoreStateChange_StoreStatusFilterDTO)
+        [Route(ReportStoreStateChangeRoute.FilterListStoreStatusHistoryType), HttpPost]
+        public async Task<List<ReportStoreStateChange_StoreStatusHistoryTypeDTO>> FilterListStoreStatusHistoryType([FromBody] ReportStoreStateChange_StoreStatusHistoryTypeFilterDTO ReportStoreStateChange_StoreStatusHistoryTypeFilterDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
 
-            StoreStatusFilter StoreStatusFilter = new StoreStatusFilter();
-            StoreStatusFilter.Skip = 0;
-            StoreStatusFilter.Take = 20;
-            StoreStatusFilter.OrderBy = StoreStatusOrder.Id;
-            StoreStatusFilter.OrderType = OrderType.ASC;
-            StoreStatusFilter.Selects = StoreStatusSelect.ALL;
-            StoreStatusFilter.Id = ReportStoreStateChange_StoreStatusFilterDTO.Id;
-            StoreStatusFilter.Code = ReportStoreStateChange_StoreStatusFilterDTO.Code;
-            StoreStatusFilter.Name = ReportStoreStateChange_StoreStatusFilterDTO.Name;
+            StoreStatusHistoryTypeFilter StoreStatusHistoryTypeFilter = new StoreStatusHistoryTypeFilter();
+            StoreStatusHistoryTypeFilter.Skip = 0;
+            StoreStatusHistoryTypeFilter.Take = 20;
+            StoreStatusHistoryTypeFilter.OrderBy = StoreStatusHistoryTypeOrder.Id;
+            StoreStatusHistoryTypeFilter.OrderType = OrderType.ASC;
+            StoreStatusHistoryTypeFilter.Selects = StoreStatusHistoryTypeSelect.ALL;
+            StoreStatusHistoryTypeFilter.Id = ReportStoreStateChange_StoreStatusHistoryTypeFilterDTO.Id;
+            StoreStatusHistoryTypeFilter.Code = ReportStoreStateChange_StoreStatusHistoryTypeFilterDTO.Code;
+            StoreStatusHistoryTypeFilter.Name = ReportStoreStateChange_StoreStatusHistoryTypeFilterDTO.Name;
 
-            List<StoreStatus> StoreStatuses = await StoreStatusService.List(StoreStatusFilter);
-            List<ReportStoreStateChange_StoreStatusDTO> ReportStoreStateChange_StoreStatusDTOs = StoreStatuses
-                .Select(x => new ReportStoreStateChange_StoreStatusDTO(x)).ToList();
-            return ReportStoreStateChange_StoreStatusDTOs;
+            List<StoreStatusHistoryType> StoreStatusHistoryTypes = await StoreStatusHistoryTypeService.List(StoreStatusHistoryTypeFilter);
+            List<ReportStoreStateChange_StoreStatusHistoryTypeDTO> ReportStoreStateChange_StoreStatusHistoryTypeDTOs = StoreStatusHistoryTypes
+                .Select(x => new ReportStoreStateChange_StoreStatusHistoryTypeDTO(x)).ToList();
+            return ReportStoreStateChange_StoreStatusHistoryTypeDTOs;
         }
         #endregion
 
