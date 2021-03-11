@@ -20,6 +20,7 @@ namespace DMS.Repositories
         Task<bool> Delete(Album Album);
         Task<bool> BulkMerge(List<Album> Albums);
         Task<bool> BulkDelete(List<Album> Albums);
+        Task<bool> BulkUsed(List<Album> Albums);
     }
     public class AlbumRepository : IAlbumRepository
     {
@@ -321,6 +322,13 @@ namespace DMS.Repositories
                 }
             }
             await DataContext.AlbumImageMapping.BulkMergeAsync(AlbumImageMappingDAOs);
+        }
+
+        public async Task<bool> BulkUsed(List<Album> Albums)
+        {
+            List<long> Ids = Albums.Select(x => x.Id).ToList();
+            await DataContext.Album.Where(a => Ids.Contains(a.Id)).UpdateFromQueryAsync(a => new AlbumDAO { Used = true });
+            return true;
         }
     }
 }

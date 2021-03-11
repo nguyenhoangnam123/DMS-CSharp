@@ -27,19 +27,9 @@ namespace DMS.Handlers
 
         private async Task Sync(DataContext context, string json)
         {
-            List<EventMessage<Position>> EventMessageReviced = JsonConvert.DeserializeObject<List<EventMessage<Position>>>(json);
-            await SaveEventMessage(context, SyncKey, EventMessageReviced);
+            List<EventMessage<Position>> PositionEventMessages = JsonConvert.DeserializeObject<List<EventMessage<Position>>>(json);
 
-            List<Guid> RowIds = EventMessageReviced.Select(a => a.RowId).Distinct().ToList();
-            List<EventMessage<Position>> PositionEventMessages = await ListEventMessage<Position>(context, SyncKey, RowIds);
-
-            List<Position> Positions = new List<Position>();
-            foreach (var RowId in RowIds)
-            {
-                EventMessage<Position> EventMessage = PositionEventMessages.Where(e => e.RowId == RowId).OrderByDescending(e => e.Time).FirstOrDefault();
-                if (EventMessage != null)
-                    Positions.Add(EventMessage.Content);
-            }
+            List<Position> Positions = PositionEventMessages.Select(x => x.Content).ToList();
             try
             {
                 List<PositionDAO> PositionDAOs = Positions.Select(x => new PositionDAO
@@ -55,9 +45,9 @@ namespace DMS.Handlers
                 }).ToList();
                 await context.BulkMergeAsync(PositionDAOs);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                Log(ex, nameof(PositionHandler));
+                SystemLog(ex, nameof(PositionHandler));
             }
         }
     }

@@ -28,10 +28,7 @@ namespace DMS.Handlers
 
         private async Task Sync(DataContext context, string json)
         {
-            List<EventMessage<TaxType>> EventMessageReceived = JsonConvert.DeserializeObject<List<EventMessage<TaxType>>>(json);
-            await SaveEventMessage(context, SyncKey, EventMessageReceived);
-            List<Guid> RowIds = EventMessageReceived.Select(a => a.RowId).Distinct().ToList();
-            List<EventMessage<TaxType>> TaxTypeEventMessages = await ListEventMessage<TaxType>(context, SyncKey, RowIds);
+            List<EventMessage<TaxType>> TaxTypeEventMessages = JsonConvert.DeserializeObject<List<EventMessage<TaxType>>>(json);
             List<TaxType> TaxTypes = TaxTypeEventMessages.Select(x => x.Content).ToList();
             try
             {
@@ -54,7 +51,7 @@ namespace DMS.Handlers
             }
             catch (Exception ex)
             {
-                Log(ex, nameof(TaxTypeHandler));
+                SystemLog(ex, nameof(TaxTypeHandler));
             }
         }
     }

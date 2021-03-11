@@ -28,10 +28,7 @@ namespace DMS.Handlers
         }
         public async Task Sync(DataContext context, string json)
         {
-            List<EventMessage<Nation>> EventMessageReceived = JsonConvert.DeserializeObject<List<EventMessage<Nation>>>(json);
-            await SaveEventMessage(context, SyncKey, EventMessageReceived);
-            List<Guid> RowIds = EventMessageReceived.Select(a => a.RowId).Distinct().ToList();
-            List<EventMessage<Nation>> NationEventMessages = await ListEventMessage<Nation>(context, SyncKey, RowIds);
+            List<EventMessage<Nation>> NationEventMessages = JsonConvert.DeserializeObject<List<EventMessage<Nation>>>(json);
             List<Nation> Nations = NationEventMessages.Select(x => x.Content).ToList();
             try
             {
@@ -52,7 +49,7 @@ namespace DMS.Handlers
             }
             catch (Exception ex)
             {
-                Log(ex, nameof(NationHandler));
+                SystemLog(ex, nameof(NationHandler));
             }
         }
     }

@@ -1,6 +1,7 @@
 ﻿using DMS.Common;
 using DMS.Entities;
 using DMS.Models;
+using DMS.Repositories;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
 using System;
@@ -28,31 +29,16 @@ namespace DMS.Handlers
 
         private async Task Sync(DataContext context, string json)
         {
-            List<EventMessage<Brand>> EventMessageReceived = JsonConvert.DeserializeObject<List<EventMessage<Brand>>>(json);
-            await SaveEventMessage(context, SyncKey, EventMessageReceived);
-            List<Guid> RowIds = EventMessageReceived.Select(a => a.RowId).Distinct().ToList();
-            List<EventMessage<Brand>> BrandEventMessages = await ListEventMessage<Brand>(context, SyncKey, RowIds);
-            List<Brand> Brands = BrandEventMessages.Select(x => x.Content).ToList();
             try
             {
-                List<BrandDAO> BrandDAOs = Brands.Select(x => new BrandDAO
-                {
-                    Code = x.Code,
-                    CreatedAt = x.CreatedAt,
-                    UpdatedAt = x.UpdatedAt,
-                    DeletedAt = x.DeletedAt,
-                    Used = x.Used,
-                    Description = x.Description,
-                    Id = x.Id,
-                    Name = x.Name,
-                    RowId = x.RowId,
-                    StatusId = x.StatusId,
-                }).ToList();
-                await context.BulkMergeAsync(BrandDAOs);
+                List<EventMessage<Brand>> BrandEventMessages = JsonConvert.DeserializeObject<List<EventMessage<Brand>>>(json);
+                List<Brand> Brands = BrandEventMessages.Select(x => x.Content).ToList();
+                IUOW UOW = new UOW(context);
+                await UOW.BrandRepository.BulkMerge(Brands);
             }
             catch (Exception ex)
             {
-                Log(ex, nameof(BrandHandler));
+                SystemLog(ex, nameof(BrandHandler));
             }
         }
     }

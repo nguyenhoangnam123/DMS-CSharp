@@ -28,18 +28,9 @@ namespace DMS.Handlers
 
         private async Task Sync(DataContext context, string json)
         {
-            List<EventMessage<Organization>> EventMessageReceived = JsonConvert.DeserializeObject<List<EventMessage<Organization>>>(json);
-            await SaveEventMessage(context, SyncKey, EventMessageReceived);
-            List<Guid> RowIds = EventMessageReceived.Select(a => a.RowId).Distinct().ToList();
-            List<EventMessage<Organization>> OrganizationEventMessages = await ListEventMessage<Organization>(context, SyncKey, RowIds);
+            List<EventMessage<Organization>> OrganizationEventMessages = JsonConvert.DeserializeObject<List<EventMessage<Organization>>>(json);
 
-            List<Organization> Organizations = new List<Organization>();
-            foreach (var RowId in RowIds)
-            {
-                EventMessage<Organization> EventMessage = OrganizationEventMessages.Where(e => e.RowId == RowId).OrderByDescending(e => e.Time).FirstOrDefault();
-                if (EventMessage != null)
-                    Organizations.Add(EventMessage.Content);
-            }
+            List<Organization> Organizations = OrganizationEventMessages.Select(x => x.Content).ToList();
 
             var AppUsers = Organizations.Where(x => x.AppUsers != null).SelectMany(x => x.AppUsers).ToList();
             var AppUserIds = AppUsers.Select(x => x.Id).ToList();
@@ -74,7 +65,7 @@ namespace DMS.Handlers
             }
             catch(Exception ex)
             {
-                Log(ex, nameof(OrganizationHandler));
+                SystemLog(ex, nameof(OrganizationHandler));
             }
         }
     }

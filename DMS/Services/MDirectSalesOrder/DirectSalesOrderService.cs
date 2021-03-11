@@ -401,6 +401,7 @@ namespace DMS.Services.MDirectSalesOrder
                 DirectSalesOrder.Code = DirectSalesOrder.Id.ToString(); 
                 DirectSalesOrder.OrganizationId = SaleEmployee.OrganizationId;
                 DirectSalesOrder.CreatorId = CurrentContext.UserId;
+                DirectSalesOrder.DirectSalesOrderSourceTypeId = DirectSalesOrderSourceTypeEnum.FROM_DMS.Id; // create DirectSalesOrder from DMS
                 await UOW.DirectSalesOrderRepository.Create(DirectSalesOrder);
                 DirectSalesOrder.Code = DirectSalesOrder.Id.ToString();
                 await UOW.DirectSalesOrderRepository.Update(DirectSalesOrder);

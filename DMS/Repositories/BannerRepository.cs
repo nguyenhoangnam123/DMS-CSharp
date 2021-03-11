@@ -412,6 +412,5 @@ namespace DMS.Repositories
         private async Task SaveReference(Banner Banner)
         {
         }
-
     }
 }

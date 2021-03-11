@@ -27,17 +27,8 @@ namespace DMS.Handlers
 
         private async Task Sync(DataContext context, string json)
         {
-            List<EventMessage<District>> EventMessageReviced = JsonConvert.DeserializeObject<List<EventMessage<District>>>(json);
-            await SaveEventMessage(context, SyncKey, EventMessageReviced);
-            List<Guid> RowIds = EventMessageReviced.Select(a => a.RowId).Distinct().ToList();
-            List<EventMessage<District>> DistrictEventMessages = await ListEventMessage<District>(context, SyncKey, RowIds);
-            List<District> Districts = new List<District>();
-            foreach (var RowId in RowIds)
-            {
-                EventMessage<District> EventMessage = DistrictEventMessages.Where(e => e.RowId == RowId).OrderByDescending(e => e.Time).FirstOrDefault();
-                if (EventMessage != null)
-                    Districts.Add(EventMessage.Content);
-            }
+            List<EventMessage<District>> DistrictEventMessages = JsonConvert.DeserializeObject<List<EventMessage<District>>>(json);
+            List<District> Districts = DistrictEventMessages.Select(x => x.Content).ToList();
             try
             {
                 List<DistrictDAO> DistrictDAOs = Districts.Select(x => new DistrictDAO
@@ -57,7 +48,7 @@ namespace DMS.Handlers
             }
             catch(Exception ex)
             {
-                Log(ex, nameof(DistrictHandler));
+                SystemLog(ex, nameof(DistrictHandler));
             }
         }
     }

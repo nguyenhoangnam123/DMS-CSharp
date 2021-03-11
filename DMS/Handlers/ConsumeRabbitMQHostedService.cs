@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using DMS.Repositories;
 
 namespace DMS.Handlers
 {
@@ -32,9 +33,9 @@ namespace DMS.Handlers
                 RabbitManager = new RabbitManager(objectPolicy);
                 _channel = _objectPool.Get();
                 _channel.ExchangeDeclare(exchangeName, ExchangeType.Topic, true, false);
-                //Dictionary<string, object> arguments = new Dictionary<string, object>();
-                //arguments.Add("x-single-active-consumer", true);
-                _channel.QueueDeclare(StaticParams.ModuleName, true, false, false, null);
+                Dictionary<string, object> arguments = new Dictionary<string, object>();
+                arguments.Add("x-single-active-consumer", true);
+                _channel.QueueDeclare(StaticParams.ModuleName, true, false, false, arguments);
 
                 List<Type> handlerTypes = typeof(ConsumeRabbitMQHostedService).Assembly.GetTypes()
                     .Where(x => typeof(Handler).IsAssignableFrom(x) && x.IsClass && !x.IsAbstract)
@@ -92,6 +93,7 @@ namespace DMS.Handlers
             var optionsBuilder = new DbContextOptionsBuilder<DataContext>();
             optionsBuilder.UseSqlServer(Configuration.GetConnectionString("DataContext"));
             DataContext context = new DataContext(optionsBuilder.Options);
+            IUOW UOW = new UOW(context);
             List<string> path = routingKey.Split(".").ToList();
             if (path.Count < 1)
                 throw new Exception();

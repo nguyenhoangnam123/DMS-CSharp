@@ -28,10 +28,7 @@ namespace DMS.Handlers
 
         private async Task Sync(DataContext context, string json)
         {
-            List<EventMessage<UnitOfMeasure>> EventMessageReceived = JsonConvert.DeserializeObject<List<EventMessage<UnitOfMeasure>>>(json);
-            await SaveEventMessage(context, SyncKey, EventMessageReceived);
-            List<Guid> RowIds = EventMessageReceived.Select(a => a.RowId).Distinct().ToList();
-            List<EventMessage<UnitOfMeasure>> UnitOfMeasureEventMessages = await ListEventMessage<UnitOfMeasure>(context, SyncKey, RowIds);
+            List<EventMessage<UnitOfMeasure>> UnitOfMeasureEventMessages = JsonConvert.DeserializeObject<List<EventMessage<UnitOfMeasure>>>(json);
             List<UnitOfMeasure> UnitOfMeasures = UnitOfMeasureEventMessages.Select(x => x.Content).ToList();
             try
             {
@@ -53,7 +50,7 @@ namespace DMS.Handlers
             }
             catch (Exception ex)
             {
-                Log(ex, nameof(UnitOfMeasureHandler));
+                SystemLog(ex, nameof(UnitOfMeasureHandler));
             }
         }
     }
