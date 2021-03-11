@@ -22,8 +22,8 @@ namespace DMS.Services.MKpiItem
         Task<KpiItem> Delete(KpiItem KpiItem);
         Task<List<KpiItem>> BulkDelete(List<KpiItem> KpiItems);
         Task<List<KpiItem>> Import(List<KpiItem> KpiItems);
-        Task<int> CountAppUser(AppUserFilter AppUserFilter, IdFilter KpiYearId, IdFilter KpiPeriodId);
-        Task<List<AppUser>> ListAppUser(AppUserFilter AppUserFilter, IdFilter KpiYearId, IdFilter KpiPeriodId);
+        Task<int> CountAppUser(AppUserFilter AppUserFilter, IdFilter KpiYearId, IdFilter KpiPeriodId, IdFilter KpiItemTypeId);
+        Task<List<AppUser>> ListAppUser(AppUserFilter AppUserFilter, IdFilter KpiYearId, IdFilter KpiPeriodId, IdFilter KpiItemTypeId);
 
         Task<KpiItemFilter> ToFilter(KpiItemFilter KpiItemFilter);
     }
@@ -279,7 +279,7 @@ namespace DMS.Services.MKpiItem
             }
         }
 
-        public async Task<List<AppUser>> ListAppUser(AppUserFilter AppUserFilter, IdFilter KpiYearId, IdFilter KpiPeriodId)
+        public async Task<List<AppUser>> ListAppUser(AppUserFilter AppUserFilter, IdFilter KpiYearId, IdFilter KpiPeriodId, IdFilter KpiItemTypeId)
         {
             try
             {
@@ -289,6 +289,7 @@ namespace DMS.Services.MKpiItem
                     Take = int.MaxValue,
                     KpiYearId = KpiYearId,
                     KpiPeriodId = KpiPeriodId,
+                    KpiItemTypeId = KpiItemTypeId,
                     Selects = KpiItemSelect.Id | KpiItemSelect.Employee
                 };
 
@@ -318,7 +319,7 @@ namespace DMS.Services.MKpiItem
 
         }
 
-        public async Task<int> CountAppUser(AppUserFilter AppUserFilter, IdFilter KpiYearId, IdFilter KpiPeriodId)
+        public async Task<int> CountAppUser(AppUserFilter AppUserFilter, IdFilter KpiYearId, IdFilter KpiPeriodId, IdFilter KpiItemTypeId)
         {
             try
             {
@@ -328,6 +329,7 @@ namespace DMS.Services.MKpiItem
                     Take = int.MaxValue,
                     KpiYearId = KpiYearId,
                     KpiPeriodId = KpiPeriodId,
+                    KpiItemTypeId = KpiItemTypeId,
                     Selects = KpiItemSelect.Id | KpiItemSelect.Employee
                 };
 

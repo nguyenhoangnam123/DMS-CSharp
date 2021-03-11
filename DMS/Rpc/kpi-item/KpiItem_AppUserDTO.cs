@@ -69,6 +69,7 @@ namespace DMS.Rpc.kpi_item
         public DateFilter Birthday { get; set; }
         public IdFilter KpiYearId { get; set; }
         public IdFilter KpiPeriodId { get; set; }
+        public IdFilter KpiItemTypeId { get; set; }
 
         public AppUserOrder OrderBy { get; set; }
     }

@@ -14,6 +14,7 @@ namespace DMS.Rpc.mobile.permission_mobile
 
         public const string ListCurrentKpiGeneral = Default + "/list-current-kpi-general";
         public const string ListCurrentKpiItem = Default + "/list-current-kpi-item";
+        public const string ListCurrentKpiNewItem = Default + "/list-current-kpi-new-item";
 
         public static Dictionary<string, long> Filters = new Dictionary<string, long>
         {
@@ -25,7 +26,7 @@ namespace DMS.Rpc.mobile.permission_mobile
         public static Dictionary<string, IEnumerable<string>> Action = new Dictionary<string, IEnumerable<string>>
         {
             { "Thống kê Kpi nhân viên theo tháng", new List<string>{
-                ListCurrentKpiGeneral, ListCurrentKpiItem, CountAppUser, ListAppUser
+                ListCurrentKpiGeneral, ListCurrentKpiItem, ListCurrentKpiNewItem, CountAppUser, ListAppUser
             } }
         };
     }

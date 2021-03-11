@@ -469,7 +469,7 @@ namespace DMS.Rpc.kpi_item
                 AppUserFilter.Id.In.AddRange(await FilterAppUser(AppUserService, OrganizationService, CurrentContext));
             }
 
-            return await KpiItemService.CountAppUser(AppUserFilter, KpiItem_AppUserFilterDTO.KpiYearId, KpiItem_AppUserFilterDTO.KpiPeriodId);
+            return await KpiItemService.CountAppUser(AppUserFilter, KpiItem_AppUserFilterDTO.KpiYearId, KpiItem_AppUserFilterDTO.KpiPeriodId, KpiItem_AppUserFilterDTO.KpiItemTypeId);
         }
 
         [Route(KpiItemRoute.ListAppUser), HttpPost]
@@ -495,7 +495,7 @@ namespace DMS.Rpc.kpi_item
                 AppUserFilter.Id.In.AddRange(await FilterAppUser(AppUserService, OrganizationService, CurrentContext));
             }
 
-            List<AppUser> AppUsers = await KpiItemService.ListAppUser(AppUserFilter, KpiItem_AppUserFilterDTO.KpiYearId, KpiItem_AppUserFilterDTO.KpiPeriodId);
+            List<AppUser> AppUsers = await KpiItemService.ListAppUser(AppUserFilter, KpiItem_AppUserFilterDTO.KpiYearId, KpiItem_AppUserFilterDTO.KpiPeriodId, KpiItem_AppUserFilterDTO.KpiItemTypeId);
             List<KpiItem_AppUserDTO> KpiItem_AppUserDTOs = AppUsers
                 .Select(x => new KpiItem_AppUserDTO(x)).ToList();
             return KpiItem_AppUserDTOs;
