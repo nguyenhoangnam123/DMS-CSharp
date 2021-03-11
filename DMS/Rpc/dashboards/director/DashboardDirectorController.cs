@@ -14,6 +14,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using DMS.Enums;
 using DMS.Services.MStore;
+using Thinktecture.EntityFrameworkCore.TempTables;
+using Thinktecture;
 
 namespace DMS.Rpc.dashboards.director
 {
@@ -163,8 +165,11 @@ namespace DMS.Rpc.dashboards.director
             }
             OrganizationIds = OrganizationDAOs.Select(o => o.Id).ToList();
 
+            List<long> StoreIds = await FilterStore(StoreService, OrganizationService, CurrentContext);
+            ITempTableQuery<TempTable<long>> tempTableQuery = await DataContext
+                        .BulkInsertValuesIntoTempTableAsync<long>(StoreIds);
             var query = from s in DataContext.Store
-                        join o in DataContext.Organization on s.OrganizationId equals o.Id
+                        join tt in tempTableQuery.Query on s.Id equals tt.Column1
                         where OrganizationIds.Contains(s.OrganizationId) &&
                         s.DeletedAt == null
                         select s;
@@ -293,16 +298,18 @@ namespace DMS.Rpc.dashboards.director
             var AppUserIds = AppUsers.Select(x => x.Id).ToList();
 
             List<long> StoreIds = await FilterStore(StoreService, OrganizationService, CurrentContext);
+            ITempTableQuery<TempTable<long>> tempTableQuery = await DataContext
+                        .BulkInsertValuesIntoTempTableAsync<long>(StoreIds);
 
             var queryStoreHasCheckedCounter = from sc in DataContext.StoreChecking
                                               join s in DataContext.Store on sc.StoreId equals s.Id
                                               join au in DataContext.AppUser on sc.SaleEmployeeId equals au.Id
                                               join o in DataContext.Organization on au.OrganizationId equals o.Id
+                                              join tt in tempTableQuery.Query on s.Id equals tt.Column1
                                               where sc.CheckOutAt.HasValue && sc.CheckOutAt >= Start && sc.CheckOutAt <= End &&
                                               AppUserIds.Contains(au.Id) &&
                                               (SaleEmployeeId.HasValue == false || au.Id == SaleEmployeeId.Value) &&
                                               OrganizationIds.Contains(s.OrganizationId) &&
-                                              StoreIds.Contains(sc.StoreId) &&
                                               au.DeletedAt == null && o.DeletedAt == null && s.DeletedAt == null
                                               select s;
 
@@ -341,16 +348,18 @@ namespace DMS.Rpc.dashboards.director
             var AppUserIds = AppUsers.Select(x => x.Id).ToList();
 
             List<long> StoreIds = await FilterStore(StoreService, OrganizationService, CurrentContext);
+            ITempTableQuery<TempTable<long>> tempTableQuery = await DataContext
+                        .BulkInsertValuesIntoTempTableAsync<long>(StoreIds);
 
             var query = from sc in DataContext.StoreChecking
                         join s in DataContext.Store on sc.StoreId equals s.Id
                         join au in DataContext.AppUser on sc.SaleEmployeeId equals au.Id
                         join o in DataContext.Organization on au.OrganizationId equals o.Id
+                        join tt in tempTableQuery.Query on s.Id equals tt.Column1
                         where sc.CheckOutAt.HasValue && sc.CheckOutAt >= Start && sc.CheckOutAt <= End &&
                         AppUserIds.Contains(au.Id) &&
                         (SaleEmployeeId.HasValue == false || au.Id == SaleEmployeeId.Value) &&
                         OrganizationIds.Contains(s.OrganizationId) &&
-                        StoreIds.Contains(sc.StoreId) &&
                         au.DeletedAt == null && o.DeletedAt == null && s.DeletedAt == null
                         select sc;
 
