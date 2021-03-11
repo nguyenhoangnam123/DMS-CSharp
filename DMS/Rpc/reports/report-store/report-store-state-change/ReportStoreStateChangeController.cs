@@ -138,7 +138,11 @@ namespace DMS.Rpc.reports.report_store.report_store_state_change
         public async Task<List<ReportStoreStateChange_ReportStoreStateChangeDTO>> List([FromBody] ReportStoreStateChange_ReportStoreStateChangeFilterDTO ReportStoreStateChange_ReportStoreStateChangeFilterDTO)
         {
             IQueryable<StoreStatusHistoryDAO> StoreStatusHistoryDAOs = await Filter(ReportStoreStateChange_ReportStoreStateChangeFilterDTO);
-            List<StoreStatusHistoryDAO> result = await StoreStatusHistoryDAOs.ToListAsync();
+            List<StoreStatusHistoryDAO> result = await StoreStatusHistoryDAOs
+                .Include(x => x.Store.Organization)
+                .Include(x => x.PreviousStoreStatus)
+                .Include(x => x.StoreStatus)
+                .ToListAsync();
             List<ReportStoreStateChange_ReportStoreStateChangeDetailDTO> ReportStoreStateChange_ReportStoreStateChangeDetailDTOs = new List<ReportStoreStateChange_ReportStoreStateChangeDetailDTO>();
             for (int i = 0; i < StoreStatusHistoryDAOs.Count(); i++)
             {
@@ -150,10 +154,10 @@ namespace DMS.Rpc.reports.report_store.report_store_state_change
                     OrganizationName = StoreStatusHistoryDAO.Store.Organization.Name,
                     PreviousCreatedAt = StoreStatusHistoryDAO.PreviousCreatedAt,
                     PreviousStoreStatus = StoreStatusHistoryDAO.PreviousStoreStatus.Name,
-                    StoreAddress = StoreStatusHistoryDAO.Store.Address,
-                    StoreCode = StoreStatusHistoryDAO.Store.Code,
-                    StoreName = StoreStatusHistoryDAO.Store.Name,
-                    StorePhoneNumber = StoreStatusHistoryDAO.Store.OwnerPhone ?? "",
+                    StoreAddress = StoreStatusHistoryDAO.Store?.Address,
+                    StoreCode = StoreStatusHistoryDAO.Store?.Code,
+                    StoreName = StoreStatusHistoryDAO.Store?.Name,
+                    StorePhoneNumber = StoreStatusHistoryDAO.Store?.OwnerPhone ?? "",
                     StoreStatus = StoreStatusHistoryDAO.StoreStatus.Name,
                 };
                 ReportStoreStateChange_ReportStoreStateChangeDetailDTOs.Add(ReportStoreStateChange_ReportStoreStateChangeDetailDTO);

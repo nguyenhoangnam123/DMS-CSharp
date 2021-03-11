@@ -463,8 +463,11 @@ namespace DMS.Rpc.reports.report_sales_order.report_indirect_sales_order_by_empl
                 ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTOs.Add(ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTO);
             }
             // khởi tạo khung dữ liệu
-            Parallel.ForEach(ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTOs, ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTO =>
+            //Parallel.ForEach(ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTOs, ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTO =>
+            //{
+            foreach (var ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTO in ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTOs)
             {
+
                 foreach (var SalesEmployee in ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTO.SaleEmployees)
                 {
                     var Employee = AppUserDAOs.Where(x => x.Id == SalesEmployee.SaleEmployeeId).FirstOrDefault();
@@ -545,7 +548,8 @@ namespace DMS.Rpc.reports.report_sales_order.report_indirect_sales_order_by_empl
                         }
                     }
                 }
-            });
+            }
+            //});
 
             //làm tròn số
             Parallel.ForEach(ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTOs, ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemDTO =>
