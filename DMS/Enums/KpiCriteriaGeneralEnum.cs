@@ -19,7 +19,7 @@ namespace DMS.Enums
         public static GenericEnum NEW_STORE_CREATED = new GenericEnum { Id = 6, Code = "NewStoresCreated", Name = "Tống số đại lý mở mới" };
         public static GenericEnum NUMBER_OF_STORE_VISIT = new GenericEnum { Id = 7, Code = "NumberOfStoreVisits", Name = "Tổng số lượng ghé thăm" };
         public static GenericEnum REVENUE_C2_TD = new GenericEnum { Id = 12, Code = "RevenueC2TD", Name = "Doanh thu C2 Trọng điểm" };
-        public static GenericEnum REVENUE_C2_BIG = new GenericEnum { Id = 13, Code = "RevenueC2SL", Name = "Doanh thu C2 Siêu lớn" };
+        public static GenericEnum REVENUE_C2_SL = new GenericEnum { Id = 13, Code = "RevenueC2SL", Name = "Doanh thu C2 Siêu lớn" };
         public static GenericEnum REVENUE_C2 = new GenericEnum { Id = 14, Code = "RevenueC2", Name = "Doanh thu C2" };
         public static GenericEnum NEW_STORE_C2_CREATED = new GenericEnum { Id = 15, Code = "NewStoresC2Created", Name = "Số đại lý trọng điểm mở mới" };
         public static GenericEnum TOTAL_PROBLEM = new GenericEnum { Id = 16, Code = "TotalProblem", Name = "Số thông tin phản ánh" };
@@ -41,7 +41,7 @@ namespace DMS.Enums
             NEW_STORE_CREATED,
             NUMBER_OF_STORE_VISIT,
             REVENUE_C2_TD,
-            REVENUE_C2_BIG,
+            REVENUE_C2_SL,
             REVENUE_C2,
             NEW_STORE_C2_CREATED,
             TOTAL_PROBLEM,

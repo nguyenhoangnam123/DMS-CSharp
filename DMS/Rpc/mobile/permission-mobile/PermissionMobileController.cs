@@ -56,27 +56,17 @@ namespace DMS.Rpc.mobile.permission_mobile
             }
             // lấy ra số KpiGeneral theo kế hoạch
             // lấy ra KpiGeneral bằng filter theo AppUserId, trạng thái = true, kpiYearId
-            long KpiGeneralId = await DataContext.KpiGeneral.Where(x => 
-                    AppUserIds.Contains(x.EmployeeId) && 
-                    x.StatusId == StatusEnum.ACTIVE.Id && 
+            long KpiGeneralId = await DataContext.KpiGeneral.Where(x =>
+                    AppUserIds.Contains(x.EmployeeId) &&
+                    x.StatusId == StatusEnum.ACTIVE.Id &&
                     x.KpiYearId == CurrentYear.Id
                 ).Select(p => p.Id).FirstOrDefaultAsync();
             if (KpiGeneralId > 0)
             {
-                // lấy ra toàn bộ KpiGeneralContent bằng filter KpiGeneral, KpiCriteriaGeneralId in [], trạng thái = true,
-                List<long> KpiCriticalPermissionListIds = new List<long>
-                {
-                    KpiCriteriaGeneralEnum.TOTAL_INDIRECT_SALES_AMOUNT.Id, // Doanh thu đơn hàng gián tiếp
-                    KpiCriteriaGeneralEnum.NEW_STORE_CREATED.Id, // Số đại lý tạo mới
-                    KpiCriteriaGeneralEnum.STORE_VISITED.Id, // Số đại lý viếng thăm
-                    KpiCriteriaGeneralEnum.NUMBER_OF_STORE_VISIT.Id, // Số lần viếng thăm đại lý
-
-                };
                 List<KpiGeneralContentDAO> KpiGeneralContentDAOs = await DataContext.KpiGeneralContent
                     .Where(x =>
                         x.KpiGeneralId == KpiGeneralId &&
-                        x.StatusId == StatusEnum.ACTIVE.Id &&
-                        KpiCriticalPermissionListIds.Contains(x.KpiCriteriaGeneralId))
+                        x.StatusId == StatusEnum.ACTIVE.Id)
                     .ToListAsync();
                 List<long> KpiGeneralContentIds = KpiGeneralContentDAOs.Select(x => x.Id).ToList();
                 // lấy ra toàn bộ KpiGeneralContentKpiPeriodMappings bằng filter theo KpiGeneralContent và theo kì
@@ -86,33 +76,93 @@ namespace DMS.Rpc.mobile.permission_mobile
                         x.KpiPeriodId == KpiPeriodId)
                     .ToListAsync();
                 // lấy ra toàn bộ storeChecking để tính số liệu thực hiện bằng filter SaleEmployeeId
-                List<StoreCheckingDAO> StoreCheckingDAOs = await DataContext.StoreChecking
-                    .Where(x =>
-                        AppUserIds.Contains(x.SaleEmployeeId) &&
-                        x.CheckInAt >= Start &&
-                        x.CheckOutAt <= End)
-                    .ToListAsync();
-                int NumberOfStoreVisit =
-                    StoreCheckingDAOs.Count; // NUMBER_OF_STORE_VISIT
-                int StoreVisited = StoreCheckingDAOs.GroupBy(x => x.StoreId).Count(); // STORE_VISITED
+
+                var StoreCheckingDAOs = await DataContext.StoreChecking
+                .Where(x => AppUserIds.Contains(x.SaleEmployeeId) &&
+                x.CheckOutAt.HasValue && x.CheckOutAt.Value >= Start && x.CheckOutAt.Value <= End)
+                .Select(x => new StoreCheckingDAO
+                {
+                    SaleEmployeeId = x.SaleEmployeeId,
+                    Id = x.Id,
+                    CheckInAt = x.CheckInAt,
+                    CheckOutAt = x.CheckOutAt,
+                    StoreId = x.StoreId
+                })
+                .ToListAsync();
 
                 List<decimal> IndirectSalesOrderTotals = await DataContext.IndirectSalesOrder
-                    .Where(x =>
-                        AppUserIds.Contains(x.SaleEmployeeId) &&
+                    .Where(x => AppUserIds.Contains(x.SaleEmployeeId) &&
                         x.RequestStateId == RequestStateEnum.APPROVED.Id &&
                         x.CreatedAt >= Start &&
                         x.CreatedAt <= End)
                     .Select(x => x.Total).ToListAsync();
 
+                var IndirectSalesOrderDAOs = await DataContext.IndirectSalesOrder
+                .Where(x => AppUserIds.Contains(x.SaleEmployeeId) &&
+                x.OrderDate >= Start && x.OrderDate <= End &&
+                x.RequestStateId == RequestStateEnum.APPROVED.Id)
+                .Select(x => new IndirectSalesOrderDAO
+                {
+                    Id = x.Id,
+                    Total = x.Total,
+                    SaleEmployeeId = x.SaleEmployeeId,
+                    OrderDate = x.OrderDate,
+                    BuyerStoreId = x.BuyerStoreId,
+                    BuyerStore = x.BuyerStore == null ? null : new StoreDAO
+                    {
+                        StoreType = x.BuyerStore.StoreType == null ? null : new StoreTypeDAO
+                        {
+                            Code = x.BuyerStore.StoreType.Code
+                        }
+                    },
+                    IndirectSalesOrderContents = x.IndirectSalesOrderContents.Select(c => new IndirectSalesOrderContentDAO
+                    {
+                        RequestedQuantity = c.RequestedQuantity,
+                        ItemId = c.ItemId
+                    }).ToList(),
+                    IndirectSalesOrderPromotions = x.IndirectSalesOrderPromotions.Select(x => new IndirectSalesOrderPromotionDAO
+                    {
+                        RequestedQuantity = x.RequestedQuantity,
+                        ItemId = x.ItemId
+                    }).ToList()
+                })
+                .ToListAsync();
+                var IndirectSalesOrderContents = IndirectSalesOrderDAOs
+                            .SelectMany(x => x.IndirectSalesOrderContents)
+                            .ToList();
+                var IndirectSalesOrderPromotions = IndirectSalesOrderDAOs
+                    .SelectMany(x => x.IndirectSalesOrderPromotions)
+                    .ToList();
 
-                decimal TotalIndirectSalesAmount = IndirectSalesOrderTotals.Sum(); // TOTAL_INDIRECT_SALES_AMOUNT
-                List<StoreDAO> StoreDAOs = await DataContext.Store.Where(x =>
-                        x.AppUserId.HasValue &&
-                        AppUserIds.Contains(x.AppUserId.Value) &&
-                        x.CreatedAt >= Start && 
-                        x.CreatedAt <= End)
+                var StoreScoutingDAOs = await DataContext.StoreScouting
+                .Where(x => AppUserIds.Contains(x.CreatorId) &&
+                x.CreatedAt >= Start && x.CreatedAt <= End)
+                .Select(x => new StoreScoutingDAO
+                {
+                    CreatorId = x.CreatorId,
+                    Id = x.Id,
+                    CreatedAt = x.CreatedAt,
+                    Stores = x.Stores.Select(c => new StoreDAO
+                    {
+                        StoreScoutingId = c.StoreScoutingId,
+                        StoreType = c.StoreType == null ? null : new StoreTypeDAO
+                        {
+                            Code = c.StoreType.Code
+                        }
+                    }).ToList()
+                })
+                .ToListAsync();
+
+                var Problems = await DataContext.Problem
+                 .Where(x => AppUserIds.Contains(x.CreatorId) &&
+                 x.NoteAt >= Start && x.NoteAt <= End)
+                 .ToListAsync();
+
+                var StoreImages = await DataContext.StoreImage
+                    .Where(x => x.SaleEmployeeId.HasValue &&
+                    AppUserIds.Contains(x.SaleEmployeeId.Value) &&
+                    x.ShootingAt >= Start && x.ShootingAt <= End)
                     .ToListAsync();
-                var NewStoreCreated = StoreDAOs.Count(); // NEW_STORE_CREATED
 
                 List<KpiCriteriaGeneralDAO> KpiCriteriaGeneralDAOs = await DataContext.KpiCriteriaGeneral.ToListAsync();
                 // loops mappings và lấy ra giá trị kế hoạch
@@ -129,19 +179,56 @@ namespace DMS.Rpc.mobile.permission_mobile
 
                     if (KpiGeneralContentKpiPeriodMapping.KpiGeneralContent.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.TOTAL_INDIRECT_SALES_AMOUNT.Id)
                     {
-                        PermissionMobile_EmployeeKpiGeneralReportDTO.CurrentValue = TotalIndirectSalesAmount;
+                        PermissionMobile_EmployeeKpiGeneralReportDTO.CurrentValue = IndirectSalesOrderDAOs.Sum(iso => iso.Total);
+                    }
+                    if (KpiGeneralContentKpiPeriodMapping.KpiGeneralContent.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.REVENUE_C2_TD.Id)
+                    {
+                        PermissionMobile_EmployeeKpiGeneralReportDTO.CurrentValue = IndirectSalesOrderDAOs
+                        .Where(x => x.BuyerStore.StoreType.Code == StaticParams.C2TD)
+                        .Sum(iso => iso.Total);
+                    }
+                    if (KpiGeneralContentKpiPeriodMapping.KpiGeneralContent.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.REVENUE_C2_SL.Id)
+                    {
+                        PermissionMobile_EmployeeKpiGeneralReportDTO.CurrentValue = IndirectSalesOrderDAOs
+                        .Where(x => x.BuyerStore.StoreType.Code == StaticParams.C2SL)
+                        .Sum(iso => iso.Total);
+                    }
+                    if (KpiGeneralContentKpiPeriodMapping.KpiGeneralContent.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.REVENUE_C2.Id)
+                    {
+                        PermissionMobile_EmployeeKpiGeneralReportDTO.CurrentValue = IndirectSalesOrderDAOs
+                        .Where(x => x.BuyerStore.StoreType.Code == StaticParams.C2)
+                        .Sum(iso => iso.Total);
                     }
                     if (KpiGeneralContentKpiPeriodMapping.KpiGeneralContent.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.NEW_STORE_CREATED.Id)
                     {
-                        PermissionMobile_EmployeeKpiGeneralReportDTO.CurrentValue = NewStoreCreated;
+                        PermissionMobile_EmployeeKpiGeneralReportDTO.CurrentValue = StoreScoutingDAOs.SelectMany(sc => sc.Stores)
+                        .Where(x => x.StoreScoutingId.HasValue)
+                        .Select(z => z.StoreScoutingId.Value)
+                        .Count();
+                    }
+                    if (KpiGeneralContentKpiPeriodMapping.KpiGeneralContent.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.NEW_STORE_C2_CREATED.Id)
+                    {
+                        PermissionMobile_EmployeeKpiGeneralReportDTO.CurrentValue = StoreScoutingDAOs.SelectMany(sc => sc.Stores)
+                        .Where(x => x.StoreScoutingId.HasValue)
+                        .Where(x => x.StoreType.Code == StaticParams.C2TD)
+                        .Select(z => z.StoreScoutingId.Value)
+                        .Count();
                     }
                     if (KpiGeneralContentKpiPeriodMapping.KpiGeneralContent.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.STORE_VISITED.Id)
                     {
-                        PermissionMobile_EmployeeKpiGeneralReportDTO.CurrentValue = StoreVisited;
+                        PermissionMobile_EmployeeKpiGeneralReportDTO.CurrentValue = StoreCheckingDAOs.Select(x => x.StoreId).Distinct().Count();
                     }
                     if (KpiGeneralContentKpiPeriodMapping.KpiGeneralContent.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.NUMBER_OF_STORE_VISIT.Id)
                     {
-                        PermissionMobile_EmployeeKpiGeneralReportDTO.CurrentValue = NumberOfStoreVisit;
+                        PermissionMobile_EmployeeKpiGeneralReportDTO.CurrentValue = StoreCheckingDAOs.Count();
+                    }
+                    if (KpiGeneralContentKpiPeriodMapping.KpiGeneralContent.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.TOTAL_PROBLEM.Id)
+                    {
+                        PermissionMobile_EmployeeKpiGeneralReportDTO.CurrentValue = Problems.Count();
+                    }
+                    if (KpiGeneralContentKpiPeriodMapping.KpiGeneralContent.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.TOTAL_IMAGE.Id)
+                    {
+                        PermissionMobile_EmployeeKpiGeneralReportDTO.CurrentValue = StoreImages.Count();
                     }
                     PermissionMobile_EmployeeKpiGeneralReportDTO.Percentage = CalculatePercentage(PermissionMobile_EmployeeKpiGeneralReportDTO.PlannedValue, PermissionMobile_EmployeeKpiGeneralReportDTO.CurrentValue); // tính ra phần trăm thực hiện
                     KpiGenerals.Add(PermissionMobile_EmployeeKpiGeneralReportDTO);
@@ -163,7 +250,7 @@ namespace DMS.Rpc.mobile.permission_mobile
             (CurrentMonth, CurrentQuarter, CurrentYear) = ConvertDateTime(StaticParams.DateTimeNow);
             DateTime Start = new DateTime(StaticParams.DateTimeNow.Year, StaticParams.DateTimeNow.Month, 1);
             DateTime End = Start.AddMonths(1).AddSeconds(-1);
-            
+
             List<long> AppUserIds = new List<long>();
             if (PermissionMobile_EmployeeKpiFilterDTO.EmployeeId.Equal.HasValue)
             {
