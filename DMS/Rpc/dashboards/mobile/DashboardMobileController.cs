@@ -450,7 +450,7 @@ namespace DMS.Rpc.dashboards.mobile
                 {
                     DashboardMobile_KpiGeneralCriterialDTO.Value = StoreCheckingDAOs
                         .Count() == 0 ?
-                        0 : StoreScoutingDAOs.Count();
+                        0 : StoreCheckingDAOs.Count();
                     DashboardMobile_KpiGeneralCriterialDTO.KpiCriterialName = KpiCriteriaGeneralEnum.NUMBER_OF_STORE_VISIT.Name;
                 }
                 #endregion

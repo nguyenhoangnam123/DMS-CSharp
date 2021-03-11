@@ -656,7 +656,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
                     //kế hoạch
                     SaleEmployeeDTO.RevenueC2SLPlanned = KpiGeneralPeriodReport_SaleEmployeeDetailDTOs
                             .Where(x => x.SaleEmployeeId == SaleEmployeeDTO.SaleEmployeeId &&
-                             x.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.REVENUE_C2_BIG.Id)
+                             x.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.REVENUE_C2_SL.Id)
                             .Select(x => x.Value).FirstOrDefault();
                     if (SaleEmployeeDTO.RevenueC2SLPlanned.HasValue)
                     {

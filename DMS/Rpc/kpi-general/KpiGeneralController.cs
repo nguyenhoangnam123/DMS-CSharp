@@ -159,7 +159,7 @@ namespace DMS.Rpc.kpi_general
                     Name = Enums.StatusEnum.ACTIVE.Name
                 },
                 StatusId = Enums.StatusEnum.ACTIVE.Id,
-            }).ToList();
+            }).OrderBy(x => x.KpiCriteriaGeneralId).ToList();
             KpiGeneral_KpiGeneralDTO.Status = new KpiGeneral_StatusDTO
             {
                 Code = Enums.StatusEnum.ACTIVE.Code,
@@ -844,14 +844,14 @@ namespace DMS.Rpc.kpi_general
 
                 #region Doanh thu C2 Siêu lớn
                 var RevenueC2SLContent = KpiGeneral_KpiGeneralContentDTOs
-                    .Where(x => x.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.REVENUE_C2_BIG.Id)
+                    .Where(x => x.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.REVENUE_C2_SL.Id)
                     .Where(x => x.KpiGeneralId == KpiGeneral.Id)
                     .Select(x => x.KpiGeneralContentKpiPeriodMappings)
                     .FirstOrDefault();
                 KpiGeneral_ExportDTO.RevenueC2SL = new KpiGeneral_ExportCriterialDTO
                 {
-                    Id = KpiCriteriaGeneralEnum.REVENUE_C2_BIG.Id,
-                    Name = KpiCriteriaGeneralEnum.REVENUE_C2_BIG.Name
+                    Id = KpiCriteriaGeneralEnum.REVENUE_C2_SL.Id,
+                    Name = KpiCriteriaGeneralEnum.REVENUE_C2_SL.Name
                 };
                 if (RevenueC2SLContent != null)
                 {
@@ -1340,8 +1340,8 @@ namespace DMS.Rpc.kpi_general
                 #region Doanh thu C2 Siêu lớn
                 KpiGeneral_ExportDTO.RevenueC2SL = new KpiGeneral_ExportCriterialDTO
                 {
-                    Id = KpiCriteriaGeneralEnum.REVENUE_C2_BIG.Id,
-                    Name = KpiCriteriaGeneralEnum.REVENUE_C2_BIG.Name
+                    Id = KpiCriteriaGeneralEnum.REVENUE_C2_SL.Id,
+                    Name = KpiCriteriaGeneralEnum.REVENUE_C2_SL.Name
                 };
                 #endregion
 

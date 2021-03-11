@@ -15,6 +15,7 @@ namespace DMS.Repositories
         Task<int> Count(BrandFilter BrandFilter);
         Task<List<Brand>> List(BrandFilter BrandFilter);
         Task<Brand> Get(long Id);
+        Task<bool> BulkMerge(List<Brand> Brands);
     }
     public class BrandRepository : IBrandRepository
     {
@@ -187,6 +188,25 @@ namespace DMS.Repositories
                 return null;
 
             return Brand;
+        }
+
+        public async Task<bool> BulkMerge(List<Brand> Brands)
+        {
+            List<BrandDAO> BrandDAOs = Brands.Select(x => new BrandDAO
+            {
+                Code = x.Code,
+                CreatedAt = x.CreatedAt,
+                UpdatedAt = x.UpdatedAt,
+                DeletedAt = x.DeletedAt,
+                Used = x.Used,
+                Description = x.Description,
+                Id = x.Id,
+                Name = x.Name,
+                RowId = x.RowId,
+                StatusId = x.StatusId,
+            }).ToList();
+            await DataContext.BulkMergeAsync(BrandDAOs);
+            return true;
         }
     }
 }
