@@ -34,7 +34,7 @@ namespace DMS.Handlers
                 _channel.ExchangeDeclare(exchangeName, ExchangeType.Topic, true, false);
                 Dictionary<string, object> arguments = new Dictionary<string, object>();
                 arguments.Add("x-single-active-consumer", true);
-                _channel.QueueDeclare(StaticParams.ModuleName, true, false, false, null);
+                _channel.QueueDeclare(StaticParams.ModuleName, true, false, false, arguments);
 
                 List<Type> handlerTypes = typeof(ConsumeRabbitMQHostedService).Assembly.GetTypes()
                     .Where(x => typeof(Handler).IsAssignableFrom(x) && x.IsClass && !x.IsAbstract)
