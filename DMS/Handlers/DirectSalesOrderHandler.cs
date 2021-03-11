@@ -53,6 +53,7 @@ namespace DMS.Handlers
                     Total = DirectSalesOrder.Total,
                     RowId = DirectSalesOrder.RowId,
                     StoreUserCreatorId = DirectSalesOrder.StoreUserCreatorId, // luu acc cua store tao don hang
+                    DirectSalesOrderSourceTypeId = DirectSalesOrder.DirectSalesOrderSourceTypeId, // luu sourceType cho don hang, tu DMS hay AMS
                     OrderDate = DirectSalesOrder.OrderDate, // ams.abe tao ra neu client ko gui ve
                     CreatedAt = DirectSalesOrder.CreatedAt, // lay tu ams.abe ra neu client ko gui ve
                     UpdatedAt = DirectSalesOrder.UpdatedAt, // lay tu ams.abe ra neu client ko gui ve
@@ -88,6 +89,7 @@ namespace DMS.Handlers
                 DirectSalesOrderDAO.Total = DirectSalesOrder.Total;
                 DirectSalesOrderDAO.RowId = DirectSalesOrder.RowId;
                 DirectSalesOrderDAO.StoreUserCreatorId = DirectSalesOrder.StoreUserCreatorId; // luu acc cua store tao don hang
+                DirectSalesOrderDAO.DirectSalesOrderSourceTypeId = DirectSalesOrder.DirectSalesOrderSourceTypeId; // luu sourceType cho don hang, tu DMS hay AMS
                 DirectSalesOrderDAO.OrderDate = DirectSalesOrder.OrderDate; // ams.abe tao ra neu client ko gui ve
                 DirectSalesOrderDAO.CreatedAt = DirectSalesOrder.CreatedAt; // lay tu ams.abe ra neu client ko gui ve
                 DirectSalesOrderDAO.UpdatedAt = DirectSalesOrder.UpdatedAt; // lay tu ams.abe ra neu client ko gui ve

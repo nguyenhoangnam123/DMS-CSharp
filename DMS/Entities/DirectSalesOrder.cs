@@ -37,6 +37,7 @@ namespace DMS.Entities
         public decimal TotalDiscountAmount { get; set; }
         public long TotalRequestedQuantity { get; set; }
         public Store BuyerStore { get; set; }
+        public DirectSalesOrderSourceType DirectSalesOrderSourceType { get; set; }
         public EditedPriceStatus EditedPriceStatus { get; set; }
         public Organization Organization { get; set; }
         public RequestState RequestState { get; set; }
@@ -45,6 +46,7 @@ namespace DMS.Entities
         public StoreUser StoreUserCreator { get; set; }
         public Guid RowId { get; set; }
         public long? StoreCheckingId { get; set; }
+        public long? DirectSalesOrderSourceTypeId { get; set; }
         public List<DirectSalesOrderContent> DirectSalesOrderContents { get; set; }
         public List<DirectSalesOrderPromotion> DirectSalesOrderPromotions { get; set; }
         public List<RequestWorkflowStepMapping> RequestWorkflowStepMappings { get; set; }
