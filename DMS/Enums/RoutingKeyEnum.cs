@@ -13,6 +13,7 @@ namespace DMS.Enums
         public static GenericEnum StoreGroupingSync = new GenericEnum { Id = 6, Code = "StoreGrouping.Sync", Name = "Đồng bộ StoreGrouping" };
         public static GenericEnum StoreTypeSync = new GenericEnum { Id = 7, Code = "StoreType.Sync", Name = "Đồng bộ StoreType" };
         public static GenericEnum DirectSalesOrderSync = new GenericEnum { Id = 8, Code = "DirectSalesOrder.Sync", Name = "Đồng bộ DirectSalesOrder" };
+        public static GenericEnum StoreUserSync = new GenericEnum { Id = 9, Code = "StoreUser.Sync", Name = "Đồng bộ StoreUser" };
 
         public static GenericEnum MailSend = new GenericEnum { Id = 4, Code = "Mail.Send", Name = "Gửi Mail" };
         public static GenericEnum AuditLogSend = new GenericEnum { Id = 5, Code = "AuditLog.Send", Name = "Audit Log" };
@@ -32,7 +33,7 @@ namespace DMS.Enums
         public static GenericEnum ProductUsed = new GenericEnum { Id = 104, Code = "Product.Used", Name = "Product Used" };
         public static GenericEnum ProductTypeUsed = new GenericEnum { Id = 105, Code = "ProductType.Used", Name = "ProductType Used" };
         public static GenericEnum ProblemTypeUsed = new GenericEnum { Id = 106, Code = "ProblemType.Used", Name = "ProblemType Used" };
-        public static GenericEnum StoreUsed = new GenericEnum { Id = 107, Code = "Store.Used", Name = "Store Used" };
+        public static GenericEnum StoreUsed = new GenericEnum { Id = 107, Code = "DMS.Store.Used", Name = "Store Used" };
         public static GenericEnum StoreTypeUsed = new GenericEnum { Id = 108, Code = "StoreType.Used", Name = "StoreType Used" };
         public static GenericEnum SupplierUsed = new GenericEnum { Id = 109, Code = "Supplier.Used", Name = "Supplier Used" };
         public static GenericEnum SurveyUsed = new GenericEnum { Id = 110, Code = "Survey.Used", Name = "Survey Used" };
@@ -45,5 +46,6 @@ namespace DMS.Enums
         public static GenericEnum ProvinceUsed = new GenericEnum { Id = 117, Code = "Province.Used", Name = "Province Used" };
         public static GenericEnum DistrictUsed = new GenericEnum { Id = 118, Code = "District.Used", Name = "District Used" };
         public static GenericEnum WardUsed = new GenericEnum { Id = 119, Code = "Ward.Used", Name = "Ward Used" };
+        public static GenericEnum StoreUserUsed = new GenericEnum { Id = 120, Code = "DMS.StoreUser.Used", Name = "StoreUser Used" };
     }
 }

@@ -383,6 +383,7 @@ namespace DMS.Services.MStoreUser
                 await UOW.StoreUserRepository.Create(StoreUser);
                 await UOW.Commit();
                 StoreUser = await UOW.StoreUserRepository.Get(StoreUser.Id);
+                Sync(new List<StoreUser> { StoreUser });
                 await Logging.CreateAuditLog(StoreUser, new { }, nameof(StoreUserService));
                 return StoreUser;
             }
@@ -451,6 +452,7 @@ namespace DMS.Services.MStoreUser
                 await UOW.Commit();
 
                 StoreUser = await UOW.StoreUserRepository.Get(StoreUser.Id);
+                Sync(new List<StoreUser> { StoreUser });
                 await Logging.CreateAuditLog(StoreUser, oldData, nameof(StoreUserService));
                 return StoreUser;
             }
@@ -480,6 +482,9 @@ namespace DMS.Services.MStoreUser
                 await UOW.Begin();
                 await UOW.StoreUserRepository.Delete(StoreUser);
                 await UOW.Commit();
+
+                StoreUser = (await UOW.StoreUserRepository.List(new List<long> { StoreUser.Id })).FirstOrDefault();
+                Sync(new List<StoreUser> { StoreUser });
                 await Logging.CreateAuditLog(new { }, StoreUser, nameof(StoreUserService));
                 return StoreUser;
             }
@@ -510,6 +515,10 @@ namespace DMS.Services.MStoreUser
                 await UOW.StoreUserRepository.BulkDelete(StoreUsers);
                 await UOW.Commit();
                 await Logging.CreateAuditLog(new { }, StoreUsers, nameof(StoreUserService));
+
+                List<long> Ids = StoreUsers.Select(x => x.Id).ToList();
+                StoreUsers = await UOW.StoreUserRepository.List(Ids);
+                Sync(StoreUsers);
                 return StoreUsers;
             }
             catch (Exception ex)
@@ -661,6 +670,24 @@ namespace DMS.Services.MStoreUser
                 return null;
             }
             return null;
+        }
+
+        private void Sync(List<StoreUser> StoreUsers)
+        {
+            List<EventMessage<StoreUser>> StoreUserEventMessages = new List<EventMessage<StoreUser>>(); // Sync to AMS
+            List<EventMessage<Store>> StoreEventMessages = new List<EventMessage<Store>>(); // Used
+            foreach (StoreUser StoreUser in StoreUsers)
+            {
+                if(StoreUser.StoreId != 0)
+                {
+                    EventMessage<Store> StoreEventMessage = new EventMessage<Store>(new Store { Id = StoreUser.StoreId}, StoreUser.RowId);
+                    StoreEventMessages.Add(StoreEventMessage);
+                }
+                EventMessage<StoreUser> StoreUserEventMessage = new EventMessage<StoreUser>(StoreUser, StoreUser.RowId);
+                StoreUserEventMessages.Add(StoreUserEventMessage);
+            }
+            RabbitManager.PublishList(StoreEventMessages, RoutingKeyEnum.StoreUsed);
+            RabbitManager.PublishList(StoreUserEventMessages, RoutingKeyEnum.StoreUserSync);
         }
     }
 
