@@ -51,7 +51,7 @@ namespace DMS.Handlers
             }
             catch (Exception ex)
             {
-                Log(ex, nameof(TaxTypeHandler));
+                SystemLog(ex, nameof(TaxTypeHandler));
             }
         }
     }

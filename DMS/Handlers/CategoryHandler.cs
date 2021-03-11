@@ -81,7 +81,7 @@ namespace DMS.Handlers
             }
             catch (Exception ex)
             {
-                Log(ex, nameof(CategoryHandler));
+                SystemLog(ex, nameof(CategoryHandler));
             }
 
         }

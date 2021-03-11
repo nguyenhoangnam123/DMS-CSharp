@@ -68,7 +68,7 @@ namespace DMS.Handlers
             }
             catch (Exception ex)
             {
-                Log(ex, nameof(CodeGeneratorRuleHandler));
+                SystemLog(ex, nameof(CodeGeneratorRuleHandler));
             }
         }
     }

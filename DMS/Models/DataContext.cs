@@ -1,7 +1,6 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Thinktecture;
 
 namespace DMS.Models
 {
@@ -37,7 +36,6 @@ namespace DMS.Models
         public virtual DbSet<EntityComponentDAO> EntityComponent { get; set; }
         public virtual DbSet<EntityTypeDAO> EntityType { get; set; }
         public virtual DbSet<ErpApprovalStateDAO> ErpApprovalState { get; set; }
-        public virtual DbSet<EventMessageDAO> EventMessage { get; set; }
         public virtual DbSet<FieldDAO> Field { get; set; }
         public virtual DbSet<FieldTypeDAO> FieldType { get; set; }
         public virtual DbSet<IdGeneratorDAO> IdGenerator { get; set; }
@@ -202,7 +200,6 @@ namespace DMS.Models
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.ConfigureTempTable<long>();
             modelBuilder.Entity<ActionDAO>(entity =>
             {
                 entity.ToTable("Action", "PER");
@@ -1152,23 +1149,6 @@ namespace DMS.Models
                 entity.Property(e => e.Name)
                     .IsRequired()
                     .HasMaxLength(50);
-            });
-
-            modelBuilder.Entity<EventMessageDAO>(entity =>
-            {
-                entity.ToTable("EventMessage", "MDM");
-
-                entity.Property(e => e.Content).IsRequired();
-
-                entity.Property(e => e.EntityName)
-                    .IsRequired()
-                    .HasMaxLength(500);
-
-                entity.Property(e => e.RoutingKey)
-                    .IsRequired()
-                    .HasMaxLength(500);
-
-                entity.Property(e => e.Time).HasColumnType("datetime");
             });
 
             modelBuilder.Entity<FieldDAO>(entity =>

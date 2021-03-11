@@ -49,7 +49,7 @@ namespace DMS.Handlers
             }
             catch (Exception ex)
             {
-                Log(ex, nameof(BrandHandler));
+                SystemLog(ex, nameof(BrandHandler));
             }
         }
     }

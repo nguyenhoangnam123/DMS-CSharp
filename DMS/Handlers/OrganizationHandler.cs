@@ -65,7 +65,7 @@ namespace DMS.Handlers
             }
             catch(Exception ex)
             {
-                Log(ex, nameof(OrganizationHandler));
+                SystemLog(ex, nameof(OrganizationHandler));
             }
         }
     }

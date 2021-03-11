@@ -60,7 +60,7 @@ namespace DMS.Handlers
             }
             catch (Exception ex)
             {
-                Log(ex, nameof(ProductTypeHandler));
+                SystemLog(ex, nameof(ProductTypeHandler));
             }
         }
     }

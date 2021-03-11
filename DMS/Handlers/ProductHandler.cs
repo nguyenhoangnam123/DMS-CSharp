@@ -222,7 +222,7 @@ namespace DMS.Handlers
             }
             catch (Exception ex)
             {
-                Log(ex, nameof(ProductHandler));
+                SystemLog(ex, nameof(ProductHandler));
             }
         }
     }

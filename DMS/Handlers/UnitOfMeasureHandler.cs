@@ -50,7 +50,7 @@ namespace DMS.Handlers
             }
             catch (Exception ex)
             {
-                Log(ex, nameof(UnitOfMeasureHandler));
+                SystemLog(ex, nameof(UnitOfMeasureHandler));
             }
         }
     }

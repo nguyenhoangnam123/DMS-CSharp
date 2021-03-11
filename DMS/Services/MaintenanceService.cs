@@ -12,7 +12,6 @@ namespace DMS.Services
 {
     public interface IMaintenanceService : IServiceScoped
     {
-        Task CleanEventMessage();
         Task CleanHangfire();
         Task Job_Checking();
         Task CompleteStoreCheckout();
@@ -25,12 +24,6 @@ namespace DMS.Services
         public MaintenanceService(DataContext DataContext)
         {
             this.DataContext = DataContext;
-        }
-
-        public async Task CleanEventMessage()
-        {
-            DateTime Checkpoint = StaticParams.DateTimeNow.AddDays(-1);
-            await DataContext.EventMessage.Where(em => em.Time < Checkpoint).DeleteFromQueryAsync();
         }
 
         public async Task CleanHangfire()

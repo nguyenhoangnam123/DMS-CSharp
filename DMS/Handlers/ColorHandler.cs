@@ -42,7 +42,7 @@ namespace DMS.Handlers
             }
             catch (Exception ex)
             {
-                Log(ex, nameof(ColorHandler));
+                SystemLog(ex, nameof(ColorHandler));
             }
         }
     }

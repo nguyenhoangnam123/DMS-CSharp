@@ -36,7 +36,7 @@ namespace DMS.Handlers
             }
             catch (Exception ex)
             {
-                Log(ex, nameof(ProblemTypeHandler));
+                SystemLog(ex, nameof(ProblemTypeHandler));
             }
         }
     }

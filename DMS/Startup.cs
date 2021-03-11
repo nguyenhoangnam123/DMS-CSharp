@@ -180,7 +180,6 @@ namespace DMS
 
                 string daily = "59 16 * * *";
                 RecurringJob.AddOrUpdate<MaintenanceService>("CleanHangfire", x => x.CleanHangfire(), Cron.Monthly);
-                RecurringJob.AddOrUpdate<MaintenanceService>("CleanEventMessage", x => x.CleanEventMessage(), daily);
                 RecurringJob.AddOrUpdate<MaintenanceService>("Job_Checking", x => x.Job_Checking(), daily);
                 RecurringJob.AddOrUpdate<MaintenanceService>("AutoInactive", x => x.AutoInactive(), "00 17 * * *");
             };

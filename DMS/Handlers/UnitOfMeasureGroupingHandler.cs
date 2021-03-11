@@ -66,7 +66,7 @@ namespace DMS.Handlers
             }
             catch (Exception ex)
             {
-                Log(ex, nameof(UnitOfMeasureGroupingHandler));
+                SystemLog(ex, nameof(UnitOfMeasureGroupingHandler));
             }
 
         }

@@ -71,7 +71,7 @@ namespace DMS.Handlers
             }
             catch (Exception ex)
             {
-                Log(ex, nameof(AppUserHandler));
+                SystemLog(ex, nameof(AppUserHandler));
             }
         }
     }

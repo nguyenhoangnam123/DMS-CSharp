@@ -61,13 +61,14 @@ namespace DMS.Handlers
                         UpdatedAt = DirectSalesOrder.UpdatedAt, // lay tu ams.abe ra neu client ko gui ve
                     };
                     await context.BulkMergeAsync(new List<DirectSalesOrderDAO> { DirectSalesOrderDAO });
-                    //await Logging.CreateAuditLog(DirectSalesOrder, new { }, nameof(DirectSalesOrderHandler)); // ghi log
+
+                    AuditLog(DirectSalesOrder, new { }, nameof(DirectSalesOrderHandler)); // ghi log
                     await NotifyUsed(DirectSalesOrder);
                     await SyncDirectSalesOrder(DirectSalesOrder); // public sync for AMS Web
                 }
                 catch (Exception ex)
                 {
-                    Log(ex, nameof(DirectSalesOrderHandler));
+                    SystemLog(ex, nameof(DirectSalesOrderHandler));
                 }
             }
         }
@@ -103,7 +104,7 @@ namespace DMS.Handlers
                 }
                 catch (Exception ex)
                 {
-                    Log(ex, nameof(DirectSalesOrderHandler));
+                    SystemLog(ex, nameof(DirectSalesOrderHandler));
                 }
             }
         }
