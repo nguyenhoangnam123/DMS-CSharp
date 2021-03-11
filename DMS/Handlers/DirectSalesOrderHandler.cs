@@ -36,34 +36,31 @@ namespace DMS.Handlers
 
         private async Task Create(DataContext context, string json)
         {
-            List<DirectSalesOrder> DirectSalesOrders = await GetDataFromMessage(context, json);
+            DirectSalesOrder DirectSalesOrder = await GetDataFromMessage(context, json);
             try
             {
-                List<long> DirectSalesOrderIds = DirectSalesOrders.Select(x => x.Id).ToList(); // lẩy ra Ids để thêm mới hoặc udpate
-                List<DirectSalesOrderDAO> DirectSalesOrdersDAOs = await context.DirectSalesOrder.Where(x => DirectSalesOrderIds.Contains(x.Id)).ToListAsync();
-                foreach (DirectSalesOrder DirectSalesOrder in DirectSalesOrders)
+                DirectSalesOrderDAO DirectSalesOrderDAO = new DirectSalesOrderDAO
                 {
-                    DirectSalesOrderDAO DirectSalesOrderDAO = DirectSalesOrdersDAOs.Where(x => x.Id == DirectSalesOrder.Id).FirstOrDefault();
-                    if (DirectSalesOrderDAO == null)
-                    {
-                        DirectSalesOrderDAO = new DirectSalesOrderDAO();
-                    } // tạo mới
-                    DirectSalesOrderDAO.Code = DirectSalesOrder.Code;
-                    DirectSalesOrderDAO.OrganizationId = DirectSalesOrder.OrganizationId;
-                    DirectSalesOrderDAO.BuyerStoreId = DirectSalesOrder.BuyerStoreId;
-                    DirectSalesOrderDAO.SaleEmployeeId = DirectSalesOrder.SaleEmployeeId;
-                    DirectSalesOrderDAO.RequestStateId = RequestStateEnum.APPROVED.Id; // don hang tao tu ams.abe mac dinh khong co wf -> wf requestState = approved 
-                    DirectSalesOrderDAO.EditedPriceStatusId = EditedPriceStatusEnum.INACTIVE.Id; // don hang tao tu ams.abe mac dinh khong cho sua gia
-                    DirectSalesOrderDAO.SubTotal = DirectSalesOrder.SubTotal;
-                    DirectSalesOrderDAO.TotalTaxAmount = DirectSalesOrder.TotalTaxAmount;
-                    DirectSalesOrderDAO.TotalAfterTax = DirectSalesOrder.TotalAfterTax;
-                    DirectSalesOrderDAO.Total = DirectSalesOrder.Total;
-                    DirectSalesOrderDAO.RowId = DirectSalesOrder.RowId;
-                    DirectSalesOrderDAO.StoreUserCreatorId = DirectSalesOrder.StoreUserCreatorId; // luu acc cua store tao don hang
-                    DirectSalesOrderDAO.OrderDate = DirectSalesOrder.OrderDate; // ams.abe tao ra neu client ko gui ve
-                    DirectSalesOrderDAO.CreatedAt = DirectSalesOrder.CreatedAt; // lay tu ams.abe ra neu client ko gui ve
-                }
-                await context.BulkMergeAsync(DirectSalesOrdersDAOs);
+                    Code = DirectSalesOrder.Code,
+                    OrganizationId = DirectSalesOrder.OrganizationId,
+                    BuyerStoreId = DirectSalesOrder.BuyerStoreId,
+                    SaleEmployeeId = DirectSalesOrder.SaleEmployeeId,
+                    RequestStateId = RequestStateEnum.APPROVED.Id, // don hang tao tu ams.abe mac dinh khong co wf -> wf requestState = approved 
+                    EditedPriceStatusId = EditedPriceStatusEnum.INACTIVE.Id, // don hang tao tu ams.abe mac dinh khong cho sua gia
+                    SubTotal = DirectSalesOrder.SubTotal,
+                    TotalTaxAmount = DirectSalesOrder.TotalTaxAmount,
+                    TotalAfterTax = DirectSalesOrder.TotalAfterTax,
+                    Total = DirectSalesOrder.Total,
+                    RowId = DirectSalesOrder.RowId,
+                    StoreUserCreatorId = DirectSalesOrder.StoreUserCreatorId, // luu acc cua store tao don hang
+                    OrderDate = DirectSalesOrder.OrderDate, // ams.abe tao ra neu client ko gui ve
+                    CreatedAt = DirectSalesOrder.CreatedAt, // lay tu ams.abe ra neu client ko gui ve
+                    UpdatedAt = DirectSalesOrder.UpdatedAt, // lay tu ams.abe ra neu client ko gui ve
+                };
+                await context.BulkMergeAsync(new List<DirectSalesOrderDAO> { DirectSalesOrderDAO } );
+                //await Logging.CreateAuditLog(DirectSalesOrder, new { }, nameof(DirectSalesOrderHandler)); // ghi log
+                await NotifyUsed(DirectSalesOrder);
+                await Sync(DirectSalesOrder); // public sync for AMS Web
             }
             catch (Exception ex)
             {
@@ -73,34 +70,29 @@ namespace DMS.Handlers
 
         private async Task Update(DataContext context, string json)
         {
-            List<DirectSalesOrder> DirectSalesOrders = await GetDataFromMessage(context, json);
+            DirectSalesOrder DirectSalesOrder = await GetDataFromMessage(context, json); // lay don hang tu message 
             try
             {
-                List<long> DirectSalesOrderIds = DirectSalesOrders.Select(x => x.Id).ToList(); // lẩy ra Ids để thêm mới hoặc udpate
-                List<DirectSalesOrderDAO> DirectSalesOrdersDAOs = await context.DirectSalesOrder.Where(x => DirectSalesOrderIds.Contains(x.Id)).ToListAsync();
-                foreach (DirectSalesOrder DirectSalesOrder in DirectSalesOrders)
-                {
-                    DirectSalesOrderDAO DirectSalesOrderDAO = DirectSalesOrdersDAOs.Where(x => x.Id == DirectSalesOrder.Id).FirstOrDefault();
-                    if (DirectSalesOrderDAO == null)
-                    {
-                        DirectSalesOrderDAO = new DirectSalesOrderDAO();
-                    } // tạo mới
-                    DirectSalesOrderDAO.Code = DirectSalesOrder.Code;
-                    DirectSalesOrderDAO.OrganizationId = DirectSalesOrder.OrganizationId;
-                    DirectSalesOrderDAO.BuyerStoreId = DirectSalesOrder.BuyerStoreId;
-                    DirectSalesOrderDAO.SaleEmployeeId = DirectSalesOrder.SaleEmployeeId;
-                    DirectSalesOrderDAO.RequestStateId = RequestStateEnum.APPROVED.Id; // don hang tao tu ams.abe mac dinh khong co wf -> wf requestState = approved 
-                    DirectSalesOrderDAO.EditedPriceStatusId = EditedPriceStatusEnum.INACTIVE.Id; // don hang tao tu ams.abe mac dinh khong cho sua gia
-                    DirectSalesOrderDAO.SubTotal = DirectSalesOrder.SubTotal;
-                    DirectSalesOrderDAO.TotalTaxAmount = DirectSalesOrder.TotalTaxAmount;
-                    DirectSalesOrderDAO.TotalAfterTax = DirectSalesOrder.TotalAfterTax;
-                    DirectSalesOrderDAO.Total = DirectSalesOrder.Total;
-                    DirectSalesOrderDAO.RowId = DirectSalesOrder.RowId;
-                    DirectSalesOrderDAO.StoreUserCreatorId = DirectSalesOrder.StoreUserCreatorId; // luu acc cua store tao don hang
-                    DirectSalesOrderDAO.OrderDate = DirectSalesOrder.OrderDate; // ams.abe tao ra neu client ko gui ve
-                    DirectSalesOrderDAO.CreatedAt = DirectSalesOrder.CreatedAt; // lay tu ams.abe ra neu client ko gui ve
-                }
-                await context.BulkMergeAsync(DirectSalesOrdersDAOs);
+                DirectSalesOrderDAO DirectSalesOrderDAO = await context.DirectSalesOrder.Where(x => x.Id == DirectSalesOrder.Id).FirstOrDefaultAsync(); // lay don hang tu db
+                DirectSalesOrderDAO.Code = DirectSalesOrder.Code;
+                DirectSalesOrderDAO.OrganizationId = DirectSalesOrder.OrganizationId;
+                DirectSalesOrderDAO.BuyerStoreId = DirectSalesOrder.BuyerStoreId;
+                DirectSalesOrderDAO.SaleEmployeeId = DirectSalesOrder.SaleEmployeeId;
+                DirectSalesOrderDAO.RequestStateId = RequestStateEnum.APPROVED.Id; // don hang tao tu ams.abe mac dinh khong co wf -> wf requestState = approved 
+                DirectSalesOrderDAO.EditedPriceStatusId = EditedPriceStatusEnum.INACTIVE.Id; // don hang tao tu ams.abe mac dinh khong cho sua gia
+                DirectSalesOrderDAO.SubTotal = DirectSalesOrder.SubTotal;
+                DirectSalesOrderDAO.TotalTaxAmount = DirectSalesOrder.TotalTaxAmount;
+                DirectSalesOrderDAO.TotalAfterTax = DirectSalesOrder.TotalAfterTax;
+                DirectSalesOrderDAO.Total = DirectSalesOrder.Total;
+                DirectSalesOrderDAO.RowId = DirectSalesOrder.RowId;
+                DirectSalesOrderDAO.StoreUserCreatorId = DirectSalesOrder.StoreUserCreatorId; // luu acc cua store tao don hang
+                DirectSalesOrderDAO.OrderDate = DirectSalesOrder.OrderDate; // ams.abe tao ra neu client ko gui ve
+                DirectSalesOrderDAO.CreatedAt = DirectSalesOrder.CreatedAt; // lay tu ams.abe ra neu client ko gui ve
+                DirectSalesOrderDAO.UpdatedAt = DirectSalesOrder.UpdatedAt; // lay tu ams.abe ra neu client ko gui ve
+                await context.BulkMergeAsync(new List<DirectSalesOrderDAO> { DirectSalesOrderDAO }); // luu vao db
+                //await Logging.CreateAuditLog(DirectSalesOrder, new { }, nameof(DirectSalesOrderHandler)); // ghi log
+                await NotifyUsed(DirectSalesOrder);
+                await Sync(DirectSalesOrder);
             }
             catch (Exception ex)
             {
@@ -108,7 +100,7 @@ namespace DMS.Handlers
             }
         }
 
-        private async Task<List<DirectSalesOrder>> GetDataFromMessage(DataContext context, string json)
+        private async Task<DirectSalesOrder> GetDataFromMessage(DataContext context, string json)
         {
             List<DirectSalesOrder> DirectSalesOrders = new List<DirectSalesOrder>();
             List<EventMessage<DirectSalesOrder>> EventMessageReceived = JsonConvert.DeserializeObject<List<EventMessage<DirectSalesOrder>>>(json);
@@ -123,14 +115,15 @@ namespace DMS.Handlers
                     DirectSalesOrders.Add(EventMessage.Content);
             } // loc message theo rowId
 
-            return DirectSalesOrders;
-        }
+            return DirectSalesOrders.Distinct().FirstOrDefault();
+        } // lay ra 1 don hang tu list message
 
         private async Task Sync(DirectSalesOrder DirectSalesOrder)
         {
             List<EventMessage<DirectSalesOrder>> EventMessageDirectSalesOrders = new List<EventMessage<DirectSalesOrder>>();
             EventMessage<DirectSalesOrder> EventMessageDirectSalesOrder = new EventMessage<DirectSalesOrder>(DirectSalesOrder, DirectSalesOrder.RowId);
             EventMessageDirectSalesOrders.Add(EventMessageDirectSalesOrder);
+            
             RabbitManager.PublishList(EventMessageDirectSalesOrders, RoutingKeyEnum.DirectSalesOrderSync); // đồng bộ lên AMS
         }
 
@@ -183,5 +176,6 @@ namespace DMS.Handlers
                 RabbitManager.PublishSingle(AppUserMessage, RoutingKeyEnum.AppUserUsed);
             } // thông báo lên PORTAL
         } // thông báo item, UOM, Store đã sử dụng
+
     }
 }
