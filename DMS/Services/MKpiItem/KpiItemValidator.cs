@@ -294,6 +294,7 @@ namespace DMS.Services.MKpiItem
             await ValidateTime(KpiItem);
             await ValidateOrganization(KpiItem);
             await ValidateEmployees(KpiItem);
+            await ValidateOldKpi(KpiItem);
             await ValidateStatus(KpiItem);
             await ValidateItem(KpiItem);
             await ValidateValue(KpiItem);

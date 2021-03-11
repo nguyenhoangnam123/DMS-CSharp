@@ -13,6 +13,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using DMS.Enums;
+using DMS.Services.MStore;
+using Thinktecture.EntityFrameworkCore.TempTables;
+using Thinktecture;
 
 namespace DMS.Rpc.dashboards.director
 {
@@ -32,13 +35,15 @@ namespace DMS.Rpc.dashboards.director
         private IOrganizationService OrganizationService;
         private IIndirectSalesOrderService IndirectSalesOrderService;
         private IStoreCheckingService StoreCheckingService;
+        private IStoreService StoreService;
         public DashboardDirectorController(
             DataContext DataContext,
             IAppUserService AppUserService,
             ICurrentContext CurrentContext,
             IOrganizationService OrganizationService,
             IIndirectSalesOrderService IndirectSalesOrderService,
-            IStoreCheckingService StoreCheckingService)
+            IStoreCheckingService StoreCheckingService,
+            IStoreService StoreService)
         {
             this.DataContext = DataContext;
             this.AppUserService = AppUserService;
@@ -46,8 +51,10 @@ namespace DMS.Rpc.dashboards.director
             this.OrganizationService = OrganizationService;
             this.IndirectSalesOrderService = IndirectSalesOrderService;
             this.StoreCheckingService = StoreCheckingService;
+            this.StoreService = StoreService;
         }
 
+        #region Filter List
         [Route(DashboardDirectorRoute.FilterListTime1), HttpPost]
         public List<DashboardDirector_EnumList> FilterListTime1()
         {
@@ -143,6 +150,7 @@ namespace DMS.Rpc.dashboards.director
                 .Select(x => new DashboardDirector_OrganizationDTO(x)).ToList();
             return DashboardDirector_OrganizationDTOs;
         }
+        #endregion
 
         [Route(DashboardDirectorRoute.CountStore), HttpPost]
         public async Task<long> CountStore([FromBody] DashboardDirector_StoreFilterDTO DashboardDirector_StoreFilterDTO)
@@ -157,8 +165,11 @@ namespace DMS.Rpc.dashboards.director
             }
             OrganizationIds = OrganizationDAOs.Select(o => o.Id).ToList();
 
+            List<long> StoreIds = await FilterStore(StoreService, OrganizationService, CurrentContext);
+            ITempTableQuery<TempTable<long>> tempTableQuery = await DataContext
+                        .BulkInsertValuesIntoTempTableAsync<long>(StoreIds);
             var query = from s in DataContext.Store
-                        join o in DataContext.Organization on s.OrganizationId equals o.Id
+                        join tt in tempTableQuery.Query on s.Id equals tt.Column1
                         where OrganizationIds.Contains(s.OrganizationId) &&
                         s.DeletedAt == null
                         select s;
@@ -286,10 +297,15 @@ namespace DMS.Rpc.dashboards.director
             var AppUsers = await AppUserService.List(AppUserFilter);
             var AppUserIds = AppUsers.Select(x => x.Id).ToList();
 
+            List<long> StoreIds = await FilterStore(StoreService, OrganizationService, CurrentContext);
+            ITempTableQuery<TempTable<long>> tempTableQuery = await DataContext
+                        .BulkInsertValuesIntoTempTableAsync<long>(StoreIds);
+
             var queryStoreHasCheckedCounter = from sc in DataContext.StoreChecking
                                               join s in DataContext.Store on sc.StoreId equals s.Id
                                               join au in DataContext.AppUser on sc.SaleEmployeeId equals au.Id
                                               join o in DataContext.Organization on au.OrganizationId equals o.Id
+                                              join tt in tempTableQuery.Query on s.Id equals tt.Column1
                                               where sc.CheckOutAt.HasValue && sc.CheckOutAt >= Start && sc.CheckOutAt <= End &&
                                               AppUserIds.Contains(au.Id) &&
                                               (SaleEmployeeId.HasValue == false || au.Id == SaleEmployeeId.Value) &&
@@ -297,7 +313,7 @@ namespace DMS.Rpc.dashboards.director
                                               au.DeletedAt == null && o.DeletedAt == null && s.DeletedAt == null
                                               select s;
 
-            var StoreHasCheckedCounter = queryStoreHasCheckedCounter.Select(x => x.Id).Sum();
+            var StoreHasCheckedCounter = queryStoreHasCheckedCounter.Select(x => x.Id).Distinct().Count();
             return StoreHasCheckedCounter;
         }
 
@@ -331,10 +347,15 @@ namespace DMS.Rpc.dashboards.director
             var AppUsers = await AppUserService.List(AppUserFilter);
             var AppUserIds = AppUsers.Select(x => x.Id).ToList();
 
+            List<long> StoreIds = await FilterStore(StoreService, OrganizationService, CurrentContext);
+            ITempTableQuery<TempTable<long>> tempTableQuery = await DataContext
+                        .BulkInsertValuesIntoTempTableAsync<long>(StoreIds);
+
             var query = from sc in DataContext.StoreChecking
                         join s in DataContext.Store on sc.StoreId equals s.Id
                         join au in DataContext.AppUser on sc.SaleEmployeeId equals au.Id
                         join o in DataContext.Organization on au.OrganizationId equals o.Id
+                        join tt in tempTableQuery.Query on s.Id equals tt.Column1
                         where sc.CheckOutAt.HasValue && sc.CheckOutAt >= Start && sc.CheckOutAt <= End &&
                         AppUserIds.Contains(au.Id) &&
                         (SaleEmployeeId.HasValue == false || au.Id == SaleEmployeeId.Value) &&
@@ -741,27 +762,25 @@ namespace DMS.Rpc.dashboards.director
                 End = Start.AddMonths(1).AddSeconds(-1);
             }
 
-            var query = from o in DataContext.IndirectSalesOrder
-                        join oc in DataContext.IndirectSalesOrderContent on o.Id equals oc.IndirectSalesOrderId
-                        join i in DataContext.Item on oc.ItemId equals i.Id
+            var query = from t in DataContext.IndirectSalesOrderTransaction
+                        join o in DataContext.IndirectSalesOrder on t.IndirectSalesOrderId equals o.Id
+                        join i in DataContext.Item on t.ItemId equals i.Id
                         join p in DataContext.Product on i.ProductId equals p.Id
                         join au in DataContext.AppUser on o.SaleEmployeeId equals au.Id
-                        join org in DataContext.Organization on au.OrganizationId equals org.Id
-                        where o.OrderDate >= Start && o.OrderDate <= End &&
-                        AppUserIds.Contains(o.SaleEmployeeId) &&
-                        (SaleEmployeeId.HasValue == false || o.SaleEmployeeId == SaleEmployeeId.Value) &&
-                        OrganizationIds.Contains(o.OrganizationId) &&
+                        where t.OrderDate >= Start && t.OrderDate <= End &&
+                        AppUserIds.Contains(t.SalesEmployeeId) &&
+                        (SaleEmployeeId.HasValue == false || t.SalesEmployeeId == SaleEmployeeId.Value) &&
+                        OrganizationIds.Contains(t.OrganizationId) &&
                         o.RequestStateId == RequestStateEnum.APPROVED.Id &&
                         au.DeletedAt == null && o.DeletedAt == null && i.DeletedAt == null && p.DeletedAt == null
-                        group oc by p.Name into x
+                        group t by p.Name into x
                         select new DashboardDirector_Top5RevenueByProductDTO
                         {
                             ProductName = x.Key,
-                            Revenue = x.Sum(y => y.Amount + y.TaxAmount ?? 0)
+                            Revenue = x.Sum(y => y.Revenue ?? 0)
                         };
 
-            List<DashboardDirector_Top5RevenueByProductDTO>
-                DashboardDirector_Top5RevenueByProductDTOs = await query.OrderByDescending(x => x.Revenue)
+            List<DashboardDirector_Top5RevenueByProductDTO> DashboardDirector_Top5RevenueByProductDTOs = await query.OrderByDescending(x => x.Revenue)
                 .Skip(0).Take(5).ToListAsync();
             return DashboardDirector_Top5RevenueByProductDTOs;
         }
@@ -824,22 +843,22 @@ namespace DMS.Rpc.dashboards.director
                 End = Start.AddMonths(1).AddSeconds(-1);
             }
 
-            var query = from i in DataContext.IndirectSalesOrder
-                        join ic in DataContext.IndirectSalesOrderContent on i.Id equals ic.IndirectSalesOrderId
-                        join s in DataContext.Store on i.SellerStoreId equals s.Id
-                        join au in DataContext.AppUser on i.SaleEmployeeId equals au.Id
-                        join o in DataContext.Organization on au.OrganizationId equals o.Id
-                        where i.OrderDate >= Start && i.OrderDate <= End &&
-                        AppUserIds.Contains(i.SaleEmployeeId) &&
-                        (SaleEmployeeId.HasValue == false || i.SaleEmployeeId == SaleEmployeeId.Value) &&
-                        OrganizationIds.Contains(i.OrganizationId) &&
-                        i.RequestStateId == RequestStateEnum.APPROVED.Id &&
-                        au.DeletedAt == null && o.DeletedAt == null && s.DeletedAt == null
-                        group ic by au.DisplayName into x
+            var query = from t in DataContext.IndirectSalesOrderTransaction
+                        join o in DataContext.IndirectSalesOrder on t.IndirectSalesOrderId equals o.Id
+                        join i in DataContext.Item on t.ItemId equals i.Id
+                        join p in DataContext.Product on i.ProductId equals p.Id
+                        join au in DataContext.AppUser on o.SaleEmployeeId equals au.Id
+                        where t.OrderDate >= Start && t.OrderDate <= End &&
+                        AppUserIds.Contains(t.SalesEmployeeId) &&
+                        (SaleEmployeeId.HasValue == false || t.SalesEmployeeId == SaleEmployeeId.Value) &&
+                        OrganizationIds.Contains(t.OrganizationId) &&
+                        o.RequestStateId == RequestStateEnum.APPROVED.Id &&
+                        au.DeletedAt == null && o.DeletedAt == null && i.DeletedAt == null && p.DeletedAt == null
+                        group t by au.DisplayName into x
                         select new DashboardDirector_Top5RevenueByEmployeeDTO
                         {
                             EmployeeName = x.Key,
-                            Revenue = x.Sum(y => y.Amount + y.TaxAmount ?? 0)
+                            Revenue = x.Sum(y => y.Revenue ?? 0)
                         };
 
             List<DashboardDirector_Top5RevenueByEmployeeDTO>
@@ -884,21 +903,20 @@ namespace DMS.Rpc.dashboards.director
                 Start = new DateTime(Now.Year, Now.Month, 1).AddHours(0 - CurrentContext.TimeZone);
                 End = Start.AddMonths(1).AddSeconds(-1);
 
-                var query = from i in DataContext.IndirectSalesOrder
-                            join ic in DataContext.IndirectSalesOrderContent on i.Id equals ic.IndirectSalesOrderId
-                            join au in DataContext.AppUser on i.SaleEmployeeId equals au.Id
-                            join o in DataContext.Organization on au.OrganizationId equals o.Id
-                            where i.OrderDate >= Start && i.OrderDate <= End &&
-                            AppUserIds.Contains(i.SaleEmployeeId) &&
-                            (SaleEmployeeId.HasValue == false || i.SaleEmployeeId == SaleEmployeeId.Value) &&
-                            OrganizationIds.Contains(i.OrganizationId) &&
+                var query = from t in DataContext.IndirectSalesOrderTransaction
+                            join i in DataContext.IndirectSalesOrder on t.IndirectSalesOrderId equals i.Id
+                            join au in DataContext.AppUser on t.SalesEmployeeId equals au.Id
+                            where t.OrderDate >= Start && t.OrderDate <= End &&
+                            AppUserIds.Contains(t.SalesEmployeeId) &&
+                            (SaleEmployeeId.HasValue == false || t.SalesEmployeeId == SaleEmployeeId.Value) &&
+                            OrganizationIds.Contains(t.OrganizationId) &&
                             i.RequestStateId == RequestStateEnum.APPROVED.Id &&
-                            au.DeletedAt == null && o.DeletedAt == null
-                            group ic by i.OrderDate.Day into x
+                            au.DeletedAt == null
+                            group t by t.OrderDate.Day into x
                             select new DashboardDirector_RevenueFluctuationByMonthDTO
                             {
                                 Day = x.Key,
-                                Revenue = x.Sum(y => y.Amount + y.TaxAmount ?? 0)
+                                Revenue = x.Sum(y => y.Revenue ?? 0)
                             };
 
                 var DashboardDirector_RevenueFluctuationByMonthDTOs = await query.ToListAsync();
@@ -929,21 +947,20 @@ namespace DMS.Rpc.dashboards.director
                 Start = new DateTime(Now.Year, Now.Month, 1).AddMonths(-1).AddHours(0 - CurrentContext.TimeZone);
                 End = Start.AddMonths(1).AddSeconds(-1);
 
-                var query = from i in DataContext.IndirectSalesOrder
-                            join ic in DataContext.IndirectSalesOrderContent on i.Id equals ic.IndirectSalesOrderId
-                            join au in DataContext.AppUser on i.SaleEmployeeId equals au.Id
-                            join o in DataContext.Organization on au.OrganizationId equals o.Id
-                            where i.OrderDate >= Start && i.OrderDate <= End &&
-                            AppUserIds.Contains(i.SaleEmployeeId) &&
-                            (SaleEmployeeId.HasValue == false || i.SaleEmployeeId == SaleEmployeeId.Value) &&
-                            OrganizationIds.Contains(i.OrganizationId) &&
+                var query = from t in DataContext.IndirectSalesOrderTransaction
+                            join i in DataContext.IndirectSalesOrder on t.IndirectSalesOrderId equals i.Id
+                            join au in DataContext.AppUser on t.SalesEmployeeId equals au.Id
+                            where t.OrderDate >= Start && t.OrderDate <= End &&
+                            AppUserIds.Contains(t.SalesEmployeeId) &&
+                            (SaleEmployeeId.HasValue == false || t.SalesEmployeeId == SaleEmployeeId.Value) &&
+                            OrganizationIds.Contains(t.OrganizationId) &&
                             i.RequestStateId == RequestStateEnum.APPROVED.Id &&
-                            au.DeletedAt == null && o.DeletedAt == null
-                            group ic by i.OrderDate.Day into x
+                            au.DeletedAt == null
+                            group t by t.OrderDate.Day into x
                             select new DashboardDirector_RevenueFluctuationByMonthDTO
                             {
                                 Day = x.Key,
-                                Revenue = x.Sum(y => y.Amount + y.TaxAmount ?? 0)
+                                Revenue = x.Sum(y => y.Revenue ?? 0)
                             };
 
                 var DashboardDirector_RevenueFluctuationByMonthDTOs = await query.ToListAsync();
@@ -975,21 +992,20 @@ namespace DMS.Rpc.dashboards.director
                 Start = new DateTime(Now.Year, (this_quarter - 1) * 3 + 1, 1).AddHours(0 - CurrentContext.TimeZone);
                 End = Start.AddMonths(3).AddSeconds(-1);
 
-                var query = from i in DataContext.IndirectSalesOrder
-                            join ic in DataContext.IndirectSalesOrderContent on i.Id equals ic.IndirectSalesOrderId
-                            join au in DataContext.AppUser on i.SaleEmployeeId equals au.Id
-                            join o in DataContext.Organization on au.OrganizationId equals o.Id
-                            where i.OrderDate >= Start && i.OrderDate <= End &&
-                            AppUserIds.Contains(i.SaleEmployeeId) &&
-                            (SaleEmployeeId.HasValue == false || i.SaleEmployeeId == SaleEmployeeId.Value) &&
-                            OrganizationIds.Contains(i.OrganizationId) &&
+                var query = from t in DataContext.IndirectSalesOrderTransaction
+                            join i in DataContext.IndirectSalesOrder on t.IndirectSalesOrderId equals i.Id
+                            join au in DataContext.AppUser on t.SalesEmployeeId equals au.Id
+                            where t.OrderDate >= Start && t.OrderDate <= End &&
+                            AppUserIds.Contains(t.SalesEmployeeId) &&
+                            (SaleEmployeeId.HasValue == false || t.SalesEmployeeId == SaleEmployeeId.Value) &&
+                            OrganizationIds.Contains(t.OrganizationId) &&
                             i.RequestStateId == RequestStateEnum.APPROVED.Id &&
-                            au.DeletedAt == null && o.DeletedAt == null
-                            group ic by i.OrderDate.Month into x
+                            au.DeletedAt == null
+                            group t by t.OrderDate.Day into x
                             select new DashboardDirector_RevenueFluctuationByQuarterDTO
                             {
                                 Month = x.Key,
-                                Revenue = x.Sum(y => y.Amount + y.TaxAmount ?? 0)
+                                Revenue = x.Sum(y => y.Revenue ?? 0)
                             };
 
                 var DashboardDirector_RevenueFluctuationByQuarterDTOs = await query.ToListAsync();
@@ -1022,21 +1038,20 @@ namespace DMS.Rpc.dashboards.director
                 Start = new DateTime(Now.Year, (this_quarter - 1) * 3 + 1, 1).AddMonths(-3).AddHours(0 - CurrentContext.TimeZone);
                 End = Start.AddMonths(3).AddSeconds(-1);
 
-                var query = from i in DataContext.IndirectSalesOrder
-                            join ic in DataContext.IndirectSalesOrderContent on i.Id equals ic.IndirectSalesOrderId
-                            join au in DataContext.AppUser on i.SaleEmployeeId equals au.Id
-                            join o in DataContext.Organization on au.OrganizationId equals o.Id
-                            where i.OrderDate >= Start && i.OrderDate <= End &&
-                            AppUserIds.Contains(i.SaleEmployeeId) &&
-                            (SaleEmployeeId.HasValue == false || i.SaleEmployeeId == SaleEmployeeId.Value) &&
-                            OrganizationIds.Contains(i.OrganizationId) &&
+                var query = from t in DataContext.IndirectSalesOrderTransaction
+                            join i in DataContext.IndirectSalesOrder on t.IndirectSalesOrderId equals i.Id
+                            join au in DataContext.AppUser on t.SalesEmployeeId equals au.Id
+                            where t.OrderDate >= Start && t.OrderDate <= End &&
+                            AppUserIds.Contains(t.SalesEmployeeId) &&
+                            (SaleEmployeeId.HasValue == false || t.SalesEmployeeId == SaleEmployeeId.Value) &&
+                            OrganizationIds.Contains(t.OrganizationId) &&
                             i.RequestStateId == RequestStateEnum.APPROVED.Id &&
-                            au.DeletedAt == null && o.DeletedAt == null
-                            group ic by i.OrderDate.Month into x
+                            au.DeletedAt == null
+                            group t by t.OrderDate.Day into x
                             select new DashboardDirector_RevenueFluctuationByQuarterDTO
                             {
                                 Month = x.Key,
-                                Revenue = x.Sum(y => y.Amount + y.TaxAmount ?? 0)
+                                Revenue = x.Sum(y => y.Revenue ?? 0)
                             };
 
                 var DashboardDirector_RevenueFluctuationByQuarterDTOs = await query.ToListAsync();
@@ -1068,21 +1083,20 @@ namespace DMS.Rpc.dashboards.director
                 Start = new DateTime(Now.Year, 1, 1).AddHours(0 - CurrentContext.TimeZone);
                 End = Start.AddYears(1).AddSeconds(-1);
 
-                var query = from i in DataContext.IndirectSalesOrder
-                            join ic in DataContext.IndirectSalesOrderContent on i.Id equals ic.IndirectSalesOrderId
-                            join au in DataContext.AppUser on i.SaleEmployeeId equals au.Id
-                            join o in DataContext.Organization on au.OrganizationId equals o.Id
-                            where i.OrderDate >= Start && i.OrderDate <= End &&
-                            AppUserIds.Contains(i.SaleEmployeeId) &&
-                            (SaleEmployeeId.HasValue == false || i.SaleEmployeeId == SaleEmployeeId.Value) &&
-                            OrganizationIds.Contains(i.OrganizationId) &&
+                var query = from t in DataContext.IndirectSalesOrderTransaction
+                            join i in DataContext.IndirectSalesOrder on t.IndirectSalesOrderId equals i.Id
+                            join au in DataContext.AppUser on t.SalesEmployeeId equals au.Id
+                            where t.OrderDate >= Start && t.OrderDate <= End &&
+                            AppUserIds.Contains(t.SalesEmployeeId) &&
+                            (SaleEmployeeId.HasValue == false || t.SalesEmployeeId == SaleEmployeeId.Value) &&
+                            OrganizationIds.Contains(t.OrganizationId) &&
                             i.RequestStateId == RequestStateEnum.APPROVED.Id &&
-                            au.DeletedAt == null && o.DeletedAt == null
-                            group ic by i.OrderDate.Month into x
+                            au.DeletedAt == null
+                            group t by t.OrderDate.Day into x
                             select new DashboardDirector_RevenueFluctuationByYearDTO
                             {
                                 Month = x.Key,
-                                Revenue = x.Sum(y => y.Amount + y.TaxAmount ?? 0)
+                                Revenue = x.Sum(y => y.Revenue ?? 0)
                             };
 
                 var DashboardDirector_RevenueFluctuationByYearDTO = await query.ToListAsync();

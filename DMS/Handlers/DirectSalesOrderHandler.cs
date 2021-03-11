@@ -63,7 +63,7 @@ namespace DMS.Handlers
                     await context.BulkMergeAsync(new List<DirectSalesOrderDAO> { DirectSalesOrderDAO });
                     //await Logging.CreateAuditLog(DirectSalesOrder, new { }, nameof(DirectSalesOrderHandler)); // ghi log
                     await NotifyUsed(DirectSalesOrder);
-                    await Sync(DirectSalesOrder); // public sync for AMS Web
+                    await SyncDirectSalesOrder(DirectSalesOrder); // public sync for AMS Web
                 }
                 catch (Exception ex)
                 {
@@ -99,7 +99,7 @@ namespace DMS.Handlers
                     await context.BulkMergeAsync(new List<DirectSalesOrderDAO> { DirectSalesOrderDAO }); // luu vao db
                                                                                                          //await Logging.CreateAuditLog(DirectSalesOrder, new { }, nameof(DirectSalesOrderHandler)); // ghi log
                     await NotifyUsed(DirectSalesOrder);
-                    await Sync(DirectSalesOrder);
+                    await SyncDirectSalesOrder(DirectSalesOrder);
                 }
                 catch (Exception ex)
                 {
@@ -109,12 +109,12 @@ namespace DMS.Handlers
         }
 
 
-        private async Task Sync(DirectSalesOrder DirectSalesOrder)
+        private async Task SyncDirectSalesOrder(DirectSalesOrder DirectSalesOrder)
         {
             List<EventMessage<DirectSalesOrder>> EventMessageDirectSalesOrders = new List<EventMessage<DirectSalesOrder>>();
             EventMessage<DirectSalesOrder> EventMessageDirectSalesOrder = new EventMessage<DirectSalesOrder>(DirectSalesOrder, DirectSalesOrder.RowId);
             EventMessageDirectSalesOrders.Add(EventMessageDirectSalesOrder);
-            
+
             RabbitManager.PublishList(EventMessageDirectSalesOrders, RoutingKeyEnum.DirectSalesOrderSync); // đồng bộ lên AMS
         }
 
@@ -132,30 +132,18 @@ namespace DMS.Handlers
                 RabbitManager.PublishList(itemMessages, RoutingKeyEnum.ItemUsed);
             } // thông báo lên MDM
             {
-                List<long> PrimaryUOMIds = DirectSalesOrder.DirectSalesOrderContents.Select(i => i.PrimaryUnitOfMeasureId).ToList();
-                List<long> UOMIds = DirectSalesOrder.DirectSalesOrderContents.Select(i => i.UnitOfMeasureId).ToList();
-                UOMIds.AddRange(PrimaryUOMIds);
-                List<EventMessage<UnitOfMeasure>> UnitOfMeasureMessages = UOMIds.Select(x => new EventMessage<UnitOfMeasure>
+                if (DirectSalesOrder.StoreUserCreatorId.HasValue)
                 {
-                    Content = new UnitOfMeasure { Id = x },
-                    EntityName = nameof(UnitOfMeasure),
-                    RowId = Guid.NewGuid(),
-                    Time = StaticParams.DateTimeNow,
-                }).ToList();
-                RabbitManager.PublishList(UnitOfMeasureMessages, RoutingKeyEnum.UnitOfMeasureUsed);
-            } // thông báo lên MDM
-            {
-                List<EventMessage<Store>> storeMessages = new List<EventMessage<Store>>();
-                EventMessage<Store> BuyerStore = new EventMessage<Store>
-                {
-                    Content = new Store { Id = DirectSalesOrder.BuyerStoreId },
-                    EntityName = nameof(Store),
-                    RowId = Guid.NewGuid(),
-                    Time = StaticParams.DateTimeNow,
-                };
-                storeMessages.Add(BuyerStore);
-                RabbitManager.PublishList(storeMessages, RoutingKeyEnum.StoreUsed);
-            } // thông báo lên DMS
+                    EventMessage<StoreUser> StoreUserMessage = new EventMessage<StoreUser>
+                    {
+                        Content = new StoreUser { Id = DirectSalesOrder.StoreUserCreatorId.Value },
+                        EntityName = nameof(StoreUser),
+                        RowId = Guid.NewGuid(),
+                        Time = StaticParams.DateTimeNow,
+                    };
+                    RabbitManager.PublishSingle(StoreUserMessage, RoutingKeyEnum.StoreUserUsed);
+                }
+            } // thong bao len DMS
             {
                 EventMessage<AppUser> AppUserMessage = new EventMessage<AppUser>
                 {
