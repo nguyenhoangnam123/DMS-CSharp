@@ -1,6 +1,7 @@
 ﻿using DMS.Common;
 using DMS.Entities;
 using DMS.Models;
+using DMS.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
@@ -31,43 +32,26 @@ namespace DMS.Handlers
             List<EventMessage<AppUser>> AppUserEventMessages = JsonConvert.DeserializeObject<List<EventMessage<AppUser>>>(json);
 
             List<AppUser> AppUsers = AppUserEventMessages.Select(x => x.Content).ToList();
+            IUOW UOW = new UOW(context);
             try
             {
                 List<long> Ids = AppUsers.Select(x => x.Id).ToList();
-                List<AppUserDAO> AppUserDAOs = await context.AppUser.Where(x => Ids.Contains(x.Id)).ToListAsync();
+                List<AppUser> oldAppUsers = await UOW.AppUserRepository.List(new AppUserFilter
+                {
+                    Selects = AppUserSelect.Id | AppUserSelect.GPSUpdatedAt,
+                    Skip = 0,
+                    Take = int.MaxValue,
+                    Id = new IdFilter { In = Ids }
+                });
                 foreach(AppUser AppUser in AppUsers)
                 {
-                    AppUserDAO AppUserDAO = AppUserDAOs.Where(x => x.Id == AppUser.Id).FirstOrDefault();
-                    if(AppUserDAO == null)
-                    {
-                        AppUserDAO = new AppUserDAO
-                        {
-                            GPSUpdatedAt = DateTime.Now,
-                        };
-                        AppUserDAOs.Add(AppUserDAO);
-                    }
-                    AppUserDAO.Address = AppUser.Address;
-                    AppUserDAO.Avatar = AppUser.Avatar;
-                    AppUserDAO.CreatedAt = AppUser.CreatedAt;
-                    AppUserDAO.UpdatedAt = AppUser.UpdatedAt;
-                    AppUserDAO.DeletedAt = AppUser.DeletedAt;
-                    AppUserDAO.Department = AppUser.Department;
-                    AppUserDAO.DisplayName = AppUser.DisplayName;
-                    AppUserDAO.Email = AppUser.Email;
-                    AppUserDAO.Id = AppUser.Id;
-                    AppUserDAO.OrganizationId = AppUser.OrganizationId;
-                    AppUserDAO.Phone = AppUser.Phone;
-                    AppUserDAO.PositionId = AppUser.PositionId;
-                    AppUserDAO.ProvinceId = AppUser.ProvinceId;
-                    AppUserDAO.RowId = AppUser.RowId;
-                    AppUserDAO.StatusId = AppUser.StatusId;
-                    AppUserDAO.Username = AppUser.Username;
-                    AppUserDAO.SexId = AppUser.SexId;
-                    AppUserDAO.Birthday = AppUser.Birthday;
-                    AppUserDAO.Longitude = AppUser.Longitude;
-                    AppUserDAO.Latitude = AppUser.Latitude;
-                }    
-                await context.BulkMergeAsync(AppUserDAOs);
+                    AppUser old = oldAppUsers.Where(x => x.Id == AppUser.Id).FirstOrDefault();
+                    if (old == null)
+                        AppUser.GPSUpdatedAt = DateTime.Now;
+                    else
+                        AppUser.GPSUpdatedAt = old.GPSUpdatedAt;
+                }
+                await UOW.AppUserRepository.BulkMerge(AppUsers);
             }
             catch (Exception ex)
             {

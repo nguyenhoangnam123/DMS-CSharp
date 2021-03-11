@@ -25,6 +25,7 @@ namespace DMS.Entities
         public Guid RowId { get; set; }
         public decimal? Latitude { get; set; }
         public decimal? Longitude { get; set; }
+        public DateTime GPSUpdatedAt { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public DateTime? DeletedAt { get; set; }
@@ -85,6 +86,7 @@ namespace DMS.Entities
         Status = 11,
         Birthday = 12,
         Province = 13,
+        
     }
 
     [Flags]
@@ -109,5 +111,6 @@ namespace DMS.Entities
         Province = E._15,
         Latitude = E._16,
         Longitude = E._17,
+        GPSUpdatedAt = 18,
     }
 }

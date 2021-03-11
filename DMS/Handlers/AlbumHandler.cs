@@ -1,6 +1,7 @@
 ﻿using DMS.Common;
 using DMS.Entities;
 using DMS.Models;
+using DMS.Repositories;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
 using System;
@@ -28,8 +29,9 @@ namespace DMS.Handlers
         private async Task Used(DataContext context, string json)
         {
             List<EventMessage<Album>> EventMessageReviced = JsonConvert.DeserializeObject<List<EventMessage<Album>>>(json);
-            List<long> AlbumIds = EventMessageReviced.Select(em => em.Content.Id).ToList();
-            await context.Album.Where(a => AlbumIds.Contains(a.Id)).UpdateFromQueryAsync(a => new AlbumDAO { Used = true });
+            List<Album> Albums = EventMessageReviced.Select(em => em.Content).ToList();
+            IUOW UOW = new UOW(context);
+            await UOW.AlbumRepository.BulkUsed(Albums);
         }
     }
 }

@@ -20,6 +20,7 @@ namespace DMS.Repositories
         Task<bool> Update(AppUser AppUser);
         Task<bool> SimpleUpdate(AppUser AppUser);
         Task<bool> BulkMergeERouteScope(List<AppUserStoreMapping> AppUserStoreMappings, List<long> AppUserIds);
+        Task<bool> BulkMerge(List<AppUser> AppUsers);
     }
     public class AppUserRepository : IAppUserRepository
     {
@@ -291,6 +292,7 @@ namespace DMS.Repositories
                 ProvinceId = filter.Selects.Contains(AppUserSelect.Province) ? q.ProvinceId : default(long),
                 Latitude = filter.Selects.Contains(AppUserSelect.Latitude) ? q.Latitude : default(decimal?),
                 Longitude = filter.Selects.Contains(AppUserSelect.Longitude) ? q.Longitude : default(decimal?),
+                GPSUpdatedAt = filter.Selects.Contains(AppUserSelect.GPSUpdatedAt) ? q.GPSUpdatedAt : default(DateTime),
                 Organization = filter.Selects.Contains(AppUserSelect.Organization) && q.Organization != null ? new Organization
                 {
                     Id = q.Organization.Id,
@@ -535,6 +537,39 @@ namespace DMS.Repositories
             }).ToList();
 
             await DataContext.AppUserStoreMapping.BulkMergeAsync(AppUserStoreMappingDAOs);
+            return true;
+        }
+
+        public async Task<bool> BulkMerge(List<AppUser> AppUsers)
+        {
+            List<AppUserDAO> AppUserDAOs = new List<AppUserDAO>();
+            foreach (AppUser AppUser in AppUsers)
+            {
+                AppUserDAO AppUserDAO = new AppUserDAO();
+                AppUserDAOs.Add(AppUserDAO);
+                AppUserDAO.GPSUpdatedAt = AppUser.GPSUpdatedAt;
+                AppUserDAO.Address = AppUser.Address;
+                AppUserDAO.Avatar = AppUser.Avatar;
+                AppUserDAO.CreatedAt = AppUser.CreatedAt;
+                AppUserDAO.UpdatedAt = AppUser.UpdatedAt;
+                AppUserDAO.DeletedAt = AppUser.DeletedAt;
+                AppUserDAO.Department = AppUser.Department;
+                AppUserDAO.DisplayName = AppUser.DisplayName;
+                AppUserDAO.Email = AppUser.Email;
+                AppUserDAO.Id = AppUser.Id;
+                AppUserDAO.OrganizationId = AppUser.OrganizationId;
+                AppUserDAO.Phone = AppUser.Phone;
+                AppUserDAO.PositionId = AppUser.PositionId;
+                AppUserDAO.ProvinceId = AppUser.ProvinceId;
+                AppUserDAO.RowId = AppUser.RowId;
+                AppUserDAO.StatusId = AppUser.StatusId;
+                AppUserDAO.Username = AppUser.Username;
+                AppUserDAO.SexId = AppUser.SexId;
+                AppUserDAO.Birthday = AppUser.Birthday;
+                AppUserDAO.Longitude = AppUser.Longitude;
+                AppUserDAO.Latitude = AppUser.Latitude;
+            }
+            await DataContext.BulkMergeAsync(AppUserDAOs);
             return true;
         }
     }
