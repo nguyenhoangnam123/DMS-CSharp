@@ -28,18 +28,9 @@ namespace DMS.Handlers
 
         private async Task Sync(DataContext context, string json)
         {
-            List<EventMessage<AppUser>> EventMessageReviced = JsonConvert.DeserializeObject<List<EventMessage<AppUser>>>(json);
-            await SaveEventMessage(context, SyncKey, EventMessageReviced);
-            List<Guid> RowIds = EventMessageReviced.Select(a => a.RowId).Distinct().ToList();
-            List<EventMessage<AppUser>> AppUserEventMessages = await ListEventMessage<AppUser>(context, SyncKey, RowIds);
+            List<EventMessage<AppUser>> AppUserEventMessages = JsonConvert.DeserializeObject<List<EventMessage<AppUser>>>(json);
 
-            List<AppUser> AppUsers = new List<AppUser>();
-            foreach (var RowId in RowIds)
-            {
-                EventMessage<AppUser> EventMessage = AppUserEventMessages.Where(e => e.RowId == RowId).OrderByDescending(e => e.Time).FirstOrDefault();
-                if (EventMessage != null)
-                    AppUsers.Add(EventMessage.Content);
-            }
+            List<AppUser> AppUsers = AppUserEventMessages.Select(x => x.Content).ToList();
             try
             {
                 List<long> Ids = AppUsers.Select(x => x.Id).ToList();

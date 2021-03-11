@@ -29,11 +29,9 @@ namespace DMS.Handlers
 
         private async Task Sync(DataContext DataContext, string json)
         {
-            List<EventMessage<Product>> EventMessageReceived = JsonConvert.DeserializeObject<List<EventMessage<Product>>>(json);
-            await SaveEventMessage(DataContext, SyncKey, EventMessageReceived);
-            List<Guid> RowIds = EventMessageReceived.Select(a => a.RowId).Distinct().ToList();
-            List<EventMessage<Product>> ProductEventMessages = await ListEventMessage<Product>(DataContext, SyncKey, RowIds);
+            List<EventMessage<Product>> ProductEventMessages = JsonConvert.DeserializeObject<List<EventMessage<Product>>>(json);
             List<Product> Products = ProductEventMessages.Select(x => x.Content).ToList();
+
             var ProductIds = Products.Select(x => x.Id).ToList();
             var VariationGroupingIds = Products.Where(x => x.VariationGroupings != null).SelectMany(x => x.VariationGroupings).Select(x => x.Id).ToList();
             var ItemIds = Products.Where(x => x.Items != null).SelectMany(x => x.Items).Select(x => x.Id).ToList();

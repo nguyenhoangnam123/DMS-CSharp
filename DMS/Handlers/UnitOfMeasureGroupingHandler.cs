@@ -30,18 +30,8 @@ namespace DMS.Handlers
 
         private async Task Sync(DataContext context, string json)
         {
-            List<EventMessage<UnitOfMeasureGrouping>> EventMessageReviced = JsonConvert.DeserializeObject<List<EventMessage<UnitOfMeasureGrouping>>>(json);
-            await SaveEventMessage(context, SyncKey, EventMessageReviced);
-            List<Guid> RowIds = EventMessageReviced.Select(a => a.RowId).Distinct().ToList();
-            List<EventMessage<UnitOfMeasureGrouping>> UnitOfMeasureGroupingEventMessages = await ListEventMessage<UnitOfMeasureGrouping>(context, SyncKey, RowIds);
-
-            List<UnitOfMeasureGrouping> UnitOfMeasureGroupings = new List<UnitOfMeasureGrouping>();
-            foreach (var RowId in RowIds)
-            {
-                EventMessage<UnitOfMeasureGrouping> EventMessage = UnitOfMeasureGroupingEventMessages.Where(e => e.RowId == RowId).OrderByDescending(e => e.Time).FirstOrDefault();
-                if (EventMessage != null)
-                    UnitOfMeasureGroupings.Add(EventMessage.Content);
-            }
+            List<EventMessage<UnitOfMeasureGrouping>> UnitOfMeasureGroupingEventMessages = JsonConvert.DeserializeObject<List<EventMessage<UnitOfMeasureGrouping>>>(json);
+            List<UnitOfMeasureGrouping> UnitOfMeasureGroupings = UnitOfMeasureGroupingEventMessages.Select(x => x.Content).ToList();
 
             try
             {

@@ -28,10 +28,7 @@ namespace DMS.Handlers
 
         private async Task Sync(DataContext context, string json)
         {
-            List<EventMessage<Color>> EventMessageReceived = JsonConvert.DeserializeObject<List<EventMessage<Color>>>(json);
-            await SaveEventMessage(context, SyncKey, EventMessageReceived);
-            List<Guid> RowIds = EventMessageReceived.Select(a => a.RowId).Distinct().ToList();
-            List<EventMessage<Color>> ColorEventMessages = await ListEventMessage<Color>(context, SyncKey, RowIds);
+            List<EventMessage<Color>> ColorEventMessages = JsonConvert.DeserializeObject<List<EventMessage<Color>>>(json);
             List<Color> Colors = ColorEventMessages.Select(x => x.Content).ToList();
             try
             {

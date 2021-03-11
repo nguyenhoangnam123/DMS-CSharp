@@ -28,18 +28,10 @@ namespace DMS.Handlers
 
         private async Task Sync(DataContext context, string json)
         {
-            List<EventMessage<CodeGeneratorRule>> EventMessageReviced = JsonConvert.DeserializeObject<List<EventMessage<CodeGeneratorRule>>>(json);
-            await SaveEventMessage(context, SyncKey, EventMessageReviced);
-            List<Guid> RowIds = EventMessageReviced.Select(a => a.RowId).Distinct().ToList();
-            List<EventMessage<CodeGeneratorRule>> CodeGeneratorRuleEventMessages = await ListEventMessage<CodeGeneratorRule>(context, SyncKey, RowIds);
+            List<EventMessage<CodeGeneratorRule>> CodeGeneratorRuleEventMessages = JsonConvert.DeserializeObject<List<EventMessage<CodeGeneratorRule>>>(json);
 
-            List<CodeGeneratorRule> CodeGeneratorRules = new List<CodeGeneratorRule>();
-            foreach (var RowId in RowIds)
-            {
-                EventMessage<CodeGeneratorRule> EventMessage = CodeGeneratorRuleEventMessages.Where(e => e.RowId == RowId).OrderByDescending(e => e.Time).FirstOrDefault();
-                if (EventMessage != null)
-                    CodeGeneratorRules.Add(EventMessage.Content);
-            }
+            List<CodeGeneratorRule> CodeGeneratorRules = CodeGeneratorRuleEventMessages.Select(x => x.Content).ToList();
+           
             try
             {
                 List<long> Ids = CodeGeneratorRules.Select(x => x.Id).ToList();

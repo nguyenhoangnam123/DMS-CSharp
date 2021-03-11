@@ -31,10 +31,7 @@ namespace DMS.Handlers
 
         private async Task Sync(DataContext context, string json)
         {
-            List<EventMessage<ProductGrouping>> EventMessageReceived = JsonConvert.DeserializeObject<List<EventMessage<ProductGrouping>>>(json);
-            await SaveEventMessage(context, SyncKey, EventMessageReceived);
-            List<Guid> RowIds = EventMessageReceived.Select(a => a.RowId).Distinct().ToList();
-            List<EventMessage<ProductGrouping>> ProductGroupingEventMessages = await ListEventMessage<ProductGrouping>(context, SyncKey, RowIds);
+            List<EventMessage<ProductGrouping>> ProductGroupingEventMessages = JsonConvert.DeserializeObject<List<EventMessage<ProductGrouping>>>(json);
             List<ProductGrouping> ProductGroupings = ProductGroupingEventMessages.Select(x => x.Content).ToList();
             List<ProductGroupingDAO> ProductGroupingInDB = await context.ProductGrouping.ToListAsync();
             try

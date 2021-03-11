@@ -27,18 +27,9 @@ namespace DMS.Handlers
 
         private async Task Sync(DataContext context, string json)
         {
-            List<EventMessage<Ward>> EventMessageReviced = JsonConvert.DeserializeObject<List<EventMessage<Ward>>>(json);
-            await SaveEventMessage(context, SyncKey, EventMessageReviced);
-            List<Guid> RowIds = EventMessageReviced.Select(a => a.RowId).Distinct().ToList();
-            List<EventMessage<Ward>> WardEventMessages = await ListEventMessage<Ward>(context, SyncKey, RowIds);
+            List<EventMessage<Ward>> WardEventMessages = JsonConvert.DeserializeObject<List<EventMessage<Ward>>>(json);
+            List<Ward> Wards = WardEventMessages.Select(x => x.Content).ToList();
 
-            List<Ward> Wards = new List<Ward>();
-            foreach (var RowId in RowIds)
-            {
-                EventMessage<Ward> EventMessage = WardEventMessages.Where(e => e.RowId == RowId).OrderByDescending(e => e.Time).FirstOrDefault();
-                if (EventMessage != null)
-                    Wards.Add(EventMessage.Content);
-            }
             List<WardDAO> WardDAOs = Wards.Select(x => new WardDAO
             {
                 Code = x.Code,
