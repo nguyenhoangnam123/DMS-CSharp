@@ -361,10 +361,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
             var ProblemDAOs = await DataContext.Problem
                  .Where(x => AppUserIds.Contains(x.CreatorId) &&
                 x.NoteAt >= StartDate && x.NoteAt <= EndDate)
-                 .Select(x => new ProblemDAO
-                 {
-                     Id = x.Id
-                 }).ToListAsync();
+                 .ToListAsync();
             var StoreImages = await DataContext.StoreImage
                 .Where(x => AppUserIds.Contains(x.SaleEmployeeId.Value) &&
                 x.ShootingAt >= StartDate && x.ShootingAt <= EndDate)

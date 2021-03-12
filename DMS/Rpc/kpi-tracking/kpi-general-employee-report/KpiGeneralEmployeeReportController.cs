@@ -322,10 +322,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_employee_report
             var ProblemDAOs = await DataContext.Problem
                  .Where(x => x.CreatorId == SaleEmployeeId &&
                 x.NoteAt >= StartDate && x.NoteAt <= EndDate)
-                 .Select(x => new ProblemDAO
-                 {
-                     Id = x.Id
-                 }).ToListAsync();
+                 .ToListAsync();
             var StoreImages = await DataContext.StoreImage
                 .Where(x => x.SaleEmployeeId == SaleEmployeeId &&
                 x.ShootingAt >= StartDate && x.ShootingAt <= EndDate)
@@ -665,7 +662,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_employee_report
                 if (Period.NewStoreC2CreatedPlanned.HasValue)
                 {
                     //thực hiện
-                    Period.NewStoreCreated = Period.NewStoreC2CreatedPlanned == null ? null :
+                    Period.NewStoreC2Created = Period.NewStoreC2CreatedPlanned == null ? null :
                         (decimal?)
                         StoreDAOs
                         .Where(sc => sc.CreatorId == Period.SaleEmployeeId &&

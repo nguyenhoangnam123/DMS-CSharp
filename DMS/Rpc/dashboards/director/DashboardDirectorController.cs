@@ -569,7 +569,7 @@ namespace DMS.Rpc.dashboards.director
                             Address = s.Address,
                             Latitude = s.Latitude,
                             Longitude = s.Longitude,
-                            Telephone = s.Telephone,
+                            Telephone = s.OwnerPhone,
                             StoreStatusId = s.StoreStatusId,
                             IsScouting = false
                         };
