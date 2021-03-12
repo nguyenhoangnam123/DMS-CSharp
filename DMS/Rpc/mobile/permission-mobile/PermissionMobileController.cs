@@ -42,6 +42,7 @@ namespace DMS.Rpc.mobile.permission_mobile
             GenericEnum CurrentYear;
             (CurrentMonth, CurrentQuarter, CurrentYear) = ConvertDateTime(StaticParams.DateTimeNow);
             DateTime Start = new DateTime(StaticParams.DateTimeNow.Year, StaticParams.DateTimeNow.Month, 1);
+            Start = Start.AddHours(0 - CurrentContext.TimeZone);
             DateTime End = Start.AddMonths(1).AddSeconds(-1);
 
             List<long> AppUserIds = new List<long>();
@@ -56,25 +57,33 @@ namespace DMS.Rpc.mobile.permission_mobile
             }
             // lấy ra số KpiGeneral theo kế hoạch
             // lấy ra KpiGeneral bằng filter theo AppUserId, trạng thái = true, kpiYearId
-            long KpiGeneralId = await DataContext.KpiGeneral.Where(x =>
+            List<long> KpiGeneralIds = await DataContext.KpiGeneral.Where(x =>
                     AppUserIds.Contains(x.EmployeeId) &&
                     x.StatusId == StatusEnum.ACTIVE.Id &&
-                    x.KpiYearId == CurrentYear.Id
-                ).Select(p => p.Id).FirstOrDefaultAsync();
-            if (KpiGeneralId > 0)
+                    x.KpiYearId == CurrentYear.Id &&
+                    x.DeletedAt == null
+                ).Select(p => p.Id).ToListAsync();
+            if (KpiGeneralIds.Count > 0)
             {
                 List<KpiGeneralContentDAO> KpiGeneralContentDAOs = await DataContext.KpiGeneralContent
-                    .Where(x =>
-                        x.KpiGeneralId == KpiGeneralId &&
+                    .Where(x => KpiGeneralIds.Contains(x.KpiGeneralId) &&
                         x.StatusId == StatusEnum.ACTIVE.Id)
                     .ToListAsync();
                 List<long> KpiGeneralContentIds = KpiGeneralContentDAOs.Select(x => x.Id).ToList();
                 // lấy ra toàn bộ KpiGeneralContentKpiPeriodMappings bằng filter theo KpiGeneralContent và theo kì
                 List<KpiGeneralContentKpiPeriodMappingDAO> KpiGeneralContentKpiPeriodMappingDAOs = await DataContext.KpiGeneralContentKpiPeriodMapping
-                    .Where(x =>
-                        KpiGeneralContentIds.Contains(x.KpiGeneralContentId) &&
+                    .Where(x => KpiGeneralContentIds.Contains(x.KpiGeneralContentId) &&
                         x.KpiPeriodId == KpiPeriodId)
-                    .ToListAsync();
+                    .Select(x => new KpiGeneralContentKpiPeriodMappingDAO
+                    {
+                        KpiPeriodId = x.KpiPeriodId,
+                        KpiGeneralContentId = x.KpiGeneralContentId,
+                        Value = x.Value,
+                        KpiGeneralContent = x.KpiGeneralContent == null ? null: new KpiGeneralContentDAO
+                        {
+                            KpiCriteriaGeneralId = x.KpiGeneralContent.KpiCriteriaGeneralId
+                        }
+                    }).ToListAsync();
                 // lấy ra toàn bộ storeChecking để tính số liệu thực hiện bằng filter SaleEmployeeId
 
                 var StoreCheckingDAOs = await DataContext.StoreChecking
@@ -160,71 +169,77 @@ namespace DMS.Rpc.mobile.permission_mobile
                     x.ShootingAt >= Start && x.ShootingAt <= End)
                     .ToListAsync();
 
-                List<KpiCriteriaGeneralDAO> KpiCriteriaGeneralDAOs = await DataContext.KpiCriteriaGeneral.ToListAsync();
-                // loops mappings và lấy ra giá trị kế hoạch
-                foreach (KpiGeneralContentKpiPeriodMappingDAO KpiGeneralContentKpiPeriodMapping in KpiGeneralContentKpiPeriodMappingDAOs)
+                List<GenericEnum> KpiCriteriaGenerals = KpiCriteriaGeneralEnum.KpiCriteriaGeneralEnumList;
+                foreach (var KpiCriteriaGeneral in KpiCriteriaGenerals)
                 {
+                    List<KpiGeneralContentKpiPeriodMappingDAO> 
+                        KpiGeneralContentKpiPeriodMappings = KpiGeneralContentKpiPeriodMappingDAOs
+                        .Where(x => x.KpiGeneralContent.KpiCriteriaGeneralId == KpiCriteriaGeneral.Id)
+                        .ToList();
+
                     PermissionMobile_EmployeeKpiGeneralReportDTO PermissionMobile_EmployeeKpiGeneralReportDTO = new PermissionMobile_EmployeeKpiGeneralReportDTO();
-                    long KpiCriteriaGeneralId = KpiGeneralContentDAOs
-                        .Where(x => x.Id == KpiGeneralContentKpiPeriodMapping.KpiGeneralContentId)
-                        .Select(x => x.KpiCriteriaGeneralId).FirstOrDefault();
+                    PermissionMobile_EmployeeKpiGeneralReportDTO.KpiCriteriaGeneralName = KpiCriteriaGeneral.Name;
+                    PermissionMobile_EmployeeKpiGeneralReportDTO.PlannedValue = KpiGeneralContentKpiPeriodMappings
+                        .Where(x => x.Value.HasValue)
+                        .Select(x => x.Value.Value)
+                        .DefaultIfEmpty(0)
+                        .Sum();
 
-                    KpiCriteriaGeneralDAO KpiCriteriaGeneralDAO = KpiCriteriaGeneralDAOs.Where(x => x.Id == KpiCriteriaGeneralId).OrderByDescending(x => x.Id).FirstOrDefault();
-                    PermissionMobile_EmployeeKpiGeneralReportDTO.KpiCriteriaGeneralName = KpiCriteriaGeneralDAO.Name;
-                    PermissionMobile_EmployeeKpiGeneralReportDTO.PlannedValue = KpiGeneralContentKpiPeriodMapping.Value ?? 0;
-
-                    if (KpiGeneralContentKpiPeriodMapping.KpiGeneralContent.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.TOTAL_INDIRECT_SALES_AMOUNT.Id)
+                    if (KpiCriteriaGeneral.Id == KpiCriteriaGeneralEnum.TOTAL_INDIRECT_SALES_AMOUNT.Id)
                     {
                         PermissionMobile_EmployeeKpiGeneralReportDTO.CurrentValue = IndirectSalesOrderDAOs.Sum(iso => iso.Total);
                     }
-                    if (KpiGeneralContentKpiPeriodMapping.KpiGeneralContent.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.REVENUE_C2_TD.Id)
+                    if (KpiCriteriaGeneral.Id == KpiCriteriaGeneralEnum.REVENUE_C2_TD.Id)
                     {
                         PermissionMobile_EmployeeKpiGeneralReportDTO.CurrentValue = IndirectSalesOrderDAOs
                         .Where(x => x.BuyerStore.StoreType.Code == StaticParams.C2TD)
                         .Sum(iso => iso.Total);
                     }
-                    if (KpiGeneralContentKpiPeriodMapping.KpiGeneralContent.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.REVENUE_C2_SL.Id)
+                    if (KpiCriteriaGeneral.Id == KpiCriteriaGeneralEnum.REVENUE_C2_SL.Id)
                     {
                         PermissionMobile_EmployeeKpiGeneralReportDTO.CurrentValue = IndirectSalesOrderDAOs
                         .Where(x => x.BuyerStore.StoreType.Code == StaticParams.C2SL)
                         .Sum(iso => iso.Total);
                     }
-                    if (KpiGeneralContentKpiPeriodMapping.KpiGeneralContent.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.REVENUE_C2.Id)
+                    if (KpiCriteriaGeneral.Id == KpiCriteriaGeneralEnum.REVENUE_C2.Id)
                     {
                         PermissionMobile_EmployeeKpiGeneralReportDTO.CurrentValue = IndirectSalesOrderDAOs
                         .Where(x => x.BuyerStore.StoreType.Code == StaticParams.C2)
                         .Sum(iso => iso.Total);
                     }
-                    if (KpiGeneralContentKpiPeriodMapping.KpiGeneralContent.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.NEW_STORE_CREATED.Id)
+                    if (KpiCriteriaGeneral.Id == KpiCriteriaGeneralEnum.NEW_STORE_CREATED.Id)
                     {
                         PermissionMobile_EmployeeKpiGeneralReportDTO.CurrentValue = StoreDAOs.Count();
                     }
-                    if (KpiGeneralContentKpiPeriodMapping.KpiGeneralContent.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.NEW_STORE_C2_CREATED.Id)
+                    if (KpiCriteriaGeneral.Id == KpiCriteriaGeneralEnum.NEW_STORE_C2_CREATED.Id)
                     {
                         PermissionMobile_EmployeeKpiGeneralReportDTO.CurrentValue = StoreDAOs
                         .Where(x => x.StoreType.Code == StaticParams.C2TD)
                         .Count();
                     }
-                    if (KpiGeneralContentKpiPeriodMapping.KpiGeneralContent.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.STORE_VISITED.Id)
+                    if (KpiCriteriaGeneral.Id == KpiCriteriaGeneralEnum.STORE_VISITED.Id)
                     {
-                        PermissionMobile_EmployeeKpiGeneralReportDTO.CurrentValue = StoreCheckingDAOs.Select(x => x.StoreId).Distinct().Count();
+                        PermissionMobile_EmployeeKpiGeneralReportDTO.CurrentValue = StoreCheckingDAOs
+                            .Select(x => x.StoreId)
+                            .Distinct()
+                            .Count();
                     }
-                    if (KpiGeneralContentKpiPeriodMapping.KpiGeneralContent.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.NUMBER_OF_STORE_VISIT.Id)
+                    if (KpiCriteriaGeneral.Id == KpiCriteriaGeneralEnum.NUMBER_OF_STORE_VISIT.Id)
                     {
                         PermissionMobile_EmployeeKpiGeneralReportDTO.CurrentValue = StoreCheckingDAOs.Count();
                     }
-                    if (KpiGeneralContentKpiPeriodMapping.KpiGeneralContent.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.TOTAL_PROBLEM.Id)
+                    if (KpiCriteriaGeneral.Id == KpiCriteriaGeneralEnum.TOTAL_PROBLEM.Id)
                     {
                         PermissionMobile_EmployeeKpiGeneralReportDTO.CurrentValue = Problems.Count();
                     }
-                    if (KpiGeneralContentKpiPeriodMapping.KpiGeneralContent.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.TOTAL_IMAGE.Id)
+                    if (KpiCriteriaGeneral.Id == KpiCriteriaGeneralEnum.TOTAL_IMAGE.Id)
                     {
                         PermissionMobile_EmployeeKpiGeneralReportDTO.CurrentValue = StoreImages.Count();
                     }
                     PermissionMobile_EmployeeKpiGeneralReportDTO.Percentage = CalculatePercentage(PermissionMobile_EmployeeKpiGeneralReportDTO.PlannedValue, PermissionMobile_EmployeeKpiGeneralReportDTO.CurrentValue); // tính ra phần trăm thực hiện
                     KpiGenerals.Add(PermissionMobile_EmployeeKpiGeneralReportDTO);
                 }
-            } // nếu có kpi chung tương ứng với nhân viên + trạng thái + năm kpi
+            } 
             return KpiGenerals;
         }
 
