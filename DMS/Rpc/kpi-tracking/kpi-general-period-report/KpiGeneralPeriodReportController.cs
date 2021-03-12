@@ -373,6 +373,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
                 .Select(x => new StoreDAO
                 {
                     Id = x.Id,
+                    CreatorId = x.CreatorId,
                     StoreScoutingId = x.StoreScoutingId,
                     StoreType = x.StoreType == null ? null : new StoreTypeDAO
                     {
