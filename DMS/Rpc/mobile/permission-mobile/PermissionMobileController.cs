@@ -169,7 +169,7 @@ namespace DMS.Rpc.mobile.permission_mobile
                         .Where(x => x.Id == KpiGeneralContentKpiPeriodMapping.KpiGeneralContentId)
                         .Select(x => x.KpiCriteriaGeneralId).FirstOrDefault();
 
-                    KpiCriteriaGeneralDAO KpiCriteriaGeneralDAO = KpiCriteriaGeneralDAOs.Where(x => x.Id == KpiCriteriaGeneralId).FirstOrDefault();
+                    KpiCriteriaGeneralDAO KpiCriteriaGeneralDAO = KpiCriteriaGeneralDAOs.Where(x => x.Id == KpiCriteriaGeneralId).OrderByDescending(x => x.Id).FirstOrDefault();
                     PermissionMobile_EmployeeKpiGeneralReportDTO.KpiCriteriaGeneralName = KpiCriteriaGeneralDAO.Name;
                     PermissionMobile_EmployeeKpiGeneralReportDTO.PlannedValue = KpiGeneralContentKpiPeriodMapping.Value ?? 0;
 
