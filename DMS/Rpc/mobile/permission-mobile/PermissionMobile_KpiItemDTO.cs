@@ -48,7 +48,6 @@ namespace DMS.Rpc.mobile.permission_mobile
             this.Organization = KpiItem.Organization == null ? null : new PermissionMobile_OrganizationDTO(KpiItem.Organization);
             this.Status = KpiItem.Status == null ? null : new PermissionMobile_StatusDTO(KpiItem.Status);
             this.KpiItemContents = KpiItem.KpiItemContents?.Select(x => new PermissionMobile_KpiItemContentDTO(x)).ToList();
-            this.EmployeeIds = KpiItem.EmployeeIds; // to do
             this.CreatedAt = KpiItem.CreatedAt;
             this.UpdatedAt = KpiItem.UpdatedAt;
             this.Errors = KpiItem.Errors;

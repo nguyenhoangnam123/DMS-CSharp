@@ -171,6 +171,7 @@ namespace DMS.Rpc.dashboards.director
             var query = from s in DataContext.Store
                         join tt in tempTableQuery.Query on s.Id equals tt.Column1
                         where OrganizationIds.Contains(s.OrganizationId) &&
+                        s.StatusId == StatusEnum.ACTIVE.Id && 
                         s.DeletedAt == null
                         select s;
 
@@ -568,7 +569,7 @@ namespace DMS.Rpc.dashboards.director
                             Address = s.Address,
                             Latitude = s.Latitude,
                             Longitude = s.Longitude,
-                            Telephone = s.Telephone,
+                            Telephone = s.OwnerPhone,
                             StoreStatusId = s.StoreStatusId,
                             IsScouting = false
                         };

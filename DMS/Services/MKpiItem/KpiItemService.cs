@@ -127,12 +127,12 @@ namespace DMS.Services.MKpiItem
             {
                 await UOW.Begin();
                 List<KpiItem> KpiItems = new List<KpiItem>();
-                if (KpiItem.EmployeeIds != null && KpiItem.EmployeeIds.Any())
+                if (KpiItem.Employees != null && KpiItem.Employees.Any())
                 {
-                    foreach (var EmployeeId in KpiItem.EmployeeIds)
+                    foreach (var Employee in KpiItem.Employees)
                     {
                         var newObj = Utils.Clone(KpiItem);
-                        newObj.EmployeeId = EmployeeId;
+                        newObj.EmployeeId = Employee.Id;
                         newObj.CreatorId = CurrentContext.UserId;
                         newObj.RowId = Guid.NewGuid();
                         KpiItems.Add(newObj);

@@ -877,7 +877,14 @@ namespace DMS.Rpc.kpi_item
                 Code = KpiItem_KpiItemDTO.Status.Code,
                 Name = KpiItem_KpiItemDTO.Status.Name,
             };
-            KpiItem.EmployeeIds = KpiItem_KpiItemDTO.EmployeeIds; // to do
+            KpiItem.Employees = KpiItem_KpiItemDTO.Employees?.Select(x => new AppUser
+            {
+                Id = x.Id,
+                DisplayName = x.DisplayName,
+                Username = x.Username,
+                Phone = x.Phone,
+                Email = x.Email,
+            }).ToList();
             KpiItem.KpiItemContents = KpiItem_KpiItemDTO.KpiItemContents?
                 .Select(x => new KpiItemContent
                 {

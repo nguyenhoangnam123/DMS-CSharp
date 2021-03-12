@@ -304,32 +304,25 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_employee_report
                 })
                 .ToListAsync();
 
-            var StoreScoutingDAOs = await DataContext.StoreScouting
-                .Where(x => x.CreatorId == SaleEmployeeId && x.CreatedAt >= StartDate && x.CreatedAt <= EndDate)
-                .Select(x => new StoreScoutingDAO
-                {
-                    CreatorId = x.CreatorId,
-                    Id = x.Id,
-                    CreatedAt = x.CreatedAt,
-                    Stores = x.Stores.Select(c => new StoreDAO
+            var StoreDAOs = await DataContext.Store
+                    .Where(x => x.CreatorId == SaleEmployeeId &&
+                    x.CreatedAt >= StartDate && x.CreatedAt <= EndDate)
+                    .Select(x => new StoreDAO
                     {
-                        Id = c.Id,
-                        StoreScoutingId = c.StoreScoutingId,
-                        StoreType = c.StoreType == null ? null : new StoreTypeDAO
+                        CreatorId = x.CreatorId,
+                        Id = x.Id,
+                        CreatedAt = x.CreatedAt,
+                        StoreType = x.StoreType == null ? null : new StoreTypeDAO
                         {
-                            Code = c.StoreType.Code
+                            Code = x.StoreType.Code
                         }
-                    }).ToList()
-                })
-                .ToListAsync();
+                    })
+                    .ToListAsync();
 
             var ProblemDAOs = await DataContext.Problem
                  .Where(x => x.CreatorId == SaleEmployeeId &&
                 x.NoteAt >= StartDate && x.NoteAt <= EndDate)
-                 .Select(x => new ProblemDAO
-                 {
-                     Id = x.Id
-                 }).ToListAsync();
+                 .ToListAsync();
             var StoreImages = await DataContext.StoreImage
                 .Where(x => x.SaleEmployeeId == SaleEmployeeId &&
                 x.ShootingAt >= StartDate && x.ShootingAt <= EndDate)
@@ -571,15 +564,12 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_employee_report
                     //thực hiện
                     Period.NewStoreCreated = Period.NewStoreCreatedPlanned == null ? null :
                         (decimal?)
-                        StoreScoutingDAOs
+                        StoreDAOs
                         .Where(sc => sc.CreatorId == Period.SaleEmployeeId &&
                         sc.CreatedAt >= Start && sc.CreatedAt <= End)
-                        .SelectMany(sc => sc.Stores)
-                        .Where(x => x.StoreScoutingId.HasValue)
-                        .Select(z => z.StoreScoutingId.Value)
                         .Count();
                     //tỉ lệ
-                    Period.NewStoreCreatedRatio = Period.NewStoreCreatedPlanned == null || Period.NewStoreCreated == null ||  Period.NewStoreCreatedPlanned == 0 ? null :
+                    Period.NewStoreCreatedRatio = Period.NewStoreCreatedPlanned == null || Period.NewStoreCreated == null || Period.NewStoreCreatedPlanned == 0 ? null :
                         (decimal?)
                         Math.Round((Period.NewStoreCreated.Value / Period.NewStoreCreatedPlanned.Value) * 100, 2);
                 }
@@ -615,7 +605,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_employee_report
                 if (Period.RevenueC2TDPlanned.HasValue)
                 {
                     //thực hiện
-                    Period.RevenueC2TD = Period.RevenueC2TDPlanned == null ? 
+                    Period.RevenueC2TD = Period.RevenueC2TDPlanned == null ?
                     null : (decimal?)IndirectSalesOrders.Where(x => x.BuyerStore.StoreType.Code == StaticParams.C2TD).Sum(x => x.Total);
                     //tỉ lệ
                     Period.RevenueC2TDRatio = Period.RevenueC2TDPlanned == null || Period.RevenueC2TD == null || Period.RevenueC2TDPlanned == 0 ? null :
@@ -672,15 +662,12 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_employee_report
                 if (Period.NewStoreC2CreatedPlanned.HasValue)
                 {
                     //thực hiện
-                    Period.NewStoreCreated = Period.NewStoreC2CreatedPlanned == null ? null :
+                    Period.NewStoreC2Created = Period.NewStoreC2CreatedPlanned == null ? null :
                         (decimal?)
-                        StoreScoutingDAOs
+                        StoreDAOs
                         .Where(sc => sc.CreatorId == Period.SaleEmployeeId &&
                         sc.CreatedAt >= Start && sc.CreatedAt <= End)
-                        .SelectMany(sc => sc.Stores)
-                        .Where(x => x.StoreScoutingId.HasValue)
                         .Where(x => x.StoreType.Code == StaticParams.C2TD)
-                        .Select(z => z.StoreScoutingId.Value)
                         .Count();
                     //tỉ lệ
                     Period.NewStoreCreatedRatio = Period.NewStoreC2CreatedPlanned == null || Period.NewStoreCreated == null || Period.NewStoreC2CreatedPlanned == 0 ? null :
@@ -699,7 +686,10 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_employee_report
                 if (Period.TotalProblemPlanned.HasValue)
                 {
                     //thực hiện
-                    Period.TotalProblem = Period.TotalProblemPlanned == null ? null : (decimal?)IndirectSalesOrders.Sum(x => x.Total);
+                    Period.TotalProblem = Period.TotalProblemPlanned == null ?
+                    null : (decimal?)ProblemDAOs.Where(x => x.CreatorId == Period.SaleEmployeeId &&
+                    Start <= x.NoteAt && x.NoteAt <= End)
+                    .Count();
                     //tỉ lệ
                     Period.TotalProblemRatio = Period.TotalProblemPlanned == null || Period.TotalProblem == null || Period.TotalProblemPlanned == 0 ? null :
                         (decimal?)
@@ -707,7 +697,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_employee_report
                 }
                 #endregion
 
-                #region Tổng doanh thu đơn hàng
+                #region Số hình ảnh chụp
                 //kế hoạch
                 Period.TotalImagePlanned = KpiGeneralContentKpiPeriodMappings
                         .Where(x => x.KpiPeriodId == Period.KpiPeriodId &&
@@ -717,7 +707,10 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_employee_report
                 if (Period.TotalImagePlanned.HasValue)
                 {
                     //thực hiện
-                    Period.TotalImage = Period.TotalImagePlanned == null ? null : (decimal?)IndirectSalesOrders.Sum(x => x.Total);
+                    Period.TotalImage = Period.TotalImagePlanned == null ? 
+                    null : (decimal?)StoreImages.Where(x => x.SaleEmployeeId == Period.SaleEmployeeId &&
+                    Start <= x.ShootingAt && x.ShootingAt <= End)
+                    .Count();
                     //tỉ lệ
                     Period.TotalImageRatio = Period.TotalImagePlanned == null || Period.TotalImage == null || Period.TotalImagePlanned == 0 ? null :
                         (decimal?)

@@ -16,12 +16,12 @@ namespace DMS.Enums
         #endregion
         public static GenericEnum TOTAL_INDIRECT_SALES_AMOUNT = new GenericEnum { Id = 3, Code = "TotalIndirectSalesAmount", Name = "Tổng doanh thu đơn hàng" };
         public static GenericEnum STORE_VISITED = new GenericEnum { Id = 5, Code = "StoresVisited", Name = "Số đại lý ghé thăm" };
-        public static GenericEnum NEW_STORE_CREATED = new GenericEnum { Id = 6, Code = "NewStoresCreated", Name = "Tống số đại lý mở mới" };
-        public static GenericEnum NUMBER_OF_STORE_VISIT = new GenericEnum { Id = 7, Code = "NumberOfStoreVisits", Name = "Tổng số lượng ghé thăm" };
         public static GenericEnum REVENUE_C2_TD = new GenericEnum { Id = 12, Code = "RevenueC2TD", Name = "Doanh thu C2 Trọng điểm" };
         public static GenericEnum REVENUE_C2_SL = new GenericEnum { Id = 13, Code = "RevenueC2SL", Name = "Doanh thu C2 Siêu lớn" };
         public static GenericEnum REVENUE_C2 = new GenericEnum { Id = 14, Code = "RevenueC2", Name = "Doanh thu C2" };
+        public static GenericEnum NEW_STORE_CREATED = new GenericEnum { Id = 6, Code = "NewStoresCreated", Name = "Tống số đại lý mở mới" };
         public static GenericEnum NEW_STORE_C2_CREATED = new GenericEnum { Id = 15, Code = "NewStoresC2Created", Name = "Số đại lý trọng điểm mở mới" };
+        public static GenericEnum NUMBER_OF_STORE_VISIT = new GenericEnum { Id = 7, Code = "NumberOfStoreVisits", Name = "Tổng số lượng ghé thăm" };
         public static GenericEnum TOTAL_PROBLEM = new GenericEnum { Id = 16, Code = "TotalProblem", Name = "Số thông tin phản ánh" };
         public static GenericEnum TOTAL_IMAGE = new GenericEnum { Id = 17, Code = "TotalImage", Name = "Số hình ảnh chụp" };
 
@@ -37,13 +37,13 @@ namespace DMS.Enums
             //SKU_DIRECT_SALES_ORDER,
 #endregion
             TOTAL_INDIRECT_SALES_AMOUNT,
-            STORE_VISITED,
-            NEW_STORE_CREATED,
-            NUMBER_OF_STORE_VISIT,
             REVENUE_C2_TD,
             REVENUE_C2_SL,
             REVENUE_C2,
+            STORE_VISITED,
+            NEW_STORE_CREATED,
             NEW_STORE_C2_CREATED,
+            NUMBER_OF_STORE_VISIT,
             TOTAL_PROBLEM,
             TOTAL_IMAGE
         };

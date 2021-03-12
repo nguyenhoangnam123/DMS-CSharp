@@ -134,24 +134,20 @@ namespace DMS.Rpc.mobile.permission_mobile
                     .SelectMany(x => x.IndirectSalesOrderPromotions)
                     .ToList();
 
-                var StoreScoutingDAOs = await DataContext.StoreScouting
-                .Where(x => AppUserIds.Contains(x.CreatorId) &&
-                x.CreatedAt >= Start && x.CreatedAt <= End)
-                .Select(x => new StoreScoutingDAO
-                {
-                    CreatorId = x.CreatorId,
-                    Id = x.Id,
-                    CreatedAt = x.CreatedAt,
-                    Stores = x.Stores.Select(c => new StoreDAO
+                var StoreDAOs = await DataContext.Store
+                    .Where(x => AppUserIds.Contains(x.CreatorId) &&
+                    x.CreatedAt >= Start && x.CreatedAt <= End)
+                    .Select(x => new StoreDAO
                     {
-                        StoreScoutingId = c.StoreScoutingId,
-                        StoreType = c.StoreType == null ? null : new StoreTypeDAO
+                        CreatorId = x.CreatorId,
+                        Id = x.Id,
+                        CreatedAt = x.CreatedAt,
+                        StoreType = x.StoreType == null ? null : new StoreTypeDAO
                         {
-                            Code = c.StoreType.Code
+                            Code = x.StoreType.Code
                         }
-                    }).ToList()
-                })
-                .ToListAsync();
+                    })
+                    .ToListAsync();
 
                 var Problems = await DataContext.Problem
                  .Where(x => AppUserIds.Contains(x.CreatorId) &&
@@ -201,17 +197,12 @@ namespace DMS.Rpc.mobile.permission_mobile
                     }
                     if (KpiGeneralContentKpiPeriodMapping.KpiGeneralContent.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.NEW_STORE_CREATED.Id)
                     {
-                        PermissionMobile_EmployeeKpiGeneralReportDTO.CurrentValue = StoreScoutingDAOs.SelectMany(sc => sc.Stores)
-                        .Where(x => x.StoreScoutingId.HasValue)
-                        .Select(z => z.StoreScoutingId.Value)
-                        .Count();
+                        PermissionMobile_EmployeeKpiGeneralReportDTO.CurrentValue = StoreDAOs.Count();
                     }
                     if (KpiGeneralContentKpiPeriodMapping.KpiGeneralContent.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.NEW_STORE_C2_CREATED.Id)
                     {
-                        PermissionMobile_EmployeeKpiGeneralReportDTO.CurrentValue = StoreScoutingDAOs.SelectMany(sc => sc.Stores)
-                        .Where(x => x.StoreScoutingId.HasValue)
+                        PermissionMobile_EmployeeKpiGeneralReportDTO.CurrentValue = StoreDAOs
                         .Where(x => x.StoreType.Code == StaticParams.C2TD)
-                        .Select(z => z.StoreScoutingId.Value)
                         .Count();
                     }
                     if (KpiGeneralContentKpiPeriodMapping.KpiGeneralContent.KpiCriteriaGeneralId == KpiCriteriaGeneralEnum.STORE_VISITED.Id)

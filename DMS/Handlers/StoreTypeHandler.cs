@@ -12,7 +12,7 @@ namespace DMS.Handlers
 {
     public class StoreTypeHandler : Handler
     {
-        private string UsedKey => Name + ".Used";
+        private string UsedKey => $"{Name}.Used";
         public override string Name => nameof(StoreType);
 
         public override void QueueBind(IModel channel, string queue, string exchange)

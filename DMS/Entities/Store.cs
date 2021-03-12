@@ -35,7 +35,7 @@ namespace DMS.Entities
         public string TaxCode { get; set; }
         public string LegalEntity { get; set; }
         public long? AppUserId { get; set; }
-        public long? CreatorId { get; set; }
+        public long CreatorId { get; set; }
         public long? StoreUserId { get; set; }
         public long StatusId { get; set; }
         public Guid RowId { get; set; }

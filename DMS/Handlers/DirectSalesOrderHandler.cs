@@ -61,7 +61,7 @@ namespace DMS.Handlers
                         UpdatedAt = DirectSalesOrder.UpdatedAt, // lay tu ams.abe ra neu client ko gui ve
                     };
                     await context.BulkMergeAsync(new List<DirectSalesOrderDAO> { DirectSalesOrderDAO });
-
+                    await SaveReference(context, DirectSalesOrder);
                     AuditLog(DirectSalesOrder, new { }, nameof(DirectSalesOrderHandler)); // ghi log
                     await NotifyUsed(DirectSalesOrder);
                     await SyncDirectSalesOrder(DirectSalesOrder); // public sync for AMS Web
@@ -98,7 +98,7 @@ namespace DMS.Handlers
                     DirectSalesOrderDAO.CreatedAt = DirectSalesOrder.CreatedAt; // lay tu ams.abe ra neu client ko gui ve
                     DirectSalesOrderDAO.UpdatedAt = DirectSalesOrder.UpdatedAt; // lay tu ams.abe ra neu client ko gui ve
                     await context.BulkMergeAsync(new List<DirectSalesOrderDAO> { DirectSalesOrderDAO }); // luu vao db
-                                                                                                         //await Logging.CreateAuditLog(DirectSalesOrder, new { }, nameof(DirectSalesOrderHandler)); // ghi log
+                    await SaveReference(context, DirectSalesOrder);
                     await NotifyUsed(DirectSalesOrder);
                     await SyncDirectSalesOrder(DirectSalesOrder);
                 }
@@ -157,5 +157,64 @@ namespace DMS.Handlers
             } // thông báo lên PORTAL
         } // thông báo item, UOM, Store đã sử dụng
 
+        private async Task SaveReference(DataContext context, DirectSalesOrder DirectSalesOrder)
+        {
+            await context.DirectSalesOrderContent
+                .Where(x => x.DirectSalesOrderId == DirectSalesOrder.Id)
+                .DeleteFromQueryAsync();
+            List<DirectSalesOrderContentDAO> DirectSalesOrderContentDAOs = new List<DirectSalesOrderContentDAO>();
+            if (DirectSalesOrder.DirectSalesOrderContents != null)
+            {
+                foreach (DirectSalesOrderContent DirectSalesOrderContent in DirectSalesOrder.DirectSalesOrderContents)
+                {
+                    DirectSalesOrderContentDAO DirectSalesOrderContentDAO = new DirectSalesOrderContentDAO();
+                    DirectSalesOrderContentDAO.Id = DirectSalesOrderContent.Id;
+                    DirectSalesOrderContentDAO.DirectSalesOrderId = DirectSalesOrder.Id;
+                    DirectSalesOrderContentDAO.ItemId = DirectSalesOrderContent.ItemId;
+                    DirectSalesOrderContentDAO.UnitOfMeasureId = DirectSalesOrderContent.UnitOfMeasureId;
+                    DirectSalesOrderContentDAO.Quantity = DirectSalesOrderContent.Quantity;
+                    DirectSalesOrderContentDAO.PrimaryUnitOfMeasureId = DirectSalesOrderContent.PrimaryUnitOfMeasureId;
+                    DirectSalesOrderContentDAO.RequestedQuantity = DirectSalesOrderContent.RequestedQuantity;
+                    DirectSalesOrderContentDAO.PrimaryPrice = DirectSalesOrderContent.PrimaryPrice;
+                    DirectSalesOrderContentDAO.SalePrice = DirectSalesOrderContent.SalePrice;
+                    DirectSalesOrderContentDAO.EditedPriceStatusId = DirectSalesOrderContent.EditedPriceStatusId;
+                    DirectSalesOrderContentDAO.DiscountPercentage = DirectSalesOrderContent.DiscountPercentage;
+                    DirectSalesOrderContentDAO.DiscountAmount = DirectSalesOrderContent.DiscountAmount;
+                    DirectSalesOrderContentDAO.GeneralDiscountPercentage = DirectSalesOrderContent.GeneralDiscountPercentage;
+                    DirectSalesOrderContentDAO.GeneralDiscountAmount = DirectSalesOrderContent.GeneralDiscountAmount;
+                    DirectSalesOrderContentDAO.Amount = DirectSalesOrderContent.Amount;
+                    DirectSalesOrderContentDAO.TaxPercentage = DirectSalesOrderContent.TaxPercentage;
+                    DirectSalesOrderContentDAO.TaxAmount = DirectSalesOrderContent.TaxAmount;
+                    DirectSalesOrderContentDAO.Factor = DirectSalesOrderContent.Factor;
+                    DirectSalesOrderContentDAOs.Add(DirectSalesOrderContentDAO);
+                }
+                await context.DirectSalesOrderContent.BulkMergeAsync(DirectSalesOrderContentDAOs);
+            }
+
+            await context.DirectSalesOrderTransaction.Where(x => x.DirectSalesOrderId == DirectSalesOrder.Id).DeleteFromQueryAsync();
+            List<DirectSalesOrderTransactionDAO> DirectSalesOrderTransactionDAOs = new List<DirectSalesOrderTransactionDAO>();
+            if (DirectSalesOrder.DirectSalesOrderContents != null)
+            {
+                foreach (var DirectSalesOrderContent in DirectSalesOrder.DirectSalesOrderContents)
+                {
+                    DirectSalesOrderTransactionDAO DirectSalesOrderTransactionDAO = new DirectSalesOrderTransactionDAO
+                    {
+                        DirectSalesOrderId = DirectSalesOrder.Id,
+                        ItemId = DirectSalesOrderContent.ItemId,
+                        OrganizationId = DirectSalesOrder.OrganizationId,
+                        BuyerStoreId = DirectSalesOrder.BuyerStoreId,
+                        SalesEmployeeId = DirectSalesOrder.SaleEmployeeId,
+                        OrderDate = DirectSalesOrder.OrderDate,
+                        TypeId = TransactionTypeEnum.SALES_CONTENT.Id,
+                        UnitOfMeasureId = DirectSalesOrderContent.PrimaryUnitOfMeasureId,
+                        Quantity = DirectSalesOrderContent.RequestedQuantity,
+                        Revenue = DirectSalesOrderContent.Amount - (DirectSalesOrderContent.GeneralDiscountAmount ?? 0) + (DirectSalesOrderContent.TaxAmount ?? 0),
+                        Discount = (DirectSalesOrderContent.DiscountAmount ?? 0) + (DirectSalesOrderContent.GeneralDiscountAmount ?? 0)
+                    };
+                    DirectSalesOrderTransactionDAOs.Add(DirectSalesOrderTransactionDAO);
+                }
+            }
+            await context.DirectSalesOrderTransaction.BulkMergeAsync(DirectSalesOrderTransactionDAOs);
+        }
     }
 }
