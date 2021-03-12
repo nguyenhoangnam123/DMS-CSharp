@@ -15,7 +15,9 @@ namespace DMS.Rpc.direct_sales_order
         public string StoreAddress { get; set; }
         public string DeliveryAddress { get; set; }
         public DateTime OrderDate { get; set; }
+        public string sOrderDate { get; set; }
         public DateTime? DeliveryDate { get; set; }
+        public string sDeliveryDate { get; set; }
         public decimal SubTotal { get; set; }
         public string SubTotalString { get; set; }
         public decimal? GeneralDiscountAmount { get; set; }
@@ -25,6 +27,7 @@ namespace DMS.Rpc.direct_sales_order
         public decimal Total { get; set; }
         public string TotalString { get; set; }
         public string TotalText { get; set; }
+        public string Note { get; set; }
         public DirectSalesOrder_StoreDTO BuyerStore { get; set; }
         public DirectSalesOrder_AppUserDTO SaleEmployee { get; set; }
         public List<DirectSalesOrder_PrintContentDTO> Contents { get; set; }
@@ -43,6 +46,7 @@ namespace DMS.Rpc.direct_sales_order
             this.GeneralDiscountAmount = DirectSalesOrder.GeneralDiscountAmount;
             this.TotalTaxAmount = DirectSalesOrder.TotalTaxAmount;
             this.Total = DirectSalesOrder.Total;
+            this.Note = DirectSalesOrder.Note;
             this.BuyerStore = DirectSalesOrder.BuyerStore == null ? null : new DirectSalesOrder_StoreDTO(DirectSalesOrder.BuyerStore);
             this.SaleEmployee = DirectSalesOrder.SaleEmployee == null ? null : new DirectSalesOrder_AppUserDTO(DirectSalesOrder.SaleEmployee);
             this.Contents = DirectSalesOrder.DirectSalesOrderContents?.Select(x => new DirectSalesOrder_PrintContentDTO(x)).ToList();

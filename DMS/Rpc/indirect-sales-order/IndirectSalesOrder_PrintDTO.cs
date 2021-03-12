@@ -15,7 +15,9 @@ namespace DMS.Rpc.indirect_sales_order
         public string StoreAddress { get; set; }
         public string DeliveryAddress { get; set; }
         public DateTime OrderDate { get; set; }
+        public string sOrderDate { get; set; }
         public DateTime? DeliveryDate { get; set; }
+        public string sDeliveryDate { get; set; }
         public decimal SubTotal { get; set; }
         public string SubTotalString { get; set; }
         public decimal? GeneralDiscountAmount { get; set; }

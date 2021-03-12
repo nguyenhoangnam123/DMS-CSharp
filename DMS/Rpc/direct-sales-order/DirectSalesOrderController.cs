@@ -413,6 +413,8 @@ namespace DMS.Rpc.direct_sales_order
             DirectSalesOrder_PrintDTO.SubTotalString = DirectSalesOrder_PrintDTO.SubTotal.ToString("N0", culture);
             DirectSalesOrder_PrintDTO.Discount = DirectSalesOrder_PrintDTO.GeneralDiscountAmount.HasValue ? DirectSalesOrder_PrintDTO.GeneralDiscountAmount.Value.ToString("N0", culture) : "";
             DirectSalesOrder_PrintDTO.Tax = DirectSalesOrder_PrintDTO.TotalTaxAmount.ToString("N0", culture);
+            DirectSalesOrder_PrintDTO.sOrderDate = DirectSalesOrder_PrintDTO.OrderDate.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy");
+            DirectSalesOrder_PrintDTO.sDeliveryDate = DirectSalesOrder_PrintDTO.DeliveryDate.HasValue ? DirectSalesOrder_PrintDTO.DeliveryDate.Value.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy") : string.Empty;
             DirectSalesOrder_PrintDTO.TotalString = DirectSalesOrder_PrintDTO.Total.ToString("N0", culture);
             DirectSalesOrder_PrintDTO.TotalText = Utils.ConvertAmountTostring((long)DirectSalesOrder_PrintDTO.Total);
 

@@ -412,6 +412,8 @@ namespace DMS.Rpc.indirect_sales_order
             IndirectSalesOrder_PrintDTO.SubTotalString = IndirectSalesOrder_PrintDTO.SubTotal.ToString("N0", culture);
             IndirectSalesOrder_PrintDTO.Discount = IndirectSalesOrder_PrintDTO.GeneralDiscountAmount.HasValue ? IndirectSalesOrder_PrintDTO.GeneralDiscountAmount.Value.ToString("N0", culture) : "";
             IndirectSalesOrder_PrintDTO.TotalString = IndirectSalesOrder_PrintDTO.Total.ToString("N0", culture);
+            IndirectSalesOrder_PrintDTO.sOrderDate = IndirectSalesOrder_PrintDTO.OrderDate.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy");
+            IndirectSalesOrder_PrintDTO.sDeliveryDate = IndirectSalesOrder_PrintDTO.DeliveryDate.HasValue ? IndirectSalesOrder_PrintDTO.DeliveryDate.Value.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy") : string.Empty;
             IndirectSalesOrder_PrintDTO.TotalText = Utils.ConvertAmountTostring((long)IndirectSalesOrder_PrintDTO.Total);
 
             string path = "Templates/Print_Indirect.docx";
