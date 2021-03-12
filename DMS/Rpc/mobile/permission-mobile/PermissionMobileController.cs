@@ -240,6 +240,7 @@ namespace DMS.Rpc.mobile.permission_mobile
             GenericEnum CurrentYear;
             (CurrentMonth, CurrentQuarter, CurrentYear) = ConvertDateTime(StaticParams.DateTimeNow);
             DateTime Start = new DateTime(StaticParams.DateTimeNow.Year, StaticParams.DateTimeNow.Month, 1);
+            Start = Start.AddHours(0 - CurrentContext.TimeZone);
             DateTime End = Start.AddMonths(1).AddSeconds(-1);
 
             List<long> AppUserIds = new List<long>();
@@ -258,7 +259,8 @@ namespace DMS.Rpc.mobile.permission_mobile
                     x.StatusId == StatusEnum.ACTIVE.Id &&
                     x.KpiPeriodId == KpiPeriodId &&
                     x.KpiYearId == CurrentYear.Id &&
-                    x.KpiItemTypeId == KpiItemTypeEnum.ALL_PRODUCT.Id)
+                    x.KpiItemTypeId == KpiItemTypeEnum.ALL_PRODUCT.Id &&
+                    x.DeletedAt == null)
                 .Select(p => p.Id).FirstOrDefaultAsync();
 
             if (KpiItemId > 0)
@@ -341,6 +343,7 @@ namespace DMS.Rpc.mobile.permission_mobile
             GenericEnum CurrentYear;
             (CurrentMonth, CurrentQuarter, CurrentYear) = ConvertDateTime(StaticParams.DateTimeNow);
             DateTime Start = new DateTime(StaticParams.DateTimeNow.Year, StaticParams.DateTimeNow.Month, 1);
+            Start = Start.AddHours(0 - CurrentContext.TimeZone);
             DateTime End = Start.AddMonths(1).AddSeconds(-1);
 
             List<long> AppUserIds = new List<long>();
@@ -359,7 +362,8 @@ namespace DMS.Rpc.mobile.permission_mobile
                     x.StatusId == StatusEnum.ACTIVE.Id &&
                     x.KpiPeriodId == KpiPeriodId &&
                     x.KpiYearId == CurrentYear.Id &&
-                    x.KpiItemTypeId == KpiItemTypeEnum.NEW_PRODUCT.Id)
+                    x.KpiItemTypeId == KpiItemTypeEnum.NEW_PRODUCT.Id &&
+                    x.DeletedAt == null)
                 .Select(p => p.Id).FirstOrDefaultAsync();
 
             if (KpiItemId > 0)
