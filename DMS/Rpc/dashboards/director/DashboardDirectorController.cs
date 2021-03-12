@@ -635,6 +635,7 @@ namespace DMS.Rpc.dashboards.director
                             Id = au.Id,
                             DisplayName = au.DisplayName,
                             Username = au.Username,
+                            Phone = au.Phone,
                             Longitude = au.Longitude,
                             Latitude = au.Latitude,
                         };

@@ -12,6 +12,7 @@ namespace DMS.Rpc.dashboards.director
         public long Id { get; set; }
         public string Username { get; set; }
         public string DisplayName { get; set; }
+        public string Phone { get; set; }
         public decimal? Latitude { get; set; }
         public decimal? Longitude { get; set; }
 
@@ -21,6 +22,7 @@ namespace DMS.Rpc.dashboards.director
             this.Id = AppUser.Id;
             this.Username = AppUser.Username;
             this.DisplayName = AppUser.DisplayName;
+            this.Phone = AppUser.Phone;
             this.Latitude = AppUser.Latitude;
             this.Longitude = AppUser.Longitude;
             this.Errors = AppUser.Errors;
