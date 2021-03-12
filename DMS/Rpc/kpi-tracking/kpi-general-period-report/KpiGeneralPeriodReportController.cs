@@ -374,7 +374,6 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
                 {
                     Id = x.Id,
                     CreatorId = x.CreatorId,
-                    StoreScoutingId = x.StoreScoutingId,
                     StoreType = x.StoreType == null ? null : new StoreTypeDAO
                     {
                         Code = x.StoreType.Code
@@ -600,8 +599,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
                         SaleEmployeeDTO.NewStoreCreated = SaleEmployeeDTO.NewStoreCreatedPlanned == null || SaleEmployeeDTO.NewStoreCreatedPlanned == 0
                             ? null
                             : (decimal?)Stores
-                            .Where(st => st.CreatorId == SaleEmployeeDTO.SaleEmployeeId &&
-                                    (st.StoreStatusId == Enums.StoreStatusEnum.DRAFT.Id || st.StoreStatusId == Enums.StoreStatusEnum.OFFICIAL.Id)
+                            .Where(st => st.CreatorId == SaleEmployeeDTO.SaleEmployeeId
                                     && st.DeletedAt == null)
                             .Count(); // lấy ra tất cả cửa hàng có người tạo là saleEmployee, trạng thái là dự thảo hoặc chính thức
                         //tỉ lệ
@@ -699,8 +697,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
                             ? null
                             : (decimal?)Stores
                             .Where(st => st.CreatorId == SaleEmployeeDTO.SaleEmployeeId &&
-                            st.StoreType.Code == StaticParams.C2TD &&
-                            (st.StoreStatusId == Enums.StoreStatusEnum.DRAFT.Id || st.StoreStatusId == Enums.StoreStatusEnum.OFFICIAL.Id)
+                            st.StoreType.Code == StaticParams.C2TD
                             && st.DeletedAt == null)
                             .Count(); // lấy ra tất cả cửa hàng có người tạo là saleEmployee, trạng thái là dự thảo hoặc chính thức
                         //tỉ lệ

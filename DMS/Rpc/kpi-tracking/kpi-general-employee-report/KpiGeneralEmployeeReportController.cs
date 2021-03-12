@@ -670,9 +670,9 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_employee_report
                         .Where(x => x.StoreType.Code == StaticParams.C2TD)
                         .Count();
                     //tỉ lệ
-                    Period.NewStoreCreatedRatio = Period.NewStoreC2CreatedPlanned == null || Period.NewStoreCreated == null || Period.NewStoreC2CreatedPlanned == 0 ? null :
+                    Period.NewStoreC2CreatedRatio = Period.NewStoreC2CreatedPlanned == null || Period.NewStoreC2Created == null || Period.NewStoreC2CreatedPlanned == 0 ? null :
                         (decimal?)
-                        Math.Round((Period.NewStoreCreated.Value / Period.NewStoreC2CreatedPlanned.Value) * 100, 2);
+                        Math.Round((Period.NewStoreC2Created.Value / Period.NewStoreC2CreatedPlanned.Value) * 100, 2);
                 }
                 #endregion
 
