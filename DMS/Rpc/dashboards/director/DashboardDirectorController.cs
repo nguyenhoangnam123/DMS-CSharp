@@ -171,6 +171,7 @@ namespace DMS.Rpc.dashboards.director
             var query = from s in DataContext.Store
                         join tt in tempTableQuery.Query on s.Id equals tt.Column1
                         where OrganizationIds.Contains(s.OrganizationId) &&
+                        s.StatusId == StatusEnum.ACTIVE.Id && 
                         s.DeletedAt == null
                         select s;
 

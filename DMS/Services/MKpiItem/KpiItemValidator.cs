@@ -26,7 +26,7 @@ namespace DMS.Services.MKpiItem
             IdNotExisted,
             OrganizationIdNotExisted,
             OrganizationEmpty,
-            EmployeeIdsEmpty,
+            EmployeesEmpty,
             StatusNotExisted,
             KpiPeriodIdNotExisted,
             KpiYearIdNotExisted,
@@ -88,27 +88,28 @@ namespace DMS.Services.MKpiItem
 
         private async Task<bool> ValidateEmployees(KpiItem KpiItem)
         {
-            if (KpiItem.EmployeeIds == null || !KpiItem.EmployeeIds.Any())
-                KpiItem.AddError(nameof(KpiItemValidator), nameof(KpiItem.EmployeeIds), ErrorCode.EmployeeIdsEmpty);
+            if (KpiItem.Employees == null || !KpiItem.Employees.Any())
+                KpiItem.AddError(nameof(KpiItemValidator), nameof(KpiItem.Employees), ErrorCode.EmployeesEmpty);
             else
             {
+                var EmployeeIds = KpiItem.Employees.Select(x => x.Id).ToList();
                 AppUserFilter AppUserFilter = new AppUserFilter
                 {
                     Skip = 0,
                     Take = int.MaxValue,
-                    Id = new IdFilter { In = KpiItem.EmployeeIds },
+                    Id = new IdFilter { In = EmployeeIds },
                     OrganizationId = new IdFilter(),
                     Selects = AppUserSelect.Id
                 };
 
                 var EmployeeIdsInDB = (await UOW.AppUserRepository.List(AppUserFilter)).Select(x => x.Id).ToList();
-                var listIdsNotExisted = KpiItem.EmployeeIds.Except(EmployeeIdsInDB).ToList();
+                var listIdsNotExisted = EmployeeIds.Except(EmployeeIdsInDB).ToList();
 
                 if (listIdsNotExisted != null && listIdsNotExisted.Any())
                 {
                     foreach (var Id in listIdsNotExisted)
                     {
-                        KpiItem.AddError(nameof(KpiItemValidator), nameof(KpiItem.EmployeeIds), ErrorCode.IdNotExisted);
+                        KpiItem.AddError(nameof(KpiItemValidator), nameof(KpiItem.Employees), ErrorCode.IdNotExisted);
                     }
                 }
 
@@ -197,9 +198,10 @@ namespace DMS.Services.MKpiItem
 
         private async Task<bool> ValidateOldKpi(KpiItem KpiItem)
         {
+            var EmployeeIds = KpiItem.Employees.Select(x => x.Id).ToList();
             KpiItemFilter KpiItemFilter = new KpiItemFilter
             {
-                AppUserId = new IdFilter { Equal = CurrentContext.UserId },
+                AppUserId = new IdFilter { In = EmployeeIds },
                 StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id },
                 KpiPeriodId = new IdFilter { Equal = KpiItem.KpiPeriodId },
                 KpiYearId = new IdFilter { Equal = KpiItem.KpiYearId },
@@ -210,10 +212,14 @@ namespace DMS.Services.MKpiItem
             else
                 KpiItemFilter.KpiItemTypeId = new IdFilter { Equal = KpiItemTypeEnum.ALL_PRODUCT.Id };
 
-            var count = await UOW.KpiItemRepository.Count(KpiItemFilter);
-            if(count > 0)
+            var oldKpiItems = await UOW.KpiItemRepository.List(KpiItemFilter);
+            var oldEmployeeIds = oldKpiItems.Select(x => x.EmployeeId).ToList();
+            foreach (var Employee in KpiItem.Employees)
             {
-                KpiItem.AddError(nameof(KpiItemValidator), nameof(KpiItem.Id), ErrorCode.EmployeeHasKpi);
+                if (oldEmployeeIds.Contains(Employee.Id))
+                {
+                    Employee.AddError(nameof(KpiItemValidator), nameof(Employee.Id), ErrorCode.EmployeeHasKpi);
+                }
             }
 
             return KpiItem.IsValidated;

@@ -2,15 +2,14 @@
   "KpiItem": {
     "Id": {
       "IdNotExisted": "Kpi chung không tồn tại",
-      "ValueCannotBeNull": "Chỉ tiêu không thể bỏ trống",
-      "EmployeeHasKpi": "Nhân viên đã có KPI cùng loại"
+      "ValueCannotBeNull": "Chỉ tiêu không thể bỏ trống"
     },
     "Organization": {
       "OrganizationIdNotExisted": "Đơn vị tổ chức không tồn tại",
       "OrganizationEmpty": "Chưa chọn đơn vị tổ chức"
     },
-    "EmployeeIds": {
-      "EmployeeIdsEmpty": "Chưa chọn nhân viên",
+    "Employees": {
+      "EmployeesEmpty": "Chưa chọn nhân viên",
       "IdNotExisted": "Nhân viên không tồn tại"
     },
     "Status": {
@@ -34,6 +33,9 @@
     "KpiItemContent": {
       "ItemNotExisted": "Sản phẩm không tồn tại",
       "ItemIsNotNew": "Sản phẩm này không phải sản phẩm mới"
+    },
+    "Employee": {
+      "EmployeeHasKpi": "Nhân viên đã có KPI cùng loại"
     }
   }
 }

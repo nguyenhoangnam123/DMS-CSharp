@@ -371,7 +371,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
                 .ToListAsync();
 
             List<StoreDAO> Stores = await DataContext.Store.
-                Where(x => x.CreatorId.HasValue && AppUserIds.Contains(x.CreatorId.Value) &&
+                Where(x => AppUserIds.Contains(x.CreatorId) &&
                 x.CreatedAt >= StartDate && x.CreatedAt <= EndDate)
                 .Select(x => new StoreDAO
                 {

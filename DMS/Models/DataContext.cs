@@ -1,8 +1,7 @@
 ﻿using Thinktecture;
-using System;
+﻿using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
-
 
 namespace DMS.Models
 {

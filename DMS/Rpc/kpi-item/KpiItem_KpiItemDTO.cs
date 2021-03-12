@@ -29,7 +29,7 @@ namespace DMS.Rpc.kpi_item
         public KpiItem_StatusDTO Status { get; set; }
         public List<KpiItem_KpiItemContentDTO> KpiItemContents { get; set; }
         public List<KpiItem_KpiCriteriaItemDTO> KpiCriteriaItems { get; set; }
-        public List<long> EmployeeIds { get; set; }
+        public List<KpiItem_AppUserDTO> Employees { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public KpiItem_KpiItemDTO() { }
@@ -52,7 +52,7 @@ namespace DMS.Rpc.kpi_item
             this.Organization = KpiItem.Organization == null ? null : new KpiItem_OrganizationDTO(KpiItem.Organization);
             this.Status = KpiItem.Status == null ? null : new KpiItem_StatusDTO(KpiItem.Status);
             this.KpiItemContents = KpiItem.KpiItemContents?.Select(x => new KpiItem_KpiItemContentDTO(x)).ToList();
-            this.EmployeeIds = KpiItem.EmployeeIds; // to do
+            this.Employees = KpiItem.Employees?.Select(x => new KpiItem_AppUserDTO(x)).ToList();
             this.CreatedAt = KpiItem.CreatedAt;
             this.UpdatedAt = KpiItem.UpdatedAt;
             this.Errors = KpiItem.Errors;

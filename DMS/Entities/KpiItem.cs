@@ -24,8 +24,8 @@ namespace DMS.Entities
         public KpiItemType KpiItemType { get; set; }
         public Organization Organization { get; set; }
         public Status Status { get; set; }
-        public List<long> EmployeeIds { get; set; }
         public List<KpiItemContent> KpiItemContents { get; set; }
+        public List<AppUser> Employees { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public Guid RowId { get; set; }
