@@ -207,6 +207,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_item_report
                 return 0;
             long? KpiPeriodId = KpiItemReport_KpiItemReportFilterDTO.KpiPeriodId?.Equal.Value;
             long? KpiYearId = KpiItemReport_KpiItemReportFilterDTO.KpiYearId?.Equal.Value;
+            long? KpiItemTypeId = KpiItemReport_KpiItemReportFilterDTO.KpiItemTypeId?.Equal.Value;
             (StartDate, EndDate) = DateTimeConvert(KpiPeriodId.Value, KpiYearId.Value);
 
             List<long> AppUserIds, OrganizationIds;
@@ -220,7 +221,9 @@ namespace DMS.Rpc.kpi_tracking.kpi_item_report
                         AppUserIds.Contains(ki.EmployeeId) &&
                         (SaleEmployeeId == null || ki.Id == SaleEmployeeId.Value) &&
                         (ItemId == null || i.Id == ItemId.Value) &&
+                        (ki.KpiPeriodId == KpiPeriodId.Value) &&
                         (ki.KpiYearId == KpiYearId) &&
+                        (ki.KpiItemTypeId == KpiItemTypeId.Value) &&
                         ki.DeletedAt == null &&
                         ki.StatusId == StatusEnum.ACTIVE.Id
                         select new
@@ -265,7 +268,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_item_report
                         (ItemId.HasValue == false || i.Id == ItemId.Value) &&
                         (ki.KpiPeriodId == KpiPeriodId.Value) &&
                         (ki.KpiYearId == KpiYearId.Value) &&
-                        (ki.KpiItemTypeId == KpiYearId.Value) &&
+                        (ki.KpiItemTypeId == KpiItemTypeId.Value) &&
                         ki.DeletedAt == null &&
                         ki.StatusId == StatusEnum.ACTIVE.Id
                         select new

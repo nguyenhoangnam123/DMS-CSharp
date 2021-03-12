@@ -201,6 +201,9 @@ namespace DMS.Services.MKpiItem
             var EmployeeIds = KpiItem.Employees.Select(x => x.Id).ToList();
             KpiItemFilter KpiItemFilter = new KpiItemFilter
             {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = KpiItemSelect.Id | KpiItemSelect.Employee,
                 AppUserId = new IdFilter { In = EmployeeIds },
                 StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id },
                 KpiPeriodId = new IdFilter { Equal = KpiItem.KpiPeriodId },

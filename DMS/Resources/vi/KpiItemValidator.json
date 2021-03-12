@@ -35,7 +35,9 @@
       "ItemIsNotNew": "Sản phẩm này không phải sản phẩm mới"
     },
     "Employee": {
-      "EmployeeHasKpi": "Nhân viên đã có KPI cùng loại"
+      "Id": {
+        "EmployeeHasKpi": "Nhân viên đã có KPI cùng loại"
+      }
     }
   }
 }
