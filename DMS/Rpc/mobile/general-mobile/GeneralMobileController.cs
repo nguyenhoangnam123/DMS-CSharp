@@ -790,6 +790,8 @@ namespace DMS.Rpc.mobile.general_mobile
 
             GeneralMobile_PrintDTO.SubTotalString = GeneralMobile_PrintDTO.SubTotal.ToString("N0", culture);
             GeneralMobile_PrintDTO.Discount = GeneralMobile_PrintDTO.GeneralDiscountAmount.HasValue ? GeneralMobile_PrintDTO.GeneralDiscountAmount.Value.ToString("N0", culture) : "";
+            GeneralMobile_PrintDTO.sOrderDate = GeneralMobile_PrintDTO.OrderDate.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy");
+            GeneralMobile_PrintDTO.sDeliveryDate = GeneralMobile_PrintDTO.DeliveryDate.HasValue ? GeneralMobile_PrintDTO.DeliveryDate.Value.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy") : string.Empty;
             GeneralMobile_PrintDTO.TotalString = GeneralMobile_PrintDTO.Total.ToString("N0", culture);
             GeneralMobile_PrintDTO.TotalText = Utils.ConvertAmountTostring((long)GeneralMobile_PrintDTO.Total);
 
