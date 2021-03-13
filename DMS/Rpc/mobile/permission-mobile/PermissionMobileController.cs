@@ -337,6 +337,7 @@ namespace DMS.Rpc.mobile.permission_mobile
                                         ItemId = t.ItemId,
                                         Revenue = t.Revenue,
                                         BuyerStoreId = t.BuyerStoreId,
+                                        SalesEmployeeId = t.SalesEmployeeId,
                                     };
 
                         List<IndirectSalesOrderTransactionDAO> IndirectSalesOrderTransactionDAOs = await query.ToListAsync();
