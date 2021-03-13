@@ -316,7 +316,7 @@ namespace DMS.Rpc.mobile.permission_mobile
                     List<PermissionMobile_EmployeeKpiItem> PermissionMobile_EmployeeKpiItems = new List<PermissionMobile_EmployeeKpiItem>();
                     if (KpiItemContentKpiCriteriaItemMappingDAOs.Count > 0)
                     {
-                        List<long> ItemIds = KpiItemContentDAOs.Select(x => x.ItemId).ToList(); // lẩy ra list itemId theo chỉ tiêu
+                        List<long> ItemIds = KpiItemContentDAOs.Select(x => x.ItemId).Distinct().ToList(); // lẩy ra list itemId theo chỉ tiêu
                         List<ItemDAO> ItemDAOs = await DataContext.Item.Where(x => ItemIds.Contains(x.Id)).Select(x => new ItemDAO
                         {
                             Id = x.Id,
@@ -505,7 +505,7 @@ namespace DMS.Rpc.mobile.permission_mobile
                     List<PermissionMobile_EmployeeKpiItem> PermissionMobile_EmployeeKpiItems = new List<PermissionMobile_EmployeeKpiItem>();
                     if (KpiItemContentKpiCriteriaItemMappingDAOs.Count > 0)
                     {
-                        List<long> ItemIds = KpiItemContentDAOs.Select(x => x.ItemId).ToList(); // lẩy ra list itemId theo chỉ tiêu
+                        List<long> ItemIds = KpiItemContentDAOs.Select(x => x.ItemId).Distinct().ToList(); // lẩy ra list itemId theo chỉ tiêu
                         List<ItemDAO> ItemDAOs = await DataContext.Item.Where(x => ItemIds.Contains(x.Id)).Select(x => new ItemDAO
                         {
                             Id = x.Id,
