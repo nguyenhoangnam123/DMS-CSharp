@@ -8,6 +8,7 @@ namespace DMS.Rpc.mobile.permission_mobile
 {
     public class PermissionMobile_EmployeeKpiItemReportDTO
     {
+        internal long ItemId { get; set; }
         public string ItemName { get; set; } // tên Item được áp dụng KPI
 
         public List<PermissionMobile_EmployeeKpiItem> CurrentKpiItems { get; set; }

@@ -269,18 +269,34 @@ namespace DMS.Rpc.mobile.permission_mobile
                 AppUserIds.AddRange(Ids);
             }
 
-            List<long> KpiItemIds = await DataContext.KpiItem.Where(x =>
+            List<KpiItemDAO> KpiItems = await DataContext.KpiItem.Where(x =>
                     AppUserIds.Contains(x.EmployeeId) &&
                     x.StatusId == StatusEnum.ACTIVE.Id &&
                     x.KpiPeriodId == KpiPeriodId &&
                     x.KpiYearId == CurrentYear.Id &&
                     x.KpiItemTypeId == KpiItemTypeEnum.ALL_PRODUCT.Id &&
                     x.DeletedAt == null)
-                .Select(p => p.Id).ToListAsync();
-
-            if (KpiItemIds.Count > 0)
+                .Select(x => new KpiItemDAO
+                {
+                    Id= x.Id,
+                    EmployeeId= x.EmployeeId,
+                }).ToListAsync();
+            var KpiItemIds = KpiItems.Select(x => x.Id).ToList();
+            if (KpiItems.Count > 0)
             {
-                List<KpiItemContentDAO> KpiItemContentDAOs = await DataContext.KpiItemContent.Where(x => KpiItemIds.Contains(x.KpiItemId)).ToListAsync();
+                List<KpiItemContentDAO> KpiItemContentDAOs = await DataContext.KpiItemContent
+                    .Where(x => KpiItemIds.Contains(x.KpiItemId))
+                    .Select(x => new KpiItemContentDAO
+                    {
+                        Id = x.Id,
+                        KpiItemId = x.KpiItemId,
+                        ItemId = x.ItemId,
+                        KpiItem = x.KpiItem == null ? null : new KpiItemDAO
+                        {
+                            EmployeeId = x.KpiItem.EmployeeId
+                        }
+                    })
+                    .ToListAsync();
                 List<long> KpiItemContentIds = KpiItemContentDAOs.Select(x => x.Id).ToList();
                 if (KpiItemContentIds.Count > 0)
                 {
@@ -301,6 +317,12 @@ namespace DMS.Rpc.mobile.permission_mobile
                     if (KpiItemContentKpiCriteriaItemMappingDAOs.Count > 0)
                     {
                         List<long> ItemIds = KpiItemContentDAOs.Select(x => x.ItemId).ToList(); // lẩy ra list itemId theo chỉ tiêu
+                        List<ItemDAO> ItemDAOs = await DataContext.Item.Where(x => ItemIds.Contains(x.Id)).Select(x => new ItemDAO
+                        {
+                            Id = x.Id,
+                            Code = x.Code,
+                            Name = x.Name,
+                        }).ToListAsync();
 
                         var query = from t in DataContext.IndirectSalesOrderTransaction
                                     join i in DataContext.IndirectSalesOrder on t.IndirectSalesOrderId equals i.Id
@@ -315,51 +337,93 @@ namespace DMS.Rpc.mobile.permission_mobile
                                         ItemId = t.ItemId,
                                         Revenue = t.Revenue,
                                         BuyerStoreId = t.BuyerStoreId,
-                                        Item = new ItemDAO
-                                        {
-                                            Code = it.Code,
-                                            Name = it.Name,
-                                        }
                                     };
 
                         List<IndirectSalesOrderTransactionDAO> IndirectSalesOrderTransactionDAOs = await query.ToListAsync();
                         List<GenericEnum> KpiCriteriaItems = KpiCriteriaItemEnum.KpiCriteriaItemEnumList;
-                        foreach (var ItemId in ItemIds)
+                        var subResults = new List<PermissionMobile_EmployeeKpiItemReportDTO>();
+                        foreach (var KpiItem in KpiItems)
                         {
-                            List<IndirectSalesOrderTransactionDAO> SubIndirectSalesOrderTransactionDAOs = IndirectSalesOrderTransactionDAOs.Where(x => x.ItemId == ItemId).ToList();
-                            PermissionMobile_EmployeeKpiItemReportDTO PermissionMobile_EmployeeKpiItemReportDTO = new PermissionMobile_EmployeeKpiItemReportDTO
-                            {
-                                ItemName = SubIndirectSalesOrderTransactionDAOs.Select(x => x.Item?.Name).FirstOrDefault(),
-                                CurrentKpiItems = new List<PermissionMobile_EmployeeKpiItem>()
-                            };
+                            var subContents = KpiItemContentDAOs.Where(x => x.KpiItemId == KpiItem.Id).ToList();
+                            var subContentIds = subContents.Select(x => x.Id).ToList();
+                            var subItemIds = subContents.Select(x => x.ItemId).Distinct().ToList();
+                            var subMappings = KpiItemContentKpiCriteriaItemMappingDAOs.Where(x => subContentIds.Contains(x.KpiItemContentId)).ToList();
+                            var subOrders = IndirectSalesOrderTransactionDAOs.Where(x => x.SalesEmployeeId == KpiItem.EmployeeId).ToList();
 
-                            foreach (var KpiCriteriaItem in KpiCriteriaItems)
+                            foreach (var ItemId in subItemIds)
                             {
-                                PermissionMobile_EmployeeKpiItem PermissionMobile_EmployeeKpiItem = new PermissionMobile_EmployeeKpiItem
+                                PermissionMobile_EmployeeKpiItemReportDTO PermissionMobile_EmployeeKpiItemReportDTO = new PermissionMobile_EmployeeKpiItemReportDTO
                                 {
-                                    KpiCriteriaItemName = KpiCriteriaItem.Name,
-                                    ItemId = ItemId
+                                    ItemId = ItemId,
+                                    ItemName = ItemDAOs.Where(x => x.Id == ItemId).Select(x => x.Name).FirstOrDefault(),
+                                    CurrentKpiItems = new List<PermissionMobile_EmployeeKpiItem>()
                                 };
-                                PermissionMobile_EmployeeKpiItemReportDTO.CurrentKpiItems.Add(PermissionMobile_EmployeeKpiItem);
-                                PermissionMobile_EmployeeKpiItem.PlannedValue = KpiItemContentKpiCriteriaItemMappingDAOs
-                                    .Where(x => x.KpiCriteriaItemId == KpiCriteriaItem.Id && x.KpiItemContent.ItemId == ItemId)
-                                    .Where(x => x.Value.HasValue)
-                                    .Select(x => (decimal)x.Value.Value)
-                                    .Sum();
-                                if (KpiCriteriaItem.Id == KpiCriteriaItemEnum.INDIRECT_REVENUE.Id)
+
+                                foreach (var KpiCriteriaItem in KpiCriteriaItems)
                                 {
-                                    PermissionMobile_EmployeeKpiItem.CurrentValue = SubIndirectSalesOrderTransactionDAOs
-                                        .Where(x => x.ItemId == ItemId)
-                                        .Select(x => x.Revenue ?? 0).Sum();
+                                    PermissionMobile_EmployeeKpiItem PermissionMobile_EmployeeKpiItem = new PermissionMobile_EmployeeKpiItem
+                                    {
+                                        KpiCriteriaItemName = KpiCriteriaItem.Name,
+                                        ItemId = ItemId
+                                    };
+                                    PermissionMobile_EmployeeKpiItemReportDTO.CurrentKpiItems.Add(PermissionMobile_EmployeeKpiItem);
+                                    PermissionMobile_EmployeeKpiItem.PlannedValue = subMappings
+                                        .Where(x => x.KpiCriteriaItemId == KpiCriteriaItem.Id && x.KpiItemContent.ItemId == ItemId)
+                                        .Where(x => x.Value.HasValue)
+                                        .Select(x => (decimal)x.Value.Value)
+                                        .Sum();
+                                    if (KpiCriteriaItem.Id == KpiCriteriaItemEnum.INDIRECT_REVENUE.Id)
+                                    {
+                                        PermissionMobile_EmployeeKpiItem.CurrentValue = subOrders
+                                            .Where(x => x.ItemId == ItemId)
+                                            .Select(x => x.Revenue ?? 0).Sum();
+                                    }
+                                    if (KpiCriteriaItem.Id == KpiCriteriaItemEnum.INDIRECT_STORE.Id)
+                                    {
+                                        PermissionMobile_EmployeeKpiItem.CurrentValue = subOrders
+                                            .Where(x => x.ItemId == ItemId)
+                                            .Select(x => x.BuyerStoreId).Distinct().Count();
+                                    }
+                                    PermissionMobile_EmployeeKpiItem.Percentage = CalculatePercentage(PermissionMobile_EmployeeKpiItem.PlannedValue, PermissionMobile_EmployeeKpiItem.CurrentValue);
                                 }
-                                if (KpiCriteriaItem.Id == KpiCriteriaItemEnum.INDIRECT_STORE.Id)
+                                subResults.Add(PermissionMobile_EmployeeKpiItemReportDTO);
+                            }
+                        }
+
+                        if(subResults.Count > 0)
+                        {
+                            foreach (var ItemId in ItemIds)
+                            {
+                                PermissionMobile_EmployeeKpiItemReportDTO PermissionMobile_EmployeeKpiItemReportDTO = new PermissionMobile_EmployeeKpiItemReportDTO
                                 {
-                                    PermissionMobile_EmployeeKpiItem.CurrentValue = SubIndirectSalesOrderTransactionDAOs
-                                        .Where(x => x.ItemId == ItemId)
-                                        .Select(x => x.BuyerStoreId).Distinct().Count();
+                                    ItemId = ItemId,
+                                    ItemName = ItemDAOs.Where(x => x.Id == ItemId).Select(x => x.Name).FirstOrDefault(),
+                                    CurrentKpiItems = new List<PermissionMobile_EmployeeKpiItem>()
+                                };
+                                KpiItemDTOs.Add(PermissionMobile_EmployeeKpiItemReportDTO);
+
+                                var resultGroupByItems = subResults.Where(x => x.ItemId == ItemId).ToList();
+                                foreach (var KpiCriteriaItem in KpiCriteriaItems)
+                                {
+                                    PermissionMobile_EmployeeKpiItem PermissionMobile_EmployeeKpiItem = new PermissionMobile_EmployeeKpiItem
+                                    {
+                                        KpiCriteriaItemName = KpiCriteriaItem.Name,
+                                        ItemId = ItemId
+                                    };
+                                    PermissionMobile_EmployeeKpiItemReportDTO.CurrentKpiItems.Add(PermissionMobile_EmployeeKpiItem);
+                                    PermissionMobile_EmployeeKpiItem.PlannedValue = resultGroupByItems
+                                        .SelectMany(x => x.CurrentKpiItems)
+                                        .Where(x => x.KpiCriteriaItemName == KpiCriteriaItem.Name)
+                                        .Select(x => x.PlannedValue)
+                                        .Sum();
+                                    PermissionMobile_EmployeeKpiItem.CurrentValue = resultGroupByItems
+                                        .SelectMany(x => x.CurrentKpiItems)
+                                        .Where(x => x.KpiCriteriaItemName == KpiCriteriaItem.Name)
+                                        .Select(x => x.CurrentValue)
+                                        .Sum();
+                                    PermissionMobile_EmployeeKpiItem.Percentage = CalculatePercentage(PermissionMobile_EmployeeKpiItem.PlannedValue, PermissionMobile_EmployeeKpiItem.CurrentValue);
                                 }
                             }
-                            KpiItemDTOs.Add(PermissionMobile_EmployeeKpiItemReportDTO);
                         }
                     }
                 }
@@ -394,18 +458,34 @@ namespace DMS.Rpc.mobile.permission_mobile
                 AppUserIds.AddRange(Ids);
             }
 
-            List<long> KpiItemIds = await DataContext.KpiItem.Where(x =>
+            List<KpiItemDAO> KpiItems = await DataContext.KpiItem.Where(x =>
                     AppUserIds.Contains(x.EmployeeId) &&
                     x.StatusId == StatusEnum.ACTIVE.Id &&
                     x.KpiPeriodId == KpiPeriodId &&
                     x.KpiYearId == CurrentYear.Id &&
                     x.KpiItemTypeId == KpiItemTypeEnum.NEW_PRODUCT.Id &&
                     x.DeletedAt == null)
-                .Select(p => p.Id).ToListAsync();
-
-            if (KpiItemIds.Count > 0)
+                .Select(x => new KpiItemDAO
+                {
+                    Id = x.Id,
+                    EmployeeId = x.EmployeeId,
+                }).ToListAsync();
+            var KpiItemIds = KpiItems.Select(x => x.Id).ToList();
+            if (KpiItems.Count > 0)
             {
-                List<KpiItemContentDAO> KpiItemContentDAOs = await DataContext.KpiItemContent.Where(x => KpiItemIds.Contains(x.KpiItemId)).ToListAsync();
+                List<KpiItemContentDAO> KpiItemContentDAOs = await DataContext.KpiItemContent
+                    .Where(x => KpiItemIds.Contains(x.KpiItemId))
+                    .Select(x => new KpiItemContentDAO
+                    {
+                        Id = x.Id,
+                        KpiItemId = x.KpiItemId,
+                        ItemId = x.ItemId,
+                        KpiItem = x.KpiItem == null ? null : new KpiItemDAO
+                        {
+                            EmployeeId = x.KpiItem.EmployeeId
+                        }
+                    })
+                    .ToListAsync();
                 List<long> KpiItemContentIds = KpiItemContentDAOs.Select(x => x.Id).ToList();
                 if (KpiItemContentIds.Count > 0)
                 {
@@ -426,6 +506,12 @@ namespace DMS.Rpc.mobile.permission_mobile
                     if (KpiItemContentKpiCriteriaItemMappingDAOs.Count > 0)
                     {
                         List<long> ItemIds = KpiItemContentDAOs.Select(x => x.ItemId).ToList(); // lẩy ra list itemId theo chỉ tiêu
+                        List<ItemDAO> ItemDAOs = await DataContext.Item.Where(x => ItemIds.Contains(x.Id)).Select(x => new ItemDAO
+                        {
+                            Id = x.Id,
+                            Code = x.Code,
+                            Name = x.Name,
+                        }).ToListAsync();
 
                         var query = from t in DataContext.IndirectSalesOrderTransaction
                                     join i in DataContext.IndirectSalesOrder on t.IndirectSalesOrderId equals i.Id
@@ -440,51 +526,94 @@ namespace DMS.Rpc.mobile.permission_mobile
                                         ItemId = t.ItemId,
                                         Revenue = t.Revenue,
                                         BuyerStoreId = t.BuyerStoreId,
-                                        Item = new ItemDAO
-                                        {
-                                            Code = it.Code,
-                                            Name = it.Name,
-                                        }
+                                        SalesEmployeeId = t.SalesEmployeeId
                                     };
 
                         List<IndirectSalesOrderTransactionDAO> IndirectSalesOrderTransactionDAOs = await query.ToListAsync();
                         List<GenericEnum> KpiCriteriaItems = KpiCriteriaItemEnum.KpiCriteriaItemEnumList;
-                        foreach (var ItemId in ItemIds)
+                        var subResults = new List<PermissionMobile_EmployeeKpiItemReportDTO>();
+                        foreach (var KpiItem in KpiItems)
                         {
-                            List<IndirectSalesOrderTransactionDAO> SubIndirectSalesOrderTransactionDAOs = IndirectSalesOrderTransactionDAOs.Where(x => x.ItemId == ItemId).ToList();
-                            PermissionMobile_EmployeeKpiItemReportDTO PermissionMobile_EmployeeKpiItemReportDTO = new PermissionMobile_EmployeeKpiItemReportDTO
-                            {
-                                ItemName = SubIndirectSalesOrderTransactionDAOs.Select(x => x.Item?.Name).FirstOrDefault(),
-                                CurrentKpiItems = new List<PermissionMobile_EmployeeKpiItem>()
-                            };
+                            var subContents = KpiItemContentDAOs.Where(x => x.KpiItemId == KpiItem.Id).ToList();
+                            var subContentIds = subContents.Select(x => x.Id).ToList();
+                            var subItemIds = subContents.Select(x => x.ItemId).Distinct().ToList();
+                            var subMappings = KpiItemContentKpiCriteriaItemMappingDAOs.Where(x => subContentIds.Contains(x.KpiItemContentId)).ToList();
+                            var subOrders = IndirectSalesOrderTransactionDAOs.Where(x => x.SalesEmployeeId == KpiItem.EmployeeId).ToList();
 
-                            foreach (var KpiCriteriaItem in KpiCriteriaItems)
+                            foreach (var ItemId in subItemIds)
                             {
-                                PermissionMobile_EmployeeKpiItem PermissionMobile_EmployeeKpiItem = new PermissionMobile_EmployeeKpiItem
+                                PermissionMobile_EmployeeKpiItemReportDTO PermissionMobile_EmployeeKpiItemReportDTO = new PermissionMobile_EmployeeKpiItemReportDTO
                                 {
-                                    KpiCriteriaItemName = KpiCriteriaItem.Name,
-                                    ItemId = ItemId
+                                    ItemId = ItemId,
+                                    ItemName = ItemDAOs.Where(x => x.Id == ItemId).Select(x => x.Name).FirstOrDefault(),
+                                    CurrentKpiItems = new List<PermissionMobile_EmployeeKpiItem>()
                                 };
-                                PermissionMobile_EmployeeKpiItemReportDTO.CurrentKpiItems.Add(PermissionMobile_EmployeeKpiItem);
-                                PermissionMobile_EmployeeKpiItem.PlannedValue = KpiItemContentKpiCriteriaItemMappingDAOs
-                                    .Where(x => x.KpiCriteriaItemId == KpiCriteriaItem.Id && x.KpiItemContent.ItemId == ItemId)
-                                    .Where(x => x.Value.HasValue)
-                                    .Select(x => (decimal)x.Value.Value)
-                                    .Sum();
-                                if (KpiCriteriaItem.Id == KpiCriteriaItemEnum.INDIRECT_REVENUE.Id)
+
+                                foreach (var KpiCriteriaItem in KpiCriteriaItems)
                                 {
-                                    PermissionMobile_EmployeeKpiItem.CurrentValue = SubIndirectSalesOrderTransactionDAOs
-                                        .Where(x => x.ItemId == ItemId)
-                                        .Select(x => x.Revenue ?? 0).Sum();
+                                    PermissionMobile_EmployeeKpiItem PermissionMobile_EmployeeKpiItem = new PermissionMobile_EmployeeKpiItem
+                                    {
+                                        KpiCriteriaItemName = KpiCriteriaItem.Name,
+                                        ItemId = ItemId
+                                    };
+                                    PermissionMobile_EmployeeKpiItemReportDTO.CurrentKpiItems.Add(PermissionMobile_EmployeeKpiItem);
+                                    PermissionMobile_EmployeeKpiItem.PlannedValue = subMappings
+                                        .Where(x => x.KpiCriteriaItemId == KpiCriteriaItem.Id && x.KpiItemContent.ItemId == ItemId)
+                                        .Where(x => x.Value.HasValue)
+                                        .Select(x => (decimal)x.Value.Value)
+                                        .Sum();
+                                    if (KpiCriteriaItem.Id == KpiCriteriaItemEnum.INDIRECT_REVENUE.Id)
+                                    {
+                                        PermissionMobile_EmployeeKpiItem.CurrentValue = subOrders
+                                            .Where(x => x.ItemId == ItemId)
+                                            .Select(x => x.Revenue ?? 0).Sum();
+                                    }
+                                    if (KpiCriteriaItem.Id == KpiCriteriaItemEnum.INDIRECT_STORE.Id)
+                                    {
+                                        PermissionMobile_EmployeeKpiItem.CurrentValue = subOrders
+                                            .Where(x => x.ItemId == ItemId)
+                                            .Select(x => x.BuyerStoreId).Distinct().Count();
+                                    }
+                                    PermissionMobile_EmployeeKpiItem.Percentage = CalculatePercentage(PermissionMobile_EmployeeKpiItem.PlannedValue, PermissionMobile_EmployeeKpiItem.CurrentValue);
                                 }
-                                if (KpiCriteriaItem.Id == KpiCriteriaItemEnum.INDIRECT_STORE.Id)
+                                subResults.Add(PermissionMobile_EmployeeKpiItemReportDTO);
+                            }
+                        }
+
+                        if (subResults.Count > 0)
+                        {
+                            foreach (var ItemId in ItemIds)
+                            {
+                                PermissionMobile_EmployeeKpiItemReportDTO PermissionMobile_EmployeeKpiItemReportDTO = new PermissionMobile_EmployeeKpiItemReportDTO
                                 {
-                                    PermissionMobile_EmployeeKpiItem.CurrentValue = SubIndirectSalesOrderTransactionDAOs
-                                        .Where(x => x.ItemId == ItemId)
-                                        .Select(x => x.BuyerStoreId).Distinct().Count();
+                                    ItemId = ItemId,
+                                    ItemName = ItemDAOs.Where(x => x.Id == ItemId).Select(x => x.Name).FirstOrDefault(),
+                                    CurrentKpiItems = new List<PermissionMobile_EmployeeKpiItem>()
+                                };
+                                KpiItemDTOs.Add(PermissionMobile_EmployeeKpiItemReportDTO);
+
+                                var resultGroupByItems = subResults.Where(x => x.ItemId == ItemId).ToList();
+                                foreach (var KpiCriteriaItem in KpiCriteriaItems)
+                                {
+                                    PermissionMobile_EmployeeKpiItem PermissionMobile_EmployeeKpiItem = new PermissionMobile_EmployeeKpiItem
+                                    {
+                                        KpiCriteriaItemName = KpiCriteriaItem.Name,
+                                        ItemId = ItemId
+                                    };
+                                    PermissionMobile_EmployeeKpiItemReportDTO.CurrentKpiItems.Add(PermissionMobile_EmployeeKpiItem);
+                                    PermissionMobile_EmployeeKpiItem.PlannedValue = resultGroupByItems
+                                        .SelectMany(x => x.CurrentKpiItems)
+                                        .Where(x => x.KpiCriteriaItemName == KpiCriteriaItem.Name)
+                                        .Select(x => x.PlannedValue)
+                                        .Sum();
+                                    PermissionMobile_EmployeeKpiItem.CurrentValue = resultGroupByItems
+                                        .SelectMany(x => x.CurrentKpiItems)
+                                        .Where(x => x.KpiCriteriaItemName == KpiCriteriaItem.Name)
+                                        .Select(x => x.CurrentValue)
+                                        .Sum();
+                                    PermissionMobile_EmployeeKpiItem.Percentage = CalculatePercentage(PermissionMobile_EmployeeKpiItem.PlannedValue, PermissionMobile_EmployeeKpiItem.CurrentValue);
                                 }
                             }
-                            KpiItemDTOs.Add(PermissionMobile_EmployeeKpiItemReportDTO);
                         }
                     }
                 }
