@@ -320,6 +320,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_item_report
                                where (SaleEmployeeIds.Contains(k.EmployeeId) &&
                                       k.KpiYearId == KpiYearId &&
                                       k.KpiPeriodId == KpiPeriodId &&
+                                      k.KpiItemTypeId == KpiItemTypeId &&
                                       (ItemId == null || i.Id == ItemId)) &&
                                       km.Value.HasValue &&
                                       k.DeletedAt == null &&
@@ -642,9 +643,12 @@ namespace DMS.Rpc.kpi_tracking.kpi_item_report
                 return BadRequest(new { message = "Chưa chọn kì KPI" });
             if (KpiItemReport_KpiItemReportFilterDTO.KpiYearId?.Equal.HasValue == false)
                 return BadRequest(new { message = "Chưa chọn năm KPI" });
+            if (KpiItemReport_KpiItemReportFilterDTO.KpiItemTypeId?.Equal.HasValue == false)
+                return BadRequest(new { message = "Chưa chọn loại KPI" });
 
             var KpiPeriod = KpiPeriodEnum.KpiPeriodEnumList.Where(x => x.Id == KpiItemReport_KpiItemReportFilterDTO.KpiPeriodId.Equal.Value).FirstOrDefault();
             var KpiYear = KpiYearEnum.KpiYearEnumList.Where(x => x.Id == KpiItemReport_KpiItemReportFilterDTO.KpiYearId.Equal.Value).FirstOrDefault();
+            var KpiItemType = KpiItemTypeEnum.KpiItemTypeEnumList.Where(x => x.Id == KpiItemReport_KpiItemReportFilterDTO.KpiItemTypeId.Equal.Value).FirstOrDefault();
 
             KpiItemReport_KpiItemReportFilterDTO.Skip = 0;
             KpiItemReport_KpiItemReportFilterDTO.Take = int.MaxValue;
@@ -668,6 +672,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_item_report
             dynamic Data = new ExpandoObject();
             Data.KpiPeriod = KpiPeriod.Name;
             Data.KpiYear = KpiYear.Name;
+            Data.KpiItemType = KpiItemType.Name;
             Data.KpiItemReports = KpiItemReport_ExportDTOs;
             using (var document = StaticParams.DocumentFactory.Open(input, output, "xlsx"))
             {

@@ -914,14 +914,13 @@ namespace DMS.Rpc.dashboards.director
                             OrganizationIds.Contains(t.OrganizationId) &&
                             i.RequestStateId == RequestStateEnum.APPROVED.Id &&
                             au.DeletedAt == null
-                            group t by t.OrderDate.Day into x
-                            select new DashboardDirector_RevenueFluctuationByMonthDTO
+                            select new IndirectSalesOrderTransactionDAO
                             {
-                                Day = x.Key,
-                                Revenue = x.Sum(y => y.Revenue ?? 0)
+                                OrderDate = t.OrderDate,
+                                Revenue = t.Revenue
                             };
 
-                var DashboardDirector_RevenueFluctuationByMonthDTOs = await query.ToListAsync();
+                var IndirectSalesOrderTransactionDAOs = await query.ToListAsync();
                 DashboardDirector_RevenueFluctuationDTO DashboardDirector_RevenueFluctuationDTO = new DashboardDirector_RevenueFluctuationDTO();
                 DashboardDirector_RevenueFluctuationDTO.RevenueFluctuationByMonths = new List<DashboardDirector_RevenueFluctuationByMonthDTO>();
                 var number_of_day_in_this_month = DateTime.DaysInMonth(Start.Year, Start.Month);
@@ -937,9 +936,13 @@ namespace DMS.Rpc.dashboards.director
 
                 foreach (var RevenueFluctuationByMonth in DashboardDirector_RevenueFluctuationDTO.RevenueFluctuationByMonths)
                 {
-                    var data = DashboardDirector_RevenueFluctuationByMonthDTOs.Where(x => x.Day == RevenueFluctuationByMonth.Day).FirstOrDefault();
-                    if (data != null)
-                        RevenueFluctuationByMonth.Revenue = data.Revenue;
+                    DateTime LocalStart = new DateTime(Now.Year, Now.Month, (int)RevenueFluctuationByMonth.Day).AddHours(0 - CurrentContext.TimeZone);
+                    DateTime LocalEnd = LocalStart.AddDays(1).AddSeconds(-1);
+                    RevenueFluctuationByMonth.Revenue = IndirectSalesOrderTransactionDAOs.Where(x => LocalStart <= x.OrderDate && x.OrderDate <= LocalEnd)
+                        .Where(x => x.Revenue.HasValue)
+                        .Select(x => x.Revenue.Value)
+                        .DefaultIfEmpty(0)
+                        .Sum();
                 }
 
                 return DashboardDirector_RevenueFluctuationDTO;
@@ -958,14 +961,13 @@ namespace DMS.Rpc.dashboards.director
                             OrganizationIds.Contains(t.OrganizationId) &&
                             i.RequestStateId == RequestStateEnum.APPROVED.Id &&
                             au.DeletedAt == null
-                            group t by t.OrderDate.Day into x
-                            select new DashboardDirector_RevenueFluctuationByMonthDTO
+                            select new IndirectSalesOrderTransactionDAO
                             {
-                                Day = x.Key,
-                                Revenue = x.Sum(y => y.Revenue ?? 0)
+                                OrderDate = t.OrderDate,
+                                Revenue = t.Revenue
                             };
 
-                var DashboardDirector_RevenueFluctuationByMonthDTOs = await query.ToListAsync();
+                var IndirectSalesOrderTransactionDAOs = await query.ToListAsync();
                 DashboardDirector_RevenueFluctuationDTO DashboardDirector_RevenueFluctuationDTO = new DashboardDirector_RevenueFluctuationDTO();
                 DashboardDirector_RevenueFluctuationDTO.RevenueFluctuationByMonths = new List<DashboardDirector_RevenueFluctuationByMonthDTO>();
                 var number_of_day_in_this_month = DateTime.DaysInMonth(Start.Year, Start.Month);
@@ -981,9 +983,13 @@ namespace DMS.Rpc.dashboards.director
 
                 foreach (var RevenueFluctuationByMonth in DashboardDirector_RevenueFluctuationDTO.RevenueFluctuationByMonths)
                 {
-                    var data = DashboardDirector_RevenueFluctuationByMonthDTOs.Where(x => x.Day == RevenueFluctuationByMonth.Day).FirstOrDefault();
-                    if (data != null)
-                        RevenueFluctuationByMonth.Revenue = data.Revenue;
+                    DateTime LocalStart = new DateTime(Now.Year, Now.Month, (int)RevenueFluctuationByMonth.Day).AddMonths(-1).AddHours(0 - CurrentContext.TimeZone);
+                    DateTime LocalEnd = LocalStart.AddDays(1).AddSeconds(-1);
+                    RevenueFluctuationByMonth.Revenue = IndirectSalesOrderTransactionDAOs.Where(x => LocalStart <= x.OrderDate && x.OrderDate <= LocalEnd)
+                        .Where(x => x.Revenue.HasValue)
+                        .Select(x => x.Revenue.Value)
+                        .DefaultIfEmpty(0)
+                        .Sum();
                 }
 
                 return DashboardDirector_RevenueFluctuationDTO;
@@ -1003,14 +1009,13 @@ namespace DMS.Rpc.dashboards.director
                             OrganizationIds.Contains(t.OrganizationId) &&
                             i.RequestStateId == RequestStateEnum.APPROVED.Id &&
                             au.DeletedAt == null
-                            group t by t.OrderDate.Day into x
-                            select new DashboardDirector_RevenueFluctuationByQuarterDTO
+                            select new IndirectSalesOrderTransactionDAO
                             {
-                                Month = x.Key,
-                                Revenue = x.Sum(y => y.Revenue ?? 0)
+                                OrderDate = t.OrderDate,
+                                Revenue = t.Revenue
                             };
 
-                var DashboardDirector_RevenueFluctuationByQuarterDTOs = await query.ToListAsync();
+                var IndirectSalesOrderTransactionDAOs = await query.ToListAsync();
                 DashboardDirector_RevenueFluctuationDTO DashboardDirector_RevenueFluctuationDTO = new DashboardDirector_RevenueFluctuationDTO();
                 DashboardDirector_RevenueFluctuationDTO.RevenueFluctuationByQuaters = new List<DashboardDirector_RevenueFluctuationByQuarterDTO>();
                 int start = 3 * (this_quarter - 1) + 1;
@@ -1025,11 +1030,15 @@ namespace DMS.Rpc.dashboards.director
                     DashboardDirector_RevenueFluctuationDTO.RevenueFluctuationByQuaters.Add(RevenueFluctuationByQuarter);
                 }
 
-                foreach (var RevenueFluctuationByQuater in DashboardDirector_RevenueFluctuationDTO.RevenueFluctuationByQuaters)
+                foreach (var RevenueFluctuationByQuarter in DashboardDirector_RevenueFluctuationDTO.RevenueFluctuationByQuaters)
                 {
-                    var data = DashboardDirector_RevenueFluctuationByQuarterDTOs.Where(x => x.Month == RevenueFluctuationByQuater.Month).FirstOrDefault();
-                    if (data != null)
-                        RevenueFluctuationByQuater.Revenue = data.Revenue;
+                    DateTime LocalStart = new DateTime(Now.Year, (int)RevenueFluctuationByQuarter.Month, 1).AddHours(0 - CurrentContext.TimeZone);
+                    DateTime LocalEnd = LocalStart.AddMonths(1).AddSeconds(-1);
+                    RevenueFluctuationByQuarter.Revenue = IndirectSalesOrderTransactionDAOs.Where(x => LocalStart <= x.OrderDate && x.OrderDate <= LocalEnd)
+                        .Where(x => x.Revenue.HasValue)
+                        .Select(x => x.Revenue.Value)
+                        .DefaultIfEmpty(0)
+                        .Sum();
                 }
 
                 return DashboardDirector_RevenueFluctuationDTO;
@@ -1049,14 +1058,13 @@ namespace DMS.Rpc.dashboards.director
                             OrganizationIds.Contains(t.OrganizationId) &&
                             i.RequestStateId == RequestStateEnum.APPROVED.Id &&
                             au.DeletedAt == null
-                            group t by t.OrderDate.Day into x
-                            select new DashboardDirector_RevenueFluctuationByQuarterDTO
+                            select new IndirectSalesOrderTransactionDAO
                             {
-                                Month = x.Key,
-                                Revenue = x.Sum(y => y.Revenue ?? 0)
+                                OrderDate = t.OrderDate,
+                                Revenue = t.Revenue
                             };
 
-                var DashboardDirector_RevenueFluctuationByQuarterDTOs = await query.ToListAsync();
+                var IndirectSalesOrderTransactionDAOs = await query.ToListAsync();
                 DashboardDirector_RevenueFluctuationDTO DashboardDirector_RevenueFluctuationDTO = new DashboardDirector_RevenueFluctuationDTO();
                 DashboardDirector_RevenueFluctuationDTO.RevenueFluctuationByQuaters = new List<DashboardDirector_RevenueFluctuationByQuarterDTO>();
                 int start = 3 * (this_quarter - 1) + 1;
@@ -1071,11 +1079,15 @@ namespace DMS.Rpc.dashboards.director
                     DashboardDirector_RevenueFluctuationDTO.RevenueFluctuationByQuaters.Add(RevenueFluctuationByQuarter);
                 }
 
-                foreach (var RevenueFluctuationByQuater in DashboardDirector_RevenueFluctuationDTO.RevenueFluctuationByQuaters)
+                foreach (var RevenueFluctuationByQuarter in DashboardDirector_RevenueFluctuationDTO.RevenueFluctuationByQuaters)
                 {
-                    var data = DashboardDirector_RevenueFluctuationByQuarterDTOs.Where(x => x.Month == RevenueFluctuationByQuater.Month).FirstOrDefault();
-                    if (data != null)
-                        RevenueFluctuationByQuater.Revenue = data.Revenue;
+                    DateTime LocalStart = new DateTime(Now.Year, (int)RevenueFluctuationByQuarter.Month, 1).AddMonths(-3).AddHours(0 - CurrentContext.TimeZone);
+                    DateTime LocalEnd = LocalStart.AddMonths(1).AddSeconds(-1);
+                    RevenueFluctuationByQuarter.Revenue = IndirectSalesOrderTransactionDAOs.Where(x => LocalStart <= x.OrderDate && x.OrderDate <= LocalEnd)
+                        .Where(x => x.Revenue.HasValue)
+                        .Select(x => x.Revenue.Value)
+                        .DefaultIfEmpty(0)
+                        .Sum();
                 }
 
                 return DashboardDirector_RevenueFluctuationDTO;
@@ -1085,23 +1097,27 @@ namespace DMS.Rpc.dashboards.director
                 Start = new DateTime(Now.Year, 1, 1).AddHours(0 - CurrentContext.TimeZone);
                 End = Start.AddYears(1).AddSeconds(-1);
 
+                List<long> StoreIds = await FilterStore(StoreService, OrganizationService, CurrentContext);
+                ITempTableQuery<TempTable<long>> tempTableQuery = await DataContext
+                           .BulkInsertValuesIntoTempTableAsync<long>(StoreIds);
+
                 var query = from t in DataContext.IndirectSalesOrderTransaction
                             join i in DataContext.IndirectSalesOrder on t.IndirectSalesOrderId equals i.Id
                             join au in DataContext.AppUser on t.SalesEmployeeId equals au.Id
+                            join tt in tempTableQuery.Query on t.BuyerStoreId equals tt.Column1
                             where t.OrderDate >= Start && t.OrderDate <= End &&
                             AppUserIds.Contains(t.SalesEmployeeId) &&
                             (SaleEmployeeId.HasValue == false || t.SalesEmployeeId == SaleEmployeeId.Value) &&
                             OrganizationIds.Contains(t.OrganizationId) &&
                             i.RequestStateId == RequestStateEnum.APPROVED.Id &&
                             au.DeletedAt == null
-                            group t by t.OrderDate.Day into x
-                            select new DashboardDirector_RevenueFluctuationByYearDTO
+                            select new IndirectSalesOrderTransactionDAO
                             {
-                                Month = x.Key,
-                                Revenue = x.Sum(y => y.Revenue ?? 0)
+                                OrderDate = t.OrderDate,
+                                Revenue = t.Revenue
                             };
 
-                var DashboardDirector_RevenueFluctuationByYearDTO = await query.ToListAsync();
+                var IndirectSalesOrderTransactionDAOs = await query.ToListAsync();
                 DashboardDirector_RevenueFluctuationDTO DashboardDirector_RevenueFluctuationDTO = new DashboardDirector_RevenueFluctuationDTO();
                 DashboardDirector_RevenueFluctuationDTO.RevenueFluctuationByYears = new List<DashboardDirector_RevenueFluctuationByYearDTO>();
                 for (int i = 1; i <= 12; i++)
@@ -1116,9 +1132,13 @@ namespace DMS.Rpc.dashboards.director
 
                 foreach (var RevenueFluctuationByYear in DashboardDirector_RevenueFluctuationDTO.RevenueFluctuationByYears)
                 {
-                    var data = DashboardDirector_RevenueFluctuationByYearDTO.Where(x => x.Month == RevenueFluctuationByYear.Month).FirstOrDefault();
-                    if (data != null)
-                        RevenueFluctuationByYear.Revenue = data.Revenue;
+                    DateTime LocalStart = new DateTime(Now.Year, (int)RevenueFluctuationByYear.Month, 1).AddHours(0 - CurrentContext.TimeZone);
+                    DateTime LocalEnd = LocalStart.AddMonths(1).AddSeconds(-1);
+                    RevenueFluctuationByYear.Revenue = IndirectSalesOrderTransactionDAOs.Where(x => LocalStart <= x.OrderDate && x.OrderDate <= LocalEnd)
+                        .Where(x => x.Revenue.HasValue)
+                        .Select(x => x.Revenue.Value)
+                        .DefaultIfEmpty(0)
+                        .Sum();
                 }
 
                 return DashboardDirector_RevenueFluctuationDTO;

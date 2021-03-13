@@ -256,7 +256,7 @@ namespace DMS.Rpc.kpi_item
                     return BadRequest(errorContent.ToString());
                 }
 
-                string KpiPeriodValue = worksheet.Cells[2, 4].Value?.ToString();
+                string KpiPeriodValue = worksheet.Cells[2, 3].Value?.ToString();
                 
                 if (!string.IsNullOrWhiteSpace(KpiPeriodValue))
                     KpiPeriod = KpiPeriodEnum.KpiPeriodEnumList.Where(x => x.Name == KpiPeriodValue).FirstOrDefault();
@@ -266,13 +266,13 @@ namespace DMS.Rpc.kpi_item
                     return BadRequest(errorContent.ToString());
                 }
 
-                string KpiYearValue = worksheet.Cells[2, 6].Value?.ToString();
+                string KpiYearValue = worksheet.Cells[2, 5].Value?.ToString();
                 
                 if (!string.IsNullOrWhiteSpace(KpiYearValue))
-                    KpiYear = KpiYearEnum.KpiYearEnumList.Where(x => x.Name == KpiYearValue).FirstOrDefault();
+                    KpiYear = KpiYearEnum.KpiYearEnumList.Where(x => x.Name == KpiYearValue.Trim()).FirstOrDefault();
                 else
                 {
-                    errorContent.AppendLine("Chưa chọn măm Kpi hoặc năm Kpi không hợp lệ");
+                    errorContent.AppendLine("Chưa chọn năm Kpi hoặc năm Kpi không hợp lệ");
                     return BadRequest(errorContent.ToString());
                 }
             }
