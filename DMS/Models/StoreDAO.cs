@@ -68,6 +68,7 @@ namespace DMS.Models
         public long StoreStatusId { get; set; }
 
         public virtual AppUserDAO AppUser { get; set; }
+        public virtual AppUserDAO Creator { get; set; }
         public virtual DistrictDAO District { get; set; }
         public virtual OrganizationDAO Organization { get; set; }
         public virtual StoreDAO ParentStore { get; set; }

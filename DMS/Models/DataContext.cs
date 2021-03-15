@@ -3852,9 +3852,15 @@ namespace DMS.Models
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
                 entity.HasOne(d => d.AppUser)
-                    .WithMany(p => p.Stores)
+                    .WithMany(p => p.StoreAppUsers)
                     .HasForeignKey(d => d.AppUserId)
                     .HasConstraintName("FK_Store_AppUser");
+
+                entity.HasOne(d => d.Creator)
+                    .WithMany(p => p.StoreCreators)
+                    .HasForeignKey(d => d.CreatorId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Store_AppUser1");
 
                 entity.HasOne(d => d.District)
                     .WithMany(p => p.Stores)

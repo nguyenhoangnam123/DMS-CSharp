@@ -32,12 +32,13 @@ namespace DMS.Models
             RequestWorkflowHistories = new HashSet<RequestWorkflowHistoryDAO>();
             RequestWorkflowStepMappings = new HashSet<RequestWorkflowStepMappingDAO>();
             RewardHistories = new HashSet<RewardHistoryDAO>();
+            StoreAppUsers = new HashSet<StoreDAO>();
             StoreCheckingImageMappings = new HashSet<StoreCheckingImageMappingDAO>();
             StoreCheckings = new HashSet<StoreCheckingDAO>();
+            StoreCreators = new HashSet<StoreDAO>();
             StoreScoutings = new HashSet<StoreScoutingDAO>();
             StoreStatusHistories = new HashSet<StoreStatusHistoryDAO>();
             StoreUncheckings = new HashSet<StoreUncheckingDAO>();
-            Stores = new HashSet<StoreDAO>();
             Suppliers = new HashSet<SupplierDAO>();
             SurveyResults = new HashSet<SurveyResultDAO>();
             Surveys = new HashSet<SurveyDAO>();
@@ -148,12 +149,13 @@ namespace DMS.Models
         public virtual ICollection<RequestWorkflowHistoryDAO> RequestWorkflowHistories { get; set; }
         public virtual ICollection<RequestWorkflowStepMappingDAO> RequestWorkflowStepMappings { get; set; }
         public virtual ICollection<RewardHistoryDAO> RewardHistories { get; set; }
+        public virtual ICollection<StoreDAO> StoreAppUsers { get; set; }
         public virtual ICollection<StoreCheckingImageMappingDAO> StoreCheckingImageMappings { get; set; }
         public virtual ICollection<StoreCheckingDAO> StoreCheckings { get; set; }
+        public virtual ICollection<StoreDAO> StoreCreators { get; set; }
         public virtual ICollection<StoreScoutingDAO> StoreScoutings { get; set; }
         public virtual ICollection<StoreStatusHistoryDAO> StoreStatusHistories { get; set; }
         public virtual ICollection<StoreUncheckingDAO> StoreUncheckings { get; set; }
-        public virtual ICollection<StoreDAO> Stores { get; set; }
         public virtual ICollection<SupplierDAO> Suppliers { get; set; }
         public virtual ICollection<SurveyResultDAO> SurveyResults { get; set; }
         public virtual ICollection<SurveyDAO> Surveys { get; set; }
