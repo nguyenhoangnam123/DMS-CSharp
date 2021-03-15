@@ -1,8 +1,10 @@
 ﻿using DMS.Common;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace DMS.Rpc.kpi_tracking.kpi_item_report
 {
+    [DisplayName("Báo cáo KPI sản phẩm")]
     public class KpiItemReportRoute : Root
     {
         public const string Parent = Module + "/kpi-tracking";

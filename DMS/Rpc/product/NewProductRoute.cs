@@ -1,9 +1,11 @@
 ﻿using DMS.Common;
 using DMS.Entities;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace DMS.Rpc.product
 {
+    [DisplayName("Sản phẩm mới")]
     public class NewProductRoute : Root
     {
         public const string Parent = Module + "/product-category";

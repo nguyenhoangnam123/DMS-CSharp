@@ -1,8 +1,10 @@
 ﻿using DMS.Common;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace DMS.Rpc.reports.report_store.report_store_general
 {
+    [DisplayName("Báo cáo tổng hợp đại lý")]
     public class ReportStoreGeneralRoute : Root
     {
         public const string Parent = Module + "/store-report";

@@ -12,9 +12,11 @@ using OfficeOpenXml;
 using DMS.Entities;
 using DMS.Services.MLuckyNumber;
 using DMS.Services.MRewardStatus;
+using System.ComponentModel;
 
 namespace DMS.Rpc.lucky_number
 {
+    [DisplayName("Quay thưởng")]
     public class LuckyNumberRoute : Root
     {
         public const string Master = Module + "/price-list-and-promotion/lucky-number/lucky-number-master";

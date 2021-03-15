@@ -1,8 +1,10 @@
 ﻿using DMS.Common;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace DMS.Rpc.monitor.monitor_store_checker
 {
+    [DisplayName("Giám sát viếng thăm")]
     public class MonitorStoreCheckerRoute : Root
     {
         public const string Parent = Module + "/monitor";

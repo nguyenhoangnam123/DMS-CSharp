@@ -1,9 +1,11 @@
 using DMS.Common;
 using DMS.Entities;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace DMS.Rpc.e_route
 {
+    [DisplayName("Tuyến")]
     public class ERouteRoute : Root
     {
         public const string Parent = Module + "/route";

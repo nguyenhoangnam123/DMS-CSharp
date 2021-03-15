@@ -15,9 +15,11 @@ using DMS.Services.MOrganization;
 using DMS.Services.MPriceListType;
 using DMS.Services.MSalesOrderType;
 using DMS.Services.MStatus;
+using System.ComponentModel;
 
 namespace DMS.Rpc.price_list
 {
+    [DisplayName("Bảng giá")]
     public class PriceListRoute : Root
     {
         public const string Parent = Module + "/price-list-and-promotion";

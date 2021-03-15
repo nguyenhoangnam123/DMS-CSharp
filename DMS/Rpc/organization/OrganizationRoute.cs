@@ -1,8 +1,10 @@
 using DMS.Common;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace DMS.Rpc.organization
 {
+    [DisplayName("Cây tổ chức")]
     public class OrganizationRoute : Root
     {
         public const string Parent = Module + "/account";

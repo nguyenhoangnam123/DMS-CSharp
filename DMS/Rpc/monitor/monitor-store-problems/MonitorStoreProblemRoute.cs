@@ -1,9 +1,11 @@
 using DMS.Common;
 using DMS.Entities;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace DMS.Rpc.monitor_store_problems
 {
+    [DisplayName("Giám sát vấn đề")]
     public class MonitorStoreProblemRoute : Root
     {
         public const string Parent = Module + "/monitor";

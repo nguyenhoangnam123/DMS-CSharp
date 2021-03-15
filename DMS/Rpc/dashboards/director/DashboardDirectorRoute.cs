@@ -1,11 +1,13 @@
 ﻿using DMS.Common;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace DMS.Rpc.dashboards.director
 {
+    [DisplayName("Dashboard quản lý")]
     public class DashboardDirectorRoute : Root
     {
         public const string Parent = Module + "/dashboards";

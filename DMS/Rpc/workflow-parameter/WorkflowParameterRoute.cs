@@ -11,9 +11,11 @@ using System.IO;
 using OfficeOpenXml;
 using DMS.Entities;
 using DMS.Services.MWorkflow;
+using System.ComponentModel;
 
 namespace DMS.Rpc.workflow_parameter
 {
+    [DisplayName("Workflow parameter")]
     public class WorkflowParameterRoute : Root
     {
         public const string Parent = Module + "/workflow";

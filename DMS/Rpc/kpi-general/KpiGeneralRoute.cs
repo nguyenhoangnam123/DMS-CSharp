@@ -16,9 +16,11 @@ using DMS.Services.MKpiYear;
 using DMS.Services.MOrganization;
 using DMS.Services.MStatus;
 using DMS.Services.MKpiCriteriaGeneral;
+using System.ComponentModel;
 
 namespace DMS.Rpc.kpi_general
 {
+    [DisplayName("KPI chung")]
     public class KpiGeneralRoute : Root
     {
         public const string Parent = Module + "/kpi-management";

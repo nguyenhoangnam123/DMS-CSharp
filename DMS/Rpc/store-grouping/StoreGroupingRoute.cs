@@ -1,8 +1,10 @@
 using DMS.Common;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace DMS.Rpc.store_grouping
 {
+    [DisplayName("Nhóm đại lý")]
     public class StoreGroupingRoute : Root
     {
         public const string Parent = Module + "/location";

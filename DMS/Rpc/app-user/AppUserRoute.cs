@@ -1,9 +1,11 @@
 ﻿using DMS.Common;
 using DMS.Entities;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace DMS.Rpc.app_user
 {
+    [DisplayName("Tài khoản")]
     public class AppUserRoute : Root
     {
         public const string Parent = Module + "/account";

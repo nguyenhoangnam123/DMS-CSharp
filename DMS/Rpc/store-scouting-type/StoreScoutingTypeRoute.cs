@@ -11,9 +11,11 @@ using System.IO;
 using OfficeOpenXml;
 using DMS.Entities;
 using DMS.Services.MStoreScoutingType;
+using System.ComponentModel;
 
 namespace DMS.Rpc.store_scouting_type
 {
+    [DisplayName("Loại đại lý cắm cờ")]
     public class StoreScoutingTypeRoute : Root
     {
         public const string Master = Module + "/store-scouting-type/store-scouting-type-master";

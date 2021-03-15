@@ -1,9 +1,11 @@
 using DMS.Common;
 using DMS.Entities;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace DMS.Rpc.store
 {
+    [DisplayName("Đại lý")]
     public class StoreRoute : Root
     {
         public const string Parent = Module + "/location";

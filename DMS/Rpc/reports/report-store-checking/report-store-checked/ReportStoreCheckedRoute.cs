@@ -1,8 +1,10 @@
 ﻿using DMS.Common;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace DMS.Rpc.reports.report_store_checking.report_store_checked
 {
+    [DisplayName("Báo cáo viếng thăm đại lý")]
     public class ReportStoreCheckedRoute : Root
     {
         public const string Parent = Module + "/store-checking-report";

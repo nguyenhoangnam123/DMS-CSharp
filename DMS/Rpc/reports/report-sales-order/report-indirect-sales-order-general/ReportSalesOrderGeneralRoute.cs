@@ -1,11 +1,13 @@
 ﻿using DMS.Common;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace DMS.Rpc.reports.report_sales_order.report_indirect_sales_order_general
 {
+    [DisplayName("Báo cáo tổng hợp bán hàng đơn gián tiếp")]
     public class ReportSalesOrderGeneralRoute : Root
     {
         public const string Parent = Module + "/indirect-sales-order-report";

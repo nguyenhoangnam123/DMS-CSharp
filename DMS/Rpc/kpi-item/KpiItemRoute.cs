@@ -1,9 +1,11 @@
 using DMS.Common;
 using DMS.Entities;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace DMS.Rpc.kpi_item
 {
+    [DisplayName("KPI sản phẩm")]
     public class KpiItemRoute : Root
     {
         public const string Parent = Module + "/kpi-management";

@@ -1,8 +1,10 @@
 ﻿using DMS.Common;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace DMS.Rpc.workflow_direction
 {
+    [DisplayName("Luồng thực hiện workflow")]
     public class WorkflowDirectionRoute : Root
     {
         public const string Parent = Module + "/workflow";

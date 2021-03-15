@@ -1,8 +1,10 @@
 ﻿using DMS.Common;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace DMS.Rpc.banner
 {
+    [DisplayName("Banner thông tin")]
     public class BannerRoute : Root
     {
         public const string Parent = Module + "/application-banner";

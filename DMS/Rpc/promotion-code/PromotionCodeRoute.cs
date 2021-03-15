@@ -1,9 +1,11 @@
 using DMS.Common;
 using DMS.Entities;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace DMS.Rpc.promotion_code
 {
+    [DisplayName("Mã khuyến mại")]
     public class PromotionCodeRoute : Root
     {
         public const string Master = Module + "/price-list-and-promotion/promotion-code/promotion-code-master";

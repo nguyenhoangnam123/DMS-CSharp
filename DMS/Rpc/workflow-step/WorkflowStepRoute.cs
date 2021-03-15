@@ -1,8 +1,10 @@
 ﻿using DMS.Common;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace DMS.Rpc.workflow_step
 {
+    [DisplayName("Bước thực hiện workflow")]
     public class WorkflowStepRoute : Root
     {
         public const string Parent = Module + "/workflow";

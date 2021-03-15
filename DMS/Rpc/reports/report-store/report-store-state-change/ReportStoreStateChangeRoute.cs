@@ -1,11 +1,13 @@
 ﻿using DMS.Common;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace DMS.Rpc.reports.report_store.report_store_state_change
 {
+    [DisplayName("Báo cáo chuyển đổi trạng thái đại lý")]
     public class ReportStoreStateChangeRoute : Root
     {
         public const string Parent = Module + "/store-report";

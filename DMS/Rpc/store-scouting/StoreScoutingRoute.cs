@@ -18,9 +18,11 @@ using DMS.Services.MProvince;
 using DMS.Services.MStore;
 using DMS.Services.MStoreScoutingStatus;
 using DMS.Services.MWard;
+using System.ComponentModel;
 
 namespace DMS.Rpc.store_scouting
 {
+    [DisplayName("Đại lý cắm cờ")]
     public class StoreScoutingRoute : Root
     {
         public const string Parent = Module + "/location";

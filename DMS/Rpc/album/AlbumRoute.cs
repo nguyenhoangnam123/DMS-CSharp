@@ -1,9 +1,11 @@
 ﻿using DMS.Common;
 using DMS.Entities;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace DMS.Rpc.album
 {
+    [DisplayName("Album anh")]
     public class AlbumRoute : Root
     {
         public const string Parent = Module + "/gallery";

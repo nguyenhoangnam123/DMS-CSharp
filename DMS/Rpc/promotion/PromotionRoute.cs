@@ -31,9 +31,11 @@ using DMS.Services.MStore;
 using DMS.Services.MStoreType;
 using DMS.Services.MPromotionStoreType;
 using DMS.Services.MPromotionStore;
+using System.ComponentModel;
 
 namespace DMS.Rpc.promotion
 {
+    [DisplayName("Khuyến mại")]
     public class PromotionRoute : Root
     {
         public const string Master = Module + "/price-list-and-promotion/promotion/promotion-master";

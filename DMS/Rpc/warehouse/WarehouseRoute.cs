@@ -1,9 +1,11 @@
 using DMS.Common;
 using DMS.Entities;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace DMS.Rpc.warehouse
 {
+    [DisplayName("Tồn có thể bán")]
     public class WarehouseRoute : Root
     {
         public const string Parent = Module + "/inventory";

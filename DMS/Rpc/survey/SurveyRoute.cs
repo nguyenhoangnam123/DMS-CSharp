@@ -1,9 +1,11 @@
 using DMS.Common;
 using DMS.Entities;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace DMS.Rpc.survey
 {
+    [DisplayName("Khảo sát")]
     public class SurveyRoute : Root
     {
         public const string Parent = Module + "/knowledge";

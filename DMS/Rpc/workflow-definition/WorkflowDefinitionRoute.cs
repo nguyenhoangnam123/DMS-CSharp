@@ -1,8 +1,10 @@
 ﻿using DMS.Common;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace DMS.Rpc.workflow_definition
 {
+    [DisplayName("Workflow")]
     public class WorkflowDefinitionRoute : Root
     {
         public const string Parent = Module + "/workflow";

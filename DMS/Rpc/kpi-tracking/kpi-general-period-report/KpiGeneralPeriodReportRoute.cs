@@ -1,8 +1,10 @@
 ﻿using DMS.Common;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
 {
+    [DisplayName("Báo cáo KPI theo kỳ")]
     public class KpiGeneralPeriodReportRoute : Root
     {
         public const string Parent = Module + "/kpi-tracking";

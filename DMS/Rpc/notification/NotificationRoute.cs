@@ -1,9 +1,11 @@
 using DMS.Common;
 using DMS.Entities;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace DMS.Rpc.notification
 {
+    [DisplayName("Thông báo tới ứng dụng")]
     public class NotificationRoute : Root
     {
         public const string Parent = Module + "/alert";

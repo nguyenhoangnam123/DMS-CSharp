@@ -11,9 +11,11 @@ using System.IO;
 using OfficeOpenXml;
 using DMS.Entities;
 using DMS.Services.MProblemType;
+using System.ComponentModel;
 
 namespace DMS.Rpc.problem_type
 {
+    [DisplayName("Loại vấn đề")]
     public class ProblemTypeRoute : Root
     {
         public const string Master = Module + "/problem-type/problem-type-master";

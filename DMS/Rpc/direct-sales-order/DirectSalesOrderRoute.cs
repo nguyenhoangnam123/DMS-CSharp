@@ -1,9 +1,11 @@
 using DMS.Common;
 using DMS.Entities;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace DMS.Rpc.direct_sales_order
 {
+    [DisplayName("Đơn hàng trực tiếp")]
     public class DirectSalesOrderRoute : Root
     {
         public const string Parent = Module + "/sale-order";

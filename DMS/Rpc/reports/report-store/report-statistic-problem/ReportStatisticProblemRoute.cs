@@ -1,11 +1,13 @@
 ﻿using DMS.Common;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace DMS.Rpc.reports.report_store.report_statistic_problem
 {
+    [DisplayName("Báo cáo thống kê vấn đề")]
     public class ReportStatisticProblemRoute : Root
     {
         public const string Parent = Module + "/store-report";

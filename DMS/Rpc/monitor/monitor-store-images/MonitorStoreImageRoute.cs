@@ -1,11 +1,13 @@
 ﻿using DMS.Common;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace DMS.Rpc.monitor.monitor_store_images
 {
+    [DisplayName("Giám sát hình ảnh")]
     public class MonitorStoreImageRoute : Root
     {
         public const string Parent = Module + "/monitor";

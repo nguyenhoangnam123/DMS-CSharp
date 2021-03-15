@@ -1,8 +1,10 @@
 using DMS.Common;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace DMS.Rpc.system_configuration
 {
+    [DisplayName("Cấu hình hệ thống")]
     public class SystemConfigurationRoute : Root
     {
         public const string Parent = Module + "/system-configuration";

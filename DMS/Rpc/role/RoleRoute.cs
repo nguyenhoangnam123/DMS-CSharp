@@ -1,9 +1,11 @@
 ﻿using DMS.Common;
 using DMS.Entities;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace DMS.Rpc.role
 {
+    [DisplayName("Vai trò")]
     public class RoleRoute : Root
     {
         public const string Parent = Module + "/account";
