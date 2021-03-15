@@ -1116,7 +1116,7 @@ namespace DMS.Repositories
                         TypeId = TransactionTypeEnum.SALES_CONTENT.Id,
                         UnitOfMeasureId = IndirectSalesOrderContent.PrimaryUnitOfMeasureId,
                         Quantity = IndirectSalesOrderContent.RequestedQuantity,
-                        Revenue = IndirectSalesOrderContent.Amount - (IndirectSalesOrderContent.GeneralDiscountAmount ?? 0) + (IndirectSalesOrderContent.TaxAmount ?? 0),
+                        Revenue = IndirectSalesOrderContent.Amount - IndirectSalesOrderContent.GeneralDiscountAmount ?? 0,
                         Discount = (IndirectSalesOrderContent.DiscountAmount ?? 0) + (IndirectSalesOrderContent.GeneralDiscountAmount ?? 0)
                     };
                     IndirectSalesOrderTransactionDAOs.Add(IndirectSalesOrderTransactionDAO);
