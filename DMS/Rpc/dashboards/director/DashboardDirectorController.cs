@@ -558,7 +558,37 @@ namespace DMS.Rpc.dashboards.director
             }
             OrganizationIds = OrganizationDAOs.Select(o => o.Id).ToList();
 
+            List<long> StoreIds = await FilterStore(StoreService, OrganizationService, CurrentContext);
+
+            long? SaleEmployeeId = DashboardDirector_StoreFilterDTO.AppUserId?.Equal;
+            if (SaleEmployeeId.HasValue)
+            {
+                var AppUserStoreMappings = await DataContext.AppUserStoreMapping.Where(x => x.AppUserId == SaleEmployeeId.Value).ToListAsync();
+                if(AppUserStoreMappings.Count > 0)
+                {
+                    var subStoreIds = AppUserStoreMappings.Select(x => x.StoreId).ToList();
+                    StoreIds = StoreIds.Intersect(subStoreIds).ToList();
+                }
+                else
+                {
+                    StoreFilter StoreFilter = new StoreFilter
+                    {
+                        Skip = 0,
+                        Take = int.MaxValue,
+                        Selects = StoreSelect.Id,
+                        StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id }
+                    };
+                    List<Store> Stores = await StoreService.ListInScoped(StoreFilter, SaleEmployeeId.Value);
+                    var subStoreIds = Stores.Select(x => x.Id).ToList();
+                    StoreIds = StoreIds.Intersect(subStoreIds).ToList();
+                }
+            }
+
+            ITempTableQuery<TempTable<long>> tempTableQuery = await DataContext
+                        .BulkInsertValuesIntoTempTableAsync<long>(StoreIds);
+
             var query = from s in DataContext.Store
+                        join tt in tempTableQuery.Query on s.Id equals tt.Column1
                         where OrganizationIds.Contains(s.OrganizationId)
                         && s.StatusId == StatusEnum.ACTIVE.Id
                         && s.DeletedAt == null
