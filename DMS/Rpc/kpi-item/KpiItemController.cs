@@ -506,7 +506,11 @@ namespace DMS.Rpc.kpi_item
                 }
                 else
                 {
-                    KpiItem = KpiItems.Where(x => x.EmployeeId == KpiItem_ImportDTO.EmployeeId && x.KpiPeriodId == KpiItem_ImportDTO.KpiPeriodId && x.KpiYearId == KpiItem_ImportDTO.KpiYearId).FirstOrDefault();
+                    KpiItem = KpiItems.Where(x => x.EmployeeId == KpiItem_ImportDTO.EmployeeId && 
+                    x.KpiPeriodId == KpiItem_ImportDTO.KpiPeriodId && 
+                    x.KpiYearId == KpiItem_ImportDTO.KpiYearId &&
+                    x.KpiItemTypeId == KpiItem_ImportDTO.KpiItemTypeId)
+                        .FirstOrDefault();
                     var content = KpiItem.KpiItemContents.Where(x => x.ItemId == KpiItem_ImportDTO.ItemId).FirstOrDefault();
                     if(content == null)
                     {
@@ -527,22 +531,24 @@ namespace DMS.Rpc.kpi_item
                 {
                     foreach (var KpiItemContentKpiCriteriaItemMapping in KpiItemContent.KpiItemContentKpiCriteriaItemMappings)
                     {
-                        //if (long.TryParse(KpiItem_ImportDTO.IndirectQuantity, out long IndirectQuantity) && KpiItemContentKpiCriteriaItemMapping.KpiCriteriaItemId == KpiCriteriaItemEnum.INDIRECT_QUANTITY.Id)
-                        //{
-                        //    KpiItemContentKpiCriteriaItemMapping.Value = IndirectQuantity;
-                        //}
-                        /*else*/ if (long.TryParse(KpiItem_ImportDTO.IndirectRevenue, out long IndirectRevenue) && KpiItemContentKpiCriteriaItemMapping.KpiCriteriaItemId == KpiCriteriaItemEnum.INDIRECT_REVENUE.Id)
+                        if (long.TryParse(KpiItem_ImportDTO.IndirectRevenue, out long IndirectRevenue) && KpiItemContentKpiCriteriaItemMapping.KpiCriteriaItemId == KpiCriteriaItemEnum.INDIRECT_REVENUE.Id)
                         {
                             KpiItemContentKpiCriteriaItemMapping.Value = IndirectRevenue;
                         }
-                        //else if (long.TryParse(KpiItem_ImportDTO.IndirectCounter, out long IndirectCounter) && KpiItemContentKpiCriteriaItemMapping.KpiCriteriaItemId == KpiCriteriaItemEnum.INDIRECT_AMOUNT.Id)
-                        //{
-                        //    KpiItemContentKpiCriteriaItemMapping.Value = IndirectCounter;
-                        //}
                         else if (long.TryParse(KpiItem_ImportDTO.IndirectStoreCounter, out long IndirectStoreCounter) && KpiItemContentKpiCriteriaItemMapping.KpiCriteriaItemId == KpiCriteriaItemEnum.INDIRECT_STORE.Id)
                         {
                             KpiItemContentKpiCriteriaItemMapping.Value = IndirectStoreCounter;
                         }
+                        #region các chỉ tiêu tạm ẩn
+                        //if (long.TryParse(KpiItem_ImportDTO.IndirectQuantity, out long IndirectQuantity) && KpiItemContentKpiCriteriaItemMapping.KpiCriteriaItemId == KpiCriteriaItemEnum.INDIRECT_QUANTITY.Id)
+                        //{
+                        //    KpiItemContentKpiCriteriaItemMapping.Value = IndirectQuantity;
+                        //}
+                        /*else*/
+                        //else if (long.TryParse(KpiItem_ImportDTO.IndirectCounter, out long IndirectCounter) && KpiItemContentKpiCriteriaItemMapping.KpiCriteriaItemId == KpiCriteriaItemEnum.INDIRECT_AMOUNT.Id)
+                        //{
+                        //    KpiItemContentKpiCriteriaItemMapping.Value = IndirectCounter;
+                        //}
                         //else if (long.TryParse(KpiItem_ImportDTO.DirectQuantity, out long DirectQuantity) && KpiItemContentKpiCriteriaItemMapping.KpiCriteriaItemId == KpiCriteriaItemEnum.DIRECT_QUANTITY.Id)
                         //{
                         //    KpiItemContentKpiCriteriaItemMapping.Value = DirectQuantity;
@@ -559,6 +565,7 @@ namespace DMS.Rpc.kpi_item
                         //{
                         //    KpiItemContentKpiCriteriaItemMapping.Value = DirectStoreCounter;
                         //}
+                        #endregion
                     }
                 }
 
