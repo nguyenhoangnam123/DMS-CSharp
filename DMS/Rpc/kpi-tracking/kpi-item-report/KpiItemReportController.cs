@@ -53,6 +53,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_item_report
             this.CurrentContext = CurrentContext;
         }
 
+        #region Filter List
         [Route(KpiItemReportRoute.FilterListAppUser), HttpPost]
         public async Task<List<KpiItemReport_AppUserDTO>> FilterListAppUser([FromBody] KpiItemReport_AppUserFilterDTO KpiItemReport_AppUserFilterDTO)
         {
@@ -193,6 +194,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_item_report
                 .Select(x => new KpiItemReport_KpiItemTypeDTO(x)).ToList();
             return KpiItemReport_KpiItemTypeDTOs;
         }
+        #endregion
 
         [Route(KpiItemReportRoute.Count), HttpPost]
         public async Task<int> Count([FromBody] KpiItemReport_KpiItemReportFilterDTO KpiItemReport_KpiItemReportFilterDTO)
@@ -450,9 +452,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_item_report
                             {
                                 if (content.ItemId == ItemContent.ItemId)
                                 {
-                                    ItemContent.IndirectRevenue += content.Amount;
-                                    ItemContent.IndirectRevenue += content.TaxAmount ?? 0;
-                                    ItemContent.IndirectRevenue -= content.GeneralDiscountAmount ?? 0;
+                                    ItemContent.IndirectRevenue += (content.Amount - content.GeneralDiscountAmount ?? 0);
                                 }
                             }
                         }
