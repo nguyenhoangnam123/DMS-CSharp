@@ -74,36 +74,36 @@ namespace DMS.Rpc
         //    await DataContext.ItemImageMapping.BulkMergeAsync(ItemImageMappingDAOs);
         //}
 
-        [HttpGet, Route("rpc/dms/setup/fix")]
-        public async Task Count()
-        {
-            List<IndirectSalesOrderDAO> IndirectSalesOrderDAOs = await DataContext.IndirectSalesOrder.ToListAsync();
-            List<IndirectSalesOrderContentDAO> IndirectSalesOrderContentDAOs = await DataContext.IndirectSalesOrderContent.ToListAsync();
-            List<IndirectSalesOrderTransactionDAO> IndirectSalesOrderTransactionDAOs = await DataContext.IndirectSalesOrderTransaction.ToListAsync();
+        //[HttpGet, Route("rpc/dms/setup/fix")]
+        //public async Task Count()
+        //{
+        //    List<IndirectSalesOrderDAO> IndirectSalesOrderDAOs = await DataContext.IndirectSalesOrder.ToListAsync();
+        //    List<IndirectSalesOrderContentDAO> IndirectSalesOrderContentDAOs = await DataContext.IndirectSalesOrderContent.ToListAsync();
+        //    List<IndirectSalesOrderTransactionDAO> IndirectSalesOrderTransactionDAOs = await DataContext.IndirectSalesOrderTransaction.ToListAsync();
 
-            foreach (var IndirectSalesOrderDAO in IndirectSalesOrderDAOs)
-            {
-                var subIndirectSalesOrderContents = IndirectSalesOrderContentDAOs.Where(X => X.IndirectSalesOrderId == IndirectSalesOrderDAO.Id).ToList();
-                var subIndirectSalesOrderTransactions = IndirectSalesOrderTransactionDAOs.Where(X => X.IndirectSalesOrderId == IndirectSalesOrderDAO.Id).ToList();
-                foreach (var IndirectSalesOrderContentDAO in subIndirectSalesOrderContents)
-                {
-                    IndirectSalesOrderTransactionDAO IndirectSalesOrderTransactionDAO = subIndirectSalesOrderTransactions
-                        .Where(x => x.IndirectSalesOrderId == IndirectSalesOrderDAO.Id)
-                        .Where(x => x.SalesEmployeeId == IndirectSalesOrderDAO.SaleEmployeeId)
-                        .Where(x => x.OrganizationId == IndirectSalesOrderDAO.OrganizationId)
-                        .Where(x => x.BuyerStoreId == IndirectSalesOrderDAO.BuyerStoreId)
-                        .Where(x => x.ItemId == IndirectSalesOrderContentDAO.ItemId)
-                        .Where(x => x.TypeId == TransactionTypeEnum.SALES_CONTENT.Id)
-                        .FirstOrDefault();
-                    if(IndirectSalesOrderTransactionDAO != null)
-                    {
-                        IndirectSalesOrderTransactionDAO.Revenue = IndirectSalesOrderContentDAO.Amount - IndirectSalesOrderContentDAO.GeneralDiscountAmount ?? 0;
-                    }
-                }
-            }
+        //    foreach (var IndirectSalesOrderDAO in IndirectSalesOrderDAOs)
+        //    {
+        //        var subIndirectSalesOrderContents = IndirectSalesOrderContentDAOs.Where(X => X.IndirectSalesOrderId == IndirectSalesOrderDAO.Id).ToList();
+        //        var subIndirectSalesOrderTransactions = IndirectSalesOrderTransactionDAOs.Where(X => X.IndirectSalesOrderId == IndirectSalesOrderDAO.Id).ToList();
+        //        foreach (var IndirectSalesOrderContentDAO in subIndirectSalesOrderContents)
+        //        {
+        //            IndirectSalesOrderTransactionDAO IndirectSalesOrderTransactionDAO = subIndirectSalesOrderTransactions
+        //                .Where(x => x.IndirectSalesOrderId == IndirectSalesOrderDAO.Id)
+        //                .Where(x => x.SalesEmployeeId == IndirectSalesOrderDAO.SaleEmployeeId)
+        //                .Where(x => x.OrganizationId == IndirectSalesOrderDAO.OrganizationId)
+        //                .Where(x => x.BuyerStoreId == IndirectSalesOrderDAO.BuyerStoreId)
+        //                .Where(x => x.ItemId == IndirectSalesOrderContentDAO.ItemId)
+        //                .Where(x => x.TypeId == TransactionTypeEnum.SALES_CONTENT.Id)
+        //                .FirstOrDefault();
+        //            if(IndirectSalesOrderTransactionDAO != null)
+        //            {
+        //                IndirectSalesOrderTransactionDAO.Revenue = IndirectSalesOrderContentDAO.Amount - IndirectSalesOrderContentDAO.GeneralDiscountAmount ?? 0;
+        //            }
+        //        }
+        //    }
 
-            await DataContext.IndirectSalesOrderTransaction.BulkMergeAsync(IndirectSalesOrderTransactionDAOs);
-        }
+        //    await DataContext.IndirectSalesOrderTransaction.BulkMergeAsync(IndirectSalesOrderTransactionDAOs);
+        //}
 
         //[HttpGet, Route("rpc/dms/setup/store-gen-code")]
         //public async Task StoreGenCode()
