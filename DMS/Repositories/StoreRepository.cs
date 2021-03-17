@@ -482,6 +482,7 @@ namespace DMS.Repositories
                 StatusId = filter.Selects.Contains(StoreSelect.Status) ? q.StatusId : default(long),
                 StoreScoutingId = filter.Selects.Contains(StoreSelect.StoreScouting) ? q.StoreScoutingId : default(long?),
                 AppUserId = filter.Selects.Contains(StoreSelect.AppUser) ? q.AppUserId : default(long?),
+                CreatorId = filter.Selects.Contains(StoreSelect.Creator) ? q.CreatorId : default(long),
                 StoreStatusId = filter.Selects.Contains(StoreSelect.StoreStatus) ? q.StoreStatusId : default(long),
                 District = filter.Selects.Contains(StoreSelect.District) && q.District != null ? new District
                 {
@@ -555,6 +556,23 @@ namespace DMS.Repositories
                     ProvinceId = q.AppUser.ProvinceId,
                     SexId = q.AppUser.SexId,
                     Birthday = q.AppUser.Birthday,
+                } : null,
+                Creator = filter.Selects.Contains(StoreSelect.Creator) && q.Creator != null ? new AppUser
+                {
+                    Id = q.Creator.Id,
+                    Username = q.Creator.Username,
+                    DisplayName = q.Creator.DisplayName,
+                    Address = q.Creator.Address,
+                    Email = q.Creator.Email,
+                    Phone = q.Creator.Phone,
+                    PositionId = q.Creator.PositionId,
+                    Department = q.Creator.Department,
+                    OrganizationId = q.Creator.OrganizationId,
+                    StatusId = q.Creator.StatusId,
+                    Avatar = q.Creator.Avatar,
+                    ProvinceId = q.Creator.ProvinceId,
+                    SexId = q.Creator.SexId,
+                    Birthday = q.Creator.Birthday,
                 } : null,
                 Status = filter.Selects.Contains(StoreSelect.Status) && q.Status != null ? new Status
                 {
@@ -694,6 +712,7 @@ namespace DMS.Repositories
                 UpdatedAt = x.UpdatedAt,
                 DeletedAt = x.DeletedAt,
                 AppUserId = x.AppUserId,
+                CreatorId = x.CreatorId,
                 StoreStatusId = x.StoreStatusId,
                 District = x.District == null ? null : new District
                 {
@@ -765,6 +784,24 @@ namespace DMS.Repositories
                     ProvinceId = x.AppUser.ProvinceId,
                     SexId = x.AppUser.SexId,
                     Birthday = x.AppUser.Birthday,
+                    RowId = x.StoreType.RowId
+                },
+                Creator = x.Creator == null ? null : new AppUser
+                {
+                    Id = x.Creator.Id,
+                    Username = x.Creator.Username,
+                    DisplayName = x.Creator.DisplayName,
+                    Address = x.Creator.Address,
+                    Email = x.Creator.Email,
+                    Phone = x.Creator.Phone,
+                    PositionId = x.Creator.PositionId,
+                    Department = x.Creator.Department,
+                    OrganizationId = x.Creator.OrganizationId,
+                    StatusId = x.Creator.StatusId,
+                    Avatar = x.Creator.Avatar,
+                    ProvinceId = x.Creator.ProvinceId,
+                    SexId = x.Creator.SexId,
+                    Birthday = x.Creator.Birthday,
                     RowId = x.StoreType.RowId
                 },
                 Status = x.Status == null ? null : new Status
@@ -956,6 +993,7 @@ namespace DMS.Repositories
                     Used = x.Used,
                     StoreScoutingId = x.StoreScoutingId,
                     AppUserId = x.AppUserId,
+                    CreatorId = x.CreatorId,
                     StoreStatusId = x.StoreStatusId,
                     CreatedAt = x.CreatedAt,
                     UpdatedAt = x.UpdatedAt,
@@ -1034,6 +1072,23 @@ namespace DMS.Repositories
                         ProvinceId = x.AppUser.ProvinceId,
                         SexId = x.AppUser.SexId,
                         Birthday = x.AppUser.Birthday,
+                    },
+                    Creator = x.Creator == null ? null : new AppUser
+                    {
+                        Id = x.Creator.Id,
+                        Username = x.Creator.Username,
+                        DisplayName = x.Creator.DisplayName,
+                        Address = x.Creator.Address,
+                        Email = x.Creator.Email,
+                        Phone = x.Creator.Phone,
+                        PositionId = x.Creator.PositionId,
+                        Department = x.Creator.Department,
+                        OrganizationId = x.Creator.OrganizationId,
+                        StatusId = x.Creator.StatusId,
+                        Avatar = x.Creator.Avatar,
+                        ProvinceId = x.Creator.ProvinceId,
+                        SexId = x.Creator.SexId,
+                        Birthday = x.Creator.Birthday,
                     },
                     Status = x.Status == null ? null : new Status
                     {
@@ -1248,6 +1303,7 @@ namespace DMS.Repositories
                 StoreDAO.LegalEntity = Store.LegalEntity;
                 StoreDAO.StatusId = Store.StatusId;
                 StoreDAO.AppUserId = Store.AppUserId;
+                StoreDAO.CreatorId = Store.CreatorId;
                 StoreDAO.StoreStatusId = Store.StoreStatusId;
                 StoreDAO.StoreScoutingId = Store.StoreScoutingId;
                 StoreDAO.RowId = Store.RowId;

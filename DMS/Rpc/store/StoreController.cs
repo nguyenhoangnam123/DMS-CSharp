@@ -474,6 +474,11 @@ namespace DMS.Rpc.store
                     Store Old = DictionaryAll[Store_ImportDTO.CodeValue];
                     Store.Id = Old.Id;
                     Store.ParentStoreId = Old.ParentStoreId;
+                    Store.CreatorId = Old.CreatorId;
+                }
+                else
+                {
+                    Store.CreatorId = CurrentContext.UserId;
                 }
                 Store.Code = Store_ImportDTO.CodeValue;
                 Store.CodeDraft = Store_ImportDTO.CodeDraftValue;

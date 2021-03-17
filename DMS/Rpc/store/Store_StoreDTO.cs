@@ -35,7 +35,7 @@ namespace DMS.Rpc.store
         public bool HasChecking { get; set; }
         public bool Used { get; set; }
         public long? AppUserId { get; set; }
-        public long? CreatorId { get; set; }
+        public long CreatorId { get; set; }
         public long? StoreScoutingId { get; set; }
         public long StoreStatusId { get; set; }
         public Store_AppUserDTO AppUser { get; set; }
