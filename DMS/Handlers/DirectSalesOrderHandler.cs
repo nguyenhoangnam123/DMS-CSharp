@@ -48,7 +48,8 @@ namespace DMS.Handlers
                         OrganizationId = DirectSalesOrder.OrganizationId,
                         BuyerStoreId = DirectSalesOrder.BuyerStoreId,
                         SaleEmployeeId = DirectSalesOrder.SaleEmployeeId,
-                        RequestStateId = RequestStateEnum.APPROVED.Id, // don hang tao tu ams.abe mac dinh khong co wf -> wf requestState = approved 
+                        RequestStateId = RequestStateEnum.APPROVED.Id, // don hang tao tu ams.abe mac dinh khong co wf -> wf requestState = approved
+                        StoreApprovalStateId = StoreApprovalStateEnum.PENDING.Id, // trang thai doi cua hang duyet
                         EditedPriceStatusId = EditedPriceStatusEnum.INACTIVE.Id, // don hang tao tu ams.abe mac dinh khong cho sua gia
                         SubTotal = DirectSalesOrder.SubTotal,
                         TotalTaxAmount = DirectSalesOrder.TotalTaxAmount,
@@ -56,6 +57,7 @@ namespace DMS.Handlers
                         Total = DirectSalesOrder.Total,
                         RowId = DirectSalesOrder.RowId,
                         StoreUserCreatorId = DirectSalesOrder.StoreUserCreatorId, // luu acc cua store tao don hang
+                        DirectSalesOrderSourceTypeId = DirectSalesOrderSourceTypeEnum.FROM_AMS.Id, // sourceType
                         OrderDate = DirectSalesOrder.OrderDate, // ams.abe tao ra neu client ko gui ve
                         CreatedAt = DirectSalesOrder.CreatedAt, // lay tu ams.abe ra neu client ko gui ve
                         UpdatedAt = DirectSalesOrder.UpdatedAt, // lay tu ams.abe ra neu client ko gui ve
