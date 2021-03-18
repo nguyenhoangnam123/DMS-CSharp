@@ -64,6 +64,9 @@ namespace DMS.Handlers
                     };
                     await context.BulkMergeAsync(new List<DirectSalesOrderDAO> { DirectSalesOrderDAO });
                     DirectSalesOrder.Id = DirectSalesOrderDAO.Id;
+                    DirectSalesOrder.RequestStateId = DirectSalesOrderDAO.RequestStateId;
+                    DirectSalesOrder.StoreApprovalStateId = DirectSalesOrderDAO.StoreApprovalStateId;
+                    DirectSalesOrder.EditedPriceStatusId = DirectSalesOrderDAO.EditedPriceStatusId;
                     await SaveReference(context, DirectSalesOrder);
                     AuditLog(DirectSalesOrder, new { }, nameof(DirectSalesOrderHandler)); // ghi log
                     await NotifyUsed(DirectSalesOrder);
@@ -89,8 +92,9 @@ namespace DMS.Handlers
                     DirectSalesOrderDAO.OrganizationId = DirectSalesOrder.OrganizationId;
                     DirectSalesOrderDAO.BuyerStoreId = DirectSalesOrder.BuyerStoreId;
                     DirectSalesOrderDAO.SaleEmployeeId = DirectSalesOrder.SaleEmployeeId;
-                    DirectSalesOrderDAO.RequestStateId = RequestStateEnum.APPROVED.Id; // don hang tao tu ams.abe mac dinh khong co wf -> wf requestState = approved 
-                    DirectSalesOrderDAO.EditedPriceStatusId = EditedPriceStatusEnum.INACTIVE.Id; // don hang tao tu ams.abe mac dinh khong cho sua gia
+                    DirectSalesOrderDAO.RequestStateId = DirectSalesOrder.RequestStateId;
+                    DirectSalesOrderDAO.StoreApprovalStateId = DirectSalesOrder.StoreApprovalStateId; // update trang thai phe duyet cua cua hang
+                    DirectSalesOrderDAO.EditedPriceStatusId = EditedPriceStatusEnum.INACTIVE.Id;
                     DirectSalesOrderDAO.SubTotal = DirectSalesOrder.SubTotal;
                     DirectSalesOrderDAO.TotalTaxAmount = DirectSalesOrder.TotalTaxAmount;
                     DirectSalesOrderDAO.TotalAfterTax = DirectSalesOrder.TotalAfterTax;
