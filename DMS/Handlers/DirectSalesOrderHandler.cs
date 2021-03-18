@@ -63,14 +63,11 @@ namespace DMS.Handlers
                         UpdatedAt = DirectSalesOrder.UpdatedAt, // lay tu ams.abe ra neu client ko gui ve
                     };
                     await context.BulkMergeAsync(new List<DirectSalesOrderDAO> { DirectSalesOrderDAO });
-                    DirectSalesOrder.Id = DirectSalesOrderDAO.Id;
-                    DirectSalesOrder.RequestStateId = DirectSalesOrderDAO.RequestStateId;
-                    DirectSalesOrder.StoreApprovalStateId = DirectSalesOrderDAO.StoreApprovalStateId;
-                    DirectSalesOrder.EditedPriceStatusId = DirectSalesOrderDAO.EditedPriceStatusId;
-                    await SaveReference(context, DirectSalesOrder);
-                    AuditLog(DirectSalesOrder, new { }, nameof(DirectSalesOrderHandler)); // ghi log
-                    await NotifyUsed(DirectSalesOrder);
-                    await SyncDirectSalesOrder(DirectSalesOrder); // public sync for AMS Web
+                    var data = ConvertDAOToEntities(DirectSalesOrderDAO, DirectSalesOrder); // gán lại data để sync và save references
+                    await SaveReference(context, data);
+                    AuditLog(data, new { }, nameof(DirectSalesOrderHandler)); // ghi log
+                    await NotifyUsed(data);
+                    await SyncDirectSalesOrder(data); // public sync for AMS Web
                 }
                 catch (Exception ex)
                 {
@@ -87,12 +84,13 @@ namespace DMS.Handlers
             {
                 try
                 {
-                    DirectSalesOrderDAO DirectSalesOrderDAO = await context.DirectSalesOrder.Where(x => x.Id == DirectSalesOrder.Id).FirstOrDefaultAsync(); // lay don hang tu db
-                    DirectSalesOrderDAO.Code = DirectSalesOrder.Code;
-                    DirectSalesOrderDAO.OrganizationId = DirectSalesOrder.OrganizationId;
-                    DirectSalesOrderDAO.BuyerStoreId = DirectSalesOrder.BuyerStoreId;
-                    DirectSalesOrderDAO.SaleEmployeeId = DirectSalesOrder.SaleEmployeeId;
-                    DirectSalesOrderDAO.RequestStateId = DirectSalesOrder.RequestStateId;
+                    DirectSalesOrderDAO DirectSalesOrderDAO = await context.DirectSalesOrder.Where(x => x.Id == DirectSalesOrder.Id)
+                        .FirstOrDefaultAsync(); // lay don hang tu db
+                    DirectSalesOrderDAO.Code = DirectSalesOrder.Code == null ? DirectSalesOrderDAO.Code : DirectSalesOrder.Code;
+                    DirectSalesOrderDAO.OrganizationId = DirectSalesOrder.OrganizationId == 0 ? DirectSalesOrderDAO.OrganizationId : DirectSalesOrder.OrganizationId;
+                    DirectSalesOrderDAO.BuyerStoreId = DirectSalesOrder.BuyerStoreId == 0 ? DirectSalesOrderDAO.BuyerStoreId : DirectSalesOrder.BuyerStoreId;
+                    DirectSalesOrderDAO.SaleEmployeeId = DirectSalesOrder.SaleEmployeeId == 0 ? DirectSalesOrderDAO.SaleEmployeeId : DirectSalesOrder.SaleEmployeeId;
+                    DirectSalesOrderDAO.RequestStateId = DirectSalesOrder.RequestStateId == 0 ? DirectSalesOrderDAO.RequestStateId : DirectSalesOrder.RequestStateId;
                     DirectSalesOrderDAO.StoreApprovalStateId = DirectSalesOrder.StoreApprovalStateId; // update trang thai phe duyet cua cua hang
                     DirectSalesOrderDAO.EditedPriceStatusId = EditedPriceStatusEnum.INACTIVE.Id;
                     DirectSalesOrderDAO.SubTotal = DirectSalesOrder.SubTotal;
@@ -100,14 +98,15 @@ namespace DMS.Handlers
                     DirectSalesOrderDAO.TotalAfterTax = DirectSalesOrder.TotalAfterTax;
                     DirectSalesOrderDAO.Total = DirectSalesOrder.Total;
                     DirectSalesOrderDAO.RowId = DirectSalesOrder.RowId;
-                    DirectSalesOrderDAO.StoreUserCreatorId = DirectSalesOrder.StoreUserCreatorId; // luu acc cua store tao don hang
-                    DirectSalesOrderDAO.OrderDate = DirectSalesOrder.OrderDate; // ams.abe tao ra neu client ko gui ve
-                    DirectSalesOrderDAO.CreatedAt = DirectSalesOrder.CreatedAt; // lay tu ams.abe ra neu client ko gui ve
-                    DirectSalesOrderDAO.UpdatedAt = DirectSalesOrder.UpdatedAt; // lay tu ams.abe ra neu client ko gui ve
+                    DirectSalesOrderDAO.StoreUserCreatorId = DirectSalesOrder.StoreUserCreatorId == null ? DirectSalesOrderDAO.StoreUserCreatorId : DirectSalesOrder.StoreUserCreatorId; // luu acc cua store tao don hang
+                    DirectSalesOrderDAO.OrderDate = DirectSalesOrder.OrderDate == null ? DirectSalesOrderDAO.OrderDate : DirectSalesOrder.OrderDate;
+                    DirectSalesOrderDAO.CreatedAt = DirectSalesOrder.CreatedAt;
+                    DirectSalesOrderDAO.UpdatedAt = DirectSalesOrder.UpdatedAt;
                     await context.BulkMergeAsync(new List<DirectSalesOrderDAO> { DirectSalesOrderDAO }); // luu vao db
-                    await SaveReference(context, DirectSalesOrder);
-                    await NotifyUsed(DirectSalesOrder);
-                    await SyncDirectSalesOrder(DirectSalesOrder);
+                    var data = ConvertDAOToEntities(DirectSalesOrderDAO, DirectSalesOrder);  // gán lại data để sync và save references
+                    await SaveReference(context, data);
+                    await NotifyUsed(data);
+                    await SyncDirectSalesOrder(data); // sync to AMS
                 }
                 catch (Exception ex)
                 {
@@ -210,14 +209,14 @@ namespace DMS.Handlers
                                                                                 RequestedQuantity = c.RequestedQuantity,
                                                                                 PrimaryPrice = c.PrimaryPrice,
                                                                                 SalePrice = c.SalePrice,
-                                                                                EditedPriceStatusId =c.EditedPriceStatusId,
+                                                                                EditedPriceStatusId = c.EditedPriceStatusId,
                                                                                 Amount = c.Amount,
                                                                                 TaxPercentage = c.TaxPercentage,
                                                                                 TaxAmount = c.TaxAmount,
                                                                                 Factor = c.Factor,
                                                                                 DiscountPercentage = c.DiscountPercentage,
                                                                                 DiscountAmount = c.DiscountAmount,
-                                                                                GeneralDiscountPercentage =c.GeneralDiscountPercentage,
+                                                                                GeneralDiscountPercentage = c.GeneralDiscountPercentage,
                                                                                 GeneralDiscountAmount = c.GeneralDiscountAmount,
                                                                             }).ToListAsync(); // sync to ams
                 }
@@ -251,6 +250,31 @@ namespace DMS.Handlers
             {
                 SystemLog(ex, nameof(DirectSalesOrderHandler));
             }
+        }
+
+        private DirectSalesOrder ConvertDAOToEntities(DirectSalesOrderDAO DirectSalesOrderDAO, DirectSalesOrder OldData)
+        {
+            return new DirectSalesOrder
+            {
+                Id = DirectSalesOrderDAO.Id,
+                Code = DirectSalesOrderDAO.Code,
+                OrganizationId = DirectSalesOrderDAO.OrganizationId,
+                BuyerStoreId = DirectSalesOrderDAO.BuyerStoreId,
+                SaleEmployeeId = DirectSalesOrderDAO.SaleEmployeeId,
+                RequestStateId = DirectSalesOrderDAO.RequestStateId,
+                StoreApprovalStateId = DirectSalesOrderDAO.StoreApprovalStateId,
+                EditedPriceStatusId = DirectSalesOrderDAO.EditedPriceStatusId,
+                SubTotal = DirectSalesOrderDAO.SubTotal,
+                TotalTaxAmount = DirectSalesOrderDAO.TotalTaxAmount,
+                TotalAfterTax = DirectSalesOrderDAO.TotalAfterTax,
+                Total = DirectSalesOrderDAO.Total,
+                RowId = DirectSalesOrderDAO.RowId,
+                StoreUserCreatorId = DirectSalesOrderDAO.StoreUserCreatorId,
+                OrderDate = DirectSalesOrderDAO.OrderDate,
+                CreatedAt = DirectSalesOrderDAO.CreatedAt,
+                UpdatedAt = DirectSalesOrderDAO.UpdatedAt,
+                DirectSalesOrderContents = OldData.DirectSalesOrderContents,
+            };
         }
     }
 }
