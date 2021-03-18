@@ -56,6 +56,7 @@ namespace DMS.Handlers
                         Total = DirectSalesOrder.Total,
                         RowId = DirectSalesOrder.RowId,
                         StoreUserCreatorId = DirectSalesOrder.StoreUserCreatorId, // luu acc cua store tao don hang
+                        DirectSalesOrderSourceTypeId = DirectSalesOrderSourceTypeEnum.FROM_AMS.Id, // sourceType
                         OrderDate = DirectSalesOrder.OrderDate, // ams.abe tao ra neu client ko gui ve
                         CreatedAt = DirectSalesOrder.CreatedAt, // lay tu ams.abe ra neu client ko gui ve
                         UpdatedAt = DirectSalesOrder.UpdatedAt, // lay tu ams.abe ra neu client ko gui ve
