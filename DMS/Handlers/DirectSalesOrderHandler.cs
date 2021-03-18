@@ -103,9 +103,9 @@ namespace DMS.Handlers
                     DirectSalesOrderDAO.CreatedAt = DirectSalesOrder.CreatedAt;
                     DirectSalesOrderDAO.UpdatedAt = DirectSalesOrder.UpdatedAt;
                     await context.BulkMergeAsync(new List<DirectSalesOrderDAO> { DirectSalesOrderDAO }); // luu vao db
-                    var data = ConvertDAOToEntities(DirectSalesOrderDAO, DirectSalesOrder);  // gán lại data để sync và save references
-                    await SaveReference(context, data);
-                    await NotifyUsed(data);
+                    var data = ConvertDAOToEntities(DirectSalesOrderDAO, null);  // gán lại data để sync và save references
+                    //await SaveReference(context, data);
+                    //await NotifyUsed(data);
                     await SyncDirectSalesOrder(data); // sync to AMS
                 }
                 catch (Exception ex)
@@ -252,7 +252,7 @@ namespace DMS.Handlers
             }
         }
 
-        private DirectSalesOrder ConvertDAOToEntities(DirectSalesOrderDAO DirectSalesOrderDAO, DirectSalesOrder OldData)
+        private DirectSalesOrder ConvertDAOToEntities(DirectSalesOrderDAO DirectSalesOrderDAO, DirectSalesOrder? OldData)
         {
             return new DirectSalesOrder
             {
@@ -273,7 +273,7 @@ namespace DMS.Handlers
                 OrderDate = DirectSalesOrderDAO.OrderDate,
                 CreatedAt = DirectSalesOrderDAO.CreatedAt,
                 UpdatedAt = DirectSalesOrderDAO.UpdatedAt,
-                DirectSalesOrderContents = OldData.DirectSalesOrderContents,
+                DirectSalesOrderContents = OldData == null ? null : OldData.DirectSalesOrderContents,
             };
         }
     }
