@@ -385,7 +385,11 @@ namespace DMS.Rpc.store
 
                     Store_ImportDTO.DeliveryAddressValue = worksheet.Cells[i + StartRow, DeliveryAddressColumn].Value?.ToString();
                     Store_ImportDTO.DeliveryLongitudeValue = worksheet.Cells[i + StartRow, DeliveryLongitudeColumn].Value?.ToString();
+                    if (!string.IsNullOrWhiteSpace(Store_ImportDTO.DeliveryLongitudeValue) && Store_ImportDTO.DeliveryLongitudeValue.Contains(","))
+                        Store_ImportDTO.DeliveryLongitudeValue = Store_ImportDTO.DeliveryLongitudeValue.Replace(",", ".");
                     Store_ImportDTO.DeliveryLatitudeValue = worksheet.Cells[i + StartRow, DeliveryLatitudeColumn].Value?.ToString();
+                    if (!string.IsNullOrWhiteSpace(Store_ImportDTO.DeliveryLatitudeValue) && Store_ImportDTO.DeliveryLatitudeValue.Contains(","))
+                        Store_ImportDTO.DeliveryLatitudeValue = Store_ImportDTO.DeliveryLatitudeValue.Replace(",", ".");
 
                     Store_ImportDTO.TelephoneValue = worksheet.Cells[i + StartRow, TelephoneColumn].Value?.ToString();
                     Store_ImportDTO.OwnerNameValue = worksheet.Cells[i + StartRow, OwnerNameColumn].Value?.ToString();
@@ -524,6 +528,7 @@ namespace DMS.Rpc.store
                 Store.OwnerEmail = Store_ImportDTO.OwnerEmailValue;
                 Store.StoreStatusId = Store_ImportDTO.StoreStatusId;
                 Store.StatusId = Store_ImportDTO.StatusId;
+                Store.CreatorId = CurrentContext.UserId;
                 Store.BaseLanguage = CurrentContext.Language;
             });
             List<Store> Stores = DictionaryStores.Select(x => x.Value).ToList();
