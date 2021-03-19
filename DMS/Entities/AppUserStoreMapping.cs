@@ -15,11 +15,14 @@ namespace DMS.Entities
 
         public bool Equals(AppUserStoreMapping other)
         {
+            if (other == null) return false;
+            if (this.AppUserId != other.AppUserId) return false;
+            if (this.StoreId != other.StoreId) return false;
             return true;
         }
         public override int GetHashCode()
         {
-            return base.GetHashCode();
+            return AppUserId.GetHashCode() ^ StoreId.GetHashCode();
         }
     }
 

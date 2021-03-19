@@ -199,6 +199,7 @@ namespace DMS.Services.MAppUser
                     AppUserStoreMappings.AddRange(AppUser.AppUserStoreMappings);
                 }
                 var appUserIds = AppUsers.Select(x => x.Id).ToList();
+                AppUserStoreMappings = AppUserStoreMappings.Distinct().ToList();
                 return await UOW.AppUserRepository.BulkMergeERouteScope(AppUserStoreMappings, appUserIds);
             }
             catch (Exception ex)
