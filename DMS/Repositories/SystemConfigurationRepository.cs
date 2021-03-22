@@ -61,12 +61,6 @@ namespace DMS.Repositories
 
                 if (SystemConfigurationDAO.Code == nameof(SystemConfiguration.USE_INDIRECT_SALES_ORDER))
                     SystemConfigurationDAO.Value = SystemConfiguration.USE_INDIRECT_SALES_ORDER.ToString();
-
-                if (SystemConfigurationDAO.Code == nameof(SystemConfiguration.LOGO))
-                    SystemConfigurationDAO.Value = SystemConfiguration.LOGO.ToString();
-
-                if (SystemConfigurationDAO.Code == nameof(SystemConfiguration.COMPANY_NAME))
-                    SystemConfigurationDAO.Value = SystemConfiguration.COMPANY_NAME.ToString();
             }
             await DataContext.SaveChangesAsync();
             return true;
@@ -174,22 +168,6 @@ namespace DMS.Repositories
                         SystemConfiguration.USE_INDIRECT_SALES_ORDER = false;
                     else
                         SystemConfiguration.USE_INDIRECT_SALES_ORDER = result;
-                };
-
-                if (SystemConfigurationDAO.Id == SystemConfigurationEnum.LOGO.Id)
-                {
-                    if (string.IsNullOrWhiteSpace(SystemConfigurationDAO.Value))
-                        SystemConfiguration.LOGO = string.Empty;
-                    else
-                        SystemConfiguration.LOGO = SystemConfigurationDAO.Value;
-                };
-
-                if (SystemConfigurationDAO.Id == SystemConfigurationEnum.COMPANY_NAME.Id)
-                {
-                    if (string.IsNullOrWhiteSpace(SystemConfigurationDAO.Value))
-                        SystemConfiguration.COMPANY_NAME = string.Empty;
-                    else
-                        SystemConfiguration.COMPANY_NAME = SystemConfigurationDAO.Value;
                 };
             }
 
