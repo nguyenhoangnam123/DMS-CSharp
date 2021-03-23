@@ -12,6 +12,7 @@ namespace DMS.Rpc.showing_order
         public string Code { get; set; }
         public long AppUserId { get; set; }
         public long OrganizationId { get; set; }
+        public long StoreId { get; set; }
         public DateTime Date { get; set; }
         public long ShowingWarehouseId { get; set; }
         public long StatusId { get; set; }
@@ -21,16 +22,19 @@ namespace DMS.Rpc.showing_order
         public ShowingOrder_OrganizationDTO Organization { get; set; }
         public ShowingOrder_ShowingWarehouseDTO ShowingWarehouse { get; set; }
         public ShowingOrder_StatusDTO Status { get; set; }
+        public ShowingOrder_StoreDTO Store { get; set; }
         public List<ShowingOrder_ShowingOrderContentDTO> ShowingOrderContents { get; set; }
+        public List<ShowingOrder_StoreDTO> Stores { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
-        public ShowingOrder_ShowingOrderDTO() {}
+        public ShowingOrder_ShowingOrderDTO() { }
         public ShowingOrder_ShowingOrderDTO(ShowingOrder ShowingOrder)
         {
             this.Id = ShowingOrder.Id;
             this.Code = ShowingOrder.Code;
             this.AppUserId = ShowingOrder.AppUserId;
             this.OrganizationId = ShowingOrder.OrganizationId;
+            this.StoreId = ShowingOrder.StoreId;
             this.Date = ShowingOrder.Date;
             this.ShowingWarehouseId = ShowingOrder.ShowingWarehouseId;
             this.StatusId = ShowingOrder.StatusId;
@@ -40,6 +44,7 @@ namespace DMS.Rpc.showing_order
             this.Organization = ShowingOrder.Organization == null ? null : new ShowingOrder_OrganizationDTO(ShowingOrder.Organization);
             this.ShowingWarehouse = ShowingOrder.ShowingWarehouse == null ? null : new ShowingOrder_ShowingWarehouseDTO(ShowingOrder.ShowingWarehouse);
             this.Status = ShowingOrder.Status == null ? null : new ShowingOrder_StatusDTO(ShowingOrder.Status);
+            this.Store = ShowingOrder.Store == null ? null : new ShowingOrder_StoreDTO(ShowingOrder.Store);
             this.ShowingOrderContents = ShowingOrder.ShowingOrderContents?.Select(x => new ShowingOrder_ShowingOrderContentDTO(x)).ToList();
             this.CreatedAt = ShowingOrder.CreatedAt;
             this.UpdatedAt = ShowingOrder.UpdatedAt;
@@ -53,6 +58,7 @@ namespace DMS.Rpc.showing_order
         public StringFilter Code { get; set; }
         public IdFilter AppUserId { get; set; }
         public IdFilter OrganizationId { get; set; }
+        public IdFilter StoreId { get; set; }
         public DateFilter Date { get; set; }
         public IdFilter ShowingWarehouseId { get; set; }
         public IdFilter StatusId { get; set; }

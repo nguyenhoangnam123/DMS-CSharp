@@ -178,6 +178,51 @@ namespace DMS.Rpc.showing_order
                 .Select(x => new ShowingOrder_UnitOfMeasureDTO(x)).ToList();
             return ShowingOrder_UnitOfMeasureDTOs;
         }
+        [Route(ShowingOrderRoute.FilterListStore), HttpPost]
+        public async Task<List<ShowingOrder_StoreDTO>> FilterListStore([FromBody] ShowingOrder_StoreFilterDTO ShowingOrder_StoreFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            StoreFilter StoreFilter = new StoreFilter();
+            StoreFilter.Skip = 0;
+            StoreFilter.Take = 20;
+            StoreFilter.OrderBy = StoreOrder.Id;
+            StoreFilter.OrderType = OrderType.ASC;
+            StoreFilter.Selects = StoreSelect.ALL;
+            StoreFilter.Id = ShowingOrder_StoreFilterDTO.Id;
+            StoreFilter.Code = ShowingOrder_StoreFilterDTO.Code;
+            StoreFilter.CodeDraft = ShowingOrder_StoreFilterDTO.CodeDraft;
+            StoreFilter.Name = ShowingOrder_StoreFilterDTO.Name;
+            StoreFilter.UnsignName = ShowingOrder_StoreFilterDTO.UnsignName;
+            StoreFilter.ParentStoreId = ShowingOrder_StoreFilterDTO.ParentStoreId;
+            StoreFilter.OrganizationId = ShowingOrder_StoreFilterDTO.OrganizationId;
+            StoreFilter.StoreTypeId = ShowingOrder_StoreFilterDTO.StoreTypeId;
+            StoreFilter.StoreGroupingId = ShowingOrder_StoreFilterDTO.StoreGroupingId;
+            StoreFilter.Telephone = ShowingOrder_StoreFilterDTO.Telephone;
+            StoreFilter.ProvinceId = ShowingOrder_StoreFilterDTO.ProvinceId;
+            StoreFilter.DistrictId = ShowingOrder_StoreFilterDTO.DistrictId;
+            StoreFilter.WardId = ShowingOrder_StoreFilterDTO.WardId;
+            StoreFilter.Address = ShowingOrder_StoreFilterDTO.Address;
+            StoreFilter.UnsignAddress = ShowingOrder_StoreFilterDTO.UnsignAddress;
+            StoreFilter.DeliveryAddress = ShowingOrder_StoreFilterDTO.DeliveryAddress;
+            StoreFilter.Latitude = ShowingOrder_StoreFilterDTO.Latitude;
+            StoreFilter.Longitude = ShowingOrder_StoreFilterDTO.Longitude;
+            StoreFilter.DeliveryLatitude = ShowingOrder_StoreFilterDTO.DeliveryLatitude;
+            StoreFilter.DeliveryLongitude = ShowingOrder_StoreFilterDTO.DeliveryLongitude;
+            StoreFilter.OwnerName = ShowingOrder_StoreFilterDTO.OwnerName;
+            StoreFilter.OwnerPhone = ShowingOrder_StoreFilterDTO.OwnerPhone;
+            StoreFilter.OwnerEmail = ShowingOrder_StoreFilterDTO.OwnerEmail;
+            StoreFilter.CreatorId = ShowingOrder_StoreFilterDTO.CreatorId;
+            StoreFilter.AppUserId = ShowingOrder_StoreFilterDTO.AppUserId;
+            StoreFilter.StatusId = ShowingOrder_StoreFilterDTO.StatusId;
+            StoreFilter.StoreStatusId = ShowingOrder_StoreFilterDTO.StoreStatusId;
+
+            List<Store> Stores = await StoreService.List(StoreFilter);
+            List<ShowingOrder_StoreDTO> ShowingOrder_StoreDTOs = Stores
+                .Select(x => new ShowingOrder_StoreDTO(x)).ToList();
+            return ShowingOrder_StoreDTOs;
+        }
     }
 }
 

@@ -18,6 +18,7 @@ using DMS.Services.MShowingWarehouse;
 using DMS.Services.MStatus;
 using DMS.Services.MShowingItem;
 using DMS.Services.MUnitOfMeasure;
+using DMS.Services.MStore;
 
 namespace DMS.Rpc.showing_order
 {
@@ -30,6 +31,7 @@ namespace DMS.Rpc.showing_order
         private IShowingItemService ShowingItemService;
         private IUnitOfMeasureService UnitOfMeasureService;
         private IShowingOrderService ShowingOrderService;
+        private IStoreService StoreService;
         private ICurrentContext CurrentContext;
         public ShowingOrderController(
             IAppUserService AppUserService,
@@ -39,6 +41,7 @@ namespace DMS.Rpc.showing_order
             IShowingItemService ShowingItemService,
             IUnitOfMeasureService UnitOfMeasureService,
             IShowingOrderService ShowingOrderService,
+            IStoreService StoreService,
             ICurrentContext CurrentContext
         )
         {
@@ -49,6 +52,7 @@ namespace DMS.Rpc.showing_order
             this.ShowingItemService = ShowingItemService;
             this.UnitOfMeasureService = UnitOfMeasureService;
             this.ShowingOrderService = ShowingOrderService;
+            this.StoreService = StoreService;
             this.CurrentContext = CurrentContext;
         }
 
@@ -79,7 +83,7 @@ namespace DMS.Rpc.showing_order
         }
 
         [Route(ShowingOrderRoute.Get), HttpPost]
-        public async Task<ActionResult<ShowingOrder_ShowingOrderDTO>> Get([FromBody]ShowingOrder_ShowingOrderDTO ShowingOrder_ShowingOrderDTO)
+        public async Task<ActionResult<ShowingOrder_ShowingOrderDTO>> Get([FromBody] ShowingOrder_ShowingOrderDTO ShowingOrder_ShowingOrderDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
@@ -96,7 +100,7 @@ namespace DMS.Rpc.showing_order
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
             if (!await HasPermission(ShowingOrder_ShowingOrderDTO.Id))
                 return Forbid();
 
@@ -114,7 +118,7 @@ namespace DMS.Rpc.showing_order
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
             if (!await HasPermission(ShowingOrder_ShowingOrderDTO.Id))
                 return Forbid();
 
@@ -144,13 +148,13 @@ namespace DMS.Rpc.showing_order
             else
                 return BadRequest(ShowingOrder_ShowingOrderDTO);
         }
-        
+
         [Route(ShowingOrderRoute.Export), HttpPost]
         public async Task<ActionResult> Export([FromBody] ShowingOrder_ShowingOrderFilterDTO ShowingOrder_ShowingOrderFilterDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
             MemoryStream memoryStream = new MemoryStream();
             using (ExcelPackage excel = new ExcelPackage(memoryStream))
             {
@@ -163,7 +167,7 @@ namespace DMS.Rpc.showing_order
 
                 var ShowingOrderHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "Code",
                         "AppUserId",
@@ -194,7 +198,7 @@ namespace DMS.Rpc.showing_order
                 }
                 excel.GenerateWorksheet("ShowingOrder", ShowingOrderHeaders, ShowingOrderData);
                 #endregion
-                
+
                 #region AppUser
                 var AppUserFilter = new AppUserFilter();
                 AppUserFilter.Selects = AppUserSelect.ALL;
@@ -206,7 +210,7 @@ namespace DMS.Rpc.showing_order
 
                 var AppUserHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "Username",
                         "DisplayName",
@@ -266,7 +270,7 @@ namespace DMS.Rpc.showing_order
 
                 var OrganizationHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "Code",
                         "Name",
@@ -312,7 +316,7 @@ namespace DMS.Rpc.showing_order
 
                 var ShowingWarehouseHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "Code",
                         "Name",
@@ -356,7 +360,7 @@ namespace DMS.Rpc.showing_order
 
                 var StatusHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "Code",
                         "Name",
@@ -386,7 +390,7 @@ namespace DMS.Rpc.showing_order
 
                 var ShowingItemHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "Code",
                         "Name",
@@ -430,7 +434,7 @@ namespace DMS.Rpc.showing_order
 
                 var UnitOfMeasureHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "Code",
                         "Name",
@@ -486,6 +490,7 @@ namespace DMS.Rpc.showing_order
             ShowingOrder.Id = ShowingOrder_ShowingOrderDTO.Id;
             ShowingOrder.Code = ShowingOrder_ShowingOrderDTO.Code;
             ShowingOrder.AppUserId = ShowingOrder_ShowingOrderDTO.AppUserId;
+            ShowingOrder.StoreId = ShowingOrder_ShowingOrderDTO.StoreId;
             ShowingOrder.OrganizationId = ShowingOrder_ShowingOrderDTO.OrganizationId;
             ShowingOrder.Date = ShowingOrder_ShowingOrderDTO.Date;
             ShowingOrder.ShowingWarehouseId = ShowingOrder_ShowingOrderDTO.ShowingWarehouseId;
@@ -546,6 +551,41 @@ namespace DMS.Rpc.showing_order
                 Code = ShowingOrder_ShowingOrderDTO.Status.Code,
                 Name = ShowingOrder_ShowingOrderDTO.Status.Name,
             };
+            ShowingOrder.Store = ShowingOrder_ShowingOrderDTO.Store == null ? null : new Store
+            {
+                Id = ShowingOrder_ShowingOrderDTO.Store.Id,
+                Code = ShowingOrder_ShowingOrderDTO.Store.Code,
+                CodeDraft = ShowingOrder_ShowingOrderDTO.Store.CodeDraft,
+                Name = ShowingOrder_ShowingOrderDTO.Store.Name,
+                UnsignName = ShowingOrder_ShowingOrderDTO.Store.UnsignName,
+                ParentStoreId = ShowingOrder_ShowingOrderDTO.Store.ParentStoreId,
+                OrganizationId = ShowingOrder_ShowingOrderDTO.Store.OrganizationId,
+                StoreTypeId = ShowingOrder_ShowingOrderDTO.Store.StoreTypeId,
+                StoreGroupingId = ShowingOrder_ShowingOrderDTO.Store.StoreGroupingId,
+                Telephone = ShowingOrder_ShowingOrderDTO.Store.Telephone,
+                ProvinceId = ShowingOrder_ShowingOrderDTO.Store.ProvinceId,
+                DistrictId = ShowingOrder_ShowingOrderDTO.Store.DistrictId,
+                WardId = ShowingOrder_ShowingOrderDTO.Store.WardId,
+                Address = ShowingOrder_ShowingOrderDTO.Store.Address,
+                UnsignAddress = ShowingOrder_ShowingOrderDTO.Store.UnsignAddress,
+                DeliveryAddress = ShowingOrder_ShowingOrderDTO.Store.DeliveryAddress,
+                Latitude = ShowingOrder_ShowingOrderDTO.Store.Latitude,
+                Longitude = ShowingOrder_ShowingOrderDTO.Store.Longitude,
+                DeliveryLatitude = ShowingOrder_ShowingOrderDTO.Store.DeliveryLatitude,
+                DeliveryLongitude = ShowingOrder_ShowingOrderDTO.Store.DeliveryLongitude,
+                OwnerName = ShowingOrder_ShowingOrderDTO.Store.OwnerName,
+                OwnerPhone = ShowingOrder_ShowingOrderDTO.Store.OwnerPhone,
+                OwnerEmail = ShowingOrder_ShowingOrderDTO.Store.OwnerEmail,
+                TaxCode = ShowingOrder_ShowingOrderDTO.Store.TaxCode,
+                LegalEntity = ShowingOrder_ShowingOrderDTO.Store.LegalEntity,
+                CreatorId = ShowingOrder_ShowingOrderDTO.Store.CreatorId,
+                AppUserId = ShowingOrder_ShowingOrderDTO.Store.AppUserId,
+                StatusId = ShowingOrder_ShowingOrderDTO.Store.StatusId,
+                RowId = ShowingOrder_ShowingOrderDTO.Store.RowId,
+                Used = ShowingOrder_ShowingOrderDTO.Store.Used,
+                StoreScoutingId = ShowingOrder_ShowingOrderDTO.Store.StoreScoutingId,
+                StoreStatusId = ShowingOrder_ShowingOrderDTO.Store.StoreStatusId,
+            };
             ShowingOrder.ShowingOrderContents = ShowingOrder_ShowingOrderDTO.ShowingOrderContents?
                 .Select(x => new ShowingOrderContent
                 {
@@ -579,6 +619,41 @@ namespace DMS.Rpc.showing_order
                         RowId = x.UnitOfMeasure.RowId,
                     },
                 }).ToList();
+            ShowingOrder.Stores = ShowingOrder_ShowingOrderDTO.Stores?.Select(x => new Store
+            {
+                Id = x.Id,
+                Code = x.Code,
+                CodeDraft = x.CodeDraft,
+                Name = x.Name,
+                UnsignName = x.UnsignName,
+                ParentStoreId = x.ParentStoreId,
+                OrganizationId = x.OrganizationId,
+                StoreTypeId = x.StoreTypeId,
+                StoreGroupingId = x.StoreGroupingId,
+                Telephone = x.Telephone,
+                ProvinceId = x.ProvinceId,
+                DistrictId = x.DistrictId,
+                WardId = x.WardId,
+                Address = x.Address,
+                UnsignAddress = x.UnsignAddress,
+                DeliveryAddress = x.DeliveryAddress,
+                Latitude = x.Latitude,
+                Longitude = x.Longitude,
+                DeliveryLatitude = x.DeliveryLatitude,
+                DeliveryLongitude = x.DeliveryLongitude,
+                OwnerName = x.OwnerName,
+                OwnerPhone = x.OwnerPhone,
+                OwnerEmail = x.OwnerEmail,
+                TaxCode = x.TaxCode,
+                LegalEntity = x.LegalEntity,
+                CreatorId = x.CreatorId,
+                AppUserId = x.AppUserId,
+                StatusId = x.StatusId,
+                RowId = x.RowId,
+                Used = x.Used,
+                StoreScoutingId = x.StoreScoutingId,
+                StoreStatusId = x.StoreStatusId,
+            }).ToList();
             ShowingOrder.BaseLanguage = CurrentContext.Language;
             return ShowingOrder;
         }

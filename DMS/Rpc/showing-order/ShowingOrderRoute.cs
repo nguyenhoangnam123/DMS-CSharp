@@ -41,6 +41,7 @@ namespace DMS.Rpc.showing_order
         public const string FilterListOrganization = Default + "/filter-list-organization";
         public const string FilterListShowingWarehouse = Default + "/filter-list-showing-warehouse";
         public const string FilterListStatus = Default + "/filter-list-status";
+        public const string FilterListStore = Default + "/filter-list-store";
         public const string FilterListShowingItem = Default + "/filter-list-showing-item";
         public const string FilterListUnitOfMeasure = Default + "/filter-list-unit-of-measure";
 
@@ -53,6 +54,8 @@ namespace DMS.Rpc.showing_order
 
         public const string CountShowingItem = Default + "/count-showing-item";
         public const string ListShowingItem = Default + "/list-showing-item";
+        public const string CountStore = Default + "/count-store";
+        public const string ListStore = Default + "/list-store";
 
         public static Dictionary<string, long> Filters = new Dictionary<string, long>
         {
@@ -68,13 +71,13 @@ namespace DMS.Rpc.showing_order
         };
 
         private static List<string> FilterList = new List<string> { 
-            FilterListAppUser,FilterListOrganization,FilterListShowingWarehouse,FilterListStatus,FilterListShowingItem,FilterListUnitOfMeasure,
+            FilterListAppUser, FilterListOrganization, FilterListShowingWarehouse, FilterListStatus, FilterListStore, FilterListShowingItem, FilterListUnitOfMeasure,
         };
         private static List<string> SingleList = new List<string> { 
             SingleListAppUser, SingleListOrganization, SingleListShowingWarehouse, SingleListStatus, SingleListShowingItem, SingleListUnitOfMeasure, 
         };
         private static List<string> CountList = new List<string> {
-            CountShowingItem, ListShowingItem
+            CountShowingItem, ListShowingItem, CountStore, ListStore
         };
         
         public static Dictionary<string, IEnumerable<string>> Action = new Dictionary<string, IEnumerable<string>>

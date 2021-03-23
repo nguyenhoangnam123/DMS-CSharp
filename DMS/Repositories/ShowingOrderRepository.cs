@@ -47,6 +47,8 @@ namespace DMS.Repositories
                 query = query.Where(q => q.AppUserId, filter.AppUserId);
             if (filter.OrganizationId != null && filter.OrganizationId.HasValue)
                 query = query.Where(q => q.OrganizationId, filter.OrganizationId);
+            if (filter.StoreId != null && filter.StoreId.HasValue)
+                query = query.Where(q => q.StoreId, filter.StoreId);
             if (filter.Date != null && filter.Date.HasValue)
                 query = query.Where(q => q.Date, filter.Date);
             if (filter.ShowingWarehouseId != null && filter.ShowingWarehouseId.HasValue)
@@ -77,6 +79,8 @@ namespace DMS.Repositories
                     queryable = queryable.Where(q => q.AppUserId, filter.AppUserId);
                 if (ShowingOrderFilter.OrganizationId != null && ShowingOrderFilter.OrganizationId.HasValue)
                     queryable = queryable.Where(q => q.OrganizationId, filter.OrganizationId);
+                if (ShowingOrderFilter.StoreId != null && ShowingOrderFilter.StoreId.HasValue)
+                    queryable = queryable.Where(q => q.StoreId, filter.StoreId);
                 if (ShowingOrderFilter.Date != null && ShowingOrderFilter.Date.HasValue)
                     queryable = queryable.Where(q => q.Date, filter.Date);
                 if (ShowingOrderFilter.ShowingWarehouseId != null && ShowingOrderFilter.ShowingWarehouseId.HasValue)
@@ -111,6 +115,9 @@ namespace DMS.Repositories
                         case ShowingOrderOrder.Organization:
                             query = query.OrderBy(q => q.OrganizationId);
                             break;
+                        case ShowingOrderOrder.Store:
+                            query = query.OrderBy(q => q.StoreId);
+                            break;
                         case ShowingOrderOrder.Date:
                             query = query.OrderBy(q => q.Date);
                             break;
@@ -143,6 +150,9 @@ namespace DMS.Repositories
                         case ShowingOrderOrder.Organization:
                             query = query.OrderByDescending(q => q.OrganizationId);
                             break;
+                        case ShowingOrderOrder.Store:
+                            query = query.OrderByDescending(q => q.StoreId);
+                            break;
                         case ShowingOrderOrder.Date:
                             query = query.OrderByDescending(q => q.Date);
                             break;
@@ -173,6 +183,7 @@ namespace DMS.Repositories
                 Code = filter.Selects.Contains(ShowingOrderSelect.Code) ? q.Code : default(string),
                 AppUserId = filter.Selects.Contains(ShowingOrderSelect.AppUser) ? q.AppUserId : default(long),
                 OrganizationId = filter.Selects.Contains(ShowingOrderSelect.Organization) ? q.OrganizationId : default(long),
+                StoreId = filter.Selects.Contains(ShowingOrderSelect.Store) ? q.StoreId : default(long),
                 Date = filter.Selects.Contains(ShowingOrderSelect.Date) ? q.Date : default(DateTime),
                 ShowingWarehouseId = filter.Selects.Contains(ShowingOrderSelect.ShowingWarehouse) ? q.ShowingWarehouseId : default(long),
                 StatusId = filter.Selects.Contains(ShowingOrderSelect.Status) ? q.StatusId : default(long),
@@ -232,6 +243,41 @@ namespace DMS.Repositories
                     Code = q.Status.Code,
                     Name = q.Status.Name,
                 } : null,
+                Store = filter.Selects.Contains(ShowingOrderSelect.Store) && q.Store != null ? new Store
+                {
+                    Id = q.Store.Id,
+                    Code = q.Store.Code,
+                    CodeDraft = q.Store.CodeDraft,
+                    Name = q.Store.Name,
+                    UnsignName = q.Store.UnsignName,
+                    ParentStoreId = q.Store.ParentStoreId,
+                    OrganizationId = q.Store.OrganizationId,
+                    StoreTypeId = q.Store.StoreTypeId,
+                    StoreGroupingId = q.Store.StoreGroupingId,
+                    Telephone = q.Store.Telephone,
+                    ProvinceId = q.Store.ProvinceId,
+                    DistrictId = q.Store.DistrictId,
+                    WardId = q.Store.WardId,
+                    Address = q.Store.Address,
+                    UnsignAddress = q.Store.UnsignAddress,
+                    DeliveryAddress = q.Store.DeliveryAddress,
+                    Latitude = q.Store.Latitude,
+                    Longitude = q.Store.Longitude,
+                    DeliveryLatitude = q.Store.DeliveryLatitude,
+                    DeliveryLongitude = q.Store.DeliveryLongitude,
+                    OwnerName = q.Store.OwnerName,
+                    OwnerPhone = q.Store.OwnerPhone,
+                    OwnerEmail = q.Store.OwnerEmail,
+                    TaxCode = q.Store.TaxCode,
+                    LegalEntity = q.Store.LegalEntity,
+                    CreatorId = q.Store.CreatorId,
+                    AppUserId = q.Store.AppUserId,
+                    StatusId = q.Store.StatusId,
+                    RowId = q.Store.RowId,
+                    Used = q.Store.Used,
+                    StoreScoutingId = q.Store.StoreScoutingId,
+                    StoreStatusId = q.Store.StoreStatusId,
+                } : null,
             }).ToListAsync();
             return ShowingOrders;
         }
@@ -265,6 +311,7 @@ namespace DMS.Repositories
                 Code = x.Code,
                 AppUserId = x.AppUserId,
                 OrganizationId = x.OrganizationId,
+                StoreId = x.StoreId,
                 Date = x.Date,
                 ShowingWarehouseId = x.ShowingWarehouseId,
                 StatusId = x.StatusId,
@@ -323,6 +370,41 @@ namespace DMS.Repositories
                     Id = x.Status.Id,
                     Code = x.Status.Code,
                     Name = x.Status.Name,
+                },
+                Store = x.Store == null ? null : new Store
+                {
+                    Id = x.Store.Id,
+                    Code = x.Store.Code,
+                    CodeDraft = x.Store.CodeDraft,
+                    Name = x.Store.Name,
+                    UnsignName = x.Store.UnsignName,
+                    ParentStoreId = x.Store.ParentStoreId,
+                    OrganizationId = x.Store.OrganizationId,
+                    StoreTypeId = x.Store.StoreTypeId,
+                    StoreGroupingId = x.Store.StoreGroupingId,
+                    Telephone = x.Store.Telephone,
+                    ProvinceId = x.Store.ProvinceId,
+                    DistrictId = x.Store.DistrictId,
+                    WardId = x.Store.WardId,
+                    Address = x.Store.Address,
+                    UnsignAddress = x.Store.UnsignAddress,
+                    DeliveryAddress = x.Store.DeliveryAddress,
+                    Latitude = x.Store.Latitude,
+                    Longitude = x.Store.Longitude,
+                    DeliveryLatitude = x.Store.DeliveryLatitude,
+                    DeliveryLongitude = x.Store.DeliveryLongitude,
+                    OwnerName = x.Store.OwnerName,
+                    OwnerPhone = x.Store.OwnerPhone,
+                    OwnerEmail = x.Store.OwnerEmail,
+                    TaxCode = x.Store.TaxCode,
+                    LegalEntity = x.Store.LegalEntity,
+                    CreatorId = x.Store.CreatorId,
+                    AppUserId = x.Store.AppUserId,
+                    StatusId = x.Store.StatusId,
+                    RowId = x.Store.RowId,
+                    Used = x.Store.Used,
+                    StoreScoutingId = x.Store.StoreScoutingId,
+                    StoreStatusId = x.Store.StoreStatusId,
                 },
             }).ToListAsync();
             
@@ -384,6 +466,7 @@ namespace DMS.Repositories
                 Code = x.Code,
                 AppUserId = x.AppUserId,
                 OrganizationId = x.OrganizationId,
+                StoreId = x.StoreId,
                 Date = x.Date,
                 ShowingWarehouseId = x.ShowingWarehouseId,
                 StatusId = x.StatusId,
@@ -443,6 +526,41 @@ namespace DMS.Repositories
                     Code = x.Status.Code,
                     Name = x.Status.Name,
                 },
+                Store = x.Store == null ? null : new Store
+                {
+                    Id = x.Store.Id,
+                    Code = x.Store.Code,
+                    CodeDraft = x.Store.CodeDraft,
+                    Name = x.Store.Name,
+                    UnsignName = x.Store.UnsignName,
+                    ParentStoreId = x.Store.ParentStoreId,
+                    OrganizationId = x.Store.OrganizationId,
+                    StoreTypeId = x.Store.StoreTypeId,
+                    StoreGroupingId = x.Store.StoreGroupingId,
+                    Telephone = x.Store.Telephone,
+                    ProvinceId = x.Store.ProvinceId,
+                    DistrictId = x.Store.DistrictId,
+                    WardId = x.Store.WardId,
+                    Address = x.Store.Address,
+                    UnsignAddress = x.Store.UnsignAddress,
+                    DeliveryAddress = x.Store.DeliveryAddress,
+                    Latitude = x.Store.Latitude,
+                    Longitude = x.Store.Longitude,
+                    DeliveryLatitude = x.Store.DeliveryLatitude,
+                    DeliveryLongitude = x.Store.DeliveryLongitude,
+                    OwnerName = x.Store.OwnerName,
+                    OwnerPhone = x.Store.OwnerPhone,
+                    OwnerEmail = x.Store.OwnerEmail,
+                    TaxCode = x.Store.TaxCode,
+                    LegalEntity = x.Store.LegalEntity,
+                    CreatorId = x.Store.CreatorId,
+                    AppUserId = x.Store.AppUserId,
+                    StatusId = x.Store.StatusId,
+                    RowId = x.Store.RowId,
+                    Used = x.Store.Used,
+                    StoreScoutingId = x.Store.StoreScoutingId,
+                    StoreStatusId = x.Store.StoreStatusId,
+                },
             }).FirstOrDefaultAsync();
 
             if (ShowingOrder == null)
@@ -492,6 +610,7 @@ namespace DMS.Repositories
             ShowingOrderDAO.Code = ShowingOrder.Code;
             ShowingOrderDAO.AppUserId = ShowingOrder.AppUserId;
             ShowingOrderDAO.OrganizationId = ShowingOrder.OrganizationId;
+            ShowingOrderDAO.StoreId = ShowingOrder.StoreId;
             ShowingOrderDAO.Date = ShowingOrder.Date;
             ShowingOrderDAO.ShowingWarehouseId = ShowingOrder.ShowingWarehouseId;
             ShowingOrderDAO.StatusId = ShowingOrder.StatusId;
@@ -515,6 +634,7 @@ namespace DMS.Repositories
             ShowingOrderDAO.Code = ShowingOrder.Code;
             ShowingOrderDAO.AppUserId = ShowingOrder.AppUserId;
             ShowingOrderDAO.OrganizationId = ShowingOrder.OrganizationId;
+            ShowingOrderDAO.StoreId = ShowingOrder.StoreId;
             ShowingOrderDAO.Date = ShowingOrder.Date;
             ShowingOrderDAO.ShowingWarehouseId = ShowingOrder.ShowingWarehouseId;
             ShowingOrderDAO.StatusId = ShowingOrder.StatusId;
@@ -542,6 +662,7 @@ namespace DMS.Repositories
                 ShowingOrderDAO.Code = ShowingOrder.Code;
                 ShowingOrderDAO.AppUserId = ShowingOrder.AppUserId;
                 ShowingOrderDAO.OrganizationId = ShowingOrder.OrganizationId;
+                ShowingOrderDAO.StoreId = ShowingOrder.StoreId;
                 ShowingOrderDAO.Date = ShowingOrder.Date;
                 ShowingOrderDAO.ShowingWarehouseId = ShowingOrder.ShowingWarehouseId;
                 ShowingOrderDAO.StatusId = ShowingOrder.StatusId;
@@ -552,6 +673,30 @@ namespace DMS.Repositories
                 ShowingOrderDAOs.Add(ShowingOrderDAO);
             }
             await DataContext.BulkMergeAsync(ShowingOrderDAOs);
+
+            var Ids = ShowingOrderDAOs.Select(x => x.Id).ToList();
+            await DataContext.ShowingOrderContent
+                .Where(x => Ids.Contains(x.ShowingOrderId))
+                .DeleteFromQueryAsync();
+            List<ShowingOrderContentDAO> ShowingOrderContentDAOs = new List<ShowingOrderContentDAO>();
+            foreach (var ShowingOrder in ShowingOrders)
+            {
+                ShowingOrder.Id = ShowingOrderDAOs.Where(x => x.RowId == ShowingOrder.RowId).Select(x => x.Id).FirstOrDefault();
+                if (ShowingOrder.ShowingOrderContents != null)
+                {
+                    var listContent = ShowingOrder.ShowingOrderContents?.Select(x => new ShowingOrderContentDAO
+                    {
+                        Amount = x.Amount,
+                        Quantity = x.Quantity,
+                        SalePrice = x.SalePrice,
+                        ShowingItemId = x.ShowingItemId,
+                        ShowingOrderId = ShowingOrder.Id,
+                        UnitOfMeasureId = x.UnitOfMeasureId,
+                    }).ToList();
+                    ShowingOrderContentDAOs.AddRange(listContent);
+                }
+            }
+            await DataContext.BulkMergeAsync(ShowingOrderContentDAOs);
             return true;
         }
 

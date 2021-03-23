@@ -9,6 +9,7 @@ using OfficeOpenXml;
 using DMS.Repositories;
 using DMS.Entities;
 using DMS.Enums;
+using DMS.Handlers;
 
 namespace DMS.Services.MShowingOrder
 {
@@ -31,18 +32,21 @@ namespace DMS.Services.MShowingOrder
         private ILogging Logging;
         private ICurrentContext CurrentContext;
         private IShowingOrderValidator ShowingOrderValidator;
+        private IRabbitManager RabbitManager;
 
         public ShowingOrderService(
             IUOW UOW,
             ICurrentContext CurrentContext,
             IShowingOrderValidator ShowingOrderValidator,
-            ILogging Logging
+            ILogging Logging,
+            IRabbitManager RabbitManager
         )
         {
             this.UOW = UOW;
             this.Logging = Logging;
             this.CurrentContext = CurrentContext;
             this.ShowingOrderValidator = ShowingOrderValidator;
+            this.RabbitManager = RabbitManager;
         }
         public async Task<int> Count(ShowingOrderFilter ShowingOrderFilter)
         {
@@ -86,7 +90,21 @@ namespace DMS.Services.MShowingOrder
 
             try
             {
-                await UOW.ShowingOrderRepository.Create(ShowingOrder);
+                await Calculator(ShowingOrder);
+                List<ShowingOrder> ShowingOrders = new List<ShowingOrder>();
+                if (ShowingOrder.Stores != null && ShowingOrder.Stores.Any())
+                {
+                    foreach (var Store in ShowingOrder.Stores)
+                    {
+                        var newObj = Utils.Clone(ShowingOrder);
+                        newObj.StoreId = Store.Id;
+                        newObj.AppUserId = CurrentContext.UserId;
+                        newObj.RowId = Guid.NewGuid();
+                        ShowingOrders.Add(newObj);
+                    }
+                }
+                await UOW.ShowingOrderRepository.BulkMerge(ShowingOrders);
+                NotifyUsed(ShowingOrder);
                 ShowingOrder = await UOW.ShowingOrderRepository.Get(ShowingOrder.Id);
                 await Logging.CreateAuditLog(ShowingOrder, new { }, nameof(ShowingOrderService));
                 return ShowingOrder;
@@ -105,9 +123,9 @@ namespace DMS.Services.MShowingOrder
             try
             {
                 var oldData = await UOW.ShowingOrderRepository.Get(ShowingOrder.Id);
-
+                await Calculator(ShowingOrder);
                 await UOW.ShowingOrderRepository.Update(ShowingOrder);
-
+                NotifyUsed(ShowingOrder);
                 ShowingOrder = await UOW.ShowingOrderRepository.Get(ShowingOrder.Id);
                 await Logging.CreateAuditLog(ShowingOrder, oldData, nameof(ShowingOrderService));
                 return ShowingOrder;
@@ -213,6 +231,89 @@ namespace DMS.Services.MShowingOrder
                 }
             }
             return filter;
+        }
+
+        private async Task Calculator(ShowingOrder ShowingOrder)
+        {
+            var ShowingItemIds = ShowingOrder.ShowingOrderContents.Select(x => x.ShowingItemId).Distinct().ToList();
+            var ShowingItems = await UOW.ShowingItemRepository.List(new ShowingItemFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = ShowingItemSelect.ALL,
+                StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id },
+                Id = new IdFilter { In = ShowingItemIds }
+            });
+            foreach (var ShowingOrderContent in ShowingOrder.ShowingOrderContents)
+            {
+                ShowingItem ShowingItem = ShowingItems.Where(x => x.Id == ShowingOrderContent.ShowingItemId).FirstOrDefault();
+                if(ShowingItem != null)
+                {
+                    ShowingOrderContent.Amount = ShowingItem.SalePrice * ShowingOrderContent.Quantity;
+                    ShowingOrder.Total += ShowingOrderContent.Amount;
+                };
+            }
+        }
+
+        private void NotifyUsed(ShowingOrder ShowingOrder)
+        {
+            {
+                List<long> ShowingItemIds = ShowingOrder.ShowingOrderContents.Select(i => i.ShowingItemId).ToList();
+                List<EventMessage<ShowingItem>> ShowingItemMessages = ShowingItemIds.Select(i => new EventMessage<ShowingItem>
+                {
+                    Content = new ShowingItem { Id = i },
+                    EntityName = nameof(ShowingItem),
+                    RowId = Guid.NewGuid(),
+                    Time = StaticParams.DateTimeNow,
+                }).ToList();
+                RabbitManager.PublishList(ShowingItemMessages, RoutingKeyEnum.ShowingItemUsed);
+            }
+
+            {
+                List<long> UOMIds = ShowingOrder.ShowingOrderContents.Select(i => i.UnitOfMeasureId).ToList();
+                List<EventMessage<UnitOfMeasure>> UnitOfMeasureMessages = UOMIds.Select(x => new EventMessage<UnitOfMeasure>
+                {
+                    Content = new UnitOfMeasure { Id = x },
+                    EntityName = nameof(UnitOfMeasure),
+                    RowId = Guid.NewGuid(),
+                    Time = StaticParams.DateTimeNow,
+                }).ToList();
+                RabbitManager.PublishList(UnitOfMeasureMessages, RoutingKeyEnum.UnitOfMeasureUsed);
+            }
+
+            {
+                List<long> StoreIds = ShowingOrder.Stores.Select(x => x.Id).Distinct().ToList();
+                List<EventMessage<Store>> storeMessages = StoreIds.Select(x => new EventMessage<Store>
+                {
+                    Content = new Store { Id = x },
+                    EntityName = nameof(Store),
+                    RowId = Guid.NewGuid(),
+                    Time = StaticParams.DateTimeNow,
+                }).ToList();
+                RabbitManager.PublishList(storeMessages, RoutingKeyEnum.StoreUsed);
+            }
+
+            {
+                EventMessage<AppUser> AppUserMessage = new EventMessage<AppUser>
+                {
+                    Content = new AppUser { Id = ShowingOrder.AppUserId },
+                    EntityName = nameof(AppUser),
+                    RowId = Guid.NewGuid(),
+                    Time = StaticParams.DateTimeNow,
+                };
+                RabbitManager.PublishSingle(AppUserMessage, RoutingKeyEnum.AppUserUsed);
+            }
+
+            {
+                EventMessage<Organization> OrganizationMessage = new EventMessage<Organization>
+                {
+                    Content = new Organization { Id = ShowingOrder.OrganizationId },
+                    EntityName = nameof(Organization),
+                    RowId = Guid.NewGuid(),
+                    Time = StaticParams.DateTimeNow,
+                };
+                RabbitManager.PublishSingle(OrganizationMessage, RoutingKeyEnum.OrganizationUsed);
+            }
         }
     }
 }
