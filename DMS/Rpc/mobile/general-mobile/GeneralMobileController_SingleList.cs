@@ -1558,7 +1558,15 @@ namespace DMS.Rpc.mobile.general_mobile
             return new GeneralMobile_IndirectSalesOrderDTO(IndirectSalesOrder);
         }
 
+        [Route(GeneralMobileRoute.GetDirectSalesOrder), HttpPost]
+        public async Task<ActionResult<GeneralMobile_DirectSalesOrderDTO>> GetDirectSalesOrder([FromBody] GeneralMobile_DirectSalesOrderDTO GeneralMobile_DirectSalesOrderDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
 
+            DirectSalesOrder DirectSalesOrder = await DirectSalesOrderService.Get(GeneralMobile_DirectSalesOrderDTO.Id);
+            return new GeneralMobile_DirectSalesOrderDTO(DirectSalesOrder);
+        }
     }
 }
 
