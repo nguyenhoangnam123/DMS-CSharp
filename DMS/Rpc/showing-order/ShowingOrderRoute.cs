@@ -26,7 +26,7 @@ namespace DMS.Rpc.showing_order
     {
         public const string Parent = Module + "/showing-order";
         public const string Master = Module + "/showing-order/showing-order-master";
-        public const string Detail = Module + "/showing-order/showing-order-detail";
+        public const string Detail = Module + "/showing-order/showing-order-detail/*";
         public const string Preview = Module + "/showing-order/showing-order-preview";
         private const string Default = Rpc + Module + "/showing-order";
         public const string Count = Default + "/count";
