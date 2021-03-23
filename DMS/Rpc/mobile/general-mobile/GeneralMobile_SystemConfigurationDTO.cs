@@ -16,6 +16,7 @@ namespace DMS.Rpc.mobile.general_mobile
         public long DASH_BOARD_REFRESH_TIME { get; set; }
         public decimal AMPLITUDE_PRICE_IN_DIRECT { get; set; }
         public decimal AMPLITUDE_PRICE_IN_INDIRECT { get; set; }
+        public string YOUTUBE_ID { get; set; }
 
         public GeneralMobile_SystemConfigurationDTO() { }
         public GeneralMobile_SystemConfigurationDTO(SystemConfiguration SystemConfiguration)
@@ -31,6 +32,7 @@ namespace DMS.Rpc.mobile.general_mobile
             this.DASH_BOARD_REFRESH_TIME = SystemConfiguration.DASH_BOARD_REFRESH_TIME;
             this.AMPLITUDE_PRICE_IN_DIRECT = SystemConfiguration.AMPLITUDE_PRICE_IN_DIRECT;
             this.AMPLITUDE_PRICE_IN_INDIRECT = SystemConfiguration.AMPLITUDE_PRICE_IN_INDIRECT;
+            this.YOUTUBE_ID = SystemConfiguration.YOUTUBE_ID;
         }
     }
 }

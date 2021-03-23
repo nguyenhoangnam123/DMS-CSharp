@@ -169,6 +169,10 @@ namespace DMS.Repositories
                     else
                         SystemConfiguration.USE_INDIRECT_SALES_ORDER = result;
                 };
+                if (SystemConfigurationDAO.Id == SystemConfigurationEnum.YOUTUBE_ID.Id)
+                {
+                    SystemConfiguration.YOUTUBE_ID = SystemConfigurationDAO.Value;
+                };
             }
 
             return SystemConfiguration;
