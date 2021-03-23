@@ -34,10 +34,10 @@ namespace DMS.Rpc.showing_category
         public const string Delete = Default + "/delete";
         public const string SaveImage = Default + "/save-image";
         
-        public const string FilterListCategory = Default + "/filter-list-category";
+        public const string FilterListShowingCategory = Default + "/filter-list-showing-category";
         public const string FilterListStatus = Default + "/filter-list-status";
 
-        public const string SingleListCategory = Default + "/single-list-category";
+        public const string SingleListShowingCategory = Default + "/single-list-showing-category";
         public const string SingleListStatus = Default + "/single-list-status";
 
 
@@ -54,11 +54,11 @@ namespace DMS.Rpc.showing_category
             { nameof(ShowingCategoryFilter.RowId), FieldTypeEnum.ID.Id },
         };
 
-        private static List<string> FilterList = new List<string> { 
-            FilterListCategory,FilterListStatus,
+        private static List<string> FilterList = new List<string> {
+            FilterListShowingCategory,FilterListStatus,
         };
-        private static List<string> SingleList = new List<string> { 
-            SingleListCategory, SingleListStatus, 
+        private static List<string> SingleList = new List<string> {
+            SingleListShowingCategory, SingleListStatus, 
         };
         private static List<string> CountList = new List<string> { 
             

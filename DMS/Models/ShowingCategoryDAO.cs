@@ -5,6 +5,11 @@ namespace DMS.Models
 {
     public partial class ShowingCategoryDAO
     {
+        public ShowingCategoryDAO()
+        {
+            InverseParent = new HashSet<ShowingCategoryDAO>();
+        }
+
         public long Id { get; set; }
         public string Code { get; set; }
         public string Name { get; set; }
@@ -20,7 +25,8 @@ namespace DMS.Models
         public bool Used { get; set; }
 
         public virtual ImageDAO Image { get; set; }
-        public virtual CategoryDAO Parent { get; set; }
+        public virtual ShowingCategoryDAO Parent { get; set; }
         public virtual StatusDAO Status { get; set; }
+        public virtual ICollection<ShowingCategoryDAO> InverseParent { get; set; }
     }
 }

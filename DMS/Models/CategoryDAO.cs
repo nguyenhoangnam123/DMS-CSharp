@@ -9,7 +9,6 @@ namespace DMS.Models
         {
             InverseParent = new HashSet<CategoryDAO>();
             Products = new HashSet<ProductDAO>();
-            ShowingCategories = new HashSet<ShowingCategoryDAO>();
             ShowingItems = new HashSet<ShowingItemDAO>();
         }
 
@@ -32,7 +31,6 @@ namespace DMS.Models
         public virtual StatusDAO Status { get; set; }
         public virtual ICollection<CategoryDAO> InverseParent { get; set; }
         public virtual ICollection<ProductDAO> Products { get; set; }
-        public virtual ICollection<ShowingCategoryDAO> ShowingCategories { get; set; }
         public virtual ICollection<ShowingItemDAO> ShowingItems { get; set; }
     }
 }

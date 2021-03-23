@@ -19,7 +19,7 @@ namespace DMS.Rpc.showing_category
         public Guid RowId { get; set; }
         public bool Used { get; set; }
         public ShowingCategory_ImageDTO Image { get; set; }
-        public ShowingCategory_CategoryDTO Parent { get; set; }
+        public ShowingCategory_ShowingCategoryDTO Parent { get; set; }
         public ShowingCategory_StatusDTO Status { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
@@ -37,7 +37,7 @@ namespace DMS.Rpc.showing_category
             this.RowId = ShowingCategory.RowId;
             this.Used = ShowingCategory.Used;
             this.Image = ShowingCategory.Image == null ? null : new ShowingCategory_ImageDTO(ShowingCategory.Image);
-            this.Parent = ShowingCategory.Parent == null ? null : new ShowingCategory_CategoryDTO(ShowingCategory.Parent);
+            this.Parent = ShowingCategory.Parent == null ? null : new ShowingCategory_ShowingCategoryDTO(ShowingCategory.Parent);
             this.Status = ShowingCategory.Status == null ? null : new ShowingCategory_StatusDTO(ShowingCategory.Status);
             this.CreatedAt = ShowingCategory.CreatedAt;
             this.UpdatedAt = ShowingCategory.UpdatedAt;

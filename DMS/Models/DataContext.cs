@@ -1,4 +1,3 @@
-﻿using Thinktecture;
 ﻿using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
@@ -208,7 +207,6 @@ namespace DMS.Models
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.ConfigureTempTable<long>();
             modelBuilder.Entity<ActionDAO>(entity =>
             {
                 entity.ToTable("Action", "PER");
@@ -3816,9 +3814,9 @@ namespace DMS.Models
                     .HasConstraintName("FK_ShowingCategory_Image");
 
                 entity.HasOne(d => d.Parent)
-                    .WithMany(p => p.ShowingCategories)
+                    .WithMany(p => p.InverseParent)
                     .HasForeignKey(d => d.ParentId)
-                    .HasConstraintName("FK_ShowingCategory_Category");
+                    .HasConstraintName("FK_ShowingCategory_ShowingCategory");
 
                 entity.HasOne(d => d.Status)
                     .WithMany(p => p.ShowingCategories)
