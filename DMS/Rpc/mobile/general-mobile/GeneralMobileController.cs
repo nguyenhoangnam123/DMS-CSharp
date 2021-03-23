@@ -46,6 +46,7 @@ using System.Net.Mime;
 using GleamTech.DocumentUltimate;
 using Newtonsoft.Json;
 using Microsoft.EntityFrameworkCore;
+using DMS.Services.MDirectSalesOrder;
 
 namespace DMS.Rpc.mobile.general_mobile
 {
@@ -58,6 +59,7 @@ namespace DMS.Rpc.mobile.general_mobile
         private IColorService ColorService;
         private IERouteService ERouteService;
         private IIndirectSalesOrderService IndirectSalesOrderService;
+        private IDirectSalesOrderService DirectSalesOrderService;
         private IItemService ItemService;
         private ILuckyNumberService LuckyNumberService;
         private IStoreService StoreService;
@@ -89,6 +91,7 @@ namespace DMS.Rpc.mobile.general_mobile
             IColorService ColorService,
             IERouteService ERouteService,
             IIndirectSalesOrderService IndirectSalesOrderService,
+            IDirectSalesOrderService DirectSalesOrderService,
             IItemService ItemService,
             ILuckyNumberService LuckyNumberService,
             IStoreScoutingService StoreScoutingService,
@@ -121,6 +124,7 @@ namespace DMS.Rpc.mobile.general_mobile
             this.ColorService = ColorService;
             this.ERouteService = ERouteService;
             this.IndirectSalesOrderService = IndirectSalesOrderService;
+            this.DirectSalesOrderService = DirectSalesOrderService;
             this.ItemService = ItemService;
             this.LuckyNumberService = LuckyNumberService;
             this.StoreService = StoreService;
@@ -296,6 +300,56 @@ namespace DMS.Rpc.mobile.general_mobile
                 return GeneralMobile_IndirectSalesOrderDTO;
             else
                 return BadRequest(GeneralMobile_IndirectSalesOrderDTO);
+        }
+
+        [Route(GeneralMobileRoute.CreateDirectSalesOrder), HttpPost]
+        public async Task<ActionResult<GeneralMobile_DirectSalesOrderDTO>> CreateDirectSalesOrder([FromBody] GeneralMobile_DirectSalesOrderDTO GeneralMobile_DirectSalesOrderDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            DirectSalesOrder DirectSalesOrder = ConvertDirectSalesOrderDTOToEntity(GeneralMobile_DirectSalesOrderDTO);
+            DirectSalesOrder.BaseLanguage = CurrentContext.Language;
+            DirectSalesOrder.SaleEmployeeId = CurrentContext.UserId;
+            DirectSalesOrder = await DirectSalesOrderService.Create(DirectSalesOrder);
+            GeneralMobile_DirectSalesOrderDTO = new GeneralMobile_DirectSalesOrderDTO(DirectSalesOrder);
+            if (DirectSalesOrder.IsValidated)
+                return GeneralMobile_DirectSalesOrderDTO;
+            else
+                return BadRequest(GeneralMobile_DirectSalesOrderDTO);
+        }
+
+        [Route(GeneralMobileRoute.UpdateDirectSalesOrder), HttpPost]
+        public async Task<ActionResult<GeneralMobile_DirectSalesOrderDTO>> UpdateDirectSalesOrder([FromBody] GeneralMobile_DirectSalesOrderDTO GeneralMobile_DirectSalesOrderDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            DirectSalesOrder DirectSalesOrder = ConvertDirectSalesOrderDTOToEntity(GeneralMobile_DirectSalesOrderDTO);
+            DirectSalesOrder.BaseLanguage = CurrentContext.Language;
+            DirectSalesOrder.SaleEmployeeId = CurrentContext.UserId;
+            DirectSalesOrder = await DirectSalesOrderService.Update(DirectSalesOrder);
+            GeneralMobile_DirectSalesOrderDTO = new GeneralMobile_DirectSalesOrderDTO(DirectSalesOrder);
+            if (DirectSalesOrder.IsValidated)
+                return GeneralMobile_DirectSalesOrderDTO;
+            else
+                return BadRequest(GeneralMobile_DirectSalesOrderDTO);
+        }
+
+        [Route(GeneralMobileRoute.SendDirectSalesOrder), HttpPost]
+        public async Task<ActionResult<GeneralMobile_DirectSalesOrderDTO>> SendDirectSalesOrder([FromBody] GeneralMobile_DirectSalesOrderDTO GeneralMobile_DirectSalesOrderDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            DirectSalesOrder DirectSalesOrder = ConvertDirectSalesOrderDTOToEntity(GeneralMobile_DirectSalesOrderDTO);
+            DirectSalesOrder.BaseLanguage = CurrentContext.Language;
+            DirectSalesOrder = await DirectSalesOrderService.Send(DirectSalesOrder);
+            GeneralMobile_DirectSalesOrderDTO = new GeneralMobile_DirectSalesOrderDTO(DirectSalesOrder);
+            if (DirectSalesOrder.IsValidated)
+                return GeneralMobile_DirectSalesOrderDTO;
+            else
+                return BadRequest(GeneralMobile_DirectSalesOrderDTO);
         }
 
         [Route(GeneralMobileRoute.PreviewIndirectOrder), HttpPost]
@@ -812,6 +866,71 @@ namespace DMS.Rpc.mobile.general_mobile
             ContentDisposition cd = new ContentDisposition
             {
                 FileName = $"Don-hang-gian-tiep-{IndirectSalesOrder.Code}.pdf",
+                Inline = true,
+            };
+            Response.Headers.Add("Content-Disposition", cd.ToString());
+            return File(MemoryStream.ToArray(), "application/pdf;charset=utf-8");
+        }
+
+        [Route(GeneralMobileRoute.PrintDirectOrder), HttpGet]
+        public async Task<ActionResult> PrintDirectOrder([FromQuery] long Id)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+            var DirectSalesOrder = await DirectSalesOrderService.Get(Id);
+            if (DirectSalesOrder == null)
+                return Content("Đơn hàng không tồn tại");
+            GeneralMobile_PrintDirectOrderDTO GeneralMobile_PrintDTO = new GeneralMobile_PrintDirectOrderDTO(DirectSalesOrder);
+            var culture = System.Globalization.CultureInfo.GetCultureInfo("en-EN");
+            var STT = 1;
+            if (GeneralMobile_PrintDTO.Contents != null)
+            {
+                foreach (var DirectSalesOrderContent in GeneralMobile_PrintDTO.Contents)
+                {
+                    DirectSalesOrderContent.STT = STT++;
+                    DirectSalesOrderContent.AmountString = DirectSalesOrderContent.Amount.ToString("N0", culture);
+                    DirectSalesOrderContent.PrimaryPriceString = DirectSalesOrderContent.PrimaryPrice.ToString("N0", culture);
+                    DirectSalesOrderContent.QuantityString = DirectSalesOrderContent.Quantity.ToString("N0", culture);
+                    DirectSalesOrderContent.RequestedQuantityString = DirectSalesOrderContent.RequestedQuantity.ToString("N0", culture);
+                    DirectSalesOrderContent.SalePriceString = DirectSalesOrderContent.SalePrice.ToString("N0", culture);
+                    DirectSalesOrderContent.DiscountString = DirectSalesOrderContent.DiscountPercentage.HasValue ? DirectSalesOrderContent.DiscountPercentage.Value.ToString("N0", culture) + "%" : "";
+                    DirectSalesOrderContent.TaxPercentageString = DirectSalesOrderContent.TaxPercentage.HasValue ? DirectSalesOrderContent.TaxPercentage.Value.ToString("N0", culture) + "%" : "";
+                }
+            }
+            if (GeneralMobile_PrintDTO.Promotions != null)
+            {
+                foreach (var DirectSalesOrderPromotion in GeneralMobile_PrintDTO.Promotions)
+                {
+                    DirectSalesOrderPromotion.STT = STT++;
+                    DirectSalesOrderPromotion.QuantityString = DirectSalesOrderPromotion.Quantity.ToString("N0", culture);
+                    DirectSalesOrderPromotion.RequestedQuantityString = DirectSalesOrderPromotion.RequestedQuantity.ToString("N0", culture);
+                }
+            }
+
+            GeneralMobile_PrintDTO.SubTotalString = GeneralMobile_PrintDTO.SubTotal.ToString("N0", culture);
+            GeneralMobile_PrintDTO.Discount = GeneralMobile_PrintDTO.GeneralDiscountAmount.HasValue ? GeneralMobile_PrintDTO.GeneralDiscountAmount.Value.ToString("N0", culture) : "";
+            GeneralMobile_PrintDTO.sOrderDate = GeneralMobile_PrintDTO.OrderDate.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy");
+            GeneralMobile_PrintDTO.sDeliveryDate = GeneralMobile_PrintDTO.DeliveryDate.HasValue ? GeneralMobile_PrintDTO.DeliveryDate.Value.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy") : string.Empty;
+            GeneralMobile_PrintDTO.TotalString = GeneralMobile_PrintDTO.Total.ToString("N0", culture);
+            GeneralMobile_PrintDTO.TotalText = Utils.ConvertAmountTostring((long)GeneralMobile_PrintDTO.Total);
+
+            string path = "Templates/Print_Indirect_Mobile.docx";
+            byte[] arr = System.IO.File.ReadAllBytes(path);
+            dynamic Data = new ExpandoObject();
+            Data.Order = GeneralMobile_PrintDTO;
+            MemoryStream MemoryStream = new MemoryStream();
+            MemoryStream input = new MemoryStream(arr);
+            MemoryStream output = new MemoryStream();
+            using (var document = StaticParams.DocumentFactory.Open(input, output, "docx"))
+            {
+                document.Process(Data);
+            };
+            var documentConverter = new DocumentConverter(output, DocumentFormat.Docx);
+            documentConverter.ConvertTo(MemoryStream, DocumentFormat.Pdf);
+
+            ContentDisposition cd = new ContentDisposition
+            {
+                FileName = $"Don-hang-gian-tiep-{DirectSalesOrder.Code}.pdf",
                 Inline = true,
             };
             Response.Headers.Add("Content-Disposition", cd.ToString());
@@ -1353,6 +1472,275 @@ namespace DMS.Rpc.mobile.general_mobile
                     },
                 }).ToList();
             return IndirectSalesOrder;
+        }
+
+        private DirectSalesOrder ConvertDirectSalesOrderDTOToEntity(GeneralMobile_DirectSalesOrderDTO GeneralMobile_DirectSalesOrderDTO)
+        {
+            DirectSalesOrder DirectSalesOrder = new DirectSalesOrder();
+            DirectSalesOrder.Id = GeneralMobile_DirectSalesOrderDTO.Id;
+            DirectSalesOrder.Code = GeneralMobile_DirectSalesOrderDTO.Code;
+            DirectSalesOrder.BuyerStoreId = GeneralMobile_DirectSalesOrderDTO.BuyerStoreId;
+            DirectSalesOrder.PhoneNumber = GeneralMobile_DirectSalesOrderDTO.PhoneNumber;
+            DirectSalesOrder.StoreAddress = GeneralMobile_DirectSalesOrderDTO.StoreAddress;
+            DirectSalesOrder.DeliveryAddress = GeneralMobile_DirectSalesOrderDTO.DeliveryAddress;
+            DirectSalesOrder.SaleEmployeeId = GeneralMobile_DirectSalesOrderDTO.SaleEmployeeId;
+            DirectSalesOrder.OrganizationId = GeneralMobile_DirectSalesOrderDTO.OrganizationId;
+            DirectSalesOrder.OrderDate = GeneralMobile_DirectSalesOrderDTO.OrderDate;
+            DirectSalesOrder.DeliveryDate = GeneralMobile_DirectSalesOrderDTO.DeliveryDate;
+            DirectSalesOrder.RequestStateId = GeneralMobile_DirectSalesOrderDTO.RequestStateId;
+            DirectSalesOrder.EditedPriceStatusId = GeneralMobile_DirectSalesOrderDTO.EditedPriceStatusId;
+            DirectSalesOrder.Note = GeneralMobile_DirectSalesOrderDTO.Note;
+            DirectSalesOrder.SubTotal = GeneralMobile_DirectSalesOrderDTO.SubTotal;
+            DirectSalesOrder.GeneralDiscountPercentage = GeneralMobile_DirectSalesOrderDTO.GeneralDiscountPercentage;
+            DirectSalesOrder.GeneralDiscountAmount = GeneralMobile_DirectSalesOrderDTO.GeneralDiscountAmount;
+            DirectSalesOrder.Total = GeneralMobile_DirectSalesOrderDTO.Total;
+            DirectSalesOrder.BuyerStore = GeneralMobile_DirectSalesOrderDTO.BuyerStore == null ? null : new Store
+            {
+                Id = GeneralMobile_DirectSalesOrderDTO.BuyerStore.Id,
+                Code = GeneralMobile_DirectSalesOrderDTO.BuyerStore.Code,
+                Name = GeneralMobile_DirectSalesOrderDTO.BuyerStore.Name,
+                ParentStoreId = GeneralMobile_DirectSalesOrderDTO.BuyerStore.ParentStoreId,
+                OrganizationId = GeneralMobile_DirectSalesOrderDTO.BuyerStore.OrganizationId,
+                StoreTypeId = GeneralMobile_DirectSalesOrderDTO.BuyerStore.StoreTypeId,
+                StoreGroupingId = GeneralMobile_DirectSalesOrderDTO.BuyerStore.StoreGroupingId,
+                Telephone = GeneralMobile_DirectSalesOrderDTO.BuyerStore.Telephone,
+                ProvinceId = GeneralMobile_DirectSalesOrderDTO.BuyerStore.ProvinceId,
+                DistrictId = GeneralMobile_DirectSalesOrderDTO.BuyerStore.DistrictId,
+                WardId = GeneralMobile_DirectSalesOrderDTO.BuyerStore.WardId,
+                Address = GeneralMobile_DirectSalesOrderDTO.BuyerStore.Address,
+                DeliveryAddress = GeneralMobile_DirectSalesOrderDTO.BuyerStore.DeliveryAddress,
+                Latitude = GeneralMobile_DirectSalesOrderDTO.BuyerStore.Latitude,
+                Longitude = GeneralMobile_DirectSalesOrderDTO.BuyerStore.Longitude,
+                DeliveryLatitude = GeneralMobile_DirectSalesOrderDTO.BuyerStore.DeliveryLatitude,
+                DeliveryLongitude = GeneralMobile_DirectSalesOrderDTO.BuyerStore.DeliveryLongitude,
+                OwnerName = GeneralMobile_DirectSalesOrderDTO.BuyerStore.OwnerName,
+                OwnerPhone = GeneralMobile_DirectSalesOrderDTO.BuyerStore.OwnerPhone,
+                OwnerEmail = GeneralMobile_DirectSalesOrderDTO.BuyerStore.OwnerEmail,
+                TaxCode = GeneralMobile_DirectSalesOrderDTO.BuyerStore.TaxCode,
+                LegalEntity = GeneralMobile_DirectSalesOrderDTO.BuyerStore.LegalEntity,
+                StatusId = GeneralMobile_DirectSalesOrderDTO.BuyerStore.StatusId,
+            };
+            DirectSalesOrder.EditedPriceStatus = GeneralMobile_DirectSalesOrderDTO.EditedPriceStatus == null ? null : new EditedPriceStatus
+            {
+                Id = GeneralMobile_DirectSalesOrderDTO.EditedPriceStatus.Id,
+                Code = GeneralMobile_DirectSalesOrderDTO.EditedPriceStatus.Code,
+                Name = GeneralMobile_DirectSalesOrderDTO.EditedPriceStatus.Name,
+            };
+            DirectSalesOrder.Organization = GeneralMobile_DirectSalesOrderDTO.Organization == null ? null : new Organization
+            {
+                Id = GeneralMobile_DirectSalesOrderDTO.Organization.Id,
+                Code = GeneralMobile_DirectSalesOrderDTO.Organization.Code,
+                Name = GeneralMobile_DirectSalesOrderDTO.Organization.Name,
+                ParentId = GeneralMobile_DirectSalesOrderDTO.Organization.ParentId,
+                Path = GeneralMobile_DirectSalesOrderDTO.Organization.Path,
+                Level = GeneralMobile_DirectSalesOrderDTO.Organization.Level,
+                StatusId = GeneralMobile_DirectSalesOrderDTO.Organization.StatusId,
+                Phone = GeneralMobile_DirectSalesOrderDTO.Organization.Phone,
+                Address = GeneralMobile_DirectSalesOrderDTO.Organization.Address,
+                Email = GeneralMobile_DirectSalesOrderDTO.Organization.Email,
+            };
+            DirectSalesOrder.SaleEmployee = GeneralMobile_DirectSalesOrderDTO.SaleEmployee == null ? null : new AppUser
+            {
+                Id = GeneralMobile_DirectSalesOrderDTO.SaleEmployee.Id,
+                Username = GeneralMobile_DirectSalesOrderDTO.SaleEmployee.Username,
+                DisplayName = GeneralMobile_DirectSalesOrderDTO.SaleEmployee.DisplayName,
+                Address = GeneralMobile_DirectSalesOrderDTO.SaleEmployee.Address,
+                Email = GeneralMobile_DirectSalesOrderDTO.SaleEmployee.Email,
+                Phone = GeneralMobile_DirectSalesOrderDTO.SaleEmployee.Phone,
+                PositionId = GeneralMobile_DirectSalesOrderDTO.SaleEmployee.PositionId,
+                Department = GeneralMobile_DirectSalesOrderDTO.SaleEmployee.Department,
+                OrganizationId = GeneralMobile_DirectSalesOrderDTO.SaleEmployee.OrganizationId,
+                SexId = GeneralMobile_DirectSalesOrderDTO.SaleEmployee.SexId,
+                StatusId = GeneralMobile_DirectSalesOrderDTO.SaleEmployee.StatusId,
+                Avatar = GeneralMobile_DirectSalesOrderDTO.SaleEmployee.Avatar,
+                Birthday = GeneralMobile_DirectSalesOrderDTO.SaleEmployee.Birthday,
+                ProvinceId = GeneralMobile_DirectSalesOrderDTO.SaleEmployee.ProvinceId,
+            };
+            DirectSalesOrder.DirectSalesOrderContents = GeneralMobile_DirectSalesOrderDTO.DirectSalesOrderContents?
+                .Select(x => new DirectSalesOrderContent
+                {
+                    Id = x.Id,
+                    ItemId = x.ItemId,
+                    UnitOfMeasureId = x.UnitOfMeasureId,
+                    Quantity = x.Quantity,
+                    PrimaryUnitOfMeasureId = x.PrimaryUnitOfMeasureId,
+                    RequestedQuantity = x.RequestedQuantity,
+                    PrimaryPrice = x.PrimaryPrice,
+                    SalePrice = x.SalePrice,
+                    DiscountPercentage = x.DiscountPercentage,
+                    DiscountAmount = x.DiscountAmount,
+                    GeneralDiscountPercentage = x.GeneralDiscountPercentage,
+                    GeneralDiscountAmount = x.GeneralDiscountAmount,
+                    Amount = x.Amount,
+                    TaxPercentage = x.TaxPercentage,
+                    TaxAmount = x.TaxAmount,
+                    Factor = x.Factor,
+                    Item = x.Item == null ? null : new Item
+                    {
+                        Id = x.Item.Id,
+                        ProductId = x.Item.ProductId,
+                        Code = x.Item.Code,
+                        Name = x.Item.Name,
+                        ScanCode = x.Item.ScanCode,
+                        SalePrice = x.Item.SalePrice,
+                        RetailPrice = x.Item.RetailPrice,
+                        StatusId = x.Item.StatusId,
+                        Product = x.Item.Product == null ? null : new Product
+                        {
+                            Id = x.Item.Product.Id,
+                            Code = x.Item.Product.Code,
+                            SupplierCode = x.Item.Product.SupplierCode,
+                            Name = x.Item.Product.Name,
+                            Description = x.Item.Product.Description,
+                            ScanCode = x.Item.Product.ScanCode,
+                            ProductTypeId = x.Item.Product.ProductTypeId,
+                            SupplierId = x.Item.Product.SupplierId,
+                            BrandId = x.Item.Product.BrandId,
+                            UnitOfMeasureId = x.Item.Product.UnitOfMeasureId,
+                            UnitOfMeasureGroupingId = x.Item.Product.UnitOfMeasureGroupingId,
+                            RetailPrice = x.Item.Product.RetailPrice,
+                            TaxTypeId = x.Item.Product.TaxTypeId,
+                            StatusId = x.Item.Product.StatusId,
+                            ProductType = x.Item.Product.ProductType == null ? null : new ProductType
+                            {
+                                Id = x.Item.Product.ProductType.Id,
+                                Code = x.Item.Product.ProductType.Code,
+                                Name = x.Item.Product.ProductType.Name,
+                                Description = x.Item.Product.ProductType.Description,
+                                StatusId = x.Item.Product.ProductType.StatusId,
+                            },
+                            TaxType = x.Item.Product.TaxType == null ? null : new TaxType
+                            {
+                                Id = x.Item.Product.TaxType.Id,
+                                Code = x.Item.Product.TaxType.Code,
+                                StatusId = x.Item.Product.TaxType.StatusId,
+                                Name = x.Item.Product.TaxType.Name,
+                                Percentage = x.Item.Product.TaxType.Percentage,
+                            },
+                            UnitOfMeasure = x.Item.Product.UnitOfMeasure == null ? null : new UnitOfMeasure
+                            {
+                                Id = x.Item.Product.UnitOfMeasure.Id,
+                                Code = x.Item.Product.UnitOfMeasure.Code,
+                                Name = x.Item.Product.UnitOfMeasure.Name,
+                                Description = x.Item.Product.UnitOfMeasure.Description,
+                                StatusId = x.Item.Product.UnitOfMeasure.StatusId,
+                            },
+                            UnitOfMeasureGrouping = x.Item.Product.UnitOfMeasureGrouping == null ? null : new UnitOfMeasureGrouping
+                            {
+                                Id = x.Item.Product.UnitOfMeasureGrouping.Id,
+                                Code = x.Item.Product.UnitOfMeasureGrouping.Code,
+                                Name = x.Item.Product.UnitOfMeasureGrouping.Name,
+                                Description = x.Item.Product.UnitOfMeasureGrouping.Description,
+                                UnitOfMeasureId = x.Item.Product.UnitOfMeasureGrouping.UnitOfMeasureId,
+                            },
+                        }
+                    },
+                    PrimaryUnitOfMeasure = x.PrimaryUnitOfMeasure == null ? null : new UnitOfMeasure
+                    {
+                        Id = x.PrimaryUnitOfMeasure.Id,
+                        Code = x.PrimaryUnitOfMeasure.Code,
+                        Name = x.PrimaryUnitOfMeasure.Name,
+                        Description = x.PrimaryUnitOfMeasure.Description,
+                        StatusId = x.PrimaryUnitOfMeasure.StatusId,
+                    },
+                    UnitOfMeasure = x.UnitOfMeasure == null ? null : new UnitOfMeasure
+                    {
+                        Id = x.UnitOfMeasure.Id,
+                        Code = x.UnitOfMeasure.Code,
+                        Name = x.UnitOfMeasure.Name,
+                        Description = x.UnitOfMeasure.Description,
+                        StatusId = x.UnitOfMeasure.StatusId,
+                    },
+                }).ToList();
+            DirectSalesOrder.DirectSalesOrderPromotions = GeneralMobile_DirectSalesOrderDTO.DirectSalesOrderPromotions?
+                .Select(x => new DirectSalesOrderPromotion
+                {
+                    Id = x.Id,
+                    ItemId = x.ItemId,
+                    UnitOfMeasureId = x.UnitOfMeasureId,
+                    Quantity = x.Quantity,
+                    PrimaryUnitOfMeasureId = x.PrimaryUnitOfMeasureId,
+                    RequestedQuantity = x.RequestedQuantity,
+                    Note = x.Note,
+                    Factor = x.Factor,
+                    Item = x.Item == null ? null : new Item
+                    {
+                        Id = x.Item.Id,
+                        ProductId = x.Item.ProductId,
+                        Code = x.Item.Code,
+                        Name = x.Item.Name,
+                        ScanCode = x.Item.ScanCode,
+                        SalePrice = x.Item.SalePrice,
+                        RetailPrice = x.Item.RetailPrice,
+                        StatusId = x.Item.StatusId,
+                        Product = x.Item.Product == null ? null : new Product
+                        {
+                            Id = x.Item.Product.Id,
+                            Code = x.Item.Product.Code,
+                            SupplierCode = x.Item.Product.SupplierCode,
+                            Name = x.Item.Product.Name,
+                            Description = x.Item.Product.Description,
+                            ScanCode = x.Item.Product.ScanCode,
+                            ProductTypeId = x.Item.Product.ProductTypeId,
+                            SupplierId = x.Item.Product.SupplierId,
+                            BrandId = x.Item.Product.BrandId,
+                            UnitOfMeasureId = x.Item.Product.UnitOfMeasureId,
+                            UnitOfMeasureGroupingId = x.Item.Product.UnitOfMeasureGroupingId,
+                            RetailPrice = x.Item.Product.RetailPrice,
+                            TaxTypeId = x.Item.Product.TaxTypeId,
+                            StatusId = x.Item.Product.StatusId,
+                            ProductType = x.Item.Product.ProductType == null ? null : new ProductType
+                            {
+                                Id = x.Item.Product.ProductType.Id,
+                                Code = x.Item.Product.ProductType.Code,
+                                Name = x.Item.Product.ProductType.Name,
+                                Description = x.Item.Product.ProductType.Description,
+                                StatusId = x.Item.Product.ProductType.StatusId,
+                            },
+                            TaxType = x.Item.Product.TaxType == null ? null : new TaxType
+                            {
+                                Id = x.Item.Product.TaxType.Id,
+                                Code = x.Item.Product.TaxType.Code,
+                                StatusId = x.Item.Product.TaxType.StatusId,
+                                Name = x.Item.Product.TaxType.Name,
+                                Percentage = x.Item.Product.TaxType.Percentage,
+                            },
+                            UnitOfMeasure = x.Item.Product.UnitOfMeasure == null ? null : new UnitOfMeasure
+                            {
+                                Id = x.Item.Product.UnitOfMeasure.Id,
+                                Code = x.Item.Product.UnitOfMeasure.Code,
+                                Name = x.Item.Product.UnitOfMeasure.Name,
+                                Description = x.Item.Product.UnitOfMeasure.Description,
+                                StatusId = x.Item.Product.UnitOfMeasure.StatusId,
+                            },
+                            UnitOfMeasureGrouping = x.Item.Product.UnitOfMeasureGrouping == null ? null : new UnitOfMeasureGrouping
+                            {
+                                Id = x.Item.Product.UnitOfMeasureGrouping.Id,
+                                Code = x.Item.Product.UnitOfMeasureGrouping.Code,
+                                Name = x.Item.Product.UnitOfMeasureGrouping.Name,
+                                Description = x.Item.Product.UnitOfMeasureGrouping.Description,
+                                UnitOfMeasureId = x.Item.Product.UnitOfMeasureGrouping.UnitOfMeasureId,
+                            },
+                        }
+                    },
+                    PrimaryUnitOfMeasure = x.PrimaryUnitOfMeasure == null ? null : new UnitOfMeasure
+                    {
+                        Id = x.PrimaryUnitOfMeasure.Id,
+                        Code = x.PrimaryUnitOfMeasure.Code,
+                        Name = x.PrimaryUnitOfMeasure.Name,
+                        Description = x.PrimaryUnitOfMeasure.Description,
+                        StatusId = x.PrimaryUnitOfMeasure.StatusId,
+                    },
+                    UnitOfMeasure = x.UnitOfMeasure == null ? null : new UnitOfMeasure
+                    {
+                        Id = x.UnitOfMeasure.Id,
+                        Code = x.UnitOfMeasure.Code,
+                        Name = x.UnitOfMeasure.Name,
+                        Description = x.UnitOfMeasure.Description,
+                        StatusId = x.UnitOfMeasure.StatusId,
+                    },
+                }).ToList();
+            return DirectSalesOrder;
         }
 
     }

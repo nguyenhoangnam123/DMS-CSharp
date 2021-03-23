@@ -1448,6 +1448,105 @@ namespace DMS.Rpc.mobile.general_mobile
             return GeneralMobile_IndirectSalesOrderDTOs;
         }
 
+        #region directSalesOrder
+        [Route(GeneralMobileRoute.CountCompletedDirectSalesOrder), HttpPost]
+        public async Task<ActionResult<int>> CountCompletedDirectSalesOrder([FromBody] GeneralMobile_DirectSalesOrderFilterDTO GeneralMobile_DirectSalesOrderFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            DirectSalesOrderFilter DirectSalesOrderFilter = new DirectSalesOrderFilter();
+            DirectSalesOrderFilter.Selects = DirectSalesOrderSelect.ALL;
+            DirectSalesOrderFilter.Skip = GeneralMobile_DirectSalesOrderFilterDTO.Skip;
+            DirectSalesOrderFilter.Take = GeneralMobile_DirectSalesOrderFilterDTO.Take;
+            DirectSalesOrderFilter.OrderBy = GeneralMobile_DirectSalesOrderFilterDTO.OrderBy;
+            DirectSalesOrderFilter.OrderType = GeneralMobile_DirectSalesOrderFilterDTO.OrderType;
+
+            DirectSalesOrderFilter.Id = GeneralMobile_DirectSalesOrderFilterDTO.Id;
+            DirectSalesOrderFilter.Code = GeneralMobile_DirectSalesOrderFilterDTO.Code;
+            DirectSalesOrderFilter.OrderDate = GeneralMobile_DirectSalesOrderFilterDTO.OrderDate;
+            DirectSalesOrderFilter.BuyerStoreId = GeneralMobile_DirectSalesOrderFilterDTO.BuyerStoreId;
+            DirectSalesOrderFilter.AppUserId = new IdFilter { Equal = CurrentContext.UserId };
+
+            int count = await DirectSalesOrderService.CountCompleted(DirectSalesOrderFilter);
+            return count;
+        }
+
+        [Route(GeneralMobileRoute.ListCompletedDirectSalesOrder), HttpPost]
+        public async Task<ActionResult<List<GeneralMobile_DirectSalesOrderDTO>>> ListCompletedDirectSalesOrder([FromBody] GeneralMobile_DirectSalesOrderFilterDTO GeneralMobile_DirectSalesOrderFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            DirectSalesOrderFilter DirectSalesOrderFilter = new DirectSalesOrderFilter();
+            DirectSalesOrderFilter.Selects = DirectSalesOrderSelect.ALL;
+            DirectSalesOrderFilter.Skip = GeneralMobile_DirectSalesOrderFilterDTO.Skip;
+            DirectSalesOrderFilter.Take = GeneralMobile_DirectSalesOrderFilterDTO.Take;
+            DirectSalesOrderFilter.OrderBy = GeneralMobile_DirectSalesOrderFilterDTO.OrderBy;
+            DirectSalesOrderFilter.OrderType = GeneralMobile_DirectSalesOrderFilterDTO.OrderType;
+
+            DirectSalesOrderFilter.Id = GeneralMobile_DirectSalesOrderFilterDTO.Id;
+            DirectSalesOrderFilter.Code = GeneralMobile_DirectSalesOrderFilterDTO.Code;
+            DirectSalesOrderFilter.OrderDate = GeneralMobile_DirectSalesOrderFilterDTO.OrderDate;
+            DirectSalesOrderFilter.BuyerStoreId = GeneralMobile_DirectSalesOrderFilterDTO.BuyerStoreId;
+            DirectSalesOrderFilter.AppUserId = new IdFilter { Equal = CurrentContext.UserId };
+
+            List<DirectSalesOrder> DirectSalesOrders = await DirectSalesOrderService.ListCompleted(DirectSalesOrderFilter);
+            List<GeneralMobile_DirectSalesOrderDTO> GeneralMobile_DirectSalesOrderDTOs = DirectSalesOrders
+                .Select(c => new GeneralMobile_DirectSalesOrderDTO(c)).ToList();
+            return GeneralMobile_DirectSalesOrderDTOs;
+        }
+
+
+        [Route(GeneralMobileRoute.CountNewDirectSalesOrder), HttpPost]
+        public async Task<ActionResult<int>> CountNewDirectSalesOrder([FromBody] GeneralMobile_DirectSalesOrderFilterDTO GeneralMobile_DirectSalesOrderFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            DirectSalesOrderFilter DirectSalesOrderFilter = new DirectSalesOrderFilter();
+            DirectSalesOrderFilter.Selects = DirectSalesOrderSelect.ALL;
+            DirectSalesOrderFilter.Skip = GeneralMobile_DirectSalesOrderFilterDTO.Skip;
+            DirectSalesOrderFilter.Take = GeneralMobile_DirectSalesOrderFilterDTO.Take;
+            DirectSalesOrderFilter.OrderBy = GeneralMobile_DirectSalesOrderFilterDTO.OrderBy;
+            DirectSalesOrderFilter.OrderType = GeneralMobile_DirectSalesOrderFilterDTO.OrderType;
+
+            DirectSalesOrderFilter.Id = GeneralMobile_DirectSalesOrderFilterDTO.Id;
+            DirectSalesOrderFilter.Code = GeneralMobile_DirectSalesOrderFilterDTO.Code;
+            DirectSalesOrderFilter.OrderDate = GeneralMobile_DirectSalesOrderFilterDTO.OrderDate;
+            DirectSalesOrderFilter.BuyerStoreId = GeneralMobile_DirectSalesOrderFilterDTO.BuyerStoreId;
+            DirectSalesOrderFilter.AppUserId = new IdFilter { Equal = CurrentContext.UserId };
+
+            int count = await DirectSalesOrderService.CountNew(DirectSalesOrderFilter);
+            return count;
+        }
+
+        [Route(GeneralMobileRoute.ListNewDirectSalesOrder), HttpPost]
+        public async Task<ActionResult<List<GeneralMobile_DirectSalesOrderDTO>>> ListNewDirectSalesOrder([FromBody] GeneralMobile_DirectSalesOrderFilterDTO GeneralMobile_DirectSalesOrderFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            DirectSalesOrderFilter DirectSalesOrderFilter = new DirectSalesOrderFilter();
+            DirectSalesOrderFilter.Selects = DirectSalesOrderSelect.ALL;
+            DirectSalesOrderFilter.Skip = GeneralMobile_DirectSalesOrderFilterDTO.Skip;
+            DirectSalesOrderFilter.Take = GeneralMobile_DirectSalesOrderFilterDTO.Take;
+            DirectSalesOrderFilter.OrderBy = GeneralMobile_DirectSalesOrderFilterDTO.OrderBy;
+            DirectSalesOrderFilter.OrderType = GeneralMobile_DirectSalesOrderFilterDTO.OrderType;
+
+            DirectSalesOrderFilter.Id = GeneralMobile_DirectSalesOrderFilterDTO.Id;
+            DirectSalesOrderFilter.Code = GeneralMobile_DirectSalesOrderFilterDTO.Code;
+            DirectSalesOrderFilter.OrderDate = GeneralMobile_DirectSalesOrderFilterDTO.OrderDate;
+            DirectSalesOrderFilter.BuyerStoreId = GeneralMobile_DirectSalesOrderFilterDTO.BuyerStoreId;
+            DirectSalesOrderFilter.AppUserId = new IdFilter { Equal = CurrentContext.UserId };
+
+            List<DirectSalesOrder> DirectSalesOrders = await DirectSalesOrderService.ListNew(DirectSalesOrderFilter);
+            List<GeneralMobile_DirectSalesOrderDTO> GeneralMobile_DirectSalesOrderDTOs = DirectSalesOrders
+                .Select(c => new GeneralMobile_DirectSalesOrderDTO(c)).ToList();
+            return GeneralMobile_DirectSalesOrderDTOs;
+        }
+        #endregion
+
 
         [Route(GeneralMobileRoute.GetIndirectSalesOrder), HttpPost]
         public async Task<ActionResult<GeneralMobile_IndirectSalesOrderDTO>> GetIndirectSalesOrder([FromBody] GeneralMobile_IndirectSalesOrderDTO GeneralMobile_IndirectSalesOrderDTO)
