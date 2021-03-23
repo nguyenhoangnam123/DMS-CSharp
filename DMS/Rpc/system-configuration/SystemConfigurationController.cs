@@ -54,6 +54,7 @@ namespace DMS.Rpc.system_configuration
                 DASH_BOARD_REFRESH_TIME = SystemConfiguration_SystemConfigurationDTO.DASH_BOARD_REFRESH_TIME,
                 AMPLITUDE_PRICE_IN_DIRECT = SystemConfiguration_SystemConfigurationDTO.AMPLITUDE_PRICE_IN_DIRECT,
                 AMPLITUDE_PRICE_IN_INDIRECT = SystemConfiguration_SystemConfigurationDTO.AMPLITUDE_PRICE_IN_INDIRECT,
+                YOUTUBE_ID = SystemConfiguration_SystemConfigurationDTO.YOUTUBE_ID
             };
             await SystemConfigurationService.Update(SystemConfiguration);
             SystemConfiguration = await SystemConfigurationService.Get();
