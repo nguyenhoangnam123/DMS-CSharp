@@ -19,14 +19,16 @@ using DMS.Services.MWard;
 using DMS.Services.MShowingInventory;
 using DMS.Services.MAppUser;
 using DMS.Services.MShowingItem;
+using System.ComponentModel;
 
 namespace DMS.Rpc.showing_warehouse
 {
+    [DisplayName("Tồn kho sản phẩm trưng bày")]
     public class ShowingWarehouseRoute : Root
     {
-        public const string Parent = Module + "/showing-warehouse";
-        public const string Master = Module + "/showing-warehouse/showing-warehouse-master";
-        public const string Detail = Module + "/showing-warehouse/showing-warehouse-detail";
+        public const string Parent = Module + "/posm";
+        public const string Master = Module + "/posm/showing-product/showing-warehouse-master";
+        public const string Detail = Module + "/posm/showing-product/showing-warehouse-detail";
         public const string Preview = Module + "/showing-warehouse/showing-warehouse-preview";
         private const string Default = Rpc + Module + "/showing-warehouse";
         public const string Count = Default + "/count";
@@ -58,6 +60,8 @@ namespace DMS.Rpc.showing_warehouse
         public const string SingleListAppUser = Default + "/single-list-app-user";
         public const string SingleListShowingItem = Default + "/single-list-showing-item";
 
+        public const string ListHistory = Default + "/list-history";
+        public const string CountHistory = Default + "/count-history";
 
         public static Dictionary<string, long> Filters = new Dictionary<string, long>
         {
@@ -79,8 +83,8 @@ namespace DMS.Rpc.showing_warehouse
         private static List<string> SingleList = new List<string> { 
             SingleListDistrict, SingleListOrganization, SingleListProvince, SingleListStatus, SingleListWard, SingleListShowingInventory, SingleListAppUser, SingleListShowingItem, 
         };
-        private static List<string> CountList = new List<string> { 
-            
+        private static List<string> CountList = new List<string> {
+            CountHistory, ListHistory, 
         };
         
         public static Dictionary<string, IEnumerable<string>> Action = new Dictionary<string, IEnumerable<string>>

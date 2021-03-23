@@ -17,11 +17,6 @@ namespace DMS.Services.MShowingInventory
         Task<int> Count(ShowingInventoryFilter ShowingInventoryFilter);
         Task<List<ShowingInventory>> List(ShowingInventoryFilter ShowingInventoryFilter);
         Task<ShowingInventory> Get(long Id);
-        Task<ShowingInventory> Create(ShowingInventory ShowingInventory);
-        Task<ShowingInventory> Update(ShowingInventory ShowingInventory);
-        Task<ShowingInventory> Delete(ShowingInventory ShowingInventory);
-        Task<List<ShowingInventory>> BulkDelete(List<ShowingInventory> ShowingInventories);
-        Task<List<ShowingInventory>> Import(List<ShowingInventory> ShowingInventories);
         Task<ShowingInventoryFilter> ToFilter(ShowingInventoryFilter ShowingInventoryFilter);
     }
 
@@ -30,19 +25,16 @@ namespace DMS.Services.MShowingInventory
         private IUOW UOW;
         private ILogging Logging;
         private ICurrentContext CurrentContext;
-        private IShowingInventoryValidator ShowingInventoryValidator;
 
         public ShowingInventoryService(
             IUOW UOW,
             ICurrentContext CurrentContext,
-            IShowingInventoryValidator ShowingInventoryValidator,
             ILogging Logging
         )
         {
             this.UOW = UOW;
             this.Logging = Logging;
             this.CurrentContext = CurrentContext;
-            this.ShowingInventoryValidator = ShowingInventoryValidator;
         }
         public async Task<int> Count(ShowingInventoryFilter ShowingInventoryFilter)
         {
@@ -79,100 +71,6 @@ namespace DMS.Services.MShowingInventory
                 return null;
             return ShowingInventory;
         }
-        public async Task<ShowingInventory> Create(ShowingInventory ShowingInventory)
-        {
-            if (!await ShowingInventoryValidator.Create(ShowingInventory))
-                return ShowingInventory;
-
-            try
-            {
-                await UOW.ShowingInventoryRepository.Create(ShowingInventory);
-                ShowingInventory = await UOW.ShowingInventoryRepository.Get(ShowingInventory.Id);
-                await Logging.CreateAuditLog(ShowingInventory, new { }, nameof(ShowingInventoryService));
-                return ShowingInventory;
-            }
-            catch (Exception ex)
-            {
-                await Logging.CreateSystemLog(ex, nameof(ShowingInventoryService));
-            }
-            return null;
-        }
-
-        public async Task<ShowingInventory> Update(ShowingInventory ShowingInventory)
-        {
-            if (!await ShowingInventoryValidator.Update(ShowingInventory))
-                return ShowingInventory;
-            try
-            {
-                var oldData = await UOW.ShowingInventoryRepository.Get(ShowingInventory.Id);
-
-                await UOW.ShowingInventoryRepository.Update(ShowingInventory);
-
-                ShowingInventory = await UOW.ShowingInventoryRepository.Get(ShowingInventory.Id);
-                await Logging.CreateAuditLog(ShowingInventory, oldData, nameof(ShowingInventoryService));
-                return ShowingInventory;
-            }
-            catch (Exception ex)
-            {
-                await Logging.CreateSystemLog(ex, nameof(ShowingInventoryService));
-            }
-            return null;
-        }
-
-        public async Task<ShowingInventory> Delete(ShowingInventory ShowingInventory)
-        {
-            if (!await ShowingInventoryValidator.Delete(ShowingInventory))
-                return ShowingInventory;
-
-            try
-            {
-                await UOW.ShowingInventoryRepository.Delete(ShowingInventory);
-                await Logging.CreateAuditLog(new { }, ShowingInventory, nameof(ShowingInventoryService));
-                return ShowingInventory;
-            }
-            catch (Exception ex)
-            {
-                await Logging.CreateSystemLog(ex, nameof(ShowingInventoryService));
-            }
-            return null;
-        }
-
-        public async Task<List<ShowingInventory>> BulkDelete(List<ShowingInventory> ShowingInventories)
-        {
-            if (!await ShowingInventoryValidator.BulkDelete(ShowingInventories))
-                return ShowingInventories;
-
-            try
-            {
-                await UOW.ShowingInventoryRepository.BulkDelete(ShowingInventories);
-                await Logging.CreateAuditLog(new { }, ShowingInventories, nameof(ShowingInventoryService));
-                return ShowingInventories;
-            }
-            catch (Exception ex)
-            {
-                await Logging.CreateSystemLog(ex, nameof(ShowingInventoryService));
-            }
-            return null;
-
-        }
-        
-        public async Task<List<ShowingInventory>> Import(List<ShowingInventory> ShowingInventories)
-        {
-            if (!await ShowingInventoryValidator.Import(ShowingInventories))
-                return ShowingInventories;
-            try
-            {
-                await UOW.ShowingInventoryRepository.BulkMerge(ShowingInventories);
-
-                await Logging.CreateAuditLog(ShowingInventories, new { }, nameof(ShowingInventoryService));
-                return ShowingInventories;
-            }
-            catch (Exception ex)
-            {
-                await Logging.CreateSystemLog(ex, nameof(ShowingInventoryService));
-            }
-            return null;
-        }     
         
         public async Task<ShowingInventoryFilter> ToFilter(ShowingInventoryFilter filter)
         {

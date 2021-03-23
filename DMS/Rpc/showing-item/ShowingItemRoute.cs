@@ -14,14 +14,16 @@ using DMS.Services.MShowingItem;
 using DMS.Services.MCategory;
 using DMS.Services.MStatus;
 using DMS.Services.MUnitOfMeasure;
+using System.ComponentModel;
 
 namespace DMS.Rpc.showing_item
 {
+    [DisplayName("Sản phẩm trưng bày")]
     public class ShowingItemRoute : Root
     {
-        public const string Parent = Module + "/showing-item";
-        public const string Master = Module + "/showing-item/showing-item-master";
-        public const string Detail = Module + "/showing-item/showing-item-detail";
+        public const string Parent = Module + "/posm";
+        public const string Master = Module + "/posm/showing-item/showing-item-master";
+        public const string Detail = Module + "/posm/showing-item/showing-item-detail";
         public const string Preview = Module + "/showing-item/showing-item-preview";
         private const string Default = Rpc + Module + "/showing-item";
         public const string Count = Default + "/count";

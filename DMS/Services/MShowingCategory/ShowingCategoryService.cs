@@ -9,6 +9,7 @@ using OfficeOpenXml;
 using DMS.Repositories;
 using DMS.Entities;
 using DMS.Enums;
+using DMS.Services.MImage;
 
 namespace DMS.Services.MShowingCategory
 {
@@ -23,6 +24,7 @@ namespace DMS.Services.MShowingCategory
         Task<List<ShowingCategory>> BulkDelete(List<ShowingCategory> ShowingCategories);
         Task<List<ShowingCategory>> Import(List<ShowingCategory> ShowingCategories);
         Task<ShowingCategoryFilter> ToFilter(ShowingCategoryFilter ShowingCategoryFilter);
+        Task<Image> SaveImage(Image Image);
     }
 
     public class ShowingCategoryService : BaseService, IShowingCategoryService
@@ -31,18 +33,21 @@ namespace DMS.Services.MShowingCategory
         private ILogging Logging;
         private ICurrentContext CurrentContext;
         private IShowingCategoryValidator ShowingCategoryValidator;
+        private IImageService ImageService;
 
         public ShowingCategoryService(
             IUOW UOW,
             ICurrentContext CurrentContext,
             IShowingCategoryValidator ShowingCategoryValidator,
-            ILogging Logging
+            ILogging Logging,
+            IImageService ImageService
         )
         {
             this.UOW = UOW;
             this.Logging = Logging;
             this.CurrentContext = CurrentContext;
             this.ShowingCategoryValidator = ShowingCategoryValidator;
+            this.ImageService = ImageService;
         }
         public async Task<int> Count(ShowingCategoryFilter ShowingCategoryFilter)
         {
@@ -172,8 +177,17 @@ namespace DMS.Services.MShowingCategory
                 await Logging.CreateSystemLog(ex, nameof(ShowingCategoryService));
             }
             return null;
-        }     
-        
+        }
+
+        public async Task<Image> SaveImage(Image Image)
+        {
+            FileInfo fileInfo = new FileInfo(Image.Name);
+            string path = $"/showing-category/{StaticParams.DateTimeNow.ToString("yyyyMMdd")}/{Guid.NewGuid()}{fileInfo.Extension}";
+            string thumbnailPath = $"/showing-category/{StaticParams.DateTimeNow.ToString("yyyyMMdd")}/{Guid.NewGuid()}{fileInfo.Extension}";
+            Image = await ImageService.Create(Image, path, thumbnailPath, 128, 128);
+            return Image;
+        }
+
         public async Task<ShowingCategoryFilter> ToFilter(ShowingCategoryFilter filter)
         {
             if (filter.OrFilter == null) filter.OrFilter = new List<ShowingCategoryFilter>();

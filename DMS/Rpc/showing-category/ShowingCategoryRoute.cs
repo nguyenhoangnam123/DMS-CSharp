@@ -14,14 +14,16 @@ using DMS.Services.MShowingCategory;
 using DMS.Services.MImage;
 using DMS.Services.MCategory;
 using DMS.Services.MStatus;
+using System.ComponentModel;
 
 namespace DMS.Rpc.showing_category
 {
+    [DisplayName("Danh mục sản phẩm trưng bày")]
     public class ShowingCategoryRoute : Root
     {
-        public const string Parent = Module + "/showing-category";
-        public const string Master = Module + "/showing-category/showing-category-master";
-        public const string Detail = Module + "/showing-category/showing-category-detail";
+        public const string Parent = Module + "/posm";
+        public const string Master = Module + "/posm/showing-item/showing-category-master";
+        public const string Detail = Module + "/posm/showing-item/showing-category-detail";
         public const string Preview = Module + "/showing-category/showing-category-preview";
         private const string Default = Rpc + Module + "/showing-category";
         public const string Count = Default + "/count";
@@ -30,16 +32,11 @@ namespace DMS.Rpc.showing_category
         public const string Create = Default + "/create";
         public const string Update = Default + "/update";
         public const string Delete = Default + "/delete";
-        public const string Import = Default + "/import";
-        public const string Export = Default + "/export";
-        public const string ExportTemplate = Default + "/export-template";
-        public const string BulkDelete = Default + "/bulk-delete";
+        public const string SaveImage = Default + "/save-image";
         
-        public const string FilterListImage = Default + "/filter-list-image";
         public const string FilterListCategory = Default + "/filter-list-category";
         public const string FilterListStatus = Default + "/filter-list-status";
 
-        public const string SingleListImage = Default + "/single-list-image";
         public const string SingleListCategory = Default + "/single-list-category";
         public const string SingleListStatus = Default + "/single-list-status";
 
@@ -58,10 +55,10 @@ namespace DMS.Rpc.showing_category
         };
 
         private static List<string> FilterList = new List<string> { 
-            FilterListImage,FilterListCategory,FilterListStatus,
+            FilterListCategory,FilterListStatus,
         };
         private static List<string> SingleList = new List<string> { 
-            SingleListImage, SingleListCategory, SingleListStatus, 
+            SingleListCategory, SingleListStatus, 
         };
         private static List<string> CountList = new List<string> { 
             
@@ -78,14 +75,14 @@ namespace DMS.Rpc.showing_category
             { "Thêm", new List<string> { 
                     Parent,
                     Master, Preview, Count, List, Get,
-                    Detail, Create, 
+                    Detail, Create, SaveImage,
                 }.Concat(SingleList).Concat(FilterList).Concat(CountList)
             },
 
             { "Sửa", new List<string> { 
                     Parent,            
                     Master, Preview, Count, List, Get,
-                    Detail, Update, 
+                    Detail, Update, SaveImage,
                 }.Concat(SingleList).Concat(FilterList).Concat(CountList)
             },
 
@@ -94,27 +91,6 @@ namespace DMS.Rpc.showing_category
                     Master, Preview, Count, List, Get,
                     Delete, 
                 }.Concat(SingleList).Concat(FilterList) 
-            },
-
-            { "Xoá nhiều", new List<string> { 
-                    Parent,
-                    Master, Preview, Count, List, Get,
-                    BulkDelete 
-                }.Concat(FilterList) 
-            },
-
-            { "Xuất excel", new List<string> { 
-                    Parent,
-                    Master, Preview, Count, List, Get,
-                    Export 
-                }.Concat(FilterList) 
-            },
-
-            { "Nhập excel", new List<string> { 
-                    Parent,
-                    Master, Preview, Count, List, Get,
-                    ExportTemplate, Import 
-                }.Concat(FilterList) 
             },
         };
     }

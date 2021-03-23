@@ -20,7 +20,7 @@ namespace DMS.Entities
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public DateTime? DeletedAt { get; set; }
-        
+        public List<ShowingInventoryHistory> ShowingInventoryHistories { get; set; }
         public bool Equals(ShowingInventory other)
         {
             if (other == null) return false;

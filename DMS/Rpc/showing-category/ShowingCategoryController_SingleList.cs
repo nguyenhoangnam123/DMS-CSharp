@@ -19,27 +19,6 @@ namespace DMS.Rpc.showing_category
 {
     public partial class ShowingCategoryController : RpcController
     {
-        [Route(ShowingCategoryRoute.SingleListImage), HttpPost]
-        public async Task<List<ShowingCategory_ImageDTO>> SingleListImage([FromBody] ShowingCategory_ImageFilterDTO ShowingCategory_ImageFilterDTO)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
-
-            ImageFilter ImageFilter = new ImageFilter();
-            ImageFilter.Skip = 0;
-            ImageFilter.Take = 20;
-            ImageFilter.OrderBy = ImageOrder.Id;
-            ImageFilter.OrderType = OrderType.ASC;
-            ImageFilter.Selects = ImageSelect.ALL;
-            ImageFilter.Id = ShowingCategory_ImageFilterDTO.Id;
-            ImageFilter.Name = ShowingCategory_ImageFilterDTO.Name;
-            ImageFilter.Url = ShowingCategory_ImageFilterDTO.Url;
-            ImageFilter.ThumbnailUrl = ShowingCategory_ImageFilterDTO.ThumbnailUrl;
-            List<Image> Images = await ImageService.List(ImageFilter);
-            List<ShowingCategory_ImageDTO> ShowingCategory_ImageDTOs = Images
-                .Select(x => new ShowingCategory_ImageDTO(x)).ToList();
-            return ShowingCategory_ImageDTOs;
-        }
         [Route(ShowingCategoryRoute.SingleListCategory), HttpPost]
         public async Task<List<ShowingCategory_CategoryDTO>> SingleListCategory([FromBody] ShowingCategory_CategoryFilterDTO ShowingCategory_CategoryFilterDTO)
         {

@@ -87,6 +87,7 @@ namespace DMS.Services.MShowingWarehouse
             try
             {
                 await UOW.ShowingWarehouseRepository.Create(ShowingWarehouse);
+                await BuildData(ShowingWarehouse);
                 ShowingWarehouse = await UOW.ShowingWarehouseRepository.Get(ShowingWarehouse.Id);
                 await Logging.CreateAuditLog(ShowingWarehouse, new { }, nameof(ShowingWarehouseService));
                 return ShowingWarehouse;
@@ -105,7 +106,7 @@ namespace DMS.Services.MShowingWarehouse
             try
             {
                 var oldData = await UOW.ShowingWarehouseRepository.Get(ShowingWarehouse.Id);
-
+                await BuildData(ShowingWarehouse);
                 await UOW.ShowingWarehouseRepository.Update(ShowingWarehouse);
 
                 ShowingWarehouse = await UOW.ShowingWarehouseRepository.Get(ShowingWarehouse.Id);
@@ -215,6 +216,69 @@ namespace DMS.Services.MShowingWarehouse
                 }
             }
             return filter;
+        }
+
+        private async Task<ShowingWarehouse> BuildData(ShowingWarehouse ShowingWarehouse)
+        {
+            List<ShowingItem> ShowingItems = await UOW.ShowingItemRepository.List(new ShowingItemFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = ShowingItemSelect.ALL
+            });
+            if (ShowingWarehouse.ShowingInventories == null)
+                ShowingWarehouse.ShowingInventories = new List<ShowingInventory>();
+            foreach (ShowingItem ShowingItem in ShowingItems)
+            {
+                ShowingInventory ShowingInventory = ShowingWarehouse.ShowingInventories.Where(i => i.ShowingItemId == ShowingItem.Id).FirstOrDefault();
+                if (ShowingInventory == null)
+                {
+                    ShowingInventory = new ShowingInventory();
+                    ShowingInventory.Id = 0;
+                    ShowingInventory.ShowingWarehouseId = ShowingWarehouse.Id;
+                    ShowingInventory.ShowingItemId = ShowingItem.Id;
+                    ShowingInventory.SaleStock = 0;
+                    ShowingInventory.AccountingStock = 0;
+                    ShowingWarehouse.ShowingInventories.Add(ShowingInventory);
+                }
+            }
+            ShowingWarehouse oldData = await UOW.ShowingWarehouseRepository.Get(ShowingWarehouse.Id); // get laij gia tri ShowingWarehouse
+            if (oldData != null)
+            {
+                foreach (ShowingInventory ShowingInventory in ShowingWarehouse.ShowingInventories)
+                {
+                    if (ShowingInventory.ShowingInventoryHistories == null)
+                        ShowingInventory.ShowingInventoryHistories = new List<ShowingInventoryHistory>();
+                    ShowingInventory ShowingInventoryInDB = oldData.ShowingInventories.Where(i => i.ShowingItemId == ShowingInventory.ShowingItemId).FirstOrDefault();
+                    if (ShowingInventoryInDB == null)
+                    {
+                        ShowingInventoryHistory ShowingInventoryHistory = new ShowingInventoryHistory();
+                        ShowingInventoryHistory.ShowingInventoryId = ShowingInventory.Id;
+                        ShowingInventoryHistory.SaleStock = ShowingInventory.SaleStock;
+                        ShowingInventoryHistory.AccountingStock = ShowingInventory.AccountingStock ?? 0;
+                        ShowingInventoryHistory.OldSaleStock = 0;
+                        ShowingInventoryHistory.OldAccountingStock = 0;
+                        ShowingInventoryHistory.AppUserId = CurrentContext.UserId;
+                        ShowingInventory.ShowingInventoryHistories.Add(ShowingInventoryHistory);
+                    }
+                    else
+                    {
+                        ShowingInventory.Id = ShowingInventoryInDB.Id;
+                        if (ShowingInventory.SaleStock != ShowingInventoryInDB.SaleStock || ShowingInventory.AccountingStock != ShowingInventoryInDB.AccountingStock)
+                        {
+                            ShowingInventoryHistory ShowingInventoryHistory = new ShowingInventoryHistory();
+                            ShowingInventoryHistory.ShowingInventoryId = ShowingInventory.Id;
+                            ShowingInventoryHistory.SaleStock = ShowingInventory.SaleStock;
+                            ShowingInventoryHistory.AccountingStock = ShowingInventory.AccountingStock ?? 0;
+                            ShowingInventoryHistory.OldSaleStock = ShowingInventoryInDB.SaleStock;
+                            ShowingInventoryHistory.OldAccountingStock = ShowingInventoryInDB.AccountingStock ?? 0;
+                            ShowingInventoryHistory.AppUserId = CurrentContext.UserId;
+                            ShowingInventory.ShowingInventoryHistories.Add(ShowingInventoryHistory);
+                        }
+                    }
+                }
+            }
+            return ShowingWarehouse;
         }
     }
 }

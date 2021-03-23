@@ -3959,6 +3959,12 @@ namespace DMS.Models
                     .HasForeignKey(d => d.StatusId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_ShowingOrder_Status");
+
+                entity.HasOne(d => d.Store)
+                    .WithMany(p => p.ShowingOrders)
+                    .HasForeignKey(d => d.StoreId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ShowingOrder_Store");
             });
 
             modelBuilder.Entity<ShowingOrderContentDAO>(entity =>

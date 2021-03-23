@@ -14,6 +14,7 @@ namespace DMS.Models
         public string Code { get; set; }
         public long AppUserId { get; set; }
         public long OrganizationId { get; set; }
+        public long StoreId { get; set; }
         public DateTime Date { get; set; }
         public long ShowingWarehouseId { get; set; }
         public long StatusId { get; set; }
@@ -27,6 +28,7 @@ namespace DMS.Models
         public virtual OrganizationDAO Organization { get; set; }
         public virtual ShowingWarehouseDAO ShowingWarehouse { get; set; }
         public virtual StatusDAO Status { get; set; }
+        public virtual StoreDAO Store { get; set; }
         public virtual ICollection<ShowingOrderContentDAO> ShowingOrderContents { get; set; }
     }
 }

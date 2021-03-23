@@ -20,6 +20,9 @@ using DMS.Services.MWard;
 using DMS.Services.MShowingInventory;
 using DMS.Services.MAppUser;
 using DMS.Services.MShowingItem;
+using System.Text;
+using DMS.Enums;
+using DMS.Services.MShowingShowingInventory;
 
 namespace DMS.Rpc.showing_warehouse
 {
@@ -34,6 +37,7 @@ namespace DMS.Rpc.showing_warehouse
         private IAppUserService AppUserService;
         private IShowingItemService ShowingItemService;
         private IShowingWarehouseService ShowingWarehouseService;
+        private IShowingInventoryHistoryService ShowingInventoryHistoryService;
         private ICurrentContext CurrentContext;
         public ShowingWarehouseController(
             IDistrictService DistrictService,
@@ -45,6 +49,7 @@ namespace DMS.Rpc.showing_warehouse
             IAppUserService AppUserService,
             IShowingItemService ShowingItemService,
             IShowingWarehouseService ShowingWarehouseService,
+            IShowingInventoryHistoryService ShowingInventoryHistoryService,
             ICurrentContext CurrentContext
         )
         {
@@ -57,6 +62,7 @@ namespace DMS.Rpc.showing_warehouse
             this.AppUserService = AppUserService;
             this.ShowingItemService = ShowingItemService;
             this.ShowingWarehouseService = ShowingWarehouseService;
+            this.ShowingInventoryHistoryService = ShowingInventoryHistoryService;
             this.CurrentContext = CurrentContext;
         }
 
@@ -172,535 +178,234 @@ namespace DMS.Rpc.showing_warehouse
                 return BadRequest(ShowingWarehouses.Where(x => !x.IsValidated));
             return true;
         }
-        
+
         [Route(ShowingWarehouseRoute.Import), HttpPost]
-        public async Task<ActionResult> Import(IFormFile file)
+        public async Task<ActionResult<List<ShowingWarehouse_ShowingInventoryDTO>>> ImportShowingInventory([FromForm] long ShowingWarehouseId, [FromForm] IFormFile file)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            DistrictFilter DistrictFilter = new DistrictFilter
+
+            if (!await HasPermission(ShowingWarehouseId))
+                return Forbid();
+
+            ShowingWarehouse ShowingWarehouse = await ShowingWarehouseService.Get(ShowingWarehouseId);
+            if (ShowingWarehouse == null)
+                return BadRequest("Kho không tồn tại");
+            FileInfo FileInfo = new FileInfo(file.FileName);
+            if (!FileInfo.Extension.Equals(".xlsx"))
+                return BadRequest("Định dạng file không hợp lệ");
+
+            ShowingItemFilter ShowingItemFilter = new ShowingItemFilter
             {
                 Skip = 0,
                 Take = int.MaxValue,
-                Selects = DistrictSelect.ALL
+                Selects = ShowingItemSelect.ALL
             };
-            List<District> Districts = await DistrictService.List(DistrictFilter);
-            ProvinceFilter ProvinceFilter = new ProvinceFilter
+
+            List<ShowingWarehouse> ShowingWarehouses = await ShowingWarehouseService.List(new ShowingWarehouseFilter
             {
                 Skip = 0,
                 Take = int.MaxValue,
-                Selects = ProvinceSelect.ALL
-            };
-            List<Province> Provinces = await ProvinceService.List(ProvinceFilter);
-            StatusFilter StatusFilter = new StatusFilter
-            {
-                Skip = 0,
-                Take = int.MaxValue,
-                Selects = StatusSelect.ALL
-            };
-            List<Status> Statuses = await StatusService.List(StatusFilter);
-            WardFilter WardFilter = new WardFilter
-            {
-                Skip = 0,
-                Take = int.MaxValue,
-                Selects = WardSelect.ALL
-            };
-            List<Ward> Wards = await WardService.List(WardFilter);
-            List<ShowingWarehouse> ShowingWarehouses = new List<ShowingWarehouse>();
+                Selects = ShowingWarehouseSelect.ALL
+            });
+            List<ShowingItem> ShowingItems = await ShowingItemService.List(ShowingItemFilter);
+            StringBuilder errorContent = new StringBuilder();
+            ShowingWarehouse.ShowingInventories = new List<ShowingInventory>();
             using (ExcelPackage excelPackage = new ExcelPackage(file.OpenReadStream()))
             {
-                ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets.FirstOrDefault();
+                ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets["ShowingInventory"];
                 if (worksheet == null)
-                    return Ok(ShowingWarehouses);
+                    return BadRequest("File không đúng biểu mẫu import");
                 int StartColumn = 1;
                 int StartRow = 1;
-                int IdColumn = 0 + StartColumn;
-                int CodeColumn = 1 + StartColumn;
-                int NameColumn = 2 + StartColumn;
-                int AddressColumn = 3 + StartColumn;
-                int OrganizationIdColumn = 4 + StartColumn;
-                int ProvinceIdColumn = 5 + StartColumn;
-                int DistrictIdColumn = 6 + StartColumn;
-                int WardIdColumn = 7 + StartColumn;
-                int StatusIdColumn = 8 + StartColumn;
-                int RowIdColumn = 12 + StartColumn;
+                int SttColumnn = 0 + StartColumn;
+                int ShowingWarehouseCodeColumn = 1 + StartColumn;
+                int ShowingWarehouseNameColumn = 2 + StartColumn;
+                int ShowingItemCodeColumn = 3 + StartColumn;
+                int ShowingItemNameColumn = 4 + StartColumn;
+                int SaleStockColumn = 5 + StartColumn;
+                int AccountingStockColumn = 6 + StartColumn;
 
                 for (int i = StartRow; i <= worksheet.Dimension.End.Row; i++)
                 {
-                    if (string.IsNullOrEmpty(worksheet.Cells[i + StartRow, StartColumn].Value?.ToString()))
+                    string stt = worksheet.Cells[i + StartRow, SttColumnn].Value?.ToString();
+                    if (stt != null && stt.ToLower() == "END".ToLower())
                         break;
-                    string IdValue = worksheet.Cells[i + StartRow, IdColumn].Value?.ToString();
-                    string CodeValue = worksheet.Cells[i + StartRow, CodeColumn].Value?.ToString();
-                    string NameValue = worksheet.Cells[i + StartRow, NameColumn].Value?.ToString();
-                    string AddressValue = worksheet.Cells[i + StartRow, AddressColumn].Value?.ToString();
-                    string OrganizationIdValue = worksheet.Cells[i + StartRow, OrganizationIdColumn].Value?.ToString();
-                    string ProvinceIdValue = worksheet.Cells[i + StartRow, ProvinceIdColumn].Value?.ToString();
-                    string DistrictIdValue = worksheet.Cells[i + StartRow, DistrictIdColumn].Value?.ToString();
-                    string WardIdValue = worksheet.Cells[i + StartRow, WardIdColumn].Value?.ToString();
-                    string StatusIdValue = worksheet.Cells[i + StartRow, StatusIdColumn].Value?.ToString();
-                    string RowIdValue = worksheet.Cells[i + StartRow, RowIdColumn].Value?.ToString();
-                    
-                    ShowingWarehouse ShowingWarehouse = new ShowingWarehouse();
-                    ShowingWarehouse.Code = CodeValue;
-                    ShowingWarehouse.Name = NameValue;
-                    ShowingWarehouse.Address = AddressValue;
-                    District District = Districts.Where(x => x.Id.ToString() == DistrictIdValue).FirstOrDefault();
-                    ShowingWarehouse.DistrictId = District == null ? 0 : District.Id;
-                    ShowingWarehouse.District = District;
-                    Province Province = Provinces.Where(x => x.Id.ToString() == ProvinceIdValue).FirstOrDefault();
-                    ShowingWarehouse.ProvinceId = Province == null ? 0 : Province.Id;
-                    ShowingWarehouse.Province = Province;
-                    Status Status = Statuses.Where(x => x.Id.ToString() == StatusIdValue).FirstOrDefault();
-                    ShowingWarehouse.StatusId = Status == null ? 0 : Status.Id;
-                    ShowingWarehouse.Status = Status;
-                    Ward Ward = Wards.Where(x => x.Id.ToString() == WardIdValue).FirstOrDefault();
-                    ShowingWarehouse.WardId = Ward == null ? 0 : Ward.Id;
-                    ShowingWarehouse.Ward = Ward;
-                    
-                    ShowingWarehouses.Add(ShowingWarehouse);
-                }
-            }
-            ShowingWarehouses = await ShowingWarehouseService.Import(ShowingWarehouses);
-            if (ShowingWarehouses.All(x => x.IsValidated))
-                return Ok(true);
-            else
-            {
-                List<string> Errors = new List<string>();
-                for (int i = 0; i < ShowingWarehouses.Count; i++)
-                {
-                    ShowingWarehouse ShowingWarehouse = ShowingWarehouses[i];
-                    if (!ShowingWarehouse.IsValidated)
+
+                    string ShowingWarehouseCodeValue = worksheet.Cells[i + StartRow, ShowingWarehouseCodeColumn].Value?.ToString();
+                    if (string.IsNullOrWhiteSpace(ShowingWarehouseCodeValue) && i != worksheet.Dimension.End.Row)
                     {
-                        string Error = $"Dòng {i + 2} có lỗi:";
-                        if (ShowingWarehouse.Errors.ContainsKey(nameof(ShowingWarehouse.Id)))
-                            Error += ShowingWarehouse.Errors[nameof(ShowingWarehouse.Id)];
-                        if (ShowingWarehouse.Errors.ContainsKey(nameof(ShowingWarehouse.Code)))
-                            Error += ShowingWarehouse.Errors[nameof(ShowingWarehouse.Code)];
-                        if (ShowingWarehouse.Errors.ContainsKey(nameof(ShowingWarehouse.Name)))
-                            Error += ShowingWarehouse.Errors[nameof(ShowingWarehouse.Name)];
-                        if (ShowingWarehouse.Errors.ContainsKey(nameof(ShowingWarehouse.Address)))
-                            Error += ShowingWarehouse.Errors[nameof(ShowingWarehouse.Address)];
-                        if (ShowingWarehouse.Errors.ContainsKey(nameof(ShowingWarehouse.OrganizationId)))
-                            Error += ShowingWarehouse.Errors[nameof(ShowingWarehouse.OrganizationId)];
-                        if (ShowingWarehouse.Errors.ContainsKey(nameof(ShowingWarehouse.ProvinceId)))
-                            Error += ShowingWarehouse.Errors[nameof(ShowingWarehouse.ProvinceId)];
-                        if (ShowingWarehouse.Errors.ContainsKey(nameof(ShowingWarehouse.DistrictId)))
-                            Error += ShowingWarehouse.Errors[nameof(ShowingWarehouse.DistrictId)];
-                        if (ShowingWarehouse.Errors.ContainsKey(nameof(ShowingWarehouse.WardId)))
-                            Error += ShowingWarehouse.Errors[nameof(ShowingWarehouse.WardId)];
-                        if (ShowingWarehouse.Errors.ContainsKey(nameof(ShowingWarehouse.StatusId)))
-                            Error += ShowingWarehouse.Errors[nameof(ShowingWarehouse.StatusId)];
-                        if (ShowingWarehouse.Errors.ContainsKey(nameof(ShowingWarehouse.RowId)))
-                            Error += ShowingWarehouse.Errors[nameof(ShowingWarehouse.RowId)];
-                        Errors.Add(Error);
+                        errorContent.AppendLine($"Lỗi dòng thứ {i + 1}: Chưa nhập mã kho");
+                    }
+                    else if (string.IsNullOrWhiteSpace(ShowingWarehouseCodeValue) && i == worksheet.Dimension.End.Row)
+                        break;
+                    string ShowingWarehouseNameValue = worksheet.Cells[i + StartRow, ShowingWarehouseNameColumn].Value?.ToString();
+                    string ShowingItemCodeValue = worksheet.Cells[i + StartRow, ShowingItemCodeColumn].Value?.ToString();
+                    string ShowingItemNameValue = worksheet.Cells[i + StartRow, ShowingItemNameColumn].Value?.ToString();
+                    string SaleStockValue = worksheet.Cells[i + StartRow, SaleStockColumn].Value?.ToString();
+                    string AccountingStockValue = worksheet.Cells[i + StartRow, AccountingStockColumn].Value?.ToString();
+
+                    ShowingWarehouse ShowingWarehouseInDB = ShowingWarehouses.Where(x => x.Code == ShowingWarehouseCodeValue.Trim()).FirstOrDefault();
+                    if (ShowingWarehouseInDB == null)
+                        errorContent.AppendLine($"Lỗi dòng thứ {i + 1}: Mã kho không đúng");
+                    else if (ShowingWarehouseInDB.Id != ShowingWarehouse.Id)
+                        errorContent.AppendLine($"Lỗi dòng thứ {i + 1}: Mã kho không đúng");
+                    var ShowingInventoryShowingItem = ShowingItems.Where(x => x.Code == ShowingItemCodeValue).FirstOrDefault();
+
+                    ShowingInventory ShowingInventory = new ShowingInventory();
+                    ShowingInventory.SaleStock = string.IsNullOrEmpty(SaleStockValue) ? 0 : long.Parse(SaleStockValue);
+                    ShowingInventory.AccountingStock = string.IsNullOrEmpty(AccountingStockValue) ? 0 : long.Parse(AccountingStockValue);
+                    ShowingInventory.ShowingItemId = ShowingInventory.ShowingItem == null ? 0 : ShowingInventory.ShowingItem.Id;
+                    ShowingInventory.ShowingItemId = ShowingInventoryShowingItem == null ? 0 : ShowingInventoryShowingItem.Id;
+                    ShowingInventory.ShowingWarehouseId = ShowingWarehouse.Id;
+
+                    ShowingWarehouse.ShowingInventories.Add(ShowingInventory);
+                }
+                if (errorContent.Length > 0)
+                    return BadRequest(errorContent.ToString());
+            }
+            ShowingWarehouse = await ShowingWarehouseService.Update(ShowingWarehouse);
+            List<ShowingWarehouse_ShowingInventoryDTO> ShowingWarehouse_ShowingInventoryDTOs = ShowingWarehouse.ShowingInventories
+                 .Select(c => new ShowingWarehouse_ShowingInventoryDTO(c)).ToList();
+            for (int i = 0; i < ShowingWarehouse.ShowingInventories.Count; i++)
+            {
+                if (!ShowingWarehouse.ShowingInventories[i].IsValidated)
+                {
+                    foreach (var Error in ShowingWarehouse.ShowingInventories[i].Errors)
+                    {
+                        errorContent.AppendLine($"Lỗi dòng thứ {i + 2}: {Error.Value}");
                     }
                 }
-                return BadRequest(Errors);
             }
+            if (ShowingWarehouse.ShowingInventories.Any(x => !x.IsValidated))
+                return BadRequest(errorContent.ToString());
+            return ShowingWarehouse_ShowingInventoryDTOs;
         }
-        
+
         [Route(ShowingWarehouseRoute.Export), HttpPost]
-        public async Task<ActionResult> Export([FromBody] ShowingWarehouse_ShowingWarehouseFilterDTO ShowingWarehouse_ShowingWarehouseFilterDTO)
+        public async Task<ActionResult> ExportShowingInventory([FromBody] ShowingWarehouse_ShowingWarehouseDTO ShowingWarehouse_ShowingWarehouseDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
+            if (!await HasPermission(ShowingWarehouse_ShowingWarehouseDTO.Id))
+                return Forbid();
+
+            long ShowingWarehouseId = ShowingWarehouse_ShowingWarehouseDTO?.Id ?? 0;
+            ShowingWarehouse ShowingWarehouse = await ShowingWarehouseService.Get(ShowingWarehouseId);
+            if (ShowingWarehouse == null)
+                return null;
+
             MemoryStream memoryStream = new MemoryStream();
             using (ExcelPackage excel = new ExcelPackage(memoryStream))
             {
-                #region ShowingWarehouse
-                var ShowingWarehouseFilter = ConvertFilterDTOToFilterEntity(ShowingWarehouse_ShowingWarehouseFilterDTO);
-                ShowingWarehouseFilter.Skip = 0;
-                ShowingWarehouseFilter.Take = int.MaxValue;
-                ShowingWarehouseFilter = await ShowingWarehouseService.ToFilter(ShowingWarehouseFilter);
-                List<ShowingWarehouse> ShowingWarehouses = await ShowingWarehouseService.List(ShowingWarehouseFilter);
-
-                var ShowingWarehouseHeaders = new List<string[]>()
-                {
-                    new string[] { 
-                        "Id",
-                        "Code",
-                        "Name",
-                        "Address",
-                        "OrganizationId",
-                        "ProvinceId",
-                        "DistrictId",
-                        "WardId",
-                        "StatusId",
-                        "RowId",
-                    }
-                };
-                List<object[]> ShowingWarehouseData = new List<object[]>();
-                for (int i = 0; i < ShowingWarehouses.Count; i++)
-                {
-                    var ShowingWarehouse = ShowingWarehouses[i];
-                    ShowingWarehouseData.Add(new Object[]
-                    {
-                        ShowingWarehouse.Id,
-                        ShowingWarehouse.Code,
-                        ShowingWarehouse.Name,
-                        ShowingWarehouse.Address,
-                        ShowingWarehouse.OrganizationId,
-                        ShowingWarehouse.ProvinceId,
-                        ShowingWarehouse.DistrictId,
-                        ShowingWarehouse.WardId,
-                        ShowingWarehouse.StatusId,
-                        ShowingWarehouse.RowId,
-                    });
-                }
-                excel.GenerateWorksheet("ShowingWarehouse", ShowingWarehouseHeaders, ShowingWarehouseData);
-                #endregion
-                
-                #region District
-                var DistrictFilter = new DistrictFilter();
-                DistrictFilter.Selects = DistrictSelect.ALL;
-                DistrictFilter.OrderBy = DistrictOrder.Id;
-                DistrictFilter.OrderType = OrderType.ASC;
-                DistrictFilter.Skip = 0;
-                DistrictFilter.Take = int.MaxValue;
-                List<District> Districts = await DistrictService.List(DistrictFilter);
-
-                var DistrictHeaders = new List<string[]>()
-                {
-                    new string[] { 
-                        "Id",
-                        "Code",
-                        "Name",
-                        "Priority",
-                        "ProvinceId",
-                        "StatusId",
-                        "RowId",
-                    }
-                };
-                List<object[]> DistrictData = new List<object[]>();
-                for (int i = 0; i < Districts.Count; i++)
-                {
-                    var District = Districts[i];
-                    DistrictData.Add(new Object[]
-                    {
-                        District.Id,
-                        District.Code,
-                        District.Name,
-                        District.Priority,
-                        District.ProvinceId,
-                        District.StatusId,
-                        District.RowId,
-                    });
-                }
-                excel.GenerateWorksheet("District", DistrictHeaders, DistrictData);
-                #endregion
-                #region Organization
-                var OrganizationFilter = new OrganizationFilter();
-                OrganizationFilter.Selects = OrganizationSelect.ALL;
-                OrganizationFilter.OrderBy = OrganizationOrder.Id;
-                OrganizationFilter.OrderType = OrderType.ASC;
-                OrganizationFilter.Skip = 0;
-                OrganizationFilter.Take = int.MaxValue;
-                List<Organization> Organizations = await OrganizationService.List(OrganizationFilter);
-
-                var OrganizationHeaders = new List<string[]>()
-                {
-                    new string[] { 
-                        "Id",
-                        "Code",
-                        "Name",
-                        "ParentId",
-                        "Path",
-                        "Level",
-                        "StatusId",
-                        "Phone",
-                        "Email",
-                        "Address",
-                        "RowId",
-                    }
-                };
-                List<object[]> OrganizationData = new List<object[]>();
-                for (int i = 0; i < Organizations.Count; i++)
-                {
-                    var Organization = Organizations[i];
-                    OrganizationData.Add(new Object[]
-                    {
-                        Organization.Id,
-                        Organization.Code,
-                        Organization.Name,
-                        Organization.ParentId,
-                        Organization.Path,
-                        Organization.Level,
-                        Organization.StatusId,
-                        Organization.Phone,
-                        Organization.Email,
-                        Organization.Address,
-                        Organization.RowId,
-                    });
-                }
-                excel.GenerateWorksheet("Organization", OrganizationHeaders, OrganizationData);
-                #endregion
-                #region Province
-                var ProvinceFilter = new ProvinceFilter();
-                ProvinceFilter.Selects = ProvinceSelect.ALL;
-                ProvinceFilter.OrderBy = ProvinceOrder.Id;
-                ProvinceFilter.OrderType = OrderType.ASC;
-                ProvinceFilter.Skip = 0;
-                ProvinceFilter.Take = int.MaxValue;
-                List<Province> Provinces = await ProvinceService.List(ProvinceFilter);
-
-                var ProvinceHeaders = new List<string[]>()
-                {
-                    new string[] { 
-                        "Id",
-                        "Code",
-                        "Name",
-                        "Priority",
-                        "StatusId",
-                        "RowId",
-                    }
-                };
-                List<object[]> ProvinceData = new List<object[]>();
-                for (int i = 0; i < Provinces.Count; i++)
-                {
-                    var Province = Provinces[i];
-                    ProvinceData.Add(new Object[]
-                    {
-                        Province.Id,
-                        Province.Code,
-                        Province.Name,
-                        Province.Priority,
-                        Province.StatusId,
-                        Province.RowId,
-                    });
-                }
-                excel.GenerateWorksheet("Province", ProvinceHeaders, ProvinceData);
-                #endregion
-                #region Status
-                var StatusFilter = new StatusFilter();
-                StatusFilter.Selects = StatusSelect.ALL;
-                StatusFilter.OrderBy = StatusOrder.Id;
-                StatusFilter.OrderType = OrderType.ASC;
-                StatusFilter.Skip = 0;
-                StatusFilter.Take = int.MaxValue;
-                List<Status> Statuses = await StatusService.List(StatusFilter);
-
-                var StatusHeaders = new List<string[]>()
-                {
-                    new string[] { 
-                        "Id",
-                        "Code",
-                        "Name",
-                    }
-                };
-                List<object[]> StatusData = new List<object[]>();
-                for (int i = 0; i < Statuses.Count; i++)
-                {
-                    var Status = Statuses[i];
-                    StatusData.Add(new Object[]
-                    {
-                        Status.Id,
-                        Status.Code,
-                        Status.Name,
-                    });
-                }
-                excel.GenerateWorksheet("Status", StatusHeaders, StatusData);
-                #endregion
-                #region Ward
-                var WardFilter = new WardFilter();
-                WardFilter.Selects = WardSelect.ALL;
-                WardFilter.OrderBy = WardOrder.Id;
-                WardFilter.OrderType = OrderType.ASC;
-                WardFilter.Skip = 0;
-                WardFilter.Take = int.MaxValue;
-                List<Ward> Wards = await WardService.List(WardFilter);
-
-                var WardHeaders = new List<string[]>()
-                {
-                    new string[] { 
-                        "Id",
-                        "Code",
-                        "Name",
-                        "Priority",
-                        "DistrictId",
-                        "StatusId",
-                        "RowId",
-                    }
-                };
-                List<object[]> WardData = new List<object[]>();
-                for (int i = 0; i < Wards.Count; i++)
-                {
-                    var Ward = Wards[i];
-                    WardData.Add(new Object[]
-                    {
-                        Ward.Id,
-                        Ward.Code,
-                        Ward.Name,
-                        Ward.Priority,
-                        Ward.DistrictId,
-                        Ward.StatusId,
-                        Ward.RowId,
-                    });
-                }
-                excel.GenerateWorksheet("Ward", WardHeaders, WardData);
-                #endregion
-                #region ShowingInventory
-                var ShowingInventoryFilter = new ShowingInventoryFilter();
-                ShowingInventoryFilter.Selects = ShowingInventorySelect.ALL;
-                ShowingInventoryFilter.OrderBy = ShowingInventoryOrder.Id;
-                ShowingInventoryFilter.OrderType = OrderType.ASC;
-                ShowingInventoryFilter.Skip = 0;
-                ShowingInventoryFilter.Take = int.MaxValue;
-                List<ShowingInventory> ShowingInventories = await ShowingInventoryService.List(ShowingInventoryFilter);
-
                 var ShowingInventoryHeaders = new List<string[]>()
                 {
-                    new string[] { 
-                        "Id",
-                        "ShowingWarehouseId",
-                        "ShowingItemId",
-                        "SaleStock",
-                        "AccountingStock",
-                        "AppUserId",
+                    new string[] {
+                        "STT",
+                        "Mã kho",
+                        "Tên kho",
+                        "Mã sản phẩm",
+                        "Tên sản phẩm",
+                        "Có thể bán",
+                        "Tồn kế toán",
                     }
                 };
-                List<object[]> ShowingInventoryData = new List<object[]>();
-                for (int i = 0; i < ShowingInventories.Count; i++)
+                List<object[]> data = new List<object[]>();
+                for (int i = 0; i < ShowingWarehouse.ShowingInventories.Count; i++)
                 {
-                    var ShowingInventory = ShowingInventories[i];
-                    ShowingInventoryData.Add(new Object[]
+                    var ShowingInventory = ShowingWarehouse.ShowingInventories[i];
+                    data.Add(new Object[]
                     {
-                        ShowingInventory.Id,
-                        ShowingInventory.ShowingWarehouseId,
-                        ShowingInventory.ShowingItemId,
+                        i+1,
+                        ShowingWarehouse.Code,
+                        ShowingWarehouse.Name,
+                        ShowingInventory.ShowingItem.Code,
+                        ShowingInventory.ShowingItem.Name,
                         ShowingInventory.SaleStock,
-                        ShowingInventory.AccountingStock,
-                        ShowingInventory.AppUserId,
+                        ShowingInventory.AccountingStock
                     });
                 }
-                excel.GenerateWorksheet("ShowingInventory", ShowingInventoryHeaders, ShowingInventoryData);
-                #endregion
-                #region AppUser
-                var AppUserFilter = new AppUserFilter();
-                AppUserFilter.Selects = AppUserSelect.ALL;
-                AppUserFilter.OrderBy = AppUserOrder.Id;
-                AppUserFilter.OrderType = OrderType.ASC;
-                AppUserFilter.Skip = 0;
-                AppUserFilter.Take = int.MaxValue;
-                List<AppUser> AppUsers = await AppUserService.List(AppUserFilter);
-
-                var AppUserHeaders = new List<string[]>()
-                {
-                    new string[] { 
-                        "Id",
-                        "Username",
-                        "DisplayName",
-                        "Address",
-                        "Email",
-                        "Phone",
-                        "SexId",
-                        "Birthday",
-                        "Avatar",
-                        "PositionId",
-                        "Department",
-                        "OrganizationId",
-                        "ProvinceId",
-                        "Longitude",
-                        "Latitude",
-                        "StatusId",
-                        "GPSUpdatedAt",
-                        "RowId",
-                    }
-                };
-                List<object[]> AppUserData = new List<object[]>();
-                for (int i = 0; i < AppUsers.Count; i++)
-                {
-                    var AppUser = AppUsers[i];
-                    AppUserData.Add(new Object[]
-                    {
-                        AppUser.Id,
-                        AppUser.Username,
-                        AppUser.DisplayName,
-                        AppUser.Address,
-                        AppUser.Email,
-                        AppUser.Phone,
-                        AppUser.SexId,
-                        AppUser.Birthday,
-                        AppUser.Avatar,
-                        AppUser.PositionId,
-                        AppUser.Department,
-                        AppUser.OrganizationId,
-                        AppUser.ProvinceId,
-                        AppUser.Longitude,
-                        AppUser.Latitude,
-                        AppUser.StatusId,
-                        AppUser.GPSUpdatedAt,
-                        AppUser.RowId,
-                    });
-                }
-                excel.GenerateWorksheet("AppUser", AppUserHeaders, AppUserData);
-                #endregion
-                #region ShowingItem
-                var ShowingItemFilter = new ShowingItemFilter();
-                ShowingItemFilter.Selects = ShowingItemSelect.ALL;
-                ShowingItemFilter.OrderBy = ShowingItemOrder.Id;
-                ShowingItemFilter.OrderType = OrderType.ASC;
-                ShowingItemFilter.Skip = 0;
-                ShowingItemFilter.Take = int.MaxValue;
-                List<ShowingItem> ShowingItems = await ShowingItemService.List(ShowingItemFilter);
-
-                var ShowingItemHeaders = new List<string[]>()
-                {
-                    new string[] { 
-                        "Id",
-                        "Code",
-                        "Name",
-                        "CategoryId",
-                        "UnitOfMeasureId",
-                        "SalePrice",
-                        "Desception",
-                        "StatusId",
-                        "Used",
-                        "RowId",
-                    }
-                };
-                List<object[]> ShowingItemData = new List<object[]>();
-                for (int i = 0; i < ShowingItems.Count; i++)
-                {
-                    var ShowingItem = ShowingItems[i];
-                    ShowingItemData.Add(new Object[]
-                    {
-                        ShowingItem.Id,
-                        ShowingItem.Code,
-                        ShowingItem.Name,
-                        ShowingItem.CategoryId,
-                        ShowingItem.UnitOfMeasureId,
-                        ShowingItem.SalePrice,
-                        ShowingItem.Desception,
-                        ShowingItem.StatusId,
-                        ShowingItem.Used,
-                        ShowingItem.RowId,
-                    });
-                }
-                excel.GenerateWorksheet("ShowingItem", ShowingItemHeaders, ShowingItemData);
-                #endregion
+                excel.GenerateWorksheet("ShowingInventory", ShowingInventoryHeaders, data);
                 excel.Save();
             }
-            return File(memoryStream.ToArray(), "application/octet-stream", "ShowingWarehouse.xlsx");
+            return File(memoryStream.ToArray(), "application/octet-stream", $"{ShowingWarehouse.Code}_ShowingInventory.xlsx");
         }
 
         [Route(ShowingWarehouseRoute.ExportTemplate), HttpPost]
-        public async Task<ActionResult> ExportTemplate([FromBody] ShowingWarehouse_ShowingWarehouseFilterDTO ShowingWarehouse_ShowingWarehouseFilterDTO)
+        public async Task<ActionResult> ExportTemplate([FromBody] ShowingWarehouse_ShowingWarehouseDTO ShowingWarehouse_ShowingWarehouseDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
-            string path = "Templates/ShowingWarehouse_Template.xlsx";
-            byte[] arr = System.IO.File.ReadAllBytes(path);
-            MemoryStream input = new MemoryStream(arr);
-            MemoryStream output = new MemoryStream();
-            dynamic Data = new ExpandoObject();
-            using (var document = StaticParams.DocumentFactory.Open(input, output, "xlsx"))
+
+            long ShowingWarehouseId = ShowingWarehouse_ShowingWarehouseDTO?.Id ?? 0;
+            ShowingWarehouse ShowingWarehouse = await ShowingWarehouseService.Get(ShowingWarehouseId);
+            if (ShowingWarehouse == null)
+                ShowingWarehouse = new ShowingWarehouse
+                {
+                    ShowingInventories = new List<ShowingInventory>()
+                };
+
+            var ShowingItemFilter = new ShowingItemFilter
             {
-                document.Process(Data);
+                Selects = ShowingItemSelect.ALL,
+                Skip = 0,
+                Take = int.MaxValue,
+                StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id }
             };
-            return File(output.ToArray(), "application/octet-stream", "ShowingWarehouse.xlsx");
+            var ShowingItems = await ShowingItemService.List(ShowingItemFilter);
+
+            MemoryStream memoryStream = new MemoryStream();
+            using (ExcelPackage excel = new ExcelPackage(memoryStream))
+            {
+                var ShowingInventoryHeaders = new List<string[]>()
+                {
+                    new string[] {
+                        "STT",
+                        "Mã kho",
+                        "Tên kho",
+                        "Mã sản phẩm",
+                        "Tên sản phẩm",
+                        "Có thể bán",
+                        "Tồn kế toán",
+                    }
+                };
+                List<object[]> data = new List<object[]>();
+                for (int i = 0; i < ShowingItems.Count; i++)
+                {
+                    var ShowingItem = ShowingItems[i];
+                    data.Add(new Object[]
+                    {
+                        i+1,
+                        ShowingWarehouse.Code,
+                        ShowingWarehouse.Name,
+                        ShowingItem.Code,
+                        ShowingItem.Name,
+                        0,
+                        0,
+                    });
+                }
+                excel.GenerateWorksheet("ShowingInventory", ShowingInventoryHeaders, data);
+
+                data.Clear();
+                var ShowingWarehouseHeader = new List<string[]>()
+                {
+                    new string[] {
+                        "Mã",
+                        "Tên",
+                    }
+                };
+                data.Add(new object[]
+                {
+                    ShowingWarehouse.Code,
+                    ShowingWarehouse.Name,
+                });
+                excel.GenerateWorksheet("ShowingWarehouse", ShowingWarehouseHeader, data);
+                excel.Save();
+            }
+            return File(memoryStream.ToArray(), "application/octet-stream", "Template_ShowingInventory.xlsx");
         }
+
 
         private async Task<bool> HasPermission(long Id)
         {
