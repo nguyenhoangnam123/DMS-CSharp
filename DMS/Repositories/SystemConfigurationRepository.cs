@@ -61,6 +61,9 @@ namespace DMS.Repositories
 
                 if (SystemConfigurationDAO.Code == nameof(SystemConfiguration.USE_INDIRECT_SALES_ORDER))
                     SystemConfigurationDAO.Value = SystemConfiguration.USE_INDIRECT_SALES_ORDER.ToString();
+
+                if (SystemConfigurationDAO.Code == nameof(SystemConfiguration.YOUTUBE_ID))
+                    SystemConfigurationDAO.Value = SystemConfiguration.YOUTUBE_ID.ToString();
             }
             await DataContext.SaveChangesAsync();
             return true;
