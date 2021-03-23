@@ -23,7 +23,7 @@ namespace DMS.Rpc.showing_item
     {
         public const string Parent = Module + "/posm/showing-item";
         public const string Master = Module + "/posm/showing-item/showing-item-master";
-        public const string Detail = Module + "/posm/showing-item/showing-item-detail";
+        public const string Detail = Module + "/posm/showing-item/showing-item-detail/*";
         public const string Preview = Module + "/showing-item/showing-item-preview";
         private const string Default = Rpc + Module + "/showing-item";
         public const string Count = Default + "/count";
