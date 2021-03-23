@@ -97,6 +97,13 @@ namespace DMS.Repositories
         IRoleRepository RoleRepository { get; }
         ISalesOrderTypeRepository SalesOrderTypeRepository { get; }
         ISexRepository SexRepository { get; }
+        IShowingCategoryRepository ShowingCategoryRepository { get; }
+        IShowingInventoryRepository ShowingInventoryRepository { get; }
+        IShowingInventoryHistoryRepository ShowingInventoryHistoryRepository { get; }
+        IShowingItemRepository ShowingItemRepository { get; }
+        IShowingOrderContentRepository ShowingOrderContentRepository { get; }
+        IShowingOrderRepository ShowingOrderRepository { get; }
+        IShowingWarehouseRepository ShowingWarehouseRepository { get; }
         IStatusRepository StatusRepository { get; }
         IStoreScoutingRepository StoreScoutingRepository { get; }
         IStoreScoutingTypeRepository StoreScoutingTypeRepository { get; }
@@ -225,6 +232,13 @@ namespace DMS.Repositories
         public IRoleRepository RoleRepository { get; private set; }
         public ISalesOrderTypeRepository SalesOrderTypeRepository { get; private set; }
         public ISexRepository SexRepository { get; private set; }
+        public IShowingCategoryRepository ShowingCategoryRepository { get; private set; }
+        public IShowingInventoryRepository ShowingInventoryRepository { get; private set; }
+        public IShowingInventoryHistoryRepository ShowingInventoryHistoryRepository { get; private set; }
+        public IShowingItemRepository ShowingItemRepository { get; private set; }
+        public IShowingOrderContentRepository ShowingOrderContentRepository { get; private set; }
+        public IShowingOrderRepository ShowingOrderRepository { get; private set; }
+        public IShowingWarehouseRepository ShowingWarehouseRepository { get; private set; }
         public IStatusRepository StatusRepository { get; private set; }
         public IStoreScoutingRepository StoreScoutingRepository { get; private set; }
         public IStoreScoutingTypeRepository StoreScoutingTypeRepository { get; private set; }
@@ -352,6 +366,13 @@ namespace DMS.Repositories
             RoleRepository = new RoleRepository(DataContext);
             SalesOrderTypeRepository = new SalesOrderTypeRepository(DataContext);
             SexRepository = new SexRepository(DataContext);
+            ShowingCategoryRepository = new ShowingCategoryRepository(DataContext);
+            ShowingInventoryRepository = new ShowingInventoryRepository(DataContext);
+            ShowingInventoryHistoryRepository = new ShowingInventoryHistoryRepository(DataContext);
+            ShowingItemRepository = new ShowingItemRepository(DataContext);
+            ShowingOrderContentRepository = new ShowingOrderContentRepository(DataContext);
+            ShowingOrderRepository = new ShowingOrderRepository(DataContext);
+            ShowingWarehouseRepository = new ShowingWarehouseRepository(DataContext);
             StatusRepository = new StatusRepository(DataContext);
             StoreScoutingStatusRepository = new StoreScoutingStatusRepository(DataContext);
             StoreScoutingRepository = new StoreScoutingRepository(DataContext);
