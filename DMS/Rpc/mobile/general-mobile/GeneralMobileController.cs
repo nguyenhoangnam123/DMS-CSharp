@@ -46,6 +46,7 @@ using System.Net.Mime;
 using GleamTech.DocumentUltimate;
 using Newtonsoft.Json;
 using Microsoft.EntityFrameworkCore;
+using DMS.Services.MDirectSalesOrder;
 
 namespace DMS.Rpc.mobile.general_mobile
 {
@@ -58,6 +59,7 @@ namespace DMS.Rpc.mobile.general_mobile
         private IColorService ColorService;
         private IERouteService ERouteService;
         private IIndirectSalesOrderService IndirectSalesOrderService;
+        private IDirectSalesOrderService DirectSalesOrderService;
         private IItemService ItemService;
         private ILuckyNumberService LuckyNumberService;
         private IStoreService StoreService;
@@ -89,6 +91,7 @@ namespace DMS.Rpc.mobile.general_mobile
             IColorService ColorService,
             IERouteService ERouteService,
             IIndirectSalesOrderService IndirectSalesOrderService,
+            IDirectSalesOrderService DirectSalesOrderService,
             IItemService ItemService,
             ILuckyNumberService LuckyNumberService,
             IStoreScoutingService StoreScoutingService,
@@ -121,6 +124,7 @@ namespace DMS.Rpc.mobile.general_mobile
             this.ColorService = ColorService;
             this.ERouteService = ERouteService;
             this.IndirectSalesOrderService = IndirectSalesOrderService;
+            this.DirectSalesOrderService = DirectSalesOrderService;
             this.ItemService = ItemService;
             this.LuckyNumberService = LuckyNumberService;
             this.StoreService = StoreService;
