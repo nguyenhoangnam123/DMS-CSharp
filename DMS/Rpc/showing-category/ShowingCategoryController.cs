@@ -197,7 +197,7 @@ namespace DMS.Rpc.showing_category
                 ThumbnailUrl = ShowingCategory_ShowingCategoryDTO.Image.ThumbnailUrl,
                 RowId = ShowingCategory_ShowingCategoryDTO.Image.RowId,
             };
-            ShowingCategory.Parent = ShowingCategory_ShowingCategoryDTO.Parent == null ? null : new Category
+            ShowingCategory.Parent = ShowingCategory_ShowingCategoryDTO.Parent == null ? null : new ShowingCategory
             {
                 Id = ShowingCategory_ShowingCategoryDTO.Parent.Id,
                 Code = ShowingCategory_ShowingCategoryDTO.Parent.Code,

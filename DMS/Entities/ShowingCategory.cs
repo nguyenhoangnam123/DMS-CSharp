@@ -19,7 +19,7 @@ namespace DMS.Entities
         public Guid RowId { get; set; }
         public bool Used { get; set; }
         public Image Image { get; set; }
-        public Category Parent { get; set; }
+        public ShowingCategory Parent { get; set; }
         public Status Status { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }

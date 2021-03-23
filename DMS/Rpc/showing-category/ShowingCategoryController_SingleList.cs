@@ -19,32 +19,32 @@ namespace DMS.Rpc.showing_category
 {
     public partial class ShowingCategoryController : RpcController
     {
-        [Route(ShowingCategoryRoute.SingleListCategory), HttpPost]
-        public async Task<List<ShowingCategory_CategoryDTO>> SingleListCategory([FromBody] ShowingCategory_CategoryFilterDTO ShowingCategory_CategoryFilterDTO)
+        [Route(ShowingCategoryRoute.SingleListShowingCategory), HttpPost]
+        public async Task<List<ShowingCategory_ShowingCategoryDTO>> SingleListShowingCategory([FromBody] ShowingCategory_ShowingCategoryFilterDTO ShowingCategory_ShowingCategoryFilterDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
 
-            CategoryFilter CategoryFilter = new CategoryFilter();
-            CategoryFilter.Skip = 0;
-            CategoryFilter.Take = int.MaxValue;
-            CategoryFilter.OrderBy = CategoryOrder.Id;
-            CategoryFilter.OrderType = OrderType.ASC;
-            CategoryFilter.Selects = CategorySelect.ALL;
-            CategoryFilter.Id = ShowingCategory_CategoryFilterDTO.Id;
-            CategoryFilter.Code = ShowingCategory_CategoryFilterDTO.Code;
-            CategoryFilter.Name = ShowingCategory_CategoryFilterDTO.Name;
-            CategoryFilter.ParentId = ShowingCategory_CategoryFilterDTO.ParentId;
-            CategoryFilter.Path = ShowingCategory_CategoryFilterDTO.Path;
-            CategoryFilter.Level = ShowingCategory_CategoryFilterDTO.Level;
-            CategoryFilter.StatusId = ShowingCategory_CategoryFilterDTO.StatusId;
-            CategoryFilter.ImageId = ShowingCategory_CategoryFilterDTO.ImageId;
-            CategoryFilter.RowId = ShowingCategory_CategoryFilterDTO.RowId;
-            CategoryFilter.StatusId = new IdFilter{ Equal = 1 };
-            List<Category> Categories = await CategoryService.List(CategoryFilter);
-            List<ShowingCategory_CategoryDTO> ShowingCategory_CategoryDTOs = Categories
-                .Select(x => new ShowingCategory_CategoryDTO(x)).ToList();
-            return ShowingCategory_CategoryDTOs;
+            ShowingCategoryFilter ShowingCategoryFilter = new ShowingCategoryFilter();
+            ShowingCategoryFilter.Skip = 0;
+            ShowingCategoryFilter.Take = int.MaxValue;
+            ShowingCategoryFilter.OrderBy = ShowingCategoryOrder.Id;
+            ShowingCategoryFilter.OrderType = OrderType.ASC;
+            ShowingCategoryFilter.Selects = ShowingCategorySelect.ALL;
+            ShowingCategoryFilter.Id = ShowingCategory_ShowingCategoryFilterDTO.Id;
+            ShowingCategoryFilter.Code = ShowingCategory_ShowingCategoryFilterDTO.Code;
+            ShowingCategoryFilter.Name = ShowingCategory_ShowingCategoryFilterDTO.Name;
+            ShowingCategoryFilter.ParentId = ShowingCategory_ShowingCategoryFilterDTO.ParentId;
+            ShowingCategoryFilter.Path = ShowingCategory_ShowingCategoryFilterDTO.Path;
+            ShowingCategoryFilter.Level = ShowingCategory_ShowingCategoryFilterDTO.Level;
+            ShowingCategoryFilter.StatusId = ShowingCategory_ShowingCategoryFilterDTO.StatusId;
+            ShowingCategoryFilter.ImageId = ShowingCategory_ShowingCategoryFilterDTO.ImageId;
+            ShowingCategoryFilter.RowId = ShowingCategory_ShowingCategoryFilterDTO.RowId;
+            ShowingCategoryFilter.StatusId = new IdFilter{ Equal = 1 };
+            List<ShowingCategory> ShowingCategorys = await ShowingCategoryService.List(ShowingCategoryFilter);
+            List<ShowingCategory_ShowingCategoryDTO> ShowingCategory_ShowingCategoryDTOs = ShowingCategorys
+                .Select(x => new ShowingCategory_ShowingCategoryDTO(x)).ToList();
+            return ShowingCategory_ShowingCategoryDTOs;
         }
         [Route(ShowingCategoryRoute.SingleListStatus), HttpPost]
         public async Task<List<ShowingCategory_StatusDTO>> SingleListStatus([FromBody] ShowingCategory_StatusFilterDTO ShowingCategory_StatusFilterDTO)

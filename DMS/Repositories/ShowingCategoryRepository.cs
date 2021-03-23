@@ -193,7 +193,7 @@ namespace DMS.Repositories
                     ThumbnailUrl = q.Image.ThumbnailUrl,
                     RowId = q.Image.RowId,
                 } : null,
-                Parent = filter.Selects.Contains(ShowingCategorySelect.Parent) && q.Parent != null ? new Category
+                Parent = filter.Selects.Contains(ShowingCategorySelect.Parent) && q.Parent != null ? new ShowingCategory
                 {
                     Id = q.Parent.Id,
                     Code = q.Parent.Code,
@@ -259,7 +259,7 @@ namespace DMS.Repositories
                     ThumbnailUrl = x.Image.ThumbnailUrl,
                     RowId = x.Image.RowId,
                 },
-                Parent = x.Parent == null ? null : new Category
+                Parent = x.Parent == null ? null : new ShowingCategory
                 {
                     Id = x.Parent.Id,
                     Code = x.Parent.Code,
@@ -311,7 +311,7 @@ namespace DMS.Repositories
                     ThumbnailUrl = x.Image.ThumbnailUrl,
                     RowId = x.Image.RowId,
                 },
-                Parent = x.Parent == null ? null : new Category
+                Parent = x.Parent == null ? null : new ShowingCategory
                 {
                     Id = x.Parent.Id,
                     Code = x.Parent.Code,
