@@ -15,6 +15,7 @@ namespace DMS.Rpc.mobile.general_mobile
         public const string UpdateStoreCheckingImage = Default + "/update-store-checking-image";
         public const string CheckIn = Default + "/check-in";
         public const string CheckOut = Default + "/check-out";
+        public const string GetConfiguration = Default + "/get-configuration";
 
         public const string CountCompletedIndirectSalesOrder = Default + "/count-completed-indirect-sales-order";
         public const string ListCompletedIndirectSalesOrder = Default + "/list-completed-indirect-sales-order";

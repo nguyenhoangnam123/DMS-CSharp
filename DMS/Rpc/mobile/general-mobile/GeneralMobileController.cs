@@ -47,6 +47,7 @@ using GleamTech.DocumentUltimate;
 using Newtonsoft.Json;
 using Microsoft.EntityFrameworkCore;
 using DMS.Services.MDirectSalesOrder;
+using DMS.Services.MSystemConfiguration;
 
 namespace DMS.Rpc.mobile.general_mobile
 {
@@ -81,6 +82,7 @@ namespace DMS.Rpc.mobile.general_mobile
         private IProductGroupingService ProductGroupingService;
         private INotificationService NotificationService;
         private IRewardHistoryService RewardHistoryService;
+        private ISystemConfigurationService SystemConfigurationService;
         private ICurrentContext CurrentContext;
         private DataContext DataContext;
         public MobileController(
@@ -113,6 +115,7 @@ namespace DMS.Rpc.mobile.general_mobile
             IProductGroupingService ProductGroupingService,
             INotificationService NotificationService,
             IRewardHistoryService RewardHistoryService,
+            ISystemConfigurationService SystemConfigurationService,
             ICurrentContext CurrentContext,
             DataContext DataContext
         )
@@ -146,8 +149,19 @@ namespace DMS.Rpc.mobile.general_mobile
             this.ProductGroupingService = ProductGroupingService;
             this.NotificationService = NotificationService;
             this.RewardHistoryService = RewardHistoryService;
+            this.SystemConfigurationService = SystemConfigurationService;
             this.CurrentContext = CurrentContext;
             this.DataContext = DataContext;
+        }
+
+        [Route(GeneralMobileRoute.GetConfiguration), HttpPost]
+        public async Task<ActionResult<GeneralMobile_SystemConfigurationDTO>> ListConfiguration()
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            SystemConfiguration SystemConfiguration = await SystemConfigurationService.Get();
+            return new GeneralMobile_SystemConfigurationDTO(SystemConfiguration);
         }
 
         [Route(GeneralMobileRoute.CountStoreChecking), HttpPost]
