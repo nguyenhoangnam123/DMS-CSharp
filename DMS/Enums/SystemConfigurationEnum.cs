@@ -36,7 +36,7 @@ namespace DMS.Enums
             AMPLITUDE_PRICE_IN_DIRECT,
             AMPLITUDE_PRICE_IN_INDIRECT,
             USE_STORE_APPROVAL,
-            USE_ERP_APPROVAL
+            USE_ERP_APPROVAL,
         };
     }
 }

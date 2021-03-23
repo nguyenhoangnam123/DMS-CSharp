@@ -570,7 +570,7 @@ namespace DMS.Services.MStore
 
                     StoreCodeGenerate(Store);
                 }
-
+                Stores = Stores.Distinct().ToList();
                 await UOW.StoreRepository.BulkMerge(Stores);
 
                 dbStores = await UOW.StoreRepository.List(StoreFilter);
