@@ -27,8 +27,8 @@ namespace DMS.Rpc.posm.showing_warehouse
     public class ShowingWarehouseRoute : Root
     {
         public const string Parent = Module + "/posm";
-        public const string Master = Module + "/posm/showing-item/showing-warehouse-master";
-        public const string Detail = Module + "/posm/showing-item/showing-warehouse-detail/*";
+        public const string Master = Module + "/posm/showing-warehouse/showing-warehouse-master";
+        public const string Detail = Module + "/posm/showing-warehouse/showing-warehouse-detail/*";
         public const string Preview = Module + "/showing-warehouse/showing-warehouse-preview";
         private const string Default = Rpc + Module + "/showing-warehouse";
         public const string Count = Default + "/count";
