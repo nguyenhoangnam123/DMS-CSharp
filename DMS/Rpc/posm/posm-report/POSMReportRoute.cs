@@ -26,8 +26,8 @@ namespace DMS.Rpc.posm.posm_report
     {
         public const string Parent = Module + "/posm-report";
         public const string Master = Module + "/posm-report/posm-report-master";
-        public const string Preview = Module + "/showing-order/showing-order-preview";
-        private const string Default = Rpc + Module + "/showing-order";
+        public const string Preview = Module + "/posm-report/posm-report-preview";
+        private const string Default = Rpc + Module + "/posm-report";
         public const string Count = Default + "/count";
         public const string List = Default + "/list";
         public const string Export = Default + "/export";

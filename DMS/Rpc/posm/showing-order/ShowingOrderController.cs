@@ -673,6 +673,8 @@ namespace DMS.Rpc.posm.showing_order
             ShowingOrderFilter.OrganizationId = ShowingOrder_ShowingOrderFilterDTO.OrganizationId;
             ShowingOrderFilter.Date = ShowingOrder_ShowingOrderFilterDTO.Date;
             ShowingOrderFilter.ShowingWarehouseId = ShowingOrder_ShowingOrderFilterDTO.ShowingWarehouseId;
+            ShowingOrderFilter.StoreId = ShowingOrder_ShowingOrderFilterDTO.StoreId;
+            ShowingOrderFilter.ShowingItemId = ShowingOrder_ShowingOrderFilterDTO.ShowingItemId;
             ShowingOrderFilter.StatusId = ShowingOrder_ShowingOrderFilterDTO.StatusId;
             ShowingOrderFilter.Total = ShowingOrder_ShowingOrderFilterDTO.Total;
             ShowingOrderFilter.RowId = ShowingOrder_ShowingOrderFilterDTO.RowId;

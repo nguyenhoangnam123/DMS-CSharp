@@ -49,6 +49,41 @@ namespace DMS.Repositories
                 query = query.Where(q => q.OrganizationId, filter.OrganizationId);
             if (filter.StoreId != null && filter.StoreId.HasValue)
                 query = query.Where(q => q.StoreId, filter.StoreId);
+            if (filter.ShowingItemId != null && filter.ShowingItemId.HasValue)
+            {
+                if (filter.ShowingItemId.Equal.HasValue)
+                {
+                    query = from q in query
+                            join c in DataContext.ShowingOrderContent on q.Id equals c.ShowingOrderId
+                            where c.ShowingItemId == filter.ShowingItemId.Equal.Value
+                            select q;
+                }
+
+                if (filter.ShowingItemId.NotEqual.HasValue)
+                {
+                    query = from q in query
+                            join c in DataContext.ShowingOrderContent on q.Id equals c.ShowingOrderId
+                            where c.ShowingItemId != filter.ShowingItemId.Equal.Value
+                            select q;
+                }
+
+                if (filter.ShowingItemId.In != null)
+                {
+                    query = from q in query
+                            join c in DataContext.ShowingOrderContent on q.Id equals c.ShowingOrderId
+                            where filter.ShowingItemId.In.Contains(c.ShowingItemId)
+                            select q;
+                }
+
+                if (filter.ShowingItemId.NotIn != null)
+                {
+                    query = from q in query
+                            join c in DataContext.ShowingOrderContent on q.Id equals c.ShowingOrderId
+                            where !filter.ShowingItemId.In.Contains(c.ShowingItemId)
+                            select q;
+                }
+                query = query.Distinct();
+            }
             if (filter.Date != null && filter.Date.HasValue)
                 query = query.Where(q => q.Date, filter.Date);
             if (filter.ShowingWarehouseId != null && filter.ShowingWarehouseId.HasValue)
@@ -673,6 +708,20 @@ namespace DMS.Repositories
                 ShowingOrderDAOs.Add(ShowingOrderDAO);
             }
             await DataContext.BulkMergeAsync(ShowingOrderDAOs);
+
+            foreach (var ShowingOrderDAO in ShowingOrderDAOs)
+            {
+                if(ShowingOrderDAO.Id < 1000000)
+                {
+                    var Code = (ShowingOrderDAO.Id + 1000000).ToString();
+                    ShowingOrderDAO.Code = Code.Substring(Code.Length - 7, Code.Length - 1);
+                }
+                else
+                {
+                    ShowingOrderDAO.Code = ShowingOrderDAO.Id.ToString();
+                }
+            }
+            await DataContext.SaveChangesAsync();
 
             var Ids = ShowingOrderDAOs.Select(x => x.Id).ToList();
             await DataContext.ShowingOrderContent

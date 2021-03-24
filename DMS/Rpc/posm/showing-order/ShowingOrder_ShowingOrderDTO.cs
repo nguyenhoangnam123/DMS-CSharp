@@ -59,6 +59,7 @@ namespace DMS.Rpc.posm.showing_order
         public IdFilter AppUserId { get; set; }
         public IdFilter OrganizationId { get; set; }
         public IdFilter StoreId { get; set; }
+        public IdFilter ShowingItemId { get; set; }
         public DateFilter Date { get; set; }
         public IdFilter ShowingWarehouseId { get; set; }
         public IdFilter StatusId { get; set; }
