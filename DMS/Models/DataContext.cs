@@ -135,6 +135,13 @@ namespace DMS.Models
         public virtual DbSet<RoleDAO> Role { get; set; }
         public virtual DbSet<SalesOrderTypeDAO> SalesOrderType { get; set; }
         public virtual DbSet<SexDAO> Sex { get; set; }
+        public virtual DbSet<ShowingCategoryDAO> ShowingCategory { get; set; }
+        public virtual DbSet<ShowingInventoryDAO> ShowingInventory { get; set; }
+        public virtual DbSet<ShowingInventoryHistoryDAO> ShowingInventoryHistory { get; set; }
+        public virtual DbSet<ShowingItemDAO> ShowingItem { get; set; }
+        public virtual DbSet<ShowingOrderDAO> ShowingOrder { get; set; }
+        public virtual DbSet<ShowingOrderContentDAO> ShowingOrderContent { get; set; }
+        public virtual DbSet<ShowingWarehouseDAO> ShowingWarehouse { get; set; }
         public virtual DbSet<StatusDAO> Status { get; set; }
         public virtual DbSet<StoreDAO> Store { get; set; }
         public virtual DbSet<StoreApprovalStateDAO> StoreApprovalState { get; set; }
@@ -3777,6 +3784,260 @@ namespace DMS.Models
                 entity.Property(e => e.Name)
                     .IsRequired()
                     .HasMaxLength(50);
+            });
+
+            modelBuilder.Entity<ShowingCategoryDAO>(entity =>
+            {
+                entity.ToTable("ShowingCategory", "POSM");
+
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.Path)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.HasOne(d => d.Image)
+                    .WithMany(p => p.ShowingCategories)
+                    .HasForeignKey(d => d.ImageId)
+                    .HasConstraintName("FK_ShowingCategory_Image");
+
+                entity.HasOne(d => d.Parent)
+                    .WithMany(p => p.InverseParent)
+                    .HasForeignKey(d => d.ParentId)
+                    .HasConstraintName("FK_ShowingCategory_ShowingCategory");
+
+                entity.HasOne(d => d.Status)
+                    .WithMany(p => p.ShowingCategories)
+                    .HasForeignKey(d => d.StatusId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ShowingCategory_Status");
+            });
+
+            modelBuilder.Entity<ShowingInventoryDAO>(entity =>
+            {
+                entity.ToTable("ShowingInventory", "POSM");
+
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.HasOne(d => d.AppUser)
+                    .WithMany(p => p.ShowingInventories)
+                    .HasForeignKey(d => d.AppUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ShowingInventory_AppUser");
+
+                entity.HasOne(d => d.ShowingItem)
+                    .WithMany(p => p.ShowingInventories)
+                    .HasForeignKey(d => d.ShowingItemId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ShowingInventory_ShowingItem");
+
+                entity.HasOne(d => d.ShowingWarehouse)
+                    .WithMany(p => p.ShowingInventories)
+                    .HasForeignKey(d => d.ShowingWarehouseId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ShowingInventory_ShowingWarehouse");
+            });
+
+            modelBuilder.Entity<ShowingInventoryHistoryDAO>(entity =>
+            {
+                entity.ToTable("ShowingInventoryHistory", "POSM");
+
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.HasOne(d => d.AppUser)
+                    .WithMany(p => p.ShowingInventoryHistories)
+                    .HasForeignKey(d => d.AppUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ShowingInventoryHistory_AppUser");
+
+                entity.HasOne(d => d.ShowingInventory)
+                    .WithMany(p => p.ShowingInventoryHistories)
+                    .HasForeignKey(d => d.ShowingInventoryId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ShowingInventoryHistory_ShowingInventory");
+            });
+
+            modelBuilder.Entity<ShowingItemDAO>(entity =>
+            {
+                entity.ToTable("ShowingItem", "POSM");
+
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(255);
+
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.Desception).HasMaxLength(4000);
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(255);
+
+                entity.Property(e => e.SalePrice).HasColumnType("decimal(18, 4)");
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.HasOne(d => d.Category)
+                    .WithMany(p => p.ShowingItems)
+                    .HasForeignKey(d => d.CategoryId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ShowingItem_Category");
+
+                entity.HasOne(d => d.Status)
+                    .WithMany(p => p.ShowingItems)
+                    .HasForeignKey(d => d.StatusId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ShowingItem_Status");
+
+                entity.HasOne(d => d.UnitOfMeasure)
+                    .WithMany(p => p.ShowingItems)
+                    .HasForeignKey(d => d.UnitOfMeasureId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ShowingItem_UnitOfMeasure");
+            });
+
+            modelBuilder.Entity<ShowingOrderDAO>(entity =>
+            {
+                entity.ToTable("ShowingOrder", "POSM");
+
+                entity.Property(e => e.Code).HasMaxLength(50);
+
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.Date).HasColumnType("datetime");
+
+                entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.Total).HasColumnType("decimal(18, 4)");
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.HasOne(d => d.AppUser)
+                    .WithMany(p => p.ShowingOrders)
+                    .HasForeignKey(d => d.AppUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ShowingOrder_AppUser");
+
+                entity.HasOne(d => d.Organization)
+                    .WithMany(p => p.ShowingOrders)
+                    .HasForeignKey(d => d.OrganizationId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ShowingOrder_Organization");
+
+                entity.HasOne(d => d.ShowingWarehouse)
+                    .WithMany(p => p.ShowingOrders)
+                    .HasForeignKey(d => d.ShowingWarehouseId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ShowingOrder_ShowingWarehouse");
+
+                entity.HasOne(d => d.Status)
+                    .WithMany(p => p.ShowingOrders)
+                    .HasForeignKey(d => d.StatusId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ShowingOrder_Status");
+
+                entity.HasOne(d => d.Store)
+                    .WithMany(p => p.ShowingOrders)
+                    .HasForeignKey(d => d.StoreId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ShowingOrder_Store");
+            });
+
+            modelBuilder.Entity<ShowingOrderContentDAO>(entity =>
+            {
+                entity.ToTable("ShowingOrderContent", "POSM");
+
+                entity.Property(e => e.Amount).HasColumnType("decimal(18, 4)");
+
+                entity.Property(e => e.SalePrice).HasColumnType("decimal(18, 4)");
+
+                entity.HasOne(d => d.ShowingItem)
+                    .WithMany(p => p.ShowingOrderContents)
+                    .HasForeignKey(d => d.ShowingItemId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ShowingOrderContent_ShowingItem");
+
+                entity.HasOne(d => d.ShowingOrder)
+                    .WithMany(p => p.ShowingOrderContents)
+                    .HasForeignKey(d => d.ShowingOrderId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ShowingOrderContent_ShowingOrder");
+
+                entity.HasOne(d => d.UnitOfMeasure)
+                    .WithMany(p => p.ShowingOrderContents)
+                    .HasForeignKey(d => d.UnitOfMeasureId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ShowingOrderContent_UnitOfMeasure");
+            });
+
+            modelBuilder.Entity<ShowingWarehouseDAO>(entity =>
+            {
+                entity.ToTable("ShowingWarehouse", "POSM");
+
+                entity.Property(e => e.Address).HasMaxLength(500);
+
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.HasOne(d => d.District)
+                    .WithMany(p => p.ShowingWarehouses)
+                    .HasForeignKey(d => d.DistrictId)
+                    .HasConstraintName("FK_ShowingWarehouse_District");
+
+                entity.HasOne(d => d.Organization)
+                    .WithMany(p => p.ShowingWarehouses)
+                    .HasForeignKey(d => d.OrganizationId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ShowingWarehouse_Organization");
+
+                entity.HasOne(d => d.Province)
+                    .WithMany(p => p.ShowingWarehouses)
+                    .HasForeignKey(d => d.ProvinceId)
+                    .HasConstraintName("FK_ShowingWarehouse_Province");
+
+                entity.HasOne(d => d.Status)
+                    .WithMany(p => p.ShowingWarehouses)
+                    .HasForeignKey(d => d.StatusId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ShowingWarehouse_Status");
+
+                entity.HasOne(d => d.Ward)
+                    .WithMany(p => p.ShowingWarehouses)
+                    .HasForeignKey(d => d.WardId)
+                    .HasConstraintName("FK_ShowingWarehouse_Ward");
             });
 
             modelBuilder.Entity<StatusDAO>(entity =>

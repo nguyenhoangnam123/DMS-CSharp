@@ -413,7 +413,7 @@ namespace DMS.Rpc.price_list
                         PriceList.PriceListItemMappings.Add(PriceListItemMapping);
                     }
                         
-                    if (long.TryParse(PriceValue, out long Price))
+                    if (decimal.TryParse(PriceValue, out decimal Price))
                     {
                         PriceListItemMapping.Price = Price;
                         if(Price < 0)

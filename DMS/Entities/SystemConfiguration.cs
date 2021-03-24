@@ -23,5 +23,6 @@ namespace DMS.Entities
         public long DASH_BOARD_REFRESH_TIME { get; set; }
         public decimal AMPLITUDE_PRICE_IN_DIRECT { get; set; }
         public decimal AMPLITUDE_PRICE_IN_INDIRECT { get; set; }
+        public string YOUTUBE_ID { get; set; }
     }
 }

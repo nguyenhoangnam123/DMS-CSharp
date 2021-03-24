@@ -21,6 +21,7 @@ namespace DMS.Enums
         public static GenericEnum AMPLITUDE_PRICE_IN_INDIRECT = new GenericEnum { Id = 11, Code = "AMPLITUDE_PRICE_IN_INDIRECT", Name = "Biên độ cho phép sửa giá trên đơn hàng gián tiếp" };
         public static GenericEnum USE_STORE_APPROVAL = new GenericEnum { Id = 12, Code = "USE_STORE_APPROVAL", Name = "Sử dụng cửa hàng phê duyệt" };
         public static GenericEnum USE_ERP_APPROVAL = new GenericEnum { Id = 13, Code = "USE_ERP_APPROVAL", Name = "Sử dụng ERP phê duyệt" };
+        public static GenericEnum YOUTUBE_ID = new GenericEnum { Id = 14, Code = "YOUTUBE_ID", Name = "Video youtube Id giới thiệu" };
 
         public static List<GenericEnum> SystemConfigurationEnumList = new List<GenericEnum>
         {
@@ -36,7 +37,8 @@ namespace DMS.Enums
             AMPLITUDE_PRICE_IN_DIRECT,
             AMPLITUDE_PRICE_IN_INDIRECT,
             USE_STORE_APPROVAL,
-            USE_ERP_APPROVAL
+            USE_ERP_APPROVAL,
+            YOUTUBE_ID,
         };
     }
 }

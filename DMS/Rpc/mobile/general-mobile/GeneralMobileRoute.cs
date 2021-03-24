@@ -15,6 +15,8 @@ namespace DMS.Rpc.mobile.general_mobile
         public const string UpdateStoreCheckingImage = Default + "/update-store-checking-image";
         public const string CheckIn = Default + "/check-in";
         public const string CheckOut = Default + "/check-out";
+        public const string GetConfiguration = Default + "/get-configuration";
+
         public const string CountCompletedIndirectSalesOrder = Default + "/count-completed-indirect-sales-order";
         public const string ListCompletedIndirectSalesOrder = Default + "/list-completed-indirect-sales-order";
         public const string CountNewIndirectSalesOrder = Default + "/count-new-indirect-sales-order";
@@ -23,6 +25,17 @@ namespace DMS.Rpc.mobile.general_mobile
         public const string CreateIndirectSalesOrder = Default + "/create-indirect-sales-order";
         public const string UpdateIndirectSalesOrder = Default + "/update-indirect-sales-order";
         public const string SendIndirectSalesOrder = Default + "/send-indirect-sales-order";
+        public const string PreviewIndirectOrder = Default + "/preview-indirect-order";
+
+        public const string CountCompletedDirectSalesOrder = Default + "/count-completed-direct-sales-order";
+        public const string ListCompletedDirectSalesOrder = Default + "/list-completed-direct-sales-order";
+        public const string CountNewDirectSalesOrder = Default + "/count-new-direct-sales-order";
+        public const string ListNewDirectSalesOrder = Default + "/list-new-direct-sales-order";
+        public const string GetDirectSalesOrder = Default + "/get-direct-sales-order";
+        public const string CreateDirectSalesOrder = Default + "/create-direct-sales-order";
+        public const string UpdateDirectSalesOrder = Default + "/update-direct-sales-order";
+        public const string SendDirectSalesOrder = Default + "/send-direct-sales-order";
+
         public const string CreateProblem = Default + "/create-problem";
         public const string SaveImage = Default + "/save-image";
         public const string SaveImage64 = Default + "/save-image-64";
@@ -30,7 +43,8 @@ namespace DMS.Rpc.mobile.general_mobile
         public const string GetNotification = Default + "/get-notification";
         public const string UpdateGPS = Default + "/update-gps";
         public const string PrintIndirectOrder = Default + "/print-indirect-order";
-        public const string PreviewIndirectOrder = Default + "/preview-indirect-order";
+        public const string PrintDirectOrder = Default + "/print-direct-order";
+
         public const string StoreReport = Default + "/store-report";
 
         public const string SingleListAlbum = Default + "/single-list-album";
@@ -105,8 +119,8 @@ namespace DMS.Rpc.mobile.general_mobile
                 } },
             { "Checkin", new List<string> {
                 Master, CountStoreChecking, ListStoreChecking, GetStoreChecking,
-                Detail, CheckIn,  UpdateStoreChecking, UpdateStoreCheckingImage, CheckOut, PrintIndirectOrder, PreviewIndirectOrder, StoreReport,
-                CreateIndirectSalesOrder, CreateProblem, SaveImage, GetSurveyForm, SaveSurveyForm,
+                Detail, CheckIn,  UpdateStoreChecking, UpdateStoreCheckingImage, CheckOut, PrintIndirectOrder, PreviewIndirectOrder, StoreReport, PrintDirectOrder,
+                CreateIndirectSalesOrder, CreateProblem, SaveImage, GetSurveyForm, SaveSurveyForm, CreateDirectSalesOrder,
                 CountItem, ListItem, CountStorePlanned, ListStorePlanned, CountStoreUnPlanned, ListStoreUnPlanned, CountStoreInScope, ListStoreInScope, CountProblem, ListProblem, CountSurvey, ListSurvey, CountStoreScouting, ListStoreScouting,
                 SingleListAlbum, SingleListAppUser, SingleListStore, SingleListStoreStatus, SingleListTaxType, SingleListUnitOfMeasure, SingleListProblemType, SingleListStoreScoutingType, SingleListProvince, SingleListDistrict, SingleListWard, SingleListStoreDraftType, } },
             { "Quay thưởng", new List<string>{
