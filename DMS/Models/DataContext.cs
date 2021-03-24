@@ -1,5 +1,4 @@
-﻿using System;
-using Thinktecture;
+﻿using System;using Thinktecture;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
@@ -208,8 +207,7 @@ namespace DMS.Models
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.ConfigureTempTable<long>();
-            modelBuilder.Entity<ActionDAO>(entity =>
+            modelBuilder.ConfigureTempTable<long>();modelBuilder.Entity<ActionDAO>(entity =>
             {
                 entity.ToTable("Action", "PER");
 
