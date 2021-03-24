@@ -148,7 +148,11 @@ namespace DMS.Rpc.posm.posm_report
                         OrganizationIds.Contains(s.OrganizationId) &&
                         so.StatusId == StatusEnum.ACTIVE.Id &&
                         s.DeletedAt == null
-                        select so.StoreId;
+                        select new
+                        {
+                            StoreId = s.Id,
+                            OrganizationId = so.OrganizationId
+                        };
             return await query.Distinct().CountAsync();
         }
 
@@ -251,12 +255,28 @@ namespace DMS.Rpc.posm.posm_report
                             }
                         };
 
-            StoreIds = await query.OrderBy(x => x.Store.OrganizationId).ThenBy(x => x.Store.Name)
-                .Select(x => x.StoreId)
+            var Ids = await query.OrderBy(x => x.OrganizationId).ThenBy(x => x.Store.Name)
+                .Select(x => new
+                {
+                    StoreId = x.StoreId,
+                    OrganizationId = x.OrganizationId,
+                })
                 .Distinct()
                 .Skip(POSMReport_ShowingOrderFilterDTO.Skip)
                 .Take(POSMReport_ShowingOrderFilterDTO.Take)
                 .ToListAsync();
+
+            StoreIds = Ids.Select(x => x.StoreId).Distinct().ToList();
+            OrganizationIds = Ids.Select(x => x.OrganizationId).Distinct().ToList();
+            var Organizations = await DataContext.Organization
+                .Where(x => OrganizationIds.Contains(x.Id))
+                .OrderBy(x => x.Id)
+                .Select(x => new OrganizationDAO
+                {
+                    Id = x.Id,
+                    Name = x.Name
+                }).ToListAsync();
+
             var ShowingOrderDAOs = await query.Where(x => StoreIds.Contains(x.StoreId)).ToListAsync();
             var ShowingOrderIds = ShowingOrderDAOs.Select(x => x.Id).ToList();
 
@@ -285,49 +305,85 @@ namespace DMS.Rpc.posm.posm_report
                                };
             var ShowingOrderContentDAOs = await queryContent.ToListAsync();
 
-            var Stores = await DataContext.Store.Where(x => StoreIds.Contains(x.Id)).ToListAsync();
+            var Stores = await DataContext.Store.Where(x => StoreIds.Contains(x.Id))
+                .Select(x => new StoreDAO
+                {
+                    Id = x.Id,
+                    Code = x.Code,
+                    CodeDraft = x.CodeDraft,
+                    Name = x.Name,
+                    Address = x.Address,
+                    StoreStatus = x.StoreStatus == null ? null : new StoreStatusDAO
+                    {
+                        Name = x.StoreStatus.Name
+                    }
+                }).ToListAsync();
             List<POSMReport_POSMReportDTO> POSMReport_POSMReportDTOs = new List<POSMReport_POSMReportDTO>();
-            foreach (var Store in Stores)
+            foreach (var Organization in Organizations)
             {
                 POSMReport_POSMReportDTO POSMReport_POSMReportDTO = new POSMReport_POSMReportDTO()
                 {
-                    StoreId = Store.Id,
-                    StoreCode = Store.Code,
-                    StoreName = Store.Name,
-                    StoreAddress = Store.Address,
-                    Contents = new List<POSMReport_POSMReportContentDTO>()
+                    OrganizationId = Organization.Id,
+                    OrganizationName = Organization.Name,
+                    Stores = new List<POSMReport_POSMStoreDTO>()
                 };
-                POSMReport_POSMReportDTOs.Add(POSMReport_POSMReportDTO);
-                var subOrder = ShowingOrderDAOs.Where(x => x.StoreId == Store.Id).ToList();
-                POSMReport_POSMReportDTO.Total = subOrder.Select(x => x.Total).DefaultIfEmpty(0).Sum();
-
-                var subIds = subOrder.Select(x => x.Id).ToList();
-                var subContent = ShowingOrderContentDAOs.Where(x => subIds.Contains(x.ShowingOrderId)).ToList();
-                foreach (var Content in subContent)
-                {
-                    POSMReport_POSMReportContentDTO POSMReport_POSMReportContentDTO = POSMReport_POSMReportDTO.Contents
-                        .Where(x => x.ShowingItemId == Content.ShowingItemId)
-                        .Where(x => x.UnitOfMeasure == Content.UnitOfMeasure.Name)
-                        .Where(x => x.SalePrice == Content.SalePrice)
-                        .FirstOrDefault();
-                    if (POSMReport_POSMReportContentDTO == null)
-                    {
-                        POSMReport_POSMReportContentDTO = new POSMReport_POSMReportContentDTO
+                POSMReport_POSMReportDTO.Stores = Ids
+                        .Where(x => x.OrganizationId == Organization.Id)
+                        .Select(x => new POSMReport_POSMStoreDTO
                         {
-                            Amount = Content.Amount,
-                            Quantity = Content.Quantity,
-                            SalePrice = Content.SalePrice,
-                            ShowingItemId = Content.ShowingItemId,
-                            ShowingItemCode = Content.ShowingItem.Code,
-                            ShowingItemName = Content.ShowingItem.Name,
-                            UnitOfMeasure = Content.UnitOfMeasure.Name
-                        };
-                        POSMReport_POSMReportDTO.Contents.Add(POSMReport_POSMReportContentDTO);
-                    }
-                    else
+                            Id = x.StoreId,
+                            OrganizationId = Organization.Id
+                        }).ToList();
+                POSMReport_POSMReportDTOs.Add(POSMReport_POSMReportDTO);
+            }
+
+            foreach (POSMReport_POSMReportDTO POSMReport_POSMReportDTO in POSMReport_POSMReportDTOs)
+            {
+                foreach (POSMReport_POSMStoreDTO POSMReport_POSMStoreDTO in POSMReport_POSMReportDTO.Stores)
+                {
+                    var Store = Stores.Where(x => x.Id == POSMReport_POSMStoreDTO.Id).FirstOrDefault();
+                    if (Store != null)
                     {
-                        POSMReport_POSMReportContentDTO.Amount += Content.Amount;
-                        POSMReport_POSMReportContentDTO.Quantity += Content.Quantity;
+                        POSMReport_POSMStoreDTO.Code = Store.Code;
+                        POSMReport_POSMStoreDTO.CodeDraft = Store.CodeDraft;
+                        POSMReport_POSMStoreDTO.Name = Store.Name;
+                        POSMReport_POSMStoreDTO.Address = Store.Address;
+                        POSMReport_POSMStoreDTO.StoreStatusName = Store.StoreStatus.Name;
+                    }
+
+                    var subOrder = ShowingOrderDAOs.Where(x => x.StoreId == POSMReport_POSMStoreDTO.Id &&
+                        x.OrganizationId == POSMReport_POSMStoreDTO.OrganizationId)
+                        .ToList();
+                    POSMReport_POSMStoreDTO.Total = subOrder.Select(x => x.Total).DefaultIfEmpty(0).Sum();
+
+                    var subIds = subOrder.Select(x => x.Id).ToList();
+                    var subContent = ShowingOrderContentDAOs.Where(x => subIds.Contains(x.ShowingOrderId)).ToList();
+                    foreach (var Content in subContent)
+                    {
+                        POSMReport_POSMReportContentDTO POSMReport_POSMReportContentDTO = POSMReport_POSMStoreDTO.Contents
+                            .Where(x => x.ShowingItemId == Content.ShowingItemId)
+                            .Where(x => x.UnitOfMeasure == Content.UnitOfMeasure.Name)
+                            .Where(x => x.SalePrice == Content.SalePrice)
+                            .FirstOrDefault();
+                        if (POSMReport_POSMReportContentDTO == null)
+                        {
+                            POSMReport_POSMReportContentDTO = new POSMReport_POSMReportContentDTO
+                            {
+                                Amount = Content.Amount,
+                                Quantity = Content.Quantity,
+                                SalePrice = Content.SalePrice,
+                                ShowingItemId = Content.ShowingItemId,
+                                ShowingItemCode = Content.ShowingItem.Code,
+                                ShowingItemName = Content.ShowingItem.Name,
+                                UnitOfMeasure = Content.UnitOfMeasure.Name
+                            };
+                            POSMReport_POSMStoreDTO.Contents.Add(POSMReport_POSMReportContentDTO);
+                        }
+                        else
+                        {
+                            POSMReport_POSMReportContentDTO.Amount += Content.Amount;
+                            POSMReport_POSMReportContentDTO.Quantity += Content.Quantity;
+                        }
                     }
                 }
             }
@@ -335,242 +391,61 @@ namespace DMS.Rpc.posm.posm_report
             return POSMReport_POSMReportDTOs;
         }
 
-        //[Route(POSMReportRoute.Export), HttpPost]
-        //public async Task<ActionResult> Export([FromBody] POSMReport_POSMReportFilterDTO POSMReport_ShowingOrderFilterDTO)
-        //{
-        //    if (!ModelState.IsValid)
-        //        throw new BindException(ModelState);
+        [Route(POSMReportRoute.Export), HttpPost]
+        public async Task<ActionResult> Export([FromBody] POSMReport_POSMReportFilterDTO POSMReport_POSMReportFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
 
-        //    MemoryStream memoryStream = new MemoryStream();
-        //    using (ExcelPackage excel = new ExcelPackage(memoryStream))
-        //    {
-        //        #region ShowingOrder
-        //        var ShowingOrderFilter = ConvertFilterDTOToFilterEntity(POSMReport_ShowingOrderFilterDTO);
-        //        ShowingOrderFilter.Skip = 0;
-        //        ShowingOrderFilter.Take = int.MaxValue;
-        //        ShowingOrderFilter = await ShowingOrderService.ToFilter(ShowingOrderFilter);
-        //        List<ShowingOrder> ShowingOrders = await ShowingOrderService.List(ShowingOrderFilter);
+            DateTime Start = POSMReport_POSMReportFilterDTO.Date?.GreaterEqual == null ?
+                    LocalStartDay(CurrentContext) :
+                    POSMReport_POSMReportFilterDTO.Date.GreaterEqual.Value;
 
-        //        var ShowingOrderHeaders = new List<string[]>()
-        //        {
-        //            new string[] {
-        //                "Id",
-        //                "Code",
-        //                "AppUserId",
-        //                "OrganizationId",
-        //                "Date",
-        //                "ShowingWarehouseId",
-        //                "StatusId",
-        //                "Total",
-        //                "RowId",
-        //            }
-        //        };
-        //        List<object[]> ShowingOrderData = new List<object[]>();
-        //        for (int i = 0; i < ShowingOrders.Count; i++)
-        //        {
-        //            var ShowingOrder = ShowingOrders[i];
-        //            ShowingOrderData.Add(new Object[]
-        //            {
-        //                ShowingOrder.Id,
-        //                ShowingOrder.Code,
-        //                ShowingOrder.AppUserId,
-        //                ShowingOrder.OrganizationId,
-        //                ShowingOrder.Date,
-        //                ShowingOrder.ShowingWarehouseId,
-        //                ShowingOrder.StatusId,
-        //                ShowingOrder.Total,
-        //                ShowingOrder.RowId,
-        //            });
-        //        }
-        //        excel.GenerateWorksheet("ShowingOrder", ShowingOrderHeaders, ShowingOrderData);
-        //        #endregion
+            DateTime End = POSMReport_POSMReportFilterDTO.Date?.LessEqual == null ?
+                    LocalEndDay(CurrentContext) :
+                    POSMReport_POSMReportFilterDTO.Date.LessEqual.Value;
 
-        //        #region AppUser
-        //        var AppUserFilter = new AppUserFilter();
-        //        AppUserFilter.Selects = AppUserSelect.ALL;
-        //        AppUserFilter.OrderBy = AppUserOrder.Id;
-        //        AppUserFilter.OrderType = OrderType.ASC;
-        //        AppUserFilter.Skip = 0;
-        //        AppUserFilter.Take = int.MaxValue;
-        //        List<AppUser> AppUsers = await AppUserService.List(AppUserFilter);
+            POSMReport_POSMReportFilterDTO.Skip = 0;
+            POSMReport_POSMReportFilterDTO.Take = int.MaxValue;
+            List<POSMReport_POSMReportDTO> POSMReport_POSMReportDTOs = (await List(POSMReport_POSMReportFilterDTO)).Value;
 
-        //        var AppUserHeaders = new List<string[]>()
-        //        {
-        //            new string[] {
-        //                "Id",
-        //                "Username",
-        //                "DisplayName",
-        //                "Address",
-        //                "Email",
-        //                "Phone",
-        //                "SexId",
-        //                "Birthday",
-        //                "Avatar",
-        //                "PositionId",
-        //                "Department",
-        //                "OrganizationId",
-        //                "ProvinceId",
-        //                "Longitude",
-        //                "Latitude",
-        //                "StatusId",
-        //                "GPSUpdatedAt",
-        //                "RowId",
-        //            }
-        //        };
-        //        List<object[]> AppUserData = new List<object[]>();
-        //        for (int i = 0; i < AppUsers.Count; i++)
-        //        {
-        //            var AppUser = AppUsers[i];
-        //            AppUserData.Add(new Object[]
-        //            {
-        //                AppUser.Id,
-        //                AppUser.Username,
-        //                AppUser.DisplayName,
-        //                AppUser.Address,
-        //                AppUser.Email,
-        //                AppUser.Phone,
-        //                AppUser.SexId,
-        //                AppUser.Birthday,
-        //                AppUser.Avatar,
-        //                AppUser.PositionId,
-        //                AppUser.Department,
-        //                AppUser.OrganizationId,
-        //                AppUser.ProvinceId,
-        //                AppUser.Longitude,
-        //                AppUser.Latitude,
-        //                AppUser.StatusId,
-        //                AppUser.GPSUpdatedAt,
-        //                AppUser.RowId,
-        //            });
-        //        }
-        //        excel.GenerateWorksheet("AppUser", AppUserHeaders, AppUserData);
-        //        #endregion
-        //        #region Organization
-        //        var OrganizationFilter = new OrganizationFilter();
-        //        OrganizationFilter.Selects = OrganizationSelect.ALL;
-        //        OrganizationFilter.OrderBy = OrganizationOrder.Id;
-        //        OrganizationFilter.OrderType = OrderType.ASC;
-        //        OrganizationFilter.Skip = 0;
-        //        OrganizationFilter.Take = int.MaxValue;
-        //        List<Organization> Organizations = await OrganizationService.List(OrganizationFilter);
+            long stt = 1;
+            foreach (POSMReport_POSMReportDTO POSMReport_POSMReportDTO in POSMReport_POSMReportDTOs)
+            {
+                foreach (var Store in POSMReport_POSMReportDTO.Stores)
+                {
+                    Store.STT = stt;
+                    stt++;
+                }
+            }
 
-        //        var OrganizationHeaders = new List<string[]>()
-        //        {
-        //            new string[] {
-        //                "Id",
-        //                "Code",
-        //                "Name",
-        //                "ParentId",
-        //                "Path",
-        //                "Level",
-        //                "StatusId",
-        //                "Phone",
-        //                "Email",
-        //                "Address",
-        //                "RowId",
-        //            }
-        //        };
-        //        List<object[]> OrganizationData = new List<object[]>();
-        //        for (int i = 0; i < Organizations.Count; i++)
-        //        {
-        //            var Organization = Organizations[i];
-        //            OrganizationData.Add(new Object[]
-        //            {
-        //                Organization.Id,
-        //                Organization.Code,
-        //                Organization.Name,
-        //                Organization.ParentId,
-        //                Organization.Path,
-        //                Organization.Level,
-        //                Organization.StatusId,
-        //                Organization.Phone,
-        //                Organization.Email,
-        //                Organization.Address,
-        //                Organization.RowId,
-        //            });
-        //        }
-        //        excel.GenerateWorksheet("Organization", OrganizationHeaders, OrganizationData);
-        //        #endregion
+            var Total = POSMReport_POSMReportDTOs.SelectMany(x => x.Stores).Select(x => x.Total).DefaultIfEmpty(0).Sum();
+            var SumQuantity = POSMReport_POSMReportDTOs.SelectMany(x => x.Stores).SelectMany(x => x.Contents).Select(x => x.Quantity).DefaultIfEmpty(0).Sum();
 
-        //        #region Status
-        //        var StatusFilter = new StatusFilter();
-        //        StatusFilter.Selects = StatusSelect.ALL;
-        //        StatusFilter.OrderBy = StatusOrder.Id;
-        //        StatusFilter.OrderType = OrderType.ASC;
-        //        StatusFilter.Skip = 0;
-        //        StatusFilter.Take = int.MaxValue;
-        //        List<Status> Statuses = await StatusService.List(StatusFilter);
+            var OrgRoot = await DataContext.Organization
+                .Where(x => x.DeletedAt == null && 
+                x.StatusId == StatusEnum.ACTIVE.Id && 
+                x.ParentId.HasValue == false)
+                .FirstOrDefaultAsync();
 
-        //        var StatusHeaders = new List<string[]>()
-        //        {
-        //            new string[] {
-        //                "Id",
-        //                "Code",
-        //                "Name",
-        //            }
-        //        };
-        //        List<object[]> StatusData = new List<object[]>();
-        //        for (int i = 0; i < Statuses.Count; i++)
-        //        {
-        //            var Status = Statuses[i];
-        //            StatusData.Add(new Object[]
-        //            {
-        //                Status.Id,
-        //                Status.Code,
-        //                Status.Name,
-        //            });
-        //        }
-        //        excel.GenerateWorksheet("Status", StatusHeaders, StatusData);
-        //        #endregion
-        //        #region ShowingItem
-        //        var ShowingItemFilter = new ShowingItemFilter();
-        //        ShowingItemFilter.Selects = ShowingItemSelect.ALL;
-        //        ShowingItemFilter.OrderBy = ShowingItemOrder.Id;
-        //        ShowingItemFilter.OrderType = OrderType.ASC;
-        //        ShowingItemFilter.Skip = 0;
-        //        ShowingItemFilter.Take = int.MaxValue;
-        //        List<ShowingItem> ShowingItems = await ShowingItemService.List(ShowingItemFilter);
+            string path = "Templates/POSM_Report.xlsx";
+            byte[] arr = System.IO.File.ReadAllBytes(path);
+            MemoryStream input = new MemoryStream(arr);
+            MemoryStream output = new MemoryStream();
+            dynamic Data = new ExpandoObject();
+            Data.Start = Start.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy");
+            Data.End = End.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy");
+            Data.Data = POSMReport_POSMReportDTOs;
+            Data.RootName = OrgRoot == null ? "" : OrgRoot.Name.ToUpper();
+            Data.Total = Total;
+            Data.SumQuantity = SumQuantity;
+            using (var document = StaticParams.DocumentFactory.Open(input, output, "xlsx"))
+            {
+                document.Process(Data);
+            };
 
-        //        var ShowingItemHeaders = new List<string[]>()
-        //        {
-        //            new string[] {
-        //                "Id",
-        //                "Code",
-        //                "Name",
-        //                "CategoryId",
-        //                "UnitOfMeasureId",
-        //                "SalePrice",
-        //                "Desception",
-        //                "StatusId",
-        //                "Used",
-        //                "RowId",
-        //            }
-        //        };
-        //        List<object[]> ShowingItemData = new List<object[]>();
-        //        for (int i = 0; i < ShowingItems.Count; i++)
-        //        {
-        //            var ShowingItem = ShowingItems[i];
-        //            ShowingItemData.Add(new Object[]
-        //            {
-        //                ShowingItem.Id,
-        //                ShowingItem.Code,
-        //                ShowingItem.Name,
-        //                ShowingItem.CategoryId,
-        //                ShowingItem.UnitOfMeasureId,
-        //                ShowingItem.SalePrice,
-        //                ShowingItem.Desception,
-        //                ShowingItem.StatusId,
-        //                ShowingItem.Used,
-        //                ShowingItem.RowId,
-        //            });
-        //        }
-        //        excel.GenerateWorksheet("ShowingItem", ShowingItemHeaders, ShowingItemData);
-        //        #endregion
-
-        //        excel.Save();
-        //    }
-        //    return File(memoryStream.ToArray(), "application/octet-stream", "ShowingOrder.xlsx");
-        //}
+            return File(output.ToArray(), "application/octet-stream", "POSMReport.xlsx");
+        }
     }
 }
 

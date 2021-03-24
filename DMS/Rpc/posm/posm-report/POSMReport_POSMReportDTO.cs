@@ -8,10 +8,21 @@ namespace DMS.Rpc.posm.posm_report
 {
     public class POSMReport_POSMReportDTO : DataDTO
     {
-        public long StoreId { get; set; }
-        public string StoreCode { get; set; }
-        public string StoreName { get; set; }
-        public string StoreAddress { get; set; }
+        public long OrganizationId { get; set; }
+        public string OrganizationName { get; set; }
+        public List<POSMReport_POSMStoreDTO> Stores { get; set; }
+    }
+
+    public class POSMReport_POSMStoreDTO : DataDTO
+    {
+        public long STT { get; set; }
+        public long OrganizationId { get; set; }
+        public long Id { get; set; }
+        public string Code { get; set; }
+        public string CodeDraft { get; set; }
+        public string Name { get; set; }
+        public string StoreStatusName { get; set; }
+        public string Address { get; set; }
         public decimal Total { get; set; }
         public List<POSMReport_POSMReportContentDTO> Contents { get; set; }
     }

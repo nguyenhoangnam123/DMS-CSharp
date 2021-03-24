@@ -125,6 +125,9 @@
     <None Update="Templates\Monitor_Store_Problem_Report.xlsx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Templates\POSM_Report.xlsx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Templates\Pricelist_Item.xlsx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
