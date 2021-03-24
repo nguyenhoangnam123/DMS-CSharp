@@ -24,8 +24,8 @@ namespace DMS.Rpc.posm.posm_report
     [DisplayName("Báo cáo POSM")]
     public class POSMReportRoute : Root
     {
-        public const string Parent = Module + "/posm/posm-report";
-        public const string Master = Module + "/posm/posm-report/posm-report-master";
+        public const string Parent = Module + "/posm-report";
+        public const string Master = Module + "/posm-report/posm-report-master";
         public const string Preview = Module + "/showing-order/showing-order-preview";
         private const string Default = Rpc + Module + "/showing-order";
         public const string Count = Default + "/count";

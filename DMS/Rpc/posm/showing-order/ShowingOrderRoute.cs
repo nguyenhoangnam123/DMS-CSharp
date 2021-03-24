@@ -24,9 +24,9 @@ namespace DMS.Rpc.posm.showing_order
     [DisplayName("Quản lý POSM")]
     public class ShowingOrderRoute : Root
     {
-        public const string Parent = Module + "/posm/showing-order";
-        public const string Master = Module + "/posm/showing-order/showing-order-master";
-        public const string Detail = Module + "/posm/showing-order/showing-order-detail/*";
+        public const string Parent = Module + "/showing-order";
+        public const string Master = Module + "/showing-order/showing-order-master";
+        public const string Detail = Module + "/showing-order/showing-order-detail/*";
         public const string Preview = Module + "/showing-order/showing-order-preview";
         private const string Default = Rpc + Module + "/showing-order";
         public const string Count = Default + "/count";
