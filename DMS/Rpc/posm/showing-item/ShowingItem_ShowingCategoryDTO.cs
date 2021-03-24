@@ -6,7 +6,7 @@ using DMS.Entities;
 
 namespace DMS.Rpc.posm.showing_item
 {
-    public class ShowingItem_CategoryDTO : DataDTO
+    public class ShowingItem_ShowingCategoryDTO : DataDTO
     {
         
         public long Id { get; set; }
@@ -30,35 +30,35 @@ namespace DMS.Rpc.posm.showing_item
         public bool Used { get; set; }
         
 
-        public ShowingItem_CategoryDTO() {}
-        public ShowingItem_CategoryDTO(Category Category)
+        public ShowingItem_ShowingCategoryDTO() {}
+        public ShowingItem_ShowingCategoryDTO(ShowingCategory ShowingCategory)
         {
             
-            this.Id = Category.Id;
+            this.Id = ShowingCategory.Id;
             
-            this.Code = Category.Code;
+            this.Code = ShowingCategory.Code;
             
-            this.Name = Category.Name;
+            this.Name = ShowingCategory.Name;
             
-            this.ParentId = Category.ParentId;
+            this.ParentId = ShowingCategory.ParentId;
             
-            this.Path = Category.Path;
+            this.Path = ShowingCategory.Path;
             
-            this.Level = Category.Level;
+            this.Level = ShowingCategory.Level;
             
-            this.StatusId = Category.StatusId;
+            this.StatusId = ShowingCategory.StatusId;
             
-            this.ImageId = Category.ImageId;
+            this.ImageId = ShowingCategory.ImageId;
             
-            this.RowId = Category.RowId;
+            this.RowId = ShowingCategory.RowId;
             
-            this.Used = Category.Used;
+            this.Used = ShowingCategory.Used;
             
-            this.Errors = Category.Errors;
+            this.Errors = ShowingCategory.Errors;
         }
     }
 
-    public class ShowingItem_CategoryFilterDTO : FilterDTO
+    public class ShowingItem_ShowingCategoryFilterDTO : FilterDTO
     {
         
         public IdFilter Id { get; set; }
@@ -79,6 +79,6 @@ namespace DMS.Rpc.posm.showing_item
         
         public GuidFilter RowId { get; set; }
         
-        public CategoryOrder OrderBy { get; set; }
+        public ShowingCategoryOrder OrderBy { get; set; }
     }
 }

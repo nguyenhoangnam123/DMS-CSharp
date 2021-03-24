@@ -15,7 +15,7 @@ namespace DMS.Rpc.posm.showing_order
         
         public string Name { get; set; }
         
-        public long CategoryId { get; set; }
+        public long ShowingCategoryId { get; set; }
         
         public long UnitOfMeasureId { get; set; }
         
@@ -29,7 +29,7 @@ namespace DMS.Rpc.posm.showing_order
         
         public Guid RowId { get; set; }
         
-
+        public ShowingOrder_ShowingCategoryDTO ShowingCategory { get; set; }
         public ShowingOrder_ShowingItemDTO() {}
         public ShowingOrder_ShowingItemDTO(ShowingItem ShowingItem)
         {
@@ -40,7 +40,7 @@ namespace DMS.Rpc.posm.showing_order
             
             this.Name = ShowingItem.Name;
             
-            this.CategoryId = ShowingItem.CategoryId;
+            this.ShowingCategoryId = ShowingItem.ShowingCategoryId;
             
             this.UnitOfMeasureId = ShowingItem.UnitOfMeasureId;
             
@@ -53,6 +53,7 @@ namespace DMS.Rpc.posm.showing_order
             this.Used = ShowingItem.Used;
             
             this.RowId = ShowingItem.RowId;
+            this.ShowingCategory = ShowingItem.ShowingCategory == null ? null : new ShowingOrder_ShowingCategoryDTO(ShowingItem.ShowingCategory);
             
             this.Errors = ShowingItem.Errors;
         }
@@ -67,7 +68,7 @@ namespace DMS.Rpc.posm.showing_order
         
         public StringFilter Name { get; set; }
         
-        public IdFilter CategoryId { get; set; }
+        public IdFilter ShowingCategoryId { get; set; }
         
         public IdFilter UnitOfMeasureId { get; set; }
         

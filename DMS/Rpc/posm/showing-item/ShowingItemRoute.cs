@@ -37,11 +37,11 @@ namespace DMS.Rpc.posm.showing_item
         public const string ExportTemplate = Default + "/export-template";
         public const string BulkDelete = Default + "/bulk-delete";
         
-        public const string FilterListCategory = Default + "/filter-list-category";
+        public const string FilterListShowingCategory = Default + "/filter-list-showing-category";
         public const string FilterListStatus = Default + "/filter-list-status";
         public const string FilterListUnitOfMeasure = Default + "/filter-list-unit-of-measure";
 
-        public const string SingleListCategory = Default + "/single-list-category";
+        public const string SingleListShowingCategory = Default + "/single-list-showing-category";
         public const string SingleListStatus = Default + "/single-list-status";
         public const string SingleListUnitOfMeasure = Default + "/single-list-unit-of-measure";
 
@@ -51,7 +51,7 @@ namespace DMS.Rpc.posm.showing_item
             { nameof(ShowingItemFilter.Id), FieldTypeEnum.ID.Id },
             { nameof(ShowingItemFilter.Code), FieldTypeEnum.STRING.Id },
             { nameof(ShowingItemFilter.Name), FieldTypeEnum.STRING.Id },
-            { nameof(ShowingItemFilter.CategoryId), FieldTypeEnum.ID.Id },
+            { nameof(ShowingItemFilter.ShowingCategoryId), FieldTypeEnum.ID.Id },
             { nameof(ShowingItemFilter.UnitOfMeasureId), FieldTypeEnum.ID.Id },
             { nameof(ShowingItemFilter.SalePrice), FieldTypeEnum.DECIMAL.Id },
             { nameof(ShowingItemFilter.Desception), FieldTypeEnum.STRING.Id },
@@ -60,10 +60,10 @@ namespace DMS.Rpc.posm.showing_item
         };
 
         private static List<string> FilterList = new List<string> { 
-            FilterListCategory,FilterListStatus,FilterListUnitOfMeasure,
+            FilterListShowingCategory,FilterListStatus,FilterListUnitOfMeasure,
         };
         private static List<string> SingleList = new List<string> { 
-            SingleListCategory, SingleListStatus, SingleListUnitOfMeasure, 
+            SingleListShowingCategory, SingleListStatus, SingleListUnitOfMeasure, 
         };
         private static List<string> CountList = new List<string> { 
             

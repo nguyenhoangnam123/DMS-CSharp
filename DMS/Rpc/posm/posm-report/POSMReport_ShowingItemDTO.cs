@@ -15,7 +15,7 @@ namespace DMS.Rpc.posm.posm_report
         
         public string Name { get; set; }
         
-        public long CategoryId { get; set; }
+        public long ShowingCategoryId { get; set; }
         
         public long UnitOfMeasureId { get; set; }
         
@@ -40,7 +40,7 @@ namespace DMS.Rpc.posm.posm_report
             
             this.Name = ShowingItem.Name;
             
-            this.CategoryId = ShowingItem.CategoryId;
+            this.ShowingCategoryId = ShowingItem.ShowingCategoryId;
             
             this.UnitOfMeasureId = ShowingItem.UnitOfMeasureId;
             
@@ -67,7 +67,7 @@ namespace DMS.Rpc.posm.posm_report
         
         public StringFilter Name { get; set; }
         
-        public IdFilter CategoryId { get; set; }
+        public IdFilter ShowingCategoryId { get; set; }
         
         public IdFilter UnitOfMeasureId { get; set; }
         

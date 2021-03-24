@@ -14,7 +14,7 @@ namespace DMS.Models
         public long Id { get; set; }
         public string Code { get; set; }
         public string Name { get; set; }
-        public long CategoryId { get; set; }
+        public long ShowingCategoryId { get; set; }
         public long UnitOfMeasureId { get; set; }
         public decimal SalePrice { get; set; }
         public string Desception { get; set; }
@@ -25,7 +25,7 @@ namespace DMS.Models
         public bool Used { get; set; }
         public Guid RowId { get; set; }
 
-        public virtual CategoryDAO Category { get; set; }
+        public virtual ShowingCategoryDAO ShowingCategory { get; set; }
         public virtual StatusDAO Status { get; set; }
         public virtual UnitOfMeasureDAO UnitOfMeasure { get; set; }
         public virtual ICollection<ShowingInventoryDAO> ShowingInventories { get; set; }

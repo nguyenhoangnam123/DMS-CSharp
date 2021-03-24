@@ -8,6 +8,7 @@ namespace DMS.Rpc.posm.showing_order
 {
     public class ShowingOrder_ShowingOrderDTO : DataDTO
     {
+        public long STT { get; set; }
         public long Id { get; set; }
         public string Code { get; set; }
         public long AppUserId { get; set; }

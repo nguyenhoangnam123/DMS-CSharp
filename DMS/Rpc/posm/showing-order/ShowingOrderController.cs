@@ -19,6 +19,9 @@ using DMS.Services.MStatus;
 using DMS.Services.MShowingItem;
 using DMS.Services.MUnitOfMeasure;
 using DMS.Services.MStore;
+using DMS.Models;
+using DMS.Enums;
+using Microsoft.EntityFrameworkCore;
 
 namespace DMS.Rpc.posm.showing_order
 {
@@ -33,6 +36,7 @@ namespace DMS.Rpc.posm.showing_order
         private IShowingOrderService ShowingOrderService;
         private IStoreService StoreService;
         private ICurrentContext CurrentContext;
+        private DataContext DataContext;
         public ShowingOrderController(
             IAppUserService AppUserService,
             IOrganizationService OrganizationService,
@@ -42,7 +46,8 @@ namespace DMS.Rpc.posm.showing_order
             IUnitOfMeasureService UnitOfMeasureService,
             IShowingOrderService ShowingOrderService,
             IStoreService StoreService,
-            ICurrentContext CurrentContext
+            ICurrentContext CurrentContext,
+            DataContext DataContext
         )
         {
             this.AppUserService = AppUserService;
@@ -54,6 +59,7 @@ namespace DMS.Rpc.posm.showing_order
             this.ShowingOrderService = ShowingOrderService;
             this.StoreService = StoreService;
             this.CurrentContext = CurrentContext;
+            this.DataContext = DataContext;
         }
 
         [Route(ShowingOrderRoute.Count), HttpPost]
@@ -155,315 +161,79 @@ namespace DMS.Rpc.posm.showing_order
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
 
-            MemoryStream memoryStream = new MemoryStream();
-            using (ExcelPackage excel = new ExcelPackage(memoryStream))
+            DateTime Start = ShowingOrder_ShowingOrderFilterDTO.Date?.GreaterEqual == null ?
+                    LocalStartDay(CurrentContext) :
+                    ShowingOrder_ShowingOrderFilterDTO.Date.GreaterEqual.Value;
+
+            DateTime End = ShowingOrder_ShowingOrderFilterDTO.Date?.LessEqual == null ?
+                    LocalEndDay(CurrentContext) :
+                    ShowingOrder_ShowingOrderFilterDTO.Date.LessEqual.Value;
+
+            ShowingOrder_ShowingOrderFilterDTO.Skip = 0;
+            ShowingOrder_ShowingOrderFilterDTO.Take = int.MaxValue;
+            List<ShowingOrder_ShowingOrderDTO> ShowingOrder_ShowingOrderDTOs = (await List(ShowingOrder_ShowingOrderFilterDTO)).Value;
+            var Ids = ShowingOrder_ShowingOrderDTOs.Select(x => x.Id).ToList();
+            var ShowingOrder_ShowingOrderContentDTOs = await DataContext.ShowingOrderContent
+                .Where(x => Ids.Contains(x.ShowingOrderId))
+                .Select(x => new ShowingOrder_ShowingOrderContentDTO
+                {
+                    Id = x.Id,
+                    ShowingItemId = x.ShowingItemId,
+                    Amount = x.Amount,
+                    Quantity = x.Quantity,
+                    SalePrice = x.SalePrice,
+                    UnitOfMeasureId = x.UnitOfMeasureId,
+                    ShowingOrderId = x.ShowingOrderId,
+                    ShowingItem = x.ShowingItem == null ? null : new ShowingOrder_ShowingItemDTO
+                    {
+                        Id = x.ShowingItem.Id,
+                        Code = x.ShowingItem.Code,
+                        Name = x.ShowingItem.Name,
+                        SalePrice = x.ShowingItem.SalePrice,
+                        ShowingCategoryId = x.ShowingItem.ShowingCategoryId,
+                        ShowingCategory = x.ShowingItem.ShowingCategory == null ? null : new ShowingOrder_ShowingCategoryDTO
+                        {
+                            Id  = x.ShowingItem.ShowingCategory.Id,
+                            Code  = x.ShowingItem.ShowingCategory.Code,
+                            Name  = x.ShowingItem.ShowingCategory.Name,
+                        },
+                    },
+                    UnitOfMeasure = x.UnitOfMeasure == null ? null : new ShowingOrder_UnitOfMeasureDTO
+                    {
+                        Id = x.UnitOfMeasure.Id,
+                        Code = x.UnitOfMeasure.Code,
+                        Name = x.UnitOfMeasure.Name,
+                    }
+                }).ToListAsync();
+
+            var stt = 1;
+            foreach (var ShowingOrder_ShowingOrderDTO in ShowingOrder_ShowingOrderDTOs)
             {
-                #region ShowingOrder
-                var ShowingOrderFilter = ConvertFilterDTOToFilterEntity(ShowingOrder_ShowingOrderFilterDTO);
-                ShowingOrderFilter.Skip = 0;
-                ShowingOrderFilter.Take = int.MaxValue;
-                ShowingOrderFilter = await ShowingOrderService.ToFilter(ShowingOrderFilter);
-                List<ShowingOrder> ShowingOrders = await ShowingOrderService.List(ShowingOrderFilter);
-
-                var ShowingOrderHeaders = new List<string[]>()
-                {
-                    new string[] {
-                        "Id",
-                        "Code",
-                        "AppUserId",
-                        "OrganizationId",
-                        "Date",
-                        "ShowingWarehouseId",
-                        "StatusId",
-                        "Total",
-                        "RowId",
-                    }
-                };
-                List<object[]> ShowingOrderData = new List<object[]>();
-                for (int i = 0; i < ShowingOrders.Count; i++)
-                {
-                    var ShowingOrder = ShowingOrders[i];
-                    ShowingOrderData.Add(new Object[]
-                    {
-                        ShowingOrder.Id,
-                        ShowingOrder.Code,
-                        ShowingOrder.AppUserId,
-                        ShowingOrder.OrganizationId,
-                        ShowingOrder.Date,
-                        ShowingOrder.ShowingWarehouseId,
-                        ShowingOrder.StatusId,
-                        ShowingOrder.Total,
-                        ShowingOrder.RowId,
-                    });
-                }
-                excel.GenerateWorksheet("ShowingOrder", ShowingOrderHeaders, ShowingOrderData);
-                #endregion
-
-                #region AppUser
-                var AppUserFilter = new AppUserFilter();
-                AppUserFilter.Selects = AppUserSelect.ALL;
-                AppUserFilter.OrderBy = AppUserOrder.Id;
-                AppUserFilter.OrderType = OrderType.ASC;
-                AppUserFilter.Skip = 0;
-                AppUserFilter.Take = int.MaxValue;
-                List<AppUser> AppUsers = await AppUserService.List(AppUserFilter);
-
-                var AppUserHeaders = new List<string[]>()
-                {
-                    new string[] {
-                        "Id",
-                        "Username",
-                        "DisplayName",
-                        "Address",
-                        "Email",
-                        "Phone",
-                        "SexId",
-                        "Birthday",
-                        "Avatar",
-                        "PositionId",
-                        "Department",
-                        "OrganizationId",
-                        "ProvinceId",
-                        "Longitude",
-                        "Latitude",
-                        "StatusId",
-                        "GPSUpdatedAt",
-                        "RowId",
-                    }
-                };
-                List<object[]> AppUserData = new List<object[]>();
-                for (int i = 0; i < AppUsers.Count; i++)
-                {
-                    var AppUser = AppUsers[i];
-                    AppUserData.Add(new Object[]
-                    {
-                        AppUser.Id,
-                        AppUser.Username,
-                        AppUser.DisplayName,
-                        AppUser.Address,
-                        AppUser.Email,
-                        AppUser.Phone,
-                        AppUser.SexId,
-                        AppUser.Birthday,
-                        AppUser.Avatar,
-                        AppUser.PositionId,
-                        AppUser.Department,
-                        AppUser.OrganizationId,
-                        AppUser.ProvinceId,
-                        AppUser.Longitude,
-                        AppUser.Latitude,
-                        AppUser.StatusId,
-                        AppUser.GPSUpdatedAt,
-                        AppUser.RowId,
-                    });
-                }
-                excel.GenerateWorksheet("AppUser", AppUserHeaders, AppUserData);
-                #endregion
-                #region Organization
-                var OrganizationFilter = new OrganizationFilter();
-                OrganizationFilter.Selects = OrganizationSelect.ALL;
-                OrganizationFilter.OrderBy = OrganizationOrder.Id;
-                OrganizationFilter.OrderType = OrderType.ASC;
-                OrganizationFilter.Skip = 0;
-                OrganizationFilter.Take = int.MaxValue;
-                List<Organization> Organizations = await OrganizationService.List(OrganizationFilter);
-
-                var OrganizationHeaders = new List<string[]>()
-                {
-                    new string[] {
-                        "Id",
-                        "Code",
-                        "Name",
-                        "ParentId",
-                        "Path",
-                        "Level",
-                        "StatusId",
-                        "Phone",
-                        "Email",
-                        "Address",
-                        "RowId",
-                    }
-                };
-                List<object[]> OrganizationData = new List<object[]>();
-                for (int i = 0; i < Organizations.Count; i++)
-                {
-                    var Organization = Organizations[i];
-                    OrganizationData.Add(new Object[]
-                    {
-                        Organization.Id,
-                        Organization.Code,
-                        Organization.Name,
-                        Organization.ParentId,
-                        Organization.Path,
-                        Organization.Level,
-                        Organization.StatusId,
-                        Organization.Phone,
-                        Organization.Email,
-                        Organization.Address,
-                        Organization.RowId,
-                    });
-                }
-                excel.GenerateWorksheet("Organization", OrganizationHeaders, OrganizationData);
-                #endregion
-                #region ShowingWarehouse
-                var ShowingWarehouseFilter = new ShowingWarehouseFilter();
-                ShowingWarehouseFilter.Selects = ShowingWarehouseSelect.ALL;
-                ShowingWarehouseFilter.OrderBy = ShowingWarehouseOrder.Id;
-                ShowingWarehouseFilter.OrderType = OrderType.ASC;
-                ShowingWarehouseFilter.Skip = 0;
-                ShowingWarehouseFilter.Take = int.MaxValue;
-                List<ShowingWarehouse> ShowingWarehouses = await ShowingWarehouseService.List(ShowingWarehouseFilter);
-
-                var ShowingWarehouseHeaders = new List<string[]>()
-                {
-                    new string[] {
-                        "Id",
-                        "Code",
-                        "Name",
-                        "Address",
-                        "OrganizationId",
-                        "ProvinceId",
-                        "DistrictId",
-                        "WardId",
-                        "StatusId",
-                        "RowId",
-                    }
-                };
-                List<object[]> ShowingWarehouseData = new List<object[]>();
-                for (int i = 0; i < ShowingWarehouses.Count; i++)
-                {
-                    var ShowingWarehouse = ShowingWarehouses[i];
-                    ShowingWarehouseData.Add(new Object[]
-                    {
-                        ShowingWarehouse.Id,
-                        ShowingWarehouse.Code,
-                        ShowingWarehouse.Name,
-                        ShowingWarehouse.Address,
-                        ShowingWarehouse.OrganizationId,
-                        ShowingWarehouse.ProvinceId,
-                        ShowingWarehouse.DistrictId,
-                        ShowingWarehouse.WardId,
-                        ShowingWarehouse.StatusId,
-                        ShowingWarehouse.RowId,
-                    });
-                }
-                excel.GenerateWorksheet("ShowingWarehouse", ShowingWarehouseHeaders, ShowingWarehouseData);
-                #endregion
-                #region Status
-                var StatusFilter = new StatusFilter();
-                StatusFilter.Selects = StatusSelect.ALL;
-                StatusFilter.OrderBy = StatusOrder.Id;
-                StatusFilter.OrderType = OrderType.ASC;
-                StatusFilter.Skip = 0;
-                StatusFilter.Take = int.MaxValue;
-                List<Status> Statuses = await StatusService.List(StatusFilter);
-
-                var StatusHeaders = new List<string[]>()
-                {
-                    new string[] {
-                        "Id",
-                        "Code",
-                        "Name",
-                    }
-                };
-                List<object[]> StatusData = new List<object[]>();
-                for (int i = 0; i < Statuses.Count; i++)
-                {
-                    var Status = Statuses[i];
-                    StatusData.Add(new Object[]
-                    {
-                        Status.Id,
-                        Status.Code,
-                        Status.Name,
-                    });
-                }
-                excel.GenerateWorksheet("Status", StatusHeaders, StatusData);
-                #endregion
-                #region ShowingItem
-                var ShowingItemFilter = new ShowingItemFilter();
-                ShowingItemFilter.Selects = ShowingItemSelect.ALL;
-                ShowingItemFilter.OrderBy = ShowingItemOrder.Id;
-                ShowingItemFilter.OrderType = OrderType.ASC;
-                ShowingItemFilter.Skip = 0;
-                ShowingItemFilter.Take = int.MaxValue;
-                List<ShowingItem> ShowingItems = await ShowingItemService.List(ShowingItemFilter);
-
-                var ShowingItemHeaders = new List<string[]>()
-                {
-                    new string[] {
-                        "Id",
-                        "Code",
-                        "Name",
-                        "CategoryId",
-                        "UnitOfMeasureId",
-                        "SalePrice",
-                        "Desception",
-                        "StatusId",
-                        "Used",
-                        "RowId",
-                    }
-                };
-                List<object[]> ShowingItemData = new List<object[]>();
-                for (int i = 0; i < ShowingItems.Count; i++)
-                {
-                    var ShowingItem = ShowingItems[i];
-                    ShowingItemData.Add(new Object[]
-                    {
-                        ShowingItem.Id,
-                        ShowingItem.Code,
-                        ShowingItem.Name,
-                        ShowingItem.CategoryId,
-                        ShowingItem.UnitOfMeasureId,
-                        ShowingItem.SalePrice,
-                        ShowingItem.Desception,
-                        ShowingItem.StatusId,
-                        ShowingItem.Used,
-                        ShowingItem.RowId,
-                    });
-                }
-                excel.GenerateWorksheet("ShowingItem", ShowingItemHeaders, ShowingItemData);
-                #endregion
-                #region UnitOfMeasure
-                var UnitOfMeasureFilter = new UnitOfMeasureFilter();
-                UnitOfMeasureFilter.Selects = UnitOfMeasureSelect.ALL;
-                UnitOfMeasureFilter.OrderBy = UnitOfMeasureOrder.Id;
-                UnitOfMeasureFilter.OrderType = OrderType.ASC;
-                UnitOfMeasureFilter.Skip = 0;
-                UnitOfMeasureFilter.Take = int.MaxValue;
-                List<UnitOfMeasure> UnitOfMeasures = await UnitOfMeasureService.List(UnitOfMeasureFilter);
-
-                var UnitOfMeasureHeaders = new List<string[]>()
-                {
-                    new string[] {
-                        "Id",
-                        "Code",
-                        "Name",
-                        "Description",
-                        "StatusId",
-                        "Used",
-                        "RowId",
-                    }
-                };
-                List<object[]> UnitOfMeasureData = new List<object[]>();
-                for (int i = 0; i < UnitOfMeasures.Count; i++)
-                {
-                    var UnitOfMeasure = UnitOfMeasures[i];
-                    UnitOfMeasureData.Add(new Object[]
-                    {
-                        UnitOfMeasure.Id,
-                        UnitOfMeasure.Code,
-                        UnitOfMeasure.Name,
-                        UnitOfMeasure.Description,
-                        UnitOfMeasure.StatusId,
-                        UnitOfMeasure.Used,
-                        UnitOfMeasure.RowId,
-                    });
-                }
-                excel.GenerateWorksheet("UnitOfMeasure", UnitOfMeasureHeaders, UnitOfMeasureData);
-                #endregion
-                excel.Save();
+                ShowingOrder_ShowingOrderDTO.STT = stt++;
+                ShowingOrder_ShowingOrderDTO.ShowingOrderContents = ShowingOrder_ShowingOrderContentDTOs.Where(x => x.ShowingOrderId == ShowingOrder_ShowingOrderDTO.Id).ToList();
             }
-            return File(memoryStream.ToArray(), "application/octet-stream", "ShowingOrder.xlsx");
+
+            var OrgRoot = await DataContext.Organization
+                .Where(x => x.DeletedAt == null &&
+                x.StatusId == StatusEnum.ACTIVE.Id &&
+                x.ParentId.HasValue == false)
+                .FirstOrDefaultAsync();
+
+            string path = "Templates/POSM_Export.xlsx";
+            byte[] arr = System.IO.File.ReadAllBytes(path);
+            MemoryStream input = new MemoryStream(arr);
+            MemoryStream output = new MemoryStream();
+            dynamic Data = new ExpandoObject();
+            Data.Start = Start.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy");
+            Data.End = End.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy");
+            Data.Data = ShowingOrder_ShowingOrderDTOs;
+            Data.RootName = OrgRoot == null ? "" : OrgRoot.Name.ToUpper();
+            using (var document = StaticParams.DocumentFactory.Open(input, output, "xlsx"))
+            {
+                document.Process(Data);
+            };
+
+            return File(output.ToArray(), "application/octet-stream", "POSMExport.xlsx");
         }
 
         private async Task<bool> HasPermission(long Id)
@@ -600,7 +370,7 @@ namespace DMS.Rpc.posm.showing_order
                         Id = x.ShowingItem.Id,
                         Code = x.ShowingItem.Code,
                         Name = x.ShowingItem.Name,
-                        CategoryId = x.ShowingItem.CategoryId,
+                        ShowingCategoryId = x.ShowingItem.ShowingCategoryId,
                         UnitOfMeasureId = x.ShowingItem.UnitOfMeasureId,
                         SalePrice = x.ShowingItem.SalePrice,
                         Desception = x.ShowingItem.Desception,

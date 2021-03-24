@@ -11,14 +11,14 @@ namespace DMS.Entities
         public long Id { get; set; }
         public string Code { get; set; }
         public string Name { get; set; }
-        public long CategoryId { get; set; }
+        public long ShowingCategoryId { get; set; }
         public long UnitOfMeasureId { get; set; }
         public decimal SalePrice { get; set; }
         public string Desception { get; set; }
         public long StatusId { get; set; }
         public bool Used { get; set; }
         public Guid RowId { get; set; }
-        public Category Category { get; set; }
+        public ShowingCategory ShowingCategory { get; set; }
         public Status Status { get; set; }
         public UnitOfMeasure UnitOfMeasure { get; set; }
         public DateTime CreatedAt { get; set; }
@@ -31,7 +31,7 @@ namespace DMS.Entities
             if (this.Id != other.Id) return false;
             if (this.Code != other.Code) return false;
             if (this.Name != other.Name) return false;
-            if (this.CategoryId != other.CategoryId) return false;
+            if (this.ShowingCategoryId != other.ShowingCategoryId) return false;
             if (this.UnitOfMeasureId != other.UnitOfMeasureId) return false;
             if (this.SalePrice != other.SalePrice) return false;
             if (this.Desception != other.Desception) return false;
@@ -51,7 +51,7 @@ namespace DMS.Entities
         public IdFilter Id { get; set; }
         public StringFilter Code { get; set; }
         public StringFilter Name { get; set; }
-        public IdFilter CategoryId { get; set; }
+        public IdFilter ShowingCategoryId { get; set; }
         public IdFilter UnitOfMeasureId { get; set; }
         public DecimalFilter SalePrice { get; set; }
         public StringFilter Desception { get; set; }
@@ -70,7 +70,7 @@ namespace DMS.Entities
         Id = 0,
         Code = 1,
         Name = 2,
-        Category = 3,
+        ShowingCategory = 3,
         UnitOfMeasure = 4,
         SalePrice = 5,
         Desception = 6,
@@ -88,7 +88,7 @@ namespace DMS.Entities
         Id = E._0,
         Code = E._1,
         Name = E._2,
-        Category = E._3,
+        ShowingCategory = E._3,
         UnitOfMeasure = E._4,
         SalePrice = E._5,
         Desception = E._6,

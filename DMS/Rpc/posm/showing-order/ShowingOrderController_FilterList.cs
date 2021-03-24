@@ -143,7 +143,7 @@ namespace DMS.Rpc.posm.showing_order
             ShowingItemFilter.Id = ShowingOrder_ShowingItemFilterDTO.Id;
             ShowingItemFilter.Code = ShowingOrder_ShowingItemFilterDTO.Code;
             ShowingItemFilter.Name = ShowingOrder_ShowingItemFilterDTO.Name;
-            ShowingItemFilter.CategoryId = ShowingOrder_ShowingItemFilterDTO.CategoryId;
+            ShowingItemFilter.ShowingCategoryId = ShowingOrder_ShowingItemFilterDTO.ShowingCategoryId;
             ShowingItemFilter.UnitOfMeasureId = ShowingOrder_ShowingItemFilterDTO.UnitOfMeasureId;
             ShowingItemFilter.SalePrice = ShowingOrder_ShowingItemFilterDTO.SalePrice;
             ShowingItemFilter.Desception = ShowingOrder_ShowingItemFilterDTO.Desception;

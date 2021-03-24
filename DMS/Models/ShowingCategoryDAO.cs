@@ -8,6 +8,7 @@ namespace DMS.Models
         public ShowingCategoryDAO()
         {
             InverseParent = new HashSet<ShowingCategoryDAO>();
+            ShowingItems = new HashSet<ShowingItemDAO>();
         }
 
         public long Id { get; set; }
@@ -28,5 +29,6 @@ namespace DMS.Models
         public virtual ShowingCategoryDAO Parent { get; set; }
         public virtual StatusDAO Status { get; set; }
         public virtual ICollection<ShowingCategoryDAO> InverseParent { get; set; }
+        public virtual ICollection<ShowingItemDAO> ShowingItems { get; set; }
     }
 }

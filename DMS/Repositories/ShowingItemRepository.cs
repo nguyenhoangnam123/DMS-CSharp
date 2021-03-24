@@ -45,8 +45,8 @@ namespace DMS.Repositories
                 query = query.Where(q => q.Code, filter.Code);
             if (filter.Name != null && filter.Name.HasValue)
                 query = query.Where(q => q.Name, filter.Name);
-            if (filter.CategoryId != null && filter.CategoryId.HasValue)
-                query = query.Where(q => q.CategoryId, filter.CategoryId);
+            if (filter.ShowingCategoryId != null && filter.ShowingCategoryId.HasValue)
+                query = query.Where(q => q.ShowingCategoryId, filter.ShowingCategoryId);
             if (filter.UnitOfMeasureId != null && filter.UnitOfMeasureId.HasValue)
                 query = query.Where(q => q.UnitOfMeasureId, filter.UnitOfMeasureId);
             if (filter.SalePrice != null && filter.SalePrice.HasValue)
@@ -75,8 +75,8 @@ namespace DMS.Repositories
                     queryable = queryable.Where(q => q.Code, filter.Code);
                 if (ShowingItemFilter.Name != null && ShowingItemFilter.Name.HasValue)
                     queryable = queryable.Where(q => q.Name, filter.Name);
-                if (ShowingItemFilter.CategoryId != null && ShowingItemFilter.CategoryId.HasValue)
-                    queryable = queryable.Where(q => q.CategoryId, filter.CategoryId);
+                if (ShowingItemFilter.ShowingCategoryId != null && ShowingItemFilter.ShowingCategoryId.HasValue)
+                    queryable = queryable.Where(q => q.ShowingCategoryId, filter.ShowingCategoryId);
                 if (ShowingItemFilter.UnitOfMeasureId != null && ShowingItemFilter.UnitOfMeasureId.HasValue)
                     queryable = queryable.Where(q => q.UnitOfMeasureId, filter.UnitOfMeasureId);
                 if (ShowingItemFilter.SalePrice != null && ShowingItemFilter.SalePrice.HasValue)
@@ -108,8 +108,8 @@ namespace DMS.Repositories
                         case ShowingItemOrder.Name:
                             query = query.OrderBy(q => q.Name);
                             break;
-                        case ShowingItemOrder.Category:
-                            query = query.OrderBy(q => q.CategoryId);
+                        case ShowingItemOrder.ShowingCategory:
+                            query = query.OrderBy(q => q.ShowingCategoryId);
                             break;
                         case ShowingItemOrder.UnitOfMeasure:
                             query = query.OrderBy(q => q.UnitOfMeasureId);
@@ -143,8 +143,8 @@ namespace DMS.Repositories
                         case ShowingItemOrder.Name:
                             query = query.OrderByDescending(q => q.Name);
                             break;
-                        case ShowingItemOrder.Category:
-                            query = query.OrderByDescending(q => q.CategoryId);
+                        case ShowingItemOrder.ShowingCategory:
+                            query = query.OrderByDescending(q => q.ShowingCategoryId);
                             break;
                         case ShowingItemOrder.UnitOfMeasure:
                             query = query.OrderByDescending(q => q.UnitOfMeasureId);
@@ -178,25 +178,25 @@ namespace DMS.Repositories
                 Id = filter.Selects.Contains(ShowingItemSelect.Id) ? q.Id : default(long),
                 Code = filter.Selects.Contains(ShowingItemSelect.Code) ? q.Code : default(string),
                 Name = filter.Selects.Contains(ShowingItemSelect.Name) ? q.Name : default(string),
-                CategoryId = filter.Selects.Contains(ShowingItemSelect.Category) ? q.CategoryId : default(long),
+                ShowingCategoryId = filter.Selects.Contains(ShowingItemSelect.ShowingCategory) ? q.ShowingCategoryId : default(long),
                 UnitOfMeasureId = filter.Selects.Contains(ShowingItemSelect.UnitOfMeasure) ? q.UnitOfMeasureId : default(long),
                 SalePrice = filter.Selects.Contains(ShowingItemSelect.SalePrice) ? q.SalePrice : default(decimal),
                 Desception = filter.Selects.Contains(ShowingItemSelect.Desception) ? q.Desception : default(string),
                 StatusId = filter.Selects.Contains(ShowingItemSelect.Status) ? q.StatusId : default(long),
                 Used = filter.Selects.Contains(ShowingItemSelect.Used) ? q.Used : default(bool),
                 RowId = filter.Selects.Contains(ShowingItemSelect.Row) ? q.RowId : default(Guid),
-                Category = filter.Selects.Contains(ShowingItemSelect.Category) && q.Category != null ? new Category
+                ShowingCategory = filter.Selects.Contains(ShowingItemSelect.ShowingCategory) && q.ShowingCategory != null ? new ShowingCategory
                 {
-                    Id = q.Category.Id,
-                    Code = q.Category.Code,
-                    Name = q.Category.Name,
-                    ParentId = q.Category.ParentId,
-                    Path = q.Category.Path,
-                    Level = q.Category.Level,
-                    StatusId = q.Category.StatusId,
-                    ImageId = q.Category.ImageId,
-                    RowId = q.Category.RowId,
-                    Used = q.Category.Used,
+                    Id = q.ShowingCategory.Id,
+                    Code = q.ShowingCategory.Code,
+                    Name = q.ShowingCategory.Name,
+                    ParentId = q.ShowingCategory.ParentId,
+                    Path = q.ShowingCategory.Path,
+                    Level = q.ShowingCategory.Level,
+                    StatusId = q.ShowingCategory.StatusId,
+                    ImageId = q.ShowingCategory.ImageId,
+                    RowId = q.ShowingCategory.RowId,
+                    Used = q.ShowingCategory.Used,
                 } : null,
                 Status = filter.Selects.Contains(ShowingItemSelect.Status) && q.Status != null ? new Status
                 {
@@ -246,25 +246,25 @@ namespace DMS.Repositories
                 Id = x.Id,
                 Code = x.Code,
                 Name = x.Name,
-                CategoryId = x.CategoryId,
+                ShowingCategoryId = x.ShowingCategoryId,
                 UnitOfMeasureId = x.UnitOfMeasureId,
                 SalePrice = x.SalePrice,
                 Desception = x.Desception,
                 StatusId = x.StatusId,
                 Used = x.Used,
                 RowId = x.RowId,
-                Category = x.Category == null ? null : new Category
+                ShowingCategory = x.ShowingCategory == null ? null : new ShowingCategory
                 {
-                    Id = x.Category.Id,
-                    Code = x.Category.Code,
-                    Name = x.Category.Name,
-                    ParentId = x.Category.ParentId,
-                    Path = x.Category.Path,
-                    Level = x.Category.Level,
-                    StatusId = x.Category.StatusId,
-                    ImageId = x.Category.ImageId,
-                    RowId = x.Category.RowId,
-                    Used = x.Category.Used,
+                    Id = x.ShowingCategory.Id,
+                    Code = x.ShowingCategory.Code,
+                    Name = x.ShowingCategory.Name,
+                    ParentId = x.ShowingCategory.ParentId,
+                    Path = x.ShowingCategory.Path,
+                    Level = x.ShowingCategory.Level,
+                    StatusId = x.ShowingCategory.StatusId,
+                    ImageId = x.ShowingCategory.ImageId,
+                    RowId = x.ShowingCategory.RowId,
+                    Used = x.ShowingCategory.Used,
                 },
                 Status = x.Status == null ? null : new Status
                 {
@@ -300,25 +300,25 @@ namespace DMS.Repositories
                 Id = x.Id,
                 Code = x.Code,
                 Name = x.Name,
-                CategoryId = x.CategoryId,
+                ShowingCategoryId = x.ShowingCategoryId,
                 UnitOfMeasureId = x.UnitOfMeasureId,
                 SalePrice = x.SalePrice,
                 Desception = x.Desception,
                 StatusId = x.StatusId,
                 Used = x.Used,
                 RowId = x.RowId,
-                Category = x.Category == null ? null : new Category
+                ShowingCategory = x.ShowingCategory == null ? null : new ShowingCategory
                 {
-                    Id = x.Category.Id,
-                    Code = x.Category.Code,
-                    Name = x.Category.Name,
-                    ParentId = x.Category.ParentId,
-                    Path = x.Category.Path,
-                    Level = x.Category.Level,
-                    StatusId = x.Category.StatusId,
-                    ImageId = x.Category.ImageId,
-                    RowId = x.Category.RowId,
-                    Used = x.Category.Used,
+                    Id = x.ShowingCategory.Id,
+                    Code = x.ShowingCategory.Code,
+                    Name = x.ShowingCategory.Name,
+                    ParentId = x.ShowingCategory.ParentId,
+                    Path = x.ShowingCategory.Path,
+                    Level = x.ShowingCategory.Level,
+                    StatusId = x.ShowingCategory.StatusId,
+                    ImageId = x.ShowingCategory.ImageId,
+                    RowId = x.ShowingCategory.RowId,
+                    Used = x.ShowingCategory.Used,
                 },
                 Status = x.Status == null ? null : new Status
                 {
@@ -349,7 +349,7 @@ namespace DMS.Repositories
             ShowingItemDAO.Id = ShowingItem.Id;
             ShowingItemDAO.Code = ShowingItem.Code;
             ShowingItemDAO.Name = ShowingItem.Name;
-            ShowingItemDAO.CategoryId = ShowingItem.CategoryId;
+            ShowingItemDAO.ShowingCategoryId = ShowingItem.ShowingCategoryId;
             ShowingItemDAO.UnitOfMeasureId = ShowingItem.UnitOfMeasureId;
             ShowingItemDAO.SalePrice = ShowingItem.SalePrice;
             ShowingItemDAO.Desception = ShowingItem.Desception;
@@ -373,7 +373,7 @@ namespace DMS.Repositories
             ShowingItemDAO.Id = ShowingItem.Id;
             ShowingItemDAO.Code = ShowingItem.Code;
             ShowingItemDAO.Name = ShowingItem.Name;
-            ShowingItemDAO.CategoryId = ShowingItem.CategoryId;
+            ShowingItemDAO.ShowingCategoryId = ShowingItem.ShowingCategoryId;
             ShowingItemDAO.UnitOfMeasureId = ShowingItem.UnitOfMeasureId;
             ShowingItemDAO.SalePrice = ShowingItem.SalePrice;
             ShowingItemDAO.Desception = ShowingItem.Desception;
@@ -401,7 +401,7 @@ namespace DMS.Repositories
                 ShowingItemDAO.Id = ShowingItem.Id;
                 ShowingItemDAO.Code = ShowingItem.Code;
                 ShowingItemDAO.Name = ShowingItem.Name;
-                ShowingItemDAO.CategoryId = ShowingItem.CategoryId;
+                ShowingItemDAO.ShowingCategoryId = ShowingItem.ShowingCategoryId;
                 ShowingItemDAO.UnitOfMeasureId = ShowingItem.UnitOfMeasureId;
                 ShowingItemDAO.SalePrice = ShowingItem.SalePrice;
                 ShowingItemDAO.Desception = ShowingItem.Desception;

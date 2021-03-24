@@ -3899,9 +3899,9 @@ namespace DMS.Models
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
-                entity.HasOne(d => d.Category)
+                entity.HasOne(d => d.ShowingCategory)
                     .WithMany(p => p.ShowingItems)
-                    .HasForeignKey(d => d.CategoryId)
+                    .HasForeignKey(d => d.ShowingCategoryId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_ShowingItem_Category");
 

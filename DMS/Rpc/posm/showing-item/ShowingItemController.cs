@@ -12,7 +12,7 @@ using OfficeOpenXml;
 using System.Dynamic;
 using DMS.Entities;
 using DMS.Services.MShowingItem;
-using DMS.Services.MCategory;
+using DMS.Services.MShowingCategory;
 using DMS.Services.MStatus;
 using DMS.Services.MUnitOfMeasure;
 
@@ -20,20 +20,20 @@ namespace DMS.Rpc.posm.showing_item
 {
     public partial class ShowingItemController : RpcController
     {
-        private ICategoryService CategoryService;
+        private IShowingCategoryService ShowingCategoryService;
         private IStatusService StatusService;
         private IUnitOfMeasureService UnitOfMeasureService;
         private IShowingItemService ShowingItemService;
         private ICurrentContext CurrentContext;
         public ShowingItemController(
-            ICategoryService CategoryService,
+            IShowingCategoryService ShowingCategoryService,
             IStatusService StatusService,
             IUnitOfMeasureService UnitOfMeasureService,
             IShowingItemService ShowingItemService,
             ICurrentContext CurrentContext
         )
         {
-            this.CategoryService = CategoryService;
+            this.ShowingCategoryService = ShowingCategoryService;
             this.StatusService = StatusService;
             this.UnitOfMeasureService = UnitOfMeasureService;
             this.ShowingItemService = ShowingItemService;
@@ -239,8 +239,8 @@ namespace DMS.Rpc.posm.showing_item
                             Error += ShowingItem.Errors[nameof(ShowingItem.Code)];
                         if (ShowingItem.Errors.ContainsKey(nameof(ShowingItem.Name)))
                             Error += ShowingItem.Errors[nameof(ShowingItem.Name)];
-                        if (ShowingItem.Errors.ContainsKey(nameof(ShowingItem.CategoryId)))
-                            Error += ShowingItem.Errors[nameof(ShowingItem.CategoryId)];
+                        if (ShowingItem.Errors.ContainsKey(nameof(ShowingItem.ShowingCategoryId)))
+                            Error += ShowingItem.Errors[nameof(ShowingItem.ShowingCategoryId)];
                         if (ShowingItem.Errors.ContainsKey(nameof(ShowingItem.UnitOfMeasureId)))
                             Error += ShowingItem.Errors[nameof(ShowingItem.UnitOfMeasureId)];
                         if (ShowingItem.Errors.ContainsKey(nameof(ShowingItem.SalePrice)))
@@ -282,7 +282,7 @@ namespace DMS.Rpc.posm.showing_item
                         "Id",
                         "Code",
                         "Name",
-                        "CategoryId",
+                        "ShowingCategoryId",
                         "UnitOfMeasureId",
                         "SalePrice",
                         "Desception",
@@ -300,7 +300,7 @@ namespace DMS.Rpc.posm.showing_item
                         ShowingItem.Id,
                         ShowingItem.Code,
                         ShowingItem.Name,
-                        ShowingItem.CategoryId,
+                        ShowingItem.ShowingCategoryId,
                         ShowingItem.UnitOfMeasureId,
                         ShowingItem.SalePrice,
                         ShowingItem.Desception,
@@ -312,16 +312,16 @@ namespace DMS.Rpc.posm.showing_item
                 excel.GenerateWorksheet("ShowingItem", ShowingItemHeaders, ShowingItemData);
                 #endregion
                 
-                #region Category
-                var CategoryFilter = new CategoryFilter();
-                CategoryFilter.Selects = CategorySelect.ALL;
-                CategoryFilter.OrderBy = CategoryOrder.Id;
-                CategoryFilter.OrderType = OrderType.ASC;
-                CategoryFilter.Skip = 0;
-                CategoryFilter.Take = int.MaxValue;
-                List<Category> Categories = await CategoryService.List(CategoryFilter);
+                #region ShowingCategory
+                var ShowingCategoryFilter = new ShowingCategoryFilter();
+                ShowingCategoryFilter.Selects = ShowingCategorySelect.ALL;
+                ShowingCategoryFilter.OrderBy = ShowingCategoryOrder.Id;
+                ShowingCategoryFilter.OrderType = OrderType.ASC;
+                ShowingCategoryFilter.Skip = 0;
+                ShowingCategoryFilter.Take = int.MaxValue;
+                List<ShowingCategory> Categories = await ShowingCategoryService.List(ShowingCategoryFilter);
 
-                var CategoryHeaders = new List<string[]>()
+                var ShowingCategoryHeaders = new List<string[]>()
                 {
                     new string[] { 
                         "Id",
@@ -336,25 +336,25 @@ namespace DMS.Rpc.posm.showing_item
                         "Used",
                     }
                 };
-                List<object[]> CategoryData = new List<object[]>();
+                List<object[]> ShowingCategoryData = new List<object[]>();
                 for (int i = 0; i < Categories.Count; i++)
                 {
-                    var Category = Categories[i];
-                    CategoryData.Add(new Object[]
+                    var ShowingCategory = Categories[i];
+                    ShowingCategoryData.Add(new Object[]
                     {
-                        Category.Id,
-                        Category.Code,
-                        Category.Name,
-                        Category.ParentId,
-                        Category.Path,
-                        Category.Level,
-                        Category.StatusId,
-                        Category.ImageId,
-                        Category.RowId,
-                        Category.Used,
+                        ShowingCategory.Id,
+                        ShowingCategory.Code,
+                        ShowingCategory.Name,
+                        ShowingCategory.ParentId,
+                        ShowingCategory.Path,
+                        ShowingCategory.Level,
+                        ShowingCategory.StatusId,
+                        ShowingCategory.ImageId,
+                        ShowingCategory.RowId,
+                        ShowingCategory.Used,
                     });
                 }
-                excel.GenerateWorksheet("Category", CategoryHeaders, CategoryData);
+                excel.GenerateWorksheet("ShowingCategory", ShowingCategoryHeaders, ShowingCategoryData);
                 #endregion
                 #region Status
                 var StatusFilter = new StatusFilter();
@@ -471,25 +471,25 @@ namespace DMS.Rpc.posm.showing_item
             ShowingItem.Id = ShowingItem_ShowingItemDTO.Id;
             ShowingItem.Code = ShowingItem_ShowingItemDTO.Code;
             ShowingItem.Name = ShowingItem_ShowingItemDTO.Name;
-            ShowingItem.CategoryId = ShowingItem_ShowingItemDTO.CategoryId;
+            ShowingItem.ShowingCategoryId = ShowingItem_ShowingItemDTO.ShowingCategoryId;
             ShowingItem.UnitOfMeasureId = ShowingItem_ShowingItemDTO.UnitOfMeasureId;
             ShowingItem.SalePrice = ShowingItem_ShowingItemDTO.SalePrice;
             ShowingItem.Desception = ShowingItem_ShowingItemDTO.Desception;
             ShowingItem.StatusId = ShowingItem_ShowingItemDTO.StatusId;
             ShowingItem.Used = ShowingItem_ShowingItemDTO.Used;
             ShowingItem.RowId = ShowingItem_ShowingItemDTO.RowId;
-            ShowingItem.Category = ShowingItem_ShowingItemDTO.Category == null ? null : new Category
+            ShowingItem.ShowingCategory = ShowingItem_ShowingItemDTO.ShowingCategory == null ? null : new ShowingCategory
             {
-                Id = ShowingItem_ShowingItemDTO.Category.Id,
-                Code = ShowingItem_ShowingItemDTO.Category.Code,
-                Name = ShowingItem_ShowingItemDTO.Category.Name,
-                ParentId = ShowingItem_ShowingItemDTO.Category.ParentId,
-                Path = ShowingItem_ShowingItemDTO.Category.Path,
-                Level = ShowingItem_ShowingItemDTO.Category.Level,
-                StatusId = ShowingItem_ShowingItemDTO.Category.StatusId,
-                ImageId = ShowingItem_ShowingItemDTO.Category.ImageId,
-                RowId = ShowingItem_ShowingItemDTO.Category.RowId,
-                Used = ShowingItem_ShowingItemDTO.Category.Used,
+                Id = ShowingItem_ShowingItemDTO.ShowingCategory.Id,
+                Code = ShowingItem_ShowingItemDTO.ShowingCategory.Code,
+                Name = ShowingItem_ShowingItemDTO.ShowingCategory.Name,
+                ParentId = ShowingItem_ShowingItemDTO.ShowingCategory.ParentId,
+                Path = ShowingItem_ShowingItemDTO.ShowingCategory.Path,
+                Level = ShowingItem_ShowingItemDTO.ShowingCategory.Level,
+                StatusId = ShowingItem_ShowingItemDTO.ShowingCategory.StatusId,
+                ImageId = ShowingItem_ShowingItemDTO.ShowingCategory.ImageId,
+                RowId = ShowingItem_ShowingItemDTO.ShowingCategory.RowId,
+                Used = ShowingItem_ShowingItemDTO.ShowingCategory.Used,
             };
             ShowingItem.Status = ShowingItem_ShowingItemDTO.Status == null ? null : new Status
             {
@@ -523,7 +523,7 @@ namespace DMS.Rpc.posm.showing_item
             ShowingItemFilter.Id = ShowingItem_ShowingItemFilterDTO.Id;
             ShowingItemFilter.Code = ShowingItem_ShowingItemFilterDTO.Code;
             ShowingItemFilter.Name = ShowingItem_ShowingItemFilterDTO.Name;
-            ShowingItemFilter.CategoryId = ShowingItem_ShowingItemFilterDTO.CategoryId;
+            ShowingItemFilter.ShowingCategoryId = ShowingItem_ShowingItemFilterDTO.ShowingCategoryId;
             ShowingItemFilter.UnitOfMeasureId = ShowingItem_ShowingItemFilterDTO.UnitOfMeasureId;
             ShowingItemFilter.SalePrice = ShowingItem_ShowingItemFilterDTO.SalePrice;
             ShowingItemFilter.Desception = ShowingItem_ShowingItemFilterDTO.Desception;

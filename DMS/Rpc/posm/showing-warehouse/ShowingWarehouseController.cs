@@ -521,7 +521,7 @@ namespace DMS.Rpc.posm.showing_warehouse
                         Id = x.ShowingItem.Id,
                         Code = x.ShowingItem.Code,
                         Name = x.ShowingItem.Name,
-                        CategoryId = x.ShowingItem.CategoryId,
+                        ShowingCategoryId = x.ShowingItem.ShowingCategoryId,
                         UnitOfMeasureId = x.ShowingItem.UnitOfMeasureId,
                         SalePrice = x.ShowingItem.SalePrice,
                         Desception = x.ShowingItem.Desception,
