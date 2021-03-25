@@ -714,14 +714,14 @@ namespace DMS.Repositories
                 if(ShowingOrderDAO.Id < 1000000)
                 {
                     var Code = (ShowingOrderDAO.Id + 1000000).ToString();
-                    ShowingOrderDAO.Code = Code.Substring(Code.Length - 7, Code.Length - 1);
+                    ShowingOrderDAO.Code = Code.Substring(Code.Length - 6);
                 }
                 else
                 {
                     ShowingOrderDAO.Code = ShowingOrderDAO.Id.ToString();
                 }
             }
-            await DataContext.SaveChangesAsync();
+            await DataContext.BulkMergeAsync(ShowingOrderDAOs);
 
             var Ids = ShowingOrderDAOs.Select(x => x.Id).ToList();
             await DataContext.ShowingOrderContent
