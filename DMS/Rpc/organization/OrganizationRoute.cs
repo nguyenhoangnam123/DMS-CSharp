@@ -33,11 +33,15 @@ namespace DMS.Rpc.organization
         {
             { "Tìm kiếm", new List<string> {
                 Parent,
+                Master, Count, List, Get, 
+                FilterListOrganization, FilterListStatus, FilterListAppUser, } },
+            { "Sửa", new List<string> {
+                Parent,
                 Master, Count, List, Get, UpdateIsDisplay,
                 FilterListOrganization, FilterListStatus, FilterListAppUser, } },
             { "Xuất excel", new List<string> {
                 Parent,
-                Master, Count, List, Get, UpdateIsDisplay,
+                Master, Count, List, Get, 
                 FilterListOrganization, FilterListStatus, FilterListAppUser, Export, ExportAppUser } },
         };
     }

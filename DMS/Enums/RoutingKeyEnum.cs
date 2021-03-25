@@ -48,5 +48,6 @@ namespace DMS.Enums
         public static GenericEnum WardUsed = new GenericEnum { Id = 119, Code = "Ward.Used", Name = "Ward Used" };
         public static GenericEnum StoreUserUsed = new GenericEnum { Id = 120, Code = "DMS.StoreUser.Used", Name = "StoreUser Used" };
         public static GenericEnum ShowingItemUsed = new GenericEnum { Id = 121, Code = "DMS.ShowingItem.Used", Name = "ShowingItem Used" };
+        public static GenericEnum ShowingCategoryUsed = new GenericEnum { Id = 121, Code = "DMS.ShowingCategory.Used", Name = "ShowingCategory Used" };
     }
 }

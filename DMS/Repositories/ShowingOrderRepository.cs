@@ -312,6 +312,12 @@ namespace DMS.Repositories
                     Used = q.Store.Used,
                     StoreScoutingId = q.Store.StoreScoutingId,
                     StoreStatusId = q.Store.StoreStatusId,
+                    StoreStatus = q.Store.StoreStatus == null ? null : new StoreStatus
+                    {
+                        Id = q.Store.StoreStatus.Id,
+                        Code = q.Store.StoreStatus.Code,
+                        Name = q.Store.StoreStatus.Name,
+                    }
                 } : null,
             }).ToListAsync();
             return ShowingOrders;
@@ -466,6 +472,12 @@ namespace DMS.Repositories
                         StatusId = x.ShowingItem.StatusId,
                         Used = x.ShowingItem.Used,
                         RowId = x.ShowingItem.RowId,
+                        ShowingCategory = x.ShowingItem.ShowingCategory == null ? null : new ShowingCategory
+                        {
+                            Id = x.ShowingItem.ShowingCategory.Id,
+                            Code = x.ShowingItem.ShowingCategory.Code,
+                            Name = x.ShowingItem.ShowingCategory.Name,
+                        }
                     },
                     UnitOfMeasure = new UnitOfMeasure
                     {
@@ -623,6 +635,12 @@ namespace DMS.Repositories
                         StatusId = x.ShowingItem.StatusId,
                         Used = x.ShowingItem.Used,
                         RowId = x.ShowingItem.RowId,
+                        ShowingCategory = x.ShowingItem.ShowingCategory == null ? null : new ShowingCategory
+                        {
+                            Id = x.ShowingItem.ShowingCategory.Id,
+                            Code = x.ShowingItem.ShowingCategory.Code,
+                            Name = x.ShowingItem.ShowingCategory.Name,
+                        }
                     },
                     UnitOfMeasure = new UnitOfMeasure
                     {
@@ -714,14 +732,14 @@ namespace DMS.Repositories
                 if(ShowingOrderDAO.Id < 1000000)
                 {
                     var Code = (ShowingOrderDAO.Id + 1000000).ToString();
-                    ShowingOrderDAO.Code = Code.Substring(Code.Length - 7, Code.Length - 1);
+                    ShowingOrderDAO.Code = Code.Substring(Code.Length - 6);
                 }
                 else
                 {
                     ShowingOrderDAO.Code = ShowingOrderDAO.Id.ToString();
                 }
             }
-            await DataContext.SaveChangesAsync();
+            await DataContext.BulkMergeAsync(ShowingOrderDAOs);
 
             var Ids = ShowingOrderDAOs.Select(x => x.Id).ToList();
             await DataContext.ShowingOrderContent

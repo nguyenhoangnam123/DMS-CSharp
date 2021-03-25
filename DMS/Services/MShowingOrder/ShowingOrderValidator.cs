@@ -24,7 +24,7 @@ namespace DMS.Services.MShowingOrder
         public enum ErrorCode
         {
             IdNotExisted,
-            OrganizationIdNotExisted,
+            OrganizationNotExisted,
             OrganizationEmpty,
             StoresEmpty,
             StatusNotExisted,
@@ -81,12 +81,13 @@ namespace DMS.Services.MShowingOrder
             {
                 OrganizationFilter OrganizationFilter = new OrganizationFilter
                 {
-                    Id = new IdFilter { Equal = ShowingOrder.OrganizationId }
+                    Id = new IdFilter { Equal = ShowingOrder.OrganizationId },
+                    StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id }
                 };
 
                 var count = await UOW.OrganizationRepository.Count(OrganizationFilter);
                 if (count == 0)
-                    ShowingOrder.AddError(nameof(ShowingOrderValidator), nameof(ShowingOrder.Organization), ErrorCode.OrganizationIdNotExisted);
+                    ShowingOrder.AddError(nameof(ShowingOrderValidator), nameof(ShowingOrder.Organization), ErrorCode.OrganizationNotExisted);
             }
 
             return ShowingOrder.IsValidated;
@@ -99,26 +100,23 @@ namespace DMS.Services.MShowingOrder
             else
             {
                 var StoreIds = ShowingOrder.Stores.Select(x => x.Id).ToList();
-                AppUserFilter AppUserFilter = new AppUserFilter
+                StoreFilter StoreFilter = new StoreFilter
                 {
                     Skip = 0,
                     Take = int.MaxValue,
                     Id = new IdFilter { In = StoreIds },
-                    OrganizationId = new IdFilter(),
-                    Selects = AppUserSelect.Id
+                    StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id },
+                    Selects = StoreSelect.Id
                 };
 
-                var StoreIdsInDB = (await UOW.AppUserRepository.List(AppUserFilter)).Select(x => x.Id).ToList();
-                var listIdsNotExisted = StoreIds.Except(StoreIdsInDB).ToList();
-
-                if (listIdsNotExisted != null && listIdsNotExisted.Any())
+                var StoreIdsInDB = (await UOW.StoreRepository.List(StoreFilter)).Select(x => x.Id).ToList();
+                foreach (var Store in ShowingOrder.Stores)
                 {
-                    foreach (var Id in listIdsNotExisted)
+                    if (!StoreIdsInDB.Contains(Store.Id))
                     {
-                        ShowingOrder.AddError(nameof(ShowingOrderValidator), nameof(ShowingOrder.Stores), ErrorCode.IdNotExisted);
+                        Store.AddError(nameof(ShowingOrderValidator), nameof(Store.Id), ErrorCode.IdNotExisted);
                     }
                 }
-
             }
             return ShowingOrder.IsValidated;
         }

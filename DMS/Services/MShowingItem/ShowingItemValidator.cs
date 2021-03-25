@@ -6,6 +6,7 @@ using DMS.Common;
 using DMS.Entities;
 using DMS;
 using DMS.Repositories;
+using DMS.Enums;
 
 namespace DMS.Services.MShowingItem
 {
@@ -23,6 +24,21 @@ namespace DMS.Services.MShowingItem
         public enum ErrorCode
         {
             IdNotExisted,
+            CodeExisted,
+            CodeRuleNotExisted,
+            CodeHasSpecialCharacter,
+            CodeEmpty,
+            NameEmpty,
+            NameExisted,
+            NameOverLength,
+            UnitOfMeasureNotExisted,
+            UnitOfMeasureEmpty,
+            SalePriceInvalid,
+            StatusEmpty,
+            ShowingCategoryEmpty,
+            ShowingCategoryNotExisted,
+            ShowingCategoryInvalid,
+            ShowingItemInUsed
         }
 
         private IUOW UOW;
@@ -50,8 +66,137 @@ namespace DMS.Services.MShowingItem
             return count == 1;
         }
 
+        private async Task<bool> ValidateCode(ShowingItem ShowingItem)
+        {
+            var oldData = await UOW.ShowingItemRepository.Get(ShowingItem.Id);
+            if (oldData != null && oldData.Used)
+            {
+                if (oldData.Code != ShowingItem.Code)
+                    ShowingItem.AddError(nameof(ShowingItemValidator), nameof(ShowingItem.Id), ErrorCode.ShowingItemInUsed);
+            }
+            else
+            {
+                if (string.IsNullOrWhiteSpace(ShowingItem.Code))
+                {
+                    ShowingItem.AddError(nameof(ShowingItemValidator), nameof(ShowingItem.Code), ErrorCode.CodeEmpty);
+                }
+                else
+                {
+                    var Code = ShowingItem.Code;
+                    if (ShowingItem.Code.Contains(" ") || !FilterExtension.ChangeToEnglishChar(Code).Equals(ShowingItem.Code))
+                    {
+                        ShowingItem.AddError(nameof(ShowingItemValidator), nameof(ShowingItem.Code), ErrorCode.CodeHasSpecialCharacter);
+                    }
+
+                    ShowingItemFilter ShowingItemFilter = new ShowingItemFilter
+                    {
+                        Skip = 0,
+                        Take = 10,
+                        Id = new IdFilter { NotEqual = ShowingItem.Id },
+                        Code = new StringFilter { Equal = ShowingItem.Code },
+                        Selects = ShowingItemSelect.Code
+                    };
+
+                    int count = await UOW.ShowingItemRepository.Count(ShowingItemFilter);
+                    if (count != 0)
+                        ShowingItem.AddError(nameof(ShowingItemValidator), nameof(ShowingItem.Code), ErrorCode.CodeExisted);
+                }
+            }
+
+            return ShowingItem.IsValidated;
+        }
+
+        private async Task<bool> ValidateName(ShowingItem ShowingItem)
+        {
+            var oldData = await UOW.ShowingItemRepository.Get(ShowingItem.Id);
+            if (oldData != null && oldData.Used)
+            {
+                if (oldData.Name != ShowingItem.Name)
+                    ShowingItem.AddError(nameof(ShowingItemValidator), nameof(ShowingItem.Id), ErrorCode.ShowingItemInUsed);
+            }
+            else
+            {
+                if (string.IsNullOrWhiteSpace(ShowingItem.Name))
+                {
+                    ShowingItem.AddError(nameof(ShowingItemValidator), nameof(ShowingItem.Name), ErrorCode.NameEmpty);
+                }
+                else if (ShowingItem.Name.Length > 3000)
+                {
+                    ShowingItem.AddError(nameof(ShowingItemValidator), nameof(ShowingItem.Name), ErrorCode.NameOverLength);
+                }
+            }
+
+            return ShowingItem.IsValidated;
+        }
+
+        private async Task<bool> ValidateCategory(ShowingItem ShowingItem)
+        {
+            if (ShowingItem.ShowingCategoryId == 0)
+                ShowingItem.AddError(nameof(ShowingItemValidator), nameof(ShowingItem.ShowingCategory), ErrorCode.ShowingCategoryEmpty);
+            else
+            {
+                CategoryFilter CategoryFilter = new CategoryFilter
+                {
+                    Skip = 0,
+                    Take = 10,
+                    Id = new IdFilter { Equal = ShowingItem.ShowingCategoryId },
+                    Selects = CategorySelect.Id
+                };
+
+                int count = await UOW.CategoryRepository.Count(CategoryFilter);
+                if (count == 0)
+                    ShowingItem.AddError(nameof(ShowingItemValidator), nameof(ShowingItem.ShowingCategory), ErrorCode.ShowingCategoryNotExisted);
+            }
+
+            return ShowingItem.IsValidated;
+        }
+
+        private async Task<bool> ValidateUnitOfMeasure(ShowingItem ShowingItem)
+        {
+            if (ShowingItem.UnitOfMeasureId == 0)
+                ShowingItem.AddError(nameof(ShowingItemValidator), nameof(ShowingItem.UnitOfMeasure), ErrorCode.UnitOfMeasureEmpty);
+            else
+            {
+                UnitOfMeasureFilter UnitOfMeasureFilter = new UnitOfMeasureFilter
+                {
+                    Skip = 0,
+                    Take = 10,
+                    Id = new IdFilter { Equal = ShowingItem.UnitOfMeasureId },
+                    Selects = UnitOfMeasureSelect.Id
+                };
+
+                int count = await UOW.UnitOfMeasureRepository.Count(UnitOfMeasureFilter);
+                if (count == 0)
+                    ShowingItem.AddError(nameof(ShowingItemValidator), nameof(ShowingItem.UnitOfMeasure), ErrorCode.UnitOfMeasureNotExisted);
+            }
+
+            return ShowingItem.IsValidated;
+        }
+
+        private async Task<bool> ValidateStatusId(ShowingItem ShowingItem)
+        {
+            if (StatusEnum.ACTIVE.Id != ShowingItem.StatusId && StatusEnum.INACTIVE.Id != ShowingItem.StatusId)
+                ShowingItem.AddError(nameof(ShowingItemValidator), nameof(ShowingItem.Status), ErrorCode.StatusEmpty);
+            return ShowingItem.IsValidated;
+        }
+
+        private async Task<bool> ValidateSalePrice(ShowingItem ShowingItem)
+        {
+            if (ShowingItem.SalePrice < 0)
+            {
+                ShowingItem.AddError(nameof(ShowingItemValidator), nameof(ShowingItem.SalePrice), ErrorCode.SalePriceInvalid);
+            }
+            return ShowingItem.IsValidated;
+        }
+
         public async Task<bool>Create(ShowingItem ShowingItem)
         {
+            await ValidateCode(ShowingItem);
+            await ValidateName(ShowingItem);
+            await ValidateCategory(ShowingItem);
+            await ValidateUnitOfMeasure(ShowingItem);
+            await ValidateStatusId(ShowingItem);
+            await ValidateSalePrice(ShowingItem);
             return ShowingItem.IsValidated;
         }
 
@@ -59,6 +204,12 @@ namespace DMS.Services.MShowingItem
         {
             if (await ValidateId(ShowingItem))
             {
+                await ValidateCode(ShowingItem);
+                await ValidateName(ShowingItem);
+                await ValidateCategory(ShowingItem);
+                await ValidateUnitOfMeasure(ShowingItem);
+                await ValidateStatusId(ShowingItem);
+                await ValidateSalePrice(ShowingItem);
             }
             return ShowingItem.IsValidated;
         }

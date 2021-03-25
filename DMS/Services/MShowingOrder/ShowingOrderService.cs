@@ -149,14 +149,6 @@ namespace DMS.Services.MShowingOrder
                     ShowingWarehouseId = new IdFilter { Equal = ShowingOrder.ShowingWarehouse.Id },
                     Selects = ShowingInventorySelect.SaleStock | ShowingInventorySelect.ShowingItem
                 });
-                var ShowingInventoryIds = ShowingInventories.Select(x => x.Id).ToList();
-                var ShowingInventoryHistories = await UOW.ShowingInventoryHistoryRepository.List(new ShowingInventoryHistoryFilter
-                {
-                    Skip = 0,
-                    Take = int.MaxValue,
-                    Selects = ShowingInventoryHistorySelect.ALL,
-                    ShowingInventoryId = new IdFilter { In = ShowingInventoryIds }
-                });
 
                 var StoreCounter = ShowingOrder.Stores.Count();
                 foreach (var ShowingOrderContent in ShowingOrder.ShowingOrderContents)
@@ -164,30 +156,15 @@ namespace DMS.Services.MShowingOrder
                     ShowingInventory ShowingInventory = ShowingInventories.Where(x => x.ShowingItemId == ShowingOrderContent.ShowingItemId).FirstOrDefault();
                     if (ShowingInventory != null)
                     {
-                        ShowingInventory.ShowingInventoryHistories = ShowingInventoryHistories.Where(x => x.ShowingInventoryId == ShowingInventory.Id).ToList();
-                        if (ShowingInventory.ShowingInventoryHistories == null)
-                            ShowingInventory.ShowingInventoryHistories = new List<ShowingInventoryHistory>();
-                        ShowingInventoryHistory ShowingInventoryHistory = new ShowingInventoryHistory
-                        {
-                            AppUserId = CurrentContext.UserId,
-                            ShowingInventoryId = ShowingInventory.Id,
-                            OldSaleStock = ShowingInventory.SaleStock,
-                            OldAccountingStock = ShowingInventory.AccountingStock ?? 0,
-                            SaleStock = ShowingInventory.SaleStock - (ShowingOrderContent.Quantity * StoreCounter),
-                            AccountingStock = ShowingInventory.AccountingStock.HasValue ? ShowingInventory.AccountingStock.Value - (ShowingOrderContent.Quantity * StoreCounter) : 0,
-                        };
-
                         ShowingInventory.SaleStock -= (ShowingOrderContent.Quantity * StoreCounter);
                         if (ShowingInventory.AccountingStock.HasValue)
                             ShowingInventory.AccountingStock -= (ShowingOrderContent.Quantity * StoreCounter);
-                        ShowingInventory.ShowingInventoryHistories.Add(ShowingInventoryHistory);
                     }
                 }
                 await UOW.ShowingInventoryRepository.BulkMerge(ShowingInventories);
                 #endregion
 
                 NotifyUsed(ShowingOrder);
-                ShowingOrder = await UOW.ShowingOrderRepository.Get(ShowingOrder.Id);
                 await Logging.CreateAuditLog(ShowingOrder, new { }, nameof(ShowingOrderService));
                 return ShowingOrder;
             }
@@ -207,6 +184,48 @@ namespace DMS.Services.MShowingOrder
                 var oldData = await UOW.ShowingOrderRepository.Get(ShowingOrder.Id);
                 await Calculator(ShowingOrder);
                 await UOW.ShowingOrderRepository.Update(ShowingOrder);
+
+                #region cập nhật lại tồn kho
+                var OldShowingItemIds = oldData.ShowingOrderContents.Select(x => x.ShowingItemId).ToList();
+                var NewShowingItemIds = ShowingOrder.ShowingOrderContents.Select(x => x.ShowingItemId).ToList();
+                var ShowingItemIds = new List<long>();
+                ShowingItemIds.AddRange(NewShowingItemIds);
+                ShowingItemIds.AddRange(OldShowingItemIds);
+                ShowingItemIds = ShowingItemIds.Distinct().ToList();
+                var ShowingInventories = await UOW.ShowingInventoryRepository.List(new ShowingInventoryFilter
+                {
+                    Skip = 0,
+                    Take = int.MaxValue,
+                    ShowingItemId = new IdFilter { In = ShowingItemIds },
+                    ShowingWarehouseId = new IdFilter { Equal = ShowingOrder.ShowingWarehouse.Id },
+                    Selects = ShowingInventorySelect.SaleStock | ShowingInventorySelect.ShowingItem
+                });
+
+                foreach (var ShowingOrderContent in oldData.ShowingOrderContents)
+                {
+                    //cộng trả lại tồn kho của các các item cũ
+                    ShowingInventory ShowingInventory = ShowingInventories.Where(x => x.ShowingItemId == ShowingOrderContent.ShowingItemId).FirstOrDefault();
+                    if (ShowingInventory != null)
+                    {
+                        ShowingInventory.SaleStock += ShowingOrderContent.Quantity;
+                        if (ShowingInventory.AccountingStock.HasValue)
+                            ShowingInventory.AccountingStock += ShowingOrderContent.Quantity;
+                    }
+                }
+                foreach (var ShowingOrderContent in ShowingOrder.ShowingOrderContents)
+                {
+                    //trừ lại tồn kho
+                    ShowingInventory ShowingInventory = ShowingInventories.Where(x => x.ShowingItemId == ShowingOrderContent.ShowingItemId).FirstOrDefault();
+                    if (ShowingInventory != null)
+                    {
+                        ShowingInventory.SaleStock -= ShowingOrderContent.Quantity;
+                        if (ShowingInventory.AccountingStock.HasValue)
+                            ShowingInventory.AccountingStock -= ShowingOrderContent.Quantity;
+                    }
+                }
+                await UOW.ShowingInventoryRepository.BulkMerge(ShowingInventories);
+                #endregion
+
                 NotifyUsed(ShowingOrder);
                 ShowingOrder = await UOW.ShowingOrderRepository.Get(ShowingOrder.Id);
                 await Logging.CreateAuditLog(ShowingOrder, oldData, nameof(ShowingOrderService));

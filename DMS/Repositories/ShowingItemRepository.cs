@@ -57,6 +57,21 @@ namespace DMS.Repositories
                 query = query.Where(q => q.StatusId, filter.StatusId);
             if (filter.RowId != null && filter.RowId.HasValue)
                 query = query.Where(q => q.RowId, filter.RowId);
+            if (filter.Search != null)
+            {
+                List<string> Tokens = filter.Search.Split(" ").Select(x => x.ToLower()).ToList();
+                var queryForCode = query;
+                var queryForName = query;
+                foreach (string Token in Tokens)
+                {
+                    if (string.IsNullOrWhiteSpace(Token))
+                        continue;
+                    queryForCode = queryForCode.Where(x => x.Code.ToLower().Contains(Token));
+                    queryForName = queryForName.Where(x => x.Name.ToLower().Contains(Token));
+                }
+                query = queryForCode.Union(queryForName);
+                query = query.Distinct();
+            }
             query = OrFilter(query, filter);
             return query;
         }

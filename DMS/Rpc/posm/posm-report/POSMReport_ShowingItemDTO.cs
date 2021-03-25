@@ -78,7 +78,7 @@ namespace DMS.Rpc.posm.posm_report
         public IdFilter StatusId { get; set; }
         
         public GuidFilter RowId { get; set; }
-        
+        public string Search { get; set; }
         public ShowingItemOrder OrderBy { get; set; }
     }
 }

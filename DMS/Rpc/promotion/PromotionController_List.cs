@@ -347,7 +347,7 @@ namespace DMS.Rpc.promotion
             OrganizationFilter.Phone = Promotion_OrganizationFilterDTO.Phone;
             OrganizationFilter.Email = Promotion_OrganizationFilterDTO.Email;
             OrganizationFilter.Address = Promotion_OrganizationFilterDTO.Address;
-            OrganizationFilter.IsDisplay = Promotion_OrganizationFilterDTO.IsDisplay;
+            OrganizationFilter.IsDisplay = true;
 
             if (OrganizationFilter.Id == null) OrganizationFilter.Id = new IdFilter();
             OrganizationFilter.Id.In = await FilterOrganization(OrganizationService, CurrentContext);

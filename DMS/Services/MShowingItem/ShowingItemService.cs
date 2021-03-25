@@ -9,6 +9,7 @@ using OfficeOpenXml;
 using DMS.Repositories;
 using DMS.Entities;
 using DMS.Enums;
+using DMS.Handlers;
 
 namespace DMS.Services.MShowingItem
 {
@@ -31,18 +32,21 @@ namespace DMS.Services.MShowingItem
         private ILogging Logging;
         private ICurrentContext CurrentContext;
         private IShowingItemValidator ShowingItemValidator;
+        private IRabbitManager RabbitManager;
 
         public ShowingItemService(
             IUOW UOW,
             ICurrentContext CurrentContext,
             IShowingItemValidator ShowingItemValidator,
-            ILogging Logging
+            ILogging Logging,
+            IRabbitManager RabbitManager
         )
         {
             this.UOW = UOW;
             this.Logging = Logging;
             this.CurrentContext = CurrentContext;
             this.ShowingItemValidator = ShowingItemValidator;
+            this.RabbitManager = RabbitManager;
         }
         public async Task<int> Count(ShowingItemFilter ShowingItemFilter)
         {
@@ -119,7 +123,9 @@ namespace DMS.Services.MShowingItem
             try
             {
                 await UOW.ShowingItemRepository.Create(ShowingItem);
-                ShowingItem = await UOW.ShowingItemRepository.Get(ShowingItem.Id);
+                var ShowingItems = await UOW.ShowingItemRepository.List(new List<long> { ShowingItem.Id });
+                Sync(ShowingItems);
+                ShowingItem = ShowingItems.FirstOrDefault();
                 await Logging.CreateAuditLog(ShowingItem, new { }, nameof(ShowingItemService));
                 return ShowingItem;
             }
@@ -140,7 +146,9 @@ namespace DMS.Services.MShowingItem
 
                 await UOW.ShowingItemRepository.Update(ShowingItem);
 
-                ShowingItem = await UOW.ShowingItemRepository.Get(ShowingItem.Id);
+                var ShowingItems = await UOW.ShowingItemRepository.List(new List<long> { ShowingItem.Id });
+                Sync(ShowingItems);
+                ShowingItem = ShowingItems.FirstOrDefault();
                 await Logging.CreateAuditLog(ShowingItem, oldData, nameof(ShowingItemService));
                 return ShowingItem;
             }
@@ -245,6 +253,24 @@ namespace DMS.Services.MShowingItem
                 }
             }
             return filter;
+        }
+
+        private void Sync(List<ShowingItem> ShowingItems)
+        {
+            List<EventMessage<ShowingCategory>> ShowingCategoryMessages = new List<EventMessage<ShowingCategory>>();
+            List<EventMessage<UnitOfMeasure>> UnitOfMeasureMessages = new List<EventMessage<UnitOfMeasure>>();
+            foreach (var ShowingItem in ShowingItems)
+            {
+                EventMessage<ShowingCategory> ShowingCategoryMessage = new EventMessage<ShowingCategory>(ShowingItem.ShowingCategory, ShowingItem.ShowingCategory.RowId);
+                ShowingCategoryMessages.Add(ShowingCategoryMessage);
+
+                EventMessage<UnitOfMeasure> UnitOfMeasureMessage = new EventMessage<UnitOfMeasure>(ShowingItem.UnitOfMeasure, ShowingItem.UnitOfMeasure.RowId);
+                UnitOfMeasureMessages.Add(UnitOfMeasureMessage);
+            }
+            ShowingCategoryMessages = ShowingCategoryMessages.Distinct().ToList();
+            UnitOfMeasureMessages = UnitOfMeasureMessages.Distinct().ToList();
+            RabbitManager.PublishList(ShowingCategoryMessages, RoutingKeyEnum.ShowingCategoryUsed);
+            RabbitManager.PublishList(UnitOfMeasureMessages, RoutingKeyEnum.UnitOfMeasureUsed);
         }
     }
 }

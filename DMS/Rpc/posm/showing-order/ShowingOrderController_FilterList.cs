@@ -177,6 +177,7 @@ namespace DMS.Rpc.posm.showing_order
             ShowingItemFilter.Desception = ShowingOrder_ShowingItemFilterDTO.Desception;
             ShowingItemFilter.StatusId = ShowingOrder_ShowingItemFilterDTO.StatusId;
             ShowingItemFilter.RowId = ShowingOrder_ShowingItemFilterDTO.RowId;
+            ShowingItemFilter.Search = ShowingOrder_ShowingItemFilterDTO.Search;
 
             List<ShowingItem> ShowingItems = await ShowingItemService.List(ShowingItemFilter);
             List<ShowingOrder_ShowingItemDTO> ShowingOrder_ShowingItemDTOs = ShowingItems
