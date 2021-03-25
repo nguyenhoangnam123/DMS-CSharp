@@ -22,14 +22,17 @@ namespace DMS.Rpc.posm.showing_order
         public decimal SalePrice { get; set; }
         
         public string Desception { get; set; }
-        
+
+        public long SaleStock { get; set; }
         public long StatusId { get; set; }
-        
+        public bool HasInventory { get; set; }
+
         public bool Used { get; set; }
         
         public Guid RowId { get; set; }
         
         public ShowingOrder_ShowingCategoryDTO ShowingCategory { get; set; }
+        public ShowingOrder_UnitOfMeasureDTO UnitOfMeasure { get; set; }
         public ShowingOrder_ShowingItemDTO() {}
         public ShowingOrder_ShowingItemDTO(ShowingItem ShowingItem)
         {
@@ -48,12 +51,15 @@ namespace DMS.Rpc.posm.showing_order
             
             this.Desception = ShowingItem.Desception;
             
+            this.SaleStock = ShowingItem.SaleStock;
             this.StatusId = ShowingItem.StatusId;
+            this.HasInventory = ShowingItem.HasInventory;
             
             this.Used = ShowingItem.Used;
             
             this.RowId = ShowingItem.RowId;
             this.ShowingCategory = ShowingItem.ShowingCategory == null ? null : new ShowingOrder_ShowingCategoryDTO(ShowingItem.ShowingCategory);
+            this.UnitOfMeasure = ShowingItem.UnitOfMeasure == null ? null : new ShowingOrder_UnitOfMeasureDTO(ShowingItem.UnitOfMeasure);
             
             this.Errors = ShowingItem.Errors;
         }
@@ -69,6 +75,7 @@ namespace DMS.Rpc.posm.showing_order
         public StringFilter Name { get; set; }
         
         public IdFilter ShowingCategoryId { get; set; }
+        public IdFilter ShowingWarehouseId { get; set; }
         
         public IdFilter UnitOfMeasureId { get; set; }
         

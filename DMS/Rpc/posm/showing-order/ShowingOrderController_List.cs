@@ -24,7 +24,7 @@ namespace DMS.Rpc.posm.showing_order
     public partial class ShowingOrderController : RpcController
     {
         [Route(ShowingOrderRoute.CountShowingItem), HttpPost]
-        public async Task<ActionResult<int>> Count([FromBody] ShowingOrder_ShowingItemFilterDTO ShowingOrder_ShowingItemFilterDTO)
+        public async Task<ActionResult<int>> CountShowingItem([FromBody] ShowingOrder_ShowingItemFilterDTO ShowingOrder_ShowingItemFilterDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
@@ -46,7 +46,7 @@ namespace DMS.Rpc.posm.showing_order
         }
 
         [Route(ShowingOrderRoute.ListShowingItem), HttpPost]
-        public async Task<ActionResult<List<ShowingOrder_ShowingItemDTO>>> List([FromBody] ShowingOrder_ShowingItemFilterDTO ShowingOrder_ShowingItemFilterDTO)
+        public async Task<ActionResult<List<ShowingOrder_ShowingItemDTO>>> ListShowingItem([FromBody] ShowingOrder_ShowingItemFilterDTO ShowingOrder_ShowingItemFilterDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
@@ -62,6 +62,7 @@ namespace DMS.Rpc.posm.showing_order
             ShowingItemFilter.Code = ShowingOrder_ShowingItemFilterDTO.Code;
             ShowingItemFilter.Name = ShowingOrder_ShowingItemFilterDTO.Name;
             ShowingItemFilter.ShowingCategoryId = ShowingOrder_ShowingItemFilterDTO.ShowingCategoryId;
+            ShowingItemFilter.ShowingWarehouseId = ShowingOrder_ShowingItemFilterDTO.ShowingWarehouseId;
             ShowingItemFilter.UnitOfMeasureId = ShowingOrder_ShowingItemFilterDTO.UnitOfMeasureId;
             ShowingItemFilter.SalePrice = ShowingOrder_ShowingItemFilterDTO.SalePrice;
             ShowingItemFilter.Desception = ShowingOrder_ShowingItemFilterDTO.Desception;
@@ -69,7 +70,7 @@ namespace DMS.Rpc.posm.showing_order
             ShowingItemFilter.RowId = ShowingOrder_ShowingItemFilterDTO.RowId;
 
             ShowingItemFilter = await ShowingItemService.ToFilter(ShowingItemFilter);
-            List<ShowingItem> ShowingItems = await ShowingItemService.List(ShowingItemFilter);
+            List<ShowingItem> ShowingItems = await ShowingOrderService.ListShowingItem(ShowingItemFilter);
             List<ShowingOrder_ShowingItemDTO> ShowingOrder_ShowingItemDTOs = ShowingItems
                 .Select(c => new ShowingOrder_ShowingItemDTO(c)).ToList();
             return ShowingOrder_ShowingItemDTOs;
@@ -103,10 +104,7 @@ namespace DMS.Rpc.posm.showing_order
             StoreFilter.OwnerEmail = ShowingOrder_StoreFilterDTO.OwnerEmail;
             StoreFilter.StoreStatusId = new IdFilter { Equal = StoreStatusEnum.OFFICIAL.Id };
             StoreFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
-
-            if (StoreFilter.Id == null) StoreFilter.Id = new IdFilter();
-            StoreFilter.Id.In = await FilterStore(StoreService, OrganizationService, CurrentContext);
-
+            StoreFilter = StoreService.ToFilter(StoreFilter);
             return await StoreService.Count(StoreFilter);
         }
 
@@ -143,12 +141,7 @@ namespace DMS.Rpc.posm.showing_order
             StoreFilter.OwnerEmail = ShowingOrder_StoreFilterDTO.OwnerEmail;
             StoreFilter.StoreStatusId = new IdFilter { Equal = StoreStatusEnum.OFFICIAL.Id };
             StoreFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
-
-            if (StoreFilter.Id == null) StoreFilter.Id = new IdFilter();
-            StoreFilter.Id.In = await FilterStore(StoreService, OrganizationService, CurrentContext);
-            if (StoreFilter.Id.NotEqual.HasValue)
-                StoreFilter.Id.In.Remove(StoreFilter.Id.NotEqual.Value);
-
+            StoreFilter = StoreService.ToFilter(StoreFilter);
             List<Store> Stores = await StoreService.List(StoreFilter);
             List<ShowingOrder_StoreDTO> ShowingOrder_StoreDTOs = Stores
                 .Select(x => new ShowingOrder_StoreDTO(x)).ToList();

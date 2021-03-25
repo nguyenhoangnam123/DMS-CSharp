@@ -1,4 +1,4 @@
-using DMS.Common;
+﻿using DMS.Common;
 using DMS.Helpers;
 using System;
 using System.Collections.Generic;
@@ -13,10 +13,11 @@ using DMS.Handlers;
 
 namespace DMS.Services.MShowingOrder
 {
-    public interface IShowingOrderService :  IServiceScoped
+    public interface IShowingOrderService : IServiceScoped
     {
         Task<int> Count(ShowingOrderFilter ShowingOrderFilter);
         Task<List<ShowingOrder>> List(ShowingOrderFilter ShowingOrderFilter);
+        Task<List<ShowingItem>> ListShowingItem(ShowingItemFilter ShowingItemFilter);
         Task<ShowingOrder> Get(long Id);
         Task<ShowingOrder> Create(ShowingOrder ShowingOrder);
         Task<ShowingOrder> Update(ShowingOrder ShowingOrder);
@@ -75,7 +76,40 @@ namespace DMS.Services.MShowingOrder
             }
             return null;
         }
-        
+
+        public async Task<List<ShowingItem>> ListShowingItem(ShowingItemFilter ShowingItemFilter)
+        {
+            try
+            {
+                List<ShowingItem> ShowingItems = await UOW.ShowingItemRepository.List(ShowingItemFilter);
+                var Ids = ShowingItems.Select(x => x.Id).ToList();
+
+                ShowingInventoryFilter ShowingInventoryFilter = new ShowingInventoryFilter
+                {
+                    Skip = 0,
+                    Take = int.MaxValue,
+                    ShowingItemId = new IdFilter { In = Ids },
+                    ShowingWarehouseId = ShowingItemFilter.ShowingWarehouseId,
+                    Selects = ShowingInventorySelect.SaleStock | ShowingInventorySelect.ShowingItem
+                };
+
+                var ShowingInventories = await UOW.ShowingInventoryRepository.List(ShowingInventoryFilter);
+                var list = ShowingInventories.GroupBy(x => x.ShowingItemId).Select(x => new { ShowingItemId = x.Key, SaleStock = x.Sum(s => s.SaleStock) }).ToList();
+
+                foreach (var ShowingItem in ShowingItems)
+                {
+                    ShowingItem.SaleStock = list.Where(i => i.ShowingItemId == ShowingItem.Id).Select(i => i.SaleStock).FirstOrDefault();
+                    ShowingItem.HasInventory = ShowingItem.SaleStock > 0;
+                }
+                return ShowingItems;
+            }
+            catch (Exception ex)
+            {
+                await Logging.CreateSystemLog(ex, nameof(ShowingOrderService));
+            }
+            return null;
+        }
+
         public async Task<ShowingOrder> Get(long Id)
         {
             ShowingOrder ShowingOrder = await UOW.ShowingOrderRepository.Get(Id);
@@ -104,6 +138,54 @@ namespace DMS.Services.MShowingOrder
                     }
                 }
                 await UOW.ShowingOrderRepository.BulkMerge(ShowingOrders);
+
+                #region cập nhật lại tồn kho
+                var ShowingItemIds = ShowingOrder.ShowingOrderContents.Select(x => x.ShowingItemId).ToList();
+                var ShowingInventories = await UOW.ShowingInventoryRepository.List(new ShowingInventoryFilter
+                {
+                    Skip = 0,
+                    Take = int.MaxValue,
+                    ShowingItemId = new IdFilter { In = ShowingItemIds },
+                    ShowingWarehouseId = new IdFilter { Equal = ShowingOrder.ShowingWarehouse.Id },
+                    Selects = ShowingInventorySelect.SaleStock | ShowingInventorySelect.ShowingItem
+                });
+                var ShowingInventoryIds = ShowingInventories.Select(x => x.Id).ToList();
+                var ShowingInventoryHistories = await UOW.ShowingInventoryHistoryRepository.List(new ShowingInventoryHistoryFilter
+                {
+                    Skip = 0,
+                    Take = int.MaxValue,
+                    Selects = ShowingInventoryHistorySelect.ALL,
+                    ShowingInventoryId = new IdFilter { In = ShowingInventoryIds }
+                });
+
+                var StoreCounter = ShowingOrder.Stores.Count();
+                foreach (var ShowingOrderContent in ShowingOrder.ShowingOrderContents)
+                {
+                    ShowingInventory ShowingInventory = ShowingInventories.Where(x => x.ShowingItemId == ShowingOrderContent.ShowingItemId).FirstOrDefault();
+                    if (ShowingInventory != null)
+                    {
+                        ShowingInventory.ShowingInventoryHistories = ShowingInventoryHistories.Where(x => x.ShowingInventoryId == ShowingInventory.Id).ToList();
+                        if (ShowingInventory.ShowingInventoryHistories == null)
+                            ShowingInventory.ShowingInventoryHistories = new List<ShowingInventoryHistory>();
+                        ShowingInventoryHistory ShowingInventoryHistory = new ShowingInventoryHistory
+                        {
+                            AppUserId = CurrentContext.UserId,
+                            ShowingInventoryId = ShowingInventory.Id,
+                            OldSaleStock = ShowingInventory.SaleStock,
+                            OldAccountingStock = ShowingInventory.AccountingStock ?? 0,
+                            SaleStock = ShowingInventory.SaleStock - (ShowingOrderContent.Quantity * StoreCounter),
+                            AccountingStock = ShowingInventory.AccountingStock.HasValue ? ShowingInventory.AccountingStock.Value - (ShowingOrderContent.Quantity * StoreCounter) : 0,
+                        };
+
+                        ShowingInventory.SaleStock -= (ShowingOrderContent.Quantity * StoreCounter);
+                        if (ShowingInventory.AccountingStock.HasValue)
+                            ShowingInventory.AccountingStock -= (ShowingOrderContent.Quantity * StoreCounter);
+                        ShowingInventory.ShowingInventoryHistories.Add(ShowingInventoryHistory);
+                    }
+                }
+                await UOW.ShowingInventoryRepository.BulkMerge(ShowingInventories);
+                #endregion
+
                 NotifyUsed(ShowingOrder);
                 ShowingOrder = await UOW.ShowingOrderRepository.Get(ShowingOrder.Id);
                 await Logging.CreateAuditLog(ShowingOrder, new { }, nameof(ShowingOrderService));
@@ -173,7 +255,7 @@ namespace DMS.Services.MShowingOrder
             return null;
 
         }
-        
+
         public async Task<List<ShowingOrder>> Import(List<ShowingOrder> ShowingOrders)
         {
             if (!await ShowingOrderValidator.Import(ShowingOrders))
@@ -190,8 +272,8 @@ namespace DMS.Services.MShowingOrder
                 await Logging.CreateSystemLog(ex, nameof(ShowingOrderService));
             }
             return null;
-        }     
-        
+        }
+
         public async Task<ShowingOrderFilter> ToFilter(ShowingOrderFilter filter)
         {
             if (filter.OrFilter == null) filter.OrFilter = new List<ShowingOrderFilter>();
@@ -247,7 +329,7 @@ namespace DMS.Services.MShowingOrder
             foreach (var ShowingOrderContent in ShowingOrder.ShowingOrderContents)
             {
                 ShowingItem ShowingItem = ShowingItems.Where(x => x.Id == ShowingOrderContent.ShowingItemId).FirstOrDefault();
-                if(ShowingItem != null)
+                if (ShowingItem != null)
                 {
                     ShowingOrderContent.Amount = ShowingItem.SalePrice * ShowingOrderContent.Quantity;
                     ShowingOrder.Total += ShowingOrderContent.Amount;
