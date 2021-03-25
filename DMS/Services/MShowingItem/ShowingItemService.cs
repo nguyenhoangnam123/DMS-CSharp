@@ -63,6 +63,38 @@ namespace DMS.Services.MShowingItem
             try
             {
                 List<ShowingItem> ShowingItems = await UOW.ShowingItemRepository.List(ShowingItemFilter);
+                var Ids = ShowingItems.Select(x => x.Id).ToList();
+                AppUser AppUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
+                if (AppUser != null)
+                {
+                    List<ShowingWarehouse> ShowingWarehouses = await UOW.ShowingWarehouseRepository.List(new ShowingWarehouseFilter
+                    {
+                        Skip = 0,
+                        Take = int.MaxValue,
+                        Selects = ShowingWarehouseSelect.Id,
+                        StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id },
+                        OrganizationId = new IdFilter { Equal = AppUser.OrganizationId }
+                    });
+                    var ShowingWarehouseIds = ShowingWarehouses.Select(x => x.Id).ToList();
+
+                    ShowingInventoryFilter ShowingInventoryFilter = new ShowingInventoryFilter
+                    {
+                        Skip = 0,
+                        Take = int.MaxValue,
+                        ShowingItemId = new IdFilter { In = Ids },
+                        ShowingWarehouseId = new IdFilter { In = ShowingWarehouseIds },
+                        Selects = ShowingInventorySelect.SaleStock | ShowingInventorySelect.ShowingItem
+                    };
+
+                    var ShowingInventories = await UOW.ShowingInventoryRepository.List(ShowingInventoryFilter);
+                    var list = ShowingInventories.GroupBy(x => x.ShowingItemId).Select(x => new { ShowingItemId = x.Key, SaleStock = x.Sum(s => s.SaleStock) }).ToList();
+
+                    foreach (var ShowingItem in ShowingItems)
+                    {
+                        ShowingItem.SaleStock = list.Where(i => i.ShowingItemId == ShowingItem.Id).Select(i => i.SaleStock).FirstOrDefault();
+                        ShowingItem.HasInventory = ShowingItem.SaleStock > 0;
+                    }
+                }
                 return ShowingItems;
             }
             catch (Exception ex)

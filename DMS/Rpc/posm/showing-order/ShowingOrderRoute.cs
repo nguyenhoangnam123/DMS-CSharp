@@ -38,6 +38,7 @@ namespace DMS.Rpc.posm.showing_order
         public const string Export = Default + "/export";
         
         public const string FilterListAppUser = Default + "/filter-list-app-user";
+        public const string FilterListShowingCategory = Default + "/filter-list-showing-category";
         public const string FilterListOrganization = Default + "/filter-list-organization";
         public const string FilterListShowingWarehouse = Default + "/filter-list-showing-warehouse";
         public const string FilterListStatus = Default + "/filter-list-status";
@@ -71,7 +72,8 @@ namespace DMS.Rpc.posm.showing_order
         };
 
         private static List<string> FilterList = new List<string> { 
-            FilterListAppUser, FilterListOrganization, FilterListShowingWarehouse, FilterListStatus, FilterListStore, FilterListShowingItem, FilterListUnitOfMeasure,
+            FilterListAppUser, FilterListShowingCategory, FilterListOrganization, FilterListShowingWarehouse, FilterListStatus, FilterListStore, FilterListShowingItem, 
+            FilterListUnitOfMeasure,
         };
         private static List<string> SingleList = new List<string> { 
             SingleListAppUser, SingleListOrganization, SingleListShowingWarehouse, SingleListStatus, SingleListShowingItem, SingleListUnitOfMeasure, 

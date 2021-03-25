@@ -15,7 +15,9 @@ namespace DMS.Entities
         public long UnitOfMeasureId { get; set; }
         public decimal SalePrice { get; set; }
         public string Desception { get; set; }
+        public long SaleStock { get; set; }
         public long StatusId { get; set; }
+        public bool HasInventory { get; set; }
         public bool Used { get; set; }
         public Guid RowId { get; set; }
         public ShowingCategory ShowingCategory { get; set; }
@@ -52,6 +54,7 @@ namespace DMS.Entities
         public StringFilter Code { get; set; }
         public StringFilter Name { get; set; }
         public IdFilter ShowingCategoryId { get; set; }
+        public IdFilter ShowingWarehouseId { get; set; }
         public IdFilter UnitOfMeasureId { get; set; }
         public DecimalFilter SalePrice { get; set; }
         public StringFilter Desception { get; set; }

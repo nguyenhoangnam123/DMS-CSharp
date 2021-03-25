@@ -30,7 +30,11 @@ namespace DMS.Services.MShowingOrder
             StatusNotExisted,
             DateEmpty,
             ContentEmpty,
-            QuantityEmpty
+            QuantityEmpty,
+            ShowingItemNotExisted,
+            SaleStockEmpty,
+            ShowingWarehouseEmpty,
+            ShowingWarehouseIdNotExisted
         }
 
         private IUOW UOW;
@@ -60,7 +64,7 @@ namespace DMS.Services.MShowingOrder
 
         public async Task<bool> ValidateDate(ShowingOrder ShowingOrder)
         {
-            if(ShowingOrder.Date == DateTime.MinValue)
+            if (ShowingOrder.Date == DateTime.MinValue)
             {
                 ShowingOrder.AddError(nameof(ShowingOrderValidator), nameof(ShowingOrder.Date), ErrorCode.DateEmpty);
             }
@@ -128,30 +132,99 @@ namespace DMS.Services.MShowingOrder
 
         private async Task<bool> ValidateContent(ShowingOrder ShowingOrder)
         {
-            if(ShowingOrder.ShowingOrderContents == null || ShowingOrder.ShowingOrderContents.Count == 0)
+            if (ShowingOrder.ShowingOrderContents == null || ShowingOrder.ShowingOrderContents.Count == 0)
             {
                 ShowingOrder.AddError(nameof(ShowingOrderValidator), nameof(ShowingOrder.ShowingOrderContents), ErrorCode.ContentEmpty);
             }
             else
             {
+                var ShowingItemIds = ShowingOrder.ShowingOrderContents.Select(x => x.ShowingItemId).ToList();
+                var ShowingItems = await UOW.ShowingItemRepository.List(new ShowingItemFilter
+                {
+                    Skip = 0,
+                    Take = int.MaxValue,
+                    Selects = ShowingItemSelect.ALL,
+                    StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id },
+                    Id = new IdFilter { In = ShowingItemIds }
+                });
+                AppUser AppUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
+                ShowingInventoryFilter ShowingInventoryFilter = new ShowingInventoryFilter
+                {
+                    Skip = 0,
+                    Take = int.MaxValue,
+                    ShowingItemId = new IdFilter { In = ShowingItemIds },
+                    ShowingWarehouseId = new IdFilter { Equal = ShowingOrder.ShowingWarehouseId },
+                    Selects = ShowingInventorySelect.SaleStock | ShowingInventorySelect.ShowingItem
+                };
+
+                var ShowingInventories = await UOW.ShowingInventoryRepository.List(ShowingInventoryFilter);
+                var list = ShowingInventories.GroupBy(x => x.ShowingItemId).Select(x => new { ShowingItemId = x.Key, SaleStock = x.Sum(s => s.SaleStock) }).ToList();
+
+                foreach (var ShowingItem in ShowingItems)
+                {
+                    ShowingItem.SaleStock = list.Where(i => i.ShowingItemId == ShowingItem.Id).Select(i => i.SaleStock).FirstOrDefault();
+                    ShowingItem.HasInventory = ShowingItem.SaleStock > 0;
+                }
+
                 foreach (var ShowingOrderContent in ShowingOrder.ShowingOrderContents)
                 {
-                    if(ShowingOrderContent.Quantity == 0)
+                    if (ShowingOrderContent.Quantity == 0)
                     {
                         ShowingOrderContent.AddError(nameof(ShowingOrderValidator), nameof(ShowingOrderContent.Quantity), ErrorCode.QuantityEmpty);
+                    }
+                    else
+                    {
+                        ShowingItem ShowingItem = ShowingItems.Where(x => x.Id == ShowingOrderContent.ShowingItemId).FirstOrDefault();
+                        if (ShowingItem == null)
+                        {
+                            ShowingOrderContent.AddError(nameof(ShowingOrderValidator), nameof(ShowingOrderContent.ShowingItem), ErrorCode.ShowingItemNotExisted);
+                        }
+                        else
+                        {
+                            var StoreCounter = ShowingOrder.Stores.Count();
+                            if (ShowingItem.SalePrice <= 0 || ShowingItem.SalePrice < ShowingOrderContent.Quantity * StoreCounter)
+                            {
+                                ShowingOrderContent.ShowingItem.AddError(nameof(ShowingOrderValidator), nameof(ShowingOrderContent.ShowingItem.SaleStock), ErrorCode.SaleStockEmpty);
+                            }
+                        }
                     }
                 }
             }
             return ShowingOrder.IsValidated;
         }
 
-        public async Task<bool>Create(ShowingOrder ShowingOrder)
+        private async Task<bool> ValidateShowingWarehouse(ShowingOrder ShowingOrder)
+        {
+            if (ShowingOrder.ShowingWarehouseId == 0)
+            {
+                ShowingOrder.AddError(nameof(ShowingOrderValidator), nameof(ShowingOrder.ShowingWarehouse), ErrorCode.ShowingWarehouseEmpty);
+            }
+            else
+            {
+                AppUser AppUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
+                ShowingWarehouseFilter ShowingWarehouseFilter = new ShowingWarehouseFilter
+                {
+                    Id = new IdFilter { Equal = ShowingOrder.ShowingWarehouseId },
+                    OrganizationId = new IdFilter { Equal = AppUser.OrganizationId },
+                    StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id }
+                };
+
+                var count = await UOW.ShowingWarehouseRepository.Count(ShowingWarehouseFilter);
+                if (count == 0)
+                    ShowingOrder.AddError(nameof(ShowingOrderValidator), nameof(ShowingOrder.ShowingWarehouse), ErrorCode.ShowingWarehouseIdNotExisted);
+            }
+
+            return ShowingOrder.IsValidated;
+        }
+
+        public async Task<bool> Create(ShowingOrder ShowingOrder)
         {
             await ValidateDate(ShowingOrder);
             await ValidateOrganization(ShowingOrder);
             await ValidateStores(ShowingOrder);
             await ValidateStatus(ShowingOrder);
             await ValidateContent(ShowingOrder);
+            await ValidateShowingWarehouse(ShowingOrder);
             return ShowingOrder.IsValidated;
         }
 
@@ -163,6 +236,7 @@ namespace DMS.Services.MShowingOrder
                 await ValidateOrganization(ShowingOrder);
                 await ValidateStatus(ShowingOrder);
                 await ValidateContent(ShowingOrder);
+                await ValidateShowingWarehouse(ShowingOrder);
             }
             return ShowingOrder.IsValidated;
         }
@@ -174,7 +248,7 @@ namespace DMS.Services.MShowingOrder
             }
             return ShowingOrder.IsValidated;
         }
-        
+
         public async Task<bool> BulkDelete(List<ShowingOrder> ShowingOrders)
         {
             foreach (ShowingOrder ShowingOrder in ShowingOrders)
@@ -183,7 +257,7 @@ namespace DMS.Services.MShowingOrder
             }
             return ShowingOrders.All(x => x.IsValidated);
         }
-        
+
         public async Task<bool> Import(List<ShowingOrder> ShowingOrders)
         {
             return true;

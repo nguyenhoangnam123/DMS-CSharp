@@ -16,7 +16,6 @@ namespace DMS.Entities
         public decimal? SalePrice { get; set; }
         public decimal? RetailPrice { get; set; }
         public long SaleStock { get; set; }
-        public bool CanDelete { get; set; }
         public long StatusId { get; set; }
         public bool HasInventory { get; set; }
         public DateTime? LastUpdateInventory { get; set; }

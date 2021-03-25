@@ -360,6 +360,7 @@ namespace DMS.Repositories
             ShowingInventoryDAO.AppUserId = ShowingInventory.AppUserId;
             ShowingInventoryDAO.CreatedAt = StaticParams.DateTimeNow;
             ShowingInventoryDAO.UpdatedAt = StaticParams.DateTimeNow;
+            ShowingInventoryDAO.RowId = Guid.NewGuid();
             DataContext.ShowingInventory.Add(ShowingInventoryDAO);
             await DataContext.SaveChangesAsync();
             ShowingInventory.Id = ShowingInventoryDAO.Id;
@@ -402,11 +403,48 @@ namespace DMS.Repositories
                 ShowingInventoryDAO.SaleStock = ShowingInventory.SaleStock;
                 ShowingInventoryDAO.AccountingStock = ShowingInventory.AccountingStock;
                 ShowingInventoryDAO.AppUserId = ShowingInventory.AppUserId;
+                ShowingInventoryDAO.RowId = ShowingInventory.RowId;
                 ShowingInventoryDAO.CreatedAt = StaticParams.DateTimeNow;
                 ShowingInventoryDAO.UpdatedAt = StaticParams.DateTimeNow;
                 ShowingInventoryDAOs.Add(ShowingInventoryDAO);
-            }
+            }   
             await DataContext.BulkMergeAsync(ShowingInventoryDAOs);
+
+            var Ids = ShowingInventoryDAOs.Select(x => x.Id).ToList();
+            List<ShowingInventoryHistoryDAO> ShowingInventoryHistoryDAOs = await DataContext.ShowingInventoryHistory
+                .Where(x => Ids.Contains(x.ShowingInventoryId))
+                .ToListAsync();
+
+            foreach (ShowingInventory ShowingInventory in ShowingInventories)
+            {
+                ShowingInventory.Id = ShowingInventoryDAOs.Where(x => x.RowId == ShowingInventory.RowId).Select(x => x.Id).FirstOrDefault();
+                if(ShowingInventory.ShowingInventoryHistories != null)
+                {
+                    foreach (var ShowingInventoryHistory in ShowingInventory.ShowingInventoryHistories)
+                    {
+                        ShowingInventoryHistoryDAO ShowingInventoryHistoryDAO = ShowingInventoryHistoryDAOs
+                            .Where(x => x.Id == ShowingInventoryHistory.Id && x.Id != 0)
+                            .FirstOrDefault();
+                        if (ShowingInventoryHistoryDAO == null)
+                        {
+                            ShowingInventoryHistoryDAO = new ShowingInventoryHistoryDAO
+                            {
+                                ShowingInventoryId = ShowingInventory.Id,
+                                AppUserId = ShowingInventoryHistory.AppUserId,
+                                SaleStock = ShowingInventoryHistory.SaleStock,
+                                AccountingStock = ShowingInventoryHistory.AccountingStock,
+                                OldAccountingStock = ShowingInventoryHistory.OldAccountingStock,
+                                OldSaleStock = ShowingInventoryHistory.OldSaleStock,
+                                CreatedAt = StaticParams.DateTimeNow,
+                                UpdatedAt = StaticParams.DateTimeNow,
+                                DeletedAt = null,
+                            };
+                            ShowingInventoryHistoryDAOs.Add(ShowingInventoryHistoryDAO);
+                        }
+                    }
+                }
+            }
+            await DataContext.BulkMergeAsync(ShowingInventoryHistoryDAOs);
             return true;
         }
 
@@ -421,6 +459,35 @@ namespace DMS.Repositories
 
         private async Task SaveReference(ShowingInventory ShowingInventory)
         {
+            List<ShowingInventoryHistoryDAO> ShowingInventoryHistoryDAOs = await DataContext.ShowingInventoryHistory
+                .Where(x => x.ShowingInventoryId == ShowingInventory.Id)
+                .ToListAsync();
+            if (ShowingInventory.ShowingInventoryHistories != null)
+            {
+                foreach (var ShowingInventoryHistory in ShowingInventory.ShowingInventoryHistories)
+                {
+                    ShowingInventoryHistoryDAO ShowingInventoryHistoryDAO = ShowingInventoryHistoryDAOs
+                        .Where(x => x.Id == ShowingInventoryHistory.Id && x.Id != 0)
+                        .FirstOrDefault();
+                    if (ShowingInventoryHistoryDAO == null)
+                    {
+                        ShowingInventoryHistoryDAO = new ShowingInventoryHistoryDAO
+                        {
+                            ShowingInventoryId = ShowingInventory.Id,
+                            AppUserId = ShowingInventoryHistory.AppUserId,
+                            SaleStock = ShowingInventoryHistory.SaleStock,
+                            AccountingStock = ShowingInventoryHistory.AccountingStock,
+                            OldAccountingStock = ShowingInventoryHistory.OldAccountingStock,
+                            OldSaleStock = ShowingInventoryHistory.OldSaleStock,
+                            CreatedAt = StaticParams.DateTimeNow,
+                            UpdatedAt = StaticParams.DateTimeNow,
+                            DeletedAt = null,
+                        };
+                        ShowingInventoryHistoryDAOs.Add(ShowingInventoryHistoryDAO);
+                    }
+                }
+            }
+            await DataContext.BulkMergeAsync(ShowingInventoryHistoryDAOs);
         }
         
     }

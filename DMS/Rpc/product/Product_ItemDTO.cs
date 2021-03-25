@@ -15,7 +15,6 @@ namespace DMS.Rpc.product
         public decimal? SalePrice { get; set; }
         public decimal? RetailPrice { get; set; }
         public long SaleStock { get; set; }
-        public bool CanDelete { get; set; }
         public bool HasInventory { get; set; }
         public long StatusId { get; set; }
         public bool Used { get; set; }
@@ -33,7 +32,6 @@ namespace DMS.Rpc.product
             this.SalePrice = Item.SalePrice;
             this.RetailPrice = Item.RetailPrice;
             this.SaleStock = Item.SaleStock;
-            this.CanDelete = Item.CanDelete;
             this.HasInventory = Item.HasInventory;
             this.StatusId = Item.StatusId;
             this.Used = Item.Used;

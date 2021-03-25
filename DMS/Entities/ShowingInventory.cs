@@ -17,6 +17,7 @@ namespace DMS.Entities
         public AppUser AppUser { get; set; }
         public ShowingItem ShowingItem { get; set; }
         public ShowingWarehouse ShowingWarehouse { get; set; }
+        public Guid RowId { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public DateTime? DeletedAt { get; set; }
