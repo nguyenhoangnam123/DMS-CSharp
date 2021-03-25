@@ -348,7 +348,7 @@ namespace DMS.Services.MStoreUser
                 var Store = await UOW.StoreRepository.Get(StoreUser.StoreId);
                 StoreUser.DisplayName = Store.Name;
                 StoreUser.Username = Store.Code.Split('.')[2];
-                StoreUser.Password = "appdailyrangdong";
+                StoreUser.Password = "appdaily";
 
                 return StoreUser;
             }
