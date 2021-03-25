@@ -23,7 +23,7 @@ namespace DMS.Rpc.posm.showing_order
 {
     public partial class ShowingOrderController : RpcController
     {
-        [Route(ShowingOrderRoute.Count), HttpPost]
+        [Route(ShowingOrderRoute.CountShowingItem), HttpPost]
         public async Task<ActionResult<int>> Count([FromBody] ShowingOrder_ShowingItemFilterDTO ShowingOrder_ShowingItemFilterDTO)
         {
             if (!ModelState.IsValid)
@@ -45,7 +45,7 @@ namespace DMS.Rpc.posm.showing_order
             return count;
         }
 
-        [Route(ShowingOrderRoute.List), HttpPost]
+        [Route(ShowingOrderRoute.ListShowingItem), HttpPost]
         public async Task<ActionResult<List<ShowingOrder_ShowingItemDTO>>> List([FromBody] ShowingOrder_ShowingItemFilterDTO ShowingOrder_ShowingItemFilterDTO)
         {
             if (!ModelState.IsValid)
