@@ -472,6 +472,12 @@ namespace DMS.Repositories
                         StatusId = x.ShowingItem.StatusId,
                         Used = x.ShowingItem.Used,
                         RowId = x.ShowingItem.RowId,
+                        ShowingCategory = x.ShowingItem.ShowingCategory == null ? null : new ShowingCategory
+                        {
+                            Id = x.ShowingItem.ShowingCategory.Id,
+                            Code = x.ShowingItem.ShowingCategory.Code,
+                            Name = x.ShowingItem.ShowingCategory.Name,
+                        }
                     },
                     UnitOfMeasure = new UnitOfMeasure
                     {
@@ -629,6 +635,12 @@ namespace DMS.Repositories
                         StatusId = x.ShowingItem.StatusId,
                         Used = x.ShowingItem.Used,
                         RowId = x.ShowingItem.RowId,
+                        ShowingCategory = x.ShowingItem.ShowingCategory == null ? null : new ShowingCategory
+                        {
+                            Id = x.ShowingItem.ShowingCategory.Id,
+                            Code = x.ShowingItem.ShowingCategory.Code,
+                            Name = x.ShowingItem.ShowingCategory.Name,
+                        }
                     },
                     UnitOfMeasure = new UnitOfMeasure
                     {
