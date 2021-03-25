@@ -86,7 +86,7 @@ namespace DMS.Rpc.posm.showing_order
         public IdFilter StatusId { get; set; }
         
         public GuidFilter RowId { get; set; }
-        
+        public string Search { get; set; }
         public ShowingItemOrder OrderBy { get; set; }
     }
 }

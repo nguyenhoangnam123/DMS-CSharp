@@ -75,6 +75,7 @@ namespace DMS.Rpc.posm.posm_report
             ShowingItemFilter.Desception = POSMReport_ShowingItemFilterDTO.Desception;
             ShowingItemFilter.StatusId = POSMReport_ShowingItemFilterDTO.StatusId;
             ShowingItemFilter.RowId = POSMReport_ShowingItemFilterDTO.RowId;
+            ShowingItemFilter.Search = POSMReport_ShowingItemFilterDTO.Search;
 
             List<ShowingItem> ShowingItems = await ShowingItemService.List(ShowingItemFilter);
             List<POSMReport_ShowingItemDTO> POSMReport_ShowingItemDTOs = ShowingItems

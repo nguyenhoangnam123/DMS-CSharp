@@ -40,12 +40,17 @@ namespace DMS.Rpc.posm.posm_report
 
     public class POSMReport_POSMReportFilterDTO : FilterDTO
     {
-        public IdFilter Id { get; set; }
         public IdFilter OrganizationId { get; set; }
         public IdFilter StoreId { get; set; }
         public IdFilter StoreGroupingId { get; set; }
         public IdFilter StoreTypeId { get; set; }
         public IdFilter ShowingItemId { get; set; }
         public DateFilter Date { get; set; }
+        internal bool HasValue => (OrganizationId != null && OrganizationId.HasValue) ||
+            (StoreId != null && StoreId.HasValue) ||
+            (StoreGroupingId != null && StoreGroupingId.HasValue) ||
+            (ShowingItemId != null && ShowingItemId.HasValue) ||
+            (Date != null && Date.HasValue) ||
+            (StoreTypeId != null && StoreTypeId.HasValue);
     }
 }

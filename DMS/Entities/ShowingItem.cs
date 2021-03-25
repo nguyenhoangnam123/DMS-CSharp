@@ -60,6 +60,7 @@ namespace DMS.Entities
         public StringFilter Desception { get; set; }
         public IdFilter StatusId { get; set; }
         public GuidFilter RowId { get; set; }
+        public string Search { get; set; }
         public DateFilter CreatedAt { get; set; }
         public DateFilter UpdatedAt { get; set; }
         public List<ShowingItemFilter> OrFilter { get; set; }

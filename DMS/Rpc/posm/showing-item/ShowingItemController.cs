@@ -531,6 +531,7 @@ namespace DMS.Rpc.posm.showing_item
             ShowingItemFilter.RowId = ShowingItem_ShowingItemFilterDTO.RowId;
             ShowingItemFilter.CreatedAt = ShowingItem_ShowingItemFilterDTO.CreatedAt;
             ShowingItemFilter.UpdatedAt = ShowingItem_ShowingItemFilterDTO.UpdatedAt;
+            ShowingItemFilter.Search = ShowingItem_ShowingItemFilterDTO.Search;
             return ShowingItemFilter;
         }
     }

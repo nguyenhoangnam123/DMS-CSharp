@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -72,6 +72,9 @@ namespace DMS.Rpc.posm.posm_report
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
 
+            if (POSMReport_ShowingOrderFilterDTO.HasValue == false)
+                return 0;
+
             DateTime Start = POSMReport_ShowingOrderFilterDTO.Date?.GreaterEqual == null ?
                     LocalStartDay(CurrentContext) :
                     POSMReport_ShowingOrderFilterDTO.Date.GreaterEqual.Value;
@@ -79,6 +82,9 @@ namespace DMS.Rpc.posm.posm_report
             DateTime End = POSMReport_ShowingOrderFilterDTO.Date?.LessEqual == null ?
                     LocalEndDay(CurrentContext) :
                     POSMReport_ShowingOrderFilterDTO.Date.LessEqual.Value;
+
+            if (End.Subtract(Start).Days > 31)
+                return 0;
 
             long? StoreId = POSMReport_ShowingOrderFilterDTO.StoreId?.Equal;
             long? StoreTypeId = POSMReport_ShowingOrderFilterDTO.StoreTypeId?.Equal;
@@ -130,9 +136,11 @@ namespace DMS.Rpc.posm.posm_report
                        .BulkInsertValuesIntoTempTableAsync<long>(StoreIds);
 
             var query = from so in DataContext.ShowingOrder
+                        join soc in DataContext.ShowingOrderContent on so.Id equals soc.ShowingOrderId
                         join s in DataContext.Store on so.StoreId equals s.Id
                         join tt in tempTableQuery.Query on so.StoreId equals tt.Column1
                         where Start <= so.Date && so.Date <= End &&
+                        (ShowingItemIds == null || ShowingItemIds.Count == 0 || ShowingItemIds.Contains(soc.ShowingItemId)) &&
                         AppUserIds.Contains(so.AppUserId) &&
                         (StoreTypeIds.Contains(s.StoreTypeId)) &&
                         (
@@ -157,18 +165,90 @@ namespace DMS.Rpc.posm.posm_report
         }
 
         [Route(POSMReportRoute.List), HttpPost]
-        public async Task<ActionResult<List<POSMReport_POSMReportDTO>>> List([FromBody] POSMReport_POSMReportFilterDTO POSMReport_ShowingOrderFilterDTO)
+        public async Task<ActionResult<List<POSMReport_POSMReportDTO>>> List([FromBody] POSMReport_POSMReportFilterDTO POSMReport_POSMReportFilterDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
 
-            DateTime Start = POSMReport_ShowingOrderFilterDTO.Date?.GreaterEqual == null ?
-                    LocalStartDay(CurrentContext) :
-                    POSMReport_ShowingOrderFilterDTO.Date.GreaterEqual.Value;
+            if (POSMReport_POSMReportFilterDTO.HasValue == false)
+                return new List<POSMReport_POSMReportDTO>();
 
-            DateTime End = POSMReport_ShowingOrderFilterDTO.Date?.LessEqual == null ?
+            DateTime Start = POSMReport_POSMReportFilterDTO.Date?.GreaterEqual == null ?
+                    LocalStartDay(CurrentContext) :
+                    POSMReport_POSMReportFilterDTO.Date.GreaterEqual.Value;
+
+            DateTime End = POSMReport_POSMReportFilterDTO.Date?.LessEqual == null ?
                     LocalEndDay(CurrentContext) :
-                    POSMReport_ShowingOrderFilterDTO.Date.LessEqual.Value;
+                    POSMReport_POSMReportFilterDTO.Date.LessEqual.Value;
+
+            if (End.Subtract(Start).Days > 31)
+                return BadRequest(new { message = "Chỉ được phép xem tối đa trong vòng 31 ngày" });
+
+            List<POSMReport_POSMReportDTO> POSMReport_POSMReportDTOs = (await ListData(POSMReport_POSMReportFilterDTO, Start, End)).Value;
+
+            return POSMReport_POSMReportDTOs;
+        }
+
+        [Route(POSMReportRoute.Export), HttpPost]
+        public async Task<ActionResult> Export([FromBody] POSMReport_POSMReportFilterDTO POSMReport_POSMReportFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            DateTime Start = POSMReport_POSMReportFilterDTO.Date?.GreaterEqual == null ?
+                    LocalStartDay(CurrentContext) :
+                    POSMReport_POSMReportFilterDTO.Date.GreaterEqual.Value;
+
+            DateTime End = POSMReport_POSMReportFilterDTO.Date?.LessEqual == null ?
+                    LocalEndDay(CurrentContext) :
+                    POSMReport_POSMReportFilterDTO.Date.LessEqual.Value;
+
+            POSMReport_POSMReportFilterDTO.Skip = 0;
+            POSMReport_POSMReportFilterDTO.Take = int.MaxValue;
+            List<POSMReport_POSMReportDTO> POSMReport_POSMReportDTOs = (await ListData(POSMReport_POSMReportFilterDTO, Start, End)).Value;
+
+            long stt = 1;
+            foreach (POSMReport_POSMReportDTO POSMReport_POSMReportDTO in POSMReport_POSMReportDTOs)
+            {
+                foreach (var Store in POSMReport_POSMReportDTO.Stores)
+                {
+                    Store.STT = stt;
+                    stt++;
+                }
+            }
+
+            var Total = POSMReport_POSMReportDTOs.SelectMany(x => x.Stores).Select(x => x.Total).DefaultIfEmpty(0).Sum();
+            var SumQuantity = POSMReport_POSMReportDTOs.SelectMany(x => x.Stores).SelectMany(x => x.Contents).Select(x => x.Quantity).DefaultIfEmpty(0).Sum();
+
+            var OrgRoot = await DataContext.Organization
+                .Where(x => x.DeletedAt == null && 
+                x.StatusId == StatusEnum.ACTIVE.Id && 
+                x.ParentId.HasValue == false)
+                .FirstOrDefaultAsync();
+
+            string path = "Templates/POSM_Report.xlsx";
+            byte[] arr = System.IO.File.ReadAllBytes(path);
+            MemoryStream input = new MemoryStream(arr);
+            MemoryStream output = new MemoryStream();
+            dynamic Data = new ExpandoObject();
+            Data.Start = Start.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy");
+            Data.End = End.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy");
+            Data.Data = POSMReport_POSMReportDTOs;
+            Data.RootName = OrgRoot == null ? "" : OrgRoot.Name.ToUpper();
+            Data.Total = Total;
+            Data.SumQuantity = SumQuantity;
+            using (var document = StaticParams.DocumentFactory.Open(input, output, "xlsx"))
+            {
+                document.Process(Data);
+            };
+
+            return File(output.ToArray(), "application/octet-stream", "POSMReport.xlsx");
+        }
+
+        private async Task<ActionResult<List<POSMReport_POSMReportDTO>>> ListData([FromBody] POSMReport_POSMReportFilterDTO POSMReport_ShowingOrderFilterDTO, DateTime Start, DateTime End)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
 
             long? StoreId = POSMReport_ShowingOrderFilterDTO.StoreId?.Equal;
             long? StoreTypeId = POSMReport_ShowingOrderFilterDTO.StoreTypeId?.Equal;
@@ -255,13 +335,12 @@ namespace DMS.Rpc.posm.posm_report
                             }
                         };
 
-            var Ids = await query.OrderBy(x => x.OrganizationId).ThenBy(x => x.Store.Name)
+            var Ids = await query.Distinct().OrderBy(x => x.OrganizationId).ThenBy(x => x.Store.Name)
                 .Select(x => new
                 {
                     StoreId = x.StoreId,
                     OrganizationId = x.OrganizationId,
                 })
-                .Distinct()
                 .Skip(POSMReport_ShowingOrderFilterDTO.Skip)
                 .Take(POSMReport_ShowingOrderFilterDTO.Take)
                 .ToListAsync();
@@ -283,7 +362,8 @@ namespace DMS.Rpc.posm.posm_report
             var queryContent = from c in DataContext.ShowingOrderContent
                                join i in DataContext.ShowingItem on c.ShowingItemId equals i.Id
                                join u in DataContext.UnitOfMeasure on c.UnitOfMeasureId equals u.Id
-                               where ShowingOrderIds.Contains(c.ShowingOrderId)
+                               where ShowingOrderIds.Contains(c.ShowingOrderId) &&
+                               (ShowingItemIds == null || ShowingItemIds.Count == 0 || ShowingItemIds.Contains(c.ShowingItemId))
                                select new ShowingOrderContentDAO
                                {
                                    Id = c.Id,
@@ -389,62 +469,6 @@ namespace DMS.Rpc.posm.posm_report
             }
 
             return POSMReport_POSMReportDTOs;
-        }
-
-        [Route(POSMReportRoute.Export), HttpPost]
-        public async Task<ActionResult> Export([FromBody] POSMReport_POSMReportFilterDTO POSMReport_POSMReportFilterDTO)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
-
-            DateTime Start = POSMReport_POSMReportFilterDTO.Date?.GreaterEqual == null ?
-                    LocalStartDay(CurrentContext) :
-                    POSMReport_POSMReportFilterDTO.Date.GreaterEqual.Value;
-
-            DateTime End = POSMReport_POSMReportFilterDTO.Date?.LessEqual == null ?
-                    LocalEndDay(CurrentContext) :
-                    POSMReport_POSMReportFilterDTO.Date.LessEqual.Value;
-
-            POSMReport_POSMReportFilterDTO.Skip = 0;
-            POSMReport_POSMReportFilterDTO.Take = int.MaxValue;
-            List<POSMReport_POSMReportDTO> POSMReport_POSMReportDTOs = (await List(POSMReport_POSMReportFilterDTO)).Value;
-
-            long stt = 1;
-            foreach (POSMReport_POSMReportDTO POSMReport_POSMReportDTO in POSMReport_POSMReportDTOs)
-            {
-                foreach (var Store in POSMReport_POSMReportDTO.Stores)
-                {
-                    Store.STT = stt;
-                    stt++;
-                }
-            }
-
-            var Total = POSMReport_POSMReportDTOs.SelectMany(x => x.Stores).Select(x => x.Total).DefaultIfEmpty(0).Sum();
-            var SumQuantity = POSMReport_POSMReportDTOs.SelectMany(x => x.Stores).SelectMany(x => x.Contents).Select(x => x.Quantity).DefaultIfEmpty(0).Sum();
-
-            var OrgRoot = await DataContext.Organization
-                .Where(x => x.DeletedAt == null && 
-                x.StatusId == StatusEnum.ACTIVE.Id && 
-                x.ParentId.HasValue == false)
-                .FirstOrDefaultAsync();
-
-            string path = "Templates/POSM_Report.xlsx";
-            byte[] arr = System.IO.File.ReadAllBytes(path);
-            MemoryStream input = new MemoryStream(arr);
-            MemoryStream output = new MemoryStream();
-            dynamic Data = new ExpandoObject();
-            Data.Start = Start.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy");
-            Data.End = End.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy");
-            Data.Data = POSMReport_POSMReportDTOs;
-            Data.RootName = OrgRoot == null ? "" : OrgRoot.Name.ToUpper();
-            Data.Total = Total;
-            Data.SumQuantity = SumQuantity;
-            using (var document = StaticParams.DocumentFactory.Open(input, output, "xlsx"))
-            {
-                document.Process(Data);
-            };
-
-            return File(output.ToArray(), "application/octet-stream", "POSMReport.xlsx");
         }
     }
 }

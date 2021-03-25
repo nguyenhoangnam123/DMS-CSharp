@@ -39,6 +39,7 @@ namespace DMS.Rpc.posm.showing_order
             ShowingItemFilter.Desception = ShowingOrder_ShowingItemFilterDTO.Desception;
             ShowingItemFilter.StatusId = ShowingOrder_ShowingItemFilterDTO.StatusId;
             ShowingItemFilter.RowId = ShowingOrder_ShowingItemFilterDTO.RowId;
+            ShowingItemFilter.Search = ShowingOrder_ShowingItemFilterDTO.Search;
 
             ShowingItemFilter = await ShowingItemService.ToFilter(ShowingItemFilter);
             int count = await ShowingItemService.Count(ShowingItemFilter);
@@ -68,6 +69,7 @@ namespace DMS.Rpc.posm.showing_order
             ShowingItemFilter.Desception = ShowingOrder_ShowingItemFilterDTO.Desception;
             ShowingItemFilter.StatusId = ShowingOrder_ShowingItemFilterDTO.StatusId;
             ShowingItemFilter.RowId = ShowingOrder_ShowingItemFilterDTO.RowId;
+            ShowingItemFilter.Search = ShowingOrder_ShowingItemFilterDTO.Search;
 
             ShowingItemFilter = await ShowingItemService.ToFilter(ShowingItemFilter);
             List<ShowingItem> ShowingItems = await ShowingOrderService.ListShowingItem(ShowingItemFilter);
