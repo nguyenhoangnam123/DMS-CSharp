@@ -571,7 +571,7 @@ namespace DMS.Rpc.e_route_change_request
             OrganizationFilter.Phone = ERouteChangeRequest_OrganizationFilterDTO.Phone;
             OrganizationFilter.Address = ERouteChangeRequest_OrganizationFilterDTO.Address;
             OrganizationFilter.Email = ERouteChangeRequest_OrganizationFilterDTO.Email;
-            OrganizationFilter.IsDisplay = ERouteChangeRequest_OrganizationFilterDTO.IsDisplay;
+            OrganizationFilter.IsDisplay = true;
 
             if (OrganizationFilter.Id == null) OrganizationFilter.Id = new IdFilter();
             OrganizationFilter.Id.In = await FilterOrganization(OrganizationService, CurrentContext);
