@@ -310,7 +310,7 @@ namespace DMS.Rpc.notification
             OrganizationFilter.Phone = Notification_OrganizationFilterDTO.Phone;
             OrganizationFilter.Email = Notification_OrganizationFilterDTO.Email;
             OrganizationFilter.Address = Notification_OrganizationFilterDTO.Address;
-
+            OrganizationFilter.IsDisplay = true;
             List<Organization> Organizations = await OrganizationService.List(OrganizationFilter);
             List<Notification_OrganizationDTO> Notification_OrganizationDTOs = Organizations
                 .Select(x => new Notification_OrganizationDTO(x)).ToList();
@@ -384,7 +384,7 @@ namespace DMS.Rpc.notification
             OrganizationFilter.Phone = Notification_OrganizationFilterDTO.Phone;
             OrganizationFilter.Email = Notification_OrganizationFilterDTO.Email;
             OrganizationFilter.Address = Notification_OrganizationFilterDTO.Address;
-
+            OrganizationFilter.IsDisplay = true;
             List<Organization> Organizations = await OrganizationService.List(OrganizationFilter);
             List<Notification_OrganizationDTO> Notification_OrganizationDTOs = Organizations
                 .Select(x => new Notification_OrganizationDTO(x)).ToList();

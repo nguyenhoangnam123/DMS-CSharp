@@ -108,6 +108,7 @@ namespace DMS.Rpc.role
             OrganizationFilter.Code = Role_OrganizationFilterDTO.Code;
             OrganizationFilter.Name = Role_OrganizationFilterDTO.Name;
             OrganizationFilter.ParentId = Role_OrganizationFilterDTO.ParentId;
+            OrganizationFilter.IsDisplay = true;
 
             List<Organization> Organizationes = await OrganizationService.List(OrganizationFilter);
             List<Role_OrganizationDTO> Role_OrganizationDTOs = Organizationes

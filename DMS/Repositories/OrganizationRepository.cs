@@ -1,5 +1,6 @@
 using DMS.Common;
 using DMS.Entities;
+using DMS.Helpers;
 using DMS.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -14,6 +15,7 @@ namespace DMS.Repositories
         Task<int> Count(OrganizationFilter OrganizationFilter);
         Task<List<Organization>> List(OrganizationFilter OrganizationFilter);
         Task<Organization> Get(long Id);
+        Task<bool> UpdateIsDisplay(Organization Organization);
     }
     public class OrganizationRepository : IOrganizationRepository
     {
@@ -116,6 +118,8 @@ namespace DMS.Repositories
                 query = query.Where(q => q.Email, filter.Email);
             if (filter.Address != null)
                 query = query.Where(q => q.Address, filter.Address);
+            if (filter.IsDisplay.HasValue)
+                query = query.Where(q => q.IsDisplay == filter.IsDisplay);
             query = OrFilter(query, filter);
             return query;
         }
@@ -308,6 +312,7 @@ namespace DMS.Repositories
                 Phone = filter.Selects.Contains(OrganizationSelect.Phone) ? q.Phone : default(string),
                 Address = filter.Selects.Contains(OrganizationSelect.Address) ? q.Address : default(string),
                 Email = filter.Selects.Contains(OrganizationSelect.Email) ? q.Email : default(string),
+                IsDisplay = filter.Selects.Contains(OrganizationSelect.IsDisplay) ? q.IsDisplay : default(bool),
                 Parent = filter.Selects.Contains(OrganizationSelect.Parent) && q.Parent != null ? new Organization
                 {
                     Id = q.Parent.Id,
@@ -365,6 +370,7 @@ namespace DMS.Repositories
                     Phone = x.Phone,
                     Address = x.Address,
                     Email = x.Email,
+                    IsDisplay = x.IsDisplay,
                     Parent = x.Parent == null ? null : new Organization
                     {
                         Id = x.Parent.Id,
@@ -417,6 +423,17 @@ namespace DMS.Repositories
                 }).ToListAsync();
 
             return Organization;
+        }
+
+        public async Task<bool> UpdateIsDisplay(Organization Organization)
+        {
+            OrganizationDAO OrganizationDAO = DataContext.Organization.Where(x => x.Id == Organization.Id).FirstOrDefault();
+            if (OrganizationDAO == null)
+                return false;
+            OrganizationDAO.IsDisplay = Organization.IsDisplay;
+            OrganizationDAO.UpdatedAt = StaticParams.DateTimeNow;
+            await DataContext.SaveChangesAsync();
+            return true;
         }
     }
 }

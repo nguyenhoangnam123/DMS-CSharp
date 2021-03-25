@@ -14,6 +14,7 @@ namespace DMS.Rpc.organization
         public const string Count = Default + "/count";
         public const string List = Default + "/list";
         public const string Get = Default + "/get";
+        public const string UpdateIsDisplay = Default + "/update-is-display";
         public const string Export = Default + "/export";
         public const string ExportAppUser = Default + "/export-app-user";
 
@@ -32,11 +33,11 @@ namespace DMS.Rpc.organization
         {
             { "Tìm kiếm", new List<string> {
                 Parent,
-                Master, Count, List, Get, 
+                Master, Count, List, Get, UpdateIsDisplay,
                 FilterListOrganization, FilterListStatus, FilterListAppUser, } },
             { "Xuất excel", new List<string> {
                 Parent,
-                Master, Count, List, Get,
+                Master, Count, List, Get, UpdateIsDisplay,
                 FilterListOrganization, FilterListStatus, FilterListAppUser, Export, ExportAppUser } },
         };
     }

@@ -115,6 +115,7 @@ namespace DMS.Rpc.kpi_item
             OrganizationFilter.Id = KpiItem_OrganizationFilterDTO.Id;
             OrganizationFilter.Code = KpiItem_OrganizationFilterDTO.Code;
             OrganizationFilter.Name = KpiItem_OrganizationFilterDTO.Name;
+            OrganizationFilter.IsDisplay = true;
 
             if (OrganizationFilter.Id == null) OrganizationFilter.Id = new IdFilter();
             OrganizationFilter.Id.In = await FilterOrganization(OrganizationService, CurrentContext);
@@ -353,6 +354,7 @@ namespace DMS.Rpc.kpi_item
             OrganizationFilter.Id = KpiItem_OrganizationFilterDTO.Id;
             OrganizationFilter.Code = KpiItem_OrganizationFilterDTO.Code;
             OrganizationFilter.Name = KpiItem_OrganizationFilterDTO.Name;
+            OrganizationFilter.IsDisplay = true;
 
             if (OrganizationFilter.Id == null) OrganizationFilter.Id = new IdFilter();
             OrganizationFilter.Id.In = await FilterOrganization(OrganizationService, CurrentContext);

@@ -99,6 +99,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_by_employ
             OrganizationFilter.Code = ReportDirectSalesOrderByEmployeeAndItem_OrganizationFilterDTO.Code;
             OrganizationFilter.Name = ReportDirectSalesOrderByEmployeeAndItem_OrganizationFilterDTO.Name;
             OrganizationFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+            OrganizationFilter.IsDisplay = true;
 
             if (OrganizationFilter.Id == null) OrganizationFilter.Id = new IdFilter();
             OrganizationFilter.Id.In = await FilterOrganization(OrganizationService, CurrentContext);

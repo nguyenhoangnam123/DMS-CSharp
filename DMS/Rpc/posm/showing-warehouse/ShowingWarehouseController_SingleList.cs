@@ -70,6 +70,7 @@ namespace DMS.Rpc.posm.showing_warehouse
             OrganizationFilter.Phone = ShowingWarehouse_OrganizationFilterDTO.Phone;
             OrganizationFilter.Email = ShowingWarehouse_OrganizationFilterDTO.Email;
             OrganizationFilter.Address = ShowingWarehouse_OrganizationFilterDTO.Address;
+            OrganizationFilter.IsDisplay = true;
             OrganizationFilter.StatusId = new IdFilter{ Equal = 1 };
             List<Organization> Organizations = await OrganizationService.List(OrganizationFilter);
             List<ShowingWarehouse_OrganizationDTO> ShowingWarehouse_OrganizationDTOs = Organizations

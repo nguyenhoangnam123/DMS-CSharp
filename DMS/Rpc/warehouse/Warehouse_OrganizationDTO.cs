@@ -23,6 +23,7 @@ namespace DMS.Rpc.warehouse
         public string Phone { get; set; }
         public string Email { get; set; }
         public string Address { get; set; }
+        public bool IsDisplay { get; set; }
 
         public Warehouse_OrganizationDTO() { }
         public Warehouse_OrganizationDTO(Organization Organization)
@@ -45,6 +46,7 @@ namespace DMS.Rpc.warehouse
             this.Phone = Organization.Phone;
 
             this.Address = Organization.Address;
+            this.IsDisplay = Organization.IsDisplay;
 
             this.Email = Organization.Email;
         }
@@ -71,6 +73,7 @@ namespace DMS.Rpc.warehouse
         public StringFilter Email { get; set; }
         public StringFilter Address { get; set; }
 
+        public bool? IsDisplay { get; set; }
         public OrganizationOrder OrderBy { get; set; }
     }
 }

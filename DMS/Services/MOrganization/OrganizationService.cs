@@ -15,6 +15,7 @@ namespace DMS.Services.MOrganization
         Task<List<Organization>> List(OrganizationFilter OrganizationFilter);
         Task<Organization> Get(long Id);
         OrganizationFilter ToFilter(OrganizationFilter OrganizationFilter);
+        Task<Organization> UpdateIsDisplay(Organization Organization);
     }
 
     public class OrganizationService : BaseService, IOrganizationService
@@ -116,6 +117,35 @@ namespace DMS.Services.MOrganization
                 }
             }
             return filter;
+        }
+
+        public async Task<Organization> UpdateIsDisplay(Organization Organization)
+        {
+            if (!await OrganizationValidator.Update(Organization))
+                return Organization;
+            try
+            {
+                var oldData = await UOW.OrganizationRepository.Get(Organization.Id);
+
+
+                await UOW.OrganizationRepository.UpdateIsDisplay(Organization);
+                await Logging.CreateAuditLog(Organization, oldData, nameof(OrganizationService));
+                return Organization;
+            }
+            catch (Exception ex)
+            {
+
+                if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(OrganizationService));
+                    throw new MessageException(ex);
+                }
+                else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(OrganizationService));
+                    throw new MessageException(ex.InnerException);
+                }
+            }
         }
     }
 }

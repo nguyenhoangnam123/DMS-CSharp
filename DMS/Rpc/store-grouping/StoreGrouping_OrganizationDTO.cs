@@ -27,6 +27,7 @@ namespace DMS.Rpc.store_grouping
         public decimal? Latitude { get; set; }
 
         public decimal? Longitude { get; set; }
+        public bool IsDisplay { get; set; }
 
 
         public StoreGrouping_OrganizationDTO() { }
@@ -52,6 +53,7 @@ namespace DMS.Rpc.store_grouping
             this.Address = Organization.Address;
 
             this.Email = Organization.Email;
+            this.IsDisplay = Organization.IsDisplay;
 
         }
     }
@@ -76,6 +78,7 @@ namespace DMS.Rpc.store_grouping
         public StringFilter Phone { get; set; }
         public StringFilter Email { get; set; }
         public StringFilter Address { get; set; }
+        public bool? IsDisplay { get; set; }
         public OrganizationOrder OrderBy { get; set; }
     }
 }

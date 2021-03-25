@@ -146,6 +146,7 @@ namespace DMS.Rpc.indirect_sales_order
             OrganizationFilter.Phone = IndirectSalesOrder_OrganizationFilterDTO.Phone;
             OrganizationFilter.Address = IndirectSalesOrder_OrganizationFilterDTO.Address;
             OrganizationFilter.Email = IndirectSalesOrder_OrganizationFilterDTO.Email;
+            OrganizationFilter.IsDisplay = true;
 
             if (OrganizationFilter.Id == null) OrganizationFilter.Id = new IdFilter();
             OrganizationFilter.Id.In = await FilterOrganization(OrganizationService, CurrentContext);
@@ -349,6 +350,7 @@ namespace DMS.Rpc.indirect_sales_order
             OrganizationFilter.Phone = IndirectSalesOrder_OrganizationFilterDTO.Phone;
             OrganizationFilter.Address = IndirectSalesOrder_OrganizationFilterDTO.Address;
             OrganizationFilter.Email = IndirectSalesOrder_OrganizationFilterDTO.Email;
+            OrganizationFilter.IsDisplay = true;
 
             if (OrganizationFilter.Id == null) OrganizationFilter.Id = new IdFilter();
             OrganizationFilter.Id.In = await FilterOrganization(OrganizationService, CurrentContext);

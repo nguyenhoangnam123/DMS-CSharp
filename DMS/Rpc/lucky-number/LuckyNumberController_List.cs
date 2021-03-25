@@ -32,6 +32,7 @@ namespace DMS.Rpc.lucky_number
             OrganizationFilter.Id = LuckyNumber_OrganizationFilterDTO.Id;
             OrganizationFilter.Code = LuckyNumber_OrganizationFilterDTO.Code;
             OrganizationFilter.Name = LuckyNumber_OrganizationFilterDTO.Name;
+            OrganizationFilter.IsDisplay = true;
 
             if (OrganizationFilter.Id == null) OrganizationFilter.Id = new IdFilter();
             OrganizationFilter.Id.In = await FilterOrganization(OrganizationService, CurrentContext);

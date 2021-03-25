@@ -637,6 +637,7 @@ namespace DMS.Rpc.warehouse
             OrganizationFilter.Name = Warehouse_OrganizationFilterDTO.Name;
             OrganizationFilter.Path = Warehouse_OrganizationFilterDTO.Path;
             OrganizationFilter.Level = Warehouse_OrganizationFilterDTO.Level;
+            OrganizationFilter.IsDisplay = true;
 
             if (OrganizationFilter.Id == null) OrganizationFilter.Id = new IdFilter();
             OrganizationFilter.Id.In = await FilterOrganization(OrganizationService, CurrentContext);
@@ -791,6 +792,7 @@ namespace DMS.Rpc.warehouse
             OrganizationFilter.Name = Warehouse_OrganizationFilterDTO.Name;
             OrganizationFilter.Path = Warehouse_OrganizationFilterDTO.Path;
             OrganizationFilter.Level = Warehouse_OrganizationFilterDTO.Level;
+            OrganizationFilter.IsDisplay = true;
 
             if (OrganizationFilter.Id == null) OrganizationFilter.Id = new IdFilter();
             OrganizationFilter.Id.In = await FilterOrganization(OrganizationService, CurrentContext);

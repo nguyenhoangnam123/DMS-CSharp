@@ -28,7 +28,7 @@ namespace DMS.Rpc.mobile.permission_mobile
         public string Email { get; set; }
         
         public string Address { get; set; }
-        
+        public bool IsDisplay { get; set; }
 
         public PermissionMobile_OrganizationDTO() {}
         public PermissionMobile_OrganizationDTO(Organization Organization)
@@ -53,7 +53,8 @@ namespace DMS.Rpc.mobile.permission_mobile
             this.Email = Organization.Email;
             
             this.Address = Organization.Address;
-            
+            this.IsDisplay = Organization.IsDisplay;
+
             this.Errors = Organization.Errors;
         }
     }
@@ -80,7 +81,8 @@ namespace DMS.Rpc.mobile.permission_mobile
         public StringFilter Email { get; set; }
         
         public StringFilter Address { get; set; }
-        
+        public bool? IsDisplay { get; set; }
+
         public OrganizationOrder OrderBy { get; set; }
     }
 }

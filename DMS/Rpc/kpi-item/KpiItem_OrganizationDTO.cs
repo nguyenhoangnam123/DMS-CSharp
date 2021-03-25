@@ -25,6 +25,7 @@ namespace DMS.Rpc.kpi_item
         public string Email { get; set; }
 
         public string Address { get; set; }
+        public bool IsDisplay { get; set; }
 
 
         public KpiItem_OrganizationDTO() { }
@@ -50,6 +51,7 @@ namespace DMS.Rpc.kpi_item
             this.Email = Organization.Email;
 
             this.Address = Organization.Address;
+            this.IsDisplay = Organization.IsDisplay;
 
             this.Errors = Organization.Errors;
         }
@@ -77,6 +79,7 @@ namespace DMS.Rpc.kpi_item
         public StringFilter Email { get; set; }
 
         public StringFilter Address { get; set; }
+        public bool? IsDisplay { get; set; }
 
         public OrganizationOrder OrderBy { get; set; }
     }

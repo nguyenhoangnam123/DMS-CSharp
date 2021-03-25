@@ -133,6 +133,7 @@ namespace DMS.Rpc.dashboards.director
             OrganizationFilter.Phone = DashboardDirector_OrganizationFilterDTO.Phone;
             OrganizationFilter.Address = DashboardDirector_OrganizationFilterDTO.Address;
             OrganizationFilter.Email = DashboardDirector_OrganizationFilterDTO.Email;
+            OrganizationFilter.IsDisplay = true;
 
             if (OrganizationFilter.Id == null) OrganizationFilter.Id = new IdFilter();
             OrganizationFilter.Id.In = await FilterOrganization(OrganizationService, CurrentContext);

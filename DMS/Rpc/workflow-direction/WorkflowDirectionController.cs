@@ -602,6 +602,7 @@ namespace DMS.Rpc.workflow_direction
             OrganizationFilter.Phone = WorkflowDirection_OrganizationFilterDTO.Phone;
             OrganizationFilter.Address = WorkflowDirection_OrganizationFilterDTO.Address;
             OrganizationFilter.Email = WorkflowDirection_OrganizationFilterDTO.Email;
+            OrganizationFilter.IsDisplay = true;
 
             List<Organization> Organizations = await OrganizationService.List(OrganizationFilter);
             List<WorkflowDirection_OrganizationDTO> WorkflowDirection_OrganizationDTOs = Organizations

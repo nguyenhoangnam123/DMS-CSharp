@@ -38,6 +38,7 @@ namespace DMS.Rpc.app_user
             OrganizationFilter.Phone = AppUser_OrganizationFilterDTO.Phone;
             OrganizationFilter.Address = AppUser_OrganizationFilterDTO.Address;
             OrganizationFilter.Email = AppUser_OrganizationFilterDTO.Email;
+            OrganizationFilter.IsDisplay = true;
 
             if (OrganizationFilter.OrFilter == null) OrganizationFilter.OrFilter = new List<OrganizationFilter>();
             if (CurrentContext.Filters != null)
@@ -119,6 +120,7 @@ namespace DMS.Rpc.app_user
             OrganizationFilter.Phone = AppUser_OrganizationFilterDTO.Phone;
             OrganizationFilter.Address = AppUser_OrganizationFilterDTO.Address;
             OrganizationFilter.Email = AppUser_OrganizationFilterDTO.Email;
+            OrganizationFilter.IsDisplay = true;
 
             if (OrganizationFilter.OrFilter == null) OrganizationFilter.OrFilter = new List<OrganizationFilter>();
             if (CurrentContext.Filters != null)
