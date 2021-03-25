@@ -1,5 +1,6 @@
 using DMS.Common;
 using DMS.Entities;
+using DMS.Helpers;
 using DMS.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -14,6 +15,7 @@ namespace DMS.Repositories
         Task<int> Count(OrganizationFilter OrganizationFilter);
         Task<List<Organization>> List(OrganizationFilter OrganizationFilter);
         Task<Organization> Get(long Id);
+        Task<bool> UpdateIsDisplay(Organization Organization);
     }
     public class OrganizationRepository : IOrganizationRepository
     {
@@ -421,6 +423,17 @@ namespace DMS.Repositories
                 }).ToListAsync();
 
             return Organization;
+        }
+
+        public async Task<bool> UpdateIsDisplay(Organization Organization)
+        {
+            OrganizationDAO OrganizationDAO = DataContext.Organization.Where(x => x.Id == Organization.Id).FirstOrDefault();
+            if (OrganizationDAO == null)
+                return false;
+            OrganizationDAO.IsDisplay = Organization.IsDisplay;
+            OrganizationDAO.UpdatedAt = StaticParams.DateTimeNow;
+            await DataContext.SaveChangesAsync();
+            return true;
         }
     }
 }

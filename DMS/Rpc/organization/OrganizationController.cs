@@ -71,6 +71,24 @@ namespace DMS.Rpc.organization
             return new Organization_OrganizationDTO(Organization);
         }
 
+        [Route(OrganizationRoute.UpdateIsDisplay), HttpPost]
+        public async Task<ActionResult<Organization_OrganizationDTO>> UpdateIsDisplay([FromBody] Organization_OrganizationDTO Organization_OrganizationDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            if (!await HasPermission(Organization_OrganizationDTO.Id))
+                return Forbid();
+
+            Organization Organization = ConvertDTOToEntity(Organization_OrganizationDTO);
+            Organization = await OrganizationService.UpdateIsDisplay(Organization);
+            Organization_OrganizationDTO = new Organization_OrganizationDTO(Organization);
+            if (Organization.IsValidated)
+                return Organization_OrganizationDTO;
+            else
+                return BadRequest(Organization_OrganizationDTO);
+        }
+
         [Route(OrganizationRoute.Export), HttpPost]
         public async Task<ActionResult> Export([FromBody] Organization_OrganizationFilterDTO Organization_OrganizationFilterDTO)
         {
@@ -331,6 +349,16 @@ namespace DMS.Rpc.organization
             List<Organization_AppUserDTO> Organization_AppUserDTOs = AppUsers
                 .Select(x => new Organization_AppUserDTO(x)).ToList();
             return Organization_AppUserDTOs;
+        }
+
+        private Organization ConvertDTOToEntity(Organization_OrganizationDTO Organization_OrganizationDTO)
+        {
+            Organization Organization = new Organization();
+            Organization.Id = Organization_OrganizationDTO.Id;
+            Organization.Code = Organization_OrganizationDTO.Code;
+            Organization.IsDisplay = Organization_OrganizationDTO.IsDisplay;
+            Organization.BaseLanguage = CurrentContext.Language;
+            return Organization;
         }
     }
 }
