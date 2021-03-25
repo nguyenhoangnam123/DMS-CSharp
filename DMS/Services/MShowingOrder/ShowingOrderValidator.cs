@@ -100,16 +100,16 @@ namespace DMS.Services.MShowingOrder
             else
             {
                 var StoreIds = ShowingOrder.Stores.Select(x => x.Id).ToList();
-                AppUserFilter AppUserFilter = new AppUserFilter
+                StoreFilter StoreFilter = new StoreFilter
                 {
                     Skip = 0,
                     Take = int.MaxValue,
                     Id = new IdFilter { In = StoreIds },
-                    OrganizationId = new IdFilter(),
-                    Selects = AppUserSelect.Id
+                    StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id },
+                    Selects = StoreSelect.Id
                 };
 
-                var StoreIdsInDB = (await UOW.AppUserRepository.List(AppUserFilter)).Select(x => x.Id).ToList();
+                var StoreIdsInDB = (await UOW.StoreRepository.List(StoreFilter)).Select(x => x.Id).ToList();
                 foreach (var Store in ShowingOrder.Stores)
                 {
                     if (!StoreIdsInDB.Contains(Store.Id))

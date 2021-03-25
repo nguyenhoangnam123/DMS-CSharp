@@ -165,7 +165,6 @@ namespace DMS.Services.MShowingOrder
                 #endregion
 
                 NotifyUsed(ShowingOrder);
-                ShowingOrder = await UOW.ShowingOrderRepository.Get(ShowingOrder.Id);
                 await Logging.CreateAuditLog(ShowingOrder, new { }, nameof(ShowingOrderService));
                 return ShowingOrder;
             }
@@ -202,17 +201,15 @@ namespace DMS.Services.MShowingOrder
                     Selects = ShowingInventorySelect.SaleStock | ShowingInventorySelect.ShowingItem
                 });
 
-                var OldStoreCounter = oldData.Stores.Count();
-                var NewStoreCounter = ShowingOrder.Stores.Count();
                 foreach (var ShowingOrderContent in oldData.ShowingOrderContents)
                 {
                     //cộng trả lại tồn kho của các các item cũ
                     ShowingInventory ShowingInventory = ShowingInventories.Where(x => x.ShowingItemId == ShowingOrderContent.ShowingItemId).FirstOrDefault();
                     if (ShowingInventory != null)
                     {
-                        ShowingInventory.SaleStock += (ShowingOrderContent.Quantity * OldStoreCounter);
+                        ShowingInventory.SaleStock += ShowingOrderContent.Quantity;
                         if (ShowingInventory.AccountingStock.HasValue)
-                            ShowingInventory.AccountingStock += (ShowingOrderContent.Quantity * OldStoreCounter);
+                            ShowingInventory.AccountingStock += ShowingOrderContent.Quantity;
                     }
                 }
                 foreach (var ShowingOrderContent in ShowingOrder.ShowingOrderContents)
@@ -221,9 +218,9 @@ namespace DMS.Services.MShowingOrder
                     ShowingInventory ShowingInventory = ShowingInventories.Where(x => x.ShowingItemId == ShowingOrderContent.ShowingItemId).FirstOrDefault();
                     if (ShowingInventory != null)
                     {
-                        ShowingInventory.SaleStock -= (ShowingOrderContent.Quantity * NewStoreCounter);
+                        ShowingInventory.SaleStock -= ShowingOrderContent.Quantity;
                         if (ShowingInventory.AccountingStock.HasValue)
-                            ShowingInventory.AccountingStock -= (ShowingOrderContent.Quantity * NewStoreCounter);
+                            ShowingInventory.AccountingStock -= ShowingOrderContent.Quantity;
                     }
                 }
                 await UOW.ShowingInventoryRepository.BulkMerge(ShowingInventories);
