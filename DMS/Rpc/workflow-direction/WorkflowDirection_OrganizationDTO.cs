@@ -15,6 +15,7 @@ namespace DMS.Rpc.workflow_direction
         public string Phone { get; set; }
         public string Email { get; set; }
         public string Address { get; set; }
+        public bool IsDisplay { get; set; }
 
         public WorkflowDirection_OrganizationDTO() { }
         public WorkflowDirection_OrganizationDTO(Organization Organization)
@@ -29,6 +30,7 @@ namespace DMS.Rpc.workflow_direction
             this.Phone = Organization.Phone;
             this.Address = Organization.Address;
             this.Email = Organization.Email;
+            this.IsDisplay = Organization.IsDisplay;
         }
     }
 
@@ -44,6 +46,7 @@ namespace DMS.Rpc.workflow_direction
         public StringFilter Phone { get; set; }
         public StringFilter Email { get; set; }
         public StringFilter Address { get; set; }
+        public bool? IsDisplay { get; set; }
         public OrganizationOrder OrderBy { get; set; }
     }
 }

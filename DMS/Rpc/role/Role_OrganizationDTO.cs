@@ -17,6 +17,7 @@ namespace DMS.Rpc.role
         public string Phone { get; set; }
         public string Email { get; set; }
         public string Address { get; set; }
+        public bool IsDisplay { get; set; }
         public Role_OrganizationDTO Parent { get; set; }
         public Role_StatusDTO Status { get; set; }
 
@@ -38,6 +39,7 @@ namespace DMS.Rpc.role
             this.Status = Organization.Status == null ? null : new Role_StatusDTO(Organization.Status);
 
             this.AppUsers = Organization.AppUsers?.Select(x => new Role_AppUserDTO(x)).ToList();
+            this.IsDisplay = Organization.IsDisplay;
             this.Errors = Organization.Errors;
         }
     }
@@ -54,6 +56,7 @@ namespace DMS.Rpc.role
         public StringFilter Phone { get; set; }
         public StringFilter Email { get; set; }
         public StringFilter Address { get; set; }
+        public bool? IsDisplay { get; set; }
         public OrganizationOrder OrderBy { get; set; }
     }
 }

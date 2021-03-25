@@ -28,7 +28,8 @@ namespace DMS.Rpc.promotion
         public string Email { get; set; }
         
         public string Address { get; set; }
-        
+        public bool IsDisplay { get; set; }
+
 
         public Promotion_OrganizationDTO() {}
         public Promotion_OrganizationDTO(Organization Organization)
@@ -53,7 +54,8 @@ namespace DMS.Rpc.promotion
             this.Email = Organization.Email;
             
             this.Address = Organization.Address;
-            
+            this.IsDisplay = Organization.IsDisplay;
+
             this.Errors = Organization.Errors;
         }
     }
@@ -80,7 +82,8 @@ namespace DMS.Rpc.promotion
         public StringFilter Email { get; set; }
         
         public StringFilter Address { get; set; }
-        
+        public bool? IsDisplay { get; set; }
+
         public OrganizationOrder OrderBy { get; set; }
     }
 }

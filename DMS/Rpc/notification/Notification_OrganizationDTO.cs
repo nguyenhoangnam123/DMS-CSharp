@@ -25,7 +25,7 @@ namespace DMS.Rpc.notification
         public string Email { get; set; }
 
         public string Address { get; set; }
-
+        public bool IsDisplay { get; set; }
 
         public Notification_OrganizationDTO() { }
         public Notification_OrganizationDTO(Organization Organization)
@@ -50,6 +50,7 @@ namespace DMS.Rpc.notification
             this.Email = Organization.Email;
 
             this.Address = Organization.Address;
+            this.IsDisplay = Organization.IsDisplay;
 
             this.Errors = Organization.Errors;
         }
@@ -77,6 +78,7 @@ namespace DMS.Rpc.notification
         public StringFilter Email { get; set; }
 
         public StringFilter Address { get; set; }
+        public bool? IsDisplay { get; set; }
 
         public OrganizationOrder OrderBy { get; set; }
     }

@@ -75,6 +75,7 @@ namespace DMS.Rpc.dashboards.monitor
             OrganizationFilter.Phone = DashboardMonitor_OrganizationFilterDTO.Phone;
             OrganizationFilter.Address = DashboardMonitor_OrganizationFilterDTO.Address;
             OrganizationFilter.Email = DashboardMonitor_OrganizationFilterDTO.Email;
+            OrganizationFilter.IsDisplay = true;
 
             if (OrganizationFilter.Id == null) OrganizationFilter.Id = new IdFilter();
             OrganizationFilter.Id.In = await FilterOrganization(OrganizationService, CurrentContext);

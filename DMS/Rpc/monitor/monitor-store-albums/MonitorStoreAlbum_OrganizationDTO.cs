@@ -15,6 +15,7 @@ namespace DMS.Rpc.monitor.monitor_store_albums
         public string Phone { get; set; }
         public string Email { get; set; }
         public string Address { get; set; }
+        public bool IsDisplay { get; set; }
         public MonitorStoreAlbum_OrganizationDTO() { }
         public MonitorStoreAlbum_OrganizationDTO(Organization Organization)
         {
@@ -28,6 +29,7 @@ namespace DMS.Rpc.monitor.monitor_store_albums
             this.Phone = Organization.Phone;
             this.Address = Organization.Address;
             this.Email = Organization.Email;
+            this.IsDisplay = Organization.IsDisplay;
             this.Errors = Organization.Errors;
         }
     }

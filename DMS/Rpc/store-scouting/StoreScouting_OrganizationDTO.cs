@@ -28,7 +28,8 @@ namespace DMS.Rpc.store_scouting
         public string Email { get; set; }
         
         public string Address { get; set; }
-        
+        public bool IsDisplay { get; set; }
+
 
         public StoreScouting_OrganizationDTO() {}
         public StoreScouting_OrganizationDTO(Organization Organization)
@@ -53,7 +54,8 @@ namespace DMS.Rpc.store_scouting
             this.Email = Organization.Email;
             
             this.Address = Organization.Address;
-            
+            this.IsDisplay = Organization.IsDisplay;
+
             this.Errors = Organization.Errors;
         }
     }

@@ -116,6 +116,8 @@ namespace DMS.Repositories
                 query = query.Where(q => q.Email, filter.Email);
             if (filter.Address != null)
                 query = query.Where(q => q.Address, filter.Address);
+            if (filter.IsDisplay.HasValue)
+                query = query.Where(q => q.IsDisplay == filter.IsDisplay);
             query = OrFilter(query, filter);
             return query;
         }
@@ -308,6 +310,7 @@ namespace DMS.Repositories
                 Phone = filter.Selects.Contains(OrganizationSelect.Phone) ? q.Phone : default(string),
                 Address = filter.Selects.Contains(OrganizationSelect.Address) ? q.Address : default(string),
                 Email = filter.Selects.Contains(OrganizationSelect.Email) ? q.Email : default(string),
+                IsDisplay = filter.Selects.Contains(OrganizationSelect.IsDisplay) ? q.IsDisplay : default(bool),
                 Parent = filter.Selects.Contains(OrganizationSelect.Parent) && q.Parent != null ? new Organization
                 {
                     Id = q.Parent.Id,
@@ -365,6 +368,7 @@ namespace DMS.Repositories
                     Phone = x.Phone,
                     Address = x.Address,
                     Email = x.Email,
+                    IsDisplay = x.IsDisplay,
                     Parent = x.Parent == null ? null : new Organization
                     {
                         Id = x.Parent.Id,

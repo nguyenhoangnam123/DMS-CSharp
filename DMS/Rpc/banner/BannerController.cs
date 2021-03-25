@@ -750,6 +750,7 @@ namespace DMS.Rpc.banner
             OrganizationFilter.Phone = Banner_OrganizationFilterDTO.Phone;
             OrganizationFilter.Address = Banner_OrganizationFilterDTO.Address;
             OrganizationFilter.Email = Banner_OrganizationFilterDTO.Email;
+            OrganizationFilter.IsDisplay = true;
 
             if (OrganizationFilter.OrFilter == null) OrganizationFilter.OrFilter = new List<OrganizationFilter>();
             if (CurrentContext.Filters != null)
@@ -844,6 +845,7 @@ namespace DMS.Rpc.banner
             OrganizationFilter.Phone = Banner_OrganizationFilterDTO.Phone;
             OrganizationFilter.Address = Banner_OrganizationFilterDTO.Address;
             OrganizationFilter.Email = Banner_OrganizationFilterDTO.Email;
+            OrganizationFilter.IsDisplay = true;
 
             if (OrganizationFilter.OrFilter == null) OrganizationFilter.OrFilter = new List<OrganizationFilter>();
             if (CurrentContext.Filters != null)

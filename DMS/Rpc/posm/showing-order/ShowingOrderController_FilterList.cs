@@ -75,6 +75,7 @@ namespace DMS.Rpc.posm.showing_order
             OrganizationFilter.Phone = ShowingOrder_OrganizationFilterDTO.Phone;
             OrganizationFilter.Email = ShowingOrder_OrganizationFilterDTO.Email;
             OrganizationFilter.Address = ShowingOrder_OrganizationFilterDTO.Address;
+            OrganizationFilter.IsDisplay = true;
 
             List<Organization> Organizations = await OrganizationService.List(OrganizationFilter);
             List<ShowingOrder_OrganizationDTO> ShowingOrder_OrganizationDTOs = Organizations

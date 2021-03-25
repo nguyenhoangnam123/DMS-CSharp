@@ -32,6 +32,7 @@ namespace DMS.Rpc.promotion_code
             OrganizationFilter.Phone = PromotionCode_OrganizationFilterDTO.Phone;
             OrganizationFilter.Email = PromotionCode_OrganizationFilterDTO.Email;
             OrganizationFilter.Address = PromotionCode_OrganizationFilterDTO.Address;
+            OrganizationFilter.IsDisplay = true;
 
             List<Organization> Organizations = await OrganizationService.List(OrganizationFilter);
             List<PromotionCode_OrganizationDTO> PromotionCode_OrganizationDTOs = Organizations
@@ -221,6 +222,7 @@ namespace DMS.Rpc.promotion_code
             OrganizationFilter.Phone = PromotionCode_OrganizationFilterDTO.Phone;
             OrganizationFilter.Email = PromotionCode_OrganizationFilterDTO.Email;
             OrganizationFilter.Address = PromotionCode_OrganizationFilterDTO.Address;
+            OrganizationFilter.IsDisplay = true;
 
             List<Organization> Organizations = await OrganizationService.List(OrganizationFilter);
             List<PromotionCode_OrganizationDTO> PromotionCode_OrganizationDTOs = Organizations

@@ -16,6 +16,7 @@ namespace DMS.Rpc.mobile_sync
         public string Phone { get; set; }
         public string Email { get; set; }
         public string Address { get; set; }
+        public bool IsDisplay { get; set; }
         public MobileSync_OrganizationDTO() { }
         public MobileSync_OrganizationDTO(Organization Organization)
         {
@@ -29,6 +30,7 @@ namespace DMS.Rpc.mobile_sync
             this.Phone = Organization.Phone;
             this.Address = Organization.Address;
             this.Email = Organization.Email;
+            this.IsDisplay = Organization.IsDisplay;
         }
     }
 }

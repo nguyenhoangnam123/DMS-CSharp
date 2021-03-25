@@ -28,7 +28,8 @@ namespace DMS.Rpc.lucky_number
         public string Email { get; set; }
         
         public string Address { get; set; }
-        
+        public bool IsDisplay { get; set; }
+
 
         public LuckyNumber_OrganizationDTO() {}
         public LuckyNumber_OrganizationDTO(Organization Organization)
@@ -53,7 +54,8 @@ namespace DMS.Rpc.lucky_number
             this.Email = Organization.Email;
             
             this.Address = Organization.Address;
-            
+            this.IsDisplay = Organization.IsDisplay;
+
             this.Errors = Organization.Errors;
         }
     }
@@ -80,7 +82,8 @@ namespace DMS.Rpc.lucky_number
         public StringFilter Email { get; set; }
         
         public StringFilter Address { get; set; }
-        
+        public bool? IsDisplay { get; set; }
+
         public OrganizationOrder OrderBy { get; set; }
     }
 }

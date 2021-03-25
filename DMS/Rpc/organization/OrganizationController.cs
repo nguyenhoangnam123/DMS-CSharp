@@ -213,6 +213,7 @@ namespace DMS.Rpc.organization
             OrganizationFilter.Path = Organization_OrganizationFilterDTO.Path;
             OrganizationFilter.Level = Organization_OrganizationFilterDTO.Level;
             OrganizationFilter.StatusId = null;
+            OrganizationFilter.IsDisplay = true;
 
             List<Organization> Organizations = await OrganizationService.List(OrganizationFilter);
             List<Organization_OrganizationDTO> Organization_OrganizationDTOs = Organizations
@@ -280,6 +281,7 @@ namespace DMS.Rpc.organization
             OrganizationFilter.Path = Organization_OrganizationFilterDTO.Path;
             OrganizationFilter.Level = Organization_OrganizationFilterDTO.Level;
             OrganizationFilter.StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id };
+            OrganizationFilter.IsDisplay = true;
 
             List<Organization> Organizations = await OrganizationService.List(OrganizationFilter);
             List<Organization_OrganizationDTO> Organization_OrganizationDTOs = Organizations

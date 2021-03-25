@@ -137,6 +137,7 @@ namespace DMS.Rpc.e_route
             OrganizationFilter.Phone = ERoute_OrganizationFilterDTO.Phone;
             OrganizationFilter.Address = ERoute_OrganizationFilterDTO.Address;
             OrganizationFilter.Email = ERoute_OrganizationFilterDTO.Email;
+            OrganizationFilter.IsDisplay = true;
 
             if (OrganizationFilter.Id == null) OrganizationFilter.Id = new IdFilter();
             OrganizationFilter.Id.In = await FilterOrganization(OrganizationService, CurrentContext);
@@ -239,6 +240,7 @@ namespace DMS.Rpc.e_route
             OrganizationFilter.Phone = ERoute_OrganizationFilterDTO.Phone;
             OrganizationFilter.Address = ERoute_OrganizationFilterDTO.Address;
             OrganizationFilter.Email = ERoute_OrganizationFilterDTO.Email;
+            OrganizationFilter.IsDisplay = true;
 
             if (OrganizationFilter.Id == null) OrganizationFilter.Id = new IdFilter();
             OrganizationFilter.Id.In = await FilterOrganization(OrganizationService, CurrentContext);

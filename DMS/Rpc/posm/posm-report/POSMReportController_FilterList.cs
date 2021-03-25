@@ -44,6 +44,7 @@ namespace DMS.Rpc.posm.posm_report
             OrganizationFilter.Phone = POSMReport_OrganizationFilterDTO.Phone;
             OrganizationFilter.Email = POSMReport_OrganizationFilterDTO.Email;
             OrganizationFilter.Address = POSMReport_OrganizationFilterDTO.Address;
+            OrganizationFilter.IsDisplay = true;
 
             if (OrganizationFilter.Id == null) OrganizationFilter.Id = new IdFilter();
             OrganizationFilter.Id.In = await FilterOrganization(OrganizationService, CurrentContext);

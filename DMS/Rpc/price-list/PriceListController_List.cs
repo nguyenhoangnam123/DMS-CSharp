@@ -43,6 +43,7 @@ namespace DMS.Rpc.price_list
             OrganizationFilter.Phone = PriceList_OrganizationFilterDTO.Phone;
             OrganizationFilter.Email = PriceList_OrganizationFilterDTO.Email;
             OrganizationFilter.Address = PriceList_OrganizationFilterDTO.Address;
+            OrganizationFilter.IsDisplay = true;
 
             if (OrganizationFilter.Id == null) OrganizationFilter.Id = new IdFilter();
             OrganizationFilter.Id.In = await FilterOrganization(OrganizationService, CurrentContext);
@@ -296,6 +297,7 @@ namespace DMS.Rpc.price_list
             OrganizationFilter.Phone = PriceList_OrganizationFilterDTO.Phone;
             OrganizationFilter.Email = PriceList_OrganizationFilterDTO.Email;
             OrganizationFilter.Address = PriceList_OrganizationFilterDTO.Address;
+            OrganizationFilter.IsDisplay = true;
 
             if (OrganizationFilter.Id == null) OrganizationFilter.Id = new IdFilter();
             OrganizationFilter.Id.In = await FilterOrganization(OrganizationService, CurrentContext);

@@ -23,7 +23,7 @@ namespace DMS.Rpc.monitor_store_problems
         public string Phone { get; set; }
         public string Email { get; set; }
         public string Address { get; set; }
-
+        public bool IsDisplay { get; set; }
 
 
         public MonitorStoreProblem_OrganizationDTO() { }
@@ -50,7 +50,7 @@ namespace DMS.Rpc.monitor_store_problems
 
             this.Email = Organization.Email;
 
-
+            this.IsDisplay = Organization.IsDisplay;
         }
     }
 }

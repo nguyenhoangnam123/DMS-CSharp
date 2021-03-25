@@ -90,6 +90,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_employee_report
             OrganizationFilter.OrderType = OrderType.ASC;
             OrganizationFilter.Selects = OrganizationSelect.ALL;
             OrganizationFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+            OrganizationFilter.IsDisplay = true;
 
             if (OrganizationFilter.Id == null) OrganizationFilter.Id = new IdFilter();
             OrganizationFilter.Id.In = await FilterOrganization(OrganizationService, CurrentContext);

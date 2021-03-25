@@ -28,7 +28,8 @@ namespace DMS.Rpc.posm.posm_report
         public string Email { get; set; }
         
         public string Address { get; set; }
-        
+        public bool IsDisplay { get; set; }
+
         public Guid RowId { get; set; }
         
 
@@ -55,7 +56,8 @@ namespace DMS.Rpc.posm.posm_report
             this.Email = Organization.Email;
             
             this.Address = Organization.Address;
-            
+            this.IsDisplay = Organization.IsDisplay;
+
             this.RowId = Organization.RowId;
             
             this.Errors = Organization.Errors;
@@ -86,7 +88,8 @@ namespace DMS.Rpc.posm.posm_report
         public StringFilter Address { get; set; }
         
         public GuidFilter RowId { get; set; }
-        
+        public bool? IsDisplay { get; set; }
+
         public OrganizationOrder OrderBy { get; set; }
     }
 }

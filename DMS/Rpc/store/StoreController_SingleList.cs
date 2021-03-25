@@ -67,6 +67,7 @@ namespace DMS.Rpc.store
             OrganizationFilter.OrderBy = OrganizationOrder.Id;
             OrganizationFilter.OrderType = OrderType.ASC;
             OrganizationFilter.Selects = OrganizationSelect.ALL;
+            OrganizationFilter.IsDisplay = true;
 
             if (OrganizationFilter.Id == null) OrganizationFilter.Id = new IdFilter();
             OrganizationFilter.Id.In = await FilterOrganization(OrganizationService, CurrentContext);

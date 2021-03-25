@@ -23,7 +23,7 @@ namespace DMS.Rpc.survey
         public string Phone { get; set; }
         public string Email { get; set; }
         public string Address { get; set; }
-
+        public bool IsDisplay { get; set; }
 
 
         public Survey_OrganizationDTO() { }
@@ -50,7 +50,7 @@ namespace DMS.Rpc.survey
 
             this.Email = Organization.Email;
 
-
+            this.IsDisplay = Organization.IsDisplay;
         }
     }
 
@@ -74,7 +74,7 @@ namespace DMS.Rpc.survey
         public StringFilter Phone { get; set; }
         public StringFilter Email { get; set; }
         public StringFilter Address { get; set; }
-
+        public bool? IsDisplay { get; set; }
         public OrganizationOrder OrderBy { get; set; }
     }
 }
