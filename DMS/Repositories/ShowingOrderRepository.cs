@@ -312,6 +312,12 @@ namespace DMS.Repositories
                     Used = q.Store.Used,
                     StoreScoutingId = q.Store.StoreScoutingId,
                     StoreStatusId = q.Store.StoreStatusId,
+                    StoreStatus = q.Store.StoreStatus == null ? null : new StoreStatus
+                    {
+                        Id = q.Store.StoreStatus.Id,
+                        Code = q.Store.StoreStatus.Code,
+                        Name = q.Store.StoreStatus.Name,
+                    }
                 } : null,
             }).ToListAsync();
             return ShowingOrders;
