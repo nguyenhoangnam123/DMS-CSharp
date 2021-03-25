@@ -22,6 +22,33 @@ namespace DMS.Rpc.posm.showing_order
 {
     public partial class ShowingOrderController : RpcController
     {
+        [Route(ShowingOrderRoute.FilterListShowingCategory), HttpPost]
+        public async Task<List<ShowingOrder_ShowingCategoryDTO>> FilterListShowingCategory([FromBody] ShowingOrder_ShowingCategoryFilterDTO ShowingOrder_ShowingCategoryFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            ShowingCategoryFilter ShowingCategoryFilter = new ShowingCategoryFilter();
+            ShowingCategoryFilter.Skip = 0;
+            ShowingCategoryFilter.Take = int.MaxValue;
+            ShowingCategoryFilter.OrderBy = ShowingCategoryOrder.Id;
+            ShowingCategoryFilter.OrderType = OrderType.ASC;
+            ShowingCategoryFilter.Selects = ShowingCategorySelect.ALL;
+            ShowingCategoryFilter.Id = ShowingOrder_ShowingCategoryFilterDTO.Id;
+            ShowingCategoryFilter.Code = ShowingOrder_ShowingCategoryFilterDTO.Code;
+            ShowingCategoryFilter.Name = ShowingOrder_ShowingCategoryFilterDTO.Name;
+            ShowingCategoryFilter.ParentId = ShowingOrder_ShowingCategoryFilterDTO.ParentId;
+            ShowingCategoryFilter.Path = ShowingOrder_ShowingCategoryFilterDTO.Path;
+            ShowingCategoryFilter.Level = ShowingOrder_ShowingCategoryFilterDTO.Level;
+            ShowingCategoryFilter.StatusId = ShowingOrder_ShowingCategoryFilterDTO.StatusId;
+            ShowingCategoryFilter.ImageId = ShowingOrder_ShowingCategoryFilterDTO.ImageId;
+            ShowingCategoryFilter.RowId = ShowingOrder_ShowingCategoryFilterDTO.RowId;
+
+            List<ShowingCategory> Categories = await ShowingCategoryService.List(ShowingCategoryFilter);
+            List<ShowingOrder_ShowingCategoryDTO> ShowingOrder_ShowingCategoryDTOs = Categories
+                .Select(x => new ShowingOrder_ShowingCategoryDTO(x)).ToList();
+            return ShowingOrder_ShowingCategoryDTOs;
+        }
         [Route(ShowingOrderRoute.FilterListAppUser), HttpPost]
         public async Task<List<ShowingOrder_AppUserDTO>> FilterListAppUser([FromBody] ShowingOrder_AppUserFilterDTO ShowingOrder_AppUserFilterDTO)
         {

@@ -22,12 +22,14 @@ using DMS.Services.MStore;
 using DMS.Models;
 using DMS.Enums;
 using Microsoft.EntityFrameworkCore;
+using DMS.Services.MShowingCategory;
 
 namespace DMS.Rpc.posm.showing_order
 {
     public partial class ShowingOrderController : RpcController
     {
         private IAppUserService AppUserService;
+        private IShowingCategoryService ShowingCategoryService;
         private IOrganizationService OrganizationService;
         private IShowingWarehouseService ShowingWarehouseService;
         private IStatusService StatusService;
@@ -39,6 +41,7 @@ namespace DMS.Rpc.posm.showing_order
         private DataContext DataContext;
         public ShowingOrderController(
             IAppUserService AppUserService,
+            IShowingCategoryService ShowingCategoryService,
             IOrganizationService OrganizationService,
             IShowingWarehouseService ShowingWarehouseService,
             IStatusService StatusService,
@@ -51,6 +54,7 @@ namespace DMS.Rpc.posm.showing_order
         )
         {
             this.AppUserService = AppUserService;
+            this.ShowingCategoryService = ShowingCategoryService;
             this.OrganizationService = OrganizationService;
             this.ShowingWarehouseService = ShowingWarehouseService;
             this.StatusService = StatusService;
