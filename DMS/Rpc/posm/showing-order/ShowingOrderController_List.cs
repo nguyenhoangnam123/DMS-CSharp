@@ -23,6 +23,58 @@ namespace DMS.Rpc.posm.showing_order
 {
     public partial class ShowingOrderController : RpcController
     {
+        [Route(ShowingOrderRoute.Count), HttpPost]
+        public async Task<ActionResult<int>> Count([FromBody] ShowingOrder_ShowingItemFilterDTO ShowingOrder_ShowingItemFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            ShowingItemFilter ShowingItemFilter = new ShowingItemFilter();
+            ShowingItemFilter.Id = ShowingOrder_ShowingItemFilterDTO.Id;
+            ShowingItemFilter.Code = ShowingOrder_ShowingItemFilterDTO.Code;
+            ShowingItemFilter.Name = ShowingOrder_ShowingItemFilterDTO.Name;
+            ShowingItemFilter.ShowingCategoryId = ShowingOrder_ShowingItemFilterDTO.ShowingCategoryId;
+            ShowingItemFilter.UnitOfMeasureId = ShowingOrder_ShowingItemFilterDTO.UnitOfMeasureId;
+            ShowingItemFilter.SalePrice = ShowingOrder_ShowingItemFilterDTO.SalePrice;
+            ShowingItemFilter.Desception = ShowingOrder_ShowingItemFilterDTO.Desception;
+            ShowingItemFilter.StatusId = ShowingOrder_ShowingItemFilterDTO.StatusId;
+            ShowingItemFilter.RowId = ShowingOrder_ShowingItemFilterDTO.RowId;
+
+            ShowingItemFilter = await ShowingItemService.ToFilter(ShowingItemFilter);
+            int count = await ShowingItemService.Count(ShowingItemFilter);
+            return count;
+        }
+
+        [Route(ShowingOrderRoute.List), HttpPost]
+        public async Task<ActionResult<List<ShowingOrder_ShowingItemDTO>>> List([FromBody] ShowingOrder_ShowingItemFilterDTO ShowingOrder_ShowingItemFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            ShowingItemFilter ShowingItemFilter = new ShowingItemFilter();
+            ShowingItemFilter.Selects = ShowingItemSelect.ALL;
+            ShowingItemFilter.Skip = ShowingOrder_ShowingItemFilterDTO.Skip;
+            ShowingItemFilter.Take = ShowingOrder_ShowingItemFilterDTO.Take;
+            ShowingItemFilter.OrderBy = ShowingOrder_ShowingItemFilterDTO.OrderBy;
+            ShowingItemFilter.OrderType = ShowingOrder_ShowingItemFilterDTO.OrderType;
+
+            ShowingItemFilter.Id = ShowingOrder_ShowingItemFilterDTO.Id;
+            ShowingItemFilter.Code = ShowingOrder_ShowingItemFilterDTO.Code;
+            ShowingItemFilter.Name = ShowingOrder_ShowingItemFilterDTO.Name;
+            ShowingItemFilter.ShowingCategoryId = ShowingOrder_ShowingItemFilterDTO.ShowingCategoryId;
+            ShowingItemFilter.UnitOfMeasureId = ShowingOrder_ShowingItemFilterDTO.UnitOfMeasureId;
+            ShowingItemFilter.SalePrice = ShowingOrder_ShowingItemFilterDTO.SalePrice;
+            ShowingItemFilter.Desception = ShowingOrder_ShowingItemFilterDTO.Desception;
+            ShowingItemFilter.StatusId = ShowingOrder_ShowingItemFilterDTO.StatusId;
+            ShowingItemFilter.RowId = ShowingOrder_ShowingItemFilterDTO.RowId;
+
+            ShowingItemFilter = await ShowingItemService.ToFilter(ShowingItemFilter);
+            List<ShowingItem> ShowingItems = await ShowingItemService.List(ShowingItemFilter);
+            List<ShowingOrder_ShowingItemDTO> ShowingOrder_ShowingItemDTOs = ShowingItems
+                .Select(c => new ShowingOrder_ShowingItemDTO(c)).ToList();
+            return ShowingOrder_ShowingItemDTOs;
+        }
+
         [Route(ShowingOrderRoute.CountStore), HttpPost]
         public async Task<long> CountStore([FromBody] ShowingOrder_StoreFilterDTO ShowingOrder_StoreFilterDTO)
         {
