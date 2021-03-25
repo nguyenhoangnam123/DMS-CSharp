@@ -440,6 +440,8 @@ namespace DMS.Rpc.posm.posm_report
                     var subContent = ShowingOrderContentDAOs.Where(x => subIds.Contains(x.ShowingOrderId)).ToList();
                     foreach (var Content in subContent)
                     {
+                        if (POSMReport_POSMStoreDTO.Contents == null)
+                            POSMReport_POSMStoreDTO.Contents = new List<POSMReport_POSMReportContentDTO>();
                         POSMReport_POSMReportContentDTO POSMReport_POSMReportContentDTO = POSMReport_POSMStoreDTO.Contents
                             .Where(x => x.ShowingItemId == Content.ShowingItemId)
                             .Where(x => x.UnitOfMeasure == Content.UnitOfMeasure.Name)
