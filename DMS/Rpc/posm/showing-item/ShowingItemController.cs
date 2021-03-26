@@ -447,6 +447,31 @@ namespace DMS.Rpc.posm.showing_item
             return File(output.ToArray(), "application/octet-stream", "ShowingItem.xlsx");
         }
 
+        [Route(ShowingItemRoute.SaveImage), HttpPost]
+        public async Task<ActionResult<ShowingItem_ImageDTO>> SaveImage(IFormFile file)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+            MemoryStream memoryStream = new MemoryStream();
+            file.CopyTo(memoryStream);
+            Image Image = new Image
+            {
+                Name = file.FileName,
+                Content = memoryStream.ToArray(),
+            };
+            Image = await ShowingItemService.SaveImage(Image);
+            if (Image == null)
+                return BadRequest();
+            ShowingItem_ImageDTO ShowingItem_ImageDTO = new ShowingItem_ImageDTO
+            {
+                Id = Image.Id,
+                Name = Image.Name,
+                Url = Image.Url,
+                ThumbnailUrl = Image.ThumbnailUrl,
+            };
+            return Ok(ShowingItem_ImageDTO);
+        }
+
         private async Task<bool> HasPermission(long Id)
         {
             ShowingItemFilter ShowingItemFilter = new ShowingItemFilter();
@@ -507,6 +532,18 @@ namespace DMS.Rpc.posm.showing_item
                 Used = ShowingItem_ShowingItemDTO.UnitOfMeasure.Used,
                 RowId = ShowingItem_ShowingItemDTO.UnitOfMeasure.RowId,
             };
+            ShowingItem.ShowingItemImageMappings = ShowingItem_ShowingItemDTO.ShowingItemImageMappings?
+               .Select(x => new ShowingItemImageMapping
+               {
+                   ImageId = x.ImageId,
+                   Image = new Image
+                   {
+                       Id = x.Image.Id,
+                       Name = x.Image.Name,
+                       Url = x.Image.Url,
+                       ThumbnailUrl = x.Image.ThumbnailUrl,
+                   },
+               }).ToList();
             ShowingItem.BaseLanguage = CurrentContext.Language;
             return ShowingItem;
         }

@@ -105,7 +105,7 @@ namespace DMS.Repositories
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;
-        }    
+        }
 
         private IQueryable<ShowingItemDAO> DynamicOrder(IQueryable<ShowingItemDAO> query, ShowingItemFilter filter)
         {
@@ -230,6 +230,30 @@ namespace DMS.Repositories
                     RowId = q.UnitOfMeasure.RowId,
                 } : null,
             }).ToListAsync();
+
+            var Ids = ShowingItems.Select(x => x.Id).ToList();
+            var ShowingItemImageMappings = DataContext.ShowingItemImageMapping.Include(x => x.Image).Where(x => Ids.Contains(x.ShowingItemId)).ToList();
+            foreach (var ShowingItem in ShowingItems)
+            {
+                ShowingItem.ShowingItemImageMappings = new List<ShowingItemImageMapping>();
+                var ShowingItemImageMappingDAO = ShowingItemImageMappings.Where(x => x.ShowingItemId == ShowingItem.Id).FirstOrDefault();
+                if (ShowingItemImageMappingDAO != null)
+                {
+                    ShowingItemImageMapping ShowingItemImageMapping = new ShowingItemImageMapping
+                    {
+                        ImageId = ShowingItemImageMappingDAO.ImageId,
+                        ShowingItemId = ShowingItemImageMappingDAO.ShowingItemId,
+                        Image = ShowingItemImageMappingDAO.Image == null ? null : new Image
+                        {
+                            Id = ShowingItemImageMappingDAO.Image.Id,
+                            Name = ShowingItemImageMappingDAO.Image.Name,
+                            Url = ShowingItemImageMappingDAO.Image.Url,
+                            ThumbnailUrl = ShowingItemImageMappingDAO.Image.ThumbnailUrl
+                        }
+                    };
+                    ShowingItem.ShowingItemImageMappings.Add(ShowingItemImageMapping);
+                }
+            }
             return ShowingItems;
         }
 
@@ -298,7 +322,7 @@ namespace DMS.Repositories
                     RowId = x.UnitOfMeasure.RowId,
                 },
             }).ToListAsync();
-            
+
 
             return ShowingItems;
         }
@@ -356,6 +380,20 @@ namespace DMS.Repositories
             if (ShowingItem == null)
                 return null;
 
+            ShowingItem.ShowingItemImageMappings = await DataContext.ShowingItemImageMapping.AsNoTracking()
+              .Where(x => x.ShowingItemId == ShowingItem.Id)
+              .Select(x => new ShowingItemImageMapping
+              {
+                  ShowingItemId = x.ShowingItemId,
+                  ImageId = x.ImageId,
+                  Image = new Image
+                  {
+                      Id = x.Image.Id,
+                      Name = x.Image.Name,
+                      Url = x.Image.Url,
+                      ThumbnailUrl = x.Image.ThumbnailUrl,
+                  },
+              }).ToListAsync();
             return ShowingItem;
         }
         public async Task<bool> Create(ShowingItem ShowingItem)
@@ -406,7 +444,7 @@ namespace DMS.Repositories
             await DataContext.ShowingItem.Where(x => x.Id == ShowingItem.Id).UpdateFromQueryAsync(x => new ShowingItemDAO { DeletedAt = StaticParams.DateTimeNow, UpdatedAt = StaticParams.DateTimeNow });
             return true;
         }
-        
+
         public async Task<bool> BulkMerge(List<ShowingItem> ShowingItems)
         {
             List<ShowingItemDAO> ShowingItemDAOs = new List<ShowingItemDAO>();
@@ -442,7 +480,24 @@ namespace DMS.Repositories
 
         private async Task SaveReference(ShowingItem ShowingItem)
         {
+            await DataContext.ShowingItemImageMapping
+               .Where(x => x.ShowingItemId == ShowingItem.Id)
+               .DeleteFromQueryAsync();
+            List<ShowingItemImageMappingDAO> ShowingItemImageMappingDAOs = new List<ShowingItemImageMappingDAO>();
+            if (ShowingItem.ShowingItemImageMappings != null)
+            {
+                foreach (ShowingItemImageMapping ShowingItemImageMapping in ShowingItem.ShowingItemImageMappings)
+                {
+                    ShowingItemImageMappingDAO ShowingItemImageMappingDAO = new ShowingItemImageMappingDAO()
+                    {
+                        ShowingItemId = ShowingItem.Id,
+                        ImageId = ShowingItemImageMapping.ImageId,
+                    };
+                    ShowingItemImageMappingDAOs.Add(ShowingItemImageMappingDAO);
+                }
+                await DataContext.ShowingItemImageMapping.BulkMergeAsync(ShowingItemImageMappingDAOs);
+            }
         }
-        
+
     }
 }

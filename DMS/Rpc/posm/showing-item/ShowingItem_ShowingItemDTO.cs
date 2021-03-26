@@ -21,6 +21,7 @@ namespace DMS.Rpc.posm.showing_item
         public ShowingItem_ShowingCategoryDTO ShowingCategory { get; set; }
         public ShowingItem_StatusDTO Status { get; set; }
         public ShowingItem_UnitOfMeasureDTO UnitOfMeasure { get; set; }
+        public List<ShowingItem_ShowingItemImageMappingDTO> ShowingItemImageMappings { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public ShowingItem_ShowingItemDTO() {}
@@ -39,6 +40,7 @@ namespace DMS.Rpc.posm.showing_item
             this.ShowingCategory = ShowingItem.ShowingCategory == null ? null : new ShowingItem_ShowingCategoryDTO(ShowingItem.ShowingCategory);
             this.Status = ShowingItem.Status == null ? null : new ShowingItem_StatusDTO(ShowingItem.Status);
             this.UnitOfMeasure = ShowingItem.UnitOfMeasure == null ? null : new ShowingItem_UnitOfMeasureDTO(ShowingItem.UnitOfMeasure);
+            this.ShowingItemImageMappings = ShowingItem.ShowingItemImageMappings?.Select(x => new ShowingItem_ShowingItemImageMappingDTO(x)).ToList();
             this.CreatedAt = ShowingItem.CreatedAt;
             this.UpdatedAt = ShowingItem.UpdatedAt;
             this.Errors = ShowingItem.Errors;

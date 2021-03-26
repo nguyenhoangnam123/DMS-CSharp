@@ -10,6 +10,7 @@ using DMS.Repositories;
 using DMS.Entities;
 using DMS.Enums;
 using DMS.Handlers;
+using DMS.Services.MImage;
 
 namespace DMS.Services.MShowingItem
 {
@@ -24,6 +25,7 @@ namespace DMS.Services.MShowingItem
         Task<List<ShowingItem>> BulkDelete(List<ShowingItem> ShowingItems);
         Task<List<ShowingItem>> Import(List<ShowingItem> ShowingItems);
         Task<ShowingItemFilter> ToFilter(ShowingItemFilter ShowingItemFilter);
+        Task<Image> SaveImage(Image Image);
     }
 
     public class ShowingItemService : BaseService, IShowingItemService
@@ -33,13 +35,15 @@ namespace DMS.Services.MShowingItem
         private ICurrentContext CurrentContext;
         private IShowingItemValidator ShowingItemValidator;
         private IRabbitManager RabbitManager;
+        private IImageService ImageService;
 
         public ShowingItemService(
             IUOW UOW,
             ICurrentContext CurrentContext,
             IShowingItemValidator ShowingItemValidator,
             ILogging Logging,
-            IRabbitManager RabbitManager
+            IRabbitManager RabbitManager,
+            IImageService ImageService
         )
         {
             this.UOW = UOW;
@@ -47,6 +51,7 @@ namespace DMS.Services.MShowingItem
             this.CurrentContext = CurrentContext;
             this.ShowingItemValidator = ShowingItemValidator;
             this.RabbitManager = RabbitManager;
+            this.ImageService = ImageService;
         }
         public async Task<int> Count(ShowingItemFilter ShowingItemFilter)
         {
@@ -212,8 +217,17 @@ namespace DMS.Services.MShowingItem
                 await Logging.CreateSystemLog(ex, nameof(ShowingItemService));
             }
             return null;
-        }     
-        
+        }
+
+        public async Task<Image> SaveImage(Image Image)
+        {
+            FileInfo fileInfo = new FileInfo(Image.Name);
+            string path = $"/showing-item/{StaticParams.DateTimeNow.ToString("yyyyMMdd")}/{Guid.NewGuid()}.{fileInfo.Extension}";
+            string thumbnailPath = $"/showing-item/{StaticParams.DateTimeNow.ToString("yyyyMMdd")}/{Guid.NewGuid()}.{fileInfo.Extension}";
+            Image = await ImageService.Create(Image, path, thumbnailPath, 128, 128);
+            return Image;
+        }
+
         public async Task<ShowingItemFilter> ToFilter(ShowingItemFilter filter)
         {
             if (filter.OrFilter == null) filter.OrFilter = new List<ShowingItemFilter>();

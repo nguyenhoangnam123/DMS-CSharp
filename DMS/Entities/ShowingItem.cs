@@ -23,6 +23,7 @@ namespace DMS.Entities
         public ShowingCategory ShowingCategory { get; set; }
         public Status Status { get; set; }
         public UnitOfMeasure UnitOfMeasure { get; set; }
+        public List<ShowingItemImageMapping> ShowingItemImageMappings { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public DateTime? DeletedAt { get; set; }
