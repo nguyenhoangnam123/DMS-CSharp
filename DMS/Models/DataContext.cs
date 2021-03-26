@@ -3890,7 +3890,7 @@ namespace DMS.Models
 
                 entity.Property(e => e.DeletedAt).HasColumnType("datetime");
 
-                entity.Property(e => e.Desception).HasMaxLength(4000);
+                entity.Property(e => e.Description).HasMaxLength(4000);
 
                 entity.Property(e => e.Name)
                     .IsRequired()

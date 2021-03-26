@@ -21,7 +21,7 @@ namespace DMS.Rpc.posm.showing_order
         
         public decimal SalePrice { get; set; }
         
-        public string Desception { get; set; }
+        public string Description { get; set; }
 
         public long SaleStock { get; set; }
         public long StatusId { get; set; }
@@ -49,7 +49,7 @@ namespace DMS.Rpc.posm.showing_order
             
             this.SalePrice = ShowingItem.SalePrice;
             
-            this.Desception = ShowingItem.Desception;
+            this.Description = ShowingItem.Description;
             
             this.SaleStock = ShowingItem.SaleStock;
             this.StatusId = ShowingItem.StatusId;
@@ -81,7 +81,7 @@ namespace DMS.Rpc.posm.showing_order
         
         public DecimalFilter SalePrice { get; set; }
         
-        public StringFilter Desception { get; set; }
+        public StringFilter Description { get; set; }
         
         public IdFilter StatusId { get; set; }
         

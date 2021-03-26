@@ -251,8 +251,8 @@ namespace DMS.Services.MShowingItem
                         subFilter.UnitOfMeasureId = FilterBuilder.Merge(subFilter.UnitOfMeasureId, FilterPermissionDefinition.IdFilter);
                     if (FilterPermissionDefinition.Name == nameof(subFilter.SalePrice))
                         subFilter.SalePrice = FilterBuilder.Merge(subFilter.SalePrice, FilterPermissionDefinition.DecimalFilter);
-                    if (FilterPermissionDefinition.Name == nameof(subFilter.Desception))
-                        subFilter.Desception = FilterBuilder.Merge(subFilter.Desception, FilterPermissionDefinition.StringFilter);
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.Description))
+                        subFilter.Description = FilterBuilder.Merge(subFilter.Description, FilterPermissionDefinition.StringFilter);
                     if (FilterPermissionDefinition.Name == nameof(subFilter.StatusId))
                         subFilter.StatusId = FilterBuilder.Merge(subFilter.StatusId, FilterPermissionDefinition.IdFilter);
                     if (FilterPermissionDefinition.Name == nameof(CurrentContext.UserId) && FilterPermissionDefinition.IdFilter != null)

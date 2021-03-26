@@ -55,7 +55,7 @@ namespace DMS.Rpc.posm.showing_item
             { nameof(ShowingItemFilter.ShowingCategoryId), FieldTypeEnum.ID.Id },
             { nameof(ShowingItemFilter.UnitOfMeasureId), FieldTypeEnum.ID.Id },
             { nameof(ShowingItemFilter.SalePrice), FieldTypeEnum.DECIMAL.Id },
-            { nameof(ShowingItemFilter.Desception), FieldTypeEnum.STRING.Id },
+            { nameof(ShowingItemFilter.Description), FieldTypeEnum.STRING.Id },
             { nameof(ShowingItemFilter.StatusId), FieldTypeEnum.ID.Id },
             { nameof(ShowingItemFilter.RowId), FieldTypeEnum.ID.Id },
         };

@@ -214,7 +214,7 @@ namespace DMS.Rpc.posm.showing_warehouse
             ShowingItemFilter.ShowingCategoryId = ShowingWarehouse_ShowingItemFilterDTO.ShowingCategoryId;
             ShowingItemFilter.UnitOfMeasureId = ShowingWarehouse_ShowingItemFilterDTO.UnitOfMeasureId;
             ShowingItemFilter.SalePrice = ShowingWarehouse_ShowingItemFilterDTO.SalePrice;
-            ShowingItemFilter.Desception = ShowingWarehouse_ShowingItemFilterDTO.Desception;
+            ShowingItemFilter.Description = ShowingWarehouse_ShowingItemFilterDTO.Description;
             ShowingItemFilter.StatusId = ShowingWarehouse_ShowingItemFilterDTO.StatusId;
             ShowingItemFilter.RowId = ShowingWarehouse_ShowingItemFilterDTO.RowId;
             ShowingItemFilter.StatusId = new IdFilter{ Equal = 1 };

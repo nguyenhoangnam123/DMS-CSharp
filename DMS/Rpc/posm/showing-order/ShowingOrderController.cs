@@ -377,7 +377,7 @@ namespace DMS.Rpc.posm.showing_order
                         ShowingCategoryId = x.ShowingItem.ShowingCategoryId,
                         UnitOfMeasureId = x.ShowingItem.UnitOfMeasureId,
                         SalePrice = x.ShowingItem.SalePrice,
-                        Desception = x.ShowingItem.Desception,
+                        Description = x.ShowingItem.Description,
                         StatusId = x.ShowingItem.StatusId,
                         Used = x.ShowingItem.Used,
                         RowId = x.ShowingItem.RowId,
