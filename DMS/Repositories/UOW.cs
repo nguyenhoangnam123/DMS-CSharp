@@ -28,6 +28,7 @@ namespace DMS.Repositories
         IERouteContentRepository ERouteContentRepository { get; }
         IERouteRepository ERouteRepository { get; }
         IERouteTypeRepository ERouteTypeRepository { get; }
+        IExportTemplateRepository ExportTemplateRepository { get; }
         IFieldRepository FieldRepository { get; }
         IIdGenerateRepository IdGenerateRepository { get; }
         IImageRepository ImageRepository { get; }
@@ -163,6 +164,7 @@ namespace DMS.Repositories
         public IERouteContentRepository ERouteContentRepository { get; private set; }
         public IERouteRepository ERouteRepository { get; private set; }
         public IERouteTypeRepository ERouteTypeRepository { get; private set; }
+        public IExportTemplateRepository ExportTemplateRepository { get; private set; }
         public IFieldRepository FieldRepository { get; private set; }
         public IIdGenerateRepository IdGenerateRepository { get; private set; }
         public IImageRepository ImageRepository { get; private set; }
@@ -297,6 +299,7 @@ namespace DMS.Repositories
             ERouteContentRepository = new ERouteContentRepository(DataContext);
             ERouteRepository = new ERouteRepository(DataContext);
             ERouteTypeRepository = new ERouteTypeRepository(DataContext);
+            ExportTemplateRepository = new ExportTemplateRepository(DataContext);
             FieldRepository = new FieldRepository(DataContext);
             IdGenerateRepository = new IdGenerateRepository(DataContext);
             ImageRepository = new ImageRepository(DataContext);

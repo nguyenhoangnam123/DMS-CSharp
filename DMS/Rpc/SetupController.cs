@@ -1402,6 +1402,7 @@ namespace DMS.Rpc
             InitStoreApprovalStateEnum();
             InitErpApprovalStateEnum();
             InitDirectSalesOrderSourceTypeEnum();
+            InitExportTemplateEnum();
             return Ok();
         }
 
@@ -1920,6 +1921,24 @@ namespace DMS.Rpc
                 }
             }
             DataContext.DirectSalesOrderSourceType.BulkSynchronize(DirectSalesOrderSourceTypeDAOs);
+        }
+
+        private void InitExportTemplateEnum()
+        {
+            List<ExportTemplateDAO> ExportTemplateDAOs = DataContext.ExportTemplate.ToList();
+            foreach (GenericEnum item in ExportTemplateEnum.ExportTemplateEnumList)
+            {
+                ExportTemplateDAO ExportTemplateDAO = ExportTemplateDAOs.Where(sc => sc.Id == item.Id).FirstOrDefault();
+                if (ExportTemplateDAO == null)
+                {
+                    ExportTemplateDAO = new ExportTemplateDAO();
+                    ExportTemplateDAO.Id = item.Id;
+                    ExportTemplateDAO.Code = item.Code;
+                    ExportTemplateDAO.Name = item.Name;
+                    ExportTemplateDAOs.Add(ExportTemplateDAO);
+                }
+            }
+            DataContext.ExportTemplate.BulkSynchronize(ExportTemplateDAOs);
         }
         #endregion
     }

@@ -36,6 +36,7 @@ namespace DMS.Models
         public virtual DbSet<EntityComponentDAO> EntityComponent { get; set; }
         public virtual DbSet<EntityTypeDAO> EntityType { get; set; }
         public virtual DbSet<ErpApprovalStateDAO> ErpApprovalState { get; set; }
+        public virtual DbSet<ExportTemplateDAO> ExportTemplate { get; set; }
         public virtual DbSet<FieldDAO> Field { get; set; }
         public virtual DbSet<FieldTypeDAO> FieldType { get; set; }
         public virtual DbSet<IdGeneratorDAO> IdGenerator { get; set; }
@@ -1157,6 +1158,23 @@ namespace DMS.Models
                 entity.Property(e => e.Name)
                     .IsRequired()
                     .HasMaxLength(50);
+            });
+
+            modelBuilder.Entity<ExportTemplateDAO>(entity =>
+            {
+                entity.ToTable("ExportTemplate", "ENUM");
+
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.Extension).HasMaxLength(50);
+
+                entity.Property(e => e.FileName).HasMaxLength(500);
+
+                entity.Property(e => e.Name).HasMaxLength(500);
             });
 
             modelBuilder.Entity<FieldDAO>(entity =>
