@@ -36,7 +36,7 @@ namespace DMS.Rpc.posm.showing_order
             ShowingItemFilter.ShowingCategoryId = ShowingOrder_ShowingItemFilterDTO.ShowingCategoryId;
             ShowingItemFilter.UnitOfMeasureId = ShowingOrder_ShowingItemFilterDTO.UnitOfMeasureId;
             ShowingItemFilter.SalePrice = ShowingOrder_ShowingItemFilterDTO.SalePrice;
-            ShowingItemFilter.Desception = ShowingOrder_ShowingItemFilterDTO.Desception;
+            ShowingItemFilter.Description = ShowingOrder_ShowingItemFilterDTO.Description;
             ShowingItemFilter.StatusId = ShowingOrder_ShowingItemFilterDTO.StatusId;
             ShowingItemFilter.RowId = ShowingOrder_ShowingItemFilterDTO.RowId;
             ShowingItemFilter.Search = ShowingOrder_ShowingItemFilterDTO.Search;
@@ -66,7 +66,7 @@ namespace DMS.Rpc.posm.showing_order
             ShowingItemFilter.ShowingWarehouseId = ShowingOrder_ShowingItemFilterDTO.ShowingWarehouseId;
             ShowingItemFilter.UnitOfMeasureId = ShowingOrder_ShowingItemFilterDTO.UnitOfMeasureId;
             ShowingItemFilter.SalePrice = ShowingOrder_ShowingItemFilterDTO.SalePrice;
-            ShowingItemFilter.Desception = ShowingOrder_ShowingItemFilterDTO.Desception;
+            ShowingItemFilter.Description = ShowingOrder_ShowingItemFilterDTO.Description;
             ShowingItemFilter.StatusId = ShowingOrder_ShowingItemFilterDTO.StatusId;
             ShowingItemFilter.RowId = ShowingOrder_ShowingItemFilterDTO.RowId;
             ShowingItemFilter.Search = ShowingOrder_ShowingItemFilterDTO.Search;

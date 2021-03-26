@@ -14,13 +14,14 @@ namespace DMS.Rpc.posm.showing_item
         public long ShowingCategoryId { get; set; }
         public long UnitOfMeasureId { get; set; }
         public decimal SalePrice { get; set; }
-        public string Desception { get; set; }
+        public string Description { get; set; }
         public long StatusId { get; set; }
         public bool Used { get; set; }
         public Guid RowId { get; set; }
         public ShowingItem_ShowingCategoryDTO ShowingCategory { get; set; }
         public ShowingItem_StatusDTO Status { get; set; }
         public ShowingItem_UnitOfMeasureDTO UnitOfMeasure { get; set; }
+        public List<ShowingItem_ShowingItemImageMappingDTO> ShowingItemImageMappings { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public ShowingItem_ShowingItemDTO() {}
@@ -32,13 +33,14 @@ namespace DMS.Rpc.posm.showing_item
             this.ShowingCategoryId = ShowingItem.ShowingCategoryId;
             this.UnitOfMeasureId = ShowingItem.UnitOfMeasureId;
             this.SalePrice = ShowingItem.SalePrice;
-            this.Desception = ShowingItem.Desception;
+            this.Description = ShowingItem.Description;
             this.StatusId = ShowingItem.StatusId;
             this.Used = ShowingItem.Used;
             this.RowId = ShowingItem.RowId;
             this.ShowingCategory = ShowingItem.ShowingCategory == null ? null : new ShowingItem_ShowingCategoryDTO(ShowingItem.ShowingCategory);
             this.Status = ShowingItem.Status == null ? null : new ShowingItem_StatusDTO(ShowingItem.Status);
             this.UnitOfMeasure = ShowingItem.UnitOfMeasure == null ? null : new ShowingItem_UnitOfMeasureDTO(ShowingItem.UnitOfMeasure);
+            this.ShowingItemImageMappings = ShowingItem.ShowingItemImageMappings?.Select(x => new ShowingItem_ShowingItemImageMappingDTO(x)).ToList();
             this.CreatedAt = ShowingItem.CreatedAt;
             this.UpdatedAt = ShowingItem.UpdatedAt;
             this.Errors = ShowingItem.Errors;
@@ -53,7 +55,7 @@ namespace DMS.Rpc.posm.showing_item
         public IdFilter ShowingCategoryId { get; set; }
         public IdFilter UnitOfMeasureId { get; set; }
         public DecimalFilter SalePrice { get; set; }
-        public StringFilter Desception { get; set; }
+        public StringFilter Description { get; set; }
         public IdFilter StatusId { get; set; }
         public GuidFilter RowId { get; set; }
         public DateFilter CreatedAt { get; set; }

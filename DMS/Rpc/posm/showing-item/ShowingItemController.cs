@@ -186,7 +186,7 @@ namespace DMS.Rpc.posm.showing_item
                 int CategoryIdColumn = 3 + StartColumn;
                 int UnitOfMeasureIdColumn = 4 + StartColumn;
                 int SalePriceColumn = 5 + StartColumn;
-                int DesceptionColumn = 6 + StartColumn;
+                int DescriptionColumn = 6 + StartColumn;
                 int StatusIdColumn = 7 + StartColumn;
                 int UsedColumn = 11 + StartColumn;
                 int RowIdColumn = 12 + StartColumn;
@@ -201,7 +201,7 @@ namespace DMS.Rpc.posm.showing_item
                     string CategoryIdValue = worksheet.Cells[i + StartRow, CategoryIdColumn].Value?.ToString();
                     string UnitOfMeasureIdValue = worksheet.Cells[i + StartRow, UnitOfMeasureIdColumn].Value?.ToString();
                     string SalePriceValue = worksheet.Cells[i + StartRow, SalePriceColumn].Value?.ToString();
-                    string DesceptionValue = worksheet.Cells[i + StartRow, DesceptionColumn].Value?.ToString();
+                    string DescriptionValue = worksheet.Cells[i + StartRow, DescriptionColumn].Value?.ToString();
                     string StatusIdValue = worksheet.Cells[i + StartRow, StatusIdColumn].Value?.ToString();
                     string UsedValue = worksheet.Cells[i + StartRow, UsedColumn].Value?.ToString();
                     string RowIdValue = worksheet.Cells[i + StartRow, RowIdColumn].Value?.ToString();
@@ -210,7 +210,7 @@ namespace DMS.Rpc.posm.showing_item
                     ShowingItem.Code = CodeValue;
                     ShowingItem.Name = NameValue;
                     ShowingItem.SalePrice = decimal.TryParse(SalePriceValue, out decimal SalePrice) ? SalePrice : 0;
-                    ShowingItem.Desception = DesceptionValue;
+                    ShowingItem.Description = DescriptionValue;
                     Status Status = Statuses.Where(x => x.Id.ToString() == StatusIdValue).FirstOrDefault();
                     ShowingItem.StatusId = Status == null ? 0 : Status.Id;
                     ShowingItem.Status = Status;
@@ -245,8 +245,8 @@ namespace DMS.Rpc.posm.showing_item
                             Error += ShowingItem.Errors[nameof(ShowingItem.UnitOfMeasureId)];
                         if (ShowingItem.Errors.ContainsKey(nameof(ShowingItem.SalePrice)))
                             Error += ShowingItem.Errors[nameof(ShowingItem.SalePrice)];
-                        if (ShowingItem.Errors.ContainsKey(nameof(ShowingItem.Desception)))
-                            Error += ShowingItem.Errors[nameof(ShowingItem.Desception)];
+                        if (ShowingItem.Errors.ContainsKey(nameof(ShowingItem.Description)))
+                            Error += ShowingItem.Errors[nameof(ShowingItem.Description)];
                         if (ShowingItem.Errors.ContainsKey(nameof(ShowingItem.StatusId)))
                             Error += ShowingItem.Errors[nameof(ShowingItem.StatusId)];
                         if (ShowingItem.Errors.ContainsKey(nameof(ShowingItem.Used)))
@@ -285,7 +285,7 @@ namespace DMS.Rpc.posm.showing_item
                         "ShowingCategoryId",
                         "UnitOfMeasureId",
                         "SalePrice",
-                        "Desception",
+                        "Description",
                         "StatusId",
                         "Used",
                         "RowId",
@@ -303,7 +303,7 @@ namespace DMS.Rpc.posm.showing_item
                         ShowingItem.ShowingCategoryId,
                         ShowingItem.UnitOfMeasureId,
                         ShowingItem.SalePrice,
-                        ShowingItem.Desception,
+                        ShowingItem.Description,
                         ShowingItem.StatusId,
                         ShowingItem.Used,
                         ShowingItem.RowId,
@@ -447,6 +447,31 @@ namespace DMS.Rpc.posm.showing_item
             return File(output.ToArray(), "application/octet-stream", "ShowingItem.xlsx");
         }
 
+        [Route(ShowingItemRoute.SaveImage), HttpPost]
+        public async Task<ActionResult<ShowingItem_ImageDTO>> SaveImage(IFormFile file)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+            MemoryStream memoryStream = new MemoryStream();
+            file.CopyTo(memoryStream);
+            Image Image = new Image
+            {
+                Name = file.FileName,
+                Content = memoryStream.ToArray(),
+            };
+            Image = await ShowingItemService.SaveImage(Image);
+            if (Image == null)
+                return BadRequest();
+            ShowingItem_ImageDTO ShowingItem_ImageDTO = new ShowingItem_ImageDTO
+            {
+                Id = Image.Id,
+                Name = Image.Name,
+                Url = Image.Url,
+                ThumbnailUrl = Image.ThumbnailUrl,
+            };
+            return Ok(ShowingItem_ImageDTO);
+        }
+
         private async Task<bool> HasPermission(long Id)
         {
             ShowingItemFilter ShowingItemFilter = new ShowingItemFilter();
@@ -474,7 +499,7 @@ namespace DMS.Rpc.posm.showing_item
             ShowingItem.ShowingCategoryId = ShowingItem_ShowingItemDTO.ShowingCategoryId;
             ShowingItem.UnitOfMeasureId = ShowingItem_ShowingItemDTO.UnitOfMeasureId;
             ShowingItem.SalePrice = ShowingItem_ShowingItemDTO.SalePrice;
-            ShowingItem.Desception = ShowingItem_ShowingItemDTO.Desception;
+            ShowingItem.Description = ShowingItem_ShowingItemDTO.Description;
             ShowingItem.StatusId = ShowingItem_ShowingItemDTO.StatusId;
             ShowingItem.Used = ShowingItem_ShowingItemDTO.Used;
             ShowingItem.RowId = ShowingItem_ShowingItemDTO.RowId;
@@ -507,6 +532,18 @@ namespace DMS.Rpc.posm.showing_item
                 Used = ShowingItem_ShowingItemDTO.UnitOfMeasure.Used,
                 RowId = ShowingItem_ShowingItemDTO.UnitOfMeasure.RowId,
             };
+            ShowingItem.ShowingItemImageMappings = ShowingItem_ShowingItemDTO.ShowingItemImageMappings?
+               .Select(x => new ShowingItemImageMapping
+               {
+                   ImageId = x.ImageId,
+                   Image = new Image
+                   {
+                       Id = x.Image.Id,
+                       Name = x.Image.Name,
+                       Url = x.Image.Url,
+                       ThumbnailUrl = x.Image.ThumbnailUrl,
+                   },
+               }).ToList();
             ShowingItem.BaseLanguage = CurrentContext.Language;
             return ShowingItem;
         }
@@ -526,7 +563,7 @@ namespace DMS.Rpc.posm.showing_item
             ShowingItemFilter.ShowingCategoryId = ShowingItem_ShowingItemFilterDTO.ShowingCategoryId;
             ShowingItemFilter.UnitOfMeasureId = ShowingItem_ShowingItemFilterDTO.UnitOfMeasureId;
             ShowingItemFilter.SalePrice = ShowingItem_ShowingItemFilterDTO.SalePrice;
-            ShowingItemFilter.Desception = ShowingItem_ShowingItemFilterDTO.Desception;
+            ShowingItemFilter.Description = ShowingItem_ShowingItemFilterDTO.Description;
             ShowingItemFilter.StatusId = ShowingItem_ShowingItemFilterDTO.StatusId;
             ShowingItemFilter.RowId = ShowingItem_ShowingItemFilterDTO.RowId;
             ShowingItemFilter.CreatedAt = ShowingItem_ShowingItemFilterDTO.CreatedAt;

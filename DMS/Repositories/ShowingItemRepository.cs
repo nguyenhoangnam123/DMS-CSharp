@@ -51,8 +51,8 @@ namespace DMS.Repositories
                 query = query.Where(q => q.UnitOfMeasureId, filter.UnitOfMeasureId);
             if (filter.SalePrice != null && filter.SalePrice.HasValue)
                 query = query.Where(q => q.SalePrice, filter.SalePrice);
-            if (filter.Desception != null && filter.Desception.HasValue)
-                query = query.Where(q => q.Desception, filter.Desception);
+            if (filter.Description != null && filter.Description.HasValue)
+                query = query.Where(q => q.Description, filter.Description);
             if (filter.StatusId != null && filter.StatusId.HasValue)
                 query = query.Where(q => q.StatusId, filter.StatusId);
             if (filter.RowId != null && filter.RowId.HasValue)
@@ -96,8 +96,8 @@ namespace DMS.Repositories
                     queryable = queryable.Where(q => q.UnitOfMeasureId, filter.UnitOfMeasureId);
                 if (ShowingItemFilter.SalePrice != null && ShowingItemFilter.SalePrice.HasValue)
                     queryable = queryable.Where(q => q.SalePrice, filter.SalePrice);
-                if (ShowingItemFilter.Desception != null && ShowingItemFilter.Desception.HasValue)
-                    queryable = queryable.Where(q => q.Desception, filter.Desception);
+                if (ShowingItemFilter.Description != null && ShowingItemFilter.Description.HasValue)
+                    queryable = queryable.Where(q => q.Description, filter.Description);
                 if (ShowingItemFilter.StatusId != null && ShowingItemFilter.StatusId.HasValue)
                     queryable = queryable.Where(q => q.StatusId, filter.StatusId);
                 if (ShowingItemFilter.RowId != null && ShowingItemFilter.RowId.HasValue)
@@ -105,7 +105,7 @@ namespace DMS.Repositories
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;
-        }    
+        }
 
         private IQueryable<ShowingItemDAO> DynamicOrder(IQueryable<ShowingItemDAO> query, ShowingItemFilter filter)
         {
@@ -132,8 +132,8 @@ namespace DMS.Repositories
                         case ShowingItemOrder.SalePrice:
                             query = query.OrderBy(q => q.SalePrice);
                             break;
-                        case ShowingItemOrder.Desception:
-                            query = query.OrderBy(q => q.Desception);
+                        case ShowingItemOrder.Description:
+                            query = query.OrderBy(q => q.Description);
                             break;
                         case ShowingItemOrder.Status:
                             query = query.OrderBy(q => q.StatusId);
@@ -167,8 +167,8 @@ namespace DMS.Repositories
                         case ShowingItemOrder.SalePrice:
                             query = query.OrderByDescending(q => q.SalePrice);
                             break;
-                        case ShowingItemOrder.Desception:
-                            query = query.OrderByDescending(q => q.Desception);
+                        case ShowingItemOrder.Description:
+                            query = query.OrderByDescending(q => q.Description);
                             break;
                         case ShowingItemOrder.Status:
                             query = query.OrderByDescending(q => q.StatusId);
@@ -196,7 +196,7 @@ namespace DMS.Repositories
                 ShowingCategoryId = filter.Selects.Contains(ShowingItemSelect.ShowingCategory) ? q.ShowingCategoryId : default(long),
                 UnitOfMeasureId = filter.Selects.Contains(ShowingItemSelect.UnitOfMeasure) ? q.UnitOfMeasureId : default(long),
                 SalePrice = filter.Selects.Contains(ShowingItemSelect.SalePrice) ? q.SalePrice : default(decimal),
-                Desception = filter.Selects.Contains(ShowingItemSelect.Desception) ? q.Desception : default(string),
+                Description = filter.Selects.Contains(ShowingItemSelect.Description) ? q.Description : default(string),
                 StatusId = filter.Selects.Contains(ShowingItemSelect.Status) ? q.StatusId : default(long),
                 Used = filter.Selects.Contains(ShowingItemSelect.Used) ? q.Used : default(bool),
                 RowId = filter.Selects.Contains(ShowingItemSelect.Row) ? q.RowId : default(Guid),
@@ -230,6 +230,30 @@ namespace DMS.Repositories
                     RowId = q.UnitOfMeasure.RowId,
                 } : null,
             }).ToListAsync();
+
+            var Ids = ShowingItems.Select(x => x.Id).ToList();
+            var ShowingItemImageMappings = DataContext.ShowingItemImageMapping.Include(x => x.Image).Where(x => Ids.Contains(x.ShowingItemId)).ToList();
+            foreach (var ShowingItem in ShowingItems)
+            {
+                ShowingItem.ShowingItemImageMappings = new List<ShowingItemImageMapping>();
+                var ShowingItemImageMappingDAO = ShowingItemImageMappings.Where(x => x.ShowingItemId == ShowingItem.Id).FirstOrDefault();
+                if (ShowingItemImageMappingDAO != null)
+                {
+                    ShowingItemImageMapping ShowingItemImageMapping = new ShowingItemImageMapping
+                    {
+                        ImageId = ShowingItemImageMappingDAO.ImageId,
+                        ShowingItemId = ShowingItemImageMappingDAO.ShowingItemId,
+                        Image = ShowingItemImageMappingDAO.Image == null ? null : new Image
+                        {
+                            Id = ShowingItemImageMappingDAO.Image.Id,
+                            Name = ShowingItemImageMappingDAO.Image.Name,
+                            Url = ShowingItemImageMappingDAO.Image.Url,
+                            ThumbnailUrl = ShowingItemImageMappingDAO.Image.ThumbnailUrl
+                        }
+                    };
+                    ShowingItem.ShowingItemImageMappings.Add(ShowingItemImageMapping);
+                }
+            }
             return ShowingItems;
         }
 
@@ -264,7 +288,7 @@ namespace DMS.Repositories
                 ShowingCategoryId = x.ShowingCategoryId,
                 UnitOfMeasureId = x.UnitOfMeasureId,
                 SalePrice = x.SalePrice,
-                Desception = x.Desception,
+                Description = x.Description,
                 StatusId = x.StatusId,
                 Used = x.Used,
                 RowId = x.RowId,
@@ -298,7 +322,7 @@ namespace DMS.Repositories
                     RowId = x.UnitOfMeasure.RowId,
                 },
             }).ToListAsync();
-            
+
 
             return ShowingItems;
         }
@@ -318,7 +342,7 @@ namespace DMS.Repositories
                 ShowingCategoryId = x.ShowingCategoryId,
                 UnitOfMeasureId = x.UnitOfMeasureId,
                 SalePrice = x.SalePrice,
-                Desception = x.Desception,
+                Description = x.Description,
                 StatusId = x.StatusId,
                 Used = x.Used,
                 RowId = x.RowId,
@@ -356,6 +380,20 @@ namespace DMS.Repositories
             if (ShowingItem == null)
                 return null;
 
+            ShowingItem.ShowingItemImageMappings = await DataContext.ShowingItemImageMapping.AsNoTracking()
+              .Where(x => x.ShowingItemId == ShowingItem.Id)
+              .Select(x => new ShowingItemImageMapping
+              {
+                  ShowingItemId = x.ShowingItemId,
+                  ImageId = x.ImageId,
+                  Image = new Image
+                  {
+                      Id = x.Image.Id,
+                      Name = x.Image.Name,
+                      Url = x.Image.Url,
+                      ThumbnailUrl = x.Image.ThumbnailUrl,
+                  },
+              }).ToListAsync();
             return ShowingItem;
         }
         public async Task<bool> Create(ShowingItem ShowingItem)
@@ -367,7 +405,7 @@ namespace DMS.Repositories
             ShowingItemDAO.ShowingCategoryId = ShowingItem.ShowingCategoryId;
             ShowingItemDAO.UnitOfMeasureId = ShowingItem.UnitOfMeasureId;
             ShowingItemDAO.SalePrice = ShowingItem.SalePrice;
-            ShowingItemDAO.Desception = ShowingItem.Desception;
+            ShowingItemDAO.Description = ShowingItem.Description;
             ShowingItemDAO.StatusId = ShowingItem.StatusId;
             ShowingItemDAO.Used = ShowingItem.Used;
             ShowingItemDAO.RowId = ShowingItem.RowId;
@@ -391,7 +429,7 @@ namespace DMS.Repositories
             ShowingItemDAO.ShowingCategoryId = ShowingItem.ShowingCategoryId;
             ShowingItemDAO.UnitOfMeasureId = ShowingItem.UnitOfMeasureId;
             ShowingItemDAO.SalePrice = ShowingItem.SalePrice;
-            ShowingItemDAO.Desception = ShowingItem.Desception;
+            ShowingItemDAO.Description = ShowingItem.Description;
             ShowingItemDAO.StatusId = ShowingItem.StatusId;
             ShowingItemDAO.Used = ShowingItem.Used;
             ShowingItemDAO.RowId = ShowingItem.RowId;
@@ -406,7 +444,7 @@ namespace DMS.Repositories
             await DataContext.ShowingItem.Where(x => x.Id == ShowingItem.Id).UpdateFromQueryAsync(x => new ShowingItemDAO { DeletedAt = StaticParams.DateTimeNow, UpdatedAt = StaticParams.DateTimeNow });
             return true;
         }
-        
+
         public async Task<bool> BulkMerge(List<ShowingItem> ShowingItems)
         {
             List<ShowingItemDAO> ShowingItemDAOs = new List<ShowingItemDAO>();
@@ -419,7 +457,7 @@ namespace DMS.Repositories
                 ShowingItemDAO.ShowingCategoryId = ShowingItem.ShowingCategoryId;
                 ShowingItemDAO.UnitOfMeasureId = ShowingItem.UnitOfMeasureId;
                 ShowingItemDAO.SalePrice = ShowingItem.SalePrice;
-                ShowingItemDAO.Desception = ShowingItem.Desception;
+                ShowingItemDAO.Description = ShowingItem.Description;
                 ShowingItemDAO.StatusId = ShowingItem.StatusId;
                 ShowingItemDAO.Used = ShowingItem.Used;
                 ShowingItemDAO.RowId = ShowingItem.RowId;
@@ -442,7 +480,24 @@ namespace DMS.Repositories
 
         private async Task SaveReference(ShowingItem ShowingItem)
         {
+            await DataContext.ShowingItemImageMapping
+               .Where(x => x.ShowingItemId == ShowingItem.Id)
+               .DeleteFromQueryAsync();
+            List<ShowingItemImageMappingDAO> ShowingItemImageMappingDAOs = new List<ShowingItemImageMappingDAO>();
+            if (ShowingItem.ShowingItemImageMappings != null)
+            {
+                foreach (ShowingItemImageMapping ShowingItemImageMapping in ShowingItem.ShowingItemImageMappings)
+                {
+                    ShowingItemImageMappingDAO ShowingItemImageMappingDAO = new ShowingItemImageMappingDAO()
+                    {
+                        ShowingItemId = ShowingItem.Id,
+                        ImageId = ShowingItemImageMapping.ImageId,
+                    };
+                    ShowingItemImageMappingDAOs.Add(ShowingItemImageMappingDAO);
+                }
+                await DataContext.ShowingItemImageMapping.BulkMergeAsync(ShowingItemImageMappingDAOs);
+            }
         }
-        
+
     }
 }

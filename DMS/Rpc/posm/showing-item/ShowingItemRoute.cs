@@ -36,7 +36,8 @@ namespace DMS.Rpc.posm.showing_item
         public const string Export = Default + "/export";
         public const string ExportTemplate = Default + "/export-template";
         public const string BulkDelete = Default + "/bulk-delete";
-        
+        public const string SaveImage = Default + "/save-image";
+
         public const string FilterListShowingCategory = Default + "/filter-list-showing-category";
         public const string FilterListStatus = Default + "/filter-list-status";
         public const string FilterListUnitOfMeasure = Default + "/filter-list-unit-of-measure";
@@ -54,7 +55,7 @@ namespace DMS.Rpc.posm.showing_item
             { nameof(ShowingItemFilter.ShowingCategoryId), FieldTypeEnum.ID.Id },
             { nameof(ShowingItemFilter.UnitOfMeasureId), FieldTypeEnum.ID.Id },
             { nameof(ShowingItemFilter.SalePrice), FieldTypeEnum.DECIMAL.Id },
-            { nameof(ShowingItemFilter.Desception), FieldTypeEnum.STRING.Id },
+            { nameof(ShowingItemFilter.Description), FieldTypeEnum.STRING.Id },
             { nameof(ShowingItemFilter.StatusId), FieldTypeEnum.ID.Id },
             { nameof(ShowingItemFilter.RowId), FieldTypeEnum.ID.Id },
         };
@@ -80,14 +81,14 @@ namespace DMS.Rpc.posm.showing_item
             { "Thêm", new List<string> { 
                     Parent,
                     Master, Preview, Count, List, Get,
-                    Detail, Create, 
+                    Detail, Create, SaveImage,
                 }.Concat(SingleList).Concat(FilterList).Concat(CountList)
             },
 
             { "Sửa", new List<string> { 
                     Parent,            
                     Master, Preview, Count, List, Get,
-                    Detail, Update, 
+                    Detail, Update, SaveImage,
                 }.Concat(SingleList).Concat(FilterList).Concat(CountList)
             },
 

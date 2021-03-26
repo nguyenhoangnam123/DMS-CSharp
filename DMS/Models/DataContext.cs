@@ -139,6 +139,7 @@ namespace DMS.Models
         public virtual DbSet<ShowingInventoryDAO> ShowingInventory { get; set; }
         public virtual DbSet<ShowingInventoryHistoryDAO> ShowingInventoryHistory { get; set; }
         public virtual DbSet<ShowingItemDAO> ShowingItem { get; set; }
+        public virtual DbSet<ShowingItemImageMappingDAO> ShowingItemImageMapping { get; set; }
         public virtual DbSet<ShowingOrderDAO> ShowingOrder { get; set; }
         public virtual DbSet<ShowingOrderContentDAO> ShowingOrderContent { get; set; }
         public virtual DbSet<ShowingWarehouseDAO> ShowingWarehouse { get; set; }
@@ -3889,7 +3890,7 @@ namespace DMS.Models
 
                 entity.Property(e => e.DeletedAt).HasColumnType("datetime");
 
-                entity.Property(e => e.Desception).HasMaxLength(4000);
+                entity.Property(e => e.Description).HasMaxLength(4000);
 
                 entity.Property(e => e.Name)
                     .IsRequired()
@@ -3916,6 +3917,25 @@ namespace DMS.Models
                     .HasForeignKey(d => d.UnitOfMeasureId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_ShowingItem_UnitOfMeasure");
+            });
+
+            modelBuilder.Entity<ShowingItemImageMappingDAO>(entity =>
+            {
+                entity.HasKey(e => new { e.ShowingItemId, e.ImageId });
+
+                entity.ToTable("ShowingItemImageMapping", "POSM");
+
+                entity.HasOne(d => d.Image)
+                    .WithMany(p => p.ShowingItemImageMappings)
+                    .HasForeignKey(d => d.ImageId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ShowingItemImageMapping_Image");
+
+                entity.HasOne(d => d.ShowingItem)
+                    .WithMany(p => p.ShowingItemImageMappings)
+                    .HasForeignKey(d => d.ShowingItemId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ShowingItemImageMapping_ShowingItem");
             });
 
             modelBuilder.Entity<ShowingOrderDAO>(entity =>

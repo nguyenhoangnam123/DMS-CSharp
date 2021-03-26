@@ -14,7 +14,7 @@ namespace DMS.Entities
         public long ShowingCategoryId { get; set; }
         public long UnitOfMeasureId { get; set; }
         public decimal SalePrice { get; set; }
-        public string Desception { get; set; }
+        public string Description { get; set; }
         public long SaleStock { get; set; }
         public long StatusId { get; set; }
         public bool HasInventory { get; set; }
@@ -23,6 +23,7 @@ namespace DMS.Entities
         public ShowingCategory ShowingCategory { get; set; }
         public Status Status { get; set; }
         public UnitOfMeasure UnitOfMeasure { get; set; }
+        public List<ShowingItemImageMapping> ShowingItemImageMappings { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public DateTime? DeletedAt { get; set; }
@@ -36,7 +37,7 @@ namespace DMS.Entities
             if (this.ShowingCategoryId != other.ShowingCategoryId) return false;
             if (this.UnitOfMeasureId != other.UnitOfMeasureId) return false;
             if (this.SalePrice != other.SalePrice) return false;
-            if (this.Desception != other.Desception) return false;
+            if (this.Description != other.Description) return false;
             if (this.StatusId != other.StatusId) return false;
             if (this.Used != other.Used) return false;
             if (this.RowId != other.RowId) return false;
@@ -57,7 +58,7 @@ namespace DMS.Entities
         public IdFilter ShowingWarehouseId { get; set; }
         public IdFilter UnitOfMeasureId { get; set; }
         public DecimalFilter SalePrice { get; set; }
-        public StringFilter Desception { get; set; }
+        public StringFilter Description { get; set; }
         public IdFilter StatusId { get; set; }
         public GuidFilter RowId { get; set; }
         public string Search { get; set; }
@@ -77,7 +78,7 @@ namespace DMS.Entities
         ShowingCategory = 3,
         UnitOfMeasure = 4,
         SalePrice = 5,
-        Desception = 6,
+        Description = 6,
         Status = 7,
         Used = 11,
         Row = 12,
@@ -95,7 +96,7 @@ namespace DMS.Entities
         ShowingCategory = E._3,
         UnitOfMeasure = E._4,
         SalePrice = E._5,
-        Desception = E._6,
+        Description = E._6,
         Status = E._7,
         Used = E._11,
         Row = E._12,

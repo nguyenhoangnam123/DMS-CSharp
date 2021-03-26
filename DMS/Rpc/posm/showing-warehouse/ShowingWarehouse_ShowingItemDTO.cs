@@ -21,7 +21,7 @@ namespace DMS.Rpc.posm.showing_warehouse
         
         public decimal SalePrice { get; set; }
         
-        public string Desception { get; set; }
+        public string Description { get; set; }
         
         public long StatusId { get; set; }
         
@@ -46,7 +46,7 @@ namespace DMS.Rpc.posm.showing_warehouse
             
             this.SalePrice = ShowingItem.SalePrice;
             
-            this.Desception = ShowingItem.Desception;
+            this.Description = ShowingItem.Description;
             
             this.StatusId = ShowingItem.StatusId;
             
@@ -73,7 +73,7 @@ namespace DMS.Rpc.posm.showing_warehouse
         
         public DecimalFilter SalePrice { get; set; }
         
-        public StringFilter Desception { get; set; }
+        public StringFilter Description { get; set; }
         
         public IdFilter StatusId { get; set; }
         
