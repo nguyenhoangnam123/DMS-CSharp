@@ -72,6 +72,7 @@ namespace DMS.Rpc.posm.posm_report
             ShowingItemFilter.ShowingCategoryId = POSMReport_ShowingItemFilterDTO.ShowingCategoryId;
             ShowingItemFilter.UnitOfMeasureId = POSMReport_ShowingItemFilterDTO.UnitOfMeasureId;
             ShowingItemFilter.SalePrice = POSMReport_ShowingItemFilterDTO.SalePrice;
+            ShowingItemFilter.ERPCode = POSMReport_ShowingItemFilterDTO.ERPCode;
             ShowingItemFilter.Description = POSMReport_ShowingItemFilterDTO.Description;
             ShowingItemFilter.StatusId = POSMReport_ShowingItemFilterDTO.StatusId;
             ShowingItemFilter.RowId = POSMReport_ShowingItemFilterDTO.RowId;

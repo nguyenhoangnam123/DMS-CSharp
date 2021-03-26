@@ -3910,6 +3910,8 @@ namespace DMS.Models
 
                 entity.Property(e => e.Description).HasMaxLength(4000);
 
+                entity.Property(e => e.ERPCode).HasMaxLength(500);
+
                 entity.Property(e => e.Name)
                     .IsRequired()
                     .HasMaxLength(255);

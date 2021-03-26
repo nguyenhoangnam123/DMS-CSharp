@@ -14,6 +14,7 @@ namespace DMS.Entities
         public long ShowingCategoryId { get; set; }
         public long UnitOfMeasureId { get; set; }
         public decimal SalePrice { get; set; }
+        public string ERPCode { get; set; }
         public string Description { get; set; }
         public long SaleStock { get; set; }
         public long StatusId { get; set; }
@@ -37,6 +38,7 @@ namespace DMS.Entities
             if (this.ShowingCategoryId != other.ShowingCategoryId) return false;
             if (this.UnitOfMeasureId != other.UnitOfMeasureId) return false;
             if (this.SalePrice != other.SalePrice) return false;
+            if (this.ERPCode != other.ERPCode) return false;
             if (this.Description != other.Description) return false;
             if (this.StatusId != other.StatusId) return false;
             if (this.Used != other.Used) return false;
@@ -58,6 +60,7 @@ namespace DMS.Entities
         public IdFilter ShowingWarehouseId { get; set; }
         public IdFilter UnitOfMeasureId { get; set; }
         public DecimalFilter SalePrice { get; set; }
+        public StringFilter ERPCode { get; set; }
         public StringFilter Description { get; set; }
         public IdFilter StatusId { get; set; }
         public GuidFilter RowId { get; set; }
@@ -82,6 +85,7 @@ namespace DMS.Entities
         Status = 7,
         Used = 11,
         Row = 12,
+        ERPCode = 13,
         CreatedAt = 50,
         UpdatedAt = 51,
     }
@@ -100,5 +104,6 @@ namespace DMS.Entities
         Status = E._7,
         Used = E._11,
         Row = E._12,
+        ERPCode = E._13,
     }
 }

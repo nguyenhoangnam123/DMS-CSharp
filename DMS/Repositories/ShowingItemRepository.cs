@@ -51,6 +51,8 @@ namespace DMS.Repositories
                 query = query.Where(q => q.UnitOfMeasureId, filter.UnitOfMeasureId);
             if (filter.SalePrice != null && filter.SalePrice.HasValue)
                 query = query.Where(q => q.SalePrice, filter.SalePrice);
+            if (filter.ERPCode != null && filter.ERPCode.HasValue)
+                query = query.Where(q => q.ERPCode, filter.ERPCode);
             if (filter.Description != null && filter.Description.HasValue)
                 query = query.Where(q => q.Description, filter.Description);
             if (filter.StatusId != null && filter.StatusId.HasValue)
@@ -96,6 +98,8 @@ namespace DMS.Repositories
                     queryable = queryable.Where(q => q.UnitOfMeasureId, filter.UnitOfMeasureId);
                 if (ShowingItemFilter.SalePrice != null && ShowingItemFilter.SalePrice.HasValue)
                     queryable = queryable.Where(q => q.SalePrice, filter.SalePrice);
+                if (ShowingItemFilter.ERPCode != null && ShowingItemFilter.ERPCode.HasValue)
+                    queryable = queryable.Where(q => q.ERPCode, filter.ERPCode);
                 if (ShowingItemFilter.Description != null && ShowingItemFilter.Description.HasValue)
                     queryable = queryable.Where(q => q.Description, filter.Description);
                 if (ShowingItemFilter.StatusId != null && ShowingItemFilter.StatusId.HasValue)
@@ -132,6 +136,9 @@ namespace DMS.Repositories
                         case ShowingItemOrder.SalePrice:
                             query = query.OrderBy(q => q.SalePrice);
                             break;
+                        case ShowingItemOrder.ERPCode:
+                            query = query.OrderBy(q => q.ERPCode);
+                            break;
                         case ShowingItemOrder.Description:
                             query = query.OrderBy(q => q.Description);
                             break;
@@ -167,6 +174,9 @@ namespace DMS.Repositories
                         case ShowingItemOrder.SalePrice:
                             query = query.OrderByDescending(q => q.SalePrice);
                             break;
+                        case ShowingItemOrder.ERPCode:
+                            query = query.OrderByDescending(q => q.ERPCode);
+                            break;
                         case ShowingItemOrder.Description:
                             query = query.OrderByDescending(q => q.Description);
                             break;
@@ -196,6 +206,7 @@ namespace DMS.Repositories
                 ShowingCategoryId = filter.Selects.Contains(ShowingItemSelect.ShowingCategory) ? q.ShowingCategoryId : default(long),
                 UnitOfMeasureId = filter.Selects.Contains(ShowingItemSelect.UnitOfMeasure) ? q.UnitOfMeasureId : default(long),
                 SalePrice = filter.Selects.Contains(ShowingItemSelect.SalePrice) ? q.SalePrice : default(decimal),
+                ERPCode = filter.Selects.Contains(ShowingItemSelect.ERPCode) ? q.ERPCode : default(string),
                 Description = filter.Selects.Contains(ShowingItemSelect.Description) ? q.Description : default(string),
                 StatusId = filter.Selects.Contains(ShowingItemSelect.Status) ? q.StatusId : default(long),
                 Used = filter.Selects.Contains(ShowingItemSelect.Used) ? q.Used : default(bool),
@@ -288,6 +299,7 @@ namespace DMS.Repositories
                 ShowingCategoryId = x.ShowingCategoryId,
                 UnitOfMeasureId = x.UnitOfMeasureId,
                 SalePrice = x.SalePrice,
+                ERPCode = x.ERPCode,
                 Description = x.Description,
                 StatusId = x.StatusId,
                 Used = x.Used,
@@ -342,6 +354,7 @@ namespace DMS.Repositories
                 ShowingCategoryId = x.ShowingCategoryId,
                 UnitOfMeasureId = x.UnitOfMeasureId,
                 SalePrice = x.SalePrice,
+                ERPCode = x.ERPCode,
                 Description = x.Description,
                 StatusId = x.StatusId,
                 Used = x.Used,
@@ -405,6 +418,7 @@ namespace DMS.Repositories
             ShowingItemDAO.ShowingCategoryId = ShowingItem.ShowingCategoryId;
             ShowingItemDAO.UnitOfMeasureId = ShowingItem.UnitOfMeasureId;
             ShowingItemDAO.SalePrice = ShowingItem.SalePrice;
+            ShowingItemDAO.ERPCode = ShowingItem.ERPCode;
             ShowingItemDAO.Description = ShowingItem.Description;
             ShowingItemDAO.StatusId = ShowingItem.StatusId;
             ShowingItemDAO.Used = ShowingItem.Used;
@@ -429,6 +443,7 @@ namespace DMS.Repositories
             ShowingItemDAO.ShowingCategoryId = ShowingItem.ShowingCategoryId;
             ShowingItemDAO.UnitOfMeasureId = ShowingItem.UnitOfMeasureId;
             ShowingItemDAO.SalePrice = ShowingItem.SalePrice;
+            ShowingItemDAO.ERPCode = ShowingItem.ERPCode;
             ShowingItemDAO.Description = ShowingItem.Description;
             ShowingItemDAO.StatusId = ShowingItem.StatusId;
             ShowingItemDAO.Used = ShowingItem.Used;
@@ -457,6 +472,7 @@ namespace DMS.Repositories
                 ShowingItemDAO.ShowingCategoryId = ShowingItem.ShowingCategoryId;
                 ShowingItemDAO.UnitOfMeasureId = ShowingItem.UnitOfMeasureId;
                 ShowingItemDAO.SalePrice = ShowingItem.SalePrice;
+                ShowingItemDAO.ERPCode = ShowingItem.ERPCode;
                 ShowingItemDAO.Description = ShowingItem.Description;
                 ShowingItemDAO.StatusId = ShowingItem.StatusId;
                 ShowingItemDAO.Used = ShowingItem.Used;

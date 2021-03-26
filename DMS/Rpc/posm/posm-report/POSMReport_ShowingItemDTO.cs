@@ -21,6 +21,7 @@ namespace DMS.Rpc.posm.posm_report
         
         public decimal SalePrice { get; set; }
         
+        public string ERPCode { get; set; }
         public string Description { get; set; }
         
         public long StatusId { get; set; }
@@ -46,6 +47,7 @@ namespace DMS.Rpc.posm.posm_report
             
             this.SalePrice = ShowingItem.SalePrice;
             
+            this.ERPCode = ShowingItem.ERPCode;
             this.Description = ShowingItem.Description;
             
             this.StatusId = ShowingItem.StatusId;
@@ -73,6 +75,7 @@ namespace DMS.Rpc.posm.posm_report
         
         public DecimalFilter SalePrice { get; set; }
         
+        public StringFilter ERPCode { get; set; }
         public StringFilter Description { get; set; }
         
         public IdFilter StatusId { get; set; }

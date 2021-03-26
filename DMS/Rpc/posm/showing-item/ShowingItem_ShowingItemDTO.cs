@@ -14,6 +14,7 @@ namespace DMS.Rpc.posm.showing_item
         public long ShowingCategoryId { get; set; }
         public long UnitOfMeasureId { get; set; }
         public decimal SalePrice { get; set; }
+        public string ERPCode { get; set; }
         public string Description { get; set; }
         public long StatusId { get; set; }
         public bool Used { get; set; }
@@ -33,6 +34,7 @@ namespace DMS.Rpc.posm.showing_item
             this.ShowingCategoryId = ShowingItem.ShowingCategoryId;
             this.UnitOfMeasureId = ShowingItem.UnitOfMeasureId;
             this.SalePrice = ShowingItem.SalePrice;
+            this.ERPCode = ShowingItem.ERPCode;
             this.Description = ShowingItem.Description;
             this.StatusId = ShowingItem.StatusId;
             this.Used = ShowingItem.Used;
@@ -55,6 +57,7 @@ namespace DMS.Rpc.posm.showing_item
         public IdFilter ShowingCategoryId { get; set; }
         public IdFilter UnitOfMeasureId { get; set; }
         public DecimalFilter SalePrice { get; set; }
+        public StringFilter ERPCode { get; set; }
         public StringFilter Description { get; set; }
         public IdFilter StatusId { get; set; }
         public GuidFilter RowId { get; set; }

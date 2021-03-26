@@ -174,6 +174,7 @@ namespace DMS.Rpc.posm.showing_order
             ShowingItemFilter.ShowingCategoryId = ShowingOrder_ShowingItemFilterDTO.ShowingCategoryId;
             ShowingItemFilter.UnitOfMeasureId = ShowingOrder_ShowingItemFilterDTO.UnitOfMeasureId;
             ShowingItemFilter.SalePrice = ShowingOrder_ShowingItemFilterDTO.SalePrice;
+            ShowingItemFilter.ERPCode = ShowingOrder_ShowingItemFilterDTO.ERPCode;
             ShowingItemFilter.Description = ShowingOrder_ShowingItemFilterDTO.Description;
             ShowingItemFilter.StatusId = ShowingOrder_ShowingItemFilterDTO.StatusId;
             ShowingItemFilter.RowId = ShowingOrder_ShowingItemFilterDTO.RowId;

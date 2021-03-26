@@ -18,6 +18,7 @@ namespace DMS.Models
         public long ShowingCategoryId { get; set; }
         public long UnitOfMeasureId { get; set; }
         public decimal SalePrice { get; set; }
+        public string ERPCode { get; set; }
         public string Description { get; set; }
         public long StatusId { get; set; }
         public DateTime CreatedAt { get; set; }

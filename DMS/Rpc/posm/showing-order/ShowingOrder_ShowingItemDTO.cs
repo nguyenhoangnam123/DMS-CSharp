@@ -21,6 +21,7 @@ namespace DMS.Rpc.posm.showing_order
         
         public decimal SalePrice { get; set; }
         
+        public string ERPCode { get; set; }
         public string Description { get; set; }
 
         public long SaleStock { get; set; }
@@ -49,6 +50,7 @@ namespace DMS.Rpc.posm.showing_order
             
             this.SalePrice = ShowingItem.SalePrice;
             
+            this.ERPCode = ShowingItem.ERPCode;
             this.Description = ShowingItem.Description;
             
             this.SaleStock = ShowingItem.SaleStock;
@@ -81,6 +83,7 @@ namespace DMS.Rpc.posm.showing_order
         
         public DecimalFilter SalePrice { get; set; }
         
+        public StringFilter ERPCode { get; set; }
         public StringFilter Description { get; set; }
         
         public IdFilter StatusId { get; set; }

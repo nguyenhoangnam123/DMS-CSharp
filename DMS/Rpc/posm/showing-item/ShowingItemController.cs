@@ -499,6 +499,7 @@ namespace DMS.Rpc.posm.showing_item
             ShowingItem.ShowingCategoryId = ShowingItem_ShowingItemDTO.ShowingCategoryId;
             ShowingItem.UnitOfMeasureId = ShowingItem_ShowingItemDTO.UnitOfMeasureId;
             ShowingItem.SalePrice = ShowingItem_ShowingItemDTO.SalePrice;
+            ShowingItem.ERPCode = ShowingItem_ShowingItemDTO.ERPCode;
             ShowingItem.Description = ShowingItem_ShowingItemDTO.Description;
             ShowingItem.StatusId = ShowingItem_ShowingItemDTO.StatusId;
             ShowingItem.Used = ShowingItem_ShowingItemDTO.Used;
@@ -563,6 +564,7 @@ namespace DMS.Rpc.posm.showing_item
             ShowingItemFilter.ShowingCategoryId = ShowingItem_ShowingItemFilterDTO.ShowingCategoryId;
             ShowingItemFilter.UnitOfMeasureId = ShowingItem_ShowingItemFilterDTO.UnitOfMeasureId;
             ShowingItemFilter.SalePrice = ShowingItem_ShowingItemFilterDTO.SalePrice;
+            ShowingItemFilter.ERPCode = ShowingItem_ShowingItemFilterDTO.ERPCode;
             ShowingItemFilter.Description = ShowingItem_ShowingItemFilterDTO.Description;
             ShowingItemFilter.StatusId = ShowingItem_ShowingItemFilterDTO.StatusId;
             ShowingItemFilter.RowId = ShowingItem_ShowingItemFilterDTO.RowId;
