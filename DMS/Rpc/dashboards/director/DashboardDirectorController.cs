@@ -55,21 +55,12 @@ namespace DMS.Rpc.dashboards.director
         }
 
         #region Filter List
-        [Route(DashboardDirectorRoute.FilterListTime1), HttpPost]
-        public List<DashboardDirector_EnumList> FilterListTime1()
+        [Route(DashboardDirectorRoute.FilterListTime), HttpPost]
+        public List<DashboardDirector_EnumList> FilterListTime()
         {
             List<DashboardDirector_EnumList> Dashborad_EnumLists = new List<DashboardDirector_EnumList>();
             Dashborad_EnumLists.Add(new DashboardDirector_EnumList { Id = TODAY, Name = "Hôm nay" });
             Dashborad_EnumLists.Add(new DashboardDirector_EnumList { Id = THIS_WEEK, Name = "Tuần này" });
-            Dashborad_EnumLists.Add(new DashboardDirector_EnumList { Id = THIS_MONTH, Name = "Tháng này" });
-            Dashborad_EnumLists.Add(new DashboardDirector_EnumList { Id = LAST_MONTH, Name = "Tháng trước" });
-            return Dashborad_EnumLists;
-        }
-
-        [Route(DashboardDirectorRoute.FilterListTime2), HttpPost]
-        public List<DashboardDirector_EnumList> FilterListTime2()
-        {
-            List<DashboardDirector_EnumList> Dashborad_EnumLists = new List<DashboardDirector_EnumList>();
             Dashborad_EnumLists.Add(new DashboardDirector_EnumList { Id = THIS_MONTH, Name = "Tháng này" });
             Dashborad_EnumLists.Add(new DashboardDirector_EnumList { Id = LAST_MONTH, Name = "Tháng trước" });
             Dashborad_EnumLists.Add(new DashboardDirector_EnumList { Id = THIS_QUARTER, Name = "Quý này" });
@@ -156,6 +147,7 @@ namespace DMS.Rpc.dashboards.director
         [Route(DashboardDirectorRoute.CountStore), HttpPost]
         public async Task<long> CountStore([FromBody] DashboardDirector_StoreFilterDTO DashboardDirector_StoreFilterDTO)
         {
+            var ProvinceId = DashboardDirector_StoreFilterDTO.ProvinceId?.Equal;
             List<long> OrganizationIds = await FilterOrganization(OrganizationService, CurrentContext);
             List<OrganizationDAO> OrganizationDAOs = await DataContext.Organization.Where(o => o.DeletedAt == null && (OrganizationIds.Count == 0 || OrganizationIds.Contains(o.Id))).ToListAsync();
             OrganizationDAO OrganizationDAO = null;
@@ -172,6 +164,7 @@ namespace DMS.Rpc.dashboards.director
             var query = from s in DataContext.Store
                         join tt in tempTableQuery.Query on s.Id equals tt.Column1
                         where OrganizationIds.Contains(s.OrganizationId) &&
+                        (ProvinceId.HasValue == false || (s.ProvinceId.HasValue && s.ProvinceId == ProvinceId.Value)) &&
                         s.StatusId == StatusEnum.ACTIVE.Id && 
                         s.DeletedAt == null
                         select s;
@@ -186,7 +179,9 @@ namespace DMS.Rpc.dashboards.director
             DateTime Now = StaticParams.DateTimeNow;
             DateTime Start = new DateTime(Now.Year, Now.Month, 1).AddHours(0 - CurrentContext.TimeZone);
             DateTime End = Start.AddMonths(1).AddSeconds(-1);
+            (Start, End) = ConvertTime(DashboardDirector_IndirectSalesOrderFluctuationFilterDTO.Time);
 
+            var ProvinceId = DashboardDirector_IndirectSalesOrderFluctuationFilterDTO.ProvinceId?.Equal;
             long? SaleEmployeeId = DashboardDirector_IndirectSalesOrderFluctuationFilterDTO.AppUserId?.Equal;
             List<long> OrganizationIds = await FilterOrganization(OrganizationService, CurrentContext);
             List<OrganizationDAO> OrganizationDAOs = await DataContext.Organization.Where(o => o.DeletedAt == null && OrganizationIds.Contains(o.Id)).ToListAsync();
@@ -197,6 +192,10 @@ namespace DMS.Rpc.dashboards.director
                 OrganizationDAOs = OrganizationDAOs.Where(o => o.Path.StartsWith(OrganizationDAO.Path)).ToList();
             }
             OrganizationIds = OrganizationDAOs.Select(o => o.Id).ToList();
+
+            List<long> StoreIds = await FilterStore(StoreService, OrganizationService, CurrentContext);
+            ITempTableQuery<TempTable<long>> tempTableQuery = await DataContext
+                        .BulkInsertValuesIntoTempTableAsync<long>(StoreIds);
 
             AppUserFilter AppUserFilter = new AppUserFilter
             {
@@ -213,9 +212,12 @@ namespace DMS.Rpc.dashboards.director
             var query = from i in DataContext.IndirectSalesOrder
                         join au in DataContext.AppUser on i.SaleEmployeeId equals au.Id
                         join o in DataContext.Organization on au.OrganizationId equals o.Id
+                        join s in DataContext.Store on i.BuyerStoreId equals s.Id
+                        join tt in tempTableQuery.Query on s.Id equals tt.Column1
                         where i.OrderDate >= Start && i.OrderDate <= End &&
                         AppUserIds.Contains(au.Id) &&
                         (SaleEmployeeId.HasValue == false || au.Id == SaleEmployeeId.Value) &&
+                        (ProvinceId.HasValue == false || (s.ProvinceId.HasValue && s.ProvinceId == ProvinceId.Value)) &&
                         OrganizationIds.Contains(i.OrganizationId) &&
                         i.RequestStateId == RequestStateEnum.APPROVED.Id &&
                         au.DeletedAt == null && o.DeletedAt == null
@@ -230,7 +232,9 @@ namespace DMS.Rpc.dashboards.director
             DateTime Now = StaticParams.DateTimeNow;
             DateTime Start = new DateTime(Now.Year, Now.Month, 1).AddHours(0 - CurrentContext.TimeZone);
             DateTime End = Start.AddMonths(1).AddSeconds(-1);
+            (Start, End) = ConvertTime(DashboardDirector_SaledItemFluctuationFilterDTO.Time);
 
+            var ProvinceId = DashboardDirector_SaledItemFluctuationFilterDTO.ProvinceId?.Equal;
             long? SaleEmployeeId = DashboardDirector_SaledItemFluctuationFilterDTO.AppUserId?.Equal;
             List<long> OrganizationIds = await FilterOrganization(OrganizationService, CurrentContext);
             List<OrganizationDAO> OrganizationDAOs = await DataContext.Organization.Where(o => o.DeletedAt == null && OrganizationIds.Contains(o.Id)).ToListAsync();
@@ -241,6 +245,10 @@ namespace DMS.Rpc.dashboards.director
                 OrganizationDAOs = OrganizationDAOs.Where(o => o.Path.StartsWith(OrganizationDAO.Path)).ToList();
             }
             OrganizationIds = OrganizationDAOs.Select(o => o.Id).ToList();
+
+            List<long> StoreIds = await FilterStore(StoreService, OrganizationService, CurrentContext);
+            ITempTableQuery<TempTable<long>> tempTableQuery = await DataContext
+                        .BulkInsertValuesIntoTempTableAsync<long>(StoreIds);
 
             AppUserFilter AppUserFilter = new AppUserFilter
             {
@@ -257,9 +265,12 @@ namespace DMS.Rpc.dashboards.director
             var query = from i in DataContext.IndirectSalesOrder
                         join au in DataContext.AppUser on i.SaleEmployeeId equals au.Id
                         join o in DataContext.Organization on au.OrganizationId equals o.Id
+                        join s in DataContext.Store on i.BuyerStoreId equals s.Id
+                        join tt in tempTableQuery.Query on s.Id equals tt.Column1
                         where i.OrderDate >= Start && i.OrderDate <= End &&
                         AppUserIds.Contains(au.Id) &&
                         (SaleEmployeeId.HasValue == false || au.Id == SaleEmployeeId.Value) &&
+                        (ProvinceId.HasValue == false || (s.ProvinceId.HasValue && s.ProvinceId == ProvinceId.Value)) &&
                         OrganizationIds.Contains(i.OrganizationId) &&
                         i.RequestStateId == RequestStateEnum.APPROVED.Id &&
                         au.DeletedAt == null && o.DeletedAt == null
@@ -275,7 +286,9 @@ namespace DMS.Rpc.dashboards.director
             DateTime Now = StaticParams.DateTimeNow;
             DateTime Start = new DateTime(Now.Year, Now.Month, 1).AddHours(0 - CurrentContext.TimeZone);
             DateTime End = Start.AddMonths(1).AddSeconds(-1);
+            (Start, End) = ConvertTime(DashboardDirector_SaledItemFluctuationFilterDTO.Time);
 
+            var ProvinceId = DashboardDirector_SaledItemFluctuationFilterDTO.ProvinceId?.Equal;
             long? SaleEmployeeId = DashboardDirector_SaledItemFluctuationFilterDTO.AppUserId?.Equal;
             List<long> OrganizationIds = await FilterOrganization(OrganizationService, CurrentContext);
             List<OrganizationDAO> OrganizationDAOs = await DataContext.Organization.Where(o => o.DeletedAt == null && OrganizationIds.Contains(o.Id)).ToListAsync();
@@ -311,6 +324,7 @@ namespace DMS.Rpc.dashboards.director
                                               where sc.CheckOutAt.HasValue && sc.CheckOutAt >= Start && sc.CheckOutAt <= End &&
                                               AppUserIds.Contains(au.Id) &&
                                               (SaleEmployeeId.HasValue == false || au.Id == SaleEmployeeId.Value) &&
+                                              (ProvinceId.HasValue == false || (s.ProvinceId.HasValue && s.ProvinceId == ProvinceId.Value)) &&
                                               OrganizationIds.Contains(s.OrganizationId) &&
                                               au.DeletedAt == null && o.DeletedAt == null && s.DeletedAt == null
                                               select s;
@@ -325,7 +339,9 @@ namespace DMS.Rpc.dashboards.director
             DateTime Now = StaticParams.DateTimeNow;
             DateTime Start = new DateTime(Now.Year, Now.Month, 1).AddHours(0 - CurrentContext.TimeZone);
             DateTime End = Start.AddMonths(1).AddSeconds(-1);
+            (Start, End) = ConvertTime(DashboardDirector_StoreFilterDTO.Time);
 
+            var ProvinceId = DashboardDirector_StoreFilterDTO.ProvinceId?.Equal;
             long? SaleEmployeeId = DashboardDirector_StoreFilterDTO.AppUserId?.Equal;
             List<long> OrganizationIds = await FilterOrganization(OrganizationService, CurrentContext);
             List<OrganizationDAO> OrganizationDAOs = await DataContext.Organization.Where(o => o.DeletedAt == null && OrganizationIds.Contains(o.Id)).ToListAsync();
@@ -361,6 +377,7 @@ namespace DMS.Rpc.dashboards.director
                         where sc.CheckOutAt.HasValue && sc.CheckOutAt >= Start && sc.CheckOutAt <= End &&
                         AppUserIds.Contains(au.Id) &&
                         (SaleEmployeeId.HasValue == false || au.Id == SaleEmployeeId.Value) &&
+                        (ProvinceId.HasValue == false || (s.ProvinceId.HasValue && s.ProvinceId == ProvinceId.Value)) &&
                         OrganizationIds.Contains(s.OrganizationId) &&
                         au.DeletedAt == null && o.DeletedAt == null && s.DeletedAt == null
                         select sc;
@@ -375,6 +392,7 @@ namespace DMS.Rpc.dashboards.director
             DateTime Start = LocalStartDay(CurrentContext);
             DateTime End = Start.AddDays(1).AddSeconds(-1);
 
+            var ProvinceId = DashboardDirector_StoreFilterDTO.ProvinceId?.Equal;
             long? SaleEmployeeId = DashboardDirector_StoreFilterDTO.AppUserId?.Equal;
             List<long> OrganizationIds = await FilterOrganization(OrganizationService, CurrentContext);
             List<OrganizationDAO> OrganizationDAOs = await DataContext.Organization.Where(o => o.DeletedAt == null && OrganizationIds.Contains(o.Id)).ToListAsync();
@@ -385,6 +403,10 @@ namespace DMS.Rpc.dashboards.director
                 OrganizationDAOs = OrganizationDAOs.Where(o => o.Path.StartsWith(OrganizationDAO.Path)).ToList();
             }
             OrganizationIds = OrganizationDAOs.Select(o => o.Id).ToList();
+
+            List<long> StoreIds = await FilterStore(StoreService, OrganizationService, CurrentContext);
+            ITempTableQuery<TempTable<long>> tempTableQuery = await DataContext
+                        .BulkInsertValuesIntoTempTableAsync<long>(StoreIds);
 
             AppUserFilter AppUserFilter = new AppUserFilter
             {
@@ -401,9 +423,12 @@ namespace DMS.Rpc.dashboards.director
             var queryRevenue = from i in DataContext.IndirectSalesOrder
                                join au in DataContext.AppUser on i.SaleEmployeeId equals au.Id
                                join o in DataContext.Organization on au.OrganizationId equals o.Id
+                               join s in DataContext.Store on i.BuyerStoreId equals s.Id
+                               join tt in tempTableQuery.Query on s.Id equals tt.Column1
                                where i.OrderDate >= Start && i.OrderDate <= End &&
                                AppUserIds.Contains(au.Id) &&
                                (SaleEmployeeId.HasValue == false || au.Id == SaleEmployeeId.Value) &&
+                               (ProvinceId.HasValue == false || (s.ProvinceId.HasValue && s.ProvinceId == ProvinceId.Value)) &&
                                OrganizationIds.Contains(i.OrganizationId) &&
                                i.RequestStateId == RequestStateEnum.APPROVED.Id &&
                                au.DeletedAt == null && o.DeletedAt == null
@@ -412,9 +437,12 @@ namespace DMS.Rpc.dashboards.director
             var queryIndirectSalesOrder = from i in DataContext.IndirectSalesOrder
                                           join au in DataContext.AppUser on i.SaleEmployeeId equals au.Id
                                           join o in DataContext.Organization on au.OrganizationId equals o.Id
+                                          join s in DataContext.Store on i.BuyerStoreId equals s.Id
+                                          join tt in tempTableQuery.Query on s.Id equals tt.Column1
                                           where i.OrderDate >= Start && i.OrderDate <= End &&
                                           AppUserIds.Contains(au.Id) &&
                                           (SaleEmployeeId.HasValue == false || au.Id == SaleEmployeeId.Value) &&
+                                          (ProvinceId.HasValue == false || (s.ProvinceId.HasValue && s.ProvinceId == ProvinceId.Value)) &&
                                           OrganizationIds.Contains(i.OrganizationId) &&
                                           i.RequestStateId == RequestStateEnum.APPROVED.Id &&
                                           au.DeletedAt == null && o.DeletedAt == null
@@ -427,6 +455,7 @@ namespace DMS.Rpc.dashboards.director
                                         where sc.CheckOutAt.HasValue && sc.CheckOutAt >= Start && sc.CheckOutAt <= End &&
                                         AppUserIds.Contains(au.Id) &&
                                         (SaleEmployeeId.HasValue == false || au.Id == SaleEmployeeId.Value) &&
+                                        (ProvinceId.HasValue == false || (s.ProvinceId.HasValue && s.ProvinceId == ProvinceId.Value)) &&
                                         OrganizationIds.Contains(s.OrganizationId) &&
                                         au.DeletedAt == null && o.DeletedAt == null && s.DeletedAt == null
                                         select s;
@@ -438,6 +467,7 @@ namespace DMS.Rpc.dashboards.director
                                      where sc.CheckOutAt.HasValue && sc.CheckOutAt >= Start && sc.CheckOutAt <= End &&
                                      AppUserIds.Contains(au.Id) &&
                                      (SaleEmployeeId.HasValue == false || au.Id == SaleEmployeeId.Value) &&
+                                     (ProvinceId.HasValue == false || (s.ProvinceId.HasValue && s.ProvinceId == ProvinceId.Value)) &&
                                      OrganizationIds.Contains(s.OrganizationId) &&
                                      au.DeletedAt == null && o.DeletedAt == null && s.DeletedAt == null
                                      select sc;
@@ -464,6 +494,7 @@ namespace DMS.Rpc.dashboards.director
             DateTime Start = LocalStartDay(CurrentContext).AddDays(-1);
             DateTime End = Start.AddDays(1).AddSeconds(-1);
 
+            var ProvinceId = DashboardDirector_IndirectSalesOrderFluctuationFilterDTO.ProvinceId?.Equal;
             long? SaleEmployeeId = DashboardDirector_IndirectSalesOrderFluctuationFilterDTO.AppUserId?.Equal;
             List<long> OrganizationIds = await FilterOrganization(OrganizationService, CurrentContext);
             List<OrganizationDAO> OrganizationDAOs = await DataContext.Organization.Where(o => o.DeletedAt == null && OrganizationIds.Contains(o.Id)).ToListAsync();
@@ -474,6 +505,10 @@ namespace DMS.Rpc.dashboards.director
                 OrganizationDAOs = OrganizationDAOs.Where(o => o.Path.StartsWith(OrganizationDAO.Path)).ToList();
             }
             OrganizationIds = OrganizationDAOs.Select(o => o.Id).ToList();
+
+            List<long> StoreIds = await FilterStore(StoreService, OrganizationService, CurrentContext);
+            ITempTableQuery<TempTable<long>> tempTableQuery = await DataContext
+                        .BulkInsertValuesIntoTempTableAsync<long>(StoreIds);
 
             AppUserFilter AppUserFilter = new AppUserFilter
             {
@@ -490,9 +525,12 @@ namespace DMS.Rpc.dashboards.director
             var queryRevenue = from i in DataContext.IndirectSalesOrder
                                join au in DataContext.AppUser on i.SaleEmployeeId equals au.Id
                                join o in DataContext.Organization on au.OrganizationId equals o.Id
+                               join s in DataContext.Store on i.BuyerStoreId equals s.Id
+                               join tt in tempTableQuery.Query on s.Id equals tt.Column1
                                where i.OrderDate >= Start && i.OrderDate <= End &&
                                AppUserIds.Contains(au.Id) &&
                                (SaleEmployeeId.HasValue == false || au.Id == SaleEmployeeId.Value) &&
+                               (ProvinceId.HasValue == false || (s.ProvinceId.HasValue && s.ProvinceId == ProvinceId.Value)) &&
                                OrganizationIds.Contains(i.OrganizationId) &&
                                i.RequestStateId == RequestStateEnum.APPROVED.Id &&
                                au.DeletedAt == null && o.DeletedAt == null
@@ -501,9 +539,12 @@ namespace DMS.Rpc.dashboards.director
             var queryIndirectSalesOrder = from i in DataContext.IndirectSalesOrder
                                           join au in DataContext.AppUser on i.SaleEmployeeId equals au.Id
                                           join o in DataContext.Organization on au.OrganizationId equals o.Id
+                                          join s in DataContext.Store on i.BuyerStoreId equals s.Id
+                                          join tt in tempTableQuery.Query on s.Id equals tt.Column1
                                           where i.OrderDate >= Start && i.OrderDate <= End &&
                                           AppUserIds.Contains(au.Id) &&
                                           (SaleEmployeeId.HasValue == false || au.Id == SaleEmployeeId.Value) &&
+                                          (ProvinceId.HasValue == false || (s.ProvinceId.HasValue && s.ProvinceId == ProvinceId.Value)) &&
                                           OrganizationIds.Contains(i.OrganizationId) &&
                                           i.RequestStateId == RequestStateEnum.APPROVED.Id &&
                                           au.DeletedAt == null && o.DeletedAt == null
@@ -516,6 +557,7 @@ namespace DMS.Rpc.dashboards.director
                                               where sc.CheckOutAt.HasValue && sc.CheckOutAt >= Start && sc.CheckOutAt <= End &&
                                               AppUserIds.Contains(au.Id) &&
                                               (SaleEmployeeId.HasValue == false || au.Id == SaleEmployeeId.Value) &&
+                                              (ProvinceId.HasValue == false || (s.ProvinceId.HasValue && s.ProvinceId == ProvinceId.Value)) &&
                                               OrganizationIds.Contains(s.OrganizationId) &&
                                               au.DeletedAt == null && o.DeletedAt == null && s.DeletedAt == null
                                               select s;
@@ -527,6 +569,7 @@ namespace DMS.Rpc.dashboards.director
                                      where sc.CheckOutAt.HasValue && sc.CheckOutAt >= Start && sc.CheckOutAt <= End &&
                                      AppUserIds.Contains(au.Id) &&
                                      (SaleEmployeeId.HasValue == false || au.Id == SaleEmployeeId.Value) &&
+                                     (ProvinceId.HasValue == false || (s.ProvinceId.HasValue && s.ProvinceId == ProvinceId.Value)) &&
                                      OrganizationIds.Contains(s.OrganizationId) &&
                                      au.DeletedAt == null && o.DeletedAt == null && s.DeletedAt == null
                                      select sc;
@@ -549,6 +592,7 @@ namespace DMS.Rpc.dashboards.director
         [Route(DashboardDirectorRoute.StoreCoverage), HttpPost]
         public async Task<List<DashboardDirector_StoreDTO>> StoreCoverage([FromBody] DashboardDirector_StoreFilterDTO DashboardDirector_StoreFilterDTO)
         {
+            var ProvinceId = DashboardDirector_StoreFilterDTO.ProvinceId?.Equal;
             List<long> OrganizationIds = await FilterOrganization(OrganizationService, CurrentContext);
             List<OrganizationDAO> OrganizationDAOs = await DataContext.Organization.Where(o => o.DeletedAt == null && (OrganizationIds.Count == 0 || OrganizationIds.Contains(o.Id))).ToListAsync();
             OrganizationDAO OrganizationDAO = null;
@@ -590,7 +634,8 @@ namespace DMS.Rpc.dashboards.director
 
             var query = from s in DataContext.Store
                         join tt in tempTableQuery.Query on s.Id equals tt.Column1
-                        where OrganizationIds.Contains(s.OrganizationId)
+                        where OrganizationIds.Contains(s.OrganizationId) &&
+                        (ProvinceId.HasValue == false || (s.ProvinceId.HasValue && s.ProvinceId == ProvinceId.Value))
                         && s.StatusId == StatusEnum.ACTIVE.Id
                         && s.DeletedAt == null
                         select new DashboardDirector_StoreDTO
@@ -631,6 +676,8 @@ namespace DMS.Rpc.dashboards.director
         {
             DateTime Start = LocalStartDay(CurrentContext);
             DateTime End = LocalEndDay(CurrentContext);
+            (Start, End) = ConvertTime(DashboardDirector_StoreFilterDTO.Time);
+
             long? SaleEmployeeId = DashboardDirector_StoreFilterDTO.AppUserId?.Equal;
             List<long> OrganizationIds = await FilterOrganization(OrganizationService, CurrentContext);
             List<OrganizationDAO> OrganizationDAOs = await DataContext.Organization.Where(o => o.DeletedAt == null && OrganizationIds.Contains(o.Id)).ToListAsync();
@@ -678,6 +725,7 @@ namespace DMS.Rpc.dashboards.director
         [Route(DashboardDirectorRoute.ListIndirectSalesOrder), HttpPost]
         public async Task<List<DashboardDirector_IndirectSalesOrderDTO>> ListIndirectSalesOrder([FromBody] DashboardDirector_IndirectSalesOrderFluctuationFilterDTO DashboardDirector_IndirectSalesOrderFluctuationFilterDTO)
         {
+            var ProvinceId = DashboardDirector_IndirectSalesOrderFluctuationFilterDTO.ProvinceId?.Equal;
             long? SaleEmployeeId = DashboardDirector_IndirectSalesOrderFluctuationFilterDTO.AppUserId?.Equal;
             List<long> OrganizationIds = await FilterOrganization(OrganizationService, CurrentContext);
             List<OrganizationDAO> OrganizationDAOs = await DataContext.Organization.Where(o => o.DeletedAt == null && OrganizationIds.Contains(o.Id)).ToListAsync();
@@ -688,6 +736,10 @@ namespace DMS.Rpc.dashboards.director
                 OrganizationDAOs = OrganizationDAOs.Where(o => o.Path.StartsWith(OrganizationDAO.Path)).ToList();
             }
             OrganizationIds = OrganizationDAOs.Select(o => o.Id).ToList();
+
+            List<long> StoreIds = await FilterStore(StoreService, OrganizationService, CurrentContext);
+            ITempTableQuery<TempTable<long>> tempTableQuery = await DataContext
+                        .BulkInsertValuesIntoTempTableAsync<long>(StoreIds);
 
             AppUserFilter AppUserFilter = new AppUserFilter
             {
@@ -706,8 +758,11 @@ namespace DMS.Rpc.dashboards.director
                         join r in DataContext.RequestState on i.RequestStateId equals r.Id
                         join au in DataContext.AppUser on i.SaleEmployeeId equals au.Id
                         join o in DataContext.Organization on au.OrganizationId equals o.Id
+                        join s in DataContext.Store on i.BuyerStoreId equals s.Id
+                        join tt in tempTableQuery.Query on s.Id equals tt.Column1
                         where AppUserIds.Contains(i.SaleEmployeeId) &&
                         (SaleEmployeeId.HasValue == false || i.SaleEmployeeId == SaleEmployeeId.Value) &&
+                        (ProvinceId.HasValue == false || (s.ProvinceId.HasValue && s.ProvinceId == ProvinceId.Value)) &&
                         OrganizationIds.Contains(i.OrganizationId) &&
                         i.RequestStateId != RequestStateEnum.NEW.Id &&
                         au.DeletedAt == null && o.DeletedAt == null
@@ -743,7 +798,9 @@ namespace DMS.Rpc.dashboards.director
             DateTime Now = StaticParams.DateTimeNow.Date;
             DateTime Start = new DateTime(Now.Year, Now.Month, Now.Day);
             DateTime End = new DateTime(Now.Year, Now.Month, Now.Day);
+            (Start, End) = ConvertTime(DashboardDirector_Top5RevenueByProductFilterDTO.Time);
 
+            var ProvinceId = DashboardDirector_Top5RevenueByProductFilterDTO.ProvinceId?.Equal;
             long? SaleEmployeeId = DashboardDirector_Top5RevenueByProductFilterDTO.AppUserId?.Equal;
             List<long> OrganizationIds = await FilterOrganization(OrganizationService, CurrentContext);
             List<OrganizationDAO> OrganizationDAOs = await DataContext.Organization.Where(o => o.DeletedAt == null && OrganizationIds.Contains(o.Id)).ToListAsync();
@@ -754,6 +811,10 @@ namespace DMS.Rpc.dashboards.director
                 OrganizationDAOs = OrganizationDAOs.Where(o => o.Path.StartsWith(OrganizationDAO.Path)).ToList();
             }
             OrganizationIds = OrganizationDAOs.Select(o => o.Id).ToList();
+
+            List<long> StoreIds = await FilterStore(StoreService, OrganizationService, CurrentContext);
+            ITempTableQuery<TempTable<long>> tempTableQuery = await DataContext
+                        .BulkInsertValuesIntoTempTableAsync<long>(StoreIds);
 
             AppUserFilter AppUserFilter = new AppUserFilter
             {
@@ -767,42 +828,17 @@ namespace DMS.Rpc.dashboards.director
             var AppUsers = await AppUserService.List(AppUserFilter);
             var AppUserIds = AppUsers.Select(x => x.Id).ToList();
 
-            if (DashboardDirector_Top5RevenueByProductFilterDTO.Time.Equal.HasValue == false)
-            {
-                DashboardDirector_Top5RevenueByProductFilterDTO.Time.Equal = 0;
-                Start = LocalStartDay(CurrentContext);
-                End = Start.AddDays(1).AddSeconds(-1);
-            }
-            else if (DashboardDirector_Top5RevenueByProductFilterDTO.Time.Equal.Value == TODAY)
-            {
-                Start = LocalStartDay(CurrentContext);
-                End = Start.AddDays(1).AddSeconds(-1);
-            }
-            else if (DashboardDirector_Top5RevenueByProductFilterDTO.Time.Equal.Value == THIS_WEEK)
-            {
-                int diff = (7 + (Now.DayOfWeek - DayOfWeek.Monday)) % 7;
-                Start = LocalStartDay(CurrentContext).AddDays(-1 * diff);
-                End = Start.AddDays(7).AddSeconds(-1);
-            }
-            else if (DashboardDirector_Top5RevenueByProductFilterDTO.Time.Equal.Value == THIS_MONTH)
-            {
-                Start = new DateTime(Now.Year, Now.Month, 1).AddHours(0 - CurrentContext.TimeZone);
-                End = Start.AddMonths(1).AddSeconds(-1);
-            }
-            else if (DashboardDirector_Top5RevenueByProductFilterDTO.Time.Equal.Value == LAST_MONTH)
-            {
-                Start = new DateTime(Now.Year, Now.Month, 1).AddMonths(-1).AddHours(0 - CurrentContext.TimeZone);
-                End = Start.AddMonths(1).AddSeconds(-1);
-            }
-
             var query = from t in DataContext.IndirectSalesOrderTransaction
                         join o in DataContext.IndirectSalesOrder on t.IndirectSalesOrderId equals o.Id
                         join i in DataContext.Item on t.ItemId equals i.Id
                         join p in DataContext.Product on i.ProductId equals p.Id
                         join au in DataContext.AppUser on o.SaleEmployeeId equals au.Id
+                        join s in DataContext.Store on t.BuyerStoreId equals s.Id
+                        join tt in tempTableQuery.Query on s.Id equals tt.Column1
                         where t.OrderDate >= Start && t.OrderDate <= End &&
                         AppUserIds.Contains(t.SalesEmployeeId) &&
                         (SaleEmployeeId.HasValue == false || t.SalesEmployeeId == SaleEmployeeId.Value) &&
+                        (ProvinceId.HasValue == false || (s.ProvinceId.HasValue && s.ProvinceId == ProvinceId.Value)) &&
                         OrganizationIds.Contains(t.OrganizationId) &&
                         o.RequestStateId == RequestStateEnum.APPROVED.Id &&
                         au.DeletedAt == null && o.DeletedAt == null && i.DeletedAt == null && p.DeletedAt == null
@@ -824,7 +860,9 @@ namespace DMS.Rpc.dashboards.director
             DateTime Now = StaticParams.DateTimeNow.Date;
             DateTime Start = new DateTime(Now.Year, Now.Month, Now.Day);
             DateTime End = new DateTime(Now.Year, Now.Month, Now.Day);
+            (Start, End) = ConvertTime(DashboardDirector_Top5RevenueByEmployeeFilterDTO.Time);
 
+            var ProvinceId = DashboardDirector_Top5RevenueByEmployeeFilterDTO.ProvinceId?.Equal;
             long? SaleEmployeeId = DashboardDirector_Top5RevenueByEmployeeFilterDTO.AppUserId?.Equal;
             List<long> OrganizationIds = await FilterOrganization(OrganizationService, CurrentContext);
             List<OrganizationDAO> OrganizationDAOs = await DataContext.Organization.Where(o => o.DeletedAt == null && OrganizationIds.Contains(o.Id)).ToListAsync();
@@ -835,6 +873,10 @@ namespace DMS.Rpc.dashboards.director
                 OrganizationDAOs = OrganizationDAOs.Where(o => o.Path.StartsWith(OrganizationDAO.Path)).ToList();
             }
             OrganizationIds = OrganizationDAOs.Select(o => o.Id).ToList();
+
+            List<long> StoreIds = await FilterStore(StoreService, OrganizationService, CurrentContext);
+            ITempTableQuery<TempTable<long>> tempTableQuery = await DataContext
+                        .BulkInsertValuesIntoTempTableAsync<long>(StoreIds);
 
             AppUserFilter AppUserFilter = new AppUserFilter
             {
@@ -848,42 +890,17 @@ namespace DMS.Rpc.dashboards.director
             var AppUsers = await AppUserService.List(AppUserFilter);
             var AppUserIds = AppUsers.Select(x => x.Id).ToList();
 
-            if (DashboardDirector_Top5RevenueByEmployeeFilterDTO.Time.Equal.HasValue == false)
-            {
-                DashboardDirector_Top5RevenueByEmployeeFilterDTO.Time.Equal = 0;
-                Start = LocalStartDay(CurrentContext);
-                End = Start.AddDays(1).AddSeconds(-1);
-            }
-            else if (DashboardDirector_Top5RevenueByEmployeeFilterDTO.Time.Equal.Value == TODAY)
-            {
-                Start = LocalStartDay(CurrentContext);
-                End = Start.AddDays(1).AddSeconds(-1);
-            }
-            else if (DashboardDirector_Top5RevenueByEmployeeFilterDTO.Time.Equal.Value == THIS_WEEK)
-            {
-                int diff = (7 + (Now.DayOfWeek - DayOfWeek.Monday)) % 7;
-                Start = LocalStartDay(CurrentContext).AddDays(-1 * diff);
-                End = Start.AddDays(7).AddSeconds(-1);
-            }
-            else if (DashboardDirector_Top5RevenueByEmployeeFilterDTO.Time.Equal.Value == THIS_MONTH)
-            {
-                Start = new DateTime(Now.Year, Now.Month, 1).AddHours(0 - CurrentContext.TimeZone);
-                End = Start.AddMonths(1).AddSeconds(-1);
-            }
-            else if (DashboardDirector_Top5RevenueByEmployeeFilterDTO.Time.Equal.Value == LAST_MONTH)
-            {
-                Start = new DateTime(Now.Year, Now.Month, 1).AddMonths(-1).AddHours(0 - CurrentContext.TimeZone);
-                End = Start.AddMonths(1).AddSeconds(-1);
-            }
-
             var query = from t in DataContext.IndirectSalesOrderTransaction
                         join o in DataContext.IndirectSalesOrder on t.IndirectSalesOrderId equals o.Id
                         join i in DataContext.Item on t.ItemId equals i.Id
                         join p in DataContext.Product on i.ProductId equals p.Id
                         join au in DataContext.AppUser on o.SaleEmployeeId equals au.Id
+                        join s in DataContext.Store on t.BuyerStoreId equals s.Id
+                        join tt in tempTableQuery.Query on s.Id equals tt.Column1
                         where t.OrderDate >= Start && t.OrderDate <= End &&
                         AppUserIds.Contains(t.SalesEmployeeId) &&
                         (SaleEmployeeId.HasValue == false || t.SalesEmployeeId == SaleEmployeeId.Value) &&
+                        (ProvinceId.HasValue == false || (s.ProvinceId.HasValue && s.ProvinceId == ProvinceId.Value)) &&
                         OrganizationIds.Contains(t.OrganizationId) &&
                         o.RequestStateId == RequestStateEnum.APPROVED.Id &&
                         au.DeletedAt == null && o.DeletedAt == null && i.DeletedAt == null && p.DeletedAt == null
@@ -906,7 +923,9 @@ namespace DMS.Rpc.dashboards.director
             DateTime Now = StaticParams.DateTimeNow.Date;
             DateTime Start = LocalStartDay(CurrentContext);
             DateTime End = new DateTime(Now.Year, Now.Month, Now.Day);
+            (Start, End) = ConvertTime(DashboardDirector_RevenueFluctuationFilterDTO.Time);
 
+            var ProvinceId = DashboardDirector_RevenueFluctuationFilterDTO.ProvinceId?.Equal;
             long? SaleEmployeeId = DashboardDirector_RevenueFluctuationFilterDTO.AppUserId?.Equal;
             List<long> OrganizationIds = await FilterOrganization(OrganizationService, CurrentContext);
             List<OrganizationDAO> OrganizationDAOs = await DataContext.Organization.Where(o => o.DeletedAt == null && OrganizationIds.Contains(o.Id)).ToListAsync();
@@ -917,6 +936,10 @@ namespace DMS.Rpc.dashboards.director
                 OrganizationDAOs = OrganizationDAOs.Where(o => o.Path.StartsWith(OrganizationDAO.Path)).ToList();
             }
             OrganizationIds = OrganizationDAOs.Select(o => o.Id).ToList();
+
+            List<long> StoreIds = await FilterStore(StoreService, OrganizationService, CurrentContext);
+            ITempTableQuery<TempTable<long>> tempTableQuery = await DataContext
+                        .BulkInsertValuesIntoTempTableAsync<long>(StoreIds);
 
             AppUserFilter AppUserFilter = new AppUserFilter
             {
@@ -933,15 +956,15 @@ namespace DMS.Rpc.dashboards.director
             if (DashboardDirector_RevenueFluctuationFilterDTO.Time.Equal.HasValue == false
                 || DashboardDirector_RevenueFluctuationFilterDTO.Time.Equal.Value == THIS_MONTH)
             {
-                Start = new DateTime(Now.Year, Now.Month, 1).AddHours(0 - CurrentContext.TimeZone);
-                End = Start.AddMonths(1).AddSeconds(-1);
-
                 var query = from t in DataContext.IndirectSalesOrderTransaction
                             join i in DataContext.IndirectSalesOrder on t.IndirectSalesOrderId equals i.Id
                             join au in DataContext.AppUser on t.SalesEmployeeId equals au.Id
+                            join s in DataContext.Store on t.BuyerStoreId equals s.Id
+                            join tt in tempTableQuery.Query on s.Id equals tt.Column1
                             where t.OrderDate >= Start && t.OrderDate <= End &&
                             AppUserIds.Contains(t.SalesEmployeeId) &&
                             (SaleEmployeeId.HasValue == false || t.SalesEmployeeId == SaleEmployeeId.Value) &&
+                            (ProvinceId.HasValue == false || (s.ProvinceId.HasValue && s.ProvinceId == ProvinceId.Value)) &&
                             OrganizationIds.Contains(t.OrganizationId) &&
                             i.RequestStateId == RequestStateEnum.APPROVED.Id &&
                             au.DeletedAt == null
@@ -980,15 +1003,15 @@ namespace DMS.Rpc.dashboards.director
             }
             else if (DashboardDirector_RevenueFluctuationFilterDTO.Time.Equal.Value == LAST_MONTH)
             {
-                Start = new DateTime(Now.Year, Now.Month, 1).AddMonths(-1).AddHours(0 - CurrentContext.TimeZone);
-                End = Start.AddMonths(1).AddSeconds(-1);
-
                 var query = from t in DataContext.IndirectSalesOrderTransaction
                             join i in DataContext.IndirectSalesOrder on t.IndirectSalesOrderId equals i.Id
                             join au in DataContext.AppUser on t.SalesEmployeeId equals au.Id
+                            join s in DataContext.Store on t.BuyerStoreId equals s.Id
+                            join tt in tempTableQuery.Query on s.Id equals tt.Column1
                             where t.OrderDate >= Start && t.OrderDate <= End &&
                             AppUserIds.Contains(t.SalesEmployeeId) &&
                             (SaleEmployeeId.HasValue == false || t.SalesEmployeeId == SaleEmployeeId.Value) &&
+                            (ProvinceId.HasValue == false || (s.ProvinceId.HasValue && s.ProvinceId == ProvinceId.Value)) &&
                             OrganizationIds.Contains(t.OrganizationId) &&
                             i.RequestStateId == RequestStateEnum.APPROVED.Id &&
                             au.DeletedAt == null
@@ -1028,15 +1051,15 @@ namespace DMS.Rpc.dashboards.director
             else if (DashboardDirector_RevenueFluctuationFilterDTO.Time.Equal.Value == THIS_QUARTER)
             {
                 var this_quarter = Convert.ToInt32(Math.Ceiling(Now.Month / 3m));
-                Start = new DateTime(Now.Year, (this_quarter - 1) * 3 + 1, 1).AddHours(0 - CurrentContext.TimeZone);
-                End = Start.AddMonths(3).AddSeconds(-1);
-
                 var query = from t in DataContext.IndirectSalesOrderTransaction
                             join i in DataContext.IndirectSalesOrder on t.IndirectSalesOrderId equals i.Id
                             join au in DataContext.AppUser on t.SalesEmployeeId equals au.Id
+                            join s in DataContext.Store on t.BuyerStoreId equals s.Id
+                            join tt in tempTableQuery.Query on s.Id equals tt.Column1
                             where t.OrderDate >= Start && t.OrderDate <= End &&
                             AppUserIds.Contains(t.SalesEmployeeId) &&
                             (SaleEmployeeId.HasValue == false || t.SalesEmployeeId == SaleEmployeeId.Value) &&
+                            (ProvinceId.HasValue == false || (s.ProvinceId.HasValue && s.ProvinceId == ProvinceId.Value)) &&
                             OrganizationIds.Contains(t.OrganizationId) &&
                             i.RequestStateId == RequestStateEnum.APPROVED.Id &&
                             au.DeletedAt == null
@@ -1077,15 +1100,16 @@ namespace DMS.Rpc.dashboards.director
             else if (DashboardDirector_RevenueFluctuationFilterDTO.Time.Equal.Value == LAST_QUATER)
             {
                 var this_quarter = Convert.ToInt32(Math.Ceiling(Now.Month / 3m));
-                Start = new DateTime(Now.Year, (this_quarter - 1) * 3 + 1, 1).AddMonths(-3).AddHours(0 - CurrentContext.TimeZone);
-                End = Start.AddMonths(3).AddSeconds(-1);
 
                 var query = from t in DataContext.IndirectSalesOrderTransaction
                             join i in DataContext.IndirectSalesOrder on t.IndirectSalesOrderId equals i.Id
                             join au in DataContext.AppUser on t.SalesEmployeeId equals au.Id
+                            join s in DataContext.Store on t.BuyerStoreId equals s.Id
+                            join tt in tempTableQuery.Query on s.Id equals tt.Column1
                             where t.OrderDate >= Start && t.OrderDate <= End &&
                             AppUserIds.Contains(t.SalesEmployeeId) &&
                             (SaleEmployeeId.HasValue == false || t.SalesEmployeeId == SaleEmployeeId.Value) &&
+                            (ProvinceId.HasValue == false || (s.ProvinceId.HasValue && s.ProvinceId == ProvinceId.Value)) &&
                             OrganizationIds.Contains(t.OrganizationId) &&
                             i.RequestStateId == RequestStateEnum.APPROVED.Id &&
                             au.DeletedAt == null
@@ -1125,20 +1149,15 @@ namespace DMS.Rpc.dashboards.director
             }
             else if (DashboardDirector_RevenueFluctuationFilterDTO.Time.Equal.Value == YEAR)
             {
-                Start = new DateTime(Now.Year, 1, 1).AddHours(0 - CurrentContext.TimeZone);
-                End = Start.AddYears(1).AddSeconds(-1);
-
-                List<long> StoreIds = await FilterStore(StoreService, OrganizationService, CurrentContext);
-                ITempTableQuery<TempTable<long>> tempTableQuery = await DataContext
-                           .BulkInsertValuesIntoTempTableAsync<long>(StoreIds);
-
                 var query = from t in DataContext.IndirectSalesOrderTransaction
                             join i in DataContext.IndirectSalesOrder on t.IndirectSalesOrderId equals i.Id
                             join au in DataContext.AppUser on t.SalesEmployeeId equals au.Id
-                            join tt in tempTableQuery.Query on t.BuyerStoreId equals tt.Column1
+                            join s in DataContext.Store on t.BuyerStoreId equals s.Id
+                            join tt in tempTableQuery.Query on s.Id equals tt.Column1
                             where t.OrderDate >= Start && t.OrderDate <= End &&
                             AppUserIds.Contains(t.SalesEmployeeId) &&
                             (SaleEmployeeId.HasValue == false || t.SalesEmployeeId == SaleEmployeeId.Value) &&
+                            (ProvinceId.HasValue == false || (s.ProvinceId.HasValue && s.ProvinceId == ProvinceId.Value)) &&
                             OrganizationIds.Contains(t.OrganizationId) &&
                             i.RequestStateId == RequestStateEnum.APPROVED.Id &&
                             au.DeletedAt == null
@@ -1183,7 +1202,9 @@ namespace DMS.Rpc.dashboards.director
             DateTime Now = StaticParams.DateTimeNow.Date;
             DateTime Start = LocalStartDay(CurrentContext);
             DateTime End = new DateTime(Now.Year, Now.Month, Now.Day);
+            (Start, End) = ConvertTime(DashboardDirector_IndirectSalesOrderFluctuationFilterDTO.Time);
 
+            var ProvinceId = DashboardDirector_IndirectSalesOrderFluctuationFilterDTO.ProvinceId?.Equal;
             long? SaleEmployeeId = DashboardDirector_IndirectSalesOrderFluctuationFilterDTO.AppUserId?.Equal;
             List<long> OrganizationIds = await FilterOrganization(OrganizationService, CurrentContext);
             List<OrganizationDAO> OrganizationDAOs = await DataContext.Organization.Where(o => o.DeletedAt == null && OrganizationIds.Contains(o.Id)).ToListAsync();
@@ -1194,6 +1215,10 @@ namespace DMS.Rpc.dashboards.director
                 OrganizationDAOs = OrganizationDAOs.Where(o => o.Path.StartsWith(OrganizationDAO.Path)).ToList();
             }
             OrganizationIds = OrganizationDAOs.Select(o => o.Id).ToList();
+
+            List<long> StoreIds = await FilterStore(StoreService, OrganizationService, CurrentContext);
+            ITempTableQuery<TempTable<long>> tempTableQuery = await DataContext
+                        .BulkInsertValuesIntoTempTableAsync<long>(StoreIds);
 
             AppUserFilter AppUserFilter = new AppUserFilter
             {
@@ -1210,15 +1235,15 @@ namespace DMS.Rpc.dashboards.director
             if (DashboardDirector_IndirectSalesOrderFluctuationFilterDTO.Time.Equal.HasValue == false
                 || DashboardDirector_IndirectSalesOrderFluctuationFilterDTO.Time.Equal.Value == THIS_MONTH)
             {
-                Start = new DateTime(Now.Year, Now.Month, 1).AddHours(0 - CurrentContext.TimeZone);
-                End = Start.AddMonths(1).AddSeconds(-1);
-
                 var query = from i in DataContext.IndirectSalesOrder
                             join au in DataContext.AppUser on i.SaleEmployeeId equals au.Id
                             join o in DataContext.Organization on au.OrganizationId equals o.Id
+                            join s in DataContext.Store on i.BuyerStoreId equals s.Id
+                            join tt in tempTableQuery.Query on s.Id equals tt.Column1
                             where i.OrderDate >= Start && i.OrderDate <= End &&
                             AppUserIds.Contains(i.SaleEmployeeId) &&
                             (SaleEmployeeId.HasValue == false || i.SaleEmployeeId == SaleEmployeeId.Value) &&
+                            (ProvinceId.HasValue == false || (s.ProvinceId.HasValue && s.ProvinceId == ProvinceId.Value)) &&
                             OrganizationIds.Contains(i.OrganizationId) &&
                             i.RequestStateId == RequestStateEnum.APPROVED.Id &&
                             au.DeletedAt == null && o.DeletedAt == null
@@ -1254,15 +1279,15 @@ namespace DMS.Rpc.dashboards.director
             }
             else if (DashboardDirector_IndirectSalesOrderFluctuationFilterDTO.Time.Equal.Value == LAST_MONTH)
             {
-                Start = new DateTime(Now.Year, Now.Month, 1).AddMonths(-1).AddHours(0 - CurrentContext.TimeZone);
-                End = Start.AddMonths(1).AddSeconds(-1);
-
                 var query = from i in DataContext.IndirectSalesOrder
                             join au in DataContext.AppUser on i.SaleEmployeeId equals au.Id
                             join o in DataContext.Organization on au.OrganizationId equals o.Id
+                            join s in DataContext.Store on i.BuyerStoreId equals s.Id
+                            join tt in tempTableQuery.Query on s.Id equals tt.Column1
                             where i.OrderDate >= Start && i.OrderDate <= End &&
                             AppUserIds.Contains(i.SaleEmployeeId) &&
                             (SaleEmployeeId.HasValue == false || i.SaleEmployeeId == SaleEmployeeId.Value) &&
+                            (ProvinceId.HasValue == false || (s.ProvinceId.HasValue && s.ProvinceId == ProvinceId.Value)) &&
                             OrganizationIds.Contains(i.OrganizationId) &&
                             i.RequestStateId == RequestStateEnum.APPROVED.Id &&
                             au.DeletedAt == null && o.DeletedAt == null
@@ -1299,15 +1324,16 @@ namespace DMS.Rpc.dashboards.director
             else if (DashboardDirector_IndirectSalesOrderFluctuationFilterDTO.Time.Equal.Value == THIS_QUARTER)
             {
                 var this_quarter = Convert.ToInt32(Math.Ceiling(Now.Month / 3m));
-                Start = new DateTime(Now.Year, (this_quarter - 1) * 3 + 1, 1).AddHours(0 - CurrentContext.TimeZone);
-                End = Start.AddMonths(3).AddSeconds(-1);
 
                 var query = from i in DataContext.IndirectSalesOrder
                             join au in DataContext.AppUser on i.SaleEmployeeId equals au.Id
                             join o in DataContext.Organization on au.OrganizationId equals o.Id
+                            join s in DataContext.Store on i.BuyerStoreId equals s.Id
+                            join tt in tempTableQuery.Query on s.Id equals tt.Column1
                             where i.OrderDate >= Start && i.OrderDate <= End &&
                             AppUserIds.Contains(i.SaleEmployeeId) &&
                             (SaleEmployeeId.HasValue == false || i.SaleEmployeeId == SaleEmployeeId.Value) &&
+                            (ProvinceId.HasValue == false || (s.ProvinceId.HasValue && s.ProvinceId == ProvinceId.Value)) &&
                             OrganizationIds.Contains(i.OrganizationId) &&
                             i.RequestStateId == RequestStateEnum.APPROVED.Id &&
                             au.DeletedAt == null && o.DeletedAt == null
@@ -1345,15 +1371,16 @@ namespace DMS.Rpc.dashboards.director
             else if (DashboardDirector_IndirectSalesOrderFluctuationFilterDTO.Time.Equal.Value == LAST_QUATER)
             {
                 var this_quarter = Convert.ToInt32(Math.Ceiling(Now.Month / 3m));
-                Start = new DateTime(Now.Year, (this_quarter - 1) * 3 + 1, 1).AddMonths(-3).AddHours(0 - CurrentContext.TimeZone);
-                End = Start.AddMonths(3).AddSeconds(-1);
 
                 var query = from i in DataContext.IndirectSalesOrder
                             join au in DataContext.AppUser on i.SaleEmployeeId equals au.Id
                             join o in DataContext.Organization on au.OrganizationId equals o.Id
+                            join s in DataContext.Store on i.BuyerStoreId equals s.Id
+                            join tt in tempTableQuery.Query on s.Id equals tt.Column1
                             where i.OrderDate >= Start && i.OrderDate <= End &&
                             AppUserIds.Contains(i.SaleEmployeeId) &&
                             (SaleEmployeeId.HasValue == false || i.SaleEmployeeId == SaleEmployeeId.Value) &&
+                            (ProvinceId.HasValue == false || (s.ProvinceId.HasValue && s.ProvinceId == ProvinceId.Value)) &&
                             OrganizationIds.Contains(i.OrganizationId) &&
                             i.RequestStateId == RequestStateEnum.APPROVED.Id &&
                             au.DeletedAt == null && o.DeletedAt == null
@@ -1390,15 +1417,15 @@ namespace DMS.Rpc.dashboards.director
             }
             else if (DashboardDirector_IndirectSalesOrderFluctuationFilterDTO.Time.Equal.Value == YEAR)
             {
-                Start = new DateTime(Now.Year, 1, 1).AddHours(0 - CurrentContext.TimeZone);
-                End = Start.AddYears(1).AddSeconds(-1);
-
                 var query = from i in DataContext.IndirectSalesOrder
                             join au in DataContext.AppUser on i.SaleEmployeeId equals au.Id
                             join o in DataContext.Organization on au.OrganizationId equals o.Id
+                            join s in DataContext.Store on i.BuyerStoreId equals s.Id
+                            join tt in tempTableQuery.Query on s.Id equals tt.Column1
                             where i.OrderDate >= Start && i.OrderDate <= End &&
                             AppUserIds.Contains(i.SaleEmployeeId) &&
                             (SaleEmployeeId.HasValue == false || i.SaleEmployeeId == SaleEmployeeId.Value) &&
+                            (ProvinceId.HasValue == false || (s.ProvinceId.HasValue && s.ProvinceId == ProvinceId.Value)) &&
                             OrganizationIds.Contains(i.OrganizationId) &&
                             i.RequestStateId == RequestStateEnum.APPROVED.Id &&
                             au.DeletedAt == null && o.DeletedAt == null
@@ -1440,7 +1467,9 @@ namespace DMS.Rpc.dashboards.director
             DateTime Now = StaticParams.DateTimeNow.Date;
             DateTime Start = LocalStartDay(CurrentContext);
             DateTime End = new DateTime(Now.Year, Now.Month, Now.Day);
+            (Start, End) = ConvertTime(DashboardDirector_SaledItemFluctuationFilterDTO.Time);
 
+            var ProvinceId = DashboardDirector_SaledItemFluctuationFilterDTO.ProvinceId?.Equal;
             long? SaleEmployeeId = DashboardDirector_SaledItemFluctuationFilterDTO.AppUserId?.Equal;
             List<long> OrganizationIds = await FilterOrganization(OrganizationService, CurrentContext);
             List<OrganizationDAO> OrganizationDAOs = await DataContext.Organization.Where(o => o.DeletedAt == null && OrganizationIds.Contains(o.Id)).ToListAsync();
@@ -1451,6 +1480,10 @@ namespace DMS.Rpc.dashboards.director
                 OrganizationDAOs = OrganizationDAOs.Where(o => o.Path.StartsWith(OrganizationDAO.Path)).ToList();
             }
             OrganizationIds = OrganizationDAOs.Select(o => o.Id).ToList();
+
+            List<long> StoreIds = await FilterStore(StoreService, OrganizationService, CurrentContext);
+            ITempTableQuery<TempTable<long>> tempTableQuery = await DataContext
+                        .BulkInsertValuesIntoTempTableAsync<long>(StoreIds);
 
             AppUserFilter AppUserFilter = new AppUserFilter
             {
@@ -1467,16 +1500,16 @@ namespace DMS.Rpc.dashboards.director
             if (DashboardDirector_SaledItemFluctuationFilterDTO.Time.Equal.HasValue == false
                 || DashboardDirector_SaledItemFluctuationFilterDTO.Time.Equal.Value == THIS_MONTH)
             {
-                Start = new DateTime(Now.Year, Now.Month, 1).AddHours(0 - CurrentContext.TimeZone);
-                End = Start.AddMonths(1).AddSeconds(-1);
-
                 var query = from i in DataContext.IndirectSalesOrder
                             join ic in DataContext.IndirectSalesOrderContent on i.Id equals ic.IndirectSalesOrderId
                             join au in DataContext.AppUser on i.SaleEmployeeId equals au.Id
                             join o in DataContext.Organization on au.OrganizationId equals o.Id
+                            join s in DataContext.Store on i.BuyerStoreId equals s.Id
+                            join tt in tempTableQuery.Query on s.Id equals tt.Column1
                             where i.OrderDate >= Start && i.OrderDate <= End &&
                             AppUserIds.Contains(i.SaleEmployeeId) &&
                             (SaleEmployeeId.HasValue == false || i.SaleEmployeeId == SaleEmployeeId.Value) &&
+                            (ProvinceId.HasValue == false || (s.ProvinceId.HasValue && s.ProvinceId == ProvinceId.Value)) &&
                             OrganizationIds.Contains(i.OrganizationId) &&
                             i.RequestStateId == RequestStateEnum.APPROVED.Id &&
                             au.DeletedAt == null && o.DeletedAt == null
@@ -1512,16 +1545,16 @@ namespace DMS.Rpc.dashboards.director
             }
             else if (DashboardDirector_SaledItemFluctuationFilterDTO.Time.Equal.Value == LAST_MONTH)
             {
-                Start = new DateTime(Now.Year, Now.Month, 1).AddMonths(-1).AddHours(0 - CurrentContext.TimeZone);
-                End = Start.AddMonths(1).AddSeconds(-1);
-
                 var query = from i in DataContext.IndirectSalesOrder
                             join ic in DataContext.IndirectSalesOrderContent on i.Id equals ic.IndirectSalesOrderId
                             join au in DataContext.AppUser on i.SaleEmployeeId equals au.Id
                             join o in DataContext.Organization on au.OrganizationId equals o.Id
+                            join s in DataContext.Store on i.BuyerStoreId equals s.Id
+                            join tt in tempTableQuery.Query on s.Id equals tt.Column1
                             where i.OrderDate >= Start && i.OrderDate <= End &&
                             AppUserIds.Contains(i.SaleEmployeeId) &&
                             (SaleEmployeeId.HasValue == false || i.SaleEmployeeId == SaleEmployeeId.Value) &&
+                            (ProvinceId.HasValue == false || (s.ProvinceId.HasValue && s.ProvinceId == ProvinceId.Value)) &&
                             OrganizationIds.Contains(i.OrganizationId) &&
                             i.RequestStateId == RequestStateEnum.APPROVED.Id &&
                             au.DeletedAt == null && o.DeletedAt == null
@@ -1558,16 +1591,17 @@ namespace DMS.Rpc.dashboards.director
             else if (DashboardDirector_SaledItemFluctuationFilterDTO.Time.Equal.Value == THIS_QUARTER)
             {
                 var this_quarter = Convert.ToInt32(Math.Ceiling(Now.Month / 3m));
-                Start = new DateTime(Now.Year, (this_quarter - 1) * 3 + 1, 1).AddHours(0 - CurrentContext.TimeZone);
-                End = Start.AddMonths(3).AddSeconds(-1);
 
                 var query = from i in DataContext.IndirectSalesOrder
                             join ic in DataContext.IndirectSalesOrderContent on i.Id equals ic.IndirectSalesOrderId
                             join au in DataContext.AppUser on i.SaleEmployeeId equals au.Id
                             join o in DataContext.Organization on au.OrganizationId equals o.Id
+                            join s in DataContext.Store on i.BuyerStoreId equals s.Id
+                            join tt in tempTableQuery.Query on s.Id equals tt.Column1
                             where i.OrderDate >= Start && i.OrderDate <= End &&
                             AppUserIds.Contains(i.SaleEmployeeId) &&
                             (SaleEmployeeId.HasValue == false || i.SaleEmployeeId == SaleEmployeeId.Value) &&
+                            (ProvinceId.HasValue == false || (s.ProvinceId.HasValue && s.ProvinceId == ProvinceId.Value)) &&
                             OrganizationIds.Contains(i.OrganizationId) &&
                             i.RequestStateId == RequestStateEnum.APPROVED.Id &&
                             au.DeletedAt == null && o.DeletedAt == null
@@ -1605,16 +1639,17 @@ namespace DMS.Rpc.dashboards.director
             else if (DashboardDirector_SaledItemFluctuationFilterDTO.Time.Equal.Value == LAST_QUATER)
             {
                 var this_quarter = Convert.ToInt32(Math.Ceiling(Now.Month / 3m));
-                Start = new DateTime(Now.Year, (this_quarter - 1) * 3 + 1, 1).AddMonths(-3).AddHours(0 - CurrentContext.TimeZone);
-                End = Start.AddMonths(3).AddSeconds(-1);
 
                 var query = from i in DataContext.IndirectSalesOrder
                             join ic in DataContext.IndirectSalesOrderContent on i.Id equals ic.IndirectSalesOrderId
                             join au in DataContext.AppUser on i.SaleEmployeeId equals au.Id
                             join o in DataContext.Organization on au.OrganizationId equals o.Id
+                            join s in DataContext.Store on i.BuyerStoreId equals s.Id
+                            join tt in tempTableQuery.Query on s.Id equals tt.Column1
                             where i.OrderDate >= Start && i.OrderDate <= End &&
                             AppUserIds.Contains(i.SaleEmployeeId) &&
                             (SaleEmployeeId.HasValue == false || i.SaleEmployeeId == SaleEmployeeId.Value) &&
+                            (ProvinceId.HasValue == false || (s.ProvinceId.HasValue && s.ProvinceId == ProvinceId.Value)) &&
                             OrganizationIds.Contains(i.OrganizationId) &&
                             i.RequestStateId == RequestStateEnum.APPROVED.Id &&
                             au.DeletedAt == null && o.DeletedAt == null
@@ -1651,16 +1686,16 @@ namespace DMS.Rpc.dashboards.director
             }
             else if (DashboardDirector_SaledItemFluctuationFilterDTO.Time.Equal.Value == YEAR)
             {
-                Start = new DateTime(Now.Year, 1, 1).AddHours(0 - CurrentContext.TimeZone);
-                End = Start.AddYears(1).AddSeconds(-1);
-
                 var query = from i in DataContext.IndirectSalesOrder
                             join ic in DataContext.IndirectSalesOrderContent on i.Id equals ic.IndirectSalesOrderId
                             join au in DataContext.AppUser on i.SaleEmployeeId equals au.Id
                             join o in DataContext.Organization on au.OrganizationId equals o.Id
+                            join s in DataContext.Store on i.BuyerStoreId equals s.Id
+                            join tt in tempTableQuery.Query on s.Id equals tt.Column1
                             where i.OrderDate >= Start && i.OrderDate <= End &&
                             AppUserIds.Contains(i.SaleEmployeeId) &&
                             (SaleEmployeeId.HasValue == false || i.SaleEmployeeId == SaleEmployeeId.Value) &&
+                            (ProvinceId.HasValue == false || (s.ProvinceId.HasValue && s.ProvinceId == ProvinceId.Value)) &&
                             OrganizationIds.Contains(i.OrganizationId) &&
                             i.RequestStateId == RequestStateEnum.APPROVED.Id &&
                             au.DeletedAt == null && o.DeletedAt == null
@@ -1694,6 +1729,58 @@ namespace DMS.Rpc.dashboards.director
                 return DashboardDirector_SaledItemFluctuationDTO;
             }
             return new DashboardDirector_SaledItemFluctuationDTO();
+        }
+
+        private Tuple<DateTime, DateTime> ConvertTime(IdFilter Time)
+        {
+            DateTime Start = LocalStartDay(CurrentContext);
+            DateTime End = Start.AddDays(1).AddSeconds(-1);
+            DateTime Now = StaticParams.DateTimeNow.Date;
+            if (Time.Equal.HasValue == false)
+            {
+                Time.Equal = 0;
+                Start = LocalStartDay(CurrentContext);
+                End = Start.AddDays(1).AddSeconds(-1);
+            }
+            else if (Time.Equal.Value == TODAY)
+            {
+                Start = LocalStartDay(CurrentContext);
+                End = Start.AddDays(1).AddSeconds(-1);
+            }
+            else if (Time.Equal.Value == THIS_WEEK)
+            {
+                int diff = (7 + (Now.DayOfWeek - DayOfWeek.Monday)) % 7;
+                Start = LocalStartDay(CurrentContext).AddDays(-1 * diff);
+                End = Start.AddDays(7).AddSeconds(-1);
+            }
+            else if (Time.Equal.Value == THIS_MONTH)
+            {
+                Start = new DateTime(Now.Year, Now.Month, 1).AddHours(0 - CurrentContext.TimeZone);
+                End = Start.AddMonths(1).AddSeconds(-1);
+            }
+            else if (Time.Equal.Value == LAST_MONTH)
+            {
+                Start = new DateTime(Now.Year, Now.Month, 1).AddMonths(-1).AddHours(0 - CurrentContext.TimeZone);
+                End = Start.AddMonths(1).AddSeconds(-1);
+            }
+            else if (Time.Equal.Value == THIS_QUARTER)
+            {
+                var this_quarter = Convert.ToInt32(Math.Ceiling(Now.Month / 3m));
+                Start = new DateTime(Now.Year, (this_quarter - 1) * 3 + 1, 1).AddHours(0 - CurrentContext.TimeZone);
+                End = Start.AddMonths(3).AddSeconds(-1);
+            }
+            else if (Time.Equal.Value == LAST_QUATER)
+            {
+                var this_quarter = Convert.ToInt32(Math.Ceiling(Now.Month / 3m));
+                Start = new DateTime(Now.Year, (this_quarter - 1) * 3 + 1, 1).AddMonths(-3).AddHours(0 - CurrentContext.TimeZone);
+                End = Start.AddMonths(3).AddSeconds(-1);
+            }
+            else if (Time.Equal.Value == YEAR)
+            {
+                Start = new DateTime(Now.Year, 1, 1).AddHours(0 - CurrentContext.TimeZone);
+                End = Start.AddYears(1).AddSeconds(-1);
+            }
+            return Tuple.Create(Start, End);
         }
     }
 }
