@@ -73,7 +73,7 @@ namespace DMS.Services.MStoreUser
         {
             try
             {
-                int result = await UOW.StoreUserRepository.Count(StoreUserFilter);
+                int result = await UOW.StoreUserRepository.Count(StoreUserFilter);  
                 return result;
             }
             catch (Exception ex)

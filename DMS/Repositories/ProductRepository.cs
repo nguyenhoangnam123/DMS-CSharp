@@ -41,8 +41,6 @@ namespace DMS.Repositories
                 query = query.Where(q => q.Description, filter.Description);
             if (filter.ScanCode != null)
                 query = query.Where(q => q.ScanCode, filter.ScanCode);
-            if (filter.CategoryId != null)
-                query = query.Where(q => q.CategoryId, filter.CategoryId);
             if (filter.ProductTypeId != null)
                 query = query.Where(q => q.ProductTypeId, filter.ProductTypeId);
             if (filter.BrandId != null)
@@ -115,7 +113,40 @@ namespace DMS.Repositories
                             where !ProductGroupingIds.Contains(pg.Id)
                             select q;
                 }
-            }
+            } // filter theo productGrouping
+            if (filter.CategoryId != null)
+            {
+                if (filter.CategoryId.Equal != null)
+                {
+                    CategoryDAO CategoryDAO = DataContext.Category
+                        .Where(o => o.Id == filter.CategoryId.Equal.Value).FirstOrDefault();
+                    query = query.Where(q => q.Category.Path.StartsWith(CategoryDAO.Path));
+                }
+                if (filter.CategoryId.NotEqual != null)
+                {
+                    CategoryDAO CategoryDAO = DataContext.Category
+                        .Where(o => o.Id == filter.CategoryId.NotEqual.Value).FirstOrDefault();
+                    query = query.Where(q => !q.Category.Path.StartsWith(CategoryDAO.Path));
+                }
+                if (filter.CategoryId.In != null)
+                {
+                    List<CategoryDAO> CategoryDAOs = DataContext.Category
+                        .Where(o => o.DeletedAt == null && o.StatusId == 1).ToList();
+                    List<CategoryDAO> Parents = CategoryDAOs.Where(o => filter.CategoryId.In.Contains(o.Id)).ToList();
+                    List<CategoryDAO> Branches = CategoryDAOs.Where(o => Parents.Any(p => o.Path.StartsWith(p.Path))).ToList();
+                    List<long> Ids = Branches.Select(o => o.Id).ToList();
+                    query = query.Where(q => Ids.Contains(q.CategoryId));
+                }
+                if (filter.CategoryId.NotIn != null)
+                {
+                    List<CategoryDAO> CategoryDAOs = DataContext.Category
+                        .Where(o => o.DeletedAt == null && o.StatusId == 1).ToList();
+                    List<CategoryDAO> Parents = CategoryDAOs.Where(o => filter.CategoryId.NotIn.Contains(o.Id)).ToList();
+                    List<CategoryDAO> Branches = CategoryDAOs.Where(o => Parents.Any(p => o.Path.StartsWith(p.Path))).ToList();
+                    List<long> Ids = Branches.Select(o => o.Id).ToList();
+                    query = query.Where(q => !Ids.Contains(q.CategoryId));
+                }
+            } // filter theo category
             if (!string.IsNullOrWhiteSpace(filter.Search))
             {
                 List<string> Tokens = filter.Search.Split(" ").Select(x => x.ToLower()).ToList();
