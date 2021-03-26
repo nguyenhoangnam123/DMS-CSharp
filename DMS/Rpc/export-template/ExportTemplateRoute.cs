@@ -18,7 +18,7 @@ namespace DMS.Rpc.export_template
     {
         public const string Parent = Module + "/export-template";
         public const string Master = Module + "/export-template/export-template-master";
-        public const string Detail = Module + "/export-template/export-template-detail";
+        public const string Detail = Module + "/export-template/export-template-detail/*";
         public const string Preview = Module + "/export-template/export-template-preview";
         private const string Default = Rpc + Module + "/export-template";
         public const string Count = Default + "/count";

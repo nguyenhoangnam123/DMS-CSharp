@@ -11,7 +11,6 @@ using System.IO;
 using OfficeOpenXml;
 using DMS.Entities;
 using DMS.Services.MExportTemplate;
-using DMS.Services.MByte[];
 
 namespace DMS.Rpc.export_template
 {

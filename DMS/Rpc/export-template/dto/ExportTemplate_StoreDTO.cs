@@ -21,29 +21,5 @@ namespace DMS.Rpc.export_template.dto
         public ExportTemplate_StoreGroupingDTO StoreGrouping { get; set; }
         public ExportTemplate_StoreTypeDTO StoreType { get; set; }
         public ExportTemplate_StoreStatusDTO StoreStatus { get; set; }
-        public ExportTemplate_StoreDTO() { }
-        public ExportTemplate_StoreDTO(Store Store)
-        {
-
-            this.Id = Store.Id;
-
-            this.Code = Store.Code;
-            this.CodeDraft = Store.CodeDraft;
-
-            this.Name = Store.Name;
-
-
-            this.Telephone = Store.Telephone;
-
-            this.Address = Store.Address;
-
-            this.DeliveryAddress = Store.DeliveryAddress;
-
-            this.ParentStore = Store.ParentStore == null ? null : new ExportTemplate_StoreDTO(Store.ParentStore);
-            this.StoreGrouping = Store.StoreGrouping == null ? null : new ExportTemplate_StoreGroupingDTO(Store.StoreGrouping);
-            this.StoreType = Store.StoreType == null ? null : new ExportTemplate_StoreTypeDTO(Store.StoreType);
-            this.StoreStatus = Store.StoreStatus == null ? null : new ExportTemplate_StoreStatusDTO(Store.StoreStatus);
-            this.Errors = Store.Errors;
-        }
     }
 }
