@@ -1351,6 +1351,7 @@ namespace DMS.Repositories
                 StoreDAO.StoreStatusId = Store.StoreStatusId;
                 StoreDAO.StoreScoutingId = Store.StoreScoutingId;
                 StoreDAO.RowId = Store.RowId;
+                StoreDAO.Used = Store.Used;
                 StoreDAO.CreatedAt = StaticParams.DateTimeNow;
                 StoreDAO.UpdatedAt = StaticParams.DateTimeNow;
                 StoreDAOs.Add(StoreDAO);

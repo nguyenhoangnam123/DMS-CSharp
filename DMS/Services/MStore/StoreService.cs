@@ -577,9 +577,11 @@ namespace DMS.Services.MStore
                     if (oldData != null)
                     {
                         Store.RowId = oldData.RowId;
+                        Store.Used = oldData.Used;
                     }
                     else
                     {
+                        Store.Used = false;
                         Store.RowId = Guid.NewGuid();
                     }
 
