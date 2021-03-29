@@ -85,15 +85,15 @@ namespace DMS.Rpc.export_template
         }
 
         [Route(ExportTemplateRoute.Update), HttpPost]
-        public async Task<ActionResult<ExportTemplate_ExportTemplateDTO>> Update([FromForm] IFormFile file, long ExportTempalteId)
+        public async Task<ActionResult<ExportTemplate_ExportTemplateDTO>> Update([FromForm] IFormFile file, long ExportTemplateId)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
             
-            if (!await HasPermission(ExportTempalteId))
+            if (!await HasPermission(ExportTemplateId))
                 return Forbid();
 
-            ExportTemplate ExportTemplate = await ExportTemplateService.Get(ExportTempalteId);
+            ExportTemplate ExportTemplate = await ExportTemplateService.Get(ExportTemplateId);
             if (ExportTemplate == null)
                 return BadRequest("Mẫu file không tồn tại");
 
