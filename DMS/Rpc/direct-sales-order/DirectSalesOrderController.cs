@@ -30,6 +30,7 @@ using DMS.Services.MStoreStatus;
 using System;
 using DMS.Models;
 using Microsoft.EntityFrameworkCore;
+using DMS.Services.MExportTemplate;
 
 namespace DMS.Rpc.direct_sales_order
 {
@@ -38,6 +39,7 @@ namespace DMS.Rpc.direct_sales_order
         private IEditedPriceStatusService EditedPriceStatusService;
         private IStoreService StoreService;
         private IAppUserService AppUserService;
+        private IExportTemplateService ExportTemplateService;
         private IOrganizationService OrganizationService;
         private IUnitOfMeasureService UnitOfMeasureService;
         private IUnitOfMeasureGroupingService UnitOfMeasureGroupingService;
@@ -59,6 +61,7 @@ namespace DMS.Rpc.direct_sales_order
             IEditedPriceStatusService EditedPriceStatusService,
             IStoreService StoreService,
             IAppUserService AppUserService,
+            IExportTemplateService ExportTemplateService,
             IUnitOfMeasureService UnitOfMeasureService,
             IUnitOfMeasureGroupingService UnitOfMeasureGroupingService,
             IItemService ItemService,
@@ -80,6 +83,7 @@ namespace DMS.Rpc.direct_sales_order
             this.EditedPriceStatusService = EditedPriceStatusService;
             this.StoreService = StoreService;
             this.AppUserService = AppUserService;
+            this.ExportTemplateService = ExportTemplateService;
             this.UnitOfMeasureService = UnitOfMeasureService;
             this.UnitOfMeasureGroupingService = UnitOfMeasureGroupingService;
             this.ItemService = ItemService;
@@ -418,12 +422,16 @@ namespace DMS.Rpc.direct_sales_order
             DirectSalesOrder_PrintDTO.TotalString = DirectSalesOrder_PrintDTO.Total.ToString("N0", culture);
             DirectSalesOrder_PrintDTO.TotalText = Utils.ConvertAmountTostring((long)DirectSalesOrder_PrintDTO.Total);
 
-            string path = "Templates/Print_Direct.docx";
-            byte[] arr = System.IO.File.ReadAllBytes(path);
+            ExportTemplate ExportTemplate = await ExportTemplateService.Get(ExportTemplateEnum.PRINT_DIRECT.Id);
+            if (ExportTemplate == null)
+                return BadRequest("Chưa có mẫu in đơn hàng");
+
+            //string path = "Templates/Print_Direct.docx";
+            //byte[] arr = System.IO.File.ReadAllBytes(path);
             dynamic Data = new ExpandoObject();
             Data.Order = DirectSalesOrder_PrintDTO;
             MemoryStream MemoryStream = new MemoryStream();
-            MemoryStream input = new MemoryStream(arr);
+            MemoryStream input = new MemoryStream(ExportTemplate.Content);
             MemoryStream output = new MemoryStream();
             using (var document = StaticParams.DocumentFactory.Open(input, output, "docx"))
             {

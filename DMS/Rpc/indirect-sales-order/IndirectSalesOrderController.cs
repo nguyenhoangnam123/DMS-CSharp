@@ -30,6 +30,7 @@ using System.Threading.Tasks;
 using System;
 using DMS.Models;
 using Microsoft.EntityFrameworkCore;
+using DMS.Services.MExportTemplate;
 
 namespace DMS.Rpc.indirect_sales_order
 {
@@ -38,6 +39,7 @@ namespace DMS.Rpc.indirect_sales_order
         private IEditedPriceStatusService EditedPriceStatusService;
         private IStoreService StoreService;
         private IAppUserService AppUserService;
+        private IExportTemplateService ExportTemplateService;
         private IOrganizationService OrganizationService;
         private IUnitOfMeasureService UnitOfMeasureService;
         private IUnitOfMeasureGroupingService UnitOfMeasureGroupingService;
@@ -59,6 +61,7 @@ namespace DMS.Rpc.indirect_sales_order
             IEditedPriceStatusService EditedPriceStatusService,
             IStoreService StoreService,
             IAppUserService AppUserService,
+            IExportTemplateService ExportTemplateService,
             IUnitOfMeasureService UnitOfMeasureService,
             IUnitOfMeasureGroupingService UnitOfMeasureGroupingService,
             IItemService ItemService,
@@ -80,6 +83,7 @@ namespace DMS.Rpc.indirect_sales_order
             this.EditedPriceStatusService = EditedPriceStatusService;
             this.StoreService = StoreService;
             this.AppUserService = AppUserService;
+            this.ExportTemplateService = ExportTemplateService;
             this.UnitOfMeasureService = UnitOfMeasureService;
             this.UnitOfMeasureGroupingService = UnitOfMeasureGroupingService;
             this.ItemService = ItemService;
@@ -416,12 +420,16 @@ namespace DMS.Rpc.indirect_sales_order
             IndirectSalesOrder_PrintDTO.sDeliveryDate = IndirectSalesOrder_PrintDTO.DeliveryDate.HasValue ? IndirectSalesOrder_PrintDTO.DeliveryDate.Value.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy") : string.Empty;
             IndirectSalesOrder_PrintDTO.TotalText = Utils.ConvertAmountTostring((long)IndirectSalesOrder_PrintDTO.Total);
 
-            string path = "Templates/Print_Indirect.docx";
-            byte[] arr = System.IO.File.ReadAllBytes(path);
+            ExportTemplate ExportTemplate = await ExportTemplateService.Get(ExportTemplateEnum.PRINT_INDIRECT.Id);
+            if (ExportTemplate == null)
+                return BadRequest("Chưa có mẫu in đơn hàng");
+
+            //string path = "Templates/Print_Indirect.docx";
+            //byte[] arr = System.IO.File.ReadAllBytes(path);
             dynamic Data = new ExpandoObject();
             Data.Order = IndirectSalesOrder_PrintDTO;
             MemoryStream MemoryStream = new MemoryStream();
-            MemoryStream input = new MemoryStream(arr);
+            MemoryStream input = new MemoryStream(ExportTemplate.Content);
             MemoryStream output = new MemoryStream();
             using (var document = StaticParams.DocumentFactory.Open(input, output, "docx"))
             {

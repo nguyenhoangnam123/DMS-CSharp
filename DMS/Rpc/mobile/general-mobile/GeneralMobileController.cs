@@ -48,6 +48,7 @@ using Newtonsoft.Json;
 using Microsoft.EntityFrameworkCore;
 using DMS.Services.MDirectSalesOrder;
 using DMS.Services.MSystemConfiguration;
+using DMS.Services.MExportTemplate;
 
 namespace DMS.Rpc.mobile.general_mobile
 {
@@ -59,6 +60,7 @@ namespace DMS.Rpc.mobile.general_mobile
         private IAppUserService AppUserService;
         private IColorService ColorService;
         private IERouteService ERouteService;
+        private IExportTemplateService ExportTemplateService;
         private IIndirectSalesOrderService IndirectSalesOrderService;
         private IDirectSalesOrderService DirectSalesOrderService;
         private IItemService ItemService;
@@ -92,6 +94,7 @@ namespace DMS.Rpc.mobile.general_mobile
             IAppUserService AppUserService,
             IColorService ColorService,
             IERouteService ERouteService,
+            IExportTemplateService ExportTemplateService,
             IIndirectSalesOrderService IndirectSalesOrderService,
             IDirectSalesOrderService DirectSalesOrderService,
             IItemService ItemService,
@@ -126,6 +129,7 @@ namespace DMS.Rpc.mobile.general_mobile
             this.AppUserService = AppUserService;
             this.ColorService = ColorService;
             this.ERouteService = ERouteService;
+            this.ExportTemplateService = ExportTemplateService;
             this.IndirectSalesOrderService = IndirectSalesOrderService;
             this.DirectSalesOrderService = DirectSalesOrderService;
             this.ItemService = ItemService;
@@ -920,12 +924,16 @@ namespace DMS.Rpc.mobile.general_mobile
             GeneralMobile_PrintDTO.TotalString = GeneralMobile_PrintDTO.Total.ToString("N0", culture);
             GeneralMobile_PrintDTO.TotalText = Utils.ConvertAmountTostring((long)GeneralMobile_PrintDTO.Total);
 
-            string path = "Templates/Print_Indirect_Mobile.docx";
-            byte[] arr = System.IO.File.ReadAllBytes(path);
+            ExportTemplate ExportTemplate = await ExportTemplateService.Get(ExportTemplateEnum.PRINT_INDIRECT_MOBILE.Id);
+            if (ExportTemplate == null)
+                return BadRequest("Chưa có mẫu in đơn hàng");
+
+            //string path = "Templates/Print_Indirect_Mobile.docx";
+            //byte[] arr = System.IO.File.ReadAllBytes(path);
             dynamic Data = new ExpandoObject();
             Data.Order = GeneralMobile_PrintDTO;
             MemoryStream MemoryStream = new MemoryStream();
-            MemoryStream input = new MemoryStream(arr);
+            MemoryStream input = new MemoryStream(ExportTemplate.Content);
             MemoryStream output = new MemoryStream();
             using (var document = StaticParams.DocumentFactory.Open(input, output, "docx"))
             {
@@ -985,12 +993,16 @@ namespace DMS.Rpc.mobile.general_mobile
             GeneralMobile_PrintDTO.TotalString = GeneralMobile_PrintDTO.Total.ToString("N0", culture);
             GeneralMobile_PrintDTO.TotalText = Utils.ConvertAmountTostring((long)GeneralMobile_PrintDTO.Total);
 
-            string path = "Templates/Print_Indirect_Mobile.docx";
-            byte[] arr = System.IO.File.ReadAllBytes(path);
+            ExportTemplate ExportTemplate = await ExportTemplateService.Get(ExportTemplateEnum.PRINT_INDIRECT_MOBILE.Id);
+            if (ExportTemplate == null)
+                return BadRequest("Chưa có mẫu in đơn hàng");
+
+            //string path = "Templates/Print_Indirect_Mobile.docx";
+            //byte[] arr = System.IO.File.ReadAllBytes(path);
             dynamic Data = new ExpandoObject();
             Data.Order = GeneralMobile_PrintDTO;
             MemoryStream MemoryStream = new MemoryStream();
-            MemoryStream input = new MemoryStream(arr);
+            MemoryStream input = new MemoryStream(ExportTemplate.Content);
             MemoryStream output = new MemoryStream();
             using (var document = StaticParams.DocumentFactory.Open(input, output, "docx"))
             {
