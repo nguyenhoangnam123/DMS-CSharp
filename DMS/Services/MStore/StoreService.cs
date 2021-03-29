@@ -198,6 +198,11 @@ namespace DMS.Services.MStore
                 var Counter = await UOW.IdGenerateRepository.GetCounter();
                 StoreCodeGenerate(Store, Counter);
 
+                if(Store.BrandInStores != null)
+                {
+                    Store.BrandInStores.ForEach(x => x.CreatorId = CurrentContext.UserId);
+                }
+
                 await UOW.Begin();
                 await UOW.StoreRepository.Create(Store);
 
@@ -311,6 +316,16 @@ namespace DMS.Services.MStore
                 Store.UnsignName = Store.Name.ChangeToEnglishChar();
                 Store.UnsignAddress = Store.Address.ChangeToEnglishChar();
                 StoreCodeGenerate(Store);
+
+                if (Store.BrandInStores != null)
+                {
+                    foreach (var BrandInStore in Store.BrandInStores)
+                    {
+                        if (BrandInStore.Id == 0)
+                            BrandInStore.CreatorId = CurrentContext.UserId;
+                    }
+                }
+
                 if (Store.StoreStatusId  != oldData.StoreStatusId)
                 {
                     StoreStatusHistory StoreStatusHistory = new StoreStatusHistory

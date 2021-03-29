@@ -85,6 +85,14 @@
     "StoreScouting": {
       "StoreScoutingHasOpened": "Đại lý cắm cờ đã được mở",
       "StoreScoutingHasRejected": "Đại lý cắm cờ bị từ chối"
+    },
+    "BrandInStore": {
+      "Brand": {
+        "BrandEmpty": "Hãng không tồn tại"
+      },
+      "Top": {
+        "TopInvalid": "Thứ hạng không hợp lệ"
+      }
     }
   }
 }

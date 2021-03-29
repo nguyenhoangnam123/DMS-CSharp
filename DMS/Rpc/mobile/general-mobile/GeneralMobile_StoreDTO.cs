@@ -51,6 +51,7 @@ namespace DMS.Rpc.mobile.general_mobile
         public List<GeneralMobile_StoreImageMappingDTO> StoreImageMappings { get; set; }
         public List<GeneralMobile_AlbumImageMappingDTO> AlbumImageMappings { get; set; }
         public List<GeneralMobile_StoreCheckingDTO> StoreCheckings { get; set; }
+        public List<GeneralMobile_BrandInStoreDTO> BrandInStores { get; set; }
         public double Distance { get; set; }
         public GeneralMobile_StoreDTO() { }
         public GeneralMobile_StoreDTO(Store Store)
@@ -98,6 +99,7 @@ namespace DMS.Rpc.mobile.general_mobile
             this.StoreStatus = Store.StoreStatus == null ? null : new GeneralMobile_StoreStatusDTO(Store.StoreStatus);
             this.StoreImageMappings = Store.StoreImageMappings?.Select(x => new GeneralMobile_StoreImageMappingDTO(x)).ToList();
             this.StoreCheckings = Store.StoreCheckings?.Select(x => new GeneralMobile_StoreCheckingDTO(x)).ToList();
+            this.BrandInStores = Store.BrandInStores?.Select(x => new GeneralMobile_BrandInStoreDTO(x)).ToList();
             this.Errors = Store.Errors;
         }
     }

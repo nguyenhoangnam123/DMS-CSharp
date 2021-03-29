@@ -7,6 +7,7 @@ namespace DMS.Models
     {
         public ProductGroupingDAO()
         {
+            BrandInStoreProductGroupingMappings = new HashSet<BrandInStoreProductGroupingMappingDAO>();
             InverseParent = new HashSet<ProductGroupingDAO>();
             ProductProductGroupingMappings = new HashSet<ProductProductGroupingMappingDAO>();
             PromotionProductGroupings = new HashSet<PromotionProductGroupingDAO>();
@@ -25,6 +26,7 @@ namespace DMS.Models
         public Guid RowId { get; set; }
 
         public virtual ProductGroupingDAO Parent { get; set; }
+        public virtual ICollection<BrandInStoreProductGroupingMappingDAO> BrandInStoreProductGroupingMappings { get; set; }
         public virtual ICollection<ProductGroupingDAO> InverseParent { get; set; }
         public virtual ICollection<ProductProductGroupingMappingDAO> ProductProductGroupingMappings { get; set; }
         public virtual ICollection<PromotionProductGroupingDAO> PromotionProductGroupings { get; set; }

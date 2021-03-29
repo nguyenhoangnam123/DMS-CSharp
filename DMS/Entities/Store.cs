@@ -66,6 +66,7 @@ namespace DMS.Entities
         public List<RequestWorkflowStepMapping> StoreWorkflows { get; set; }
         public List<RequestWorkflowStepMapping> RequestWorkflowStepMappings { get; set; }
         public List<StoreChecking> StoreCheckings { get; set; }
+        public List<BrandInStore> BrandInStores { get; set; }
         public double Distance { get; set; }
         public bool Equals(Store other)
         {

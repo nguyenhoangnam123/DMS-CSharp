@@ -41,6 +41,7 @@ namespace DMS.Rpc.store
         public const string FilterListStoreUserStatus = Default + "/filter-list-store-user-status";
 
         public const string SingleListAppUser = Default + "/single-list-app-user";
+        public const string SingleListBrand = Default + "/single-list-brand";
         public const string SingleListOrganization = Default + "/single-list-organization";
         public const string SingleListParentStore = Default + "/single-list-parent-store";
         public const string SingleListProvince = Default + "/single-list-province";
@@ -53,6 +54,8 @@ namespace DMS.Rpc.store
 
         public const string ListReseller = Default + "/list-reseller";
         public const string CountReseller = Default + "/count-reseller";
+        public const string ListProductGrouping = Default + "/list-product-grouping";
+        public const string CountProductGrouping = Default + "/count-product-grouping";
 
         public const string CreateDraft = Default + "/create-draft";
         public const string CreateStoreUser = Default + "/create-store-user";
@@ -78,13 +81,17 @@ namespace DMS.Rpc.store
                 Master, Count, List, Get, GetDraft,
                 FilterListAppUser, FilterListDistrict, FilterListOrganization, FilterListProvince, FilterListWard, FilterListStatus, FilterListParentStore, FilterListStoreStatus, FilterListStoreGrouping, FilterListStoreType,
                 Detail, Create, CreateStoreScouting, SaveImage,
-                SingleListAppUser, SingleListDistrict, SingleListOrganization, SingleListProvince, SingleListStatus, SingleListStoreGrouping, SingleListStoreType, SingleListWard, SingleListParentStore, SingleListStoreStatus} },
+                SingleListAppUser, SingleListBrand, SingleListDistrict, SingleListOrganization, SingleListProvince, SingleListStatus, SingleListStoreGrouping, SingleListStoreType, SingleListWard, SingleListParentStore, SingleListStoreStatus,
+                CountProductGrouping, ListProductGrouping
+                } },
             { "Sửa", new List<string> {
                 Parent,
                 Master, Count, List, Get,
                 FilterListAppUser, FilterListDistrict, FilterListOrganization, FilterListProvince, FilterListWard, FilterListStatus, FilterListParentStore, FilterListStoreStatus, FilterListStoreGrouping, FilterListStoreType,
                 Detail, Update, SaveImage,
-                SingleListAppUser, SingleListDistrict, SingleListOrganization, SingleListProvince, SingleListStatus, SingleListStoreGrouping, SingleListStoreType, SingleListWard, SingleListParentStore, SingleListStoreStatus} },
+                SingleListAppUser, SingleListBrand, SingleListDistrict, SingleListOrganization, SingleListProvince, SingleListStatus, SingleListStoreGrouping, SingleListStoreType, SingleListWard, SingleListParentStore, SingleListStoreStatus,
+                CountProductGrouping, ListProductGrouping
+                } },
             { "Xoá", new List<string> {
                 Parent,
                 Master, Count, List, Get,
@@ -110,7 +117,9 @@ namespace DMS.Rpc.store
                 Master, Count, List, Get,
                 FilterListAppUser, FilterListDistrict, FilterListOrganization, FilterListProvince, FilterListWard, FilterListStatus, FilterListParentStore, FilterListStoreStatus, FilterListStoreGrouping, FilterListStoreType,
                 Detail, Approve, 
-                SingleListAppUser, SingleListDistrict, SingleListOrganization, SingleListProvince, SingleListStatus, SingleListStoreGrouping, SingleListStoreType, SingleListWard, SingleListParentStore, SingleListStoreStatus} },
+                SingleListAppUser, SingleListBrand, SingleListDistrict, SingleListOrganization, SingleListProvince, SingleListStatus, SingleListStoreGrouping, SingleListStoreType, SingleListWard, SingleListParentStore, SingleListStoreStatus,
+                CountProductGrouping, ListProductGrouping
+                } },
 
              { "Tạo tài khoản cửa hàng", new List<string> {
                 Parent,

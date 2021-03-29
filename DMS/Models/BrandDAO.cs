@@ -7,6 +7,7 @@ namespace DMS.Models
     {
         public BrandDAO()
         {
+            BrandInStores = new HashSet<BrandInStoreDAO>();
             Products = new HashSet<ProductDAO>();
         }
 
@@ -46,6 +47,7 @@ namespace DMS.Models
         public Guid RowId { get; set; }
 
         public virtual StatusDAO Status { get; set; }
+        public virtual ICollection<BrandInStoreDAO> BrandInStores { get; set; }
         public virtual ICollection<ProductDAO> Products { get; set; }
     }
 }

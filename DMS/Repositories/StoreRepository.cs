@@ -178,7 +178,7 @@ namespace DMS.Repositories
                 query = query.Where(q => q.AppUserId, filter.AppUserId);
             if (filter.StoreStatusId != null && filter.StoreStatusId.Equal.HasValue && filter.StoreStatusId.Equal != StoreStatusEnum.ALL.Id)
             {
-                if(filter.StoreStatusId.Equal == StoreStatusEnum.DRAFT.Id)
+                if (filter.StoreStatusId.Equal == StoreStatusEnum.DRAFT.Id)
                 {
                     query = query.Where(q => q.StoreStatusId, filter.StoreStatusId);
                     if (filter.StoreDraftTypeId != null && filter.StoreDraftTypeId.HasValue && filter.StoreDraftTypeId.Equal == StoreDraftTypeEnum.MINE.Id && filter.SalesEmployeeId.HasValue)
@@ -189,7 +189,7 @@ namespace DMS.Repositories
                     query = query.Where(q => q.StoreStatusId, filter.StoreStatusId);
                 }
             }
-                
+
             query = OrFilter(query, filter);
             query = query.Distinct();
             return query;
@@ -1176,6 +1176,50 @@ namespace DMS.Repositories
                         ThumbnailUrl = x.Image.ThumbnailUrl,
                     }
                 }).ToListAsync();
+
+            Store.BrandInStores = await DataContext.BrandInStore
+                .Where(x => x.StoreId == Id && x.DeletedAt == null).Select(x => new BrandInStore
+                {
+                    Id = x.Id,
+                    StoreId = x.StoreId,
+                    BrandId = x.BrandId,
+                    Top = x.Top,
+                    CreatorId = x.CreatorId,
+                    CreatedAt = x.CreatedAt,
+                    UpdatedAt = x.UpdatedAt,
+                    Brand = x.Brand == null ? null : new Brand
+                    {
+                        Id = x.Brand.Id,
+                        Code = x.Brand.Code,
+                        Name = x.Brand.Name,
+                    },
+                    Creator = x.Creator == null ? null : new AppUser
+                    {
+                        Id = x.Creator.Id,
+                        Username = x.Creator.Username,
+                        DisplayName = x.Creator.DisplayName,
+                    }
+                }).OrderBy(x => x.Top).ToListAsync();
+
+            var BrandInStoreIds = Store.BrandInStores.Select(x => x.Id).ToList();
+            var BrandInStoreProductGroupingMappings = await DataContext.BrandInStoreProductGroupingMapping
+                .Where(x => BrandInStoreIds.Contains(x.BrandInStoreId)).Select(x => new BrandInStoreProductGroupingMapping
+                {
+                    BrandInStoreId = x.BrandInStoreId,
+                    ProductGroupingId = x.ProductGroupingId,
+                    ProductGrouping = x.ProductGrouping == null ? null : new ProductGrouping
+                    {
+                        Id = x.ProductGrouping.Id,
+                        Code = x.ProductGrouping.Code,
+                        Name = x.ProductGrouping.Name,
+                    },
+                }).ToListAsync();
+            foreach (var BrandInStore in Store.BrandInStores)
+            {
+                BrandInStore.BrandInStoreProductGroupingMappings = BrandInStoreProductGroupingMappings
+                    .Where(x => x.BrandInStoreId == BrandInStore.Id)
+                    .ToList();
+            }
             return Store;
         }
         public async Task<bool> Create(Store Store)
@@ -1368,7 +1412,59 @@ namespace DMS.Repositories
                 }
                 await DataContext.StoreImageMapping.BulkMergeAsync(StoreImageMappingDAOs);
             }
-        }
 
+            await DataContext.BrandInStoreProductGroupingMapping.Where(x => x.BrandInStore.StoreId == Store.Id).DeleteFromQueryAsync();
+            List<BrandInStoreDAO> BrandInStoreDAOs = await DataContext.BrandInStore.Where(x => x.StoreId == Store.Id).ToListAsync();
+            BrandInStoreDAOs.ForEach(x => x.DeletedAt = StaticParams.DateTimeNow);
+            if (Store.BrandInStores != null)
+            {
+                foreach (var BrandInStore in Store.BrandInStores)
+                {
+                    BrandInStoreDAO BrandInStoreDAO = BrandInStoreDAOs.Where(x => x.StoreId == BrandInStore.StoreId && x.BrandId == BrandInStore.BrandId).FirstOrDefault();
+                    if (BrandInStoreDAO == null)
+                    {
+                        BrandInStoreDAO = new BrandInStoreDAO
+                        {
+                            BrandId = BrandInStore.BrandId,
+                            StoreId = BrandInStore.StoreId,
+                            Top = BrandInStore.Top,
+                            CreatorId = BrandInStore.CreatorId,
+                            CreatedAt = StaticParams.DateTimeNow,
+                            UpdatedAt = StaticParams.DateTimeNow,
+                            RowId = Guid.NewGuid()
+                        };
+                        BrandInStoreDAOs.Add(BrandInStoreDAO);
+                        BrandInStore.RowId = BrandInStoreDAO.RowId;
+                    }
+                    else
+                    {
+                        BrandInStoreDAO.Top = BrandInStore.Top;
+                        BrandInStoreDAO.UpdatedAt = StaticParams.DateTimeNow;
+                        BrandInStoreDAO.DeletedAt = null;
+                        BrandInStore.RowId = BrandInStoreDAO.RowId;
+                    }
+                }
+                await DataContext.BulkMergeAsync(BrandInStoreDAOs);
+
+                List<BrandInStoreProductGroupingMappingDAO> BrandInStoreProductGroupingMappingDAOs = new List<BrandInStoreProductGroupingMappingDAO>();
+                foreach (var BrandInStore in Store.BrandInStores)
+                {
+                    BrandInStore.Id = BrandInStoreDAOs.Where(x => x.RowId == BrandInStore.RowId).Select(x => x.Id).FirstOrDefault();
+                    if (BrandInStore.BrandInStoreProductGroupingMappings != null)
+                    {
+                        foreach (var BrandInStoreProductGroupingMapping in BrandInStore.BrandInStoreProductGroupingMappings)
+                        {
+                            BrandInStoreProductGroupingMappingDAO BrandInStoreProductGroupingMappingDAO = new BrandInStoreProductGroupingMappingDAO
+                            {
+                                BrandInStoreId = BrandInStore.Id,
+                                ProductGroupingId = BrandInStoreProductGroupingMapping.ProductGroupingId
+                            };
+                            BrandInStoreProductGroupingMappingDAOs.Add(BrandInStoreProductGroupingMappingDAO);
+                        }
+                    }
+                }
+                await DataContext.BulkMergeAsync(BrandInStoreProductGroupingMappingDAOs);
+            }
+        }
     }
 }

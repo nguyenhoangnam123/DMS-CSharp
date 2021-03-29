@@ -10,6 +10,7 @@ namespace DMS.Models
             AppUserRoleMappings = new HashSet<AppUserRoleMappingDAO>();
             AppUserStoreMappings = new HashSet<AppUserStoreMappingDAO>();
             Banners = new HashSet<BannerDAO>();
+            BrandInStores = new HashSet<BrandInStoreDAO>();
             DirectSalesOrderCreators = new HashSet<DirectSalesOrderDAO>();
             DirectSalesOrderSaleEmployees = new HashSet<DirectSalesOrderDAO>();
             DirectSalesOrderTransactions = new HashSet<DirectSalesOrderTransactionDAO>();
@@ -130,6 +131,7 @@ namespace DMS.Models
         public virtual ICollection<AppUserRoleMappingDAO> AppUserRoleMappings { get; set; }
         public virtual ICollection<AppUserStoreMappingDAO> AppUserStoreMappings { get; set; }
         public virtual ICollection<BannerDAO> Banners { get; set; }
+        public virtual ICollection<BrandInStoreDAO> BrandInStores { get; set; }
         public virtual ICollection<DirectSalesOrderDAO> DirectSalesOrderCreators { get; set; }
         public virtual ICollection<DirectSalesOrderDAO> DirectSalesOrderSaleEmployees { get; set; }
         public virtual ICollection<DirectSalesOrderTransactionDAO> DirectSalesOrderTransactions { get; set; }

@@ -439,5 +439,61 @@ namespace DMS.Rpc.store
                 .Select(x => new Store_StoreTypeDTO(x)).ToList();
             return Store_StoreTypeDTOs;
         }
+
+        [Route(StoreRoute.SingleListBrand), HttpPost]
+        public async Task<List<Store_BrandDTO>> SingleListBrand([FromBody] Store_BrandFilterDTO Store_BrandFilterDTO)
+        {
+            BrandFilter BrandFilter = new BrandFilter();
+            BrandFilter.Skip = 0;
+            BrandFilter.Take = 20;
+            BrandFilter.OrderBy = BrandOrder.Id;
+            BrandFilter.OrderType = OrderType.ASC;
+            BrandFilter.Selects = BrandSelect.ALL;
+            BrandFilter.Id = Store_BrandFilterDTO.Id;
+            BrandFilter.Code = Store_BrandFilterDTO.Code;
+            BrandFilter.Name = Store_BrandFilterDTO.Name;
+            BrandFilter.Description = Store_BrandFilterDTO.Description;
+            BrandFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+            BrandFilter.UpdateTime = Store_BrandFilterDTO.UpdateTime;
+
+            List<Brand> Brands = await BrandService.List(BrandFilter);
+            List<Store_BrandDTO> Store_BrandDTOs = Brands
+                .Select(x => new Store_BrandDTO(x)).ToList();
+            return Store_BrandDTOs;
+        }
+
+        [Route(StoreRoute.CountProductGrouping), HttpPost]
+        public async Task<long> CountProductGrouping([FromBody] Store_ProductGroupingFilterDTO Store_ProductGroupingFilterDTO)
+        {
+            ProductGroupingFilter ProductGroupingFilter = new ProductGroupingFilter();
+            ProductGroupingFilter.Id = Store_ProductGroupingFilterDTO.Id;
+            ProductGroupingFilter.Code = Store_ProductGroupingFilterDTO.Code;
+            ProductGroupingFilter.Name = Store_ProductGroupingFilterDTO.Name;
+            ProductGroupingFilter.ParentId = Store_ProductGroupingFilterDTO.ParentId;
+            ProductGroupingFilter.Path = Store_ProductGroupingFilterDTO.Path;
+            ProductGroupingFilter.Description = Store_ProductGroupingFilterDTO.Description;
+            return await ProductGroupingService.Count(ProductGroupingFilter);
+        }
+
+        [Route(StoreRoute.ListProductGrouping), HttpPost]
+        public async Task<List<Store_ProductGroupingDTO>> ListProductGrouping([FromBody] Store_ProductGroupingFilterDTO Store_ProductGroupingFilterDTO)
+        {
+            ProductGroupingFilter ProductGroupingFilter = new ProductGroupingFilter();
+            ProductGroupingFilter.Skip = Store_ProductGroupingFilterDTO.Skip;
+            ProductGroupingFilter.Take = Store_ProductGroupingFilterDTO.Take;
+            ProductGroupingFilter.OrderBy = ProductGroupingOrder.Id;
+            ProductGroupingFilter.OrderType = OrderType.ASC;
+            ProductGroupingFilter.Selects = ProductGroupingSelect.ALL;
+            ProductGroupingFilter.Id = Store_ProductGroupingFilterDTO.Id;
+            ProductGroupingFilter.Code = Store_ProductGroupingFilterDTO.Code;
+            ProductGroupingFilter.Name = Store_ProductGroupingFilterDTO.Name;
+            ProductGroupingFilter.ParentId = Store_ProductGroupingFilterDTO.ParentId;
+            ProductGroupingFilter.Path = Store_ProductGroupingFilterDTO.Path;
+
+            List<ProductGrouping> ProductGroupings = await ProductGroupingService.List(ProductGroupingFilter);
+            List<Store_ProductGroupingDTO> Store_ProductGroupingDTOs = ProductGroupings
+                .Select(x => new Store_ProductGroupingDTO(x)).ToList();
+            return Store_ProductGroupingDTOs;
+        }
     }
 }

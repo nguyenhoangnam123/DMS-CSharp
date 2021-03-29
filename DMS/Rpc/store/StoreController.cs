@@ -2,8 +2,10 @@
 using DMS.Entities;
 using DMS.Enums;
 using DMS.Services.MAppUser;
+using DMS.Services.MBrand;
 using DMS.Services.MDistrict;
 using DMS.Services.MOrganization;
+using DMS.Services.MProductGrouping;
 using DMS.Services.MProvince;
 using DMS.Services.MStatus;
 using DMS.Services.MStore;
@@ -29,8 +31,10 @@ namespace DMS.Rpc.store
     public partial class StoreController : RpcController
     {
         private IAppUserService AppUserService;
+        private IBrandService BrandService;
         private IDistrictService DistrictService;
         private IOrganizationService OrganizationService;
+        private IProductGroupingService ProductGroupingService;
         private IProvinceService ProvinceService;
         private IStoreStatusService StoreStatusService;
         private IStatusService StatusService;
@@ -43,8 +47,10 @@ namespace DMS.Rpc.store
         private ICurrentContext CurrentContext;
         public StoreController(
             IAppUserService AppUserService,
+            IBrandService BrandService,
             IDistrictService DistrictService,
             IOrganizationService OrganizationService,
+            IProductGroupingService ProductGroupingService,
             IProvinceService ProvinceService,
             IStoreStatusService StoreStatusService,
             IStatusService StatusService,
@@ -58,8 +64,10 @@ namespace DMS.Rpc.store
         )
         {
             this.AppUserService = AppUserService;
+            this.BrandService = BrandService;
             this.DistrictService = DistrictService;
             this.OrganizationService = OrganizationService;
+            this.ProductGroupingService = ProductGroupingService;
             this.ProvinceService = ProvinceService;
             this.StoreStatusService = StoreStatusService;
             this.StatusService = StatusService;
@@ -1165,8 +1173,6 @@ namespace DMS.Rpc.store
             else
                 return BadRequest(Store_StoreUserDTO);
         }
-
-
         #endregion
 
         private Store ConvertDTOToEntity(Store_StoreDTO Store_StoreDTO)
@@ -1323,6 +1329,34 @@ namespace DMS.Rpc.store
                         Url = x.Image.Url,
                         ThumbnailUrl = x.Image.ThumbnailUrl,
                     }
+                }).ToList();
+            Store.BrandInStores = Store_StoreDTO.BrandInStores?
+                .Select(x => new BrandInStore
+                {
+                    Id = x.Id,
+                    StoreId = x.StoreId,
+                    BrandId = x.BrandId,
+                    Top = x.Top,
+                    CreatorId = x.CreatorId,
+                    CreatedAt = x.CreatedAt,
+                    UpdatedAt = x.UpdatedAt,
+                    Brand = x.Brand == null ? null : new Brand
+                    {
+                        Id = x.Brand.Id,
+                        Code = x.Brand.Code,
+                        Name = x.Brand.Name,
+                    },
+                    Creator = x.Creator == null ? null : new AppUser
+                    {
+                        Id = x.Creator.Id,
+                        Username = x.Creator.Username,
+                        DisplayName = x.Creator.DisplayName,
+                    },
+                    BrandInStoreProductGroupingMappings = x.BrandInStoreProductGroupingMappings?.Select(x => new BrandInStoreProductGroupingMapping
+                    {
+                        BrandInStoreId = x.BrandInStoreId,
+                        ProductGroupingId = x.ProductGroupingId,
+                    }).ToList()
                 }).ToList();
             Store.BaseLanguage = CurrentContext.Language;
             return Store;

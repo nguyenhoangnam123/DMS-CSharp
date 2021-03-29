@@ -1,4 +1,4 @@
-using DMS.Common;
+﻿using DMS.Common;
 using DMS.Entities;
 using DMS.Enums;
 using DMS.Repositories;
@@ -58,7 +58,9 @@ namespace DMS.Services.MStore
             StoreHasChild,
             StoreScoutingHasOpened,
             StoreScoutingHasRejected,
-            StoreInUsed
+            StoreInUsed,
+            BrandEmpty,
+            TopInvalid
         }
 
         private IUOW UOW;
@@ -477,6 +479,39 @@ namespace DMS.Services.MStore
             return Store.IsValidated;
         }
 
+        private async Task<bool> ValidateBrandInStore(Store Store)
+        {
+            if(Store.BrandInStores != null)
+            {
+                var BrandIds = Store.BrandInStores.Select(x => x.BrandId).ToList();
+                List<Brand> Brands = await UOW.BrandRepository.List(new BrandFilter
+                {
+                    Skip = 0,
+                    Take = int.MaxValue,
+                    Selects = BrandSelect.Id | BrandSelect.Code,
+                    Id = new IdFilter { In = BrandIds },
+                    StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id }
+                });
+                List<long> BrandIdInDB = Brands.Select(x => x.Id).ToList();
+                foreach (var BrandInStore in Store.BrandInStores)
+                {
+                    if (!BrandIdInDB.Contains(BrandInStore.BrandId))
+                    {
+                        BrandInStore.AddError(nameof(StoreValidator), nameof(BrandInStore.Brand), ErrorCode.BrandEmpty);
+                    }
+                    else
+                    {
+                        // hạng từ 1-5
+                        if(0 >= BrandInStore.Top || BrandInStore.Top > 5)
+                        {
+                            BrandInStore.AddError(nameof(StoreValidator), nameof(BrandInStore.Top), ErrorCode.TopInvalid);
+                        }
+                    }
+                }
+            }
+            return Store.IsValidated;
+        }
+
         public async Task<bool> Create(Store Store)
         {
             //await ValidateCode(Store);
@@ -500,6 +535,7 @@ namespace DMS.Services.MStore
             await ValidateStatus(Store);
             await ValidateStoreStatus(Store);
             await ValidateStoreScouting(Store);
+            await ValidateBrandInStore(Store);
             return Store.IsValidated;
         }
 
@@ -527,6 +563,7 @@ namespace DMS.Services.MStore
                 await ValidateOwnerEmail(Store);
                 await ValidateStatus(Store);
                 await ValidateStoreStatus(Store);
+                await ValidateBrandInStore(Store);
             }
             return Store.IsValidated;
         }

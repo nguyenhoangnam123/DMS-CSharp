@@ -753,6 +753,34 @@ namespace DMS.Rpc.mobile.general_mobile
                 {
                     ImageId = x.ImageId,
                     StoreId = x.StoreId,
+                }).ToList(),
+                BrandInStores = GeneralMobile_StoreDTO.BrandInStores?
+                .Select(x => new BrandInStore
+                {
+                    Id = x.Id,
+                    StoreId = x.StoreId,
+                    BrandId = x.BrandId,
+                    Top = x.Top,
+                    CreatorId = x.CreatorId,
+                    CreatedAt = x.CreatedAt,
+                    UpdatedAt = x.UpdatedAt,
+                    Brand = x.Brand == null ? null : new Brand
+                    {
+                        Id = x.Brand.Id,
+                        Code = x.Brand.Code,
+                        Name = x.Brand.Name,
+                    },
+                    Creator = x.Creator == null ? null : new AppUser
+                    {
+                        Id = x.Creator.Id,
+                        Username = x.Creator.Username,
+                        DisplayName = x.Creator.DisplayName,
+                    },
+                    BrandInStoreProductGroupingMappings = x.BrandInStoreProductGroupingMappings?.Select(x => new BrandInStoreProductGroupingMapping
+                    {
+                        BrandInStoreId = x.BrandInStoreId,
+                        ProductGroupingId = x.ProductGroupingId,
+                    }).ToList()
                 }).ToList()
             };
             Store.BaseLanguage = CurrentContext.Language;
@@ -766,7 +794,7 @@ namespace DMS.Rpc.mobile.general_mobile
         }
 
         [Route(GeneralMobileRoute.UpdateStore), HttpPost]
-        public async Task<ActionResult<GeneralMobile_StoreDTO>> Update([FromBody] GeneralMobile_StoreDTO GeneralMobile_StoreDTO)
+        public async Task<ActionResult<GeneralMobile_StoreDTO>> UpdateStore([FromBody] GeneralMobile_StoreDTO GeneralMobile_StoreDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
@@ -782,6 +810,35 @@ namespace DMS.Rpc.mobile.general_mobile
             Store.Address = GeneralMobile_StoreDTO.Address;
             Store.Latitude = GeneralMobile_StoreDTO.Latitude;
             Store.Longitude = GeneralMobile_StoreDTO.Longitude;
+            Store.BrandInStores = GeneralMobile_StoreDTO.BrandInStores?
+                .Select(x => new BrandInStore
+                {
+                    Id = x.Id,
+                    StoreId = x.StoreId,
+                    BrandId = x.BrandId,
+                    Top = x.Top,
+                    CreatorId = x.CreatorId,
+                    CreatedAt = x.CreatedAt,
+                    UpdatedAt = x.UpdatedAt,
+                    Brand = x.Brand == null ? null : new Brand
+                    {
+                        Id = x.Brand.Id,
+                        Code = x.Brand.Code,
+                        Name = x.Brand.Name,
+                    },
+                    Creator = x.Creator == null ? null : new AppUser
+                    {
+                        Id = x.Creator.Id,
+                        Username = x.Creator.Username,
+                        DisplayName = x.Creator.DisplayName,
+                    },
+                    BrandInStoreProductGroupingMappings = x.BrandInStoreProductGroupingMappings?.Select(x => new BrandInStoreProductGroupingMapping
+                    {
+                        BrandInStoreId = x.BrandInStoreId,
+                        ProductGroupingId = x.ProductGroupingId,
+                    }).ToList()
+                }).ToList();
+
             Store.BaseLanguage = CurrentContext.Language;
             Store = await StoreService.Update(Store);
             GeneralMobile_StoreDTO = new GeneralMobile_StoreDTO(Store);

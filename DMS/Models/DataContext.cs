@@ -16,6 +16,8 @@ namespace DMS.Models
         public virtual DbSet<AppUserStoreMappingDAO> AppUserStoreMapping { get; set; }
         public virtual DbSet<BannerDAO> Banner { get; set; }
         public virtual DbSet<BrandDAO> Brand { get; set; }
+        public virtual DbSet<BrandInStoreDAO> BrandInStore { get; set; }
+        public virtual DbSet<BrandInStoreProductGroupingMappingDAO> BrandInStoreProductGroupingMapping { get; set; }
         public virtual DbSet<CategoryDAO> Category { get; set; }
         public virtual DbSet<CodeGeneratorRuleDAO> CodeGeneratorRule { get; set; }
         public virtual DbSet<CodeGeneratorRuleEntityComponentMappingDAO> CodeGeneratorRuleEntityComponentMapping { get; set; }
@@ -524,6 +526,50 @@ namespace DMS.Models
                     .HasForeignKey(d => d.StatusId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Brand_Status");
+            });
+
+            modelBuilder.Entity<BrandInStoreDAO>(entity =>
+            {
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.HasOne(d => d.Brand)
+                    .WithMany(p => p.BrandInStores)
+                    .HasForeignKey(d => d.BrandId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_BrandInStore_Brand");
+
+                entity.HasOne(d => d.Creator)
+                    .WithMany(p => p.BrandInStores)
+                    .HasForeignKey(d => d.CreatorId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_BrandInStore_AppUser");
+
+                entity.HasOne(d => d.Store)
+                    .WithMany(p => p.BrandInStores)
+                    .HasForeignKey(d => d.StoreId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_BrandInStore_Store");
+            });
+
+            modelBuilder.Entity<BrandInStoreProductGroupingMappingDAO>(entity =>
+            {
+                entity.HasKey(e => new { e.BrandInStoreId, e.ProductGroupingId });
+
+                entity.HasOne(d => d.BrandInStore)
+                    .WithMany(p => p.BrandInStoreProductGroupingMappings)
+                    .HasForeignKey(d => d.BrandInStoreId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_BrandInStoreProductGroupingMapping_BrandInStore");
+
+                entity.HasOne(d => d.ProductGrouping)
+                    .WithMany(p => p.BrandInStoreProductGroupingMappings)
+                    .HasForeignKey(d => d.ProductGroupingId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_BrandInStoreProductGroupingMapping_ProductGrouping");
             });
 
             modelBuilder.Entity<CategoryDAO>(entity =>
