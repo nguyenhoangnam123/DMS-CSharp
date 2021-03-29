@@ -135,15 +135,15 @@ namespace DMS.Services.MShowingItem
                 ShowingItem.AddError(nameof(ShowingItemValidator), nameof(ShowingItem.ShowingCategory), ErrorCode.ShowingCategoryEmpty);
             else
             {
-                CategoryFilter CategoryFilter = new CategoryFilter
+                ShowingCategoryFilter ShowingCategoryFilter = new ShowingCategoryFilter
                 {
                     Skip = 0,
                     Take = 10,
                     Id = new IdFilter { Equal = ShowingItem.ShowingCategoryId },
-                    Selects = CategorySelect.Id
+                    Selects = ShowingCategorySelect.Id
                 };
 
-                int count = await UOW.CategoryRepository.Count(CategoryFilter);
+                int count = await UOW.ShowingCategoryRepository.Count(ShowingCategoryFilter);
                 if (count == 0)
                     ShowingItem.AddError(nameof(ShowingItemValidator), nameof(ShowingItem.ShowingCategory), ErrorCode.ShowingCategoryNotExisted);
             }
