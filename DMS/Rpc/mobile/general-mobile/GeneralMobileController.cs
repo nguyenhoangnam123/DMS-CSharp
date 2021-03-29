@@ -1044,6 +1044,64 @@ namespace DMS.Rpc.mobile.general_mobile
             return GeneralMobile_StoreReportDTO;
         }
 
+        [Route(GeneralMobileRoute.StoreStatistic), HttpPost]
+        public async Task<ActionResult<GeneralMobile_StoreStatisticDTO>> StoreStatistic([FromBody] GeneralMobile_StoreStatisticFilterDTO GeneralMobile_StoreStatisticFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            if (GeneralMobile_StoreStatisticFilterDTO.StoreId == null || GeneralMobile_StoreStatisticFilterDTO.StoreId.Equal.HasValue == false)
+                return new GeneralMobile_StoreStatisticDTO();
+
+            DateTime Now = StaticParams.DateTimeNow.Date;
+            DateTime Start = LocalStartDay(CurrentContext);
+            DateTime End = new DateTime(Now.Year, Now.Month, Now.Day);
+            (Start, End) = ConvertTime(GeneralMobile_StoreStatisticFilterDTO.Time);
+
+            GeneralMobile_StoreStatisticDTO GeneralMobile_StoreStatisticDTO = new GeneralMobile_StoreStatisticDTO();
+            var query = from t in DataContext.IndirectSalesOrderTransaction
+                        where t.BuyerStoreId == GeneralMobile_StoreStatisticFilterDTO.StoreId.Equal &&
+                        Start <= t.OrderDate && t.OrderDate <= End
+                        select t;
+
+            GeneralMobile_StoreStatisticDTO.Revenue = query.Where(x => x.Revenue.HasValue).Select(x => x.Revenue.Value).DefaultIfEmpty(0).Sum();
+            return GeneralMobile_StoreStatisticDTO;
+        }
+
+        private Tuple<DateTime, DateTime> ConvertTime(IdFilter Time)
+        {
+            DateTime Start = LocalStartDay(CurrentContext);
+            DateTime End = Start.AddDays(1).AddSeconds(-1);
+            DateTime Now = StaticParams.DateTimeNow.Date;
+            if (Time.Equal.HasValue == false)
+            {
+                Start = new DateTime(Now.Year, Now.Month, 1).AddHours(0 - CurrentContext.TimeZone);
+                End = Start.AddMonths(1).AddSeconds(-1);
+            }
+            else if (Time.Equal.Value == THIS_MONTH)
+            {
+                Start = new DateTime(Now.Year, Now.Month, 1).AddHours(0 - CurrentContext.TimeZone);
+                End = Start.AddMonths(1).AddSeconds(-1);
+            }
+            else if (Time.Equal.Value == LAST_MONTH)
+            {
+                Start = new DateTime(Now.Year, Now.Month, 1).AddMonths(-1).AddHours(0 - CurrentContext.TimeZone);
+                End = Start.AddMonths(1).AddSeconds(-1);
+            }
+            else if (Time.Equal.Value == THIS_QUARTER)
+            {
+                var this_quarter = Convert.ToInt32(Math.Ceiling(Now.Month / 3m));
+                Start = new DateTime(Now.Year, (this_quarter - 1) * 3 + 1, 1).AddHours(0 - CurrentContext.TimeZone);
+                End = Start.AddMonths(3).AddSeconds(-1);
+            }
+            else if (Time.Equal.Value == YEAR)
+            {
+                Start = new DateTime(Now.Year, 1, 1).AddHours(0 - CurrentContext.TimeZone);
+                End = Start.AddYears(1).AddSeconds(-1);
+            }
+            return Tuple.Create(Start, End);
+        }
+
         private StoreChecking ConvertDTOToEntity(GeneralMobile_StoreCheckingDTO GeneralMobile_StoreCheckingDTO)
         {
             StoreChecking StoreChecking = new StoreChecking();

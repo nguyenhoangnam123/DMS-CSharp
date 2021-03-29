@@ -46,6 +46,7 @@ namespace DMS.Rpc.mobile.general_mobile
         public const string PrintDirectOrder = Default + "/print-direct-order";
 
         public const string StoreReport = Default + "/store-report";
+        public const string StoreStatistic = Default + "/store-statistic";
 
         public const string SingleListAlbum = Default + "/single-list-album";
         public const string SingleListAppUser = Default + "/single-list-app-user";
@@ -61,6 +62,7 @@ namespace DMS.Rpc.mobile.general_mobile
         public const string SingleListProvince = Default + "/single-list-province";
         public const string SingleListDistrict = Default + "/single-list-district";
         public const string SingleListWard = Default + "/single-list-ward";
+        public const string SingleListTime = Default + "/single-list-time";
 
         public const string SingleListBrand = Default + "/single-list-brand";
         public const string SingleListColor = Default + "/single-list-color";
@@ -119,7 +121,7 @@ namespace DMS.Rpc.mobile.general_mobile
                 } },
             { "Checkin", new List<string> {
                 Master, CountStoreChecking, ListStoreChecking, GetStoreChecking,
-                Detail, CheckIn,  UpdateStoreChecking, UpdateStoreCheckingImage, CheckOut, PrintIndirectOrder, PreviewIndirectOrder, StoreReport, PrintDirectOrder,
+                Detail, CheckIn,  UpdateStoreChecking, UpdateStoreCheckingImage, CheckOut, PrintIndirectOrder, PreviewIndirectOrder, StoreReport, StoreStatistic, PrintDirectOrder,
                 CreateIndirectSalesOrder, CreateProblem, SaveImage, GetSurveyForm, SaveSurveyForm, CreateDirectSalesOrder,
                 CountItem, ListItem, CountStorePlanned, ListStorePlanned, CountStoreUnPlanned, ListStoreUnPlanned, CountStoreInScope, ListStoreInScope, CountProblem, ListProblem, CountSurvey, ListSurvey, CountStoreScouting, ListStoreScouting,
                 SingleListAlbum, SingleListAppUser, SingleListStore, SingleListStoreStatus, SingleListTaxType, SingleListUnitOfMeasure, SingleListProblemType, SingleListStoreScoutingType, SingleListProvince, SingleListDistrict, SingleListWard, SingleListStoreDraftType, } },

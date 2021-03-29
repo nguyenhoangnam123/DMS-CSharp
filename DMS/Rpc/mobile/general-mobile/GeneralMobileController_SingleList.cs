@@ -28,6 +28,22 @@ namespace DMS.Rpc.mobile.general_mobile
 {
     public partial class MobileController
     {
+        private const long THIS_MONTH = 1;
+        private const long LAST_MONTH = 2;
+        private const long THIS_QUARTER = 3;
+        private const long YEAR = 4;
+
+        [Route(GeneralMobileRoute.SingleListTime), HttpPost]
+        public List<GeneralMobile_EnumList> SingleListTime()
+        {
+            List<GeneralMobile_EnumList> Dashborad_EnumLists = new List<GeneralMobile_EnumList>();
+            Dashborad_EnumLists.Add(new GeneralMobile_EnumList { Id = THIS_MONTH, Name = "Tháng này" });
+            Dashborad_EnumLists.Add(new GeneralMobile_EnumList { Id = LAST_MONTH, Name = "Tháng trước" });
+            Dashborad_EnumLists.Add(new GeneralMobile_EnumList { Id = THIS_QUARTER, Name = "Quý này" });
+            Dashborad_EnumLists.Add(new GeneralMobile_EnumList { Id = YEAR, Name = "Năm" });
+            return Dashborad_EnumLists;
+        }
+
         [Route(GeneralMobileRoute.SingleListAlbum), HttpPost]
         public async Task<List<GeneralMobile_AlbumDTO>> SingleListAlbum([FromBody] GeneralMobile_AlbumFilterDTO GeneralMobile_AlbumFilterDTO)
         {
