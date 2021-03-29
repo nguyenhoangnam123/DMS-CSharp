@@ -16,6 +16,7 @@ using DMS.Enums;
 using DMS.Services.MStore;
 using Thinktecture.EntityFrameworkCore.TempTables;
 using Thinktecture;
+using DMS.Services.MProvince;
 
 namespace DMS.Rpc.dashboards.director
 {
@@ -34,6 +35,7 @@ namespace DMS.Rpc.dashboards.director
         private ICurrentContext CurrentContext;
         private IOrganizationService OrganizationService;
         private IIndirectSalesOrderService IndirectSalesOrderService;
+        private IProvinceService ProvinceService;
         private IStoreCheckingService StoreCheckingService;
         private IStoreService StoreService;
         public DashboardDirectorController(
@@ -42,6 +44,7 @@ namespace DMS.Rpc.dashboards.director
             ICurrentContext CurrentContext,
             IOrganizationService OrganizationService,
             IIndirectSalesOrderService IndirectSalesOrderService,
+            IProvinceService ProvinceService,
             IStoreCheckingService StoreCheckingService,
             IStoreService StoreService)
         {
@@ -50,6 +53,7 @@ namespace DMS.Rpc.dashboards.director
             this.CurrentContext = CurrentContext;
             this.OrganizationService = OrganizationService;
             this.IndirectSalesOrderService = IndirectSalesOrderService;
+            this.ProvinceService = ProvinceService;
             this.StoreCheckingService = StoreCheckingService;
             this.StoreService = StoreService;
         }
@@ -141,6 +145,25 @@ namespace DMS.Rpc.dashboards.director
             List<DashboardDirector_OrganizationDTO> DashboardDirector_OrganizationDTOs = Organizations
                 .Select(x => new DashboardDirector_OrganizationDTO(x)).ToList();
             return DashboardDirector_OrganizationDTOs;
+        }
+
+        [Route(DashboardDirectorRoute.FilterListProvince), HttpPost]
+        public async Task<List<DashboardDirector_ProvinceDTO>> FilterListProvince([FromBody] DashboardDirector_ProvinceFilterDTO DashboardDirector_ProvinceFilterDTO)
+        {
+            ProvinceFilter ProvinceFilter = new ProvinceFilter();
+            ProvinceFilter.Skip = 0;
+            ProvinceFilter.Take = 20;
+            ProvinceFilter.OrderBy = ProvinceOrder.Priority;
+            ProvinceFilter.OrderType = OrderType.ASC;
+            ProvinceFilter.Selects = ProvinceSelect.ALL;
+            ProvinceFilter.Id = DashboardDirector_ProvinceFilterDTO.Id;
+            ProvinceFilter.Name = DashboardDirector_ProvinceFilterDTO.Name;
+            ProvinceFilter.StatusId = DashboardDirector_ProvinceFilterDTO.StatusId;
+
+            List<Province> Provinces = await ProvinceService.List(ProvinceFilter);
+            List<DashboardDirector_ProvinceDTO> DashboardDirector_ProvinceDTOs = Provinces
+                .Select(x => new DashboardDirector_ProvinceDTO(x)).ToList();
+            return DashboardDirector_ProvinceDTOs;
         }
         #endregion
 
