@@ -144,7 +144,7 @@ namespace DMS.Services.MStoreUser
                 await UOW.StoreUserRepository.Update(oldData);
                 await UOW.Commit();
                 var newData = await UOW.StoreUserRepository.Get(StoreUser.Id);
-
+                Sync(new List<StoreUser> { newData });
                 await Logging.CreateAuditLog(newData, oldData, nameof(StoreUserService));
                 return newData;
             }
@@ -171,13 +171,13 @@ namespace DMS.Services.MStoreUser
             try
             {
                 StoreUser oldData = await UOW.StoreUserRepository.Get(StoreUser.Id);
-                oldData.Password = HashPassword("appdailyrangdong");
+                oldData.Password = HashPassword("appdaily");
                 await UOW.Begin();
                 await UOW.StoreUserRepository.Update(oldData);
                 await UOW.Commit();
 
                 var newData = await UOW.StoreUserRepository.Get(StoreUser.Id);
-
+                Sync(new List<StoreUser> { newData });
                 await Logging.CreateAuditLog(newData, oldData, nameof(StoreUserService));
                 return newData;
             }
@@ -228,6 +228,7 @@ namespace DMS.Services.MStoreUser
                     Recipients = new List<string> { Store.OwnerEmail },
                     RowId = Guid.NewGuid()
                 };
+                Sync(new List<StoreUser> { newData });
                 RabbitManager.PublishSingle(new EventMessage<Mail>(mail, mail.RowId), RoutingKeyEnum.MailSend);
                 return newData;
             }
@@ -285,6 +286,7 @@ namespace DMS.Services.MStoreUser
                     Recipients = new List<string> { Store.OwnerEmail },
                     RowId = Guid.NewGuid()
                 };
+                Sync(new List<StoreUser> { newData });
                 RabbitManager.PublishSingle(new EventMessage<Mail>(mail, mail.RowId), RoutingKeyEnum.MailSend);
                 await Logging.CreateAuditLog(newData, oldData, nameof(StoreUserService));
                 return newData;
@@ -318,8 +320,9 @@ namespace DMS.Services.MStoreUser
                 await UOW.StoreUserRepository.Update(StoreUser);
                 await UOW.Commit();
 
-                StoreUser = await UOW.StoreUserRepository.Get(StoreUser.Id);
-                await Logging.CreateAuditLog(StoreUser, oldData, nameof(StoreUserService));
+                var NewData = await UOW.StoreUserRepository.Get(StoreUser.Id);
+                Sync(new List<StoreUser> { NewData });
+                await Logging.CreateAuditLog(NewData, oldData, nameof(StoreUserService));
                 return StoreUser;
             }
             catch (Exception ex)
@@ -411,7 +414,7 @@ namespace DMS.Services.MStoreUser
             {
                 foreach (var StoreUser in StoreUsers)
                 {
-                    StoreUser.Password = HashPassword("appdailyrangdong");
+                    StoreUser.Password = HashPassword("appdaily");
                     StoreUser.RowId = Guid.NewGuid();
                 }
 
