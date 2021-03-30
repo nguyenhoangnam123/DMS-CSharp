@@ -43,7 +43,7 @@ namespace DMS.Rpc.mobile.permission_mobile
             (CurrentMonth, CurrentQuarter, CurrentYear) = ConvertDateTime(StaticParams.DateTimeNow);
             DateTime Start = new DateTime(StaticParams.DateTimeNow.Year, StaticParams.DateTimeNow.Month, 1);
             Start = Start.AddHours(0 - CurrentContext.TimeZone);
-            DateTime End = Start.AddMonths(1).AddSeconds(-1);
+            DateTime End = new DateTime(StaticParams.DateTimeNow.Year, StaticParams.DateTimeNow.Month, 1).AddMonths(1).AddSeconds(-1).AddHours(0 - CurrentContext.TimeZone);
 
             List<long> AppUserIds = new List<long>();
             if (PermissionMobile_EmployeeKpiFilterDTO.EmployeeId.Equal.HasValue)
@@ -256,7 +256,7 @@ namespace DMS.Rpc.mobile.permission_mobile
             (CurrentMonth, CurrentQuarter, CurrentYear) = ConvertDateTime(StaticParams.DateTimeNow);
             DateTime Start = new DateTime(StaticParams.DateTimeNow.Year, StaticParams.DateTimeNow.Month, 1);
             Start = Start.AddHours(0 - CurrentContext.TimeZone);
-            DateTime End = Start.AddMonths(1).AddSeconds(-1);
+            DateTime End = new DateTime(StaticParams.DateTimeNow.Year, StaticParams.DateTimeNow.Month, 1).AddMonths(1).AddSeconds(-1).AddHours(0 - CurrentContext.TimeZone);
 
             List<long> AppUserIds = new List<long>();
             if (PermissionMobile_EmployeeKpiFilterDTO.EmployeeId.Equal.HasValue)
@@ -446,7 +446,7 @@ namespace DMS.Rpc.mobile.permission_mobile
             (CurrentMonth, CurrentQuarter, CurrentYear) = ConvertDateTime(StaticParams.DateTimeNow);
             DateTime Start = new DateTime(StaticParams.DateTimeNow.Year, StaticParams.DateTimeNow.Month, 1);
             Start = Start.AddHours(0 - CurrentContext.TimeZone);
-            DateTime End = Start.AddMonths(1).AddSeconds(-1);
+            DateTime End = new DateTime(StaticParams.DateTimeNow.Year, StaticParams.DateTimeNow.Month, 1).AddMonths(1).AddSeconds(-1).AddHours(0 - CurrentContext.TimeZone);
 
             List<long> AppUserIds = new List<long>();
             if (PermissionMobile_EmployeeKpiFilterDTO.EmployeeId.Equal.HasValue)

@@ -1779,29 +1779,29 @@ namespace DMS.Rpc.dashboards.director
             else if (Time.Equal.Value == THIS_MONTH)
             {
                 Start = new DateTime(Now.Year, Now.Month, 1).AddHours(0 - CurrentContext.TimeZone);
-                End = Start.AddMonths(1).AddSeconds(-1);
+                End = new DateTime(Now.Year, Now.Month, 1).AddMonths(1).AddSeconds(-1).AddHours(0 - CurrentContext.TimeZone);
             }
             else if (Time.Equal.Value == LAST_MONTH)
             {
                 Start = new DateTime(Now.Year, Now.Month, 1).AddMonths(-1).AddHours(0 - CurrentContext.TimeZone);
-                End = Start.AddMonths(1).AddSeconds(-1);
+                End = new DateTime(Now.Year, Now.Month, 1).AddMonths(-1).AddMonths(1).AddSeconds(-1).AddHours(0 - CurrentContext.TimeZone);
             }
             else if (Time.Equal.Value == THIS_QUARTER)
             {
                 var this_quarter = Convert.ToInt32(Math.Ceiling(Now.Month / 3m));
                 Start = new DateTime(Now.Year, (this_quarter - 1) * 3 + 1, 1).AddHours(0 - CurrentContext.TimeZone);
-                End = Start.AddMonths(3).AddSeconds(-1);
+                End = new DateTime(Now.Year, (this_quarter - 1) * 3 + 1, 1).AddMonths(3).AddSeconds(-1).AddHours(0 - CurrentContext.TimeZone);
             }
             else if (Time.Equal.Value == LAST_QUATER)
             {
                 var this_quarter = Convert.ToInt32(Math.Ceiling(Now.Month / 3m));
                 Start = new DateTime(Now.Year, (this_quarter - 1) * 3 + 1, 1).AddMonths(-3).AddHours(0 - CurrentContext.TimeZone);
-                End = Start.AddMonths(3).AddSeconds(-1);
+                End = new DateTime(Now.Year, (this_quarter - 1) * 3 + 1, 1).AddMonths(-3).AddMonths(3).AddSeconds(-1).AddHours(0 - CurrentContext.TimeZone);
             }
             else if (Time.Equal.Value == YEAR)
             {
                 Start = new DateTime(Now.Year, 1, 1).AddHours(0 - CurrentContext.TimeZone);
-                End = Start.AddYears(1).AddSeconds(-1);
+                End = new DateTime(Now.Year, 1, 1).AddYears(1).AddSeconds(-1).AddHours(0 - CurrentContext.TimeZone);
             }
             return Tuple.Create(Start, End);
         }

@@ -312,8 +312,9 @@ namespace DMS.Rpc.kpi_item
                 Skip = 0,
                 Take = int.MaxValue,
                 Selects = AppUserSelect.Id | AppUserSelect.Username | AppUserSelect.DisplayName | AppUserSelect.Organization,
-                OrganizationId = new IdFilter { Equal = AppUser.OrganizationId }
+                Id = new IdFilter { }
             };
+            EmployeeFilter.Id.In = await FilterAppUser(AppUserService, OrganizationService, CurrentContext);
             List<AppUser> Employees = await AppUserService.List(EmployeeFilter);
             var AppUserIds = Employees.Select(x => x.Id).ToList();
             List<KpiItem> KpiItems = await KpiItemService.List(new KpiItemFilter
@@ -414,7 +415,7 @@ namespace DMS.Rpc.kpi_item
                     Item Item;
                     if (!string.IsNullOrWhiteSpace(ItemCodeValue))
                     {
-                        Item = Items.Where(x => x.Code == ItemCodeValue.Trim()).FirstOrDefault();
+                        Item = Items.Where(x => x.Code.ToLower() == ItemCodeValue.ToLower().Trim()).FirstOrDefault();
                         if (Item == null)
                         {
                             errorContent.AppendLine($"Lỗi dòng thứ {i + 1}: Sản phẩm không tồn tại");
@@ -467,7 +468,7 @@ namespace DMS.Rpc.kpi_item
                     });
                     KpiItem_ImportDTO.IsNew = true;
 
-                    var Employee = Employees.Where(x => x.Username == KpiItem_ImportDTO.UsernameValue).FirstOrDefault();
+                    var Employee = Employees.Where(x => x.Username.ToLower() == KpiItem_ImportDTO.UsernameValue.ToLower()).FirstOrDefault();
                     KpiItem_ImportDTO.OrganizationId = Employee.OrganizationId;
                     KpiItem_ImportDTO.EmployeeId = Employee.Id;
                 }
