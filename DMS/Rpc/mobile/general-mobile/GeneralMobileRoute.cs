@@ -21,6 +21,14 @@ namespace DMS.Rpc.mobile.general_mobile
         public const string ListCompletedIndirectSalesOrder = Default + "/list-completed-indirect-sales-order";
         public const string CountNewIndirectSalesOrder = Default + "/count-new-indirect-sales-order";
         public const string ListNewIndirectSalesOrder = Default + "/list-new-indirect-sales-order";
+
+        // mobile route custom
+        public const string CountIndirectSalesOrder = Default + "/count-indirect-sales-order";
+        public const string ListIndirectSalesOrder = Default + "/list-indirect-sales-order";
+
+        public const string CountDirectSalesOrder = Default + "/count-direct-sales-order";
+        public const string ListDirectSalesOrder = Default + "/list-direct-sales-order";
+
         public const string GetIndirectSalesOrder = Default + "/get-indirect-sales-order";
         public const string CreateIndirectSalesOrder = Default + "/create-indirect-sales-order";
         public const string UpdateIndirectSalesOrder = Default + "/update-indirect-sales-order";
