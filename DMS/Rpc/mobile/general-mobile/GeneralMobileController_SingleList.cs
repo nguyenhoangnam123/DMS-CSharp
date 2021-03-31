@@ -1056,6 +1056,41 @@ namespace DMS.Rpc.mobile.general_mobile
             return GeneralMobile_ItemDTOs;
         }
 
+        [Route(GeneralMobileRoute.ListItemDirectOrder), HttpPost]
+        public async Task<List<GeneralMobile_ItemDTO>> ListItemDirectOrder([FromBody] GeneralMobile_ItemFilterDTO GeneralMobile_ItemFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            ItemFilter ItemFilter = new ItemFilter();
+            ItemFilter.Search = GeneralMobile_ItemFilterDTO.Search;
+            ItemFilter.Skip = GeneralMobile_ItemFilterDTO.Skip;
+            ItemFilter.Take = GeneralMobile_ItemFilterDTO.Take;
+            ItemFilter.OrderBy = ItemOrder.Id;
+            ItemFilter.OrderType = OrderType.DESC;
+            ItemFilter.Selects = ItemSelect.ALL;
+            ItemFilter.Id = GeneralMobile_ItemFilterDTO.Id;
+            ItemFilter.Code = GeneralMobile_ItemFilterDTO.Code;
+            ItemFilter.Name = GeneralMobile_ItemFilterDTO.Name;
+            ItemFilter.OtherName = GeneralMobile_ItemFilterDTO.OtherName;
+            ItemFilter.ProductGroupingId = GeneralMobile_ItemFilterDTO.ProductGroupingId;
+            ItemFilter.ProductId = GeneralMobile_ItemFilterDTO.ProductId;
+            ItemFilter.ProductTypeId = GeneralMobile_ItemFilterDTO.ProductTypeId;
+            ItemFilter.RetailPrice = GeneralMobile_ItemFilterDTO.RetailPrice;
+            ItemFilter.SalePrice = GeneralMobile_ItemFilterDTO.SalePrice;
+            ItemFilter.ScanCode = GeneralMobile_ItemFilterDTO.ScanCode;
+            ItemFilter.IsNew = GeneralMobile_ItemFilterDTO.IsNew;
+            ItemFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+            ItemFilter.SupplierId = GeneralMobile_ItemFilterDTO.SupplierId;
+
+            if (GeneralMobile_ItemFilterDTO.StoreId == null)
+                GeneralMobile_ItemFilterDTO.StoreId = new IdFilter();
+            List<Item> Items = await DirectSalesOrderService.ListItem(ItemFilter, CurrentContext.UserId, GeneralMobile_ItemFilterDTO.StoreId.Equal);
+            List<GeneralMobile_ItemDTO> GeneralMobile_ItemDTOs = Items
+                .Select(x => new GeneralMobile_ItemDTO(x)).ToList();
+            return GeneralMobile_ItemDTOs;
+        }
+
         [Route(GeneralMobileRoute.GetItem), HttpPost]
         public async Task<GeneralMobile_ItemDTO> GetItem([FromBody] GeneralMobile_ItemDTO GeneralMobile_ItemDTO)
         {
@@ -1685,6 +1720,40 @@ namespace DMS.Rpc.mobile.general_mobile
 
             DirectSalesOrder DirectSalesOrder = await DirectSalesOrderService.Get(GeneralMobile_DirectSalesOrderDTO.Id);
             return new GeneralMobile_DirectSalesOrderDTO(DirectSalesOrder);
+        }
+
+        [Route(GeneralMobileRoute.CountProductGrouping), HttpPost]
+        public async Task<long> CountProductGrouping([FromBody] GeneralMobile_ProductGroupingFilterDTO GeneralMobile_ProductGroupingFilterDTO)
+        {
+            ProductGroupingFilter ProductGroupingFilter = new ProductGroupingFilter();
+            ProductGroupingFilter.Id = GeneralMobile_ProductGroupingFilterDTO.Id;
+            ProductGroupingFilter.Code = GeneralMobile_ProductGroupingFilterDTO.Code;
+            ProductGroupingFilter.Name = GeneralMobile_ProductGroupingFilterDTO.Name;
+            ProductGroupingFilter.ParentId = GeneralMobile_ProductGroupingFilterDTO.ParentId;
+            ProductGroupingFilter.Path = GeneralMobile_ProductGroupingFilterDTO.Path;
+            ProductGroupingFilter.Description = GeneralMobile_ProductGroupingFilterDTO.Description;
+            return await ProductGroupingService.Count(ProductGroupingFilter);
+        }
+
+        [Route(GeneralMobileRoute.ListProductGrouping), HttpPost]
+        public async Task<List<GeneralMobile_ProductGroupingDTO>> ListProductGrouping([FromBody] GeneralMobile_ProductGroupingFilterDTO GeneralMobile_ProductGroupingFilterDTO)
+        {
+            ProductGroupingFilter ProductGroupingFilter = new ProductGroupingFilter();
+            ProductGroupingFilter.Skip = GeneralMobile_ProductGroupingFilterDTO.Skip;
+            ProductGroupingFilter.Take = GeneralMobile_ProductGroupingFilterDTO.Take;
+            ProductGroupingFilter.OrderBy = ProductGroupingOrder.Id;
+            ProductGroupingFilter.OrderType = OrderType.ASC;
+            ProductGroupingFilter.Selects = ProductGroupingSelect.ALL;
+            ProductGroupingFilter.Id = GeneralMobile_ProductGroupingFilterDTO.Id;
+            ProductGroupingFilter.Code = GeneralMobile_ProductGroupingFilterDTO.Code;
+            ProductGroupingFilter.Name = GeneralMobile_ProductGroupingFilterDTO.Name;
+            ProductGroupingFilter.ParentId = GeneralMobile_ProductGroupingFilterDTO.ParentId;
+            ProductGroupingFilter.Path = GeneralMobile_ProductGroupingFilterDTO.Path;
+
+            List<ProductGrouping> ProductGroupings = await ProductGroupingService.List(ProductGroupingFilter);
+            List<GeneralMobile_ProductGroupingDTO> GeneralMobile_ProductGroupingDTOs = ProductGroupings
+                .Select(x => new GeneralMobile_ProductGroupingDTO(x)).ToList();
+            return GeneralMobile_ProductGroupingDTOs;
         }
     }
 }

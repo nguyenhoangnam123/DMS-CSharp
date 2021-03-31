@@ -84,6 +84,7 @@ namespace DMS.Rpc.mobile.general_mobile
         public const string GetBanner = Default + "/get-banner";
         public const string CountItem = Default + "/count-item";
         public const string ListItem = Default + "/list-item";
+        public const string ListItemDirectOrder = Default + "/list-item-direct-orderr";
         public const string GetItem = Default + "/get-item";
         public const string CountStore = Default + "/count-store";
         public const string ListStore = Default + "/list-store";
@@ -118,6 +119,10 @@ namespace DMS.Rpc.mobile.general_mobile
         public const string GetRewardHistory = Default + "/get-reward";
         public const string CreateRewardHistory = Default + "/create-reward";
         public const string LuckyDraw = Default + "/lucky-draw";
+
+        public const string CountProductGrouping = Default + "/count-product-grouping";
+        public const string ListProductGrouping = Default + "/list-product-grouping";
+
         public static Dictionary<string, long> Filters = new Dictionary<string, long>
         {
         };
@@ -128,10 +133,10 @@ namespace DMS.Rpc.mobile.general_mobile
                 Master, CountStoreChecking, ListStoreChecking, GetStoreChecking,
                 } },
             { "Checkin", new List<string> {
-                Master, CountStoreChecking, ListStoreChecking, GetStoreChecking,
+                Master, CountStoreChecking, ListStoreChecking, GetStoreChecking, CountProductGrouping, ListProductGrouping,
                 Detail, CheckIn,  UpdateStoreChecking, UpdateStoreCheckingImage, CheckOut, PrintIndirectOrder, PreviewIndirectOrder, StoreReport, StoreStatistic, PrintDirectOrder,
                 CreateIndirectSalesOrder, CreateProblem, SaveImage, GetSurveyForm, SaveSurveyForm, CreateDirectSalesOrder,
-                CountItem, ListItem, CountStorePlanned, ListStorePlanned, CountStoreUnPlanned, ListStoreUnPlanned, CountStoreInScope, ListStoreInScope, CountProblem, ListProblem, CountSurvey, ListSurvey, CountStoreScouting, ListStoreScouting,
+                CountItem, ListItem, ListItemDirectOrder, CountStorePlanned, ListStorePlanned, CountStoreUnPlanned, ListStoreUnPlanned, CountStoreInScope, ListStoreInScope, CountProblem, ListProblem, CountSurvey, ListSurvey, CountStoreScouting, ListStoreScouting,
                 SingleListAlbum, SingleListAppUser, SingleListStore, SingleListStoreStatus, SingleListTaxType, SingleListUnitOfMeasure, SingleListProblemType, SingleListStoreScoutingType, SingleListProvince, SingleListDistrict, SingleListWard, SingleListStoreDraftType, } },
             { "Quay thưởng", new List<string>{
                 Master, CountStoreChecking, ListStoreChecking, GetStoreChecking,
