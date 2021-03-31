@@ -1169,6 +1169,8 @@ namespace DMS.Models
             {
                 entity.ToTable("EntityComponent", "ENUM");
 
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
                 entity.Property(e => e.Code)
                     .IsRequired()
                     .HasMaxLength(500);
@@ -1181,6 +1183,8 @@ namespace DMS.Models
             modelBuilder.Entity<EntityTypeDAO>(entity =>
             {
                 entity.ToTable("EntityType", "ENUM");
+
+                entity.Property(e => e.Id).ValueGeneratedNever();
 
                 entity.Property(e => e.Code)
                     .IsRequired()

@@ -42,6 +42,11 @@ namespace DMS.Handlers
                 foreach (CodeGeneratorRule CodeGeneratorRule in CodeGeneratorRules)
                 {
                     CodeGeneratorRuleDAO CodeGeneratorRuleDAO = CodeGeneratorRuleDAOs.Where(x => x.Id == CodeGeneratorRule.Id).FirstOrDefault();
+                    if (CodeGeneratorRuleDAO == null)
+                    {
+                        CodeGeneratorRuleDAO = new CodeGeneratorRuleDAO();
+                        CodeGeneratorRuleDAOs.Add(CodeGeneratorRuleDAO);
+                    }
                     CodeGeneratorRuleDAO.Id = CodeGeneratorRule.Id;
                     CodeGeneratorRuleDAO.EntityTypeId = CodeGeneratorRule.EntityTypeId;
                     CodeGeneratorRuleDAO.StatusId = CodeGeneratorRule.StatusId;
@@ -51,18 +56,17 @@ namespace DMS.Handlers
                     CodeGeneratorRuleDAO.AutoNumberLenth = CodeGeneratorRule.AutoNumberLenth;
                     CodeGeneratorRuleDAO.RowId = CodeGeneratorRule.RowId;
                     CodeGeneratorRuleDAO.Used = CodeGeneratorRule.Used;
-                    CodeGeneratorRuleDAOs.Add(CodeGeneratorRuleDAO);
 
                     foreach (CodeGeneratorRuleEntityComponentMapping CodeGeneratorRuleEntityComponentMapping in CodeGeneratorRule.CodeGeneratorRuleEntityComponentMappings)
                     {
                         CodeGeneratorRuleEntityComponentMappingDAO CodeGeneratorRuleEntityComponentMappingDAO = new CodeGeneratorRuleEntityComponentMappingDAO
                         {
-                            CodeGeneratorRuleId = CodeGeneratorRuleEntityComponentMapping.CodeGeneratorRuleId,
+                            CodeGeneratorRuleId = CodeGeneratorRule.Id,
                             EntityComponentId = CodeGeneratorRuleEntityComponentMapping.EntityComponentId,
                         };
                         CodeGeneratorRuleEntityComponentMappingDAOs.Add(CodeGeneratorRuleEntityComponentMappingDAO);
                     }
-                }    
+                }
                 await context.BulkMergeAsync(CodeGeneratorRuleDAOs);
                 await context.BulkMergeAsync(CodeGeneratorRuleEntityComponentMappingDAOs);
             }

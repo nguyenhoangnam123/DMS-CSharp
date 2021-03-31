@@ -1076,7 +1076,7 @@ namespace DMS.Rpc.mobile.general_mobile
                         Start <= t.OrderDate && t.OrderDate <= End
                         select t;
 
-            GeneralMobile_StoreStatisticDTO.Revenue = query.Where(x => x.Revenue.HasValue).Select(x => x.Revenue.Value).DefaultIfEmpty(0).Sum();
+            GeneralMobile_StoreStatisticDTO.Revenue = query.Where(x => x.Revenue.HasValue).Select(x => x.Revenue.Value).Sum();
             return GeneralMobile_StoreStatisticDTO;
         }
 
