@@ -60,7 +60,9 @@ namespace DMS.Services.MStore
             StoreScoutingHasRejected,
             StoreInUsed,
             BrandEmpty,
-            TopInvalid
+            BrandNotExisted,
+            TopInvalid,
+            ProductGroupingEmpty
         }
 
         private IUOW UOW;
@@ -495,9 +497,13 @@ namespace DMS.Services.MStore
                 List<long> BrandIdInDB = Brands.Select(x => x.Id).ToList();
                 foreach (var BrandInStore in Store.BrandInStores)
                 {
-                    if (!BrandIdInDB.Contains(BrandInStore.BrandId))
+                    if(BrandInStore.BrandId == 0)
                     {
                         BrandInStore.AddError(nameof(StoreValidator), nameof(BrandInStore.Brand), ErrorCode.BrandEmpty);
+                    }
+                    else if (!BrandIdInDB.Contains(BrandInStore.BrandId))
+                    {
+                        BrandInStore.AddError(nameof(StoreValidator), nameof(BrandInStore.Brand), ErrorCode.BrandNotExisted);
                     }
                     else
                     {
@@ -505,6 +511,13 @@ namespace DMS.Services.MStore
                         if(0 >= BrandInStore.Top || BrandInStore.Top > 5)
                         {
                             BrandInStore.AddError(nameof(StoreValidator), nameof(BrandInStore.Top), ErrorCode.TopInvalid);
+                        }
+                        else
+                        {
+                            if(BrandInStore.BrandInStoreProductGroupingMappings == null || BrandInStore.BrandInStoreProductGroupingMappings.Count == 0)
+                            {
+                                BrandInStore.AddError(nameof(StoreValidator), nameof(BrandInStore.BrandInStoreProductGroupingMappings), ErrorCode.ProductGroupingEmpty);
+                            }
                         }
                     }
                 }
