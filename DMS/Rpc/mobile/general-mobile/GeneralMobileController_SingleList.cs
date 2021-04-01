@@ -1755,6 +1755,42 @@ namespace DMS.Rpc.mobile.general_mobile
                 .Select(x => new GeneralMobile_ProductGroupingDTO(x)).ToList();
             return GeneralMobile_ProductGroupingDTOs;
         }
+
+        [Route(GeneralMobileRoute.CountBrand), HttpPost]
+        public async Task<int> CountBrand([FromBody] GeneralMobile_BrandFilterDTO GeneralMobile_BrandFilterDTO)
+        {
+            BrandFilter BrandFilter = new BrandFilter();
+            BrandFilter.Id = GeneralMobile_BrandFilterDTO.Id;
+            BrandFilter.Code = GeneralMobile_BrandFilterDTO.Code;
+            BrandFilter.Name = GeneralMobile_BrandFilterDTO.Name;
+            BrandFilter.Description = GeneralMobile_BrandFilterDTO.Description;
+            BrandFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+            BrandFilter.UpdateTime = GeneralMobile_BrandFilterDTO.UpdateTime;
+
+            return await BrandService.Count(BrandFilter);
+        }
+
+        [Route(GeneralMobileRoute.ListBrand), HttpPost]
+        public async Task<List<GeneralMobile_BrandDTO>> ListBrand([FromBody] GeneralMobile_BrandFilterDTO GeneralMobile_BrandFilterDTO)
+        {
+            BrandFilter BrandFilter = new BrandFilter();
+            BrandFilter.Skip = GeneralMobile_BrandFilterDTO.Skip;
+            BrandFilter.Take = GeneralMobile_BrandFilterDTO.Take;
+            BrandFilter.OrderBy = BrandOrder.Id;
+            BrandFilter.OrderType = OrderType.ASC;
+            BrandFilter.Selects = BrandSelect.ALL;
+            BrandFilter.Id = GeneralMobile_BrandFilterDTO.Id;
+            BrandFilter.Code = GeneralMobile_BrandFilterDTO.Code;
+            BrandFilter.Name = GeneralMobile_BrandFilterDTO.Name;
+            BrandFilter.Description = GeneralMobile_BrandFilterDTO.Description;
+            BrandFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+            BrandFilter.UpdateTime = GeneralMobile_BrandFilterDTO.UpdateTime;
+
+            List<Brand> Brands = await BrandService.List(BrandFilter);
+            List<GeneralMobile_BrandDTO> GeneralMobile_BrandDTOs = Brands
+                .Select(x => new GeneralMobile_BrandDTO(x)).ToList();
+            return GeneralMobile_BrandDTOs;
+        }
     }
 }
 

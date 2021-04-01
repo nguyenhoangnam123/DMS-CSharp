@@ -122,6 +122,8 @@ namespace DMS.Rpc.mobile.general_mobile
 
         public const string CountProductGrouping = Default + "/count-product-grouping";
         public const string ListProductGrouping = Default + "/list-product-grouping";
+        public const string CountBrand = Default + "/count-brand";
+        public const string ListBrand = Default + "/list-brand";
 
         public static Dictionary<string, long> Filters = new Dictionary<string, long>
         {
@@ -133,7 +135,7 @@ namespace DMS.Rpc.mobile.general_mobile
                 Master, CountStoreChecking, ListStoreChecking, GetStoreChecking,
                 } },
             { "Checkin", new List<string> {
-                Master, CountStoreChecking, ListStoreChecking, GetStoreChecking, CountProductGrouping, ListProductGrouping,
+                Master, CountStoreChecking, ListStoreChecking, GetStoreChecking, CountProductGrouping, ListProductGrouping, CountBrand, ListBrand,
                 Detail, CheckIn,  UpdateStoreChecking, UpdateStoreCheckingImage, CheckOut, PrintIndirectOrder, PreviewIndirectOrder, StoreReport, StoreStatistic, PrintDirectOrder,
                 CreateIndirectSalesOrder, CreateProblem, SaveImage, GetSurveyForm, SaveSurveyForm, CreateDirectSalesOrder,
                 CountItem, ListItem, ListItemDirectOrder, CountStorePlanned, ListStorePlanned, CountStoreUnPlanned, ListStoreUnPlanned, CountStoreInScope, ListStoreInScope, CountProblem, ListProblem, CountSurvey, ListSurvey, CountStoreScouting, ListStoreScouting,
