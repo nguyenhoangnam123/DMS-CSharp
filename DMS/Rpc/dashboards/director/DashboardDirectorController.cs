@@ -1000,7 +1000,7 @@ namespace DMS.Rpc.dashboards.director
                 var IndirectSalesOrderTransactionDAOs = await query.ToListAsync();
                 DashboardDirector_RevenueFluctuationDTO DashboardDirector_RevenueFluctuationDTO = new DashboardDirector_RevenueFluctuationDTO();
                 DashboardDirector_RevenueFluctuationDTO.RevenueFluctuationByMonths = new List<DashboardDirector_RevenueFluctuationByMonthDTO>();
-                var number_of_day_in_this_month = DateTime.DaysInMonth(Start.Year, Start.Month);
+                var number_of_day_in_this_month = DateTime.DaysInMonth(Start.AddHours(CurrentContext.TimeZone).Year, Start.AddHours(CurrentContext.TimeZone).Month);
                 for (int i = 1; i < number_of_day_in_this_month + 1; i++)
                 {
                     DashboardDirector_RevenueFluctuationByMonthDTO RevenueFluctuationByMonth = new DashboardDirector_RevenueFluctuationByMonthDTO
@@ -1047,7 +1047,7 @@ namespace DMS.Rpc.dashboards.director
                 var IndirectSalesOrderTransactionDAOs = await query.ToListAsync();
                 DashboardDirector_RevenueFluctuationDTO DashboardDirector_RevenueFluctuationDTO = new DashboardDirector_RevenueFluctuationDTO();
                 DashboardDirector_RevenueFluctuationDTO.RevenueFluctuationByMonths = new List<DashboardDirector_RevenueFluctuationByMonthDTO>();
-                var number_of_day_in_this_month = DateTime.DaysInMonth(Start.Year, Start.Month);
+                var number_of_day_in_this_month = DateTime.DaysInMonth(Start.AddHours(CurrentContext.TimeZone).Year, Start.AddHours(CurrentContext.TimeZone).Month);
                 for (int i = 1; i < number_of_day_in_this_month + 1; i++)
                 {
                     DashboardDirector_RevenueFluctuationByMonthDTO RevenueFluctuationByMonth = new DashboardDirector_RevenueFluctuationByMonthDTO
