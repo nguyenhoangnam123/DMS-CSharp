@@ -677,8 +677,14 @@ namespace DMS.Repositories
 
         public async Task<List<Store>> List(List<long> Ids)
         {
-            IQueryable<StoreDAO> StoreDAOs = DataContext.Store.AsNoTracking();
-            List<Store> Stores = StoreDAOs.Where(x => Ids.Contains(x.Id)).Select(x => new Store
+            ITempTableQuery<TempTable<long>> tempTableQuery = await DataContext
+                        .BulkInsertValuesIntoTempTableAsync<long>(Ids);
+
+            var query = from s in DataContext.Store
+                        join tt in tempTableQuery.Query on s.Id equals tt.Column1
+                        select s;
+
+            List<Store> Stores = query.Where(x => Ids.Contains(x.Id)).Select(x => new Store
             {
                 Id = x.Id,
                 Code = x.Code,
@@ -856,7 +862,10 @@ namespace DMS.Repositories
                 },
             }).ToList();
 
-            var StoreImageMappings = await DataContext.StoreImageMapping.Where(x => Ids.Contains(x.StoreId)).Select(x => new StoreImageMapping
+            var queryStoreImageMappings = from i in DataContext.StoreImageMapping
+                                          join tt in tempTableQuery.Query on i.StoreId equals tt.Column1
+                                          select i;
+            var StoreImageMappings = await queryStoreImageMappings.Where(x => Ids.Contains(x.StoreId)).Select(x => new StoreImageMapping
             {
                 ImageId = x.ImageId,
                 StoreId = x.StoreId,
@@ -873,7 +882,10 @@ namespace DMS.Repositories
                 }
             }).ToListAsync();
 
-            var BrandInStores = await DataContext.BrandInStore.Where(x => Ids.Contains(x.StoreId))
+            var queryBrandInStores = from bs in DataContext.BrandInStore
+                                          join tt in tempTableQuery.Query on bs.StoreId equals tt.Column1
+                                          select bs;
+            var BrandInStores = await queryBrandInStores.Where(x => Ids.Contains(x.StoreId))
                 .Select(x => new BrandInStore
                 {
                     Id = x.Id,

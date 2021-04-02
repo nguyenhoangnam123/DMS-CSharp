@@ -292,6 +292,7 @@ namespace DMS.Rpc.dashboards.store_information
                         select new DashboardStoreInformation_StoreDTO
                         {
                             Id = s.Id,
+                            Code = s.Code,
                             Name = s.Name,
                             Address = s.Address,
                             Latitude = s.Latitude,
@@ -301,6 +302,19 @@ namespace DMS.Rpc.dashboards.store_information
                             IsScouting = false
                         };
             List<DashboardStoreInformation_StoreDTO> DashboardMonitor_StoreDTOs = await query.Distinct().ToListAsync();
+            StoreIds = DashboardMonitor_StoreDTOs.Select(x => x.Id).ToList();
+            var BrandInStores = await DataContext.BrandInStore.Where(x => StoreIds.Contains(x.StoreId) && x.Top == 1).Select(x => new BrandInStore
+            {
+                StoreId = x.StoreId,
+                Brand = x.Brand == null ? null : new Brand
+                {
+                    Name = x.Brand.Name
+                },
+            }).ToListAsync();
+            foreach (var DashboardMonitor_StoreDTO in DashboardMonitor_StoreDTOs)
+            {
+                DashboardMonitor_StoreDTO.Top1BrandName = BrandInStores.Where(x => x.StoreId == DashboardMonitor_StoreDTO.Id).Select(x => x.Brand.Name).FirstOrDefault();
+            }
             return DashboardMonitor_StoreDTOs;
         }
 
