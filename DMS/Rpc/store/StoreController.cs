@@ -586,15 +586,7 @@ namespace DMS.Rpc.store
             }
             else
             {
-                var Organizations = await OrganizationService.List(new OrganizationFilter
-                {
-                    Skip = 0,
-                    Take = 1,
-                    Selects = OrganizationSelect.ALL,
-                    Id = Store_StoreFilterDTO.OrganizationId,
-                    StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id }
-                });
-                Org = Organizations.FirstOrDefault();
+                Org = await OrganizationService.Get(Store_StoreFilterDTO.OrganizationId.Equal.Value);
             }
             
             StoreFilter StoreFilter = ConvertFilterDTOToFilterEntity(Store_StoreFilterDTO);
@@ -608,6 +600,10 @@ namespace DMS.Rpc.store
             long stt = 1;
             foreach (var Store_StoreExportDTO in Store_StoreExportDTOs)
             {
+                Store_StoreExportDTO.STT = stt++;   
+            }
+            Parallel.ForEach(Store_StoreExportDTOs, Store_StoreExportDTO =>
+            {
                 Store_StoreExportDTO.STT = stt++;
                 Store_StoreExportDTO.BrandInStoreTop1 = Store_StoreExportDTO.BrandInStores.Where(x => x.Top == 1).FirstOrDefault();
                 Store_StoreExportDTO.BrandInStoreTop2 = Store_StoreExportDTO.BrandInStores.Where(x => x.Top == 2).FirstOrDefault();
@@ -615,7 +611,7 @@ namespace DMS.Rpc.store
                 Store_StoreExportDTO.BrandInStoreTop4 = Store_StoreExportDTO.BrandInStores.Where(x => x.Top == 4).FirstOrDefault();
                 Store_StoreExportDTO.BrandInStoreTop5 = Store_StoreExportDTO.BrandInStores.Where(x => x.Top == 5).FirstOrDefault();
 
-                if(Store_StoreExportDTO.BrandInStoreTop1 != null)
+                if (Store_StoreExportDTO.BrandInStoreTop1 != null)
                 {
                     var ProductGroupings = Store_StoreExportDTO.BrandInStoreTop1.BrandInStoreProductGroupingMappings?.Select(x => x.ProductGrouping).ToList();
                     var ProductGroupingNames = ProductGroupings.Select(x => x.Name).ToList();
@@ -649,7 +645,7 @@ namespace DMS.Rpc.store
                     var ProductGroupingNames = ProductGroupings.Select(x => x.Name).ToList();
                     Store_StoreExportDTO.BrandInStoreTop5.ProductGroupings = string.Join(';', ProductGroupingNames);
                 }
-            }
+            });
             string path = "Templates/Store_Export.xlsx";
             byte[] arr = System.IO.File.ReadAllBytes(path);
             MemoryStream input = new MemoryStream(arr);
