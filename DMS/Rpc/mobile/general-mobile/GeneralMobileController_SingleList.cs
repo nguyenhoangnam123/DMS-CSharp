@@ -1483,6 +1483,8 @@ namespace DMS.Rpc.mobile.general_mobile
             IndirectSalesOrderFilter.Code = GeneralMobile_IndirectSalesOrderFilterDTO.Code;
             IndirectSalesOrderFilter.OrderDate = GeneralMobile_IndirectSalesOrderFilterDTO.OrderDate;
             IndirectSalesOrderFilter.BuyerStoreId = GeneralMobile_IndirectSalesOrderFilterDTO.BuyerStoreId;
+            IndirectSalesOrderFilter.RequestStateId = GeneralMobile_IndirectSalesOrderFilterDTO.RequestStateId;
+
             IndirectSalesOrderFilter.Search = GeneralMobile_IndirectSalesOrderFilterDTO.Search;
             IndirectSalesOrderFilter.AppUserId = new IdFilter { Equal = CurrentContext.UserId };
 
@@ -1508,6 +1510,8 @@ namespace DMS.Rpc.mobile.general_mobile
             IndirectSalesOrderFilter.OrderDate = GeneralMobile_IndirectSalesOrderFilterDTO.OrderDate;
             IndirectSalesOrderFilter.BuyerStoreId = GeneralMobile_IndirectSalesOrderFilterDTO.BuyerStoreId;
             IndirectSalesOrderFilter.StoreCheckingId = GeneralMobile_IndirectSalesOrderFilterDTO.StoreCheckingId;
+            IndirectSalesOrderFilter.RequestStateId = GeneralMobile_IndirectSalesOrderFilterDTO.RequestStateId;
+
             IndirectSalesOrderFilter.Search = GeneralMobile_IndirectSalesOrderFilterDTO.Search;
             IndirectSalesOrderFilter.AppUserId = new IdFilter { Equal = CurrentContext.UserId };
 
@@ -1633,6 +1637,7 @@ namespace DMS.Rpc.mobile.general_mobile
             DirectSalesOrderFilter.Id = GeneralMobile_DirectSalesOrderFilterDTO.Id;
             DirectSalesOrderFilter.Code = GeneralMobile_DirectSalesOrderFilterDTO.Code;
             DirectSalesOrderFilter.OrderDate = GeneralMobile_DirectSalesOrderFilterDTO.OrderDate;
+            DirectSalesOrderFilter.RequestStateId = GeneralMobile_DirectSalesOrderFilterDTO.RequestStateId;
             DirectSalesOrderFilter.BuyerStoreId = GeneralMobile_DirectSalesOrderFilterDTO.BuyerStoreId;
             DirectSalesOrderFilter.AppUserId = new IdFilter { Equal = CurrentContext.UserId };
 
@@ -1656,6 +1661,7 @@ namespace DMS.Rpc.mobile.general_mobile
             DirectSalesOrderFilter.Id = GeneralMobile_DirectSalesOrderFilterDTO.Id;
             DirectSalesOrderFilter.Code = GeneralMobile_DirectSalesOrderFilterDTO.Code;
             DirectSalesOrderFilter.OrderDate = GeneralMobile_DirectSalesOrderFilterDTO.OrderDate;
+            DirectSalesOrderFilter.RequestStateId = GeneralMobile_DirectSalesOrderFilterDTO.RequestStateId;
             DirectSalesOrderFilter.BuyerStoreId = GeneralMobile_DirectSalesOrderFilterDTO.BuyerStoreId;
             DirectSalesOrderFilter.AppUserId = new IdFilter { Equal = CurrentContext.UserId };
 
