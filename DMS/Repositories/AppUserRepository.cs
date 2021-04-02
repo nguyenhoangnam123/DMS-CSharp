@@ -517,13 +517,12 @@ namespace DMS.Repositories
 
         public async Task<bool> SimpleUpdate(AppUser AppUser)
         {
-            AppUserDAO AppUserDAO = DataContext.AppUser.Where(x => x.Id == AppUser.Id).FirstOrDefault();
-            if (AppUserDAO == null)
-                return false;
-            AppUserDAO.Latitude = AppUser.Latitude;
-            AppUserDAO.Longitude = AppUser.Longitude;
-            AppUserDAO.GPSUpdatedAt = StaticParams.DateTimeNow;
-            await DataContext.SaveChangesAsync();
+            await DataContext.AppUser.Where(x => x.Id == AppUser.Id).UpdateFromQueryAsync(x => new AppUserDAO
+            {
+                Latitude = AppUser.Latitude,
+                Longitude = AppUser.Longitude,
+                GPSUpdatedAt = StaticParams.DateTimeNow,
+            });
             return true;
         }
 

@@ -2,7 +2,7 @@
 
 FROM registry.truesight.asia/aspnet:3.1-buster-slim AS base
 WORKDIR /app
-RUN apt-get update && apt-get install -y net-tools curl iputils-ping telnetd nano vim libc6-dev libgdiplus
+
 
 FROM registry.truesight.asia/dotnet-sdk:3.1-buster AS build
 WORKDIR /src
@@ -16,7 +16,7 @@ FROM build AS publish
 RUN dotnet publish "DMS.csproj" -c Release -o /app/publish
 
 FROM base AS final
-
+RUN apt-get update && apt-get install -y net-tools curl iputils-ping telnetd nano vim libc6-dev libgdiplus
 WORKDIR /app
 
 COPY --from=publish /app/publish .

@@ -13,6 +13,7 @@ namespace DMS.Rpc.mobile.general_mobile
 
     public class GeneralMobile_StoreStatisticFilterDTO : FilterDTO 
     {
+        public IdFilter SalesOrderTypeId { get; set; }
         public IdFilter StoreId { get; set; }
         public IdFilter Time { get; set; }
     }

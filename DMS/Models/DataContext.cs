@@ -617,6 +617,8 @@ namespace DMS.Models
             {
                 entity.ToTable("CodeGeneratorRule", "MDM");
 
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.DeletedAt).HasColumnType("datetime");

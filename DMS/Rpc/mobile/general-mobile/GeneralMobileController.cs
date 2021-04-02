@@ -1062,7 +1062,7 @@ namespace DMS.Rpc.mobile.general_mobile
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
 
-            if (GeneralMobile_StoreStatisticFilterDTO.StoreId == null || GeneralMobile_StoreStatisticFilterDTO.StoreId.Equal.HasValue == false)
+            if (GeneralMobile_StoreStatisticFilterDTO.SalesOrderTypeId == null || GeneralMobile_StoreStatisticFilterDTO.StoreId == null || GeneralMobile_StoreStatisticFilterDTO.StoreId.Equal.HasValue == false)
                 return new GeneralMobile_StoreStatisticDTO();
 
             DateTime Now = StaticParams.DateTimeNow.Date;
@@ -1071,12 +1071,39 @@ namespace DMS.Rpc.mobile.general_mobile
             (Start, End) = ConvertTime(GeneralMobile_StoreStatisticFilterDTO.Time);
 
             GeneralMobile_StoreStatisticDTO GeneralMobile_StoreStatisticDTO = new GeneralMobile_StoreStatisticDTO();
-            var query = from t in DataContext.IndirectSalesOrderTransaction
-                        where t.BuyerStoreId == GeneralMobile_StoreStatisticFilterDTO.StoreId.Equal &&
-                        Start <= t.OrderDate && t.OrderDate <= End
-                        select t;
 
-            GeneralMobile_StoreStatisticDTO.Revenue = query.Where(x => x.Revenue.HasValue).Select(x => x.Revenue.Value).Sum();
+            if(GeneralMobile_StoreStatisticFilterDTO.SalesOrderTypeId?.Equal == SalesOrderTypeEnum.DIRECT.Id)
+            {
+                var query = from t in DataContext.DirectSalesOrderTransaction
+                            where t.BuyerStoreId == GeneralMobile_StoreStatisticFilterDTO.StoreId.Equal &&
+                            Start <= t.OrderDate && t.OrderDate <= End
+                            select t;
+
+                GeneralMobile_StoreStatisticDTO.Revenue = query.Where(x => x.Revenue.HasValue).Select(x => x.Revenue.Value).Sum();
+            }
+            else if (GeneralMobile_StoreStatisticFilterDTO.SalesOrderTypeId?.Equal == SalesOrderTypeEnum.INDIRECT.Id)
+            {
+                var query = from t in DataContext.IndirectSalesOrderTransaction
+                            where t.BuyerStoreId == GeneralMobile_StoreStatisticFilterDTO.StoreId.Equal &&
+                            Start <= t.OrderDate && t.OrderDate <= End
+                            select t;
+
+                GeneralMobile_StoreStatisticDTO.Revenue = query.Where(x => x.Revenue.HasValue).Select(x => x.Revenue.Value).Sum();
+            }
+            else
+            {
+                var query1 = from t in DataContext.DirectSalesOrderTransaction
+                            where t.BuyerStoreId == GeneralMobile_StoreStatisticFilterDTO.StoreId.Equal &&
+                            Start <= t.OrderDate && t.OrderDate <= End
+                            select t;
+                var query2 = from t in DataContext.IndirectSalesOrderTransaction
+                            where t.BuyerStoreId == GeneralMobile_StoreStatisticFilterDTO.StoreId.Equal &&
+                            Start <= t.OrderDate && t.OrderDate <= End
+                            select t;
+                GeneralMobile_StoreStatisticDTO.Revenue = query1.Where(x => x.Revenue.HasValue).Select(x => x.Revenue.Value).Sum();
+                GeneralMobile_StoreStatisticDTO.Revenue += query2.Where(x => x.Revenue.HasValue).Select(x => x.Revenue.Value).Sum();
+            }
+
             return GeneralMobile_StoreStatisticDTO;
         }
 
