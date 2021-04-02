@@ -44,6 +44,12 @@ namespace DMS.Rpc.mobile.general_mobile
             return Dashborad_EnumLists;
         }
 
+        [Route(GeneralMobileRoute.SingleListSalesOrderType), HttpPost]
+        public List<GenericEnum> SingleListSalesOrderType()
+        {
+            return SalesOrderTypeEnum.SalesOrderTypeEnumList;
+        }
+
         [Route(GeneralMobileRoute.SingleListAlbum), HttpPost]
         public async Task<List<GeneralMobile_AlbumDTO>> SingleListAlbum([FromBody] GeneralMobile_AlbumFilterDTO GeneralMobile_AlbumFilterDTO)
         {
