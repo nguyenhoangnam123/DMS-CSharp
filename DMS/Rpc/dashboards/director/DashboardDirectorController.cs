@@ -676,7 +676,8 @@ namespace DMS.Rpc.dashboards.director
 
             var query_Scouting = from ss in DataContext.StoreScouting
                                  join au in DataContext.AppUser on ss.CreatorId equals au.Id
-                                 where (OrganizationIds.Contains(au.OrganizationId))
+                                 where (OrganizationIds.Contains(au.OrganizationId)) &&
+                                 (ProvinceId.HasValue == false || (ss.ProvinceId.HasValue && ss.ProvinceId == ProvinceId.Value))
                                  && ss.StoreScoutingStatusId == StoreScoutingStatusEnum.NOTOPEN.Id // chi lay cua hang du thao chua chinh thuc
                                  && ss.DeletedAt == null
                                  select new DashboardDirector_StoreDTO
