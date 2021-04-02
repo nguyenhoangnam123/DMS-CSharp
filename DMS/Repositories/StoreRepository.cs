@@ -684,7 +684,7 @@ namespace DMS.Repositories
                         join tt in tempTableQuery.Query on s.Id equals tt.Column1
                         select s;
 
-            List<Store> Stores = query.Where(x => Ids.Contains(x.Id)).Select(x => new Store
+            List<Store> Stores = await query.Select(x => new Store
             {
                 Id = x.Id,
                 Code = x.Code,
@@ -860,12 +860,12 @@ namespace DMS.Repositories
                     Code = x.StoreStatus.Code,
                     Name = x.StoreStatus.Name,
                 },
-            }).ToList();
+            }).ToListAsync();
 
             var queryStoreImageMappings = from i in DataContext.StoreImageMapping
                                           join tt in tempTableQuery.Query on i.StoreId equals tt.Column1
                                           select i;
-            var StoreImageMappings = await queryStoreImageMappings.Where(x => Ids.Contains(x.StoreId)).Select(x => new StoreImageMapping
+            var StoreImageMappings = await queryStoreImageMappings.Select(x => new StoreImageMapping
             {
                 ImageId = x.ImageId,
                 StoreId = x.StoreId,
@@ -885,7 +885,7 @@ namespace DMS.Repositories
             var queryBrandInStores = from bs in DataContext.BrandInStore
                                           join tt in tempTableQuery.Query on bs.StoreId equals tt.Column1
                                           select bs;
-            var BrandInStores = await queryBrandInStores.Where(x => Ids.Contains(x.StoreId))
+            var BrandInStores = await queryBrandInStores
                 .Select(x => new BrandInStore
                 {
                     Id = x.Id,
