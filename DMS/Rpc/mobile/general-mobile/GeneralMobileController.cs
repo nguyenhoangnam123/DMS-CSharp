@@ -1075,7 +1075,9 @@ namespace DMS.Rpc.mobile.general_mobile
             if(GeneralMobile_StoreStatisticFilterDTO.SalesOrderTypeId?.Equal == SalesOrderTypeEnum.DIRECT.Id)
             {
                 var query = from t in DataContext.DirectSalesOrderTransaction
+                            join o in DataContext.DirectSalesOrder on t.DirectSalesOrderId equals o.Id
                             where t.BuyerStoreId == GeneralMobile_StoreStatisticFilterDTO.StoreId.Equal &&
+                            o.RequestStateId == RequestStateEnum.APPROVED.Id &&
                             Start <= t.OrderDate && t.OrderDate <= End
                             select t;
 
@@ -1084,7 +1086,9 @@ namespace DMS.Rpc.mobile.general_mobile
             else if (GeneralMobile_StoreStatisticFilterDTO.SalesOrderTypeId?.Equal == SalesOrderTypeEnum.INDIRECT.Id)
             {
                 var query = from t in DataContext.IndirectSalesOrderTransaction
+                            join o in DataContext.IndirectSalesOrder on t.IndirectSalesOrderId equals o.Id
                             where t.BuyerStoreId == GeneralMobile_StoreStatisticFilterDTO.StoreId.Equal &&
+                            o.RequestStateId == RequestStateEnum.APPROVED.Id &&
                             Start <= t.OrderDate && t.OrderDate <= End
                             select t;
 
@@ -1093,13 +1097,17 @@ namespace DMS.Rpc.mobile.general_mobile
             else
             {
                 var query1 = from t in DataContext.DirectSalesOrderTransaction
-                            where t.BuyerStoreId == GeneralMobile_StoreStatisticFilterDTO.StoreId.Equal &&
-                            Start <= t.OrderDate && t.OrderDate <= End
-                            select t;
+                             join o in DataContext.DirectSalesOrder on t.DirectSalesOrderId equals o.Id
+                             where t.BuyerStoreId == GeneralMobile_StoreStatisticFilterDTO.StoreId.Equal &&
+                             o.RequestStateId == RequestStateEnum.APPROVED.Id &&
+                             Start <= t.OrderDate && t.OrderDate <= End
+                             select t;
                 var query2 = from t in DataContext.IndirectSalesOrderTransaction
-                            where t.BuyerStoreId == GeneralMobile_StoreStatisticFilterDTO.StoreId.Equal &&
-                            Start <= t.OrderDate && t.OrderDate <= End
-                            select t;
+                             join o in DataContext.IndirectSalesOrder on t.IndirectSalesOrderId equals o.Id
+                             where t.BuyerStoreId == GeneralMobile_StoreStatisticFilterDTO.StoreId.Equal &&
+                             o.RequestStateId == RequestStateEnum.APPROVED.Id &&
+                             Start <= t.OrderDate && t.OrderDate <= End
+                             select t;
                 GeneralMobile_StoreStatisticDTO.Revenue = query1.Where(x => x.Revenue.HasValue).Select(x => x.Revenue.Value).Sum();
                 GeneralMobile_StoreStatisticDTO.Revenue += query2.Where(x => x.Revenue.HasValue).Select(x => x.Revenue.Value).Sum();
             }

@@ -32,6 +32,7 @@ namespace DMS.Services.MStore
         //Task<Store> Reject(Store Store);
         Task<List<Store>> BulkDelete(List<Store> Stores);
         Task<List<Store>> Import(List<Store> Stores);
+        Task<List<Store>> Export(StoreFilter StoreFilter);
         StoreFilter ToFilter(StoreFilter StoreFilter);
         Task<Image> SaveImage(Image Image);
     }
@@ -615,6 +616,32 @@ namespace DMS.Services.MStore
 
                 await Logging.CreateAuditLog(Stores, new { }, nameof(StoreService));
                 return null;
+            }
+            catch (Exception ex)
+            {
+                await UOW.Rollback();
+                if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(StoreService));
+                    throw new MessageException(ex);
+                }
+                else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(StoreService));
+                    throw new MessageException(ex.InnerException);
+                }
+            }
+        }
+
+        public async Task<List<Store>> Export(StoreFilter StoreFilter)
+        {
+            try
+            {
+                StoreFilter.Selects = StoreSelect.Id;
+                List<Store> Stores = await UOW.StoreRepository.List(StoreFilter);
+                var Ids = Stores.Select(x => x.Id).ToList();
+                Stores = await UOW.StoreRepository.List(Ids);
+                return Stores;
             }
             catch (Exception ex)
             {

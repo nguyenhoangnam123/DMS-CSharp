@@ -872,6 +872,44 @@ namespace DMS.Repositories
                     DeletedAt = x.Image.DeletedAt,
                 }
             }).ToListAsync();
+
+            var BrandInStores = await DataContext.BrandInStore.Where(x => Ids.Contains(x.StoreId))
+                .Select(x => new BrandInStore
+                {
+                    Id = x.Id,
+                    BrandId = x.BrandId,
+                    CreatorId = x.CreatorId,
+                    StoreId = x.StoreId,
+                    Top = x.Top,
+                    Brand = x.Brand == null ? null : new Brand
+                    {
+                        Id = x.Brand.Id,
+                        Code = x.Brand.Code,
+                        Name = x.Brand.Name,
+                    },
+                }).ToListAsync();
+            var BrandInStoreIds = BrandInStores.Select(x => x.Id).ToList();
+            var BrandInStoreProductGroupingMappings = await DataContext.BrandInStoreProductGroupingMapping
+                .Select(x => new BrandInStoreProductGroupingMapping
+                {
+                    BrandInStoreId = x.BrandInStoreId,
+                    ProductGroupingId = x.ProductGroupingId,
+                    ProductGrouping = x.ProductGrouping == null ? null : new ProductGrouping
+                    {
+                        Id = x.ProductGrouping.Id,
+                        Code = x.ProductGrouping.Code,
+                        Name = x.ProductGrouping.Name,
+                    }
+                }).ToListAsync();
+            foreach (var BrandInStore in BrandInStores)
+            {
+                BrandInStore.BrandInStoreProductGroupingMappings = BrandInStoreProductGroupingMappings.Where(x => x.BrandInStoreId == BrandInStore.Id).ToList();
+            }
+            foreach (var Store in Stores)
+            {
+                Store.StoreImageMappings = StoreImageMappings.Where(x => x.StoreId == Store.Id).ToList();
+                Store.BrandInStores = BrandInStores.Where(x => x.StoreId == Store.Id).ToList();
+            }
             return Stores;
         }
         public async Task<int> CountInScoped(StoreFilter filter, long AppUserId)
