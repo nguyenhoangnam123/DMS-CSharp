@@ -1,6 +1,7 @@
 ﻿using DMS.Common;
 using DMS.Entities;
 using DMS.Enums;
+using DMS.Helpers;
 using DMS.Services.MAppUser;
 using DMS.Services.MBrand;
 using DMS.Services.MDistrict;
@@ -20,6 +21,7 @@ using Microsoft.AspNetCore.Mvc;
 using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -569,267 +571,93 @@ namespace DMS.Rpc.store
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
 
-            List<Organization> Organizations = await OrganizationService.List(new OrganizationFilter
+            Organization Org;
+            if (Store_StoreFilterDTO.OrganizationId.HasValue == false)
             {
-                Skip = 0,
-                Take = int.MaxValue,
-                Selects = OrganizationSelect.Code | OrganizationSelect.Name | OrganizationSelect.Path
-            });
-
-            List<StoreType> StoreTypes = await StoreTypeService.List(new StoreTypeFilter
+                var Organizations = await OrganizationService.List(new OrganizationFilter
+                {
+                    Skip = 0,
+                    Take = 1,
+                    Selects = OrganizationSelect.ALL,
+                    Level = new LongFilter { Equal = 1 },
+                    StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id }
+                });
+                Org = Organizations.FirstOrDefault();
+            }
+            else
             {
-                Skip = 0,
-                Take = int.MaxValue,
-                Selects = StoreTypeSelect.Id | StoreTypeSelect.Code | StoreTypeSelect.Name
-            });
-
-            List<StoreGrouping> StoreGroupings = await StoreGroupingService.List(new StoreGroupingFilter
-            {
-                Skip = 0,
-                Take = int.MaxValue,
-                Selects = StoreGroupingSelect.Id | StoreGroupingSelect.Code | StoreGroupingSelect.Name
-            });
-
-            List<Province> Provinces = await ProvinceService.List(new ProvinceFilter
-            {
-                Skip = 0,
-                Take = int.MaxValue,
-                Selects = ProvinceSelect.Id | ProvinceSelect.Code | ProvinceSelect.Name
-            });
-
-            List<District> Districts = await DistrictService.List(new DistrictFilter
-            {
-                Skip = 0,
-                Take = int.MaxValue,
-                Selects = DistrictSelect.Id | DistrictSelect.Code | DistrictSelect.Name | DistrictSelect.Province
-            });
-
-            List<Ward> Wards = await WardService.List(new WardFilter
-            {
-                Skip = 0,
-                Take = int.MaxValue,
-                Selects = WardSelect.Id | WardSelect.Code | WardSelect.Name | WardSelect.District
-            });
-
+                Org = await OrganizationService.Get(Store_StoreFilterDTO.OrganizationId.Equal.Value);
+            }
+            
             StoreFilter StoreFilter = ConvertFilterDTOToFilterEntity(Store_StoreFilterDTO);
             StoreFilter = StoreService.ToFilter(StoreFilter);
             StoreFilter.Skip = 0;
             StoreFilter.Take = int.MaxValue;
             StoreFilter = StoreService.ToFilter(StoreFilter);
 
-            List<Store> Stores = await StoreService.List(StoreFilter);
-            MemoryStream memoryStream = new MemoryStream();
-            using (ExcelPackage excel = new ExcelPackage(memoryStream))
+            List<Store> Stores = await StoreService.Export(StoreFilter);
+            List<Store_StoreExportDTO> Store_StoreExportDTOs = Stores.Select(x => new Store_StoreExportDTO(x)).ToList();
+            long stt = 1;
+            foreach (var Store_StoreExportDTO in Store_StoreExportDTOs)
             {
-                #region Store
-                var StoreHeaders = new List<string[]>()
-                {
-                    new string[]
-                    {
-                        "STT",
-                        "Mã đại lý (tự sinh)",
-                        "Mã đại lý (tự nhập)",
-                        "Tên đại lý",
-                        "Đơn vị quản lý",
-                        "Đại lý cấp cha",
-                        "Cấp đại lý" ,
-                        "Nhóm đại lý",
-                        "Tư cách pháp nhân",
-                        "Mã số thuế",
-                        "Tỉnh/Thành phố",
-                        "Quận/Huyện",
-                        "Phường/Xã",
-                        "Địa Chỉ đại lý",
-                        "Kinh Độ",
-                        "Vĩ Độ",
-                        "Địa Chỉ Giao Hàng",
-                        "Kinh Độ Giao Hàng",
-                        "Vĩ Độ Giao Hàng",
-                        "Điện Thoại",
-                        "Tên Chủ đại lý",
-                        "Điện Thoại Liên Hệ",
-                        "Email",
-                        "Trạng thái duyệt",
-                        "Trạng thái"
-                    }
-                };
-                List<object[]> data = new List<object[]>();
-                for (int i = 0; i < Stores.Count; i++)
-                {
-                    var Store = Stores[i];
-                    data.Add(new Object[]
-                    {
-                        i+1,
-                        Store.Code,
-                        Store.CodeDraft,
-                        Store.Name,
-                        Store.Organization?.Name,
-                        Store.ParentStore?.Name,
-                        Store.StoreType?.Name,
-                        Store.StoreGrouping?.Name,
-                        Store.LegalEntity,
-                        Store.TaxCode,
-                        Store.Province?.Name,
-                        Store.District?.Name,
-                        Store.Ward?.Name,
-                        Store.Address,
-                        Store.Longitude,
-                        Store.Latitude,
-                        Store.DeliveryAddress,
-                        Store.DeliveryLongitude,
-                        Store.DeliveryLatitude,
-                        Store.Telephone,
-                        Store.OwnerName,
-                        Store.OwnerPhone,
-                        Store.OwnerEmail,
-                        Store.StoreStatus?.Name,
-                        Store.Status?.Name
-                    });
-                }
-                excel.GenerateWorksheet("Store", StoreHeaders, data);
-                #endregion
-
-                #region Organization
-                var OrganizationHeaders = new List<string[]>()
-                {
-                    new string[]
-                    {
-                        "Mã đơn vị",
-                        "Tên đơn vị",
-                    }
-                };
-                data = new List<object[]>();
-                for (int i = 0; i < Organizations.Count; i++)
-                {
-                    var Organization = Organizations[i];
-                    data.Add(new Object[]
-                    {
-                        Organization.Code,
-                        Organization.Name,
-                    });
-                }
-                excel.GenerateWorksheet("Organization", OrganizationHeaders, data);
-                #endregion
-
-                #region StoreType
-                var StoreTypeHeaders = new List<string[]>()
-                {
-                    new string[]
-                    {
-                        "Mã",
-                        "Tên",
-                    }
-                };
-                data = new List<object[]>();
-                for (int i = 0; i < StoreTypes.Count; i++)
-                {
-                    var StoreType = StoreTypes[i];
-                    data.Add(new Object[]
-                    {
-                        StoreType.Code,
-                        StoreType.Name,
-                    });
-                }
-                excel.GenerateWorksheet("StoreType", StoreTypeHeaders, data);
-                #endregion
-
-                #region StoreGrouping
-                var StoreGroupingHeaders = new List<string[]>()
-                {
-                    new string[]
-                    {
-                        "Mã",
-                        "Tên",
-                    }
-                };
-                data = new List<object[]>();
-                for (int i = 0; i < StoreGroupings.Count; i++)
-                {
-                    var StoreGrouping = StoreGroupings[i];
-                    data.Add(new Object[]
-                    {
-                        StoreGrouping.Code,
-                        StoreGrouping.Name,
-                    });
-                }
-                excel.GenerateWorksheet("StoreGroup", StoreGroupingHeaders, data);
-                #endregion
-
-                #region Province
-                var ProvinceHeaders = new List<string[]>()
-                {
-                    new string[]
-                    {
-                        "Mã",
-                        "Tên",
-                    }
-                };
-                data = new List<object[]>();
-                for (int i = 0; i < Provinces.Count; i++)
-                {
-                    var Province = Provinces[i];
-                    data.Add(new Object[]
-                    {
-                        Province.Code,
-                        Province.Name,
-                    });
-                }
-                excel.GenerateWorksheet("Province", ProvinceHeaders, data);
-                #endregion
-
-                #region District
-                var DistrictHeaders = new List<string[]>()
-                {
-                    new string[]
-                    {
-                        "Mã",
-                        "Tên",
-                        "Tên tỉnh/thành phố"
-                    }
-                };
-                data = new List<object[]>();
-                for (int i = 0; i < Districts.Count; i++)
-                {
-                    var District = Districts[i];
-                    data.Add(new Object[]
-                    {
-                        District.Code,
-                        District.Name,
-                        District.Province?.Name,
-                    });
-                }
-                excel.GenerateWorksheet("District", DistrictHeaders, data);
-                #endregion
-
-                #region Ward
-                var WardHeaders = new List<string[]>()
-                {
-                    new string[]
-                    {
-                        "Mã",
-                        "Tên",
-                        "Tên quận/huyện",
-                        "Tên tỉnh/thành phố",
-                    }
-                };
-                data = new List<object[]>();
-                for (int i = 0; i < Wards.Count; i++)
-                {
-                    var Ward = Wards[i];
-                    data.Add(new Object[]
-                    {
-                        Ward.Code,
-                        Ward.Name,
-                        Ward.District?.Name,
-                        Ward.District?.Province?.Name,
-                    });
-                }
-                excel.GenerateWorksheet("Ward", WardHeaders, data);
-                #endregion
-                excel.Save();
+                Store_StoreExportDTO.STT = stt++;   
             }
+            Parallel.ForEach(Store_StoreExportDTOs, Store_StoreExportDTO =>
+            {
+                Store_StoreExportDTO.STT = stt++;
+                Store_StoreExportDTO.BrandInStoreTop1 = Store_StoreExportDTO.BrandInStores.Where(x => x.Top == 1).FirstOrDefault();
+                Store_StoreExportDTO.BrandInStoreTop2 = Store_StoreExportDTO.BrandInStores.Where(x => x.Top == 2).FirstOrDefault();
+                Store_StoreExportDTO.BrandInStoreTop3 = Store_StoreExportDTO.BrandInStores.Where(x => x.Top == 3).FirstOrDefault();
+                Store_StoreExportDTO.BrandInStoreTop4 = Store_StoreExportDTO.BrandInStores.Where(x => x.Top == 4).FirstOrDefault();
+                Store_StoreExportDTO.BrandInStoreTop5 = Store_StoreExportDTO.BrandInStores.Where(x => x.Top == 5).FirstOrDefault();
 
-            return File(memoryStream.ToArray(), "application/octet-stream", "Store" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".xlsx");
+                if (Store_StoreExportDTO.BrandInStoreTop1 != null)
+                {
+                    var ProductGroupings = Store_StoreExportDTO.BrandInStoreTop1.BrandInStoreProductGroupingMappings?.Select(x => x.ProductGrouping).ToList();
+                    var ProductGroupingNames = ProductGroupings.Select(x => x.Name).ToList();
+                    Store_StoreExportDTO.BrandInStoreTop1.ProductGroupings = string.Join(';', ProductGroupingNames);
+                }
+
+                if (Store_StoreExportDTO.BrandInStoreTop2 != null)
+                {
+                    var ProductGroupings = Store_StoreExportDTO.BrandInStoreTop2.BrandInStoreProductGroupingMappings?.Select(x => x.ProductGrouping).ToList();
+                    var ProductGroupingNames = ProductGroupings.Select(x => x.Name).ToList();
+                    Store_StoreExportDTO.BrandInStoreTop2.ProductGroupings = string.Join(';', ProductGroupingNames);
+                }
+
+                if (Store_StoreExportDTO.BrandInStoreTop3 != null)
+                {
+                    var ProductGroupings = Store_StoreExportDTO.BrandInStoreTop3.BrandInStoreProductGroupingMappings?.Select(x => x.ProductGrouping).ToList();
+                    var ProductGroupingNames = ProductGroupings.Select(x => x.Name).ToList();
+                    Store_StoreExportDTO.BrandInStoreTop3.ProductGroupings = string.Join(';', ProductGroupingNames);
+                }
+
+                if (Store_StoreExportDTO.BrandInStoreTop4 != null)
+                {
+                    var ProductGroupings = Store_StoreExportDTO.BrandInStoreTop4.BrandInStoreProductGroupingMappings?.Select(x => x.ProductGrouping).ToList();
+                    var ProductGroupingNames = ProductGroupings.Select(x => x.Name).ToList();
+                    Store_StoreExportDTO.BrandInStoreTop4.ProductGroupings = string.Join(';', ProductGroupingNames);
+                }
+
+                if (Store_StoreExportDTO.BrandInStoreTop5 != null)
+                {
+                    var ProductGroupings = Store_StoreExportDTO.BrandInStoreTop5.BrandInStoreProductGroupingMappings?.Select(x => x.ProductGrouping).ToList();
+                    var ProductGroupingNames = ProductGroupings.Select(x => x.Name).ToList();
+                    Store_StoreExportDTO.BrandInStoreTop5.ProductGroupings = string.Join(';', ProductGroupingNames);
+                }
+            });
+            string path = "Templates/Store_Export.xlsx";
+            byte[] arr = System.IO.File.ReadAllBytes(path);
+            MemoryStream input = new MemoryStream(arr);
+            MemoryStream output = new MemoryStream();
+            dynamic Data = new ExpandoObject();
+            Data.Data = Store_StoreExportDTOs;
+            Data.Org = Org;
+            using (var document = StaticParams.DocumentFactory.Open(input, output, "xlsx"))
+            {
+                document.Process(Data);
+            };
+            return File(output.ToArray(), "application/octet-stream", "Stores.xlsx");
         }
 
         [Route(StoreRoute.ExportTemplate), HttpPost]
@@ -892,7 +720,7 @@ namespace DMS.Rpc.store
             });
             ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
             MemoryStream MemoryStream = new MemoryStream();
-            string tempPath = "Templates/Store_Export.xlsx";
+            string tempPath = "Templates/Store_Template.xlsx";
             using (var xlPackage = new ExcelPackage(new FileInfo(tempPath)))
             {
                 #region sheet Organization 

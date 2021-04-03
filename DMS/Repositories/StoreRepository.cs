@@ -677,8 +677,14 @@ namespace DMS.Repositories
 
         public async Task<List<Store>> List(List<long> Ids)
         {
-            IQueryable<StoreDAO> StoreDAOs = DataContext.Store.AsNoTracking();
-            List<Store> Stores = StoreDAOs.Where(x => Ids.Contains(x.Id)).Select(x => new Store
+            ITempTableQuery<TempTable<long>> tempTableQuery = await DataContext
+                        .BulkInsertValuesIntoTempTableAsync<long>(Ids);
+
+            var query = from s in DataContext.Store
+                        join tt in tempTableQuery.Query on s.Id equals tt.Column1
+                        select s;
+
+            List<Store> Stores = await query.Select(x => new Store
             {
                 Id = x.Id,
                 Code = x.Code,
@@ -854,9 +860,12 @@ namespace DMS.Repositories
                     Code = x.StoreStatus.Code,
                     Name = x.StoreStatus.Name,
                 },
-            }).ToList();
+            }).ToListAsync();
 
-            var StoreImageMappings = await DataContext.StoreImageMapping.Where(x => Ids.Contains(x.StoreId)).Select(x => new StoreImageMapping
+            var queryStoreImageMappings = from i in DataContext.StoreImageMapping
+                                          join tt in tempTableQuery.Query on i.StoreId equals tt.Column1
+                                          select i;
+            var StoreImageMappings = await queryStoreImageMappings.Select(x => new StoreImageMapping
             {
                 ImageId = x.ImageId,
                 StoreId = x.StoreId,
@@ -872,6 +881,47 @@ namespace DMS.Repositories
                     DeletedAt = x.Image.DeletedAt,
                 }
             }).ToListAsync();
+
+            var queryBrandInStores = from bs in DataContext.BrandInStore
+                                          join tt in tempTableQuery.Query on bs.StoreId equals tt.Column1
+                                          select bs;
+            var BrandInStores = await queryBrandInStores
+                .Select(x => new BrandInStore
+                {
+                    Id = x.Id,
+                    BrandId = x.BrandId,
+                    CreatorId = x.CreatorId,
+                    StoreId = x.StoreId,
+                    Top = x.Top,
+                    Brand = x.Brand == null ? null : new Brand
+                    {
+                        Id = x.Brand.Id,
+                        Code = x.Brand.Code,
+                        Name = x.Brand.Name,
+                    },
+                }).ToListAsync();
+            var BrandInStoreIds = BrandInStores.Select(x => x.Id).ToList();
+            var BrandInStoreProductGroupingMappings = await DataContext.BrandInStoreProductGroupingMapping
+                .Select(x => new BrandInStoreProductGroupingMapping
+                {
+                    BrandInStoreId = x.BrandInStoreId,
+                    ProductGroupingId = x.ProductGroupingId,
+                    ProductGrouping = x.ProductGrouping == null ? null : new ProductGrouping
+                    {
+                        Id = x.ProductGrouping.Id,
+                        Code = x.ProductGrouping.Code,
+                        Name = x.ProductGrouping.Name,
+                    }
+                }).ToListAsync();
+            foreach (var BrandInStore in BrandInStores)
+            {
+                BrandInStore.BrandInStoreProductGroupingMappings = BrandInStoreProductGroupingMappings.Where(x => x.BrandInStoreId == BrandInStore.Id).ToList();
+            }
+            foreach (var Store in Stores)
+            {
+                Store.StoreImageMappings = StoreImageMappings.Where(x => x.StoreId == Store.Id).ToList();
+                Store.BrandInStores = BrandInStores.Where(x => x.StoreId == Store.Id).ToList();
+            }
             return Stores;
         }
         public async Task<int> CountInScoped(StoreFilter filter, long AppUserId)

@@ -23,7 +23,7 @@ namespace DMS.Rpc.store
         public Store_BrandDTO Brand { get; set; }
         public Store_AppUserDTO Creator { get; set; }
         public List<Store_BrandInStoreProductGroupingMappingDTO> BrandInStoreProductGroupingMappings { get; set; }
-
+        public string ProductGroupings { get; set; }
         public Store_BrandInStoreDTO() { }
         public Store_BrandInStoreDTO(BrandInStore BrandInStore)
         {

@@ -188,7 +188,7 @@ namespace DMS.Rpc.dashboards.director
                         join tt in tempTableQuery.Query on s.Id equals tt.Column1
                         where OrganizationIds.Contains(s.OrganizationId) &&
                         (ProvinceId.HasValue == false || (s.ProvinceId.HasValue && s.ProvinceId == ProvinceId.Value)) &&
-                        s.StatusId == StatusEnum.ACTIVE.Id && 
+                        s.StatusId == StatusEnum.ACTIVE.Id &&
                         s.DeletedAt == null
                         select s;
 
@@ -201,7 +201,7 @@ namespace DMS.Rpc.dashboards.director
         {
             DateTime Now = StaticParams.DateTimeNow;
             DateTime Start = new DateTime(Now.Year, Now.Month, 1).AddHours(0 - CurrentContext.TimeZone);
-            DateTime End = Start.AddMonths(1).AddSeconds(-1);
+            DateTime End = new DateTime(Now.AddHours(CurrentContext.TimeZone).Year, Now.AddHours(CurrentContext.TimeZone).Month, 1).AddHours(0 - CurrentContext.TimeZone);
             (Start, End) = ConvertTime(DashboardDirector_IndirectSalesOrderFluctuationFilterDTO.Time);
 
             var ProvinceId = DashboardDirector_IndirectSalesOrderFluctuationFilterDTO.ProvinceId?.Equal;
@@ -254,7 +254,7 @@ namespace DMS.Rpc.dashboards.director
         {
             DateTime Now = StaticParams.DateTimeNow;
             DateTime Start = new DateTime(Now.Year, Now.Month, 1).AddHours(0 - CurrentContext.TimeZone);
-            DateTime End = Start.AddMonths(1).AddSeconds(-1);
+            DateTime End = new DateTime(Now.AddHours(CurrentContext.TimeZone).Year, Now.AddHours(CurrentContext.TimeZone).Month, 1).AddHours(0 - CurrentContext.TimeZone);
             (Start, End) = ConvertTime(DashboardDirector_SaledItemFluctuationFilterDTO.Time);
 
             var ProvinceId = DashboardDirector_SaledItemFluctuationFilterDTO.ProvinceId?.Equal;
@@ -308,7 +308,7 @@ namespace DMS.Rpc.dashboards.director
         {
             DateTime Now = StaticParams.DateTimeNow;
             DateTime Start = new DateTime(Now.Year, Now.Month, 1).AddHours(0 - CurrentContext.TimeZone);
-            DateTime End = Start.AddMonths(1).AddSeconds(-1);
+            DateTime End = new DateTime(Now.AddHours(CurrentContext.TimeZone).Year, Now.AddHours(CurrentContext.TimeZone).Month, 1).AddHours(0 - CurrentContext.TimeZone);
             (Start, End) = ConvertTime(DashboardDirector_SaledItemFluctuationFilterDTO.Time);
 
             var ProvinceId = DashboardDirector_SaledItemFluctuationFilterDTO.ProvinceId?.Equal;
@@ -361,7 +361,7 @@ namespace DMS.Rpc.dashboards.director
         {
             DateTime Now = StaticParams.DateTimeNow;
             DateTime Start = new DateTime(Now.Year, Now.Month, 1).AddHours(0 - CurrentContext.TimeZone);
-            DateTime End = Start.AddMonths(1).AddSeconds(-1);
+            DateTime End = new DateTime(Now.AddHours(CurrentContext.TimeZone).Year, Now.AddHours(CurrentContext.TimeZone).Month, 1).AddHours(0 - CurrentContext.TimeZone);
             (Start, End) = ConvertTime(DashboardDirector_StoreFilterDTO.Time);
 
             var ProvinceId = DashboardDirector_StoreFilterDTO.ProvinceId?.Equal;
@@ -413,7 +413,7 @@ namespace DMS.Rpc.dashboards.director
         public async Task<DashboardDirector_StatisticDailyDTO> StatisticToday([FromBody] DashboardDirector_StoreFilterDTO DashboardDirector_StoreFilterDTO)
         {
             DateTime Start = LocalStartDay(CurrentContext);
-            DateTime End = Start.AddDays(1).AddSeconds(-1);
+            DateTime End = LocalEndDay(CurrentContext);
 
             var ProvinceId = DashboardDirector_StoreFilterDTO.ProvinceId?.Equal;
             long? SaleEmployeeId = DashboardDirector_StoreFilterDTO.AppUserId?.Equal;
@@ -472,16 +472,16 @@ namespace DMS.Rpc.dashboards.director
                                           select i;
 
             var queryStoreHasCheckedCounter = from sc in DataContext.StoreChecking
-                                        join s in DataContext.Store on sc.StoreId equals s.Id
-                                        join au in DataContext.AppUser on sc.SaleEmployeeId equals au.Id
-                                        join o in DataContext.Organization on au.OrganizationId equals o.Id
-                                        where sc.CheckOutAt.HasValue && sc.CheckOutAt >= Start && sc.CheckOutAt <= End &&
-                                        AppUserIds.Contains(au.Id) &&
-                                        (SaleEmployeeId.HasValue == false || au.Id == SaleEmployeeId.Value) &&
-                                        (ProvinceId.HasValue == false || (s.ProvinceId.HasValue && s.ProvinceId == ProvinceId.Value)) &&
-                                        OrganizationIds.Contains(s.OrganizationId) &&
-                                        au.DeletedAt == null && o.DeletedAt == null && s.DeletedAt == null
-                                        select s;
+                                              join s in DataContext.Store on sc.StoreId equals s.Id
+                                              join au in DataContext.AppUser on sc.SaleEmployeeId equals au.Id
+                                              join o in DataContext.Organization on au.OrganizationId equals o.Id
+                                              where sc.CheckOutAt.HasValue && sc.CheckOutAt >= Start && sc.CheckOutAt <= End &&
+                                              AppUserIds.Contains(au.Id) &&
+                                              (SaleEmployeeId.HasValue == false || au.Id == SaleEmployeeId.Value) &&
+                                              (ProvinceId.HasValue == false || (s.ProvinceId.HasValue && s.ProvinceId == ProvinceId.Value)) &&
+                                              OrganizationIds.Contains(s.OrganizationId) &&
+                                              au.DeletedAt == null && o.DeletedAt == null && s.DeletedAt == null
+                                              select s;
 
             var queryStoreChecking = from sc in DataContext.StoreChecking
                                      join s in DataContext.Store on sc.StoreId equals s.Id
@@ -513,9 +513,9 @@ namespace DMS.Rpc.dashboards.director
         [Route(DashboardDirectorRoute.StatisticYesterday), HttpPost]
         public async Task<DashboardDirector_StatisticDailyDTO> StatisticYesterday([FromBody] DashboardDirector_IndirectSalesOrderFluctuationFilterDTO DashboardDirector_IndirectSalesOrderFluctuationFilterDTO)
         {
-            DateTime Now = StaticParams.DateTimeNow.Date;
-            DateTime Start = LocalStartDay(CurrentContext).AddDays(-1);
-            DateTime End = Start.AddDays(1).AddSeconds(-1);
+            DateTime Now = StaticParams.DateTimeNow;
+            DateTime Start = LocalStartDay(CurrentContext);
+            DateTime End = LocalEndDay(CurrentContext);
 
             var ProvinceId = DashboardDirector_IndirectSalesOrderFluctuationFilterDTO.ProvinceId?.Equal;
             long? SaleEmployeeId = DashboardDirector_IndirectSalesOrderFluctuationFilterDTO.AppUserId?.Equal;
@@ -632,7 +632,7 @@ namespace DMS.Rpc.dashboards.director
             if (SaleEmployeeId.HasValue)
             {
                 var AppUserStoreMappings = await DataContext.AppUserStoreMapping.Where(x => x.AppUserId == SaleEmployeeId.Value).ToListAsync();
-                if(AppUserStoreMappings.Count > 0)
+                if (AppUserStoreMappings.Count > 0)
                 {
                     var subStoreIds = AppUserStoreMappings.Select(x => x.StoreId).ToList();
                     StoreIds = StoreIds.Intersect(subStoreIds).ToList();
@@ -676,7 +676,8 @@ namespace DMS.Rpc.dashboards.director
 
             var query_Scouting = from ss in DataContext.StoreScouting
                                  join au in DataContext.AppUser on ss.CreatorId equals au.Id
-                                 where (OrganizationIds.Contains(au.OrganizationId))
+                                 where (OrganizationIds.Contains(au.OrganizationId)) &&
+                                 (ProvinceId.HasValue == false || (ss.ProvinceId.HasValue && ss.ProvinceId == ProvinceId.Value))
                                  && ss.StoreScoutingStatusId == StoreScoutingStatusEnum.NOTOPEN.Id // chi lay cua hang du thao chua chinh thuc
                                  && ss.DeletedAt == null
                                  select new DashboardDirector_StoreDTO
@@ -818,9 +819,9 @@ namespace DMS.Rpc.dashboards.director
         [Route(DashboardDirectorRoute.Top5RevenueByProduct), HttpPost]
         public async Task<List<DashboardDirector_Top5RevenueByProductDTO>> Top5RevenueByProduct([FromBody] DashboardDirector_Top5RevenueByProductFilterDTO DashboardDirector_Top5RevenueByProductFilterDTO)
         {
-            DateTime Now = StaticParams.DateTimeNow.Date;
-            DateTime Start = new DateTime(Now.Year, Now.Month, Now.Day);
-            DateTime End = new DateTime(Now.Year, Now.Month, Now.Day);
+            DateTime Now = StaticParams.DateTimeNow;
+            DateTime Start = LocalStartDay(CurrentContext);
+            DateTime End = LocalEndDay(CurrentContext);
             (Start, End) = ConvertTime(DashboardDirector_Top5RevenueByProductFilterDTO.Time);
 
             var ProvinceId = DashboardDirector_Top5RevenueByProductFilterDTO.ProvinceId?.Equal;
@@ -880,9 +881,9 @@ namespace DMS.Rpc.dashboards.director
         [Route(DashboardDirectorRoute.Top5RevenueByEmployee), HttpPost]
         public async Task<List<DashboardDirector_Top5RevenueByEmployeeDTO>> Top5RevenueByEmployee([FromBody] DashboardDirector_Top5RevenueByEmployeeFilterDTO DashboardDirector_Top5RevenueByEmployeeFilterDTO)
         {
-            DateTime Now = StaticParams.DateTimeNow.Date;
-            DateTime Start = new DateTime(Now.Year, Now.Month, Now.Day);
-            DateTime End = new DateTime(Now.Year, Now.Month, Now.Day);
+            DateTime Now = StaticParams.DateTimeNow;
+            DateTime Start = LocalStartDay(CurrentContext);
+            DateTime End = LocalEndDay(CurrentContext);
             (Start, End) = ConvertTime(DashboardDirector_Top5RevenueByEmployeeFilterDTO.Time);
 
             var ProvinceId = DashboardDirector_Top5RevenueByEmployeeFilterDTO.ProvinceId?.Equal;
@@ -943,9 +944,9 @@ namespace DMS.Rpc.dashboards.director
         [Route(DashboardDirectorRoute.RevenueFluctuation), HttpPost]
         public async Task<DashboardDirector_RevenueFluctuationDTO> RevenueFluctuation([FromBody] DashboardDirector_RevenueFluctuationFilterDTO DashboardDirector_RevenueFluctuationFilterDTO)
         {
-            DateTime Now = StaticParams.DateTimeNow.Date;
+            DateTime Now = StaticParams.DateTimeNow;
             DateTime Start = LocalStartDay(CurrentContext);
-            DateTime End = new DateTime(Now.Year, Now.Month, Now.Day);
+            DateTime End = LocalEndDay(CurrentContext);
             (Start, End) = ConvertTime(DashboardDirector_RevenueFluctuationFilterDTO.Time);
 
             var ProvinceId = DashboardDirector_RevenueFluctuationFilterDTO.ProvinceId?.Equal;
@@ -1000,7 +1001,7 @@ namespace DMS.Rpc.dashboards.director
                 var IndirectSalesOrderTransactionDAOs = await query.ToListAsync();
                 DashboardDirector_RevenueFluctuationDTO DashboardDirector_RevenueFluctuationDTO = new DashboardDirector_RevenueFluctuationDTO();
                 DashboardDirector_RevenueFluctuationDTO.RevenueFluctuationByMonths = new List<DashboardDirector_RevenueFluctuationByMonthDTO>();
-                var number_of_day_in_this_month = DateTime.DaysInMonth(Start.Year, Start.Month);
+                var number_of_day_in_this_month = DateTime.DaysInMonth(Start.AddHours(CurrentContext.TimeZone).Year, Start.AddHours(CurrentContext.TimeZone).Month);
                 for (int i = 1; i < number_of_day_in_this_month + 1; i++)
                 {
                     DashboardDirector_RevenueFluctuationByMonthDTO RevenueFluctuationByMonth = new DashboardDirector_RevenueFluctuationByMonthDTO
@@ -1013,8 +1014,8 @@ namespace DMS.Rpc.dashboards.director
 
                 foreach (var RevenueFluctuationByMonth in DashboardDirector_RevenueFluctuationDTO.RevenueFluctuationByMonths)
                 {
-                    DateTime LocalStart = new DateTime(Now.Year, Now.Month, (int)RevenueFluctuationByMonth.Day).AddHours(0 - CurrentContext.TimeZone);
-                    DateTime LocalEnd = LocalStart.AddDays(1).AddSeconds(-1);
+                    DateTime LocalStart = new DateTime(Now.AddHours(CurrentContext.TimeZone).Year, Now.AddHours(CurrentContext.TimeZone).Month, (int)RevenueFluctuationByMonth.Day).AddHours(0 - CurrentContext.TimeZone);
+                    DateTime LocalEnd = LocalStart.AddHours(CurrentContext.TimeZone).AddDays(1).AddSeconds(-1).AddHours(0 - CurrentContext.TimeZone);
                     RevenueFluctuationByMonth.Revenue = IndirectSalesOrderTransactionDAOs.Where(x => LocalStart <= x.OrderDate && x.OrderDate <= LocalEnd)
                         .Where(x => x.Revenue.HasValue)
                         .Select(x => x.Revenue.Value)
@@ -1047,7 +1048,7 @@ namespace DMS.Rpc.dashboards.director
                 var IndirectSalesOrderTransactionDAOs = await query.ToListAsync();
                 DashboardDirector_RevenueFluctuationDTO DashboardDirector_RevenueFluctuationDTO = new DashboardDirector_RevenueFluctuationDTO();
                 DashboardDirector_RevenueFluctuationDTO.RevenueFluctuationByMonths = new List<DashboardDirector_RevenueFluctuationByMonthDTO>();
-                var number_of_day_in_this_month = DateTime.DaysInMonth(Start.Year, Start.Month);
+                var number_of_day_in_this_month = DateTime.DaysInMonth(Start.AddHours(CurrentContext.TimeZone).Year, Start.AddHours(CurrentContext.TimeZone).Month);
                 for (int i = 1; i < number_of_day_in_this_month + 1; i++)
                 {
                     DashboardDirector_RevenueFluctuationByMonthDTO RevenueFluctuationByMonth = new DashboardDirector_RevenueFluctuationByMonthDTO
@@ -1060,8 +1061,8 @@ namespace DMS.Rpc.dashboards.director
 
                 foreach (var RevenueFluctuationByMonth in DashboardDirector_RevenueFluctuationDTO.RevenueFluctuationByMonths)
                 {
-                    DateTime LocalStart = new DateTime(Now.Year, Now.Month, (int)RevenueFluctuationByMonth.Day).AddMonths(-1).AddHours(0 - CurrentContext.TimeZone);
-                    DateTime LocalEnd = LocalStart.AddDays(1).AddSeconds(-1);
+                    DateTime LocalStart = new DateTime(Now.AddHours(CurrentContext.TimeZone).Year, Now.AddHours(CurrentContext.TimeZone).AddMonths(-1).Month, (int)RevenueFluctuationByMonth.Day).AddHours(0 - CurrentContext.TimeZone);
+                    DateTime LocalEnd = LocalStart.AddHours(CurrentContext.TimeZone).AddDays(1).AddSeconds(-1).AddHours(0 - CurrentContext.TimeZone);
                     RevenueFluctuationByMonth.Revenue = IndirectSalesOrderTransactionDAOs.Where(x => LocalStart <= x.OrderDate && x.OrderDate <= LocalEnd)
                         .Where(x => x.Revenue.HasValue)
                         .Select(x => x.Revenue.Value)
@@ -1073,7 +1074,7 @@ namespace DMS.Rpc.dashboards.director
             }
             else if (DashboardDirector_RevenueFluctuationFilterDTO.Time.Equal.Value == THIS_QUARTER)
             {
-                var this_quarter = Convert.ToInt32(Math.Ceiling(Now.Month / 3m));
+                var this_quarter = Convert.ToInt32(Math.Ceiling(Now.AddHours(CurrentContext.TimeZone).Month / 3m));
                 var query = from t in DataContext.IndirectSalesOrderTransaction
                             join i in DataContext.IndirectSalesOrder on t.IndirectSalesOrderId equals i.Id
                             join au in DataContext.AppUser on t.SalesEmployeeId equals au.Id
@@ -1109,8 +1110,8 @@ namespace DMS.Rpc.dashboards.director
 
                 foreach (var RevenueFluctuationByQuarter in DashboardDirector_RevenueFluctuationDTO.RevenueFluctuationByQuaters)
                 {
-                    DateTime LocalStart = new DateTime(Now.Year, (int)RevenueFluctuationByQuarter.Month, 1).AddHours(0 - CurrentContext.TimeZone);
-                    DateTime LocalEnd = LocalStart.AddMonths(1).AddSeconds(-1);
+                    DateTime LocalStart = new DateTime(Now.AddHours(CurrentContext.TimeZone).Year, (int)RevenueFluctuationByQuarter.Month, 1).AddHours(0 - CurrentContext.TimeZone);
+                    DateTime LocalEnd = LocalStart.AddHours(CurrentContext.TimeZone).AddMonths(1).AddSeconds(-1).AddHours(0 - CurrentContext.TimeZone);
                     RevenueFluctuationByQuarter.Revenue = IndirectSalesOrderTransactionDAOs.Where(x => LocalStart <= x.OrderDate && x.OrderDate <= LocalEnd)
                         .Where(x => x.Revenue.HasValue)
                         .Select(x => x.Revenue.Value)
@@ -1122,7 +1123,7 @@ namespace DMS.Rpc.dashboards.director
             }
             else if (DashboardDirector_RevenueFluctuationFilterDTO.Time.Equal.Value == LAST_QUATER)
             {
-                var this_quarter = Convert.ToInt32(Math.Ceiling(Now.Month / 3m));
+                var this_quarter = Convert.ToInt32(Math.Ceiling(Now.AddHours(CurrentContext.TimeZone).Month / 3m));
 
                 var query = from t in DataContext.IndirectSalesOrderTransaction
                             join i in DataContext.IndirectSalesOrder on t.IndirectSalesOrderId equals i.Id
@@ -1159,8 +1160,8 @@ namespace DMS.Rpc.dashboards.director
 
                 foreach (var RevenueFluctuationByQuarter in DashboardDirector_RevenueFluctuationDTO.RevenueFluctuationByQuaters)
                 {
-                    DateTime LocalStart = new DateTime(Now.Year, (int)RevenueFluctuationByQuarter.Month, 1).AddMonths(-3).AddHours(0 - CurrentContext.TimeZone);
-                    DateTime LocalEnd = LocalStart.AddMonths(1).AddSeconds(-1);
+                    DateTime LocalStart = new DateTime(Now.AddHours(CurrentContext.TimeZone).Year, (int)RevenueFluctuationByQuarter.Month, 1).AddMonths(-3).AddHours(0 - CurrentContext.TimeZone);
+                    DateTime LocalEnd = LocalStart.AddHours(CurrentContext.TimeZone).AddMonths(1).AddSeconds(-1).AddHours(0 - CurrentContext.TimeZone);
                     RevenueFluctuationByQuarter.Revenue = IndirectSalesOrderTransactionDAOs.Where(x => LocalStart <= x.OrderDate && x.OrderDate <= LocalEnd)
                         .Where(x => x.Revenue.HasValue)
                         .Select(x => x.Revenue.Value)
@@ -1205,8 +1206,8 @@ namespace DMS.Rpc.dashboards.director
 
                 foreach (var RevenueFluctuationByYear in DashboardDirector_RevenueFluctuationDTO.RevenueFluctuationByYears)
                 {
-                    DateTime LocalStart = new DateTime(Now.Year, (int)RevenueFluctuationByYear.Month, 1).AddHours(0 - CurrentContext.TimeZone);
-                    DateTime LocalEnd = LocalStart.AddMonths(1).AddSeconds(-1);
+                    DateTime LocalStart = new DateTime(Now.AddHours(CurrentContext.TimeZone).Year, (int)RevenueFluctuationByYear.Month, 1).AddHours(0 - CurrentContext.TimeZone);
+                    DateTime LocalEnd = LocalStart.AddHours(CurrentContext.TimeZone).AddMonths(1).AddSeconds(-1).AddHours(0 - CurrentContext.TimeZone);
                     RevenueFluctuationByYear.Revenue = IndirectSalesOrderTransactionDAOs.Where(x => LocalStart <= x.OrderDate && x.OrderDate <= LocalEnd)
                         .Where(x => x.Revenue.HasValue)
                         .Select(x => x.Revenue.Value)
@@ -1222,9 +1223,9 @@ namespace DMS.Rpc.dashboards.director
         [Route(DashboardDirectorRoute.IndirectSalesOrderFluctuation), HttpPost]
         public async Task<DashboardDirector_IndirectSalesOrderFluctuationDTO> IndirectSalesOrderFluctuation([FromBody] DashboardDirector_IndirectSalesOrderFluctuationFilterDTO DashboardDirector_IndirectSalesOrderFluctuationFilterDTO)
         {
-            DateTime Now = StaticParams.DateTimeNow.Date;
+            DateTime Now = StaticParams.DateTimeNow;
             DateTime Start = LocalStartDay(CurrentContext);
-            DateTime End = new DateTime(Now.Year, Now.Month, Now.Day);
+            DateTime End = LocalEndDay(CurrentContext);
             (Start, End) = ConvertTime(DashboardDirector_IndirectSalesOrderFluctuationFilterDTO.Time);
 
             var ProvinceId = DashboardDirector_IndirectSalesOrderFluctuationFilterDTO.ProvinceId?.Equal;
@@ -1280,7 +1281,7 @@ namespace DMS.Rpc.dashboards.director
                 var DashboardDirector_IndirectSalesOrderFluctuationByMonthDTOs = await query.ToListAsync();
                 DashboardDirector_IndirectSalesOrderFluctuationDTO DashboardDirector_IndirectSalesOrderFluctuationDTO = new DashboardDirector_IndirectSalesOrderFluctuationDTO();
                 DashboardDirector_IndirectSalesOrderFluctuationDTO.IndirectSalesOrderFluctuationByMonths = new List<DashboardDirector_IndirectSalesOrderFluctuationByMonthDTO>();
-                var number_of_day_in_this_month = DateTime.DaysInMonth(Start.Year, Start.Month);
+                var number_of_day_in_this_month = DateTime.DaysInMonth(Start.AddHours(CurrentContext.TimeZone).Year, Start.AddHours(CurrentContext.TimeZone).Month);
                 for (int i = 1; i < number_of_day_in_this_month + 1; i++)
                 {
                     DashboardDirector_IndirectSalesOrderFluctuationByMonthDTO IndirectSalesOrderFluctuationByMonth = new DashboardDirector_IndirectSalesOrderFluctuationByMonthDTO
@@ -1324,7 +1325,7 @@ namespace DMS.Rpc.dashboards.director
                 var DashboardDirector_IndirectSalesOrderFluctuationByMonthDTOs = await query.ToListAsync();
                 DashboardDirector_IndirectSalesOrderFluctuationDTO DashboardDirector_IndirectSalesOrderFluctuationDTO = new DashboardDirector_IndirectSalesOrderFluctuationDTO();
                 DashboardDirector_IndirectSalesOrderFluctuationDTO.IndirectSalesOrderFluctuationByMonths = new List<DashboardDirector_IndirectSalesOrderFluctuationByMonthDTO>();
-                var number_of_day_in_this_month = DateTime.DaysInMonth(Start.Year, Start.Month);
+                var number_of_day_in_this_month = DateTime.DaysInMonth(Start.AddHours(CurrentContext.TimeZone).Year, Start.AddHours(CurrentContext.TimeZone).Month);
                 for (int i = 1; i < number_of_day_in_this_month + 1; i++)
                 {
                     DashboardDirector_IndirectSalesOrderFluctuationByMonthDTO IndirectSalesOrderFluctuationByMonth = new DashboardDirector_IndirectSalesOrderFluctuationByMonthDTO
@@ -1346,7 +1347,7 @@ namespace DMS.Rpc.dashboards.director
             }
             else if (DashboardDirector_IndirectSalesOrderFluctuationFilterDTO.Time.Equal.Value == THIS_QUARTER)
             {
-                var this_quarter = Convert.ToInt32(Math.Ceiling(Now.Month / 3m));
+                var this_quarter = Convert.ToInt32(Math.Ceiling(Now.AddHours(CurrentContext.TimeZone).Month / 3m));
 
                 var query = from i in DataContext.IndirectSalesOrder
                             join au in DataContext.AppUser on i.SaleEmployeeId equals au.Id
@@ -1393,7 +1394,7 @@ namespace DMS.Rpc.dashboards.director
             }
             else if (DashboardDirector_IndirectSalesOrderFluctuationFilterDTO.Time.Equal.Value == LAST_QUATER)
             {
-                var this_quarter = Convert.ToInt32(Math.Ceiling(Now.Month / 3m));
+                var this_quarter = Convert.ToInt32(Math.Ceiling(Now.AddHours(CurrentContext.TimeZone).Month / 3m));
 
                 var query = from i in DataContext.IndirectSalesOrder
                             join au in DataContext.AppUser on i.SaleEmployeeId equals au.Id
@@ -1487,9 +1488,9 @@ namespace DMS.Rpc.dashboards.director
         [Route(DashboardDirectorRoute.SaledItemFluctuation), HttpPost]
         public async Task<DashboardDirector_SaledItemFluctuationDTO> SaledItemFluctuation([FromBody] DashboardDirector_SaledItemFluctuationFilterDTO DashboardDirector_SaledItemFluctuationFilterDTO)
         {
-            DateTime Now = StaticParams.DateTimeNow.Date;
+            DateTime Now = StaticParams.DateTimeNow;
             DateTime Start = LocalStartDay(CurrentContext);
-            DateTime End = new DateTime(Now.Year, Now.Month, Now.Day);
+            DateTime End = LocalEndDay(CurrentContext);
             (Start, End) = ConvertTime(DashboardDirector_SaledItemFluctuationFilterDTO.Time);
 
             var ProvinceId = DashboardDirector_SaledItemFluctuationFilterDTO.ProvinceId?.Equal;
@@ -1546,7 +1547,7 @@ namespace DMS.Rpc.dashboards.director
                 var DashboardDirector_SaledItemFluctuationByMonthDTOs = await query.ToListAsync();
                 DashboardDirector_SaledItemFluctuationDTO DashboardDirector_SaledItemFluctuationDTO = new DashboardDirector_SaledItemFluctuationDTO();
                 DashboardDirector_SaledItemFluctuationDTO.SaledItemFluctuationByMonths = new List<DashboardDirector_SaledItemFluctuationByMonthDTO>();
-                var number_of_day_in_this_month = DateTime.DaysInMonth(Start.Year, Start.Month);
+                var number_of_day_in_this_month = DateTime.DaysInMonth(Start.AddHours(CurrentContext.TimeZone).Year, Start.AddHours(CurrentContext.TimeZone).Month);
                 for (int i = 1; i < number_of_day_in_this_month + 1; i++)
                 {
                     DashboardDirector_SaledItemFluctuationByMonthDTO SaledItemFluctuationByMonth = new DashboardDirector_SaledItemFluctuationByMonthDTO
@@ -1591,7 +1592,7 @@ namespace DMS.Rpc.dashboards.director
                 var DashboardDirector_SaledItemFluctuationByMonthDTOs = await query.ToListAsync();
                 DashboardDirector_SaledItemFluctuationDTO DashboardDirector_SaledItemFluctuationDTO = new DashboardDirector_SaledItemFluctuationDTO();
                 DashboardDirector_SaledItemFluctuationDTO.SaledItemFluctuationByMonths = new List<DashboardDirector_SaledItemFluctuationByMonthDTO>();
-                var number_of_day_in_this_month = DateTime.DaysInMonth(Start.Year, Start.Month);
+                var number_of_day_in_this_month = DateTime.DaysInMonth(Start.AddHours(CurrentContext.TimeZone).Year, Start.AddHours(CurrentContext.TimeZone).Month);
                 for (int i = 1; i < number_of_day_in_this_month + 1; i++)
                 {
                     DashboardDirector_SaledItemFluctuationByMonthDTO SaledItemFluctuationByMonth = new DashboardDirector_SaledItemFluctuationByMonthDTO
@@ -1757,51 +1758,51 @@ namespace DMS.Rpc.dashboards.director
         private Tuple<DateTime, DateTime> ConvertTime(IdFilter Time)
         {
             DateTime Start = LocalStartDay(CurrentContext);
-            DateTime End = Start.AddDays(1).AddSeconds(-1);
-            DateTime Now = StaticParams.DateTimeNow.Date;
+            DateTime End = LocalEndDay(CurrentContext);
+            DateTime Now = StaticParams.DateTimeNow;
             if (Time.Equal.HasValue == false)
             {
                 Time.Equal = 0;
                 Start = LocalStartDay(CurrentContext);
-                End = Start.AddDays(1).AddSeconds(-1);
+                End = LocalEndDay(CurrentContext);
             }
             else if (Time.Equal.Value == TODAY)
             {
                 Start = LocalStartDay(CurrentContext);
-                End = Start.AddDays(1).AddSeconds(-1);
+                End = LocalEndDay(CurrentContext);
             }
             else if (Time.Equal.Value == THIS_WEEK)
             {
-                int diff = (7 + (Now.DayOfWeek - DayOfWeek.Monday)) % 7;
+                int diff = (7 + (Now.AddHours(CurrentContext.TimeZone).DayOfWeek - DayOfWeek.Monday)) % 7;
                 Start = LocalStartDay(CurrentContext).AddDays(-1 * diff);
                 End = Start.AddDays(7).AddSeconds(-1);
             }
             else if (Time.Equal.Value == THIS_MONTH)
             {
-                Start = new DateTime(Now.Year, Now.Month, 1).AddHours(0 - CurrentContext.TimeZone);
-                End = new DateTime(Now.Year, Now.Month, 1).AddMonths(1).AddSeconds(-1).AddHours(0 - CurrentContext.TimeZone);
+                Start = new DateTime(Now.AddHours(CurrentContext.TimeZone).Year, Now.AddHours(CurrentContext.TimeZone).Month, 1).AddHours(0 - CurrentContext.TimeZone);
+                End = new DateTime(Now.AddHours(CurrentContext.TimeZone).Year, Now.AddHours(CurrentContext.TimeZone).Month, 1).AddMonths(1).AddSeconds(-1).AddHours(0 - CurrentContext.TimeZone);
             }
             else if (Time.Equal.Value == LAST_MONTH)
             {
-                Start = new DateTime(Now.Year, Now.Month, 1).AddMonths(-1).AddHours(0 - CurrentContext.TimeZone);
-                End = new DateTime(Now.Year, Now.Month, 1).AddMonths(-1).AddMonths(1).AddSeconds(-1).AddHours(0 - CurrentContext.TimeZone);
+                Start = new DateTime(Now.AddHours(CurrentContext.TimeZone).Year, Now.AddHours(CurrentContext.TimeZone).Month, 1).AddMonths(-1).AddHours(0 - CurrentContext.TimeZone);
+                End = new DateTime(Now.AddHours(CurrentContext.TimeZone).Year, Now.AddHours(CurrentContext.TimeZone).Month, 1).AddSeconds(-1).AddHours(0 - CurrentContext.TimeZone);
             }
             else if (Time.Equal.Value == THIS_QUARTER)
             {
-                var this_quarter = Convert.ToInt32(Math.Ceiling(Now.Month / 3m));
-                Start = new DateTime(Now.Year, (this_quarter - 1) * 3 + 1, 1).AddHours(0 - CurrentContext.TimeZone);
-                End = new DateTime(Now.Year, (this_quarter - 1) * 3 + 1, 1).AddMonths(3).AddSeconds(-1).AddHours(0 - CurrentContext.TimeZone);
+                var this_quarter = Convert.ToInt32(Math.Ceiling(Now.AddHours(CurrentContext.TimeZone).Month / 3m));
+                Start = new DateTime(Now.AddHours(CurrentContext.TimeZone).Year, (this_quarter - 1) * 3 + 1, 1).AddHours(0 - CurrentContext.TimeZone);
+                End = new DateTime(Now.AddHours(CurrentContext.TimeZone).Year, (this_quarter - 1) * 3 + 1, 1).AddMonths(3).AddSeconds(-1).AddHours(0 - CurrentContext.TimeZone);
             }
             else if (Time.Equal.Value == LAST_QUATER)
             {
-                var this_quarter = Convert.ToInt32(Math.Ceiling(Now.Month / 3m));
-                Start = new DateTime(Now.Year, (this_quarter - 1) * 3 + 1, 1).AddMonths(-3).AddHours(0 - CurrentContext.TimeZone);
-                End = new DateTime(Now.Year, (this_quarter - 1) * 3 + 1, 1).AddMonths(-3).AddMonths(3).AddSeconds(-1).AddHours(0 - CurrentContext.TimeZone);
+                var this_quarter = Convert.ToInt32(Math.Ceiling(Now.AddHours(CurrentContext.TimeZone).Month / 3m));
+                Start = new DateTime(Now.AddHours(CurrentContext.TimeZone).Year, (this_quarter - 1) * 3 + 1, 1).AddMonths(-3).AddHours(0 - CurrentContext.TimeZone);
+                End = new DateTime(Now.AddHours(CurrentContext.TimeZone).Year, (this_quarter - 1) * 3 + 1, 1).AddSeconds(-1).AddHours(0 - CurrentContext.TimeZone);
             }
             else if (Time.Equal.Value == YEAR)
             {
-                Start = new DateTime(Now.Year, 1, 1).AddHours(0 - CurrentContext.TimeZone);
-                End = new DateTime(Now.Year, 1, 1).AddYears(1).AddSeconds(-1).AddHours(0 - CurrentContext.TimeZone);
+                Start = new DateTime(Now.AddHours(CurrentContext.TimeZone).Year, 1, 1).AddHours(0 - CurrentContext.TimeZone);
+                End = new DateTime(Now.AddHours(CurrentContext.TimeZone).Year, 1, 1).AddYears(1).AddSeconds(-1).AddHours(0 - CurrentContext.TimeZone);
             }
             return Tuple.Create(Start, End);
         }

@@ -1065,9 +1065,8 @@ namespace DMS.Rpc.mobile.general_mobile
             if (GeneralMobile_StoreStatisticFilterDTO.SalesOrderTypeId == null || GeneralMobile_StoreStatisticFilterDTO.StoreId == null || GeneralMobile_StoreStatisticFilterDTO.StoreId.Equal.HasValue == false)
                 return new GeneralMobile_StoreStatisticDTO();
 
-            DateTime Now = StaticParams.DateTimeNow.Date;
             DateTime Start = LocalStartDay(CurrentContext);
-            DateTime End = new DateTime(Now.Year, Now.Month, Now.Day);
+            DateTime End = LocalEndDay(CurrentContext);
             (Start, End) = ConvertTime(GeneralMobile_StoreStatisticFilterDTO.Time);
 
             GeneralMobile_StoreStatisticDTO GeneralMobile_StoreStatisticDTO = new GeneralMobile_StoreStatisticDTO();
@@ -1075,7 +1074,9 @@ namespace DMS.Rpc.mobile.general_mobile
             if(GeneralMobile_StoreStatisticFilterDTO.SalesOrderTypeId?.Equal == SalesOrderTypeEnum.DIRECT.Id)
             {
                 var query = from t in DataContext.DirectSalesOrderTransaction
+                            join o in DataContext.DirectSalesOrder on t.DirectSalesOrderId equals o.Id
                             where t.BuyerStoreId == GeneralMobile_StoreStatisticFilterDTO.StoreId.Equal &&
+                            o.RequestStateId == RequestStateEnum.APPROVED.Id &&
                             Start <= t.OrderDate && t.OrderDate <= End
                             select t;
 
@@ -1084,7 +1085,9 @@ namespace DMS.Rpc.mobile.general_mobile
             else if (GeneralMobile_StoreStatisticFilterDTO.SalesOrderTypeId?.Equal == SalesOrderTypeEnum.INDIRECT.Id)
             {
                 var query = from t in DataContext.IndirectSalesOrderTransaction
+                            join o in DataContext.IndirectSalesOrder on t.IndirectSalesOrderId equals o.Id
                             where t.BuyerStoreId == GeneralMobile_StoreStatisticFilterDTO.StoreId.Equal &&
+                            o.RequestStateId == RequestStateEnum.APPROVED.Id &&
                             Start <= t.OrderDate && t.OrderDate <= End
                             select t;
 
@@ -1093,13 +1096,17 @@ namespace DMS.Rpc.mobile.general_mobile
             else
             {
                 var query1 = from t in DataContext.DirectSalesOrderTransaction
-                            where t.BuyerStoreId == GeneralMobile_StoreStatisticFilterDTO.StoreId.Equal &&
-                            Start <= t.OrderDate && t.OrderDate <= End
-                            select t;
+                             join o in DataContext.DirectSalesOrder on t.DirectSalesOrderId equals o.Id
+                             where t.BuyerStoreId == GeneralMobile_StoreStatisticFilterDTO.StoreId.Equal &&
+                             o.RequestStateId == RequestStateEnum.APPROVED.Id &&
+                             Start <= t.OrderDate && t.OrderDate <= End
+                             select t;
                 var query2 = from t in DataContext.IndirectSalesOrderTransaction
-                            where t.BuyerStoreId == GeneralMobile_StoreStatisticFilterDTO.StoreId.Equal &&
-                            Start <= t.OrderDate && t.OrderDate <= End
-                            select t;
+                             join o in DataContext.IndirectSalesOrder on t.IndirectSalesOrderId equals o.Id
+                             where t.BuyerStoreId == GeneralMobile_StoreStatisticFilterDTO.StoreId.Equal &&
+                             o.RequestStateId == RequestStateEnum.APPROVED.Id &&
+                             Start <= t.OrderDate && t.OrderDate <= End
+                             select t;
                 GeneralMobile_StoreStatisticDTO.Revenue = query1.Where(x => x.Revenue.HasValue).Select(x => x.Revenue.Value).Sum();
                 GeneralMobile_StoreStatisticDTO.Revenue += query2.Where(x => x.Revenue.HasValue).Select(x => x.Revenue.Value).Sum();
             }
@@ -1110,32 +1117,32 @@ namespace DMS.Rpc.mobile.general_mobile
         private Tuple<DateTime, DateTime> ConvertTime(IdFilter Time)
         {
             DateTime Start = LocalStartDay(CurrentContext);
-            DateTime End = Start.AddDays(1).AddSeconds(-1);
-            DateTime Now = StaticParams.DateTimeNow.Date;
+            DateTime End = LocalEndDay(CurrentContext);
+            DateTime Now = StaticParams.DateTimeNow;
             if (Time.Equal.HasValue == false)
             {
-                Start = new DateTime(Now.Year, Now.Month, 1).AddHours(0 - CurrentContext.TimeZone);
-                End = Start.AddMonths(1).AddSeconds(-1);
+                Start = new DateTime(Now.AddHours(CurrentContext.TimeZone).Year, Now.AddHours(CurrentContext.TimeZone).Month, 1).AddHours(0 - CurrentContext.TimeZone);
+                End = Start.AddHours(CurrentContext.TimeZone).AddMonths(1).AddSeconds(-1).AddHours(0 - CurrentContext.TimeZone);
             }
             else if (Time.Equal.Value == THIS_MONTH)
             {
-                Start = new DateTime(Now.Year, Now.Month, 1).AddHours(0 - CurrentContext.TimeZone);
+                Start = new DateTime(Now.AddHours(CurrentContext.TimeZone).Year, Now.AddHours(CurrentContext.TimeZone).Month, 1).AddHours(0 - CurrentContext.TimeZone);
                 End = Start.AddMonths(1).AddSeconds(-1);
             }
             else if (Time.Equal.Value == LAST_MONTH)
             {
-                Start = new DateTime(Now.Year, Now.Month, 1).AddMonths(-1).AddHours(0 - CurrentContext.TimeZone);
+                Start = new DateTime(Now.AddHours(CurrentContext.TimeZone).Year, Now.AddHours(CurrentContext.TimeZone).Month, 1).AddMonths(-1).AddHours(0 - CurrentContext.TimeZone);
                 End = Start.AddMonths(1).AddSeconds(-1);
             }
             else if (Time.Equal.Value == THIS_QUARTER)
             {
-                var this_quarter = Convert.ToInt32(Math.Ceiling(Now.Month / 3m));
-                Start = new DateTime(Now.Year, (this_quarter - 1) * 3 + 1, 1).AddHours(0 - CurrentContext.TimeZone);
+                var this_quarter = Convert.ToInt32(Math.Ceiling(Now.AddHours(CurrentContext.TimeZone).Month / 3m));
+                Start = new DateTime(Now.AddHours(CurrentContext.TimeZone).Year, (this_quarter - 1) * 3 + 1, 1).AddHours(0 - CurrentContext.TimeZone);
                 End = Start.AddMonths(3).AddSeconds(-1);
             }
             else if (Time.Equal.Value == YEAR)
             {
-                Start = new DateTime(Now.Year, 1, 1).AddHours(0 - CurrentContext.TimeZone);
+                Start = new DateTime(Now.AddHours(CurrentContext.TimeZone).Year, 1, 1).AddHours(0 - CurrentContext.TimeZone);
                 End = Start.AddYears(1).AddSeconds(-1);
             }
             return Tuple.Create(Start, End);
