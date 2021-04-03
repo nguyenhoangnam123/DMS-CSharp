@@ -1124,7 +1124,7 @@ namespace DMS.Rpc.dashboards.director
             else if (DashboardDirector_RevenueFluctuationFilterDTO.Time.Equal.Value == LAST_QUATER)
             {
                 var this_quarter = Convert.ToInt32(Math.Ceiling(Now.AddHours(CurrentContext.TimeZone).Month / 3m));
-
+                var last_quarter = (this_quarter + 3) % 4;
                 var query = from t in DataContext.IndirectSalesOrderTransaction
                             join i in DataContext.IndirectSalesOrder on t.IndirectSalesOrderId equals i.Id
                             join au in DataContext.AppUser on t.SalesEmployeeId equals au.Id
@@ -1146,7 +1146,7 @@ namespace DMS.Rpc.dashboards.director
                 var IndirectSalesOrderTransactionDAOs = await query.ToListAsync();
                 DashboardDirector_RevenueFluctuationDTO DashboardDirector_RevenueFluctuationDTO = new DashboardDirector_RevenueFluctuationDTO();
                 DashboardDirector_RevenueFluctuationDTO.RevenueFluctuationByQuaters = new List<DashboardDirector_RevenueFluctuationByQuarterDTO>();
-                int start = 3 * (this_quarter - 1) + 1;
+                int start = 3 * (last_quarter - 1) + 1 ;
                 int end = start + 3;
                 for (int i = start; i < end; i++)
                 {
@@ -1395,7 +1395,7 @@ namespace DMS.Rpc.dashboards.director
             else if (DashboardDirector_IndirectSalesOrderFluctuationFilterDTO.Time.Equal.Value == LAST_QUATER)
             {
                 var this_quarter = Convert.ToInt32(Math.Ceiling(Now.AddHours(CurrentContext.TimeZone).Month / 3m));
-
+                var last_quarter = (this_quarter + 3) % 4;
                 var query = from i in DataContext.IndirectSalesOrder
                             join au in DataContext.AppUser on i.SaleEmployeeId equals au.Id
                             join o in DataContext.Organization on au.OrganizationId equals o.Id
@@ -1418,7 +1418,7 @@ namespace DMS.Rpc.dashboards.director
                 var DashboardDirector_IndirectSalesOrderFluctuationByQuarterDTOs = await query.ToListAsync();
                 DashboardDirector_IndirectSalesOrderFluctuationDTO DashboardDirector_IndirectSalesOrderFluctuationDTO = new DashboardDirector_IndirectSalesOrderFluctuationDTO();
                 DashboardDirector_IndirectSalesOrderFluctuationDTO.IndirectSalesOrderFluctuationByQuaters = new List<DashboardDirector_IndirectSalesOrderFluctuationByQuarterDTO>();
-                int start = 3 * (this_quarter - 1) + 1;
+                int start = 3 * (last_quarter - 1) + 1;
                 int end = start + 3;
                 for (int i = start; i < end; i++)
                 {
@@ -1663,7 +1663,7 @@ namespace DMS.Rpc.dashboards.director
             else if (DashboardDirector_SaledItemFluctuationFilterDTO.Time.Equal.Value == LAST_QUATER)
             {
                 var this_quarter = Convert.ToInt32(Math.Ceiling(Now.Month / 3m));
-
+                var last_quarter = (this_quarter + 3) % 4;
                 var query = from i in DataContext.IndirectSalesOrder
                             join ic in DataContext.IndirectSalesOrderContent on i.Id equals ic.IndirectSalesOrderId
                             join au in DataContext.AppUser on i.SaleEmployeeId equals au.Id
@@ -1687,7 +1687,7 @@ namespace DMS.Rpc.dashboards.director
                 var DashboardDirector_SaledItemFluctuationByQuarterDTOs = await query.ToListAsync();
                 DashboardDirector_SaledItemFluctuationDTO DashboardDirector_SaledItemFluctuationDTO = new DashboardDirector_SaledItemFluctuationDTO();
                 DashboardDirector_SaledItemFluctuationDTO.SaledItemFluctuationByQuaters = new List<DashboardDirector_SaledItemFluctuationByQuarterDTO>();
-                int start = 3 * (this_quarter - 1) + 1;
+                int start = 3 * (last_quarter - 1) + 1;
                 int end = start + 3;
                 for (int i = start; i < end; i++)
                 {

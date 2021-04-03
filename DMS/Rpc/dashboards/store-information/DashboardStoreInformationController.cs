@@ -127,7 +127,8 @@ namespace DMS.Rpc.dashboards.store_information
                         where OrganizationIds.Contains(s.OrganizationId) &&
                         (BrandId.HasValue == false || bs.BrandId == BrandId) &&
                         s.StatusId == StatusEnum.ACTIVE.Id &&
-                        s.DeletedAt == null
+                        s.DeletedAt == null &&
+                        bs.DeletedAt == null 
                         select s;
             var SurveyedStoreCounter = query.Select(x => x.Id).Distinct().Count();
 
@@ -179,7 +180,8 @@ namespace DMS.Rpc.dashboards.store_information
                         where OrganizationIds.Contains(s.OrganizationId) &&
                         (BrandId.HasValue == false || bs.BrandId == BrandId) &&
                         s.StatusId == StatusEnum.ACTIVE.Id &&
-                        s.DeletedAt == null
+                        s.DeletedAt == null &&
+                        bs.DeletedAt == null
                         select s;
             var SurveyedStoreCounter = query.Select(x => x.Id).Distinct().Count();
 
@@ -190,7 +192,8 @@ namespace DMS.Rpc.dashboards.store_information
                              where OrganizationIds.Contains(s.OrganizationId) &&
                              (BrandId.HasValue == false || bs.BrandId == BrandId) &&
                              s.StatusId == StatusEnum.ACTIVE.Id &&
-                             s.DeletedAt == null
+                             s.DeletedAt == null &&
+                             bs.DeletedAt == null
                              group bs by new { b.Id, b.Name } into x
                              select new DashboardStoreInformation_BrandStatisticsDTO
                              {
@@ -203,6 +206,7 @@ namespace DMS.Rpc.dashboards.store_information
             {
                 DashboardStoreInformation_BrandStatisticsDTO.Total = SurveyedStoreCounter;
             }
+            DashboardStoreInformation_BrandStatisticsDTOs = DashboardStoreInformation_BrandStatisticsDTOs.OrderByDescending(x => x.Value).ToList();
             return DashboardStoreInformation_BrandStatisticsDTOs;
         }
 
@@ -233,7 +237,8 @@ namespace DMS.Rpc.dashboards.store_information
                         where OrganizationIds.Contains(s.OrganizationId) &&
                         (BrandId.HasValue == false || bs.BrandId == BrandId) &&
                         s.StatusId == StatusEnum.ACTIVE.Id &&
-                        s.DeletedAt == null
+                        s.DeletedAt == null &&
+                        bs.DeletedAt == null
                         select s;
             var SurveyedStoreCounter = query.Select(x => x.Id).Distinct().Count();
 
@@ -244,7 +249,8 @@ namespace DMS.Rpc.dashboards.store_information
                              where OrganizationIds.Contains(s.OrganizationId) &&
                              (BrandId.HasValue == false || bs.BrandId == BrandId) &&
                              s.StatusId == StatusEnum.ACTIVE.Id &&
-                             s.DeletedAt == null
+                             s.DeletedAt == null &&
+                             bs.DeletedAt == null
                              group bs by new { b.Id, b.Name } into x
                              select new DashboardStoreInformation_BrandStatisticsDTO
                              {
@@ -258,6 +264,7 @@ namespace DMS.Rpc.dashboards.store_information
                 DashboardStoreInformation_BrandStatisticsDTO.Value = SurveyedStoreCounter - DashboardStoreInformation_BrandStatisticsDTO.Value;
                 DashboardStoreInformation_BrandStatisticsDTO.Total = SurveyedStoreCounter;
             }
+            DashboardStoreInformation_BrandStatisticsDTOs = DashboardStoreInformation_BrandStatisticsDTOs.OrderByDescending(x => x.Value).ToList();
             return DashboardStoreInformation_BrandStatisticsDTOs;
         }
 
@@ -288,7 +295,8 @@ namespace DMS.Rpc.dashboards.store_information
                         where OrganizationIds.Contains(s.OrganizationId) &&
                         (BrandId.HasValue == false || (bs.BrandId == BrandId.Value))
                         && s.StatusId == StatusEnum.ACTIVE.Id
-                        && s.DeletedAt == null
+                        && s.DeletedAt == null &&
+                        bs.DeletedAt == null
                         select new DashboardStoreInformation_StoreDTO
                         {
                             Id = s.Id,
@@ -346,7 +354,8 @@ namespace DMS.Rpc.dashboards.store_information
                         where OrganizationIds.Contains(s.OrganizationId) &&
                         (BrandId.HasValue == false || (bs.BrandId == BrandId.Value))
                         && s.StatusId == StatusEnum.ACTIVE.Id
-                        && s.DeletedAt == null
+                        && s.DeletedAt == null &&
+                        bs.DeletedAt == null
                         group bs by new {b.Id, b.Name} into x
                         select new DashboardStoreInformation_ProductGroupingStatisticsDTO
                         {
@@ -362,7 +371,8 @@ namespace DMS.Rpc.dashboards.store_information
                          where OrganizationIds.Contains(s.OrganizationId) &&
                          (BrandId.HasValue == false || (bs.BrandId == BrandId.Value))
                          && s.StatusId == StatusEnum.ACTIVE.Id
-                         && s.DeletedAt == null
+                         && s.DeletedAt == null &&
+                         bs.DeletedAt == null
                          select bs.Id;
 
             var BrandInStoreIds = await query2.Distinct().ToListAsync();
@@ -422,7 +432,8 @@ namespace DMS.Rpc.dashboards.store_information
                         where OrganizationIds.Contains(s.OrganizationId) &&
                         (BrandId.HasValue == false || (bs.BrandId == BrandId.Value))
                         && s.StatusId == StatusEnum.ACTIVE.Id
-                        && s.DeletedAt == null
+                        && s.DeletedAt == null &&
+                        bs.DeletedAt == null
                         group bs by new { b.Id, b.Name } into x
                         select new DashboardStoreInformation_TopBrandDTO
                         {
@@ -439,7 +450,8 @@ namespace DMS.Rpc.dashboards.store_information
                          (BrandId.HasValue == false || (bs.BrandId == BrandId.Value)) &&
                          (Top.HasValue == false || (bs.Top == Top.Value))
                          && s.StatusId == StatusEnum.ACTIVE.Id
-                         && s.DeletedAt == null
+                         && s.DeletedAt == null &&
+                         bs.DeletedAt == null
                          select bs;
 
             var BrandInStores = await query2.ToListAsync();
