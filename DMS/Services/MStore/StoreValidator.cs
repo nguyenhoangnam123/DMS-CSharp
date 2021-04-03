@@ -356,12 +356,12 @@ namespace DMS.Services.MStore
         }
         private async Task<bool> ValidateLocation(Store Store)
         {
-            if (!(-180 <= Store.Longitude && Store.Longitude <= 180))
+            if (!(-180 <= Store.Longitude && Store.Longitude <= 180) || Store.Longitude == 0)
             {
                 Store.AddError(nameof(StoreValidator), nameof(Store.Longitude), ErrorCode.LongitudeInvalid);
             }
 
-            if (!(-90 <= Store.Latitude && Store.Latitude <= 90))
+            if (!(-90 <= Store.Latitude && Store.Latitude <= 90) || Store.Latitude == 0)
             {
                 Store.AddError(nameof(StoreValidator), nameof(Store.Latitude), ErrorCode.LatitudeInvalid);
             }
