@@ -2,7 +2,7 @@ namespace DMS.ABE.Common
 {
     public class Root
     {
-        protected const string Module = "DMS.ABE";
+        protected const string Module = "dms-abe";
         protected const string Rpc = "rpc/";
         protected const string Rest = "rest/";
     }
