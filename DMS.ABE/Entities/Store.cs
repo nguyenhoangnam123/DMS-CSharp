@@ -36,36 +36,33 @@ namespace DMS.ABE.Entities
         public string LegalEntity { get; set; }
         public long? AppUserId { get; set; }
         public long CreatorId { get; set; }
-        public long? StoreUserId { get; set; }
         public long StatusId { get; set; }
         public Guid RowId { get; set; }
+        public long? StoreUserId { get; set; }
+        public long? StoreScoutingId { get; set; }
         public long StoreStatusId { get; set; }
         public bool HasEroute { get; set; }
         public bool HasChecking { get; set; }
-        public bool HasOrder { get; set; }
         public bool Used { get; set; }
-        public long? StoreScoutingId { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public DateTime? DeletedAt { get; set; }
         public AppUser AppUser { get; set; }
-        public StoreUser StoreUser { get; set; }
-        public AppUser Creator { get; set; }
         public District District { get; set; }
         public Organization Organization { get; set; }
         public Store ParentStore { get; set; }
         public Province Province { get; set; }
         public Status Status { get; set; }
         public StoreGrouping StoreGrouping { get; set; }
+        public StoreUser StoreUser { get; set; }
+        public AppUser Creator { get; set; }
         public StoreType StoreType { get; set; }
         public Ward Ward { get; set; }
-        public StoreScouting StoreScouting { get; set; }
         public StoreStatus StoreStatus { get; set; }
+        public StoreScouting StoreScouting { get; set; }
         public List<AlbumImageMapping> AlbumImageMappings { get; set; }
         public List<StoreImageMapping> StoreImageMappings { get; set; }
-        public List<RequestWorkflowStepMapping> StoreWorkflows { get; set; }
-        public List<RequestWorkflowStepMapping> RequestWorkflowStepMappings { get; set; }
-        public List<StoreChecking> StoreCheckings { get; set; }
+        public List<AppUserStoreMapping> StoreAppUserMappings { get; set; }
         public List<BrandInStore> BrandInStores { get; set; }
         public double Distance { get; set; }
         public bool Equals(Store other)
@@ -110,6 +107,7 @@ namespace DMS.ABE.Entities
         public IdFilter AppUserId { get; set; }
         public IdFilter CreatorId { get; set; }
         public IdFilter StatusId { get; set; }
+        public IdFilter StoreUserStatusId { get; set; }
         public IdFilter WorkflowDefinitionId { get; set; }
         public IdFilter StoreStatusId { get; set; }
         public IdFilter StoreDraftTypeId { get; set; }
@@ -142,13 +140,11 @@ namespace DMS.ABE.Entities
         OwnerPhone = 19,
         OwnerEmail = 20,
         Status = 21,
-        StoreScouting = 22,
         UnsignName = 23,
         UnsignAddress = 24,
         AppUser = 25,
         StoreStatus = 26,
         CodeDraft = 27,
-        Creator = 28,
     }
 
     [Flags]
@@ -182,10 +178,11 @@ namespace DMS.ABE.Entities
         StoreScouting = E._26,
         UnsignName = E._27,
         UnsignAddress = E._28,
-        AppUser = E._25,
-        StoreStatus = E._26,
-        HasChecking = E._27,
-        CodeDraft = E._28,
-        Creator = E._29,
+        AppUser = E._30,
+        StoreStatus = E._31,
+        HasChecking = E._32,
+        CodeDraft = E._33,
+        StoreAppUserMappings = E._34,
+        Creator = E._35,
     }
 }
