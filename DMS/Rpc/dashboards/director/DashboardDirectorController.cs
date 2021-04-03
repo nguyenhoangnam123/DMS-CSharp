@@ -22,13 +22,13 @@ namespace DMS.Rpc.dashboards.director
 {
     public class DashboardDirectorController : RpcController
     {
-        private const long TODAY = 0;
-        private const long THIS_WEEK = 1;
-        private const long THIS_MONTH = 2;
-        private const long LAST_MONTH = 3;
-        private const long THIS_QUARTER = 4;
-        private const long LAST_QUATER = 5;
-        private const long YEAR = 6;
+        private const long TODAY = 1;
+        private const long THIS_WEEK = 2;
+        private const long THIS_MONTH = 3;
+        private const long LAST_MONTH = 4;
+        private const long THIS_QUARTER = 5;
+        private const long LAST_QUATER = 6;
+        private const long YEAR = 7;
 
         private DataContext DataContext;
         private IAppUserService AppUserService;

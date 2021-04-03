@@ -884,6 +884,7 @@ namespace DMS.Repositories
 
             var queryBrandInStores = from bs in DataContext.BrandInStore
                                           join tt in tempTableQuery.Query on bs.StoreId equals tt.Column1
+                                          where bs.DeletedAt == null
                                           select bs;
             var BrandInStores = await queryBrandInStores
                 .Select(x => new BrandInStore
