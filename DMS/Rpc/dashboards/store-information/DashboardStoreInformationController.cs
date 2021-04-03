@@ -128,7 +128,7 @@ namespace DMS.Rpc.dashboards.store_information
                         (BrandId.HasValue == false || bs.BrandId == BrandId) &&
                         s.StatusId == StatusEnum.ACTIVE.Id &&
                         s.DeletedAt == null &&
-                        bs.DeletedAt == null 
+                        bs.DeletedAt == null
                         select s;
             var SurveyedStoreCounter = query.Select(x => x.Id).Distinct().Count();
 
@@ -289,14 +289,11 @@ namespace DMS.Rpc.dashboards.store_information
             ITempTableQuery<TempTable<long>> tempTableQuery = await DataContext
                         .BulkInsertValuesIntoTempTableAsync<long>(StoreIds);
 
-            var query = from bs in DataContext.BrandInStore
-                        join s in DataContext.Store on bs.StoreId equals s.Id
+            var query = from s in DataContext.Store
                         join tt in tempTableQuery.Query on s.Id equals tt.Column1
                         where OrganizationIds.Contains(s.OrganizationId) &&
-                        (BrandId.HasValue == false || (bs.BrandId == BrandId.Value))
-                        && s.StatusId == StatusEnum.ACTIVE.Id
-                        && s.DeletedAt == null &&
-                        bs.DeletedAt == null
+                        s.StatusId == StatusEnum.ACTIVE.Id && 
+                        s.DeletedAt == null
                         select new DashboardStoreInformation_StoreDTO
                         {
                             Id = s.Id,
@@ -311,14 +308,29 @@ namespace DMS.Rpc.dashboards.store_information
                         };
             List<DashboardStoreInformation_StoreDTO> DashboardMonitor_StoreDTOs = await query.Distinct().ToListAsync();
             StoreIds = DashboardMonitor_StoreDTOs.Select(x => x.Id).ToList();
-            var BrandInStores = await DataContext.BrandInStore.Where(x => StoreIds.Contains(x.StoreId) && x.Top == 1).Select(x => new BrandInStore
-            {
-                StoreId = x.StoreId,
-                Brand = x.Brand == null ? null : new Brand
-                {
-                    Name = x.Brand.Name
-                },
-            }).ToListAsync();
+
+            var queryBrandInStore = from bs in DataContext.BrandInStore
+                                    join b in DataContext.Brand on bs.BrandId equals b.Id
+                                    join s in DataContext.Store on bs.StoreId equals s.Id
+                                    join tt in tempTableQuery.Query on s.Id equals tt.Column1
+                                    where OrganizationIds.Contains(s.OrganizationId) &&
+                                    (BrandId.HasValue == false || (bs.BrandId == BrandId.Value))
+                                    && s.StatusId == StatusEnum.ACTIVE.Id
+                                    && s.DeletedAt == null &&
+                                    bs.DeletedAt == null &&
+                                    bs.Top == 1
+                                    select new BrandInStoreDAO
+                                    {
+                                        Id = bs.Id,
+                                        StoreId = bs.StoreId,
+                                        BrandId = bs.BrandId,
+                                        Brand = new BrandDAO
+                                        {
+                                            Name = b.Name
+                                        }
+                                    };
+            
+            var BrandInStores = await queryBrandInStore.ToListAsync();
             foreach (var DashboardMonitor_StoreDTO in DashboardMonitor_StoreDTOs)
             {
                 DashboardMonitor_StoreDTO.Top1BrandName = BrandInStores.Where(x => x.StoreId == DashboardMonitor_StoreDTO.Id).Select(x => x.Brand.Name).FirstOrDefault();
@@ -374,7 +386,7 @@ namespace DMS.Rpc.dashboards.store_information
                         && s.StatusId == StatusEnum.ACTIVE.Id
                         && s.DeletedAt == null &&
                         bs.DeletedAt == null
-                        group bs by new {b.Id, b.Name} into x
+                        group bs by new { b.Id, b.Name } into x
                         select new DashboardStoreInformation_ProductGroupingStatisticsDTO
                         {
                             BrandId = x.Key.Id,

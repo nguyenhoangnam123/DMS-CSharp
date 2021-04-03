@@ -1738,8 +1738,8 @@ namespace DMS.Rpc.mobile.general_mobile
         public async Task<long> CountProductGrouping([FromBody] GeneralMobile_ProductGroupingFilterDTO GeneralMobile_ProductGroupingFilterDTO)
         {
             ProductGroupingFilter ProductGroupingFilter = new ProductGroupingFilter();
-            ProductGroupingFilter.Skip = GeneralMobile_ProductGroupingFilterDTO.Skip;
-            ProductGroupingFilter.Take = GeneralMobile_ProductGroupingFilterDTO.Take;
+            ProductGroupingFilter.Skip = 0;
+            ProductGroupingFilter.Take = 999999;
             ProductGroupingFilter.OrderBy = ProductGroupingOrder.Id;
             ProductGroupingFilter.OrderType = OrderType.ASC;
             ProductGroupingFilter.Selects = ProductGroupingSelect.ALL;
@@ -1758,8 +1758,8 @@ namespace DMS.Rpc.mobile.general_mobile
         public async Task<List<GeneralMobile_ProductGroupingDTO>> ListProductGrouping([FromBody] GeneralMobile_ProductGroupingFilterDTO GeneralMobile_ProductGroupingFilterDTO)
         {
             ProductGroupingFilter ProductGroupingFilter = new ProductGroupingFilter();
-            ProductGroupingFilter.Skip = GeneralMobile_ProductGroupingFilterDTO.Skip;
-            ProductGroupingFilter.Take = GeneralMobile_ProductGroupingFilterDTO.Take;
+            ProductGroupingFilter.Skip = 0;
+            ProductGroupingFilter.Take = 999999;
             ProductGroupingFilter.OrderBy = ProductGroupingOrder.Id;
             ProductGroupingFilter.OrderType = OrderType.ASC;
             ProductGroupingFilter.Selects = ProductGroupingSelect.ALL;
