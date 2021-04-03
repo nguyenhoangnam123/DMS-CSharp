@@ -49,4 +49,31 @@ namespace DMS.Rpc.store
         public long StoreStatusId { get; set; }
         public long StatusId { get; set; }
     }
+
+    public class Store_BrandInStoreImportDTO : DataDTO
+    {
+        public long STT { get; set; }
+        public string StoreCode { get; set; }
+        public string BrandCode1 { get; set; }
+        public string BrandCode2 { get; set; }
+        public string BrandCode3 { get; set; }
+        public string BrandCode4 { get; set; }
+        public string BrandCode5 { get; set; }
+        public string ProductGrouping1 { get; set; }
+        public string ProductGrouping2 { get; set; }
+        public string ProductGrouping3 { get; set; }
+        public string ProductGrouping4 { get; set; }
+        public string ProductGrouping5 { get; set; }
+        public long? Brand1Id { get; set; }
+        public long? Brand2Id { get; set; }
+        public long? Brand3Id { get; set; }
+        public long? Brand4Id { get; set; }
+        public long? Brand5Id { get; set; }
+        public List<long> ProductGrouping1Ids { get; set; }
+        public List<long> ProductGrouping2Ids { get; set; }
+        public List<long> ProductGrouping3Ids { get; set; }
+        public List<long> ProductGrouping4Ids { get; set; }
+        public List<long> ProductGrouping5Ids { get; set; }
+        public long StoreId { get; set; }
+    }
 }
