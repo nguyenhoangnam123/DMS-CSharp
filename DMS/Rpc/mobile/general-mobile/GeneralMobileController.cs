@@ -1065,9 +1065,8 @@ namespace DMS.Rpc.mobile.general_mobile
             if (GeneralMobile_StoreStatisticFilterDTO.SalesOrderTypeId == null || GeneralMobile_StoreStatisticFilterDTO.StoreId == null || GeneralMobile_StoreStatisticFilterDTO.StoreId.Equal.HasValue == false)
                 return new GeneralMobile_StoreStatisticDTO();
 
-            DateTime Now = StaticParams.DateTimeNow.Date;
             DateTime Start = LocalStartDay(CurrentContext);
-            DateTime End = new DateTime(Now.Year, Now.Month, Now.Day);
+            DateTime End = LocalEndDay(CurrentContext);
             (Start, End) = ConvertTime(GeneralMobile_StoreStatisticFilterDTO.Time);
 
             GeneralMobile_StoreStatisticDTO GeneralMobile_StoreStatisticDTO = new GeneralMobile_StoreStatisticDTO();
