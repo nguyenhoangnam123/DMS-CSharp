@@ -13,17 +13,4 @@ DMS/appsettings.Production.json
 DMS/DMS - Backup.csproj
 DMS/DMS.csproj.user
 DMS.ABE/obj/
-DMS.ABE/bin/Release/netcoreapp3.1/appsettings.Development.json
-DMS.ABE/bin/Release/netcoreapp3.1/appsettings.json
-DMS.ABE/bin/Release/netcoreapp3.1/DMS.ABE.deps.json
-DMS.ABE/bin/Release/netcoreapp3.1/DMS.ABE.dll
-DMS.ABE/bin/Release/netcoreapp3.1/DMS.ABE.exe
-DMS.ABE/bin/Release/netcoreapp3.1/DMS.ABE.pdb
-DMS.ABE/bin/Release/netcoreapp3.1/DMS.ABE.runtimeconfig.dev.json
-DMS.ABE/bin/Release/netcoreapp3.1/DMS.ABE.runtimeconfig.json
-DMS.ABE/bin/Debug/netcoreapp3.1/DMS.ABE.dll
-DMS.ABE/bin/Debug/netcoreapp3.1/DMS.ABE.exe
-DMS.ABE/bin/Debug/netcoreapp3.1/DMS.ABE.pdb
-DMS.ABE/bin/Debug/netcoreapp3.1/DMS.ABE.runtimeconfig.dev.json
-DMS.ABE/bin/Debug/netcoreapp3.1/DMS.ABE.runtimeconfig.json
 DMS.ABE/bin/
