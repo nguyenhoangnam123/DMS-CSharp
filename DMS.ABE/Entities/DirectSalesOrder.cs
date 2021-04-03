@@ -72,6 +72,7 @@ namespace DMS.ABE.Entities
         public StringFilter StoreAddress { get; set; }
         public StringFilter DeliveryAddress { get; set; }
         public IdFilter AppUserId { get; set; }
+        public IdFilter StoreUserCreatorId { get; set; } // loc don hang theo tai khoan dai ly
         public DateFilter OrderDate { get; set; }
         public DateFilter DeliveryDate { get; set; }
         public IdFilter RequestStateId { get; set; }

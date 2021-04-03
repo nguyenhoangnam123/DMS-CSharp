@@ -11,15 +11,16 @@ namespace DMS.ABE.Entities
         public long Id { get; set; }
         public Guid RowId { get; set; }
         public string Code { get; set; }
-        public string SupplierCode { get; set; }
         public string Name { get; set; }
+        public string Note { get; set; }
         public string Description { get; set; }
         public string ScanCode { get; set; }
         public string ERPCode { get; set; }
+        public string SupplierCode { get; set; }
         public long CategoryId { get; set; }
         public long ProductTypeId { get; set; }
-        public long? SupplierId { get; set; }
         public long? BrandId { get; set; }
+        public long? SupplierId { get; set; }
         public long UnitOfMeasureId { get; set; }
         public long? UnitOfMeasureGroupingId { get; set; }
         public decimal? SalePrice { get; set; }
@@ -28,8 +29,8 @@ namespace DMS.ABE.Entities
         public long StatusId { get; set; }
         public string OtherName { get; set; }
         public string TechnicalName { get; set; }
-        public string Note { get; set; }
         public bool IsNew { get; set; }
+        public bool IsFavorite { get; set; }
         public long UsedVariationId { get; set; }
         public long VariationCounter { get; set; }
         public bool CanDelete { get; set; }
@@ -65,14 +66,14 @@ namespace DMS.ABE.Entities
     {
         public IdFilter Id { get; set; }
         public StringFilter Code { get; set; }
-        public StringFilter SupplierCode { get; set; }
         public StringFilter Name { get; set; }
+        public StringFilter SupplierCode { get; set; }
         public StringFilter Description { get; set; }
         public StringFilter ScanCode { get; set; }
         public StringFilter ERPCode { get; set; }
         public IdFilter CategoryId { get; set; }
-        public IdFilter ProductTypeId { get; set; }
         public IdFilter SupplierId { get; set; }
+        public IdFilter ProductTypeId { get; set; }
         public IdFilter BrandId { get; set; }
         public IdFilter UnitOfMeasureId { get; set; }
         public IdFilter UnitOfMeasureGroupingId { get; set; }
@@ -98,12 +99,10 @@ namespace DMS.ABE.Entities
     {
         Id = 0,
         Code = 1,
-        SupplierCode = 2,
         Name = 3,
         Description = 4,
         ScanCode = 5,
         ProductType = 6,
-        Supplier = 7,
         Brand = 8,
         UnitOfMeasure = 9,
         UnitOfMeasureGrouping = 10,
@@ -117,7 +116,6 @@ namespace DMS.ABE.Entities
         IsNew = 18,
         UsedVariation = 19,
         Category = 20,
-        UpdatedAt = 21,
     }
 
     [Flags]
@@ -126,12 +124,10 @@ namespace DMS.ABE.Entities
         ALL = E.ALL,
         Id = E._0,
         Code = E._1,
-        SupplierCode = E._2,
         Name = E._3,
         Description = E._4,
         ScanCode = E._5,
         ProductType = E._6,
-        Supplier = E._7,
         Brand = E._8,
         UnitOfMeasure = E._9,
         UnitOfMeasureGrouping = E._10,

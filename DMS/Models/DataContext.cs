@@ -164,6 +164,7 @@ namespace DMS.Models
         public virtual DbSet<StoreTypeDAO> StoreType { get; set; }
         public virtual DbSet<StoreUncheckingDAO> StoreUnchecking { get; set; }
         public virtual DbSet<StoreUserDAO> StoreUser { get; set; }
+        public virtual DbSet<StoreUserFavoriteProductMappingDAO> StoreUserFavoriteProductMapping { get; set; }
         public virtual DbSet<SupplierDAO> Supplier { get; set; }
         public virtual DbSet<SurveyDAO> Survey { get; set; }
         public virtual DbSet<SurveyOptionDAO> SurveyOption { get; set; }
@@ -4705,6 +4706,25 @@ namespace DMS.Models
                     .HasForeignKey(d => d.StoreId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_StoreUser_Store");
+            });
+
+            modelBuilder.Entity<StoreUserFavoriteProductMappingDAO>(entity =>
+            {
+                entity.HasKey(e => new { e.FavoriteProductId, e.StoreUserId });
+
+                entity.ToTable("StoreUserFavoriteProductMapping", "MDM");
+
+                entity.HasOne(d => d.FavoriteProduct)
+                    .WithMany(p => p.StoreUserFavoriteProductMappings)
+                    .HasForeignKey(d => d.FavoriteProductId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_StoreUserFavoriteProductMapping_Product");
+
+                entity.HasOne(d => d.StoreUser)
+                    .WithMany(p => p.StoreUserFavoriteProductMappings)
+                    .HasForeignKey(d => d.StoreUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_StoreUserFavoriteProductMapping_StoreUser");
             });
 
             modelBuilder.Entity<SupplierDAO>(entity =>

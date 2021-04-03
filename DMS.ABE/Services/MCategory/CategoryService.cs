@@ -1,0 +1,203 @@
+﻿using DMS.ABE.Common;
+using DMS.ABE.Helpers;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+using OfficeOpenXml;
+using DMS.ABE.Repositories;
+using DMS.ABE.Entities;
+using DMS.ABE.Enums;
+using DMS.ABE.Services.MImage;
+
+namespace DMS.ABE.Services.MCategory
+{
+    public interface ICategoryService : IServiceScoped
+    {
+        Task<int> Count(CategoryFilter CategoryFilter);
+        Task<List<Category>> List(CategoryFilter CategoryFilter);
+        Task<Category> Get(long Id);
+        Task<Image> SaveImage(Image Image);
+        Task<CategoryFilter> ToFilter(CategoryFilter CategoryFilter);
+    }
+
+    public class CategoryService : BaseService, ICategoryService
+    {
+        private IUOW UOW;
+        private ILogging Logging;
+        private ICurrentContext CurrentContext;
+        private IImageService ImageService;
+        private ICategoryValidator CategoryValidator;
+
+        public CategoryService(
+            IUOW UOW,
+            ILogging Logging,
+            ICurrentContext CurrentContext,
+            IImageService ImageService,
+            ICategoryValidator CategoryValidator
+        )
+        {
+            this.UOW = UOW;
+            this.Logging = Logging;
+            this.CurrentContext = CurrentContext;
+            this.ImageService = ImageService;
+            this.CategoryValidator = CategoryValidator;
+        }
+        public async Task<int> Count(CategoryFilter CategoryFilter)
+        {
+            try
+            {
+                CategoryFilter.Skip = 0;
+                CategoryFilter.Take = int.MaxValue;
+                List<Category> Categories = await UOW.CategoryRepository.List(CategoryFilter); // lay ra cac categories thoa man
+                List<Category> AllCategories = await UOW.CategoryRepository.List(new CategoryFilter
+                {
+                    Skip = 0,
+                    Take = int.MaxValue,
+                    Selects = CategorySelect.Id | CategorySelect.Code | CategorySelect.Name | CategorySelect.Image | CategorySelect.Parent | CategorySelect.Path | CategorySelect.Level
+                }); // lay het cac categories
+                foreach (Category Category in Categories)
+                {
+                    Category.HasChildren = AllCategories.Any(x => x.ParentId.HasValue && x.ParentId.Value == Category.Id);
+                }
+                if (CategoryFilter.HasChildren)
+                {
+                    Categories = Categories.Where(x => x.HasChildren).ToList();
+                }
+                else
+                {
+                    Categories = Categories.Where(x => x.HasChildren == false).ToList();
+                }
+                int result = Categories.Count;
+                return result;
+            }
+            catch (Exception ex)
+            {
+                if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(CategoryService));
+                    throw new MessageException(ex);
+                }
+                else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(CategoryService));
+                    throw new MessageException(ex.InnerException);
+                }
+            }
+        }
+
+        public async Task<List<Category>> List(CategoryFilter CategoryFilter)
+        {
+            try
+            {
+                CategoryFilter.Skip = 0;
+                CategoryFilter.Take = int.MaxValue;
+                List<Category> Categories = await UOW.CategoryRepository.List(CategoryFilter); // lay ra cac categories thoa man
+                List<Category> AllCategories = await UOW.CategoryRepository.List(new CategoryFilter { 
+                    Skip = 0,
+                    Take = int.MaxValue,
+                    Selects = CategorySelect.Id | CategorySelect.Code | CategorySelect.Name | CategorySelect.Image | CategorySelect.Parent | CategorySelect.Path | CategorySelect.Level
+                }); // lay het cac categories
+                foreach (Category Category in Categories)
+                {
+                    Category.HasChildren = AllCategories.Any(x => x.ParentId.HasValue && x.ParentId.Value == Category.Id);
+                }
+                if (CategoryFilter.HasChildren)
+                {
+                    Categories = Categories.Where(x => x.HasChildren).ToList();
+                }
+                else
+                {
+                    Categories = Categories.Where(x => x.HasChildren == false).ToList();
+                }
+                List<long> CategoryIds = Categories.Select(x => x.Id).ToList();
+                List<Product> Products = await UOW.ProductRepository.List(new ProductFilter
+                {
+                    CategoryId = new IdFilter { In = CategoryIds },
+                    Selects = ProductSelect.Id | ProductSelect.Category,
+                    Skip = 0,
+                    Take = int.MaxValue,
+                    OrderBy = ProductOrder.Id,
+                });
+                if (CategoryFilter.HasChildren)
+                {
+                    List<Category> Children = AllCategories.Where(x => x.ParentId.HasValue && CategoryIds.Contains(x.ParentId.Value)).ToList(); // lấy ra tất cả con
+                    Categories = Categories.Union(Children).ToList();
+                }
+                foreach (Category Category in Categories)
+                {
+                    Category.ProductCounter = Products.Where(x => x.CategoryId == Category.Id).Count();
+                }
+                return Categories;
+            }
+            catch (Exception ex)
+            {
+                if (ex.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(ex, nameof(CategoryService));
+                    throw new MessageException(ex);
+                }
+                else
+                {
+                    await Logging.CreateSystemLog(ex.InnerException, nameof(CategoryService));
+                    throw new MessageException(ex.InnerException);
+                }
+            }
+        }
+        public async Task<Category> Get(long Id)
+        {
+            Category Category = await UOW.CategoryRepository.Get(Id);
+            if (Category == null)
+                return null;
+            return Category;
+        }
+
+        public async Task<Image> SaveImage(Image Image)
+        {
+            FileInfo fileInfo = new FileInfo(Image.Name);
+            string path = $"/category/{StaticParams.DateTimeNow.ToString("yyyyMMdd")}/{Guid.NewGuid()}{fileInfo.Extension}";
+            Image = await ImageService.Create(Image, path);
+            return Image;
+        }
+
+        public async Task<CategoryFilter> ToFilter(CategoryFilter filter)
+        {
+            if (filter.OrFilter == null) filter.OrFilter = new List<CategoryFilter>();
+            if (CurrentContext.Filters == null || CurrentContext.Filters.Count == 0) return filter;
+            foreach (var currentFilter in CurrentContext.Filters)
+            {
+                CategoryFilter subFilter = new CategoryFilter();
+                filter.OrFilter.Add(subFilter);
+                List<FilterPermissionDefinition> FilterPermissionDefinitions = currentFilter.Value;
+                foreach (FilterPermissionDefinition FilterPermissionDefinition in FilterPermissionDefinitions)
+                {
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.Id))
+                        subFilter.Id = FilterBuilder.Merge(subFilter.Id, FilterPermissionDefinition.IdFilter);
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.Code))
+                        subFilter.Code = FilterBuilder.Merge(subFilter.Code, FilterPermissionDefinition.StringFilter);
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.Name))
+                        subFilter.Name = FilterBuilder.Merge(subFilter.Name, FilterPermissionDefinition.StringFilter);
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.ParentId))
+                        subFilter.ParentId = FilterBuilder.Merge(subFilter.ParentId, FilterPermissionDefinition.IdFilter);
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.Path))
+                        subFilter.Path = FilterBuilder.Merge(subFilter.Path, FilterPermissionDefinition.StringFilter);
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.Level))
+                        subFilter.Level = FilterBuilder.Merge(subFilter.Level, FilterPermissionDefinition.LongFilter);
+                    if (FilterPermissionDefinition.Name == nameof(subFilter.StatusId))
+                        subFilter.StatusId = FilterBuilder.Merge(subFilter.StatusId, FilterPermissionDefinition.IdFilter);
+                    if (FilterPermissionDefinition.Name == nameof(CurrentContext.UserId) && FilterPermissionDefinition.IdFilter != null)
+                    {
+                        if (FilterPermissionDefinition.IdFilter.Equal.HasValue && FilterPermissionDefinition.IdFilter.Equal.Value == CurrentUserEnum.IS.Id)
+                        {
+                        }
+                        if (FilterPermissionDefinition.IdFilter.Equal.HasValue && FilterPermissionDefinition.IdFilter.Equal.Value == CurrentUserEnum.ISNT.Id)
+                        {
+                        }
+                    }
+                }
+            }
+            return filter;
+        }
+    }
+}

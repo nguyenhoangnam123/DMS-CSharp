@@ -8,6 +8,7 @@ namespace DMS.ABE.Models
         public StoreUserDAO()
         {
             DirectSalesOrders = new HashSet<DirectSalesOrderDAO>();
+            StoreUserFavoriteProductMappings = new HashSet<StoreUserFavoriteProductMappingDAO>();
         }
 
         public long Id { get; set; }
@@ -27,5 +28,6 @@ namespace DMS.ABE.Models
         public virtual StatusDAO Status { get; set; }
         public virtual StoreDAO Store { get; set; }
         public virtual ICollection<DirectSalesOrderDAO> DirectSalesOrders { get; set; }
+        public virtual ICollection<StoreUserFavoriteProductMappingDAO> StoreUserFavoriteProductMappings { get; set; }
     }
 }

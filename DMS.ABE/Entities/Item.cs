@@ -9,6 +9,7 @@ namespace DMS.ABE.Entities
     public class Item : DataEntity, IEquatable<Item>
     {
         public long Id { get; set; }
+        public Guid RowId { get; set; }
         public long ProductId { get; set; }
         public string Code { get; set; }
         public string Name { get; set; }
@@ -16,14 +17,14 @@ namespace DMS.ABE.Entities
         public decimal? SalePrice { get; set; }
         public decimal? RetailPrice { get; set; }
         public long SaleStock { get; set; }
+        public bool CanDelete { get; set; }
         public long StatusId { get; set; }
         public bool HasInventory { get; set; }
         public DateTime? LastUpdateInventory { get; set; }
+        public bool Used { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public DateTime? DeletedAt { get; set; }
-        public bool Used { get; set; }
-        public Guid RowId { get; set; }
         public Product Product { get; set; }
         public Status Status { get; set; }
         public List<Inventory> Inventories { get; set; }
@@ -43,6 +44,7 @@ namespace DMS.ABE.Entities
     {
         public string Search { get; set; }
         public IdFilter Id { get; set; }
+        public IdFilter CategoryId { get; set; }
         public IdFilter ProductId { get; set; }
         public StringFilter Code { get; set; }
         public StringFilter Name { get; set; }
@@ -85,5 +87,6 @@ namespace DMS.ABE.Entities
         RetailPrice = E._6,
         Status = E._7,
         ProductId = E._8,
+        Image = E._9
     }
 }

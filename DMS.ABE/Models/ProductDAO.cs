@@ -12,6 +12,7 @@ namespace DMS.ABE.Models
             ProductProductGroupingMappings = new HashSet<ProductProductGroupingMappingDAO>();
             PromotionCodeProductMappings = new HashSet<PromotionCodeProductMappingDAO>();
             PromotionProducts = new HashSet<PromotionProductDAO>();
+            StoreUserFavoriteProductMappings = new HashSet<StoreUserFavoriteProductMappingDAO>();
             VariationGroupings = new HashSet<VariationGroupingDAO>();
         }
 
@@ -54,6 +55,7 @@ namespace DMS.ABE.Models
         public virtual ICollection<ProductProductGroupingMappingDAO> ProductProductGroupingMappings { get; set; }
         public virtual ICollection<PromotionCodeProductMappingDAO> PromotionCodeProductMappings { get; set; }
         public virtual ICollection<PromotionProductDAO> PromotionProducts { get; set; }
+        public virtual ICollection<StoreUserFavoriteProductMappingDAO> StoreUserFavoriteProductMappings { get; set; }
         public virtual ICollection<VariationGroupingDAO> VariationGroupings { get; set; }
     }
 }

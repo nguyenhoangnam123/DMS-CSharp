@@ -141,6 +141,7 @@ namespace DMS.ABE.Repositories
         IWorkflowStepRepository WorkflowStepRepository { get; }
         IWorkflowTypeRepository WorkflowTypeRepository { get; }
         IStoreUserRepository StoreUserRepository { get; }
+        IStoreUserFavoriteProductMappingRepository StoreUserFavoriteProductMappingRepository { get; }
     }
 
     public class UOW : IUOW
@@ -277,6 +278,7 @@ namespace DMS.ABE.Repositories
         public IWorkflowStepRepository WorkflowStepRepository { get; private set; }
         public IWorkflowTypeRepository WorkflowTypeRepository { get; private set; }
         public IStoreUserRepository StoreUserRepository { get; private set; }
+        public IStoreUserFavoriteProductMappingRepository StoreUserFavoriteProductMappingRepository { get; private set; }
 
         public UOW(DataContext DataContext)
         {
@@ -412,6 +414,7 @@ namespace DMS.ABE.Repositories
             WorkflowStepRepository = new WorkflowStepRepository(DataContext);
             WorkflowTypeRepository = new WorkflowTypeRepository(DataContext);
             StoreUserRepository = new StoreUserRepository(DataContext);
+            StoreUserFavoriteProductMappingRepository = new StoreUserFavoriteProductMappingRepository(DataContext);
         }
         public async Task Begin()
         {
