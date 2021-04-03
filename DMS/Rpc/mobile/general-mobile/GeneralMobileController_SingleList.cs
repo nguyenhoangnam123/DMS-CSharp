@@ -1738,13 +1738,20 @@ namespace DMS.Rpc.mobile.general_mobile
         public async Task<long> CountProductGrouping([FromBody] GeneralMobile_ProductGroupingFilterDTO GeneralMobile_ProductGroupingFilterDTO)
         {
             ProductGroupingFilter ProductGroupingFilter = new ProductGroupingFilter();
+            ProductGroupingFilter.Skip = GeneralMobile_ProductGroupingFilterDTO.Skip;
+            ProductGroupingFilter.Take = GeneralMobile_ProductGroupingFilterDTO.Take;
+            ProductGroupingFilter.OrderBy = ProductGroupingOrder.Id;
+            ProductGroupingFilter.OrderType = OrderType.ASC;
+            ProductGroupingFilter.Selects = ProductGroupingSelect.ALL;
             ProductGroupingFilter.Id = GeneralMobile_ProductGroupingFilterDTO.Id;
             ProductGroupingFilter.Code = GeneralMobile_ProductGroupingFilterDTO.Code;
             ProductGroupingFilter.Name = GeneralMobile_ProductGroupingFilterDTO.Name;
             ProductGroupingFilter.ParentId = GeneralMobile_ProductGroupingFilterDTO.ParentId;
             ProductGroupingFilter.Path = GeneralMobile_ProductGroupingFilterDTO.Path;
-            ProductGroupingFilter.Description = GeneralMobile_ProductGroupingFilterDTO.Description;
-            return await ProductGroupingService.Count(ProductGroupingFilter);
+
+            List<ProductGrouping> ProductGroupings = await ProductGroupingService.List(ProductGroupingFilter);
+            ProductGroupings = ProductGroupings.Where(x => x.HasChildren == false).ToList();
+            return ProductGroupings.Count();
         }
 
         [Route(GeneralMobileRoute.ListProductGrouping), HttpPost]
@@ -1763,6 +1770,7 @@ namespace DMS.Rpc.mobile.general_mobile
             ProductGroupingFilter.Path = GeneralMobile_ProductGroupingFilterDTO.Path;
 
             List<ProductGrouping> ProductGroupings = await ProductGroupingService.List(ProductGroupingFilter);
+            ProductGroupings = ProductGroupings.Where(x => x.HasChildren == false).ToList();
             List<GeneralMobile_ProductGroupingDTO> GeneralMobile_ProductGroupingDTOs = ProductGroupings
                 .Select(x => new GeneralMobile_ProductGroupingDTO(x)).ToList();
             return GeneralMobile_ProductGroupingDTOs;

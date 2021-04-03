@@ -145,6 +145,14 @@ namespace DMS.Repositories
                     Description = q.Parent.Description,
                 } : null,
             }).ToListAsync();
+
+            var ProductGroupingDAOs = await DataContext.ProductGrouping.ToListAsync();
+            foreach (var ProductGrouping in ProductGroupings)
+            {
+                var count = ProductGroupingDAOs.Where(x => x.Path.StartsWith(ProductGrouping.Path) && x.Id != ProductGrouping.Id).Count();
+                if (count > 0)
+                    ProductGrouping.HasChildren = true;
+            }
             return ProductGroupings;
         }
 

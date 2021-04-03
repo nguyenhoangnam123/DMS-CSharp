@@ -15,6 +15,7 @@ namespace DMS.Entities
         public long? ParentId { get; set; }
         public string Path { get; set; }
         public long Level { get; set; }
+        public bool HasChildren { get; set; }
         public Guid RowId { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
