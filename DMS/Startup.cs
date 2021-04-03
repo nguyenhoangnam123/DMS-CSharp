@@ -4,7 +4,6 @@ using DMS.Helpers;
 using DMS.Models;
 using DMS.Rpc;
 using DMS.Services;
-using Elastic.Apm.NetCoreAll;
 using GleamTech.AspNet.Core;
 using Hangfire;
 using Hangfire.SqlServer;
@@ -190,7 +189,6 @@ namespace DMS
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            app.UseAllElasticApm(Configuration);
             app.UseRouting();
             app.UseMiddleware<ErrorHandlingMiddleware>();
             app.UseGleamTech();

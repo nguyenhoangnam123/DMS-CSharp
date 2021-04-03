@@ -948,7 +948,19 @@ namespace DMS.Rpc.store
                         }
                     }
                 }
-                await DataContext.BulkMergeAsync(BrandInStoreProductGroupingMappingDAOs);
+                List<BrandInStoreProductGroupingMappingDAO> NewList = new List<BrandInStoreProductGroupingMappingDAO>();
+                foreach(BrandInStoreProductGroupingMappingDAO BrandInStoreProductGroupingMappingDAO in BrandInStoreProductGroupingMappingDAOs)
+                {
+                    BrandInStoreProductGroupingMappingDAO Old = NewList
+                        .Where(x => x.BrandInStoreId == BrandInStoreProductGroupingMappingDAO.BrandInStoreId && x.ProductGroupingId == BrandInStoreProductGroupingMappingDAO.ProductGroupingId)
+                        .FirstOrDefault();
+                    if (Old == null)
+                    {
+                        NewList.Add(BrandInStoreProductGroupingMappingDAO);
+                    }
+                }
+
+                await DataContext.BulkMergeAsync(NewList);
                 return Ok();
             }
             catch (Exception ex )
