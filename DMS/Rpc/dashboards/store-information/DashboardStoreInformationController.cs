@@ -323,6 +323,24 @@ namespace DMS.Rpc.dashboards.store_information
             {
                 DashboardMonitor_StoreDTO.Top1BrandName = BrandInStores.Where(x => x.StoreId == DashboardMonitor_StoreDTO.Id).Select(x => x.Brand.Name).FirstOrDefault();
             }
+
+            var query_Scouting = from ss in DataContext.StoreScouting
+                                 join au in DataContext.AppUser on ss.CreatorId equals au.Id
+                                 where (OrganizationIds.Contains(au.OrganizationId)) &&
+                                 ss.StoreScoutingStatusId == StoreScoutingStatusEnum.NOTOPEN.Id &&
+                                 ss.DeletedAt == null
+                                 select new DashboardStoreInformation_StoreDTO
+                                 {
+                                     Id = ss.Id,
+                                     Name = ss.Name,
+                                     Address = ss.Address,
+                                     Latitude = ss.Latitude,
+                                     Longitude = ss.Longitude,
+                                     Telephone = ss.OwnerPhone,
+                                     IsScouting = true
+                                 };
+            List<DashboardStoreInformation_StoreDTO> DashboardMonitor_StoreScotingDTOs = await query_Scouting.Distinct().ToListAsync();
+            DashboardMonitor_StoreDTOs.AddRange(DashboardMonitor_StoreScotingDTOs);
             return DashboardMonitor_StoreDTOs;
         }
 

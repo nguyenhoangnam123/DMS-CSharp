@@ -133,7 +133,7 @@ namespace DMS.Repositories
                 Code = filter.Selects.Contains(ProductGroupingSelect.Code) ? q.Code : default(string),
                 Name = filter.Selects.Contains(ProductGroupingSelect.Name) ? q.Name : default(string),
                 ParentId = filter.Selects.Contains(ProductGroupingSelect.Parent) ? q.ParentId : default(long?),
-                Path = filter.Selects.Contains(ProductGroupingSelect.Path) ? q.Path : default(string),
+                Path = q.Path,
                 Description = filter.Selects.Contains(ProductGroupingSelect.Description) ? q.Description : default(string),
                 Parent = filter.Selects.Contains(ProductGroupingSelect.Parent) && q.Parent != null ? new ProductGrouping
                 {

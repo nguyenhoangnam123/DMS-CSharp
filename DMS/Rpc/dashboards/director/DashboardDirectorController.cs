@@ -513,9 +513,8 @@ namespace DMS.Rpc.dashboards.director
         [Route(DashboardDirectorRoute.StatisticYesterday), HttpPost]
         public async Task<DashboardDirector_StatisticDailyDTO> StatisticYesterday([FromBody] DashboardDirector_IndirectSalesOrderFluctuationFilterDTO DashboardDirector_IndirectSalesOrderFluctuationFilterDTO)
         {
-            DateTime Now = StaticParams.DateTimeNow;
-            DateTime Start = LocalStartDay(CurrentContext);
-            DateTime End = LocalEndDay(CurrentContext);
+            DateTime Start = LocalStartDay(CurrentContext).AddDays(-1);
+            DateTime End = LocalEndDay(CurrentContext).AddDays(-1);
 
             var ProvinceId = DashboardDirector_IndirectSalesOrderFluctuationFilterDTO.ProvinceId?.Equal;
             long? SaleEmployeeId = DashboardDirector_IndirectSalesOrderFluctuationFilterDTO.AppUserId?.Equal;
