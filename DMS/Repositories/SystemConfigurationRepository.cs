@@ -29,40 +29,40 @@ namespace DMS.Repositories
             List<SystemConfigurationDAO> SystemConfigurationDAOs = await DataContext.SystemConfiguration.ToListAsync();
             foreach (SystemConfigurationDAO SystemConfigurationDAO in SystemConfigurationDAOs)
             {
-                if (SystemConfigurationDAO.Code == nameof(SystemConfiguration.ALLOW_EDIT_KPI_IN_PERIOD))
+                if (SystemConfigurationDAO.Code == nameof(SystemConfigurationEnum.ALLOW_EDIT_KPI_IN_PERIOD))
                     SystemConfigurationDAO.Value = SystemConfiguration.ALLOW_EDIT_KPI_IN_PERIOD.ToString();
 
-                if (SystemConfigurationDAO.Code == nameof(SystemConfiguration.AMPLITUDE_PRICE_IN_DIRECT))
+                if (SystemConfigurationDAO.Code == nameof(SystemConfigurationEnum.AMPLITUDE_PRICE_IN_DIRECT))
                     SystemConfigurationDAO.Value = SystemConfiguration.AMPLITUDE_PRICE_IN_DIRECT.ToString();
 
-                if (SystemConfigurationDAO.Code == nameof(SystemConfiguration.AMPLITUDE_PRICE_IN_INDIRECT))
+                if (SystemConfigurationDAO.Code == nameof(SystemConfigurationEnum.AMPLITUDE_PRICE_IN_INDIRECT))
                     SystemConfigurationDAO.Value = SystemConfiguration.AMPLITUDE_PRICE_IN_INDIRECT.ToString();
 
-                if (SystemConfigurationDAO.Code == nameof(SystemConfiguration.DASH_BOARD_REFRESH_TIME))
+                if (SystemConfigurationDAO.Code == nameof(SystemConfigurationEnum.DASH_BOARD_REFRESH_TIME))
                     SystemConfigurationDAO.Value = SystemConfiguration.DASH_BOARD_REFRESH_TIME.ToString();
 
-                if (SystemConfigurationDAO.Code == nameof(SystemConfiguration.PRIORITY_USE_PRICE_LIST))
+                if (SystemConfigurationDAO.Code == nameof(SystemConfigurationEnum.PRIORITY_USE_PRICE_LIST))
                     SystemConfigurationDAO.Value = SystemConfiguration.PRIORITY_USE_PRICE_LIST.ToString();
 
-                if (SystemConfigurationDAO.Code == nameof(SystemConfiguration.PRIORITY_USE_PROMOTION))
+                if (SystemConfigurationDAO.Code == nameof(SystemConfigurationEnum.PRIORITY_USE_PROMOTION))
                     SystemConfigurationDAO.Value = SystemConfiguration.PRIORITY_USE_PROMOTION.ToString();
 
-                if (SystemConfigurationDAO.Code == nameof(SystemConfiguration.STORE_CHECKING_DISTANCE))
+                if (SystemConfigurationDAO.Code == nameof(SystemConfigurationEnum.STORE_CHECKING_DISTANCE))
                     SystemConfigurationDAO.Value = SystemConfiguration.STORE_CHECKING_DISTANCE.ToString();
 
-                if (SystemConfigurationDAO.Code == nameof(SystemConfiguration.STORE_CHECKING_MINIMUM_TIME))
+                if (SystemConfigurationDAO.Code == nameof(SystemConfigurationEnum.STORE_CHECKING_MINIMUM_TIME))
                     SystemConfigurationDAO.Value = SystemConfiguration.STORE_CHECKING_MINIMUM_TIME.ToString();
 
-                if (SystemConfigurationDAO.Code == nameof(SystemConfiguration.STORE_CHECKING_OFFLINE_CONSTRAINT_DISTANCE))
+                if (SystemConfigurationDAO.Code == nameof(SystemConfigurationEnum.STORE_CHECKING_OFFLINE_CONSTRAINT_DISTANCE))
                     SystemConfigurationDAO.Value = SystemConfiguration.STORE_CHECKING_OFFLINE_CONSTRAINT_DISTANCE.ToString();
 
-                if (SystemConfigurationDAO.Code == nameof(SystemConfiguration.USE_DIRECT_SALES_ORDER))
+                if (SystemConfigurationDAO.Code == nameof(SystemConfigurationEnum.USE_DIRECT_SALES_ORDER))
                     SystemConfigurationDAO.Value = SystemConfiguration.USE_DIRECT_SALES_ORDER.ToString();
 
-                if (SystemConfigurationDAO.Code == nameof(SystemConfiguration.USE_INDIRECT_SALES_ORDER))
+                if (SystemConfigurationDAO.Code == nameof(SystemConfigurationEnum.USE_INDIRECT_SALES_ORDER))
                     SystemConfigurationDAO.Value = SystemConfiguration.USE_INDIRECT_SALES_ORDER.ToString();
 
-                if (SystemConfigurationDAO.Code == nameof(SystemConfiguration.YOUTUBE_ID))
+                if (SystemConfigurationDAO.Code == nameof(SystemConfigurationEnum.YOUTUBE_ID))
                     SystemConfigurationDAO.Value = SystemConfiguration.YOUTUBE_ID.ToString();
             }
             await DataContext.SaveChangesAsync();
