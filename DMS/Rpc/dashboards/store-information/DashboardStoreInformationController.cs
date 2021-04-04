@@ -406,9 +406,23 @@ namespace DMS.Rpc.dashboards.store_information
                          select bs.Id;
 
             var BrandInStoreIds = await query2.Distinct().ToListAsync();
-            var BrandInStoreProductGroupingMappings = await DataContext.BrandInStoreProductGroupingMapping.Include(x => x.BrandInStore)
-                .Where(x => BrandInStoreIds.Contains(x.BrandInStoreId))
-                .ToListAsync();
+            ITempTableQuery<TempTable<long>> tempTableQuery2 = await DataContext
+                        .BulkInsertValuesIntoTempTableAsync<long>(StoreIds);
+            var query3 = from bsg in DataContext.BrandInStoreProductGroupingMapping
+                         join tt in tempTableQuery2.Query on bsg.BrandInStoreId equals tt.Column1
+                         join bs in DataContext.BrandInStore on bsg.BrandInStoreId equals bs.Id
+                         select new BrandInStoreProductGroupingMapping
+                         {
+                             BrandInStoreId = bsg.BrandInStoreId,
+                             ProductGroupingId = bsg.ProductGroupingId,
+                             BrandInStore = new BrandInStore
+                             {
+                                 Id = bs.Id,
+                                 BrandId = bs.BrandId,
+                                 StoreId = bs.StoreId
+                             }
+                         };
+            var BrandInStoreProductGroupingMappings = await query3.ToListAsync();
 
             List<DashboardStoreInformation_ProductGroupingStatisticsDTO> DashboardStoreInformation_ProductGroupingStatisticsDTOs = await query.ToListAsync();
             foreach (var DashboardStoreInformation_ProductGroupingStatisticsDTO in DashboardStoreInformation_ProductGroupingStatisticsDTOs)
