@@ -63,7 +63,7 @@ namespace DMS.Repositories
                     SystemConfigurationDAO.Value = SystemConfiguration.USE_INDIRECT_SALES_ORDER.ToString();
 
                 if (SystemConfigurationDAO.Code == nameof(SystemConfigurationEnum.YOUTUBE_ID))
-                    SystemConfigurationDAO.Value = SystemConfiguration.YOUTUBE_ID.ToString();
+                    SystemConfigurationDAO.Value = SystemConfiguration.YOUTUBE_ID;
             }
             await DataContext.SaveChangesAsync();
             return true;
