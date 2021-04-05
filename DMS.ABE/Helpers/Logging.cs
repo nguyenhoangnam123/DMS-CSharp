@@ -12,8 +12,8 @@ namespace DMS.ABE.Helpers
 {
     public interface ILogging : IServiceScoped
     {
-        Task<bool> CreateAuditLog(object newData, object oldData, string className, [CallerMemberName]string methodName = "");
-        Task CreateSystemLog(Exception ex, string className, [CallerMemberName]string methodName = "");
+        Task<bool> CreateAuditLog(object newData, object oldData, string className, [CallerMemberName] string methodName = "");
+        Task<bool> CreateSystemLog(Exception ex, string className, [CallerMemberName] string methodName = "");
     }
     public class Logging : ILogging
     {
@@ -31,37 +31,45 @@ namespace DMS.ABE.Helpers
         }
         public async Task<bool> CreateAuditLog(object newData, object oldData, string className, [CallerMemberName] string methodName = "")
         {
-            AppUser AppUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
-            AuditLog AuditLog = new AuditLog
+            if (CurrentContext.UserId != 0 && CurrentContext.StoreUserId == 0)
             {
-                AppUserId = CurrentContext.UserId,
-                AppUser = AppUser.DisplayName,
-                ClassName = className,
-                MethodName = methodName,
-                ModuleName = StaticParams.ModuleName,
-                OldData = JsonConvert.SerializeObject(oldData),
-                NewData = JsonConvert.SerializeObject(newData),
-                Time = StaticParams.DateTimeNow,
-                RowId = Guid.NewGuid(),
-            };
-            RabbitManager.PublishSingle(new EventMessage<AuditLog>(AuditLog, AuditLog.RowId), RoutingKeyEnum.AuditLogSend);
+                AppUser AppUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
+                AuditLog AuditLog = new AuditLog
+                {
+                    AppUserId = CurrentContext.UserId,
+                    AppUser = AppUser.DisplayName,
+                    ClassName = className,
+                    MethodName = methodName,
+                    ModuleName = StaticParams.ModuleName,
+                    OldData = JsonConvert.SerializeObject(oldData),
+                    NewData = JsonConvert.SerializeObject(newData),
+                    Time = StaticParams.DateTimeNow,
+                    RowId = Guid.NewGuid(),
+                };
+                RabbitManager.PublishSingle(new EventMessage<AuditLog>(AuditLog, AuditLog.RowId), RoutingKeyEnum.AuditLogSend);
+            }
+
             return true;
         }
-        public async Task CreateSystemLog(Exception ex, string className, [CallerMemberName] string methodName = "")
+        public async Task<bool> CreateSystemLog(Exception ex, string className, [CallerMemberName] string methodName = "")
         {
-            AppUser AppUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
-            SystemLog SystemLog = new SystemLog
+            if (CurrentContext.UserId != 0 && CurrentContext.StoreUserId == 0)
             {
-                AppUserId = CurrentContext.UserId,
-                AppUser = AppUser.DisplayName,
-                ClassName = className,
-                MethodName = methodName,
-                ModuleName = StaticParams.ModuleName,
-                Exception = ex.ToString(),
-                Time = StaticParams.DateTimeNow,
-            };
-            RabbitManager.PublishSingle(new EventMessage<SystemLog>(SystemLog, SystemLog.RowId), RoutingKeyEnum.SystemLogSend);
-            throw new MessageException(ex);
+                AppUser AppUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
+                SystemLog SystemLog = new SystemLog
+                {
+                    AppUserId = CurrentContext.UserId,
+                    AppUser = AppUser.DisplayName,
+                    ClassName = className,
+                    MethodName = methodName,
+                    ModuleName = StaticParams.ModuleName,
+                    Exception = ex.ToString(),
+                    Time = StaticParams.DateTimeNow,
+                };
+                RabbitManager.PublishSingle(new EventMessage<SystemLog>(SystemLog, SystemLog.RowId), RoutingKeyEnum.SystemLogSend);
+            }
+
+            return true;
         }
     }
 }

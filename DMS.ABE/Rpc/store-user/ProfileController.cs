@@ -16,16 +16,16 @@ namespace DMS.ABE.Rpc.store_user
 {
     public class ProfileRoot
     {
-        public const string Login = "rpc/ams-abe/account/login";
-        public const string Logged = "rpc/ams-abe/account/logged";
-        public const string Get = "rpc/ams-abe/profile/get";
-        public const string Update = "rpc/ams-abe/profile/update";
-        public const string SaveImage = "rpc/ams-abe/profile/save-image";
-        public const string ChangePassword = "rpc/ams-abe/profile/change-password";
-        public const string ForgotPassword = "rpc/ams-abe/profile/forgot-password";
-        public const string VerifyOtpCode = "rpc/ams-abe/profile/verify-otp-code";
-        public const string RecoveryPassword = "rpc/ams-abe/profile/recovery-password";
-        public const string ToggleFavoriteProduct = "rpc/ams-abe/account/toggle-favorite-product"; // đổi trạng thái thích hoặc không thích sản phẩm
+        public const string Login = "rpc/dms-abe/account/login";
+        public const string Logged = "rpc/dms-abe/account/logged";
+        public const string Get = "rpc/dms-abe/profile/get";
+        public const string Update = "rpc/dms-abe/profile/update";
+        public const string SaveImage = "rpc/dms-abe/profile/save-image";
+        public const string ChangePassword = "rpc/dms-abe/profile/change-password";
+        public const string ForgotPassword = "rpc/dms-abe/profile/forgot-password";
+        public const string VerifyOtpCode = "rpc/dms-abe/profile/verify-otp-code";
+        public const string RecoveryPassword = "rpc/dms-abe/profile/recovery-password";
+        public const string ToggleFavoriteProduct = "rpc/dms-abe/account/toggle-favorite-product"; // đổi trạng thái thích hoặc không thích sản phẩm
     }
     public class ProfileController : SimpleController
     {
