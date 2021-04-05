@@ -903,6 +903,7 @@ namespace DMS.Repositories
                 }).ToListAsync();
             var BrandInStoreIds = BrandInStores.Select(x => x.Id).ToList();
             var BrandInStoreProductGroupingMappings = await DataContext.BrandInStoreProductGroupingMapping
+                .Where(x => BrandInStoreIds.Contains(x.BrandInStoreId) && x.ProductGrouping.DeletedAt == null)
                 .Select(x => new BrandInStoreProductGroupingMapping
                 {
                     BrandInStoreId = x.BrandInStoreId,
@@ -1254,7 +1255,8 @@ namespace DMS.Repositories
 
             var BrandInStoreIds = Store.BrandInStores.Select(x => x.Id).ToList();
             var BrandInStoreProductGroupingMappings = await DataContext.BrandInStoreProductGroupingMapping
-                .Where(x => BrandInStoreIds.Contains(x.BrandInStoreId)).Select(x => new BrandInStoreProductGroupingMapping
+                .Where(x => BrandInStoreIds.Contains(x.BrandInStoreId) && x.ProductGrouping.DeletedAt == null)
+                .Select(x => new BrandInStoreProductGroupingMapping
                 {
                     BrandInStoreId = x.BrandInStoreId,
                     ProductGroupingId = x.ProductGroupingId,

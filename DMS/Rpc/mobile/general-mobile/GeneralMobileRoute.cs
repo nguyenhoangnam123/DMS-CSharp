@@ -85,7 +85,7 @@ namespace DMS.Rpc.mobile.general_mobile
         public const string GetBanner = Default + "/get-banner";
         public const string CountItem = Default + "/count-item";
         public const string ListItem = Default + "/list-item";
-        public const string ListItemDirectOrder = Default + "/list-item-direct-orderr";
+        public const string ListItemDirectOrder = Default + "/list-item-direct-order";
         public const string GetItem = Default + "/get-item";
         public const string CountStore = Default + "/count-store";
         public const string ListStore = Default + "/list-store";

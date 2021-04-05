@@ -281,7 +281,20 @@ namespace DMS.Rpc.app_user
 
             var query = from asm in DataContext.AppUserStoreMapping
                         join tt in tempTableQuery.Query on asm.AppUserId equals tt.Column1
-                        select asm;
+                        join s in DataContext.Store on asm.StoreId equals s.Id
+                        select new AppUserStoreMapping
+                        {
+                            AppUserId = asm.AppUserId,
+                            StoreId = asm.StoreId,
+                            Store = new Store
+                            {
+                                Id = s.Id,
+                                CodeDraft = s.CodeDraft,
+                                Code = s.Code,
+                                Name = s.Name,
+                                Address = s.Address,
+                            }
+                        };
 
             var AppUserStoreMappings = await query.ToListAsync();
 

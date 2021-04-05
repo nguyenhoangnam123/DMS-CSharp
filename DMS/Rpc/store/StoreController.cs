@@ -2,6 +2,7 @@
 using DMS.Entities;
 using DMS.Enums;
 using DMS.Helpers;
+using DMS.Models;
 using DMS.Services.MAppUser;
 using DMS.Services.MBrand;
 using DMS.Services.MDistrict;
@@ -47,6 +48,7 @@ namespace DMS.Rpc.store
         private IStoreService StoreService;
         private IStoreUserService StoreUserService;
         private ICurrentContext CurrentContext;
+        private DataContext DataContext;
         public StoreController(
             IAppUserService AppUserService,
             IBrandService BrandService,
@@ -62,7 +64,8 @@ namespace DMS.Rpc.store
             IWardService WardService,
             IStoreService StoreService,
             IStoreUserService StoreUserService,
-            ICurrentContext CurrentContext
+            ICurrentContext CurrentContext,
+            DataContext DataContext
         )
         {
             this.AppUserService = AppUserService;
@@ -80,6 +83,7 @@ namespace DMS.Rpc.store
             this.StoreService = StoreService;
             this.StoreUserService = StoreUserService;
             this.CurrentContext = CurrentContext;
+            this.DataContext = DataContext;
         }
 
         [Route(StoreRoute.Count), HttpPost]
@@ -563,6 +567,407 @@ namespace DMS.Rpc.store
             if (Stores.Any(s => !s.IsValidated))
                 return BadRequest(errorContent.ToString());
             return Ok(Store_StoreDTOs);
+        }
+
+        [Route(StoreRoute.ImportBrand), HttpPost]
+        public async Task<ActionResult<bool>> ImportBrand(IFormFile file)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+            FileInfo FileInfo = new FileInfo(file.FileName);
+            if (!FileInfo.Extension.Equals(".xlsx"))
+                return BadRequest("Định dạng file không hợp lệ");
+
+            DataFile DataFile = new DataFile
+            {
+                Name = file.FileName,
+                Content = file.OpenReadStream(),
+            };
+            #region MDM
+            List<Brand> Brands = await BrandService.List(new BrandFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = BrandSelect.ALL
+            });
+            List<ProductGrouping> ProductGroupings = await ProductGroupingService.List(new ProductGroupingFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = ProductGroupingSelect.ALL
+            });
+            List<Store> All = await StoreService.List(new StoreFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = StoreSelect.Id | StoreSelect.Code | StoreSelect.Name | StoreSelect.CodeDraft
+            });
+
+            Dictionary<string, Store> DictionaryStore = All.ToDictionary(x => x.Code, y => y);
+            Dictionary<string, Brand> DictionaryBrand = Brands.ToDictionary(x => x.Code, y => y);
+            Dictionary<string, ProductGrouping> DictionaryProductGrouping = ProductGroupings.ToDictionary(x => x.Code, y => y);
+            #endregion
+            List<Store_BrandInStoreImportDTO> Store_BrandInStoreImportDTOs = new List<Store_BrandInStoreImportDTO>();
+
+            StringBuilder errorContent = new StringBuilder();
+            using (ExcelPackage excelPackage = new ExcelPackage(DataFile.Content))
+            {
+                ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets.FirstOrDefault();
+                if (worksheet == null)
+                    return BadRequest("File không đúng biểu mẫu import");
+
+                #region khai báo các cột
+                int StartColumn = 1;
+                int StartRow = 4;
+                int SttColumnn = 0 + StartColumn;
+                int StoreCodeColumn = 1 + StartColumn;
+                int BrandCode1Column = 3 + StartColumn;
+                int ProductGrouping1Column = 4 + StartColumn;
+                int BrandCode2Column = 5 + StartColumn;
+                int ProductGrouping2Column = 6 + StartColumn;
+                int BrandCode3Column = 7 + StartColumn;
+                int ProductGrouping3Column = 8 + StartColumn;
+                int BrandCode4Column = 9 + StartColumn;
+                int ProductGrouping4Column = 10 + StartColumn;
+                int BrandCode5Column = 11 + StartColumn;
+                int ProductGrouping5Column = 12 + StartColumn;
+                #endregion
+
+                for (int i = StartRow; i <= worksheet.Dimension.End.Row; i++)
+                {
+                    #region Lấy thông tin từng dòng
+                    string stt = worksheet.Cells[i + StartRow, SttColumnn].Value?.ToString();
+                    if (stt != null && stt.ToLower() == "END".ToLower())
+                        break;
+                    bool convert = long.TryParse(stt, out long Stt);
+                    if (convert == false)
+                        continue;
+                    Store_BrandInStoreImportDTO Store_BrandInStoreImportDTO = new Store_BrandInStoreImportDTO();
+                    Store_BrandInStoreImportDTOs.Add(Store_BrandInStoreImportDTO);
+                    Store_BrandInStoreImportDTO.StoreCode = worksheet.Cells[i + StartRow, StoreCodeColumn].Value?.ToString();
+
+                    Store_BrandInStoreImportDTO.BrandCode1 = worksheet.Cells[i + StartRow, BrandCode1Column].Value?.ToString();
+                    Store_BrandInStoreImportDTO.ProductGrouping1 = worksheet.Cells[i + StartRow, ProductGrouping1Column].Value?.ToString();
+                    Store_BrandInStoreImportDTO.BrandCode2 = worksheet.Cells[i + StartRow, BrandCode2Column].Value?.ToString();
+                    Store_BrandInStoreImportDTO.ProductGrouping2 = worksheet.Cells[i + StartRow, ProductGrouping2Column].Value?.ToString();
+                    Store_BrandInStoreImportDTO.BrandCode3 = worksheet.Cells[i + StartRow, BrandCode3Column].Value?.ToString();
+                    Store_BrandInStoreImportDTO.ProductGrouping3 = worksheet.Cells[i + StartRow, ProductGrouping3Column].Value?.ToString();
+                    Store_BrandInStoreImportDTO.BrandCode4 = worksheet.Cells[i + StartRow, BrandCode4Column].Value?.ToString();
+                    Store_BrandInStoreImportDTO.ProductGrouping4 = worksheet.Cells[i + StartRow, ProductGrouping4Column].Value?.ToString();
+                    Store_BrandInStoreImportDTO.BrandCode5 = worksheet.Cells[i + StartRow, BrandCode5Column].Value?.ToString();
+                    Store_BrandInStoreImportDTO.ProductGrouping5 = worksheet.Cells[i + StartRow, ProductGrouping5Column].Value?.ToString();
+                    #endregion
+                }
+            }
+            Dictionary<long, StringBuilder> Errors = new Dictionary<long, StringBuilder>();
+            HashSet<string> StoreCodes = new HashSet<string>(All.Select(x => x.Code).Distinct().ToList());
+            Parallel.ForEach(Store_BrandInStoreImportDTOs, Store_BrandInStoreImportDTO =>
+            {
+                if (!string.IsNullOrWhiteSpace(Store_BrandInStoreImportDTO.StoreCode))
+                {
+                    if (!StoreCodes.Contains(Store_BrandInStoreImportDTO.StoreCode))
+                    {
+                        Errors[Store_BrandInStoreImportDTO.STT].AppendLine($"Lỗi dòng thứ {Store_BrandInStoreImportDTO.STT}: Mã đại lý không tồn tại");
+                        return;
+                    }
+                }
+                Store_BrandInStoreImportDTO.StoreCode = Store_BrandInStoreImportDTO.StoreCode.Trim();
+                Store_BrandInStoreImportDTO.StoreId = DictionaryStore[Store_BrandInStoreImportDTO.StoreCode].Id;
+
+                if (!string.IsNullOrWhiteSpace(Store_BrandInStoreImportDTO.BrandCode1))
+                {
+                    Store_BrandInStoreImportDTO.BrandCode1 = Store_BrandInStoreImportDTO.BrandCode1.Trim();
+                    Store_BrandInStoreImportDTO.Brand1Id = DictionaryBrand[Store_BrandInStoreImportDTO.BrandCode1].Id;
+                    if (!string.IsNullOrWhiteSpace(Store_BrandInStoreImportDTO.ProductGrouping1))
+                    {
+                        Store_BrandInStoreImportDTO.ProductGrouping1Ids = new List<long>();
+                        var ProductGroupingCodes = Store_BrandInStoreImportDTO.ProductGrouping1.Split(';');
+                        foreach (var ProductGroupingCode in ProductGroupingCodes)
+                        {
+                            var ProductGroupingId = DictionaryProductGrouping[ProductGroupingCode.Trim()].Id;
+                            Store_BrandInStoreImportDTO.ProductGrouping1Ids.Add(ProductGroupingId);
+                        }
+                    }
+                }
+
+                if (!string.IsNullOrWhiteSpace(Store_BrandInStoreImportDTO.BrandCode2))
+                {
+                    Store_BrandInStoreImportDTO.BrandCode2 = Store_BrandInStoreImportDTO.BrandCode2.Trim();
+                    Store_BrandInStoreImportDTO.Brand2Id = DictionaryBrand[Store_BrandInStoreImportDTO.BrandCode2].Id;
+                    if (!string.IsNullOrWhiteSpace(Store_BrandInStoreImportDTO.ProductGrouping2))
+                    {
+                        Store_BrandInStoreImportDTO.ProductGrouping2Ids = new List<long>();
+                        var ProductGroupingCodes = Store_BrandInStoreImportDTO.ProductGrouping2.Split(';');
+                        foreach (var ProductGroupingCode in ProductGroupingCodes)
+                        {
+                            var ProductGroupingId = DictionaryProductGrouping[ProductGroupingCode.Trim()].Id;
+                            Store_BrandInStoreImportDTO.ProductGrouping2Ids.Add(ProductGroupingId);
+                        }
+                    }
+                }
+
+                if (!string.IsNullOrWhiteSpace(Store_BrandInStoreImportDTO.BrandCode3))
+                {
+                    Store_BrandInStoreImportDTO.BrandCode3 = Store_BrandInStoreImportDTO.BrandCode3.Trim();
+                    Store_BrandInStoreImportDTO.Brand3Id = DictionaryBrand[Store_BrandInStoreImportDTO.BrandCode3].Id;
+                    if (!string.IsNullOrWhiteSpace(Store_BrandInStoreImportDTO.ProductGrouping3))
+                    {
+                        Store_BrandInStoreImportDTO.ProductGrouping3Ids = new List<long>();
+                        var ProductGroupingCodes = Store_BrandInStoreImportDTO.ProductGrouping3.Split(';');
+                        foreach (var ProductGroupingCode in ProductGroupingCodes)
+                        {
+                            var ProductGroupingId = DictionaryProductGrouping[ProductGroupingCode.Trim()].Id;
+                            Store_BrandInStoreImportDTO.ProductGrouping3Ids.Add(ProductGroupingId);
+                        }
+                    }
+                }
+
+                if (!string.IsNullOrWhiteSpace(Store_BrandInStoreImportDTO.BrandCode4))
+                {
+                    Store_BrandInStoreImportDTO.BrandCode4 = Store_BrandInStoreImportDTO.BrandCode4.Trim();
+                    Store_BrandInStoreImportDTO.Brand4Id = DictionaryBrand[Store_BrandInStoreImportDTO.BrandCode4].Id;
+                    if (!string.IsNullOrWhiteSpace(Store_BrandInStoreImportDTO.ProductGrouping4))
+                    {
+                        Store_BrandInStoreImportDTO.ProductGrouping4Ids = new List<long>();
+                        var ProductGroupingCodes = Store_BrandInStoreImportDTO.ProductGrouping4.Split(';');
+                        foreach (var ProductGroupingCode in ProductGroupingCodes)
+                        {
+                            var ProductGroupingId = DictionaryProductGrouping[ProductGroupingCode.Trim()].Id;
+                            Store_BrandInStoreImportDTO.ProductGrouping4Ids.Add(ProductGroupingId);
+                        }
+                    }
+                }
+
+                if (!string.IsNullOrWhiteSpace(Store_BrandInStoreImportDTO.BrandCode5))
+                {
+                    Store_BrandInStoreImportDTO.BrandCode5 = Store_BrandInStoreImportDTO.BrandCode5.Trim();
+                    Store_BrandInStoreImportDTO.Brand5Id = DictionaryBrand[Store_BrandInStoreImportDTO.BrandCode5].Id;
+                    if (!string.IsNullOrWhiteSpace(Store_BrandInStoreImportDTO.ProductGrouping5))
+                    {
+                        Store_BrandInStoreImportDTO.ProductGrouping5Ids = new List<long>();
+                        var ProductGroupingCodes = Store_BrandInStoreImportDTO.ProductGrouping5.Split(';');
+                        foreach (var ProductGroupingCode in ProductGroupingCodes)
+                        {
+                            var ProductGroupingId = DictionaryProductGrouping[ProductGroupingCode.Trim()].Id;
+                            Store_BrandInStoreImportDTO.ProductGrouping5Ids.Add(ProductGroupingId);
+                        }
+                    }
+                }
+            });
+
+            string error = string.Join("\n", Errors.Where(x => !string.IsNullOrWhiteSpace(x.Value.ToString())).Select(x => x.Value.ToString()).ToList());
+            if (!string.IsNullOrWhiteSpace(error))
+                return BadRequest(error);
+
+            try
+            {
+                List<BrandInStoreDAO> BrandInStoreDAOs = new List<BrandInStoreDAO>();
+                foreach (var Store_BrandInStoreImportDTO in Store_BrandInStoreImportDTOs)
+                {
+                    if (Store_BrandInStoreImportDTO.Brand1Id.HasValue)
+                    {
+                        BrandInStoreDAO BrandInStore1 = new BrandInStoreDAO()
+                        {
+                            BrandId = Store_BrandInStoreImportDTO.Brand1Id.Value,
+                            StoreId = Store_BrandInStoreImportDTO.StoreId,
+                            Top = 1,
+                            CreatorId = CurrentContext.UserId,
+                            CreatedAt = StaticParams.DateTimeNow,
+                            UpdatedAt = StaticParams.DateTimeNow,
+                            RowId = Guid.NewGuid()
+                        };
+                        BrandInStoreDAOs.Add(BrandInStore1);
+                    }
+
+                    if (Store_BrandInStoreImportDTO.Brand2Id.HasValue)
+                    {
+                        BrandInStoreDAO BrandInStore2 = new BrandInStoreDAO()
+                        {
+                            BrandId = Store_BrandInStoreImportDTO.Brand2Id.Value,
+                            StoreId = Store_BrandInStoreImportDTO.StoreId,
+                            Top = 2,
+                            CreatorId = CurrentContext.UserId,
+                            CreatedAt = StaticParams.DateTimeNow,
+                            UpdatedAt = StaticParams.DateTimeNow,
+                            RowId = Guid.NewGuid()
+                        };
+                        BrandInStoreDAOs.Add(BrandInStore2);
+                    }
+
+                    if (Store_BrandInStoreImportDTO.Brand3Id.HasValue)
+                    {
+                        BrandInStoreDAO BrandInStore3 = new BrandInStoreDAO()
+                        {
+                            BrandId = Store_BrandInStoreImportDTO.Brand3Id.Value,
+                            StoreId = Store_BrandInStoreImportDTO.StoreId,
+                            Top = 3,
+                            CreatorId = CurrentContext.UserId,
+                            CreatedAt = StaticParams.DateTimeNow,
+                            UpdatedAt = StaticParams.DateTimeNow,
+                            RowId = Guid.NewGuid()
+                        };
+                        BrandInStoreDAOs.Add(BrandInStore3);
+                    }
+
+                    if (Store_BrandInStoreImportDTO.Brand4Id.HasValue)
+                    {
+                        BrandInStoreDAO BrandInStore4 = new BrandInStoreDAO()
+                        {
+                            BrandId = Store_BrandInStoreImportDTO.Brand4Id.Value,
+                            StoreId = Store_BrandInStoreImportDTO.StoreId,
+                            Top = 4,
+                            CreatorId = CurrentContext.UserId,
+                            CreatedAt = StaticParams.DateTimeNow,
+                            UpdatedAt = StaticParams.DateTimeNow,
+                            RowId = Guid.NewGuid()
+                        };
+                        BrandInStoreDAOs.Add(BrandInStore4);
+                    }
+
+                    if (Store_BrandInStoreImportDTO.Brand5Id.HasValue)
+                    {
+                        BrandInStoreDAO BrandInStore5 = new BrandInStoreDAO()
+                        {
+                            BrandId = Store_BrandInStoreImportDTO.Brand5Id.Value,
+                            StoreId = Store_BrandInStoreImportDTO.StoreId,
+                            Top = 5,
+                            CreatorId = CurrentContext.UserId,
+                            CreatedAt = StaticParams.DateTimeNow,
+                            UpdatedAt = StaticParams.DateTimeNow,
+                            RowId = Guid.NewGuid()
+                        };
+                        BrandInStoreDAOs.Add(BrandInStore5);
+                    }
+                }
+                await DataContext.BulkMergeAsync(BrandInStoreDAOs);
+
+                List<BrandInStoreProductGroupingMappingDAO> BrandInStoreProductGroupingMappingDAOs = new List<BrandInStoreProductGroupingMappingDAO>();
+                foreach (var Store_BrandInStoreImportDTO in Store_BrandInStoreImportDTOs)
+                {
+                    if (Store_BrandInStoreImportDTO.Brand1Id.HasValue)
+                    {
+                        if (Store_BrandInStoreImportDTO.ProductGrouping1Ids != null)
+                        {
+                            var BrandInStoreDAO = BrandInStoreDAOs.Where(x => x.BrandId == Store_BrandInStoreImportDTO.Brand1Id.Value && x.StoreId == Store_BrandInStoreImportDTO.StoreId).FirstOrDefault();
+                            if (BrandInStoreDAO != null)
+                            {
+                                foreach (var ProductGrouping1Id in Store_BrandInStoreImportDTO.ProductGrouping1Ids)
+                                {
+                                    BrandInStoreProductGroupingMappingDAO BrandInStoreProductGroupingMappingDAO = new BrandInStoreProductGroupingMappingDAO
+                                    {
+                                        BrandInStoreId = BrandInStoreDAO.Id,
+                                        ProductGroupingId = ProductGrouping1Id
+                                    };
+                                    BrandInStoreProductGroupingMappingDAOs.Add(BrandInStoreProductGroupingMappingDAO);
+                                }
+                            }
+
+                        }
+                    }
+
+                    if (Store_BrandInStoreImportDTO.Brand2Id.HasValue)
+                    {
+                        if (Store_BrandInStoreImportDTO.ProductGrouping2Ids != null)
+                        {
+                            var BrandInStoreDAO = BrandInStoreDAOs.Where(x => x.BrandId == Store_BrandInStoreImportDTO.Brand2Id.Value && x.StoreId == Store_BrandInStoreImportDTO.StoreId).FirstOrDefault();
+                            if (BrandInStoreDAO != null)
+                            {
+                                foreach (var ProductGrouping2Id in Store_BrandInStoreImportDTO.ProductGrouping2Ids)
+                                {
+                                    BrandInStoreProductGroupingMappingDAO BrandInStoreProductGroupingMappingDAO = new BrandInStoreProductGroupingMappingDAO
+                                    {
+                                        BrandInStoreId = BrandInStoreDAO.Id,
+                                        ProductGroupingId = ProductGrouping2Id
+                                    };
+                                    BrandInStoreProductGroupingMappingDAOs.Add(BrandInStoreProductGroupingMappingDAO);
+                                }
+                            }
+
+                        }
+                    }
+
+                    if (Store_BrandInStoreImportDTO.Brand3Id.HasValue)
+                    {
+                        if (Store_BrandInStoreImportDTO.ProductGrouping3Ids != null)
+                        {
+                            var BrandInStoreDAO = BrandInStoreDAOs.Where(x => x.BrandId == Store_BrandInStoreImportDTO.Brand3Id.Value && x.StoreId == Store_BrandInStoreImportDTO.StoreId).FirstOrDefault();
+                            if (BrandInStoreDAO != null)
+                            {
+                                foreach (var ProductGrouping3Id in Store_BrandInStoreImportDTO.ProductGrouping3Ids)
+                                {
+                                    BrandInStoreProductGroupingMappingDAO BrandInStoreProductGroupingMappingDAO = new BrandInStoreProductGroupingMappingDAO
+                                    {
+                                        BrandInStoreId = BrandInStoreDAO.Id,
+                                        ProductGroupingId = ProductGrouping3Id
+                                    };
+                                    BrandInStoreProductGroupingMappingDAOs.Add(BrandInStoreProductGroupingMappingDAO);
+                                }
+                            }
+
+                        }
+                    }
+
+                    if (Store_BrandInStoreImportDTO.Brand4Id.HasValue)
+                    {
+                        if (Store_BrandInStoreImportDTO.ProductGrouping4Ids != null)
+                        {
+                            var BrandInStoreDAO = BrandInStoreDAOs.Where(x => x.BrandId == Store_BrandInStoreImportDTO.Brand4Id.Value && x.StoreId == Store_BrandInStoreImportDTO.StoreId).FirstOrDefault();
+                            if (BrandInStoreDAO != null)
+                            {
+                                foreach (var ProductGrouping4Id in Store_BrandInStoreImportDTO.ProductGrouping4Ids)
+                                {
+                                    BrandInStoreProductGroupingMappingDAO BrandInStoreProductGroupingMappingDAO = new BrandInStoreProductGroupingMappingDAO
+                                    {
+                                        BrandInStoreId = BrandInStoreDAO.Id,
+                                        ProductGroupingId = ProductGrouping4Id
+                                    };
+                                    BrandInStoreProductGroupingMappingDAOs.Add(BrandInStoreProductGroupingMappingDAO);
+                                }
+                            }
+
+                        }
+                    }
+
+                    if (Store_BrandInStoreImportDTO.Brand5Id.HasValue)
+                    {
+                        if (Store_BrandInStoreImportDTO.ProductGrouping5Ids != null)
+                        {
+                            var BrandInStoreDAO = BrandInStoreDAOs.Where(x => x.BrandId == Store_BrandInStoreImportDTO.Brand5Id.Value && x.StoreId == Store_BrandInStoreImportDTO.StoreId).FirstOrDefault();
+                            if (BrandInStoreDAO != null)
+                            {
+                                foreach (var ProductGrouping5Id in Store_BrandInStoreImportDTO.ProductGrouping5Ids)
+                                {
+                                    BrandInStoreProductGroupingMappingDAO BrandInStoreProductGroupingMappingDAO = new BrandInStoreProductGroupingMappingDAO
+                                    {
+                                        BrandInStoreId = BrandInStoreDAO.Id,
+                                        ProductGroupingId = ProductGrouping5Id
+                                    };
+                                    BrandInStoreProductGroupingMappingDAOs.Add(BrandInStoreProductGroupingMappingDAO);
+                                }
+                            }
+                        }
+                    }
+                }
+                List<BrandInStoreProductGroupingMappingDAO> NewList = new List<BrandInStoreProductGroupingMappingDAO>();
+                foreach(BrandInStoreProductGroupingMappingDAO BrandInStoreProductGroupingMappingDAO in BrandInStoreProductGroupingMappingDAOs)
+                {
+                    BrandInStoreProductGroupingMappingDAO Old = NewList
+                        .Where(x => x.BrandInStoreId == BrandInStoreProductGroupingMappingDAO.BrandInStoreId && x.ProductGroupingId == BrandInStoreProductGroupingMappingDAO.ProductGroupingId)
+                        .FirstOrDefault();
+                    if (Old == null)
+                    {
+                        NewList.Add(BrandInStoreProductGroupingMappingDAO);
+                    }
+                }
+
+                await DataContext.BulkMergeAsync(NewList);
+                return Ok();
+            }
+            catch (Exception ex )
+            {
+
+                throw ex;
+            }
         }
 
         [Route(StoreRoute.Export), HttpPost]

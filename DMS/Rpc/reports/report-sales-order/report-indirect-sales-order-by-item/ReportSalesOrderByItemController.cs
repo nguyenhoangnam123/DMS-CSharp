@@ -92,8 +92,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_indirect_sales_order_by_item
             ProductGroupingFilter.Take = int.MaxValue;
             ProductGroupingFilter.OrderBy = ProductGroupingOrder.Id;
             ProductGroupingFilter.OrderType = OrderType.ASC;
-            ProductGroupingFilter.Selects = ProductGroupingSelect.Id | ProductGroupingSelect.Code
-                | ProductGroupingSelect.Name | ProductGroupingSelect.Parent;
+            ProductGroupingFilter.Selects = ProductGroupingSelect.ALL;
             ProductGroupingFilter.Code = ReportSalesOrderByItem_ProductGroupingFilterDTO.Code;
             ProductGroupingFilter.Name = ReportSalesOrderByItem_ProductGroupingFilterDTO.Name;
 

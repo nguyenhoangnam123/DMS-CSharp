@@ -23,6 +23,7 @@ namespace DMS.Rpc.store
         public const string Approve = Default + "/approve";
         public const string Delete = Default + "/delete";
         public const string Import = Default + "/import";
+        public const string ImportBrand = Default + "/import-brand";
         public const string Export = Default + "/export";
         public const string ExportTemplate = Default + "/export-template";
         public const string BulkDelete = Default + "/bulk-delete";
@@ -111,7 +112,7 @@ namespace DMS.Rpc.store
                 Parent,
                 Master, Count, List, Get,
                 FilterListAppUser, FilterListDistrict, FilterListOrganization, FilterListProvince, FilterListWard, FilterListStatus, FilterListParentStore, FilterListStoreStatus, FilterListStoreGrouping, FilterListStoreType,
-                Detail, ExportTemplate, Import } },
+                Detail, ExportTemplate, Import, ImportBrand } },
             { "Phê duyệt", new List<string> {
                 Parent,
                 Master, Count, List, Get,
