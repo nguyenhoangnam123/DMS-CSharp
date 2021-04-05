@@ -62,6 +62,8 @@ namespace DMS.Handlers
                         CodeGeneratorRuleEntityComponentMappingDAO CodeGeneratorRuleEntityComponentMappingDAO = new CodeGeneratorRuleEntityComponentMappingDAO
                         {
                             CodeGeneratorRuleId = CodeGeneratorRule.Id,
+                            Sequence = CodeGeneratorRuleEntityComponentMapping.Sequence,
+                            Value = CodeGeneratorRuleEntityComponentMapping.Value,
                             EntityComponentId = CodeGeneratorRuleEntityComponentMapping.EntityComponentId,
                         };
                         CodeGeneratorRuleEntityComponentMappingDAOs.Add(CodeGeneratorRuleEntityComponentMappingDAO);
