@@ -143,17 +143,7 @@ namespace DMS.ABE.Rpc.product
                 SupplierId = Product_ItemFilterDTO.SupplierId,
                 Search = Product_ItemFilterDTO.Search,
             };
-            var StoreUserId = CurrentContext.StoreUserId;
-            List<StoreUser> StoreUsers = await StoreUserService.List(new StoreUserFilter { 
-                Skip = 0,
-                Take = int.MaxValue,
-                Id = new IdFilter { Equal = StoreUserId },
-                Selects = StoreUserSelect.Id | StoreUserSelect.Store,
-            });
-            StoreUser StoreUser = StoreUsers.FirstOrDefault();
-            if (StoreUser == null) 
-                return null;
-            List<Item> Items = await ItemService.ListByStore(ItemFilter, StoreUser.StoreId);
+            List<Item> Items = await ItemService.ListByStore(ItemFilter);
             if (Items == null) 
                 return null;
             List<Product_ItemDTO> Product_ItemDTOs = Items.Select(x => new Product_ItemDTO(x)).ToList();
