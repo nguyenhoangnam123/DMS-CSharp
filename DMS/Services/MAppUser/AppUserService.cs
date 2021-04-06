@@ -167,8 +167,7 @@ namespace DMS.Services.MAppUser
             {
                 if(AppUser.Latitude.HasValue && AppUser.Longitude.HasValue)
                 {
-                    EventMessage<AppUser> EventMessageAppUser = new EventMessage<AppUser>(AppUser, AppUser.RowId);
-                    RabbitManager.PublishSingle(EventMessageAppUser, RoutingKeyEnum.UpdateGPS);
+                    await UOW.AppUserRepository.SimpleUpdate(AppUser);
                 }
                 
                 AppUser = await UOW.AppUserRepository.Get(AppUser.Id);
