@@ -48,7 +48,9 @@ namespace DMS.ABE.Services.MDirectSalesOrder
                 return DirectSalesOrder;
             try
             {
-                await CalculateOrder(DirectSalesOrder);
+                Store Store = await GetStore();
+                if (Store == null)
+                    return null;
                 DirectSalesOrder.StoreUserCreatorId = CurrentContext.StoreUserId;
                 DirectSalesOrder.Code = DirectSalesOrder.Id.ToString();
                 DirectSalesOrder.DirectSalesOrderSourceTypeId = DirectSalesOrderSourceTypeEnum.FROM_AMS.Id; // set source Type
@@ -58,10 +60,15 @@ namespace DMS.ABE.Services.MDirectSalesOrder
                 {
                     DirectSalesOrder.OrganizationId = SaleEmployee.OrganizationId;
                 }
-                await NotifyUsed(DirectSalesOrder); // update nội bộ
-                List<EventMessage<DirectSalesOrder>> EventMessageDirectSalesOrders = new List<EventMessage<DirectSalesOrder>>();
-                EventMessage<DirectSalesOrder> EventMessageDirectSalesOrder = new EventMessage<DirectSalesOrder>(DirectSalesOrder, DirectSalesOrder.RowId);
-                EventMessageDirectSalesOrders.Add(EventMessageDirectSalesOrder);
+                await CalculateOrder(DirectSalesOrder, Store.Id); // tính toán nội dung đơn hàng
+                await UOW.Begin();
+                await UOW.DirectSalesOrderRepository.Create(DirectSalesOrder); // tạo mới đơn
+                await UOW.Commit();
+                DirectSalesOrder.Code = DirectSalesOrder.Id.ToString(); // gán lại Code đơn hàng
+                await UOW.DirectSalesOrderRepository.Update(DirectSalesOrder);
+                DirectSalesOrder = await UOW.DirectSalesOrderRepository.Get(DirectSalesOrder.Id);
+                NotifyUsed(DirectSalesOrder); // update nội bộ
+                Sync(DirectSalesOrder); // sync đơn hàng
                 await Logging.CreateAuditLog(DirectSalesOrder, new { }, nameof(DirectSalesOrderService)); // ghi log
                 return DirectSalesOrder;
             }
@@ -88,13 +95,17 @@ namespace DMS.ABE.Services.MDirectSalesOrder
                 return DirectSalesOrder;
             try
             {
-                //await CalculateOrder(DirectSalesOrder);
-                //await NotifyUsed(DirectSalesOrder); // update nội bộ
-                List<EventMessage<DirectSalesOrder>> EventMessageDirectSalesOrders = new List<EventMessage<DirectSalesOrder>>();
-                EventMessage<DirectSalesOrder> EventMessageDirectSalesOrder = new EventMessage<DirectSalesOrder>(DirectSalesOrder, DirectSalesOrder.RowId);
-                EventMessageDirectSalesOrders.Add(EventMessageDirectSalesOrder);
-                //RabbitManager.PublishList(EventMessageDirectSalesOrders, RoutingKeyEnum.DirectSalesOrderUpdate); // tạo message update tới DMS
-                await Logging.CreateAuditLog(DirectSalesOrder, new { }, nameof(DirectSalesOrderService)); // ghi log
+                var oldData = await UOW.DirectSalesOrderRepository.Get(DirectSalesOrder.Id);
+                if(oldData.RequestStateId == RequestStateEnum.APPROVED.Id)
+                {
+                    oldData.StoreApprovalStateId = DirectSalesOrder.StoreApprovalStateId;
+                } // nếu đơn hàng ở trạng thái phê duyệt thì mới cho phép update trạng thái phê duyệt của cửa hàng trên mobile
+                await UOW.Begin();
+                await UOW.DirectSalesOrderRepository.Update(DirectSalesOrder);
+                await UOW.Commit();
+                DirectSalesOrder = await UOW.DirectSalesOrderRepository.Get(DirectSalesOrder.Id);
+                Sync(DirectSalesOrder);
+                await Logging.CreateAuditLog(DirectSalesOrder, oldData, nameof(DirectSalesOrderService)); // ghi log
                 return DirectSalesOrder;
             }
             catch (Exception Exception)
@@ -170,7 +181,177 @@ namespace DMS.ABE.Services.MDirectSalesOrder
             }
         }
 
-        private async Task<DirectSalesOrder> CalculateOrder(DirectSalesOrder DirectSalesOrder)
+        private async Task<Store> GetStore()
+        {
+            var StoreUserId = CurrentContext.StoreUserId;
+            StoreUser StoreUser = await UOW.StoreUserRepository.Get(StoreUserId);
+            if (StoreUser == null)
+            {
+                return null;
+            } // check storeUser co ton tai khong
+            Store Store = await UOW.StoreRepository.Get(StoreUser.StoreId);
+            if (Store == null)
+            {
+                return null;
+            } // check store tuong ung vs storeUser co ton tai khong
+            return Store;
+        }
+
+        private async Task<List<Item>> ApplyPrice(List<Item> Items, long StoreId)
+        {
+            var Store = await UOW.StoreRepository.Get(StoreId);
+            SystemConfiguration SystemConfiguration = await UOW.SystemConfigurationRepository.Get();
+            OrganizationFilter OrganizationFilter = new OrganizationFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = OrganizationSelect.ALL,
+                StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id }
+            };
+
+            var Organizations = await UOW.OrganizationRepository.List(OrganizationFilter);
+            var OrganizationIds = Organizations
+                .Where(x => x.Path.StartsWith(Store.Organization.Path) || Store.Organization.Path.StartsWith(x.Path))
+                .Select(x => x.Id)
+                .ToList();
+
+            var ItemIds = Items.Select(x => x.Id).Distinct().ToList();
+            Dictionary<long, decimal> result = new Dictionary<long, decimal>();
+
+            PriceListItemMappingFilter PriceListItemMappingFilter = new PriceListItemMappingFilter
+            {
+                ItemId = new IdFilter { In = ItemIds },
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = PriceListItemMappingSelect.ALL,
+                PriceListTypeId = new IdFilter { Equal = PriceListTypeEnum.ALLSTORE.Id },
+                SalesOrderTypeId = new IdFilter { In = new List<long> { SalesOrderTypeEnum.INDIRECT.Id, SalesOrderTypeEnum.ALL.Id } },
+                OrganizationId = new IdFilter { In = OrganizationIds },
+                StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id }
+            };
+
+            var PriceListItemMappingAllStore = await UOW.PriceListItemMappingItemMappingRepository.List(PriceListItemMappingFilter);
+            List<PriceListItemMapping> PriceListItemMappings = new List<PriceListItemMapping>();
+            PriceListItemMappings.AddRange(PriceListItemMappingAllStore);
+
+            PriceListItemMappingFilter = new PriceListItemMappingFilter
+            {
+                ItemId = new IdFilter { In = ItemIds },
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = PriceListItemMappingSelect.ALL,
+                PriceListTypeId = new IdFilter { Equal = PriceListTypeEnum.STOREGROUPING.Id },
+                SalesOrderTypeId = new IdFilter { In = new List<long> { SalesOrderTypeEnum.INDIRECT.Id, SalesOrderTypeEnum.ALL.Id } },
+                StoreGroupingId = new IdFilter { Equal = Store.StoreGroupingId },
+                OrganizationId = new IdFilter { In = OrganizationIds },
+                StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id }
+            };
+            var PriceListItemMappingStoreGrouping = await UOW.PriceListItemMappingItemMappingRepository.List(PriceListItemMappingFilter);
+
+            PriceListItemMappingFilter = new PriceListItemMappingFilter
+            {
+                ItemId = new IdFilter { In = ItemIds },
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = PriceListItemMappingSelect.ALL,
+                PriceListTypeId = new IdFilter { Equal = PriceListTypeEnum.STORETYPE.Id },
+                SalesOrderTypeId = new IdFilter { In = new List<long> { SalesOrderTypeEnum.INDIRECT.Id, SalesOrderTypeEnum.ALL.Id } },
+                StoreTypeId = new IdFilter { Equal = Store.StoreTypeId },
+                OrganizationId = new IdFilter { In = OrganizationIds },
+                StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id }
+            };
+            var PriceListItemMappingStoreType = await UOW.PriceListItemMappingItemMappingRepository.List(PriceListItemMappingFilter);
+
+            PriceListItemMappingFilter = new PriceListItemMappingFilter
+            {
+                ItemId = new IdFilter { In = ItemIds },
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = PriceListItemMappingSelect.ALL,
+                PriceListTypeId = new IdFilter { Equal = PriceListTypeEnum.DETAILS.Id },
+                SalesOrderTypeId = new IdFilter { In = new List<long> { SalesOrderTypeEnum.INDIRECT.Id, SalesOrderTypeEnum.ALL.Id } },
+                StoreId = new IdFilter { Equal = StoreId },
+                OrganizationId = new IdFilter { In = OrganizationIds },
+                StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id }
+            };
+            var PriceListItemMappingStoreDetail = await UOW.PriceListItemMappingItemMappingRepository.List(PriceListItemMappingFilter);
+            PriceListItemMappings.AddRange(PriceListItemMappingStoreGrouping);
+            PriceListItemMappings.AddRange(PriceListItemMappingStoreType);
+            PriceListItemMappings.AddRange(PriceListItemMappingStoreDetail);
+
+            //Áp giá theo cấu hình
+            //Ưu tiên lấy giá thấp hơn
+            if (SystemConfiguration.PRIORITY_USE_PRICE_LIST == 0)
+            {
+                foreach (var ItemId in ItemIds)
+                {
+                    result.Add(ItemId, decimal.MaxValue);
+                }
+                foreach (var ItemId in ItemIds)
+                {
+                    foreach (var OrganizationId in OrganizationIds)
+                    {
+                        decimal targetPrice = decimal.MaxValue;
+                        targetPrice = PriceListItemMappings.Where(x => x.ItemId == ItemId && x.PriceList.OrganizationId == OrganizationId)
+                            .Select(x => x.Price)
+                            .DefaultIfEmpty(decimal.MaxValue)
+                            .Min();
+                        if (targetPrice < result[ItemId])
+                        {
+                            result[ItemId] = targetPrice;
+                        }
+                    }
+                }
+
+                foreach (var ItemId in ItemIds)
+                {
+                    if (result[ItemId] == decimal.MaxValue)
+                    {
+                        result[ItemId] = Items.Where(x => x.Id == ItemId).Select(x => x.SalePrice.GetValueOrDefault(0)).FirstOrDefault();
+                    }
+                }
+            }
+            //Ưu tiên lấy giá cao hơn
+            else if (SystemConfiguration.PRIORITY_USE_PRICE_LIST == 1)
+            {
+                foreach (var ItemId in ItemIds)
+                {
+                    result.Add(ItemId, decimal.MinValue);
+                }
+                foreach (var ItemId in ItemIds)
+                {
+                    foreach (var OrganizationId in OrganizationIds)
+                    {
+                        decimal targetPrice = decimal.MinValue;
+                        targetPrice = PriceListItemMappings.Where(x => x.ItemId == ItemId && x.PriceList.OrganizationId == OrganizationId)
+                            .Select(x => x.Price)
+                            .DefaultIfEmpty(decimal.MinValue)
+                            .Max();
+                        if (targetPrice > result[ItemId])
+                        {
+                            result[ItemId] = targetPrice;
+                        }
+                    }
+                }
+
+                foreach (var ItemId in ItemIds)
+                {
+                    if (result[ItemId] == decimal.MinValue)
+                    {
+                        result[ItemId] = Items.Where(x => x.Id == ItemId).Select(x => x.SalePrice.GetValueOrDefault(0)).FirstOrDefault();
+                    }
+                }
+            }
+
+            //nhân giá với thuế
+            foreach (var item in Items)
+            {
+                item.SalePrice = result[item.Id] * (1 + item.Product.TaxType.Percentage / 100);
+            }
+            return Items;
+        } // áp giá cho list item
+
+        private async Task<DirectSalesOrder> CalculateOrder(DirectSalesOrder DirectSalesOrder, long StoreId)
         {
             var ProductIds = new List<long>();
             var ItemIds = new List<long>();
@@ -189,19 +370,14 @@ namespace DMS.ABE.Services.MDirectSalesOrder
             ProductIds = ProductIds.Distinct().ToList();
             ItemIds = ItemIds.Distinct().ToList();
 
-            //List<ItemBasePrice> ItemBasePrices = await UOW.ItemBasePriceRepository.List(new ItemBasePriceFilter {
-            //    Skip = 0,
-            //    Take = int.MaxValue,
-            //    ItemId = new IdFilter { In = ItemIds  },
-            //    Selects = ItemBasePriceSelect.ALL,
-            //});
-
             List<Item> Items = await UOW.ItemRepository.List(new ItemFilter {
                 Skip = 0,
                 Take = ItemIds.Count,
                 Id = new IdFilter { In = ItemIds },
                 Selects = ItemSelect.ALL,
             });
+
+            Items = await ApplyPrice(Items, StoreId); // áp giá cho Item trong đơn hàng
 
             List<Product> Products = await UOW.ProductRepository.List(new ProductFilter
             {
@@ -217,15 +393,6 @@ namespace DMS.ABE.Services.MDirectSalesOrder
                 Take = int.MaxValue,
                 Selects = UnitOfMeasureGroupingSelect.Id | UnitOfMeasureGroupingSelect.UnitOfMeasure | UnitOfMeasureGroupingSelect.UnitOfMeasureGroupingContents
             });
-
-            //foreach (Item Item in Items)
-            //{
-            //    ItemBasePrice ItemBasePrice = ItemBasePrices.Where(x => x.ItemId == Item.Id).FirstOrDefault();
-            //    if(ItemBasePrice != null)
-            //    {
-            //        Item.SalePrice = ItemBasePrice.BasePrice;
-            //    }
-            //} // nếu không có itemBasePrice thì lấy giá item từ client
 
             if (DirectSalesOrder.DirectSalesOrderContents != null)
             {
@@ -257,8 +424,6 @@ namespace DMS.ABE.Services.MDirectSalesOrder
                         DirectSalesOrderContent.DiscountAmount = Math.Round(DirectSalesOrderContent.DiscountAmount ?? 0, 0);
                         DirectSalesOrderContent.Amount = SubAmount - DirectSalesOrderContent.DiscountAmount.Value;
                     } // áp giảm giá nếu có
-
-                     
                 } // gán primaryUOMId, RequestedQuantity
                 DirectSalesOrder.SubTotal = DirectSalesOrder.DirectSalesOrderContents.Sum(x => x.Amount); //tổng trước chiết khấu
                 if (DirectSalesOrder.GeneralDiscountPercentage.HasValue && DirectSalesOrder.GeneralDiscountPercentage > 0)
@@ -294,7 +459,7 @@ namespace DMS.ABE.Services.MDirectSalesOrder
             return DirectSalesOrder;
         } // tinh subtotal, totalTaxAmount,  totalAfterTax, Total, phần trăm chiết khẩu chung, tổng chiết khấu
 
-        private async Task NotifyUsed(DirectSalesOrder DirectSalesOrder)
+        private void NotifyUsed(DirectSalesOrder DirectSalesOrder)
         {
             {
                 List<long> ItemIds = DirectSalesOrder.DirectSalesOrderContents.Select(i => i.ItemId).ToList();
@@ -343,5 +508,14 @@ namespace DMS.ABE.Services.MDirectSalesOrder
                 RabbitManager.PublishSingle(AppUserMessage, RoutingKeyEnum.AppUserUsed);
             } // thông báo lên PORTAL
         } // thông báo store, item, UOM đã được sử dụng
+
+        private void Sync(DirectSalesOrder DirectSalesOrder)
+        {
+            List<EventMessage<DirectSalesOrder>> EventMessageDirectSalesOrders = new List<EventMessage<DirectSalesOrder>>();
+            EventMessage<DirectSalesOrder> EventMessageDirectSalesOrder = new EventMessage<DirectSalesOrder>(DirectSalesOrder, DirectSalesOrder.RowId);
+            EventMessageDirectSalesOrders.Add(EventMessageDirectSalesOrder);
+
+            RabbitManager.PublishList(EventMessageDirectSalesOrders, RoutingKeyEnum.DirectSalesOrderSync); // đồng bộ
+        }
     }
 }

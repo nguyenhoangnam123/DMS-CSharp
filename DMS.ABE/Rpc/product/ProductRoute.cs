@@ -18,6 +18,7 @@ namespace DMS.ABE.Rpc.product
         //public const string ListNewProduct = Default + "/list-new-product"; // lấy ra list sản phẩm mới, sắp xếp theo thứ tự UpdatedAt
         //public const string CountNewProduct = Default + "/count-new-product"; // lấy ra list sản phẩm mới, sắp xếp theo thứ tự UpdatedAt
         public const string GetItem = Default + "/get-item"; // lấy ra chi tiết sản phẩm + lấy ra một items theo điều kiện lọc (variationGrouping)
+        public const string ListItem = Default + "/list-item"; // lấy ra chi tiết sản phẩm + lấy ra một items theo điều kiện lọc (variationGrouping)
         public const string GetItemByVariation = Default + "/get-item-by-variation"; // lấy ra chi tiết sản phẩm + lấy ra một items theo điều kiện lọc (variationGrouping)
 
         public const string ListCategory = Default + "/list-category"; 

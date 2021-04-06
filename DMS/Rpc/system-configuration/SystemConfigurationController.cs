@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 
 namespace DMS.Rpc.system_configuration
 {
@@ -23,7 +24,7 @@ namespace DMS.Rpc.system_configuration
             this.SystemConfigurationService = SystemConfigurationService;
             this.CurrentContext = CurrentContext;
         }
-
+        [AllowAnonymous]
         [Route(SystemConfigurationRoute.Get), HttpPost]
         public async Task<ActionResult<SystemConfiguration_SystemConfigurationDTO>> Get()
         {

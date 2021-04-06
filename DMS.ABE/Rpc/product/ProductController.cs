@@ -7,6 +7,7 @@ using DMS.ABE.Entities;
 using DMS.ABE.Enums;
 using DMS.ABE.Services.MCategory;
 using DMS.ABE.Services.MProduct;
+using DMS.ABE.Services.MStoreUser;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DMS.ABE.Rpc.product
@@ -16,16 +17,19 @@ namespace DMS.ABE.Rpc.product
         private IProductService ProductService;
         private IItemService ItemService;
         private ICategoryService CategoryService;
+        private IStoreUserService StoreUserService;
         private ICurrentContext CurrentContext;
         public ProductController(
              IProductService ProductService,
              ICurrentContext CurrentContext,
              ICategoryService CategoryService,
+             IStoreUserService StoreUserService,
              IItemService ItemService
         )
         {
             this.ProductService = ProductService;
             this.CategoryService = CategoryService;
+            this.StoreUserService = StoreUserService;
             this.CurrentContext = CurrentContext;
             this.ItemService = ItemService;
         }
@@ -41,18 +45,19 @@ namespace DMS.ABE.Rpc.product
             List<Product_ProductDTO> Product_ProductDTOs = Products
                 .Select(c => new Product_ProductDTO(c)).ToList();
             return Product_ProductDTOs;
-        }
+        } // lấy giá Item theo priceList, thứ tự giá ưu tiên theo systemconfig
 
         [Route(ProductRoute.ListPotential), HttpPost]
         public async Task<List<Product_ProductDTO>> ListPotential([FromBody] Product_ProductPotentialDTO Product_ProductPotentialDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            if(Product_ProductPotentialDTO.ProductId == 0)
+            if (Product_ProductPotentialDTO.ProductId == 0)
             {
                 return null;
             }
-            List<Product> ProductEntitiess = await ProductService.List(new ProductFilter{ 
+            List<Product> ProductEntitiess = await ProductService.List(new ProductFilter
+            {
                 Skip = 0,
                 Take = 1,
                 Selects = ProductSelect.Category,
@@ -67,15 +72,16 @@ namespace DMS.ABE.Rpc.product
                 Id = new IdFilter { Equal = Product.Category.Id },
                 Skip = 0,
                 Take = 1,
-                Selects = CategorySelect.Id
+                Selects = CategorySelect.ALL
             };
             List<Category> Categories = await CategoryService.List(CategoryFilter);
             Category Category = Categories.FirstOrDefault();
-            if(Category == null)
+            if (Category == null)
             {
                 return null;
             }
-            ProductFilter ProductFilter = new ProductFilter {
+            ProductFilter ProductFilter = new ProductFilter
+            {
                 Id = new IdFilter { NotEqual = Product_ProductPotentialDTO.ProductId },
                 CategoryId = new IdFilter { Equal = Category.Id },
                 StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id },
@@ -111,6 +117,39 @@ namespace DMS.ABE.Rpc.product
             return new Product_ProductDTO(Product);
         }
 
+        [Route(ProductRoute.ListItem), HttpPost]
+        public async Task<List<Product_ItemDTO>> ListItem([FromBody] Product_ItemFilterDTO Product_ItemFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+            ItemFilter ItemFilter = new ItemFilter
+            {
+                Skip = Product_ItemFilterDTO.Skip,
+                Take = Product_ItemFilterDTO.Take,
+                OrderBy = ItemOrder.Id,
+                OrderType = OrderType.ASC,
+                Selects = ItemSelect.ALL,
+                Id = Product_ItemFilterDTO.Id,
+                Code = Product_ItemFilterDTO.Code,
+                Name = Product_ItemFilterDTO.Name,
+                OtherName = Product_ItemFilterDTO.OtherName,
+                ProductGroupingId = Product_ItemFilterDTO.ProductGroupingId,
+                ProductId = Product_ItemFilterDTO.ProductId,
+                ProductTypeId = Product_ItemFilterDTO.ProductTypeId,
+                RetailPrice = Product_ItemFilterDTO.RetailPrice,
+                SalePrice = Product_ItemFilterDTO.SalePrice,
+                ScanCode = Product_ItemFilterDTO.ScanCode,
+                StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id },
+                SupplierId = Product_ItemFilterDTO.SupplierId,
+                Search = Product_ItemFilterDTO.Search,
+            };
+            List<Item> Items = await ItemService.ListByStore(ItemFilter);
+            if (Items == null) 
+                return null;
+            List<Product_ItemDTO> Product_ItemDTOs = Items.Select(x => new Product_ItemDTO(x)).ToList();
+            return Product_ItemDTOs;
+        } // tra ve list item 
+
         [Route(ProductRoute.GetItem), HttpPost]
         public async Task<Product_ItemDTO> GetItem([FromBody] Product_ItemDTO Product_ItemDTO)
         {
@@ -126,7 +165,7 @@ namespace DMS.ABE.Rpc.product
             if (Item == null)
                 return null;
             return new Product_ItemDTO(Item);
-        }
+        } // lấy giá Item theo priceList, thứ tự giá ưu tiên theo systemconfig
 
         [Route(ProductRoute.GetItemByVariation), HttpPost]
         public async Task<Product_ItemDTO> GetItemByVariation([FromBody] Product_ProductDetailDTO Product_ProductDetailDTO)
@@ -144,7 +183,7 @@ namespace DMS.ABE.Rpc.product
             if (Item == null)
                 return null;
             return new Product_ItemDTO(Item);
-        }
+        } // lấy giá Item theo priceList, thứ tự giá ưu tiên theo systemconfig
 
         [Route(ProductRoute.CountCategory), HttpPost]
         public async Task<int> CountCategory([FromBody] Product_CategoryFilterDTO Product_CategoryFilterDTO)
