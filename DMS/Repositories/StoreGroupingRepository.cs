@@ -412,6 +412,7 @@ namespace DMS.Repositories
             StoreGroupingDAO.StatusId = StoreGrouping.StatusId;
             StoreGroupingDAO.CreatedAt = StaticParams.DateTimeNow;
             StoreGroupingDAO.UpdatedAt = StaticParams.DateTimeNow;
+            StoreGroupingDAO.RowId = Guid.NewGuid();
             DataContext.StoreGrouping.Add(StoreGroupingDAO);
             await DataContext.SaveChangesAsync();
             StoreGrouping.Id = StoreGroupingDAO.Id;
@@ -463,6 +464,7 @@ namespace DMS.Repositories
                 StoreGroupingDAO.StatusId = StoreGrouping.StatusId;
                 StoreGroupingDAO.CreatedAt = StaticParams.DateTimeNow;
                 StoreGroupingDAO.UpdatedAt = StaticParams.DateTimeNow;
+                StoreGroupingDAO.RowId = StoreGrouping.RowId;
                 StoreGroupingDAOs.Add(StoreGroupingDAO);
             }
             await DataContext.BulkMergeAsync(StoreGroupingDAOs);
