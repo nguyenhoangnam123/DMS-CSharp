@@ -589,11 +589,6 @@ namespace DMS.Common
 
     public class HintCommandInterceptor : DbCommandInterceptor
     {
-        private static readonly Regex _tableAliasRegex = new Regex(@"(?<tableAlias>FROM +(\[.*\]\.)?(\[.*\]) AS (\[.*\])(?! WITH \(NOLOCK\)))",
-           RegexOptions.Multiline |
-           RegexOptions.IgnoreCase |
-           RegexOptions.Compiled);
-
         public override InterceptionResult<DbDataReader> ReaderExecuting(
             DbCommand command,
             CommandEventData eventData,
@@ -605,13 +600,6 @@ namespace DMS.Common
                 return result;
 
             command.CommandText += " OPTION (FORCE ORDER)";
-            if (!command.CommandText.Contains("WITH (NOLOCK)"))
-            {
-                command.CommandText =
-                    _tableAliasRegex.Replace(
-                         command.CommandText,
-                         "${tableAlias} WITH (NOLOCK)");
-            }
 
             return result;
         }
@@ -624,13 +612,6 @@ namespace DMS.Common
                 return result;
 
             command.CommandText += " OPTION (FORCE ORDER)";
-            if (!command.CommandText.Contains("WITH (NOLOCK)"))
-            {
-                command.CommandText =
-                    _tableAliasRegex.Replace(
-                         command.CommandText,
-                         "${tableAlias} WITH (NOLOCK)");
-            }
             return result;
         }
     }

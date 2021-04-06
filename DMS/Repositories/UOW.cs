@@ -1,5 +1,6 @@
 using DMS.Common;
 using DMS.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Threading.Tasks;
 
@@ -180,7 +181,7 @@ namespace DMS.Repositories
         public IKpiCriteriaItemRepository KpiCriteriaItemRepository { get; private set; }
         public IKpiGeneralRepository KpiGeneralRepository { get; private set; }
         public IKpiGeneralContentRepository KpiGeneralContentRepository { get; private set; }
-        public IKpiItemContentRepository KpiItemContentRepository { get; private set; } 
+        public IKpiItemContentRepository KpiItemContentRepository { get; private set; }
         public IKpiItemRepository KpiItemRepository { get; private set; }
         public IKpiPeriodRepository KpiPeriodRepository { get; private set; }
         public IKpiYearRepository KpiYearRepository { get; private set; }
@@ -281,7 +282,7 @@ namespace DMS.Repositories
         public UOW(DataContext DataContext)
         {
             this.DataContext = DataContext;
-
+            DataContext.Database.ExecuteSqlCommand("SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;");
             AlbumRepository = new AlbumRepository(DataContext);
             AppUserRepository = new AppUserRepository(DataContext);
             AppUserStoreMappingRepository = new AppUserStoreMappingRepository(DataContext);
