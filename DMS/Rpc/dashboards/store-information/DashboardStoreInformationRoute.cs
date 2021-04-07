@@ -23,6 +23,8 @@ namespace DMS.Rpc.dashboards.store_information
 
         public const string FilterListOrganization = Default + "/filter-list-organization";
         public const string FilterListBrand = Default + "/filter-list-brand";
+        public const string FilterListDistrict = Default + "/filter-list-district";
+        public const string FilterListProvince = Default + "/filter-list-province";
 
         public static Dictionary<string, long> Filters = new Dictionary<string, long>
         {
@@ -35,7 +37,7 @@ namespace DMS.Rpc.dashboards.store_information
                 Parent,
                 Master,
                 StoreCounter, BrandStatistic, BrandUnStatistic, StoreCoverage, ProductGroupingStatistic, TopBrand,
-                FilterListOrganization, FilterListBrand
+                FilterListOrganization, FilterListBrand, FilterListDistrict, FilterListProvince
             } },
         };
     }

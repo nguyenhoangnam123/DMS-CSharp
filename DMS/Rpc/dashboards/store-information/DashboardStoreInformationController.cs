@@ -20,6 +20,8 @@ using DMS.Services.MBrand;
 using DMS.Services.MStore;
 using Thinktecture.EntityFrameworkCore.TempTables;
 using Thinktecture;
+using DMS.Services.MDistrict;
+using DMS.Services.MProvince;
 
 namespace DMS.Rpc.dashboards.store_information
 {
@@ -34,24 +36,31 @@ namespace DMS.Rpc.dashboards.store_information
         private IAppUserService AppUserService;
         private IBrandService BrandService;
         private ICurrentContext CurrentContext;
+        private IDistrictService DistrictService;
         private IOrganizationService OrganizationService;
+        private IProvinceService ProvinceService;
         private IStoreService StoreService;
         public DashboardStoreInformationController(
             DataContext DataContext,
             IAppUserService AppUserService,
             IBrandService BrandService,
             ICurrentContext CurrentContext,
+            IDistrictService DistrictService,
             IOrganizationService OrganizationService,
+            IProvinceService ProvinceService,
             IStoreService StoreService)
         {
             this.DataContext = DataContext;
             this.AppUserService = AppUserService;
             this.BrandService = BrandService;
             this.CurrentContext = CurrentContext;
+            this.DistrictService = DistrictService;
             this.OrganizationService = OrganizationService;
+            this.ProvinceService = ProvinceService;
             this.StoreService = StoreService;
         }
 
+        #region Filter List
         [Route(DashboardStoreInformationRoute.FilterListBrand), HttpPost]
         public async Task<List<DashboardStoreInformation_BrandDTO>> FilterListBrand([FromBody] DashboardStoreInformation_BrandFilterDTO DashboardStoreInformation_BrandFilterDTO)
         {
@@ -99,6 +108,47 @@ namespace DMS.Rpc.dashboards.store_information
             return DashboardStoreInformation_OrganizationDTOs;
         }
 
+        [Route(DashboardStoreInformationRoute.FilterListDistrict), HttpPost]
+        public async Task<List<DashboardStoreInformation_DistrictDTO>> FilterListDistrict([FromBody] DashboardStoreInformation_DistrictFilterDTO DashboardStoreInformation_DistrictFilterDTO)
+        {
+            DistrictFilter DistrictFilter = new DistrictFilter();
+            DistrictFilter.Skip = 0;
+            DistrictFilter.Take = 20;
+            DistrictFilter.OrderBy = DistrictOrder.Priority;
+            DistrictFilter.OrderType = OrderType.ASC;
+            DistrictFilter.Selects = DistrictSelect.ALL;
+            DistrictFilter.Id = DashboardStoreInformation_DistrictFilterDTO.Id;
+            DistrictFilter.Name = DashboardStoreInformation_DistrictFilterDTO.Name;
+            DistrictFilter.Priority = DashboardStoreInformation_DistrictFilterDTO.Priority;
+            DistrictFilter.ProvinceId = DashboardStoreInformation_DistrictFilterDTO.ProvinceId;
+            DistrictFilter.StatusId = DashboardStoreInformation_DistrictFilterDTO.StatusId;
+
+            List<District> Districts = await DistrictService.List(DistrictFilter);
+            List<DashboardStoreInformation_DistrictDTO> DashboardStoreInformation_DistrictDTOs = Districts
+                .Select(x => new DashboardStoreInformation_DistrictDTO(x)).ToList();
+            return DashboardStoreInformation_DistrictDTOs;
+        }
+
+        [Route(DashboardStoreInformationRoute.FilterListProvince), HttpPost]
+        public async Task<List<DashboardStoreInformation_ProvinceDTO>> FilterListProvince([FromBody] DashboardStoreInformation_ProvinceFilterDTO DashboardStoreInformation_ProvinceFilterDTO)
+        {
+            ProvinceFilter ProvinceFilter = new ProvinceFilter();
+            ProvinceFilter.Skip = 0;
+            ProvinceFilter.Take = 20;
+            ProvinceFilter.OrderBy = ProvinceOrder.Priority;
+            ProvinceFilter.OrderType = OrderType.ASC;
+            ProvinceFilter.Selects = ProvinceSelect.ALL;
+            ProvinceFilter.Id = DashboardStoreInformation_ProvinceFilterDTO.Id;
+            ProvinceFilter.Name = DashboardStoreInformation_ProvinceFilterDTO.Name;
+            ProvinceFilter.StatusId = DashboardStoreInformation_ProvinceFilterDTO.StatusId;
+
+            List<Province> Provinces = await ProvinceService.List(ProvinceFilter);
+            List<DashboardStoreInformation_ProvinceDTO> DashboardStoreInformation_ProvinceDTOs = Provinces
+                .Select(x => new DashboardStoreInformation_ProvinceDTO(x)).ToList();
+            return DashboardStoreInformation_ProvinceDTOs;
+        }
+        #endregion
+
         [Route(DashboardStoreInformationRoute.StoreCounter), HttpPost]
         public async Task<DashboardStoreInformation_StoreCounterDTO> StoreCounter([FromBody] DashboardStoreInformation_StoreCounterFilterDTO DashboardStoreInformation_StoreCounterFilterDTO)
         {
@@ -106,6 +156,8 @@ namespace DMS.Rpc.dashboards.store_information
                 throw new BindException(ModelState);
 
             long? BrandId = DashboardStoreInformation_StoreCounterFilterDTO.BrandId?.Equal;
+            long? ProvinceId = DashboardStoreInformation_StoreCounterFilterDTO.ProvinceId?.Equal;
+            long? DistrictId = DashboardStoreInformation_StoreCounterFilterDTO.DistrictId?.Equal;
             List<long> OrganizationIds = await FilterOrganization(OrganizationService, CurrentContext);
             List<OrganizationDAO> OrganizationDAOs = await DataContext.Organization.Where(o => o.DeletedAt == null && (OrganizationIds.Count == 0 || OrganizationIds.Contains(o.Id))).ToListAsync();
             OrganizationDAO OrganizationDAO = null;
@@ -126,6 +178,8 @@ namespace DMS.Rpc.dashboards.store_information
                         join tt in tempTableQuery.Query on s.Id equals tt.Column1
                         where OrganizationIds.Contains(s.OrganizationId) &&
                         (BrandId.HasValue == false || bs.BrandId == BrandId) &&
+                        (ProvinceId.HasValue == false || (s.ProvinceId.HasValue && s.ProvinceId == ProvinceId.Value)) &&
+                        (DistrictId.HasValue == false || (s.DistrictId.HasValue && s.DistrictId == DistrictId.Value)) &&
                         s.StatusId == StatusEnum.ACTIVE.Id &&
                         s.DeletedAt == null &&
                         bs.DeletedAt == null
@@ -135,15 +189,19 @@ namespace DMS.Rpc.dashboards.store_information
             var queryStore = from s in DataContext.Store
                              join tt in tempTableQuery.Query on s.Id equals tt.Column1
                              where OrganizationIds.Contains(s.OrganizationId) &&
+                             (ProvinceId.HasValue == false || (s.ProvinceId.HasValue && s.ProvinceId == ProvinceId.Value)) &&
+                             (DistrictId.HasValue == false || (s.DistrictId.HasValue && s.DistrictId == DistrictId.Value)) &&
                              s.StatusId == StatusEnum.ACTIVE.Id &&
                              s.DeletedAt == null
                              select s;
             var StoreCounter = queryStore.Count();
 
             var queryScouting = from ss in DataContext.StoreScouting
-                                where (OrganizationIds.Contains(ss.OrganizationId))
-                                && ss.StoreScoutingStatusId == StoreScoutingStatusEnum.NOTOPEN.Id
-                                && ss.DeletedAt == null
+                                where (OrganizationIds.Contains(ss.OrganizationId)) &&
+                                (ProvinceId.HasValue == false || (ss.ProvinceId.HasValue && ss.ProvinceId == ProvinceId.Value)) &&
+                                (DistrictId.HasValue == false || (ss.DistrictId.HasValue && ss.DistrictId == DistrictId.Value)) &&
+                                ss.StoreScoutingStatusId == StoreScoutingStatusEnum.NOTOPEN.Id &&
+                                ss.DeletedAt == null
                                 select ss;
             var StoreScoutingCounter = queryScouting.Count();
 
@@ -160,6 +218,8 @@ namespace DMS.Rpc.dashboards.store_information
                 throw new BindException(ModelState);
 
             long? BrandId = DashboardStoreInformation_BrandStatisticsFilterDTO.BrandId?.Equal;
+            long? ProvinceId = DashboardStoreInformation_BrandStatisticsFilterDTO.ProvinceId?.Equal;
+            long? DistrictId = DashboardStoreInformation_BrandStatisticsFilterDTO.DistrictId?.Equal;
             List<long> OrganizationIds = await FilterOrganization(OrganizationService, CurrentContext);
             List<OrganizationDAO> OrganizationDAOs = await DataContext.Organization.Where(o => o.DeletedAt == null && (OrganizationIds.Count == 0 || OrganizationIds.Contains(o.Id))).ToListAsync();
             OrganizationDAO OrganizationDAO = null;
@@ -178,6 +238,8 @@ namespace DMS.Rpc.dashboards.store_information
                         join bs in DataContext.BrandInStore on s.Id equals bs.StoreId
                         join tt in tempTableQuery.Query on s.Id equals tt.Column1
                         where OrganizationIds.Contains(s.OrganizationId) &&
+                        (ProvinceId.HasValue == false || (s.ProvinceId.HasValue && s.ProvinceId == ProvinceId.Value)) &&
+                        (DistrictId.HasValue == false || (s.DistrictId.HasValue && s.DistrictId == DistrictId.Value)) &&
                         (BrandId.HasValue == false || bs.BrandId == BrandId) &&
                         s.StatusId == StatusEnum.ACTIVE.Id &&
                         s.DeletedAt == null &&
@@ -190,6 +252,8 @@ namespace DMS.Rpc.dashboards.store_information
                              join s in DataContext.Store on bs.StoreId equals s.Id
                              join tt in tempTableQuery.Query on bs.StoreId equals tt.Column1
                              where OrganizationIds.Contains(s.OrganizationId) &&
+                             (ProvinceId.HasValue == false || (s.ProvinceId.HasValue && s.ProvinceId == ProvinceId.Value)) &&
+                             (DistrictId.HasValue == false || (s.DistrictId.HasValue && s.DistrictId == DistrictId.Value)) &&
                              (BrandId.HasValue == false || bs.BrandId == BrandId) &&
                              s.StatusId == StatusEnum.ACTIVE.Id &&
                              s.DeletedAt == null &&
@@ -217,6 +281,8 @@ namespace DMS.Rpc.dashboards.store_information
                 throw new BindException(ModelState);
 
             long? BrandId = DashboardStoreInformation_BrandStatisticsFilterDTO.BrandId?.Equal;
+            long? ProvinceId = DashboardStoreInformation_BrandStatisticsFilterDTO.ProvinceId?.Equal;
+            long? DistrictId = DashboardStoreInformation_BrandStatisticsFilterDTO.DistrictId?.Equal;
             List<long> OrganizationIds = await FilterOrganization(OrganizationService, CurrentContext);
             List<OrganizationDAO> OrganizationDAOs = await DataContext.Organization.Where(o => o.DeletedAt == null && (OrganizationIds.Count == 0 || OrganizationIds.Contains(o.Id))).ToListAsync();
             OrganizationDAO OrganizationDAO = null;
@@ -235,6 +301,8 @@ namespace DMS.Rpc.dashboards.store_information
                         join bs in DataContext.BrandInStore on s.Id equals bs.StoreId
                         join tt in tempTableQuery.Query on s.Id equals tt.Column1
                         where OrganizationIds.Contains(s.OrganizationId) &&
+                        (ProvinceId.HasValue == false || (s.ProvinceId.HasValue && s.ProvinceId == ProvinceId.Value)) &&
+                        (DistrictId.HasValue == false || (s.DistrictId.HasValue && s.DistrictId == DistrictId.Value)) &&
                         (BrandId.HasValue == false || bs.BrandId == BrandId) &&
                         s.StatusId == StatusEnum.ACTIVE.Id &&
                         s.DeletedAt == null &&
@@ -247,6 +315,8 @@ namespace DMS.Rpc.dashboards.store_information
                              join s in DataContext.Store on bs.StoreId equals s.Id
                              join tt in tempTableQuery.Query on bs.StoreId equals tt.Column1
                              where OrganizationIds.Contains(s.OrganizationId) &&
+                             (ProvinceId.HasValue == false || (s.ProvinceId.HasValue && s.ProvinceId == ProvinceId.Value)) &&
+                             (DistrictId.HasValue == false || (s.DistrictId.HasValue && s.DistrictId == DistrictId.Value)) &&
                              (BrandId.HasValue == false || bs.BrandId == BrandId) &&
                              s.StatusId == StatusEnum.ACTIVE.Id &&
                              s.DeletedAt == null &&
@@ -275,6 +345,8 @@ namespace DMS.Rpc.dashboards.store_information
                 throw new BindException(ModelState);
 
             var BrandId = DashboardStoreInformation_StoreFilterDTO.BrandId?.Equal;
+            long? ProvinceId = DashboardStoreInformation_StoreFilterDTO.ProvinceId?.Equal;
+            long? DistrictId = DashboardStoreInformation_StoreFilterDTO.DistrictId?.Equal;
             List<long> OrganizationIds = await FilterOrganization(OrganizationService, CurrentContext);
             List<OrganizationDAO> OrganizationDAOs = await DataContext.Organization.Where(o => o.DeletedAt == null && (OrganizationIds.Count == 0 || OrganizationIds.Contains(o.Id))).ToListAsync();
             OrganizationDAO OrganizationDAO = null;
@@ -292,6 +364,8 @@ namespace DMS.Rpc.dashboards.store_information
             var query = from s in DataContext.Store
                         join tt in tempTableQuery.Query on s.Id equals tt.Column1
                         where OrganizationIds.Contains(s.OrganizationId) &&
+                        (ProvinceId.HasValue == false || (s.ProvinceId.HasValue && s.ProvinceId == ProvinceId.Value)) &&
+                        (DistrictId.HasValue == false || (s.DistrictId.HasValue && s.DistrictId == DistrictId.Value)) &&
                         s.StatusId == StatusEnum.ACTIVE.Id &&
                         s.DeletedAt == null
                         select new DashboardStoreInformation_StoreDTO
@@ -314,6 +388,8 @@ namespace DMS.Rpc.dashboards.store_information
                                     join s in DataContext.Store on bs.StoreId equals s.Id
                                     join tt in tempTableQuery.Query on s.Id equals tt.Column1
                                     where OrganizationIds.Contains(s.OrganizationId) &&
+                                    (ProvinceId.HasValue == false || (s.ProvinceId.HasValue && s.ProvinceId == ProvinceId.Value)) &&
+                                    (DistrictId.HasValue == false || (s.DistrictId.HasValue && s.DistrictId == DistrictId.Value)) &&
                                     (BrandId.HasValue == false || (bs.BrandId == BrandId.Value))
                                     && s.StatusId == StatusEnum.ACTIVE.Id
                                     && s.DeletedAt == null &&
@@ -339,6 +415,8 @@ namespace DMS.Rpc.dashboards.store_information
             var query_Scouting = from ss in DataContext.StoreScouting
                                  join au in DataContext.AppUser on ss.CreatorId equals au.Id
                                  where (OrganizationIds.Contains(au.OrganizationId)) &&
+                                 (ProvinceId.HasValue == false || (ss.ProvinceId.HasValue && ss.ProvinceId == ProvinceId.Value)) &&
+                                 (DistrictId.HasValue == false || (ss.DistrictId.HasValue && ss.DistrictId == DistrictId.Value)) &&
                                  ss.StoreScoutingStatusId == StoreScoutingStatusEnum.NOTOPEN.Id &&
                                  ss.DeletedAt == null
                                  select new DashboardStoreInformation_StoreDTO
@@ -363,6 +441,8 @@ namespace DMS.Rpc.dashboards.store_information
                 throw new BindException(ModelState);
 
             var BrandId = DashboardStoreInformation_ProductGroupingStatisticsFilterDTO.BrandId?.Equal;
+            long? ProvinceId = DashboardStoreInformation_ProductGroupingStatisticsFilterDTO.ProvinceId?.Equal;
+            long? DistrictId = DashboardStoreInformation_ProductGroupingStatisticsFilterDTO.DistrictId?.Equal;
             List<long> OrganizationIds = await FilterOrganization(OrganizationService, CurrentContext);
             List<OrganizationDAO> OrganizationDAOs = await DataContext.Organization.Where(o => o.DeletedAt == null && (OrganizationIds.Count == 0 || OrganizationIds.Contains(o.Id))).ToListAsync();
             OrganizationDAO OrganizationDAO = null;
@@ -382,6 +462,8 @@ namespace DMS.Rpc.dashboards.store_information
                         join s in DataContext.Store on bs.StoreId equals s.Id
                         join tt in tempTableQuery.Query on s.Id equals tt.Column1
                         where OrganizationIds.Contains(s.OrganizationId) &&
+                        (ProvinceId.HasValue == false || (s.ProvinceId.HasValue && s.ProvinceId == ProvinceId.Value)) &&
+                        (DistrictId.HasValue == false || (s.DistrictId.HasValue && s.DistrictId == DistrictId.Value)) &&
                         (BrandId.HasValue == false || (bs.BrandId == BrandId.Value))
                         && s.StatusId == StatusEnum.ACTIVE.Id
                         && s.DeletedAt == null &&
@@ -399,6 +481,8 @@ namespace DMS.Rpc.dashboards.store_information
                          join s in DataContext.Store on bs.StoreId equals s.Id
                          join tt in tempTableQuery.Query on s.Id equals tt.Column1
                          where OrganizationIds.Contains(s.OrganizationId) &&
+                         (ProvinceId.HasValue == false || (s.ProvinceId.HasValue && s.ProvinceId == ProvinceId.Value)) &&
+                         (DistrictId.HasValue == false || (s.DistrictId.HasValue && s.DistrictId == DistrictId.Value)) &&
                          (BrandId.HasValue == false || (bs.BrandId == BrandId.Value))
                          && s.StatusId == StatusEnum.ACTIVE.Id
                          && s.DeletedAt == null &&
@@ -454,6 +538,8 @@ namespace DMS.Rpc.dashboards.store_information
                 throw new BindException(ModelState);
 
             var BrandId = DashboardStoreInformation_TopBrandFilterDTO.BrandId?.Equal;
+            long? ProvinceId = DashboardStoreInformation_TopBrandFilterDTO.ProvinceId?.Equal;
+            long? DistrictId = DashboardStoreInformation_TopBrandFilterDTO.DistrictId?.Equal;
             var Top = DashboardStoreInformation_TopBrandFilterDTO.Top?.Equal ?? 1; // mặc định ở tab Hạng 1
             List<long> OrganizationIds = await FilterOrganization(OrganizationService, CurrentContext);
             List<OrganizationDAO> OrganizationDAOs = await DataContext.Organization.Where(o => o.DeletedAt == null && (OrganizationIds.Count == 0 || OrganizationIds.Contains(o.Id))).ToListAsync();
@@ -474,6 +560,8 @@ namespace DMS.Rpc.dashboards.store_information
                          join s in DataContext.Store on bs.StoreId equals s.Id
                          join tt in tempTableQuery.Query on s.Id equals tt.Column1
                          where OrganizationIds.Contains(s.OrganizationId) &&
+                         (ProvinceId.HasValue == false || (s.ProvinceId.HasValue && s.ProvinceId == ProvinceId.Value)) &&
+                         (DistrictId.HasValue == false || (s.DistrictId.HasValue && s.DistrictId == DistrictId.Value)) &&
                          (BrandId.HasValue == false || (bs.BrandId == BrandId.Value)) &&
                          bs.Top == Top &&
                          s.StatusId == StatusEnum.ACTIVE.Id &&

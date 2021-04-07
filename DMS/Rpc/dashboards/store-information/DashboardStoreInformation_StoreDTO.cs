@@ -36,5 +36,7 @@ namespace DMS.Rpc.dashboards.store_information
     {   
         public IdFilter OrganizationId { get; set; }
         public IdFilter BrandId { get; set; }
+        public IdFilter ProvinceId { get; set; }
+        public IdFilter DistrictId { get; set; }
     }
 }
