@@ -697,5 +697,104 @@ namespace DMS.Rpc.dashboards.store_information
 
             return File(output.ToArray(), "application/octet-stream", "StoreInformation_Brand.xlsx");
         }
+
+        [Route(DashboardStoreInformationRoute.ExportBrandUnStatistic), HttpPost]
+        public async Task<ActionResult> ExportUnBrandUnStatistic([FromBody] DashboardStoreInformation_BrandStatisticsFilterDTO DashboardStoreInformation_BrandStatisticsFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            long? BrandId = DashboardStoreInformation_BrandStatisticsFilterDTO.BrandId?.Equal;
+            long? ProvinceId = DashboardStoreInformation_BrandStatisticsFilterDTO.ProvinceId?.Equal;
+            long? DistrictId = DashboardStoreInformation_BrandStatisticsFilterDTO.DistrictId?.Equal;
+            if (BrandId.HasValue == false)
+                return BadRequest("Bạn chưa chọn hãng");
+
+            List<long> OrganizationIds = await FilterOrganization(OrganizationService, CurrentContext);
+            List<OrganizationDAO> OrganizationDAOs = await DataContext.Organization.Where(o => o.DeletedAt == null && (OrganizationIds.Count == 0 || OrganizationIds.Contains(o.Id))).ToListAsync();
+            OrganizationDAO OrganizationDAO = null;
+            if (DashboardStoreInformation_BrandStatisticsFilterDTO.OrganizationId?.Equal != null)
+            {
+                OrganizationDAO = await DataContext.Organization.Where(o => o.Id == DashboardStoreInformation_BrandStatisticsFilterDTO.OrganizationId.Equal.Value).FirstOrDefaultAsync();
+                OrganizationDAOs = OrganizationDAOs.Where(o => o.Path.StartsWith(OrganizationDAO.Path)).ToList();
+            }
+            OrganizationIds = OrganizationDAOs.Select(o => o.Id).ToList();
+
+            List<long> StoreIds = await FilterStore(StoreService, OrganizationService, CurrentContext);
+
+            ITempTableQuery<TempTable<long>> tempTableQuery = await DataContext
+                        .BulkInsertValuesIntoTempTableAsync<long>(StoreIds);
+            var query = from bs in DataContext.BrandInStore
+                        join s in DataContext.Store on bs.StoreId equals s.Id
+                        join tt in tempTableQuery.Query on s.Id equals tt.Column1
+                        where OrganizationIds.Contains(s.OrganizationId) &&
+                        (ProvinceId.HasValue == false || (s.ProvinceId.HasValue && s.ProvinceId == ProvinceId.Value)) &&
+                        (DistrictId.HasValue == false || (s.DistrictId.HasValue && s.DistrictId == DistrictId.Value)) &&
+                        bs.BrandId != BrandId &&
+                        s.StatusId == StatusEnum.ACTIVE.Id &&
+                        s.DeletedAt == null &&
+                        bs.DeletedAt == null
+                        select new DashboardStoreInformation_StoreDTO
+                        {
+                            Id = s.Id,
+                            Code = s.Code,
+                            CodeDraft = s.CodeDraft,
+                            Name = s.Name,
+                            Telephone = s.Telephone,
+                            Address = s.Address,
+                            OrganizationId = s.OrganizationId,
+                        };
+            var Stores = await query.Distinct().ToListAsync();
+            OrganizationIds = Stores.Select(x => x.OrganizationId).Distinct().ToList();
+            var Organizations = await DataContext.Organization
+                .Where(x => OrganizationIds.Contains(x.Id) &&
+                x.StatusId == StatusEnum.ACTIVE.Id &&
+                x.DeletedAt == null)
+                .OrderBy(x => x.Id)
+                .ToListAsync();
+            List<DashboardStoreInformation_StoreExportDTO> DashboardStoreInformation_StoreExportDTOs = new List<DashboardStoreInformation_StoreExportDTO>();
+            foreach (var Organization in Organizations)
+            {
+                DashboardStoreInformation_StoreExportDTO DashboardStoreInformation_StoreExportDTO = new DashboardStoreInformation_StoreExportDTO();
+                DashboardStoreInformation_StoreExportDTO.OrganizationId = Organization.Id;
+                DashboardStoreInformation_StoreExportDTO.OrganizationName = Organization.Name;
+                DashboardStoreInformation_StoreExportDTO.Stores = Stores.Where(x => x.OrganizationId == Organization.Id).OrderBy(x => x.Code).ToList();
+                DashboardStoreInformation_StoreExportDTOs.Add(DashboardStoreInformation_StoreExportDTO);
+            }
+            long stt = 1;
+            foreach (var DashboardStoreInformation_StoreExportDTO in DashboardStoreInformation_StoreExportDTOs)
+            {
+                foreach (var Store in DashboardStoreInformation_StoreExportDTO.Stores)
+                {
+                    Store.STT = stt++;
+                }
+            }
+            var Brand = await DataContext.Brand
+                .Where(x => x.Id == BrandId && x.DeletedAt == null && x.StatusId == StatusEnum.ACTIVE.Id)
+                .FirstOrDefaultAsync();
+
+            var OrgRoot = await DataContext.Organization
+                .Where(x => x.DeletedAt == null &&
+                x.StatusId == StatusEnum.ACTIVE.Id &&
+                x.ParentId.HasValue == false)
+                .FirstOrDefaultAsync();
+            var Total = DashboardStoreInformation_StoreExportDTOs.SelectMany(x => x.Stores).Count();
+
+            string path = "Templates/Dashboard_StoreInformation_UnBrand.xlsx";
+            byte[] arr = System.IO.File.ReadAllBytes(path);
+            MemoryStream input = new MemoryStream(arr);
+            MemoryStream output = new MemoryStream();
+            dynamic Data = new ExpandoObject();
+            Data.Brand = Brand;
+            Data.Data = DashboardStoreInformation_StoreExportDTOs;
+            Data.Total = Total;
+            Data.OrgRoot = OrgRoot == null ? "" : OrgRoot.Name.ToUpper();
+            using (var document = StaticParams.DocumentFactory.Open(input, output, "xlsx"))
+            {
+                document.Process(Data);
+            };
+
+            return File(output.ToArray(), "application/octet-stream", "StoreInformation_UnBrand.xlsx");
+        }
     }
 }
