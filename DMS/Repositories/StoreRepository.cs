@@ -863,7 +863,8 @@ namespace DMS.Repositories
             }).ToListAsync();
 
             var queryStoreImageMappings = from i in DataContext.StoreImageMapping
-                                          join tt in tempTableQuery.Query on i.StoreId equals tt.Column1
+                                          join s in DataContext.Store on i.StoreId equals s.Id
+                                          join tt in tempTableQuery.Query on s.Id equals tt.Column1
                                           select i;
             var StoreImageMappings = await queryStoreImageMappings.Select(x => new StoreImageMapping
             {
@@ -883,8 +884,9 @@ namespace DMS.Repositories
             }).ToListAsync();
 
             var queryBrandInStores = from bs in DataContext.BrandInStore
-                                          join tt in tempTableQuery.Query on bs.StoreId equals tt.Column1
-                                          where bs.DeletedAt == null
+                                     join s in DataContext.Store on bs.StoreId equals s.Id
+                                     join tt in tempTableQuery.Query on s.Id equals tt.Column1
+                                     where bs.DeletedAt == null
                                           select bs;
             var BrandInStores = await queryBrandInStores
                 .Select(x => new BrandInStore
