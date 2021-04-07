@@ -21,6 +21,9 @@ namespace DMS.Rpc.dashboards.store_information
         public const string ProductGroupingStatistic = Default + "/product-grouping-statistics";
         public const string TopBrand = Default + "/top-brand";
 
+        public const string ExportBrandStatistic = Default + "/export-brand-statistics";
+        public const string ExportBrandUnStatistic = Default + "/export-brand-un-statistics";
+
         public const string FilterListOrganization = Default + "/filter-list-organization";
         public const string FilterListBrand = Default + "/filter-list-brand";
         public const string FilterListDistrict = Default + "/filter-list-district";
@@ -38,6 +41,14 @@ namespace DMS.Rpc.dashboards.store_information
                 Master,
                 StoreCounter, BrandStatistic, BrandUnStatistic, StoreCoverage, ProductGroupingStatistic, TopBrand,
                 FilterListOrganization, FilterListBrand, FilterListDistrict, FilterListProvince
+            } },
+
+            { "Xuất Excel", new List<string> {
+                Parent,
+                Master,
+                StoreCounter, BrandStatistic, BrandUnStatistic, StoreCoverage, ProductGroupingStatistic, TopBrand,
+                FilterListOrganization, FilterListBrand, FilterListDistrict, FilterListProvince,
+                ExportBrandStatistic, ExportBrandUnStatistic
             } },
         };
     }

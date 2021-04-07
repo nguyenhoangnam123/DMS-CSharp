@@ -22,6 +22,8 @@ using Thinktecture.EntityFrameworkCore.TempTables;
 using Thinktecture;
 using DMS.Services.MDistrict;
 using DMS.Services.MProvince;
+using System.IO;
+using System.Dynamic;
 
 namespace DMS.Rpc.dashboards.store_information
 {
@@ -595,6 +597,79 @@ namespace DMS.Rpc.dashboards.store_information
             DashboardStoreInformation_TopBrandDTOs
                  = DashboardStoreInformation_TopBrandDTOs.OrderByDescending(x => x.Value).ToList();
             return DashboardStoreInformation_TopBrandDTOs;
+        }
+
+        [Route(DashboardStoreInformationRoute.ExportBrandStatistic), HttpPost]
+        public async Task<ActionResult> ExportBrandStatistic([FromBody] DashboardStoreInformation_BrandStatisticsFilterDTO DashboardStoreInformation_BrandStatisticsFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            long? BrandId = DashboardStoreInformation_BrandStatisticsFilterDTO.BrandId?.Equal;
+            long? ProvinceId = DashboardStoreInformation_BrandStatisticsFilterDTO.ProvinceId?.Equal;
+            long? DistrictId = DashboardStoreInformation_BrandStatisticsFilterDTO.DistrictId?.Equal;
+            if (BrandId.HasValue == false)
+                return BadRequest("Bạn chưa chọn hãng");
+
+            List<long> OrganizationIds = await FilterOrganization(OrganizationService, CurrentContext);
+            List<OrganizationDAO> OrganizationDAOs = await DataContext.Organization.Where(o => o.DeletedAt == null && (OrganizationIds.Count == 0 || OrganizationIds.Contains(o.Id))).ToListAsync();
+            OrganizationDAO OrganizationDAO = null;
+            if (DashboardStoreInformation_BrandStatisticsFilterDTO.OrganizationId?.Equal != null)
+            {
+                OrganizationDAO = await DataContext.Organization.Where(o => o.Id == DashboardStoreInformation_BrandStatisticsFilterDTO.OrganizationId.Equal.Value).FirstOrDefaultAsync();
+                OrganizationDAOs = OrganizationDAOs.Where(o => o.Path.StartsWith(OrganizationDAO.Path)).ToList();
+            }
+            OrganizationIds = OrganizationDAOs.Select(o => o.Id).ToList();
+
+            List<long> StoreIds = await FilterStore(StoreService, OrganizationService, CurrentContext);
+
+            ITempTableQuery<TempTable<long>> tempTableQuery = await DataContext
+                        .BulkInsertValuesIntoTempTableAsync<long>(StoreIds);
+            var query = from bs in DataContext.BrandInStore
+                        join s in DataContext.Store on bs.StoreId equals s.Id
+                        join tt in tempTableQuery.Query on s.Id equals tt.Column1
+                        where OrganizationIds.Contains(s.OrganizationId) &&
+                        (ProvinceId.HasValue == false || (s.ProvinceId.HasValue && s.ProvinceId == ProvinceId.Value)) &&
+                        (DistrictId.HasValue == false || (s.DistrictId.HasValue && s.DistrictId == DistrictId.Value)) &&
+                        bs.BrandId == BrandId &&
+                        s.StatusId == StatusEnum.ACTIVE.Id &&
+                        s.DeletedAt == null &&
+                        bs.DeletedAt == null
+                        select new Store
+                        {
+                            Id = s.Id,
+                            Code = s.Code,
+                            CodeDraft = s.CodeDraft,
+                            Name = s.Name,
+                            Telephone = s.Telephone,
+                            Address = s.Address,
+                        };
+            var Stores = await query.Distinct().ToListAsync();
+
+            var Brand = await DataContext.Brand
+                .Where(x => x.Id == BrandId && x.DeletedAt == null && x.StatusId == StatusEnum.ACTIVE.Id)
+                .FirstOrDefaultAsync();
+
+            var OrgRoot = await DataContext.Organization
+                .Where(x => x.DeletedAt == null &&
+                x.StatusId == StatusEnum.ACTIVE.Id &&
+                x.ParentId.HasValue == false)
+                .FirstOrDefaultAsync();
+
+            string path = "Templates/Dashboard_StoreInformation_Brand.xlsx";
+            byte[] arr = System.IO.File.ReadAllBytes(path);
+            MemoryStream input = new MemoryStream(arr);
+            MemoryStream output = new MemoryStream();
+            dynamic Data = new ExpandoObject();
+            Data.Brand = Brand;
+            Data.Data = Stores;
+            Data.RootName = OrgRoot == null ? "" : OrgRoot.Name.ToUpper();
+            using (var document = StaticParams.DocumentFactory.Open(input, output, "xlsx"))
+            {
+                document.Process(Data);
+            };
+
+            return File(output.ToArray(), "application/octet-stream", "StoreInformation_Brand.xlsx");
         }
     }
 }
