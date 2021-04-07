@@ -635,7 +635,7 @@ namespace DMS.Rpc.dashboards.store_information
                         s.StatusId == StatusEnum.ACTIVE.Id &&
                         s.DeletedAt == null &&
                         bs.DeletedAt == null
-                        select new Store
+                        select new DashboardStoreInformation_StoreDTO
                         {
                             Id = s.Id,
                             Code = s.Code,
@@ -643,9 +643,33 @@ namespace DMS.Rpc.dashboards.store_information
                             Name = s.Name,
                             Telephone = s.Telephone,
                             Address = s.Address,
+                            OrganizationId = s.OrganizationId,
                         };
             var Stores = await query.Distinct().ToListAsync();
-
+            OrganizationIds = Stores.Select(x => x.OrganizationId).Distinct().ToList();
+            var Organizations = await DataContext.Organization
+                .Where(x => OrganizationIds.Contains(x.Id) &&
+                x.StatusId == StatusEnum.ACTIVE.Id &&
+                x.DeletedAt == null)
+                .OrderBy(x => x.Id)
+                .ToListAsync();
+            List<DashboardStoreInformation_StoreExportDTO> DashboardStoreInformation_StoreExportDTOs = new List<DashboardStoreInformation_StoreExportDTO>();
+            foreach (var Organization in Organizations)
+            {
+                DashboardStoreInformation_StoreExportDTO DashboardStoreInformation_StoreExportDTO = new DashboardStoreInformation_StoreExportDTO();
+                DashboardStoreInformation_StoreExportDTO.OrganizationId = Organization.Id;
+                DashboardStoreInformation_StoreExportDTO.OrganizationName = Organization.Name;
+                DashboardStoreInformation_StoreExportDTO.Stores = Stores.Where(x => x.OrganizationId == Organization.Id).OrderBy(x => x.Code).ToList();
+                DashboardStoreInformation_StoreExportDTOs.Add(DashboardStoreInformation_StoreExportDTO);
+            }
+            long stt = 1;
+            foreach (var DashboardStoreInformation_StoreExportDTO in DashboardStoreInformation_StoreExportDTOs)
+            {
+                foreach (var Store in DashboardStoreInformation_StoreExportDTO.Stores)
+                {
+                    Store.STT = stt++;
+                }
+            }
             var Brand = await DataContext.Brand
                 .Where(x => x.Id == BrandId && x.DeletedAt == null && x.StatusId == StatusEnum.ACTIVE.Id)
                 .FirstOrDefaultAsync();
@@ -655,6 +679,7 @@ namespace DMS.Rpc.dashboards.store_information
                 x.StatusId == StatusEnum.ACTIVE.Id &&
                 x.ParentId.HasValue == false)
                 .FirstOrDefaultAsync();
+            var Total = DashboardStoreInformation_StoreExportDTOs.SelectMany(x => x.Stores).Count();
 
             string path = "Templates/Dashboard_StoreInformation_Brand.xlsx";
             byte[] arr = System.IO.File.ReadAllBytes(path);
@@ -662,8 +687,9 @@ namespace DMS.Rpc.dashboards.store_information
             MemoryStream output = new MemoryStream();
             dynamic Data = new ExpandoObject();
             Data.Brand = Brand;
-            Data.Data = Stores;
-            Data.RootName = OrgRoot == null ? "" : OrgRoot.Name.ToUpper();
+            Data.Data = DashboardStoreInformation_StoreExportDTOs;
+            Data.Total = Total;
+            Data.OrgRoot = OrgRoot == null ? "" : OrgRoot.Name.ToUpper();
             using (var document = StaticParams.DocumentFactory.Open(input, output, "xlsx"))
             {
                 document.Process(Data);

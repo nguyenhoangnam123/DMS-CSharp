@@ -8,7 +8,6 @@ namespace DMS.Rpc.posm.posm_report
 {
     public class POSMReport_StoreDTO : DataDTO
     {
-        
         public long Id { get; set; }
         
         public string Code { get; set; }
