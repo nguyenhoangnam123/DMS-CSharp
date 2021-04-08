@@ -1246,6 +1246,7 @@ namespace DMS.Repositories
                         Id = x.Brand.Id,
                         Code = x.Brand.Code,
                         Name = x.Brand.Name,
+                        RowId = x.RowId
                     },
                     Creator = x.Creator == null ? null : new AppUser
                     {
@@ -1267,6 +1268,7 @@ namespace DMS.Repositories
                         Id = x.ProductGrouping.Id,
                         Code = x.ProductGrouping.Code,
                         Name = x.ProductGrouping.Name,
+                        RowId = x.ProductGrouping.RowId
                     },
                 }).ToListAsync();
             foreach (var BrandInStore in Store.BrandInStores)

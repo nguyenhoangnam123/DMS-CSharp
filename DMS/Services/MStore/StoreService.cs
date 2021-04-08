@@ -720,6 +720,7 @@ namespace DMS.Services.MStore
 
         private void Sync(List<Store> Stores)
         {
+            List<EventMessage<Brand>> EventMessageBrands = new List<EventMessage<Brand>>();
             List<EventMessage<Store>> EventMessageSyncStores = new List<EventMessage<Store>>();
             List<EventMessage<AppUser>> EventMessageAppUsers = new List<EventMessage<AppUser>>();
             List<EventMessage<Store>> EventMessageStores = new List<EventMessage<Store>>();
@@ -766,6 +767,15 @@ namespace DMS.Services.MStore
                     EventMessage<Ward> EventMessageWard = new EventMessage<Ward>(Store.Ward, Store.Ward.RowId);
                     EventMessageWards.Add(EventMessageWard);
                 }
+
+                if(Store.BrandInStores != null)
+                {
+                    foreach (var BrandInStore in Store.BrandInStores)
+                    {
+                        EventMessage<Brand> EventMessageBrand = new EventMessage<Brand>(BrandInStore.Brand, BrandInStore.Brand.RowId);
+                        EventMessageBrands.Add(EventMessageBrand);
+                    }
+                }
             }
             RabbitManager.PublishList(EventMessageSyncStores, RoutingKeyEnum.StoreSync);
             EventMessageAppUsers = EventMessageAppUsers.Distinct().ToList();
@@ -777,6 +787,7 @@ namespace DMS.Services.MStore
             EventMessageWards = EventMessageWards.Distinct().ToList();
             OrganizationEventMessages = OrganizationEventMessages.Distinct().ToList();
             RabbitManager.PublishList(EventMessageAppUsers, RoutingKeyEnum.AppUserUsed);
+            RabbitManager.PublishList(EventMessageBrands, RoutingKeyEnum.BrandUsed);
             RabbitManager.PublishList(EventMessageStores, RoutingKeyEnum.StoreUsed);
             RabbitManager.PublishList(EventMessageStoreTypes, RoutingKeyEnum.StoreTypeUsed);
             RabbitManager.PublishList(EventMessageStoreGroupings, RoutingKeyEnum.StoreGroupingUsed);
