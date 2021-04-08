@@ -56,7 +56,7 @@ namespace DMS.Repositories
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;
-        }    
+        }
 
         private IQueryable<StoreStatusDAO> DynamicOrder(IQueryable<StoreStatusDAO> query, StoreStatusFilter filter)
         {
@@ -126,12 +126,13 @@ namespace DMS.Repositories
         public async Task<StoreStatus> Get(long Id)
         {
             StoreStatus StoreStatus = await DataContext.StoreStatus.AsNoTracking()
-            .Where(x => x.Id == Id).Select(x => new StoreStatus()
-            {
-                Id = x.Id,
-                Code = x.Code,
-                Name = x.Name,
-            }).FirstOrDefaultAsync();
+                .Where(x => x.Id == Id)
+                .Select(x => new StoreStatus()
+                {
+                    Id = x.Id,
+                    Code = x.Code,
+                    Name = x.Name,
+                }).FirstOrDefaultAsync();
 
             if (StoreStatus == null)
                 return null;
@@ -139,9 +140,17 @@ namespace DMS.Repositories
             return StoreStatus;
         }
 
-        public Task<List<StoreStatus>> List(List<long> Ids)
+        public async Task<List<StoreStatus>> List(List<long> Ids)
         {
-            throw new NotImplementedException();
+            List<StoreStatus> StoreStatuses = await DataContext.StoreStatus.AsNoTracking()
+               .Where(x => Ids.Contains(x.Id))
+               .Select(x => new StoreStatus()
+               {
+                   Id = x.Id,
+                   Code = x.Code,
+                   Name = x.Name,
+               }).ToListAsync();
+            return StoreStatuses;
         }
     }
 }
