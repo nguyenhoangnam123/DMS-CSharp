@@ -147,7 +147,7 @@ namespace DMS.Services.MShowingOrder
                     Take = int.MaxValue,
                     ShowingItemId = new IdFilter { In = ShowingItemIds },
                     ShowingWarehouseId = new IdFilter { Equal = ShowingOrder.ShowingWarehouse.Id },
-                    Selects = ShowingInventorySelect.SaleStock | ShowingInventorySelect.ShowingItem
+                    Selects = ShowingInventorySelect.SaleStock | ShowingInventorySelect.ShowingItem | ShowingInventorySelect.ShowingWarehouse
                 });
 
                 var StoreCounter = ShowingOrder.Stores.Count();
@@ -156,6 +156,7 @@ namespace DMS.Services.MShowingOrder
                     ShowingInventory ShowingInventory = ShowingInventories.Where(x => x.ShowingItemId == ShowingOrderContent.ShowingItemId).FirstOrDefault();
                     if (ShowingInventory != null)
                     {
+                        ShowingInventory.AppUserId = CurrentContext.UserId;
                         ShowingInventory.SaleStock -= (ShowingOrderContent.Quantity * StoreCounter);
                         if (ShowingInventory.AccountingStock.HasValue)
                             ShowingInventory.AccountingStock -= (ShowingOrderContent.Quantity * StoreCounter);
