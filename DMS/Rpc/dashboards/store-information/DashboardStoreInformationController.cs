@@ -157,7 +157,6 @@ namespace DMS.Rpc.dashboards.store_information
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
 
-            long? BrandId = DashboardStoreInformation_StoreCounterFilterDTO.BrandId?.Equal;
             long? ProvinceId = DashboardStoreInformation_StoreCounterFilterDTO.ProvinceId?.Equal;
             long? DistrictId = DashboardStoreInformation_StoreCounterFilterDTO.DistrictId?.Equal;
             List<long> OrganizationIds = await FilterOrganization(OrganizationService, CurrentContext);
@@ -179,7 +178,6 @@ namespace DMS.Rpc.dashboards.store_information
                         join bs in DataContext.BrandInStore on s.Id equals bs.StoreId
                         join tt in tempTableQuery.Query on s.Id equals tt.Column1
                         where OrganizationIds.Contains(s.OrganizationId) &&
-                        (BrandId.HasValue == false || bs.BrandId == BrandId) &&
                         (ProvinceId.HasValue == false || (s.ProvinceId.HasValue && s.ProvinceId == ProvinceId.Value)) &&
                         (DistrictId.HasValue == false || (s.DistrictId.HasValue && s.DistrictId == DistrictId.Value)) &&
                         s.StatusId == StatusEnum.ACTIVE.Id &&
@@ -493,10 +491,10 @@ namespace DMS.Rpc.dashboards.store_information
 
             var BrandInStoreIds = await query2.Distinct().ToListAsync();
             ITempTableQuery<TempTable<long>> tempTableQuery2 = await DataContext
-                        .BulkInsertValuesIntoTempTableAsync<long>(StoreIds);
+                        .BulkInsertValuesIntoTempTableAsync<long>(BrandInStoreIds);
             var query3 = from bsg in DataContext.BrandInStoreProductGroupingMapping
-                         join tt in tempTableQuery2.Query on bsg.BrandInStoreId equals tt.Column1
                          join bs in DataContext.BrandInStore on bsg.BrandInStoreId equals bs.Id
+                         join tt in tempTableQuery2.Query on bsg.BrandInStoreId equals tt.Column1
                          select new BrandInStoreProductGroupingMapping
                          {
                              BrandInStoreId = bsg.BrandInStoreId,
@@ -725,12 +723,20 @@ namespace DMS.Rpc.dashboards.store_information
             ITempTableQuery<TempTable<long>> tempTableQuery = await DataContext
                         .BulkInsertValuesIntoTempTableAsync<long>(StoreIds);
             var query = from bs in DataContext.BrandInStore
+                        join tt in tempTableQuery.Query on bs.StoreId equals tt.Column1
+                        where bs.BrandId == BrandId &&
+                        bs.DeletedAt == null
+                        select bs.StoreId;
+            StoreIds = await query.Distinct().ToListAsync();
+            tempTableQuery = await DataContext
+                        .BulkInsertValuesIntoTempTableAsync<long>(StoreIds);
+
+            var query2 = from bs in DataContext.BrandInStore
                         join s in DataContext.Store on bs.StoreId equals s.Id
                         join tt in tempTableQuery.Query on s.Id equals tt.Column1
                         where OrganizationIds.Contains(s.OrganizationId) &&
                         (ProvinceId.HasValue == false || (s.ProvinceId.HasValue && s.ProvinceId == ProvinceId.Value)) &&
                         (DistrictId.HasValue == false || (s.DistrictId.HasValue && s.DistrictId == DistrictId.Value)) &&
-                        bs.BrandId != BrandId &&
                         s.StatusId == StatusEnum.ACTIVE.Id &&
                         s.DeletedAt == null &&
                         bs.DeletedAt == null
@@ -744,7 +750,7 @@ namespace DMS.Rpc.dashboards.store_information
                             Address = s.Address,
                             OrganizationId = s.OrganizationId,
                         };
-            var Stores = await query.Distinct().ToListAsync();
+            var Stores = await query2.Distinct().ToListAsync();
             OrganizationIds = Stores.Select(x => x.OrganizationId).Distinct().ToList();
             var Organizations = await DataContext.Organization
                 .Where(x => OrganizationIds.Contains(x.Id) &&
