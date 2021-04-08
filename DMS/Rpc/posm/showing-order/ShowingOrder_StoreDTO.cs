@@ -64,6 +64,9 @@ namespace DMS.Rpc.posm.showing_order
         public long? AppUserId { get; set; }
         
         public long StatusId { get; set; }
+
+        public ShowingOrder_OrganizationDTO Organization { get; set; }
+        public ShowingOrder_StoreTypeDTO StoreType { get; set; }
         
         public Guid RowId { get; set; }
         
@@ -141,7 +144,11 @@ namespace DMS.Rpc.posm.showing_order
             this.StoreScoutingId = Store.StoreScoutingId;
             
             this.StoreStatusId = Store.StoreStatusId;
-            
+
+            this.Organization = Store.Organization == null ? null : new ShowingOrder_OrganizationDTO(Store.Organization);
+
+            this.StoreType = Store.StoreType == null ? null : new ShowingOrder_StoreTypeDTO(Store.StoreType);
+
             this.Errors = Store.Errors;
         }
     }
