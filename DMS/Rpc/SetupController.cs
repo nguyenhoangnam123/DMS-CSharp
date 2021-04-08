@@ -4,6 +4,7 @@ using DMS.Enums;
 using DMS.Handlers;
 using DMS.Helpers;
 using DMS.Models;
+using DMS.Repositories;
 using DMS.Services;
 using DMS.Services.MProduct;
 using Microsoft.AspNetCore.Http;
@@ -26,12 +27,14 @@ namespace DMS.Rpc
         private IItemService ItemService;
         private IMaintenanceService MaintenanceService;
         private IRabbitManager RabbitManager;
-        public SetupController(DataContext DataContext, IItemService ItemService, IMaintenanceService MaintenanceService, IRabbitManager RabbitManager)
+        private IUOW UOW;
+        public SetupController(DataContext DataContext, IItemService ItemService, IMaintenanceService MaintenanceService, IRabbitManager RabbitManager, IUOW UOW)
         {
             this.ItemService = ItemService;
             this.MaintenanceService = MaintenanceService;
             this.DataContext = DataContext;
             this.RabbitManager = RabbitManager;
+            this.UOW = UOW;
         }
 
         //[HttpGet, Route("rpc/dms/setup/save-image")]
@@ -125,7 +128,105 @@ namespace DMS.Rpc
         [HttpGet, Route("rpc/dms/setup/es-publish")]
         public async Task<ActionResult> ESPublish()
         {
+            #region DirectSalesOrder
+            List<DirectSalesOrder> DirectSalesOrders = await UOW.DirectSalesOrderRepository.List(new DirectSalesOrderFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
 
+                Selects = DirectSalesOrderSelect.Id,
+            });
+
+            List<long> DirectSalesOrderIds = DirectSalesOrders.Select(x => x.Id).ToList();
+            DirectSalesOrders = await UOW.DirectSalesOrderRepository.List(DirectSalesOrderIds);
+
+            List<EventMessage<DirectSalesOrder>> DirectSalesOrderEventMessages = new List<EventMessage<DirectSalesOrder>>();
+            foreach (DirectSalesOrder DirectSalesOrder in DirectSalesOrders)
+            {
+                DirectSalesOrderEventMessages.Add(new EventMessage<DirectSalesOrder>(DirectSalesOrder, DirectSalesOrder.RowId));
+            }
+            RabbitManager.PublishList(DirectSalesOrderEventMessages, RoutingKeyEnum.DirectSalesOrderSync);
+            #endregion
+
+            #region Store
+            List<Store> Stores = await UOW.StoreRepository.List(new StoreFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+
+                Selects = StoreSelect.Id,
+            });
+
+            List<long> StoreIds = Stores.Select(x => x.Id).ToList();
+            Stores = await UOW.StoreRepository.List(StoreIds);
+
+            List<EventMessage<Store>> StoreEventMessages = new List<EventMessage<Store>>();
+            foreach (Store Store in Stores)
+            {
+                StoreEventMessages.Add(new EventMessage<Store>(Store, Store.RowId));
+            }
+            RabbitManager.PublishList(StoreEventMessages, RoutingKeyEnum.StoreSync);
+            #endregion
+
+            #region StoreGrouping
+            List<StoreGrouping> StoreGroupings = await UOW.StoreGroupingRepository.List(new StoreGroupingFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+
+                Selects = StoreGroupingSelect.Id,
+            });
+
+            List<long> StoreGroupingIds = StoreGroupings.Select(x => x.Id).ToList();
+            StoreGroupings = await UOW.StoreGroupingRepository.List(StoreGroupingIds);
+
+            List<EventMessage<StoreGrouping>> StoreGroupingEventMessages = new List<EventMessage<StoreGrouping>>();
+            foreach (StoreGrouping StoreGrouping in StoreGroupings)
+            {
+                StoreGroupingEventMessages.Add(new EventMessage<StoreGrouping>(StoreGrouping, StoreGrouping.RowId));
+            }
+            RabbitManager.PublishList(StoreGroupingEventMessages, RoutingKeyEnum.StoreGroupingSync);
+            #endregion
+
+            #region StoreType
+            List<StoreType> StoreTypes = await UOW.StoreTypeRepository.List(new StoreTypeFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+
+                Selects = StoreTypeSelect.Id,
+            });
+
+            List<long> StoreTypeIds = StoreTypes.Select(x => x.Id).ToList();
+            StoreTypes = await UOW.StoreTypeRepository.List(StoreTypeIds);
+
+            List<EventMessage<StoreType>> StoreTypeEventMessages = new List<EventMessage<StoreType>>();
+            foreach (StoreType StoreType in StoreTypes)
+            {
+                StoreTypeEventMessages.Add(new EventMessage<StoreType>(StoreType, StoreType.RowId));
+            }
+            RabbitManager.PublishList(StoreTypeEventMessages, RoutingKeyEnum.StoreTypeSync);
+            #endregion
+
+            #region StoreStatus
+            List<StoreStatus> StoreStatuss = await UOW.StoreStatusRepository.List(new StoreStatusFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+
+                Selects = StoreStatusSelect.Id,
+            });
+
+            List<long> StoreStatusIds = StoreStatuss.Select(x => x.Id).ToList();
+            StoreStatuss = await UOW.StoreStatusRepository.List(StoreStatusIds);
+
+            List<EventMessage<StoreStatus>> StoreStatusEventMessages = new List<EventMessage<StoreStatus>>();
+            foreach (StoreStatus StoreStatus in StoreStatuss)
+            {
+                StoreStatusEventMessages.Add(new EventMessage<StoreStatus>(StoreStatus, Guid.NewGuid()));
+            }
+            RabbitManager.PublishList(StoreStatusEventMessages, RoutingKeyEnum.StoreStatusSync);
+            #endregion
             return Ok();
         }
 

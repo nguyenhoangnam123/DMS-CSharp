@@ -99,7 +99,6 @@ namespace DMS.Repositories
                 query = query.Where(q => q.DeliveryDate, filter.DeliveryDate);
             if (filter.EditedPriceStatusId != null)
                 query = query.Where(q => q.EditedPriceStatusId, filter.EditedPriceStatusId);
-
             if (filter.Note != null)
                 query = query.Where(q => q.Note, filter.Note);
             if (filter.RequestStateId != null)

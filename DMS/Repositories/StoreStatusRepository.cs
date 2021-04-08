@@ -139,7 +139,7 @@ namespace DMS.Repositories
             return StoreStatus;
         }
 
-        public Task<StoreStatus> List(List<long> Ids)
+        public Task<List<StoreStatus>> List(List<long> Ids)
         {
             throw new NotImplementedException();
         }
