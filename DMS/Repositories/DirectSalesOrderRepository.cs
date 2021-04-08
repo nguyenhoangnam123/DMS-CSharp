@@ -24,7 +24,7 @@ namespace DMS.Repositories
 
         Task<int> CountCompleted(DirectSalesOrderFilter DirectSalesOrderFilter);
         Task<List<DirectSalesOrder>> ListCompleted(DirectSalesOrderFilter DirectSalesOrderFilter);
-    
+
         Task<List<DirectSalesOrder>> List(List<long> Ids);
         Task<DirectSalesOrder> Get(long Id);
         Task<bool> Create(DirectSalesOrder DirectSalesOrder);
@@ -915,6 +915,324 @@ namespace DMS.Repositories
                 .Sum() : 0;
             return DirectSalesOrder;
         }
+
+        public async Task<List<DirectSalesOrder>> List(List<long> Ids)
+        {
+            List<DirectSalesOrder> DirectSalesOrders = await DataContext.DirectSalesOrder.AsNoTracking()
+                .Where(x => Ids.Contains(x.Id))
+                .Select(x => new DirectSalesOrder()
+                {
+                    Id = x.Id,
+                    Code = x.Code,
+                    OrganizationId = x.OrganizationId,
+                    BuyerStoreId = x.BuyerStoreId,
+                    PhoneNumber = x.PhoneNumber,
+                    StoreAddress = x.StoreAddress,
+                    DeliveryAddress = x.DeliveryAddress,
+                    SaleEmployeeId = x.SaleEmployeeId,
+                    OrderDate = x.OrderDate,
+                    CreatedAt = x.CreatedAt,
+                    UpdatedAt = x.UpdatedAt,
+                    DeliveryDate = x.DeliveryDate,
+                    EditedPriceStatusId = x.EditedPriceStatusId,
+                    Note = x.Note,
+                    RequestStateId = x.RequestStateId,
+                    SubTotal = x.SubTotal,
+                    GeneralDiscountPercentage = x.GeneralDiscountPercentage,
+                    GeneralDiscountAmount = x.GeneralDiscountAmount,
+                    PromotionCode = x.PromotionCode,
+                    PromotionValue = x.PromotionValue,
+                    TotalTaxAmount = x.TotalTaxAmount,
+                    TotalAfterTax = x.TotalAfterTax,
+                    Total = x.Total,
+                    RowId = x.RowId,
+                    StoreCheckingId = x.StoreCheckingId,
+                    CreatorId = x.CreatorId,
+                    BuyerStore = x.BuyerStore == null ? null : new Store
+                    {
+                        Id = x.BuyerStore.Id,
+                        Code = x.BuyerStore.Code,
+                        CodeDraft = x.BuyerStore.CodeDraft,
+                        Name = x.BuyerStore.Name,
+                        ParentStoreId = x.BuyerStore.ParentStoreId,
+                        OrganizationId = x.BuyerStore.OrganizationId,
+                        StoreTypeId = x.BuyerStore.StoreTypeId,
+                        StoreGroupingId = x.BuyerStore.StoreGroupingId,
+                        Telephone = x.BuyerStore.Telephone,
+                        ProvinceId = x.BuyerStore.ProvinceId,
+                        DistrictId = x.BuyerStore.DistrictId,
+                        WardId = x.BuyerStore.WardId,
+                        Address = x.BuyerStore.Address,
+                        DeliveryAddress = x.BuyerStore.DeliveryAddress,
+                        Latitude = x.BuyerStore.Latitude,
+                        Longitude = x.BuyerStore.Longitude,
+                        DeliveryLatitude = x.BuyerStore.DeliveryLatitude,
+                        DeliveryLongitude = x.BuyerStore.DeliveryLongitude,
+                        OwnerName = x.BuyerStore.OwnerName,
+                        OwnerPhone = x.BuyerStore.OwnerPhone,
+                        OwnerEmail = x.BuyerStore.OwnerEmail,
+                        TaxCode = x.BuyerStore.TaxCode,
+                        LegalEntity = x.BuyerStore.LegalEntity,
+                        StatusId = x.BuyerStore.StatusId,
+                    },
+                    EditedPriceStatus = x.EditedPriceStatus == null ? null : new EditedPriceStatus
+                    {
+                        Id = x.EditedPriceStatus.Id,
+                        Code = x.EditedPriceStatus.Code,
+                        Name = x.EditedPriceStatus.Name,
+                    },
+                    Organization = x.Organization == null ? null : new Organization
+                    {
+                        Id = x.Organization.Id,
+                        Code = x.Organization.Code,
+                        Name = x.Organization.Name,
+                        Address = x.Organization.Address,
+                        Phone = x.Organization.Phone,
+                        Path = x.Organization.Path,
+                        ParentId = x.Organization.ParentId,
+                        Email = x.Organization.Email,
+                        StatusId = x.Organization.StatusId,
+                        Level = x.Organization.Level
+                    },
+                    RequestState = x.RequestState == null ? null : new RequestState
+                    {
+                        Id = x.RequestState.Id,
+                        Code = x.RequestState.Code,
+                        Name = x.RequestState.Name,
+                    },
+                    SaleEmployee = x.SaleEmployee == null ? null : new AppUser
+                    {
+                        Id = x.SaleEmployee.Id,
+                        Username = x.SaleEmployee.Username,
+                        DisplayName = x.SaleEmployee.DisplayName,
+                        Address = x.SaleEmployee.Address,
+                        Email = x.SaleEmployee.Email,
+                        Phone = x.SaleEmployee.Phone,
+                    },
+                })
+                .ToListAsync();
+
+            List<Guid> RowIds = DirectSalesOrders.Select(x => x.RowId).ToList();
+            List<RequestWorkflowDefinitionMappingDAO> RequestWorkflowDefinitionMappingDAOs = await DataContext.RequestWorkflowDefinitionMapping
+              .Where(x => RowIds.Contains(x.RequestId))
+              .Include(x => x.RequestState)
+              .AsNoTracking()
+              .ToListAsync();
+            foreach (DirectSalesOrder DirectSalesOrder in DirectSalesOrders)
+            {
+                RequestWorkflowDefinitionMappingDAO RequestWorkflowDefinitionMappingDAO = RequestWorkflowDefinitionMappingDAOs
+                    .Where(x => x.RequestId == DirectSalesOrder.RowId)
+                    .FirstOrDefault();
+                if (RequestWorkflowDefinitionMappingDAO != null)
+                {
+                    DirectSalesOrder.RequestStateId = RequestWorkflowDefinitionMappingDAO.RequestStateId;
+                    DirectSalesOrder.RequestState = new RequestState
+                    {
+                        Id = RequestWorkflowDefinitionMappingDAO.RequestState.Id,
+                        Code = RequestWorkflowDefinitionMappingDAO.RequestState.Code,
+                        Name = RequestWorkflowDefinitionMappingDAO.RequestState.Name,
+                    };
+                }
+            }
+
+            List<DirectSalesOrderContent> DirectSalesOrderContents = await DataContext.DirectSalesOrderContent.AsNoTracking()
+                .Where(x => Ids.Contains(x.DirectSalesOrderId))
+                .Select(x => new DirectSalesOrderContent
+                {
+                    Id = x.Id,
+                    DirectSalesOrderId = x.DirectSalesOrderId,
+                    ItemId = x.ItemId,
+                    UnitOfMeasureId = x.UnitOfMeasureId,
+                    Quantity = x.Quantity,
+                    PrimaryUnitOfMeasureId = x.PrimaryUnitOfMeasureId,
+                    RequestedQuantity = x.RequestedQuantity,
+                    PrimaryPrice = x.PrimaryPrice,
+                    SalePrice = x.SalePrice,
+                    EditedPriceStatusId = x.EditedPriceStatusId,
+                    DiscountPercentage = x.DiscountPercentage,
+                    DiscountAmount = x.DiscountAmount,
+                    GeneralDiscountPercentage = x.GeneralDiscountPercentage,
+                    GeneralDiscountAmount = x.GeneralDiscountAmount,
+                    Amount = x.Amount,
+                    TaxPercentage = x.TaxPercentage,
+                    TaxAmount = x.TaxAmount,
+                    Factor = x.Factor,
+                    EditedPriceStatus = x.EditedPriceStatus == null ? null : new EditedPriceStatus
+                    {
+                        Id = x.EditedPriceStatus.Id,
+                        Code = x.EditedPriceStatus.Code,
+                        Name = x.EditedPriceStatus.Name,
+                    },
+                    Item = new Item
+                    {
+                        Id = x.Item.Id,
+                        Code = x.Item.Code,
+                        Name = x.Item.Name,
+                        ProductId = x.Item.ProductId,
+                        RetailPrice = x.Item.RetailPrice,
+                        SalePrice = x.Item.SalePrice,
+                        ScanCode = x.Item.ScanCode,
+                        StatusId = x.Item.StatusId,
+                        Product = new Product
+                        {
+                            Id = x.Item.Product.Id,
+                            Code = x.Item.Product.Code,
+                            Name = x.Item.Product.Name,
+                            TaxTypeId = x.Item.Product.TaxTypeId,
+                            UnitOfMeasureId = x.Item.Product.UnitOfMeasureId,
+                            UnitOfMeasureGroupingId = x.Item.Product.UnitOfMeasureGroupingId,
+                            TaxType = new TaxType
+                            {
+                                Id = x.Item.Product.TaxType.Id,
+                                Code = x.Item.Product.TaxType.Code,
+                                Name = x.Item.Product.TaxType.Name,
+                                StatusId = x.Item.Product.TaxType.StatusId,
+                                Percentage = x.Item.Product.TaxType.Percentage,
+                            },
+                            UnitOfMeasure = new UnitOfMeasure
+                            {
+                                Id = x.Item.Product.UnitOfMeasure.Id,
+                                Code = x.Item.Product.UnitOfMeasure.Code,
+                                Name = x.Item.Product.UnitOfMeasure.Name,
+                                Description = x.Item.Product.UnitOfMeasure.Description,
+                                StatusId = x.Item.Product.UnitOfMeasure.StatusId,
+                            },
+                            UnitOfMeasureGrouping = new UnitOfMeasureGrouping
+                            {
+                                Id = x.Item.Product.UnitOfMeasureGrouping.Id,
+                                Code = x.Item.Product.UnitOfMeasureGrouping.Code,
+                                Name = x.Item.Product.UnitOfMeasureGrouping.Name,
+                                Description = x.Item.Product.UnitOfMeasureGrouping.Description,
+                                StatusId = x.Item.Product.UnitOfMeasureGrouping.StatusId,
+                                UnitOfMeasureId = x.Item.Product.UnitOfMeasureGrouping.UnitOfMeasureId
+                            }
+                        }
+                    },
+                    PrimaryUnitOfMeasure = new UnitOfMeasure
+                    {
+                        Id = x.PrimaryUnitOfMeasure.Id,
+                        Code = x.PrimaryUnitOfMeasure.Code,
+                        Name = x.PrimaryUnitOfMeasure.Name,
+                        Description = x.PrimaryUnitOfMeasure.Description,
+                        StatusId = x.PrimaryUnitOfMeasure.StatusId,
+                    },
+                    UnitOfMeasure = new UnitOfMeasure
+                    {
+                        Id = x.UnitOfMeasure.Id,
+                        Code = x.UnitOfMeasure.Code,
+                        Name = x.UnitOfMeasure.Name,
+                        Description = x.UnitOfMeasure.Description,
+                        StatusId = x.UnitOfMeasure.StatusId,
+                    },
+                }).ToListAsync();
+            foreach (DirectSalesOrder DirectSalesOrder in DirectSalesOrders)
+            {
+                DirectSalesOrder.DirectSalesOrderContents = DirectSalesOrderContents
+                    .Where(x => x.DirectSalesOrderId == DirectSalesOrder.Id)
+                    .ToList();
+            }
+
+
+            List<DirectSalesOrderPromotion> DirectSalesOrderPromotions = await DataContext.DirectSalesOrderPromotion.AsNoTracking()
+                .Where(x => Ids.Contains(x.DirectSalesOrderId))
+                .Select(x => new DirectSalesOrderPromotion
+                {
+                    Id = x.Id,
+                    DirectSalesOrderId = x.DirectSalesOrderId,
+                    ItemId = x.ItemId,
+                    UnitOfMeasureId = x.UnitOfMeasureId,
+                    Quantity = x.Quantity,
+                    PrimaryUnitOfMeasureId = x.PrimaryUnitOfMeasureId,
+                    RequestedQuantity = x.RequestedQuantity,
+                    Note = x.Note,
+                    Factor = x.Factor,
+                    Item = new Item
+                    {
+                        Id = x.Item.Id,
+                        Code = x.Item.Code,
+                        Name = x.Item.Name,
+                        ProductId = x.Item.ProductId,
+                        RetailPrice = x.Item.RetailPrice,
+                        SalePrice = x.Item.SalePrice,
+                        ScanCode = x.Item.ScanCode,
+                        StatusId = x.Item.StatusId,
+                        Product = new Product
+                        {
+                            Id = x.Item.Product.Id,
+                            Code = x.Item.Product.Code,
+                            Name = x.Item.Product.Name,
+                            TaxTypeId = x.Item.Product.TaxTypeId,
+                            UnitOfMeasureId = x.Item.Product.UnitOfMeasureId,
+                            UnitOfMeasureGroupingId = x.Item.Product.UnitOfMeasureGroupingId,
+                            TaxType = new TaxType
+                            {
+                                Id = x.Item.Product.TaxType.Id,
+                                Code = x.Item.Product.TaxType.Code,
+                                Name = x.Item.Product.TaxType.Name,
+                                StatusId = x.Item.Product.TaxType.StatusId,
+                                Percentage = x.Item.Product.TaxType.Percentage,
+                            },
+                            UnitOfMeasure = new UnitOfMeasure
+                            {
+                                Id = x.Item.Product.UnitOfMeasure.Id,
+                                Code = x.Item.Product.UnitOfMeasure.Code,
+                                Name = x.Item.Product.UnitOfMeasure.Name,
+                                Description = x.Item.Product.UnitOfMeasure.Description,
+                                StatusId = x.Item.Product.UnitOfMeasure.StatusId,
+                            },
+                            UnitOfMeasureGrouping = new UnitOfMeasureGrouping
+                            {
+                                Id = x.Item.Product.UnitOfMeasureGrouping.Id,
+                                Code = x.Item.Product.UnitOfMeasureGrouping.Code,
+                                Name = x.Item.Product.UnitOfMeasureGrouping.Name,
+                                Description = x.Item.Product.UnitOfMeasureGrouping.Description,
+                                StatusId = x.Item.Product.UnitOfMeasureGrouping.StatusId,
+                                UnitOfMeasureId = x.Item.Product.UnitOfMeasureGrouping.UnitOfMeasureId
+                            }
+                        }
+                    },
+                    PrimaryUnitOfMeasure = new UnitOfMeasure
+                    {
+                        Id = x.PrimaryUnitOfMeasure.Id,
+                        Code = x.PrimaryUnitOfMeasure.Code,
+                        Name = x.PrimaryUnitOfMeasure.Name,
+                        Description = x.PrimaryUnitOfMeasure.Description,
+                        StatusId = x.PrimaryUnitOfMeasure.StatusId,
+                    },
+                    UnitOfMeasure = new UnitOfMeasure
+                    {
+                        Id = x.UnitOfMeasure.Id,
+                        Code = x.UnitOfMeasure.Code,
+                        Name = x.UnitOfMeasure.Name,
+                        Description = x.UnitOfMeasure.Description,
+                        StatusId = x.UnitOfMeasure.StatusId,
+                    },
+                }).ToListAsync();
+
+            foreach (DirectSalesOrder DirectSalesOrder in DirectSalesOrders)
+            {
+                DirectSalesOrder.DirectSalesOrderPromotions = DirectSalesOrderPromotions
+                    .Where(x => x.DirectSalesOrderId == DirectSalesOrder.Id)
+                    .ToList();
+            }
+
+            foreach (DirectSalesOrder DirectSalesOrder in DirectSalesOrders)
+            {
+                decimal GeneralDiscountAmount = DirectSalesOrder.GeneralDiscountAmount.HasValue ? DirectSalesOrder.GeneralDiscountAmount.Value : 0;
+                decimal DiscountAmount = DirectSalesOrder.DirectSalesOrderContents != null ?
+                    DirectSalesOrder.DirectSalesOrderContents
+                    .Select(x => x.DiscountAmount.GetValueOrDefault(0))
+                    .Sum() : 0;
+                DirectSalesOrder.TotalDiscountAmount = GeneralDiscountAmount + DiscountAmount;
+                DirectSalesOrder.TotalRequestedQuantity = DirectSalesOrder.DirectSalesOrderContents != null ?
+                    DirectSalesOrder.DirectSalesOrderContents
+                    .Select(x => x.RequestedQuantity)
+                    .Sum() : 0;
+            }
+
+            return DirectSalesOrders;
+        }
+
         public async Task<bool> Create(DirectSalesOrder DirectSalesOrder)
         {
             DirectSalesOrderDAO DirectSalesOrderDAO = new DirectSalesOrderDAO();
@@ -1146,11 +1464,6 @@ namespace DMS.Repositories
                     UpdatedAt = StaticParams.DateTimeNow
                 });
             return true;
-        }
-
-        public Task<List<DirectSalesOrder>> List(List<long> Ids)
-        {
-            throw new NotImplementedException();
         }
     }
 }
