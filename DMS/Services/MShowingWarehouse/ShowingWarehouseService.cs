@@ -252,6 +252,7 @@ namespace DMS.Services.MShowingWarehouse
                     ShowingInventory ShowingInventoryInDB = oldData.ShowingInventories.Where(i => i.ShowingItemId == ShowingInventory.ShowingItemId).FirstOrDefault();
                     if (ShowingInventoryInDB == null)
                     {
+                        ShowingInventory.AppUserId = CurrentContext.UserId;
                         ShowingInventoryHistory ShowingInventoryHistory = new ShowingInventoryHistory();
                         ShowingInventoryHistory.ShowingInventoryId = ShowingInventory.Id;
                         ShowingInventoryHistory.SaleStock = ShowingInventory.SaleStock;

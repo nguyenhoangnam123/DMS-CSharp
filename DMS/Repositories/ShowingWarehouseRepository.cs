@@ -608,6 +608,7 @@ namespace DMS.Repositories
                     {
                         ShowingInventoryDAO = new ShowingInventoryDAO();
                         ShowingInventoryDAO.Id = ShowingInventory.Id;
+                        ShowingInventoryDAO.AppUserId = ShowingInventory.AppUserId;
                         ShowingInventoryDAO.ShowingWarehouseId = ShowingWarehouse.Id;
                         ShowingInventoryDAO.ShowingItemId = ShowingInventory.ShowingItemId;
                         ShowingInventoryDAO.SaleStock = ShowingInventory.SaleStock;
