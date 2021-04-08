@@ -122,6 +122,13 @@ namespace DMS.Rpc
         //    await DataContext.SaveChangesAsync();
         //}
 
+        [HttpGet, Route("rpc/dms/setup/es-publish")]
+        public async Task<ActionResult> ESPublish()
+        {
+
+            return Ok();
+        }
+
         [HttpGet, Route("rpc/dms/setup/year/{year}")]
         public bool ChangeYear(int year)
         {
