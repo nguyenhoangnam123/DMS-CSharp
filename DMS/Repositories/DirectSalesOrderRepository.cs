@@ -24,7 +24,8 @@ namespace DMS.Repositories
 
         Task<int> CountCompleted(DirectSalesOrderFilter DirectSalesOrderFilter);
         Task<List<DirectSalesOrder>> ListCompleted(DirectSalesOrderFilter DirectSalesOrderFilter);
-
+    
+        Task<List<DirectSalesOrder>> List(List<long> Ids);
         Task<DirectSalesOrder> Get(long Id);
         Task<bool> Create(DirectSalesOrder DirectSalesOrder);
         Task<bool> Update(DirectSalesOrder DirectSalesOrder);
@@ -98,6 +99,7 @@ namespace DMS.Repositories
                 query = query.Where(q => q.DeliveryDate, filter.DeliveryDate);
             if (filter.EditedPriceStatusId != null)
                 query = query.Where(q => q.EditedPriceStatusId, filter.EditedPriceStatusId);
+
             if (filter.Note != null)
                 query = query.Where(q => q.Note, filter.Note);
             if (filter.RequestStateId != null)
@@ -1145,6 +1147,11 @@ namespace DMS.Repositories
                     UpdatedAt = StaticParams.DateTimeNow
                 });
             return true;
+        }
+
+        public Task<List<DirectSalesOrder>> List(List<long> Ids)
+        {
+            throw new NotImplementedException();
         }
     }
 }

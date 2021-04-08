@@ -14,6 +14,7 @@ namespace DMS.Repositories
     {
         Task<int> Count(StoreStatusFilter StoreStatusFilter);
         Task<List<StoreStatus>> List(StoreStatusFilter StoreStatusFilter);
+        Task<List<StoreStatus>> List(List<long> Ids);
         Task<StoreStatus> Get(long Id);
     }
     public class StoreStatusRepository : IStoreStatusRepository
@@ -136,6 +137,11 @@ namespace DMS.Repositories
                 return null;
 
             return StoreStatus;
+        }
+
+        public Task<StoreStatus> List(List<long> Ids)
+        {
+            throw new NotImplementedException();
         }
     }
 }
