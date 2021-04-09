@@ -495,28 +495,36 @@ namespace DMS.Services.MStore
                     StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id }
                 });
                 List<long> BrandIdInDB = Brands.Select(x => x.Id).ToList();
-                foreach (var BrandInStore in Store.BrandInStores)
+                var countTop = Store.BrandInStores.Select(x => x.Top).Distinct().Count();
+                if(countTop < Store.BrandInStores.Count())
                 {
-                    if(BrandInStore.BrandId == 0)
+                    Store.AddError(nameof(StoreValidator), nameof(Store.BrandInStores), ErrorCode.TopInvalid);
+                }
+                else
+                {
+                    foreach (var BrandInStore in Store.BrandInStores)
                     {
-                        BrandInStore.AddError(nameof(StoreValidator), nameof(BrandInStore.Brand), ErrorCode.BrandEmpty);
-                    }
-                    else if (!BrandIdInDB.Contains(BrandInStore.BrandId))
-                    {
-                        BrandInStore.AddError(nameof(StoreValidator), nameof(BrandInStore.Brand), ErrorCode.BrandNotExisted);
-                    }
-                    else
-                    {
-                        // hạng từ 1-5
-                        if(0 >= BrandInStore.Top || BrandInStore.Top > 5)
+                        if (BrandInStore.BrandId == 0)
                         {
-                            BrandInStore.AddError(nameof(StoreValidator), nameof(BrandInStore.Top), ErrorCode.TopInvalid);
+                            BrandInStore.AddError(nameof(StoreValidator), nameof(BrandInStore.Brand), ErrorCode.BrandEmpty);
+                        }
+                        else if (!BrandIdInDB.Contains(BrandInStore.BrandId))
+                        {
+                            BrandInStore.AddError(nameof(StoreValidator), nameof(BrandInStore.Brand), ErrorCode.BrandNotExisted);
                         }
                         else
                         {
-                            if(BrandInStore.BrandInStoreProductGroupingMappings == null || BrandInStore.BrandInStoreProductGroupingMappings.Count == 0)
+                            // hạng từ 1-5
+                            if (0 >= BrandInStore.Top || BrandInStore.Top > 5)
                             {
-                                BrandInStore.AddError(nameof(StoreValidator), nameof(BrandInStore.BrandInStoreProductGroupingMappings), ErrorCode.ProductGroupingEmpty);
+                                BrandInStore.AddError(nameof(StoreValidator), nameof(BrandInStore.Top), ErrorCode.TopInvalid);
+                            }
+                            else
+                            {
+                                if (BrandInStore.BrandInStoreProductGroupingMappings == null || BrandInStore.BrandInStoreProductGroupingMappings.Count == 0)
+                                {
+                                    BrandInStore.AddError(nameof(StoreValidator), nameof(BrandInStore.BrandInStoreProductGroupingMappings), ErrorCode.ProductGroupingEmpty);
+                                }
                             }
                         }
                     }
