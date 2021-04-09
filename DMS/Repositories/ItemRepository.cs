@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using DMS.Enums;
 
 namespace DMS.Repositories
 {
@@ -116,7 +117,15 @@ namespace DMS.Repositories
                 query = query.Where(q => q.Product.ProductTypeId, filter.ProductTypeId);
 
             if (filter.StatusId != null && filter.StatusId.HasValue)
-                query = query.Where(q => q.StatusId, filter.StatusId);
+            {
+                var UsedVariationItems = query.Where(x => x.Product.UsedVariationId == UsedVariationEnum.USED.Id);
+                UsedVariationItems = UsedVariationItems.Where(q => q.StatusId, filter.StatusId);
+
+                var NotUsedVariationItems = query.Where(x => x.Product.UsedVariationId == UsedVariationEnum.NOTUSED.Id);
+                NotUsedVariationItems = NotUsedVariationItems.Where(x => x.Product.StatusId, filter.StatusId);
+
+                query = UsedVariationItems.Union(NotUsedVariationItems);
+            }
 
             if (filter.IsNew != null && filter.IsNew.HasValue)
                 query = query.Where(q => q.Product.IsNew == filter.IsNew);
