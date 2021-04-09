@@ -29,32 +29,57 @@ namespace DMS.Handlers
         private async Task Sync(DataContext context, string json)
         {
             List<EventMessage<Organization>> OrganizationEventMessages = JsonConvert.DeserializeObject<List<EventMessage<Organization>>>(json);
-
             List<Organization> Organizations = OrganizationEventMessages.Select(x => x.Content).ToList();
-
+            List<OrganizationDAO> OrganizationDAOs = await context.Organization.ToListAsync();
             var AppUsers = Organizations.Where(x => x.AppUsers != null).SelectMany(x => x.AppUsers).ToList();
             var AppUserIds = AppUsers.Select(x => x.Id).ToList();
             var AppUserDAOs = await context.AppUser.Where(x => AppUserIds.Contains(x.Id)).ToListAsync();
 
             try
             {
-                List<OrganizationDAO> OrganizationDAOs = Organizations.Select(o => new OrganizationDAO
+                foreach (var Organization in Organizations)
                 {
-                    Id = o.Id,
-                    Code = o.Code,
-                    Name = o.Name,
-                    Address = o.Address,
-                    CreatedAt = o.CreatedAt,
-                    UpdatedAt = o.UpdatedAt,
-                    DeletedAt = o.DeletedAt,
-                    Email = o.Email,
-                    Level = o.Level,
-                    ParentId = o.ParentId,
-                    Path = o.Path,
-                    Phone = o.Phone,
-                    RowId = o.RowId,
-                    StatusId = o.StatusId,
-                }).ToList();
+                    OrganizationDAO OrganizationDAO = OrganizationDAOs.Where(x => x.Id == Organization.Id).FirstOrDefault();
+                    if(OrganizationDAO == null)
+                    {
+                        OrganizationDAO = new OrganizationDAO
+                        {
+                            Id = Organization.Id,
+                            Code = Organization.Code,
+                            Name = Organization.Name,
+                            Address = Organization.Address,
+                            CreatedAt = Organization.CreatedAt,
+                            UpdatedAt = Organization.UpdatedAt,
+                            DeletedAt = Organization.DeletedAt,
+                            Email = Organization.Email,
+                            Level = Organization.Level,
+                            ParentId = Organization.ParentId,
+                            Path = Organization.Path,
+                            Phone = Organization.Phone,
+                            RowId = Organization.RowId,
+                            StatusId = Organization.StatusId,
+                            IsDisplay = true
+                        };
+                        OrganizationDAOs.Add(OrganizationDAO);
+                    }
+                    else
+                    {
+                        OrganizationDAO.Id = Organization.Id;
+                        OrganizationDAO.Code = Organization.Code;
+                        OrganizationDAO.Name = Organization.Name;
+                        OrganizationDAO.Address = Organization.Address;
+                        OrganizationDAO.CreatedAt = Organization.CreatedAt;
+                        OrganizationDAO.UpdatedAt = Organization.UpdatedAt;
+                        OrganizationDAO.DeletedAt = Organization.DeletedAt;
+                        OrganizationDAO.Email = Organization.Email;
+                        OrganizationDAO.Level = Organization.Level;
+                        OrganizationDAO.ParentId = Organization.ParentId;
+                        OrganizationDAO.Path = Organization.Path;
+                        OrganizationDAO.Phone = Organization.Phone;
+                        OrganizationDAO.RowId = Organization.RowId;
+                        OrganizationDAO.StatusId = Organization.StatusId;
+                    }
+                }
                 await context.Organization.BulkMergeAsync(OrganizationDAOs);
 
                 foreach (var AppUserDAO in AppUserDAOs)
