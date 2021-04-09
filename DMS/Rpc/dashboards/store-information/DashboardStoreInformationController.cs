@@ -174,14 +174,17 @@ namespace DMS.Rpc.dashboards.store_information
             ITempTableQuery<TempTable<long>> tempTableQuery = await DataContext
                         .BulkInsertValuesIntoTempTableAsync<long>(StoreIds);
 
-            var query = from s in DataContext.Store
-                        join bs in DataContext.BrandInStore on s.Id equals bs.StoreId
+            var query = from bs in DataContext.BrandInStore
+                        join b in DataContext.Brand on bs.BrandId equals b.Id
+                        join s in DataContext.Store on bs.StoreId equals s.Id
                         join tt in tempTableQuery.Query on s.Id equals tt.Column1
                         where OrganizationIds.Contains(s.OrganizationId) &&
                         (ProvinceId.HasValue == false || (s.ProvinceId.HasValue && s.ProvinceId == ProvinceId.Value)) &&
                         (DistrictId.HasValue == false || (s.DistrictId.HasValue && s.DistrictId == DistrictId.Value)) &&
                         s.StatusId == StatusEnum.ACTIVE.Id &&
+                        b.StatusId == StatusEnum.ACTIVE.Id &&
                         s.DeletedAt == null &&
+                        b.DeletedAt == null &&
                         bs.DeletedAt == null
                         select s;
             var SurveyedStoreCounter = query.Select(x => x.Id).Distinct().Count();
@@ -234,15 +237,18 @@ namespace DMS.Rpc.dashboards.store_information
 
             ITempTableQuery<TempTable<long>> tempTableQuery = await DataContext
                         .BulkInsertValuesIntoTempTableAsync<long>(StoreIds);
-            var query = from s in DataContext.Store
-                        join bs in DataContext.BrandInStore on s.Id equals bs.StoreId
+            var query = from bs in DataContext.BrandInStore
+                        join b in DataContext.Brand on bs.BrandId equals b.Id
+                        join s in DataContext.Store on bs.StoreId equals s.Id
                         join tt in tempTableQuery.Query on s.Id equals tt.Column1
                         where OrganizationIds.Contains(s.OrganizationId) &&
                         (ProvinceId.HasValue == false || (s.ProvinceId.HasValue && s.ProvinceId == ProvinceId.Value)) &&
                         (DistrictId.HasValue == false || (s.DistrictId.HasValue && s.DistrictId == DistrictId.Value)) &&
                         (BrandId.HasValue == false || bs.BrandId == BrandId) &&
                         s.StatusId == StatusEnum.ACTIVE.Id &&
+                        b.StatusId == StatusEnum.ACTIVE.Id &&
                         s.DeletedAt == null &&
+                        b.DeletedAt == null &&
                         bs.DeletedAt == null
                         select s;
             var SurveyedStoreCounter = query.Select(x => x.Id).Distinct().Count();
@@ -256,7 +262,9 @@ namespace DMS.Rpc.dashboards.store_information
                              (DistrictId.HasValue == false || (s.DistrictId.HasValue && s.DistrictId == DistrictId.Value)) &&
                              (BrandId.HasValue == false || bs.BrandId == BrandId) &&
                              s.StatusId == StatusEnum.ACTIVE.Id &&
+                             b.StatusId == StatusEnum.ACTIVE.Id &&
                              s.DeletedAt == null &&
+                             b.DeletedAt == null &&
                              bs.DeletedAt == null
                              group bs by new { b.Id, b.Name } into x
                              select new DashboardStoreInformation_BrandStatisticsDTO
@@ -297,15 +305,18 @@ namespace DMS.Rpc.dashboards.store_information
 
             ITempTableQuery<TempTable<long>> tempTableQuery = await DataContext
                         .BulkInsertValuesIntoTempTableAsync<long>(StoreIds);
-            var query = from s in DataContext.Store
-                        join bs in DataContext.BrandInStore on s.Id equals bs.StoreId
+            var query = from bs in DataContext.BrandInStore
+                        join b in DataContext.Brand on bs.BrandId equals b.Id
+                        join s in DataContext.Store on bs.StoreId equals s.Id
                         join tt in tempTableQuery.Query on s.Id equals tt.Column1
                         where OrganizationIds.Contains(s.OrganizationId) &&
                         (ProvinceId.HasValue == false || (s.ProvinceId.HasValue && s.ProvinceId == ProvinceId.Value)) &&
                         (DistrictId.HasValue == false || (s.DistrictId.HasValue && s.DistrictId == DistrictId.Value)) &&
                         (BrandId.HasValue == false || bs.BrandId == BrandId) &&
                         s.StatusId == StatusEnum.ACTIVE.Id &&
+                        b.StatusId == StatusEnum.ACTIVE.Id &&
                         s.DeletedAt == null &&
+                        b.DeletedAt == null &&
                         bs.DeletedAt == null
                         select s;
             var SurveyedStoreCounter = query.Select(x => x.Id).Distinct().Count();
@@ -319,7 +330,9 @@ namespace DMS.Rpc.dashboards.store_information
                              (DistrictId.HasValue == false || (s.DistrictId.HasValue && s.DistrictId == DistrictId.Value)) &&
                              (BrandId.HasValue == false || bs.BrandId == BrandId) &&
                              s.StatusId == StatusEnum.ACTIVE.Id &&
+                             b.StatusId == StatusEnum.ACTIVE.Id &&
                              s.DeletedAt == null &&
+                             b.DeletedAt == null &&
                              bs.DeletedAt == null
                              group bs by new { b.Id, b.Name } into x
                              select new DashboardStoreInformation_BrandStatisticsDTO
@@ -392,7 +405,9 @@ namespace DMS.Rpc.dashboards.store_information
                                     (DistrictId.HasValue == false || (s.DistrictId.HasValue && s.DistrictId == DistrictId.Value)) &&
                                     (BrandId.HasValue == false || (bs.BrandId == BrandId.Value))
                                     && s.StatusId == StatusEnum.ACTIVE.Id
+                                    && b.StatusId == StatusEnum.ACTIVE.Id
                                     && s.DeletedAt == null &&
+                                    b.DeletedAt == null &&
                                     bs.DeletedAt == null &&
                                     bs.Top == 1
                                     select new BrandInStoreDAO
@@ -465,9 +480,11 @@ namespace DMS.Rpc.dashboards.store_information
                         (ProvinceId.HasValue == false || (s.ProvinceId.HasValue && s.ProvinceId == ProvinceId.Value)) &&
                         (DistrictId.HasValue == false || (s.DistrictId.HasValue && s.DistrictId == DistrictId.Value)) &&
                         (BrandId.HasValue == false || (bs.BrandId == BrandId.Value))
-                        && s.StatusId == StatusEnum.ACTIVE.Id
+                        && s.StatusId == StatusEnum.ACTIVE.Id 
+                        && b.StatusId == StatusEnum.ACTIVE.Id 
                         && s.DeletedAt == null &&
-                        bs.DeletedAt == null
+                        bs.DeletedAt == null &&
+                        b.DeletedAt == null
                         group bs by new { b.Id, b.Name } into x
                         select new DashboardStoreInformation_ProductGroupingStatisticsDTO
                         {
@@ -485,8 +502,10 @@ namespace DMS.Rpc.dashboards.store_information
                          (DistrictId.HasValue == false || (s.DistrictId.HasValue && s.DistrictId == DistrictId.Value)) &&
                          (BrandId.HasValue == false || (bs.BrandId == BrandId.Value))
                          && s.StatusId == StatusEnum.ACTIVE.Id
+                         && b.StatusId == StatusEnum.ACTIVE.Id
                          && s.DeletedAt == null &&
-                         bs.DeletedAt == null
+                         bs.DeletedAt == null &&
+                         b.DeletedAt == null
                          select bs.Id;
 
             var BrandInStoreIds = await query2.Distinct().ToListAsync();
@@ -494,7 +513,14 @@ namespace DMS.Rpc.dashboards.store_information
                         .BulkInsertValuesIntoTempTableAsync<long>(BrandInStoreIds);
             var query3 = from bsg in DataContext.BrandInStoreProductGroupingMapping
                          join bs in DataContext.BrandInStore on bsg.BrandInStoreId equals bs.Id
+                         join b in DataContext.Brand on bs.BrandId equals b.Id
+                         join s in DataContext.Store on bs.StoreId equals s.Id
                          join tt in tempTableQuery2.Query on bsg.BrandInStoreId equals tt.Column1
+                         where s.StatusId == StatusEnum.ACTIVE.Id &&
+                         b.StatusId == StatusEnum.ACTIVE.Id &&
+                         s.DeletedAt == null &&
+                         bs.DeletedAt == null &&
+                         b.DeletedAt == null
                          select new BrandInStoreProductGroupingMapping
                          {
                              BrandInStoreId = bsg.BrandInStoreId,
@@ -565,7 +591,9 @@ namespace DMS.Rpc.dashboards.store_information
                          (BrandId.HasValue == false || (bs.BrandId == BrandId.Value)) &&
                          bs.Top == Top &&
                          s.StatusId == StatusEnum.ACTIVE.Id &&
+                         b.StatusId == StatusEnum.ACTIVE.Id &&
                          s.DeletedAt == null &&
+                         b.DeletedAt == null &&
                          bs.DeletedAt == null
                          select new BrandInStore
                          {
@@ -624,6 +652,7 @@ namespace DMS.Rpc.dashboards.store_information
             ITempTableQuery<TempTable<long>> tempTableQuery = await DataContext
                         .BulkInsertValuesIntoTempTableAsync<long>(StoreIds);
             var query = from bs in DataContext.BrandInStore
+                        join b in DataContext.Brand on bs.BrandId equals b.Id
                         join s in DataContext.Store on bs.StoreId equals s.Id
                         join tt in tempTableQuery.Query on s.Id equals tt.Column1
                         where OrganizationIds.Contains(s.OrganizationId) &&
@@ -631,7 +660,9 @@ namespace DMS.Rpc.dashboards.store_information
                         (DistrictId.HasValue == false || (s.DistrictId.HasValue && s.DistrictId == DistrictId.Value)) &&
                         bs.BrandId == BrandId &&
                         s.StatusId == StatusEnum.ACTIVE.Id &&
+                        b.StatusId == StatusEnum.ACTIVE.Id &&
                         s.DeletedAt == null &&
+                        b.DeletedAt == null &&
                         bs.DeletedAt == null
                         select new DashboardStoreInformation_StoreDTO
                         {
@@ -723,23 +754,29 @@ namespace DMS.Rpc.dashboards.store_information
             ITempTableQuery<TempTable<long>> tempTableQuery = await DataContext
                         .BulkInsertValuesIntoTempTableAsync<long>(StoreIds);
             var query = from bs in DataContext.BrandInStore
+                        join b in DataContext.Brand on bs.BrandId equals b.Id
+                        join s in DataContext.Store on bs.StoreId equals s.Id
                         join tt in tempTableQuery.Query on bs.StoreId equals tt.Column1
                         where bs.BrandId == BrandId &&
-                        bs.DeletedAt == null
+                        s.StatusId == StatusEnum.ACTIVE.Id &&
+                        b.StatusId == StatusEnum.ACTIVE.Id &&
+                        bs.DeletedAt == null &&
+                        s.DeletedAt == null &&
+                        b.DeletedAt == null
                         select bs.StoreId;
             StoreIds = await query.Distinct().ToListAsync();
-            tempTableQuery = await DataContext
-                        .BulkInsertValuesIntoTempTableAsync<long>(StoreIds);
 
             var query2 = from bs in DataContext.BrandInStore
+                         join b in DataContext.Brand on bs.BrandId equals b.Id
                         join s in DataContext.Store on bs.StoreId equals s.Id
-                        join tt in tempTableQuery.Query on s.Id equals tt.Column1
                         where OrganizationIds.Contains(s.OrganizationId) &&
                         (ProvinceId.HasValue == false || (s.ProvinceId.HasValue && s.ProvinceId == ProvinceId.Value)) &&
                         (DistrictId.HasValue == false || (s.DistrictId.HasValue && s.DistrictId == DistrictId.Value)) &&
                         s.StatusId == StatusEnum.ACTIVE.Id &&
+                        b.StatusId == StatusEnum.ACTIVE.Id &&
                         s.DeletedAt == null &&
-                        bs.DeletedAt == null
+                        bs.DeletedAt == null &&
+                        b.DeletedAt == null
                         select new DashboardStoreInformation_StoreDTO
                         {
                             Id = s.Id,
@@ -750,7 +787,7 @@ namespace DMS.Rpc.dashboards.store_information
                             Address = s.Address,
                             OrganizationId = s.OrganizationId,
                         };
-            var Stores = await query2.Distinct().ToListAsync();
+            var Stores = await query2.Where(x => !StoreIds.Contains(x.Id)).Distinct().ToListAsync();
             OrganizationIds = Stores.Select(x => x.OrganizationId).Distinct().ToList();
             var Organizations = await DataContext.Organization
                 .Where(x => OrganizationIds.Contains(x.Id) &&
