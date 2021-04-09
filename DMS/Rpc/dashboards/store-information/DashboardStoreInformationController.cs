@@ -396,7 +396,8 @@ namespace DMS.Rpc.dashboards.store_information
                         };
             List<DashboardStoreInformation_StoreDTO> DashboardMonitor_StoreDTOs = await query.Distinct().ToListAsync();
             StoreIds = DashboardMonitor_StoreDTOs.Select(x => x.Id).ToList();
-
+            tempTableQuery = await DataContext
+                        .BulkInsertValuesIntoTempTableAsync<long>(StoreIds);
             var queryBrandInStore = from bs in DataContext.BrandInStore
                                     join b in DataContext.Brand on bs.BrandId equals b.Id
                                     join s in DataContext.Store on bs.StoreId equals s.Id
