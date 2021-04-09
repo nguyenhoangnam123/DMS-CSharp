@@ -182,7 +182,6 @@ namespace DMS.Rpc.dashboards.store_information
                         where OrganizationIds.Contains(s.OrganizationId) &&
                         (ProvinceId.HasValue == false || (s.ProvinceId.HasValue && s.ProvinceId == ProvinceId.Value)) &&
                         (DistrictId.HasValue == false || (s.DistrictId.HasValue && s.DistrictId == DistrictId.Value)) &&
-                        (BrandId.HasValue == false || bs.BrandId == BrandId) &&
                         s.StatusId == StatusEnum.ACTIVE.Id &&
                         b.StatusId == StatusEnum.ACTIVE.Id &&
                         s.DeletedAt == null &&
