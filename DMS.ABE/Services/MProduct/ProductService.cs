@@ -94,7 +94,7 @@ namespace DMS.ABE.Services.MProduct
                 {
                     ProductId = new IdFilter { In = ProductIds },
                     StatusId = null,
-                    Selects = ItemSelect.Id | ItemSelect.ProductId | ItemSelect.SalePrice | ItemSelect.Image,
+                    Selects = ItemSelect.ALL,
                     OrderBy = ItemOrder.Id,
                     OrderType = OrderType.ASC,
                     Skip = 0,
