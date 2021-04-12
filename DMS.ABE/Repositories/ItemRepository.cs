@@ -556,6 +556,24 @@ namespace DMS.ABE.Repositories
                     Item.ItemImageMappings.Add(ItemImageMapping);
                 }
             }
+            if(Item.Product != null)
+            {
+                var VariationGroupings = await DataContext.VariationGrouping
+                    .Where(x => x.ProductId == Item.ProductId && x.DeletedAt == null)
+                    .Select(x => new VariationGrouping { 
+                        Id = x.Id,
+                        Name = x.Name,
+                        ProductId = x.ProductId,
+                        Variations = x.Variations.Select(v => new Variation
+                        {
+                            Id = v.Id,
+                            Code = v.Code,
+                            Name = v.Name,
+                            VariationGroupingId = v.VariationGroupingId,
+                        }).ToList(),
+                    }).ToListAsync();
+                Item.Product.VariationGroupings = VariationGroupings;
+            }
             return Item;
         }
     }

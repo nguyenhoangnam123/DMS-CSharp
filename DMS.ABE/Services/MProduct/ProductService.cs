@@ -93,7 +93,7 @@ namespace DMS.ABE.Services.MProduct
                 ItemFilter ItemFilter = new ItemFilter
                 {
                     ProductId = new IdFilter { In = ProductIds },
-                    StatusId = null,
+                    StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id },
                     Selects = ItemSelect.ALL,
                     OrderBy = ItemOrder.Id,
                     OrderType = OrderType.ASC,

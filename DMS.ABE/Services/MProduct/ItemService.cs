@@ -119,7 +119,6 @@ namespace DMS.ABE.Services.MProduct
 
         public async Task<Item> Get(long Id)
         {
-            var StoreUserId = CurrentContext.StoreUserId;
             Store Store = await GetStore(); // lay ra cua hang
             if (Store == null)
                 return null;
