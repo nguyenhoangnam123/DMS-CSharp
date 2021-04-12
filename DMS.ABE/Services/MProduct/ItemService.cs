@@ -136,6 +136,7 @@ namespace DMS.ABE.Services.MProduct
             List<Item> Items = await CheckSalesStock(new List<Item> { Item }, Store.OrganizationId); // check ton kho
             Items = await ApplyPrice(Items, Store.Id); // ap gia theo chinh sach gia
             Item = Items.FirstOrDefault();
+            Item.Product.VariationGroupings = Item.Product.VariationGroupings.Where(x => x.Variations.Count > 0).ToList(); // remove VariationGrouping doest not have Variations
             return Item;
         }
 
@@ -173,6 +174,7 @@ namespace DMS.ABE.Services.MProduct
                 return null;
             } // ko tìm thấy Item nào
             Result.Product = Product;
+            Result.Product.VariationGroupings = Result.Product.VariationGroupings.Where(x => x.Variations.Count > 0).ToList(); // remove VariationGrouping doest not have Variations
             return Result;
         } // lấy ra product và một item theo ItemFilter
 
