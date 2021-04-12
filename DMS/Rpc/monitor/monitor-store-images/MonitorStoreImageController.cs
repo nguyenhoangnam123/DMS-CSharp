@@ -378,8 +378,11 @@ namespace DMS.Rpc.monitor.monitor_store_images
                 {
                     foreach (var StoreChecking in SaleEmployee.StoreCheckings)
                     {
-                        StoreChecking.STT = stt;
-                        stt++;
+                        if (StoreChecking != null)
+                        {
+                            StoreChecking.STT = stt;
+                            stt++;
+                        }
                     }
                 }
             }
