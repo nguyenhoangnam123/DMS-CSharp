@@ -128,6 +128,17 @@ namespace DMS.Rpc
         [HttpGet, Route("rpc/dms/setup/es-publish")]
         public async Task<ActionResult> ESPublish()
         {
+            await ESPublishDirectSalesOrder();
+            await ESPublishStore();
+            await ESPublishStoreGrouping();
+            await ESPublishStoreType();
+            await ESPublishStoreStatus();
+            
+            return Ok();
+        }
+        [HttpGet, Route("rpc/dms/setup/es-publish-direct-sales-order")]
+        public async Task<ActionResult> ESPublishDirectSalesOrder()
+        {
             #region DirectSalesOrder
             List<DirectSalesOrder> DirectSalesOrders = await UOW.DirectSalesOrderRepository.List(new DirectSalesOrderFilter
             {
@@ -148,6 +159,12 @@ namespace DMS.Rpc
             RabbitManager.PublishList(DirectSalesOrderEventMessages, RoutingKeyEnum.DirectSalesOrderSync);
             #endregion
 
+            return Ok();
+        }
+
+        [HttpGet, Route("rpc/dms/setup/es-publish-store")]
+        public async Task<ActionResult> ESPublishStore()
+        {
             #region Store
             List<Store> Stores = await UOW.StoreRepository.List(new StoreFilter
             {
@@ -168,6 +185,12 @@ namespace DMS.Rpc
             RabbitManager.PublishList(StoreEventMessages, RoutingKeyEnum.StoreSync);
             #endregion
 
+            return Ok();
+        }
+
+        [HttpGet, Route("rpc/dms/setup/es-publish-store-grouping")]
+        public async Task<ActionResult> ESPublishStoreGrouping()
+        {
             #region StoreGrouping
             List<StoreGrouping> StoreGroupings = await UOW.StoreGroupingRepository.List(new StoreGroupingFilter
             {
@@ -188,6 +211,12 @@ namespace DMS.Rpc
             RabbitManager.PublishList(StoreGroupingEventMessages, RoutingKeyEnum.StoreGroupingSync);
             #endregion
 
+            return Ok();
+        }
+
+        [HttpGet, Route("rpc/dms/setup/es-publish-store-type")]
+        public async Task<ActionResult> ESPublishStoreType()
+        {
             #region StoreType
             List<StoreType> StoreTypes = await UOW.StoreTypeRepository.List(new StoreTypeFilter
             {
@@ -208,6 +237,12 @@ namespace DMS.Rpc
             RabbitManager.PublishList(StoreTypeEventMessages, RoutingKeyEnum.StoreTypeSync);
             #endregion
 
+            return Ok();
+        }
+
+        [HttpGet, Route("rpc/dms/setup/es-publish-store-status")]
+        public async Task<ActionResult> ESPublishStoreStatus()
+        {
             #region StoreStatus
             List<StoreStatus> StoreStatuss = await UOW.StoreStatusRepository.List(new StoreStatusFilter
             {
@@ -227,6 +262,7 @@ namespace DMS.Rpc
             }
             RabbitManager.PublishList(StoreStatusEventMessages, RoutingKeyEnum.StoreStatusSync);
             #endregion
+
             return Ok();
         }
 
