@@ -86,7 +86,7 @@ namespace DMS.Rpc.dashboards.mobile
                         select i;
 
             return await query.CountAsync();
-        }
+        } // số đơn gián tiếp theo kỳ
 
         [Route(DashboardMobileRoute.CountStoreChecking), HttpPost]
         public async Task<long> CountStoreChecking()
@@ -98,7 +98,7 @@ namespace DMS.Rpc.dashboards.mobile
 
             var count = await query.CountAsync();
             return count;
-        }
+        } // số lượt viếng thăm
 
         [Route(DashboardMobileRoute.Revenue), HttpPost]
         public async Task<decimal> Revenue()

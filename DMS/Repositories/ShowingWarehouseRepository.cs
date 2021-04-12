@@ -500,6 +500,12 @@ namespace DMS.Repositories
                         StatusId = x.ShowingItem.StatusId,
                         Used = x.ShowingItem.Used,
                         RowId = x.ShowingItem.RowId,
+                        UnitOfMeasure = x.ShowingItem.UnitOfMeasure == null ?  null : new UnitOfMeasure
+                        {
+                            Id = x.ShowingItem.UnitOfMeasure.Id,
+                            Code = x.ShowingItem.UnitOfMeasure.Code,
+                            Name = x.ShowingItem.UnitOfMeasure.Name,
+                        }
                     },
                 }).ToListAsync();
 

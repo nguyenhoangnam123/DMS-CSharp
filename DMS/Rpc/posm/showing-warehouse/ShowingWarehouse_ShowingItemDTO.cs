@@ -27,7 +27,9 @@ namespace DMS.Rpc.posm.showing_warehouse
         public long StatusId { get; set; }
         
         public bool Used { get; set; }
-        
+
+        public ShowingWarehouse_UnitOfMeasureDTO UnitOfMeasure { get; set; }
+
         public Guid RowId { get; set; }
         
 
@@ -44,7 +46,9 @@ namespace DMS.Rpc.posm.showing_warehouse
             this.ShowingCategoryId = ShowingItem.ShowingCategoryId;
             
             this.UnitOfMeasureId = ShowingItem.UnitOfMeasureId;
-            
+
+            this.UnitOfMeasure = ShowingItem.UnitOfMeasure == null ? null : new ShowingWarehouse_UnitOfMeasureDTO(ShowingItem.UnitOfMeasure);
+
             this.SalePrice = ShowingItem.SalePrice;
             
             this.ERPCode = ShowingItem.ERPCode;
