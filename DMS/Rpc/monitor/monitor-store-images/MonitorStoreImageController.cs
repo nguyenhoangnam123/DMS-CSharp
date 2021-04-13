@@ -378,11 +378,8 @@ namespace DMS.Rpc.monitor.monitor_store_images
                 {
                     foreach (var StoreChecking in SaleEmployee.StoreCheckings)
                     {
-                        if (StoreChecking != null)
-                        {
-                            StoreChecking.STT = stt;
-                            stt++;
-                        }
+                        StoreChecking.STT = stt;
+                        stt++;
                     }
                 }
             }
@@ -573,7 +570,7 @@ namespace DMS.Rpc.monitor.monitor_store_images
                     Dates.AddRange(Date2s);
                     Dates = Dates.Distinct().ToList();
 
-                    Parallel.ForEach(Dates, Date =>
+                    foreach (var Date in Dates)
                     {
                         var Checkings = StoreCheckingDAOs
                             .Where(x => x.SaleEmployeeId == SalesEmployee.SaleEmployeeId &&
@@ -605,7 +602,7 @@ namespace DMS.Rpc.monitor.monitor_store_images
                             MonitorStoreImage_DetailDTO.ImageCounter += Images.Count();
                         }
                         SalesEmployee.StoreCheckings.Add(MonitorStoreImage_DetailDTO);
-                    });
+                    }
                 }
             }
 
