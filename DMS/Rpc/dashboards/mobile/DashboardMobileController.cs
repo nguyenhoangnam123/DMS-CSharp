@@ -73,7 +73,7 @@ namespace DMS.Rpc.dashboards.mobile
             (Start, End) = ConvertTime(filter.Time); // lấy ra startDate và EndDate theo filter time
 
             var query = from sc in DataContext.StoreChecking
-                        where sc.SaleEmployeeId == CurrentContext.UserId 
+                        where sc.SaleEmployeeId == CurrentContext.UserId
                         && (sc.CheckOutAt.HasValue && sc.CheckOutAt.Value >= Start && sc.CheckOutAt.Value <= End)
                         select sc;
 
@@ -92,7 +92,8 @@ namespace DMS.Rpc.dashboards.mobile
             var query = from sc in DataContext.StoreChecking
                         where sc.SaleEmployeeId == CurrentContext.UserId
                         && (sc.CheckOutAt.HasValue && sc.CheckOutAt.Value >= Start && sc.CheckOutAt.Value <= End)
-                        select new { 
+                        select new
+                        {
                             Id = sc.StoreId
                         };
 
@@ -236,6 +237,413 @@ namespace DMS.Rpc.dashboards.mobile
 
             return Result;
         } // top 5 doanh thu đơn gián tiếp theo item
+
+        [Route(DashboardMobileRoute.IndirectRevenueGrowth), HttpPost]
+        public async Task<DashboardMobile_RevenueGrowthDTO> IndirectRevenueGrowth([FromBody] DashboardMobile_RevenueGrowthFilterDTO filter)
+        {
+            DateTime Now = StaticParams.DateTimeNow;
+            DateTime Start = LocalStartDay(CurrentContext);
+            DateTime End = LocalEndDay(CurrentContext);
+            (Start, End) = ConvertTime(filter.Time);
+
+            if (filter.Time.Equal.HasValue == false
+                || filter.Time.Equal.Value == THIS_MONTH)
+            {
+                var query = from t in DataContext.IndirectSalesOrderTransaction
+                            join i in DataContext.IndirectSalesOrder on t.IndirectSalesOrderId equals i.Id
+                            where i.RequestStateId == RequestStateEnum.APPROVED.Id
+                            && t.OrderDate >= Start
+                            && t.OrderDate <= End
+                            select new IndirectSalesOrderTransactionDAO
+                            {
+                                OrderDate = t.OrderDate,
+                                Revenue = t.Revenue
+                            };
+
+                var IndirectSalesOrderTransactionDAOs = await query.ToListAsync();
+                DashboardMobile_RevenueGrowthDTO DashboardMobile_RevenueGrowthDTO = new DashboardMobile_RevenueGrowthDTO();
+                DashboardMobile_RevenueGrowthDTO.IndirectRevenueGrowthByMonths = new List<DashboardMobile_RevenueGrowthByMonthDTO>();
+                var number_of_day_in_this_month = DateTime.DaysInMonth(Start.AddHours(CurrentContext.TimeZone).Year, Start.AddHours(CurrentContext.TimeZone).Month);
+                for (int i = 1; i < number_of_day_in_this_month + 1; i++)
+                {
+                    DashboardMobile_RevenueGrowthByMonthDTO RevenueGrowthByMonth = new DashboardMobile_RevenueGrowthByMonthDTO
+                    {
+                        Day = i,
+                        Revenue = 0
+                    };
+                    DashboardMobile_RevenueGrowthDTO.IndirectRevenueGrowthByMonths.Add(RevenueGrowthByMonth);
+                }
+
+                foreach (var RevenueGrowthByMonth in DashboardMobile_RevenueGrowthDTO.IndirectRevenueGrowthByMonths)
+                {
+                    DateTime LocalStart = new DateTime(Now.AddHours(CurrentContext.TimeZone).Year, Now.AddHours(CurrentContext.TimeZone).Month, (int)RevenueGrowthByMonth.Day).AddHours(0 - CurrentContext.TimeZone);
+                    DateTime LocalEnd = LocalStart.AddHours(CurrentContext.TimeZone).AddDays(1).AddSeconds(-1).AddHours(0 - CurrentContext.TimeZone);
+                    RevenueGrowthByMonth.Revenue = IndirectSalesOrderTransactionDAOs.Where(x => LocalStart <= x.OrderDate && x.OrderDate <= LocalEnd)
+                        .Where(x => x.Revenue.HasValue)
+                        .Select(x => x.Revenue.Value)
+                        .DefaultIfEmpty(0)
+                        .Sum();
+                }
+
+                return DashboardMobile_RevenueGrowthDTO;
+            }
+            else if (filter.Time.Equal.Value == LAST_MONTH)
+            {
+                var query = from t in DataContext.IndirectSalesOrderTransaction
+                            join i in DataContext.IndirectSalesOrder on t.IndirectSalesOrderId equals i.Id
+                            where i.RequestStateId == RequestStateEnum.APPROVED.Id
+                            && t.OrderDate >= Start
+                            && t.OrderDate <= End
+                            select new IndirectSalesOrderTransactionDAO
+                            {
+                                OrderDate = t.OrderDate,
+                                Revenue = t.Revenue
+                            };
+
+                var IndirectSalesOrderTransactionDAOs = await query.ToListAsync();
+                DashboardMobile_RevenueGrowthDTO DashboardMobile_RevenueGrowthDTO = new DashboardMobile_RevenueGrowthDTO();
+                DashboardMobile_RevenueGrowthDTO.IndirectRevenueGrowthByMonths = new List<DashboardMobile_RevenueGrowthByMonthDTO>();
+                var number_of_day_in_this_month = DateTime.DaysInMonth(Start.AddHours(CurrentContext.TimeZone).Year, Start.AddHours(CurrentContext.TimeZone).Month);
+                for (int i = 1; i < number_of_day_in_this_month + 1; i++)
+                {
+                    DashboardMobile_RevenueGrowthByMonthDTO RevenueGrowthByMonth = new DashboardMobile_RevenueGrowthByMonthDTO
+                    {
+                        Day = i,
+                        Revenue = 0
+                    };
+                    DashboardMobile_RevenueGrowthDTO.IndirectRevenueGrowthByMonths.Add(RevenueGrowthByMonth);
+                }
+
+                foreach (var RevenueGrowthByMonth in DashboardMobile_RevenueGrowthDTO.IndirectRevenueGrowthByMonths)
+                {
+                    DateTime LocalStart = new DateTime(Now.AddHours(CurrentContext.TimeZone).Year, Now.AddHours(CurrentContext.TimeZone).AddMonths(-1).Month, (int)RevenueGrowthByMonth.Day).AddHours(0 - CurrentContext.TimeZone);
+                    DateTime LocalEnd = LocalStart.AddHours(CurrentContext.TimeZone).AddDays(1).AddSeconds(-1).AddHours(0 - CurrentContext.TimeZone);
+                    RevenueGrowthByMonth.Revenue = IndirectSalesOrderTransactionDAOs.Where(x => LocalStart <= x.OrderDate && x.OrderDate <= LocalEnd)
+                        .Where(x => x.Revenue.HasValue)
+                        .Select(x => x.Revenue.Value)
+                        .DefaultIfEmpty(0)
+                        .Sum();
+                }
+
+                return DashboardMobile_RevenueGrowthDTO;
+            }
+            else if (filter.Time.Equal.Value == THIS_QUARTER)
+            {
+                var this_quarter = Convert.ToInt32(Math.Ceiling(Now.AddHours(CurrentContext.TimeZone).Month / 3m));
+                var query = from t in DataContext.IndirectSalesOrderTransaction
+                            join i in DataContext.IndirectSalesOrder on t.IndirectSalesOrderId equals i.Id
+                            where i.RequestStateId == RequestStateEnum.APPROVED.Id
+                            && t.OrderDate >= Start
+                            && t.OrderDate <= End
+                            select new IndirectSalesOrderTransactionDAO
+                            {
+                                OrderDate = t.OrderDate,
+                                Revenue = t.Revenue
+                            };
+
+                var IndirectSalesOrderTransactionDAOs = await query.ToListAsync();
+                DashboardMobile_RevenueGrowthDTO DashboardMobile_RevenueGrowthDTO = new DashboardMobile_RevenueGrowthDTO();
+                DashboardMobile_RevenueGrowthDTO.IndirectRevenueGrowthByQuaters = new List<DashboardMobile_RevenueGrowthByQuarterDTO>();
+                int start = 3 * (this_quarter - 1) + 1;
+                int end = start + 3;
+                for (int i = start; i < end; i++)
+                {
+                    DashboardMobile_RevenueGrowthByQuarterDTO RevenueGrowthByQuarter = new DashboardMobile_RevenueGrowthByQuarterDTO
+                    {
+                        Month = i,
+                        Revenue = 0
+                    };
+                    DashboardMobile_RevenueGrowthDTO.IndirectRevenueGrowthByQuaters.Add(RevenueGrowthByQuarter);
+                }
+
+                foreach (var RevenueGrowthByQuarter in DashboardMobile_RevenueGrowthDTO.IndirectRevenueGrowthByQuaters)
+                {
+                    DateTime LocalStart = new DateTime(Now.AddHours(CurrentContext.TimeZone).Year, (int)RevenueGrowthByQuarter.Month, 1).AddHours(0 - CurrentContext.TimeZone);
+                    DateTime LocalEnd = LocalStart.AddHours(CurrentContext.TimeZone).AddMonths(1).AddSeconds(-1).AddHours(0 - CurrentContext.TimeZone);
+                    RevenueGrowthByQuarter.Revenue = IndirectSalesOrderTransactionDAOs.Where(x => LocalStart <= x.OrderDate && x.OrderDate <= LocalEnd)
+                        .Where(x => x.Revenue.HasValue)
+                        .Select(x => x.Revenue.Value)
+                        .DefaultIfEmpty(0)
+                        .Sum();
+                }
+
+                return DashboardMobile_RevenueGrowthDTO;
+            }
+            else if (filter.Time.Equal.Value == LAST_QUATER)
+            {
+                var this_quarter = Convert.ToInt32(Math.Ceiling(Now.AddHours(CurrentContext.TimeZone).Month / 3m));
+                var last_quarter = (this_quarter + 3) % 4;
+                var query = from t in DataContext.IndirectSalesOrderTransaction
+                            join i in DataContext.IndirectSalesOrder on t.IndirectSalesOrderId equals i.Id
+                            where i.RequestStateId == RequestStateEnum.APPROVED.Id
+                            && t.OrderDate >= Start
+                            && t.OrderDate <= End
+                            select new IndirectSalesOrderTransactionDAO
+                            {
+                                OrderDate = t.OrderDate,
+                                Revenue = t.Revenue
+                            };
+
+                var IndirectSalesOrderTransactionDAOs = await query.ToListAsync();
+                DashboardMobile_RevenueGrowthDTO DashboardMobile_RevenueGrowthDTO = new DashboardMobile_RevenueGrowthDTO();
+                DashboardMobile_RevenueGrowthDTO.IndirectRevenueGrowthByQuaters = new List<DashboardMobile_RevenueGrowthByQuarterDTO>();
+                int start = 3 * (last_quarter - 1) + 1;
+                int end = start + 3;
+                for (int i = start; i < end; i++)
+                {
+                    DashboardMobile_RevenueGrowthByQuarterDTO RevenueGrowthByQuarter = new DashboardMobile_RevenueGrowthByQuarterDTO
+                    {
+                        Month = i,
+                        Revenue = 0
+                    };
+                    DashboardMobile_RevenueGrowthDTO.IndirectRevenueGrowthByQuaters.Add(RevenueGrowthByQuarter);
+                }
+
+                foreach (var RevenueGrowthByQuarter in DashboardMobile_RevenueGrowthDTO.IndirectRevenueGrowthByQuaters)
+                {
+                    DateTime LocalStart = new DateTime(Now.AddHours(CurrentContext.TimeZone).Year, (int)RevenueGrowthByQuarter.Month, 1).AddHours(0 - CurrentContext.TimeZone);
+                    DateTime LocalEnd = LocalStart.AddHours(CurrentContext.TimeZone).AddMonths(1).AddSeconds(-1).AddHours(0 - CurrentContext.TimeZone);
+                    RevenueGrowthByQuarter.Revenue = IndirectSalesOrderTransactionDAOs.Where(x => LocalStart <= x.OrderDate && x.OrderDate <= LocalEnd)
+                        .Where(x => x.Revenue.HasValue)
+                        .Select(x => x.Revenue.Value)
+                        .DefaultIfEmpty(0)
+                        .Sum();
+                }
+
+                return DashboardMobile_RevenueGrowthDTO;
+            }
+            else if (filter.Time.Equal.Value == YEAR)
+            {
+                var query = from t in DataContext.IndirectSalesOrderTransaction
+                            join i in DataContext.IndirectSalesOrder on t.IndirectSalesOrderId equals i.Id
+                            where i.RequestStateId == RequestStateEnum.APPROVED.Id
+                            && t.OrderDate >= Start
+                            && t.OrderDate <= End
+                            select new IndirectSalesOrderTransactionDAO
+                            {
+                                OrderDate = t.OrderDate,
+                                Revenue = t.Revenue
+                            };
+
+                var IndirectSalesOrderTransactionDAOs = await query.ToListAsync();
+                DashboardMobile_RevenueGrowthDTO DashboardMobile_RevenueGrowthDTO = new DashboardMobile_RevenueGrowthDTO();
+                DashboardMobile_RevenueGrowthDTO.IndirectRevenueGrowthByYears = new List<DashboardMobile_RevenueGrowthByYearDTO>();
+                for (int i = 1; i <= 12; i++)
+                {
+                    DashboardMobile_RevenueGrowthByYearDTO RevenueGrowthByYear = new DashboardMobile_RevenueGrowthByYearDTO
+                    {
+                        Month = i,
+                        Revenue = 0
+                    };
+                    DashboardMobile_RevenueGrowthDTO.IndirectRevenueGrowthByYears.Add(RevenueGrowthByYear);
+                }
+
+                foreach (var RevenueGrowthByYear in DashboardMobile_RevenueGrowthDTO.IndirectRevenueGrowthByYears)
+                {
+                    DateTime LocalStart = new DateTime(Now.AddHours(CurrentContext.TimeZone).Year, (int)RevenueGrowthByYear.Month, 1).AddHours(0 - CurrentContext.TimeZone);
+                    DateTime LocalEnd = LocalStart.AddHours(CurrentContext.TimeZone).AddMonths(1).AddSeconds(-1).AddHours(0 - CurrentContext.TimeZone);
+                    RevenueGrowthByYear.Revenue = IndirectSalesOrderTransactionDAOs.Where(x => LocalStart <= x.OrderDate && x.OrderDate <= LocalEnd)
+                        .Where(x => x.Revenue.HasValue)
+                        .Select(x => x.Revenue.Value)
+                        .DefaultIfEmpty(0)
+                        .Sum();
+                }
+
+                return DashboardMobile_RevenueGrowthDTO;
+            }
+            return new DashboardMobile_RevenueGrowthDTO();
+        } // tăng trưởng doanh thu gián tiếp
+
+        [Route(DashboardMobileRoute.IndirectQuantityGrowth), HttpPost]
+        public async Task<DashboardMobile_QuantityGrowthDTO> IndirectSalesOrderGrowth([FromBody] DashboardMobile_QuantityGrowthFilterDTO filter)
+        {
+            DateTime Now = StaticParams.DateTimeNow;
+            DateTime Start = LocalStartDay(CurrentContext);
+            DateTime End = LocalEndDay(CurrentContext);
+            (Start, End) = ConvertTime(filter.Time);
+
+            if (filter.Time.Equal.HasValue == false
+                || filter.Time.Equal.Value == THIS_MONTH)
+            {
+                var query = from i in DataContext.IndirectSalesOrder
+                            where i.RequestStateId == RequestStateEnum.APPROVED.Id
+                            && i.OrderDate >= Start
+                            && i.OrderDate <= End
+                            group i by i.OrderDate.Day into x
+                            select new DashboardMobile_QuantityGrowthByMonthDTO
+                            {
+                                Day = x.Key,
+                                IndirectSalesOrderCounter = x.Count()
+                            };
+
+                var DashboardMobile_IndirectSalesOrderGrowthByMonthDTOs = await query.ToListAsync();
+                DashboardMobile_QuantityGrowthDTO DashboardMobile_QuantityGrowthDTO = new DashboardMobile_QuantityGrowthDTO();
+                DashboardMobile_QuantityGrowthDTO.IndirectSalesOrderQuantityGrowthByMonths = new List<DashboardMobile_QuantityGrowthByMonthDTO>();
+                var number_of_day_in_this_month = DateTime.DaysInMonth(Start.AddHours(CurrentContext.TimeZone).Year, Start.AddHours(CurrentContext.TimeZone).Month);
+                for (int i = 1; i < number_of_day_in_this_month + 1; i++)
+                {
+                    DashboardMobile_QuantityGrowthByMonthDTO IndirectSalesOrderQuantityGrowthByMonth = new DashboardMobile_QuantityGrowthByMonthDTO
+                    {
+                        Day = i,
+                        IndirectSalesOrderCounter = 0
+                    };
+                    DashboardMobile_QuantityGrowthDTO.IndirectSalesOrderQuantityGrowthByMonths.Add(IndirectSalesOrderQuantityGrowthByMonth);
+                }
+
+                foreach (var IndirectSalesOrderGrowthByMonth in DashboardMobile_QuantityGrowthDTO.IndirectSalesOrderQuantityGrowthByMonths)
+                {
+                    var data = DashboardMobile_IndirectSalesOrderGrowthByMonthDTOs.Where(x => x.Day == IndirectSalesOrderGrowthByMonth.Day).FirstOrDefault();
+                    if (data != null)
+                        IndirectSalesOrderGrowthByMonth.IndirectSalesOrderCounter = data.IndirectSalesOrderCounter;
+                }
+
+                return DashboardMobile_QuantityGrowthDTO;
+            }
+            else if (filter.Time.Equal.Value == LAST_MONTH)
+            {
+                var query = from i in DataContext.IndirectSalesOrder
+                            where i.RequestStateId == RequestStateEnum.APPROVED.Id
+                            && i.OrderDate >= Start
+                            && i.OrderDate <= End
+                            group i by i.OrderDate.Day into x
+                            select new DashboardMobile_QuantityGrowthByMonthDTO
+                            {
+                                Day = x.Key,
+                                IndirectSalesOrderCounter = x.Count()
+                            };
+
+                var DashboardMobile_IndirectSalesOrderGrowthByMonthDTOs = await query.ToListAsync();
+                DashboardMobile_QuantityGrowthDTO DashboardMobile_QuantityGrowthDTO = new DashboardMobile_QuantityGrowthDTO();
+                DashboardMobile_QuantityGrowthDTO.IndirectSalesOrderQuantityGrowthByMonths = new List<DashboardMobile_QuantityGrowthByMonthDTO>();
+                var number_of_day_in_this_month = DateTime.DaysInMonth(Start.AddHours(CurrentContext.TimeZone).Year, Start.AddHours(CurrentContext.TimeZone).Month);
+                for (int i = 1; i < number_of_day_in_this_month + 1; i++)
+                {
+                    DashboardMobile_QuantityGrowthByMonthDTO IndirectSalesOrderQuantityGrowthByMonth = new DashboardMobile_QuantityGrowthByMonthDTO
+                    {
+                        Day = i,
+                        IndirectSalesOrderCounter = 0
+                    };
+                    DashboardMobile_QuantityGrowthDTO.IndirectSalesOrderQuantityGrowthByMonths.Add(IndirectSalesOrderQuantityGrowthByMonth);
+                }
+
+                foreach (var IndirectSalesOrderGrowthByMonth in DashboardMobile_QuantityGrowthDTO.IndirectSalesOrderQuantityGrowthByMonths)
+                {
+                    var data = DashboardMobile_IndirectSalesOrderGrowthByMonthDTOs.Where(x => x.Day == IndirectSalesOrderGrowthByMonth.Day).FirstOrDefault();
+                    if (data != null)
+                        IndirectSalesOrderGrowthByMonth.IndirectSalesOrderCounter = data.IndirectSalesOrderCounter;
+                }
+
+                return DashboardMobile_QuantityGrowthDTO;
+            }
+            else if (filter.Time.Equal.Value == THIS_QUARTER)
+            {
+                var this_quarter = Convert.ToInt32(Math.Ceiling(Now.AddHours(CurrentContext.TimeZone).Month / 3m));
+
+                var query = from i in DataContext.IndirectSalesOrder
+                            where i.RequestStateId == RequestStateEnum.APPROVED.Id
+                            && i.OrderDate >= Start
+                            && i.OrderDate <= End
+                            group i by i.OrderDate.Month into x
+                            select new DashboardMobile_QuantityGrowthByQuarterDTO
+                            {
+                                Month = x.Key,
+                                IndirectSalesOrderCounter = x.Count()
+                            };
+
+                var DashboardMobile_IndirectSalesOrderGrowthByQuarterDTOs = await query.ToListAsync();
+                DashboardMobile_QuantityGrowthDTO DashboardMobile_QuantityGrowthDTO = new DashboardMobile_QuantityGrowthDTO();
+                DashboardMobile_QuantityGrowthDTO.IndirectSalesOrderQuantityGrowthByQuaters = new List<DashboardMobile_QuantityGrowthByQuarterDTO>();
+                int start = 3 * (this_quarter - 1) + 1;
+                int end = start + 3;
+                for (int i = start; i < end; i++)
+                {
+                    DashboardMobile_QuantityGrowthByQuarterDTO IndirectSalesOrderQuantityGrowthByQuarter = new DashboardMobile_QuantityGrowthByQuarterDTO
+                    {
+                        Month = i,
+                        IndirectSalesOrderCounter = 0
+                    };
+                    DashboardMobile_QuantityGrowthDTO.IndirectSalesOrderQuantityGrowthByQuaters.Add(IndirectSalesOrderQuantityGrowthByQuarter);
+                }
+
+                foreach (var IndirectSalesOrderGrowthByQuater in DashboardMobile_QuantityGrowthDTO.IndirectSalesOrderQuantityGrowthByQuaters)
+                {
+                    var data = DashboardMobile_IndirectSalesOrderGrowthByQuarterDTOs.Where(x => x.Month == IndirectSalesOrderGrowthByQuater.Month).FirstOrDefault();
+                    if (data != null)
+                        IndirectSalesOrderGrowthByQuater.IndirectSalesOrderCounter = data.IndirectSalesOrderCounter;
+                }
+
+                return DashboardMobile_QuantityGrowthDTO;
+            }
+            else if (filter.Time.Equal.Value == LAST_QUATER)
+            {
+                var this_quarter = Convert.ToInt32(Math.Ceiling(Now.AddHours(CurrentContext.TimeZone).Month / 3m));
+                var last_quarter = (this_quarter + 3) % 4;
+                var query = from i in DataContext.IndirectSalesOrder
+                            group i by i.OrderDate.Month into x
+                            select new DashboardMobile_QuantityGrowthByQuarterDTO
+                            {
+                                Month = x.Key,
+                                IndirectSalesOrderCounter = x.Count()
+                            };
+
+                var DashboardMobile_IndirectSalesOrderGrowthByQuarterDTOs = await query.ToListAsync();
+                DashboardMobile_QuantityGrowthDTO DashboardMobile_QuantityGrowthDTO = new DashboardMobile_QuantityGrowthDTO();
+                DashboardMobile_QuantityGrowthDTO.IndirectSalesOrderQuantityGrowthByQuaters = new List<DashboardMobile_QuantityGrowthByQuarterDTO>();
+                int start = 3 * (last_quarter - 1) + 1;
+                int end = start + 3;
+                for (int i = start; i < end; i++)
+                {
+                    DashboardMobile_QuantityGrowthByQuarterDTO IndirectSalesOrderGrowthByQuarter = new DashboardMobile_QuantityGrowthByQuarterDTO
+                    {
+                        Month = i,
+                        IndirectSalesOrderCounter = 0
+                    };
+                    DashboardMobile_QuantityGrowthDTO.IndirectSalesOrderQuantityGrowthByQuaters.Add(IndirectSalesOrderGrowthByQuarter);
+                }
+
+                foreach (var IndirectSalesOrderGrowthByQuater in DashboardMobile_QuantityGrowthDTO.IndirectSalesOrderQuantityGrowthByQuaters)
+                {
+                    var data = DashboardMobile_IndirectSalesOrderGrowthByQuarterDTOs.Where(x => x.Month == IndirectSalesOrderGrowthByQuater.Month).FirstOrDefault();
+                    if (data != null)
+                        IndirectSalesOrderGrowthByQuater.IndirectSalesOrderCounter = data.IndirectSalesOrderCounter;
+                }
+
+                return DashboardMobile_QuantityGrowthDTO;
+            }
+            else if (filter.Time.Equal.Value == YEAR)
+            {
+                var query = from i in DataContext.IndirectSalesOrder
+                            group i by i.OrderDate.Month into x
+                            select new DashboardMobile_QuantityGrowthByYearDTO
+                            {
+                                Month = x.Key,
+                                IndirectSalesOrderCounter = x.Count()
+                            };
+
+                var DashboardMobile_IndirectSalesOrderGrowthByYearDTO = await query.ToListAsync();
+                DashboardMobile_QuantityGrowthDTO DashboardMobile_QuantityGrowthDTO = new DashboardMobile_QuantityGrowthDTO();
+                DashboardMobile_QuantityGrowthDTO.IndirectSalesOrderQuantityGrowthByYears = new List<DashboardMobile_QuantityGrowthByYearDTO>();
+                for (int i = 1; i <= 12; i++)
+                {
+                    DashboardMobile_QuantityGrowthByYearDTO IndirectSalesOrderGrowthByYear = new DashboardMobile_QuantityGrowthByYearDTO
+                    {
+                        Month = i,
+                        IndirectSalesOrderCounter = 0
+                    };
+                    DashboardMobile_QuantityGrowthDTO.IndirectSalesOrderQuantityGrowthByYears.Add(IndirectSalesOrderGrowthByYear);
+                }
+
+                foreach (var IndirectSalesOrderGrowthByYear in DashboardMobile_QuantityGrowthDTO.IndirectSalesOrderQuantityGrowthByYears)
+                {
+                    var data = DashboardMobile_IndirectSalesOrderGrowthByYearDTO.Where(x => x.Month == IndirectSalesOrderGrowthByYear.Month).FirstOrDefault();
+                    if (data != null)
+                        IndirectSalesOrderGrowthByYear.IndirectSalesOrderCounter = data.IndirectSalesOrderCounter;
+                }
+
+                return DashboardMobile_QuantityGrowthDTO;
+            }
+            return new DashboardMobile_QuantityGrowthDTO();
+        } //  tăng trưởng số lượng đơn gián tiếp
         #endregion
 
         #region DirectSalesOrder
