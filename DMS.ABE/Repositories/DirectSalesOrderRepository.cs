@@ -366,6 +366,7 @@ namespace DMS.ABE.Repositories
                 EditedPriceStatusId = filter.Selects.Contains(DirectSalesOrderSelect.EditedPriceStatus) ? q.EditedPriceStatusId : default(long),
                 Note = filter.Selects.Contains(DirectSalesOrderSelect.Note) ? q.Note : default(string),
                 RequestStateId = filter.Selects.Contains(DirectSalesOrderSelect.RequestState) ? q.RequestStateId : default(long),
+                StoreApprovalStateId = filter.Selects.Contains(DirectSalesOrderSelect.StoreApprovalState) ? q.StoreApprovalStateId : default(long),
                 SubTotal = filter.Selects.Contains(DirectSalesOrderSelect.SubTotal) ? q.SubTotal : default(decimal),
                 GeneralDiscountPercentage = filter.Selects.Contains(DirectSalesOrderSelect.GeneralDiscountPercentage) ? q.GeneralDiscountPercentage : default(decimal?),
                 GeneralDiscountAmount = filter.Selects.Contains(DirectSalesOrderSelect.GeneralDiscountAmount) ? q.GeneralDiscountAmount : default(decimal?),
@@ -431,6 +432,12 @@ namespace DMS.ABE.Repositories
                     Id = q.RequestState.Id,
                     Code = q.RequestState.Code,
                     Name = q.RequestState.Name,
+                } : null,
+                StoreApprovalState = filter.Selects.Contains(DirectSalesOrderSelect.StoreApprovalState) && q.StoreApprovalState != null ? new StoreApprovalState
+                {
+                    Id = q.StoreApprovalState.Id,
+                    Code = q.StoreApprovalState.Code,
+                    Name = q.StoreApprovalState.Name,
                 } : null,
                 SaleEmployee = filter.Selects.Contains(DirectSalesOrderSelect.SaleEmployee) && q.SaleEmployee != null ? new AppUser
                 {
