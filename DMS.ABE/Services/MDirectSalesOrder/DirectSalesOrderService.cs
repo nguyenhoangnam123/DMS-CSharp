@@ -55,6 +55,7 @@ namespace DMS.ABE.Services.MDirectSalesOrder
                 DirectSalesOrder.Code = DirectSalesOrder.Id.ToString();
                 DirectSalesOrder.DirectSalesOrderSourceTypeId = DirectSalesOrderSourceTypeEnum.FROM_AMS.Id; // set source Type
                 DirectSalesOrder.OrderDate = StaticParams.DateTimeNow; // khi tao moi don hang trne mobile mac dinh OrderDate = DateTime Now
+                DirectSalesOrder.RequestStateId = RequestStateEnum.APPROVED.Id; // don hang tao tren mobile ko co wf => requestStateId = Approved
                 AppUser SaleEmployee = await UOW.AppUserRepository.Get(DirectSalesOrder.SaleEmployeeId);
                 if(SaleEmployee != null)
                 {
