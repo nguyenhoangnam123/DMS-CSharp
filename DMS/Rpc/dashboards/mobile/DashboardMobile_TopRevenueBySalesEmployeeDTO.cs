@@ -13,7 +13,7 @@ namespace DMS.Rpc.dashboards.mobile
         public decimal Revenue { get; set; }
     }
 
-    public class DashboardMobile_TopRevenueBySalesEmployeeFilterDTO : FilterDTO
+    public class DashboardMobile_FilterDTO : FilterDTO
     {
         public IdFilter Time { get; set; }
     }

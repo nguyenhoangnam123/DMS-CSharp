@@ -12,7 +12,8 @@ namespace DMS.Rpc.dashboards.mobile
         public const string Master = Module + "/dashboards/mobile";
         private const string Default = Rpc + Module + "/dashboards/mobile";
 
-        public const string CountStoreChecking = Default + "/count-store-checking";
+        public const string CountStoreChecking = Default + "/count-store-checking"; // số lượt viếng thăm 
+        public const string CountStore = Default + "/count-store"; // số đại lý viếng thăm
         public const string SalesQuantity = Default + "/sales-quantity";
         public const string KpiGeneral = Default + "/kpi-general";
 

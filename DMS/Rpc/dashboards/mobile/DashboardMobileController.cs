@@ -65,49 +65,88 @@ namespace DMS.Rpc.dashboards.mobile
         }
 
         [Route(DashboardMobileRoute.CountStoreChecking), HttpPost]
-        public async Task<long> CountStoreChecking()
+        public async Task<long> CountStoreChecking(DashboardMobile_FilterDTO filter)
         {
+            DateTime Now = StaticParams.DateTimeNow;
+            DateTime Start = new DateTime(Now.Year, Now.Month, 1).AddHours(0 - CurrentContext.TimeZone);
+            DateTime End = new DateTime(Now.AddHours(CurrentContext.TimeZone).Year, Now.AddHours(CurrentContext.TimeZone).Month, 1).AddHours(0 - CurrentContext.TimeZone);
+            (Start, End) = ConvertTime(filter.Time); // lấy ra startDate và EndDate theo filter time
+
             var query = from sc in DataContext.StoreChecking
-                        where sc.SaleEmployeeId == CurrentContext.UserId &&
-                        sc.CheckOutAt.HasValue
+                        where sc.SaleEmployeeId == CurrentContext.UserId 
+                        && (sc.CheckOutAt.HasValue && sc.CheckOutAt.Value >= Start && sc.CheckOutAt.Value <= End)
                         select sc;
 
             var count = await query.CountAsync();
             return count;
         } // số lượt viếng thăm
 
+        [Route(DashboardMobileRoute.CountStore), HttpPost]
+        public async Task<long> CountStore(DashboardMobile_FilterDTO filter)
+        {
+            DateTime Now = StaticParams.DateTimeNow;
+            DateTime Start = new DateTime(Now.Year, Now.Month, 1).AddHours(0 - CurrentContext.TimeZone);
+            DateTime End = new DateTime(Now.AddHours(CurrentContext.TimeZone).Year, Now.AddHours(CurrentContext.TimeZone).Month, 1).AddHours(0 - CurrentContext.TimeZone);
+            (Start, End) = ConvertTime(filter.Time); // lấy ra startDate và EndDate theo filter time
+
+            var query = from sc in DataContext.StoreChecking
+                        where sc.SaleEmployeeId == CurrentContext.UserId
+                        && (sc.CheckOutAt.HasValue && sc.CheckOutAt.Value >= Start && sc.CheckOutAt.Value <= End)
+                        select new { 
+                            Id = sc.StoreId
+                        };
+
+            var count = await query
+                .Distinct()
+                .CountAsync();
+            return count;
+        } // số lượt viếng thăm
+
         #region IndirectSalesOrder
         [Route(DashboardMobileRoute.CountIndirectSalesOrder), HttpPost]
-        public async Task<long> CountIndirectSalesOrder()
+        public async Task<long> CountIndirectSalesOrder(DashboardMobile_FilterDTO filter)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
 
-            var query = from i in DataContext.IndirectSalesOrder
-                        where i.SaleEmployeeId == CurrentContext.UserId &&
-                        i.RequestStateId != RequestStateEnum.NEW.Id
-                        select i;
+            DateTime Now = StaticParams.DateTimeNow;
+            DateTime Start = new DateTime(Now.Year, Now.Month, 1).AddHours(0 - CurrentContext.TimeZone);
+            DateTime End = new DateTime(Now.AddHours(CurrentContext.TimeZone).Year, Now.AddHours(CurrentContext.TimeZone).Month, 1).AddHours(0 - CurrentContext.TimeZone);
+            (Start, End) = ConvertTime(filter.Time); // lấy ra startDate và EndDate theo filter time
 
+            var query = from ind in DataContext.IndirectSalesOrder
+                        where ind.RequestStateId == RequestStateEnum.APPROVED.Id
+                        where ind.OrderDate >= Start
+                        where ind.OrderDate <= End
+                        select ind; // group transaction theo id don hang
             return await query.CountAsync();
         }
 
         [Route(DashboardMobileRoute.IndirectSalesOrderRevenue), HttpPost]
-        public async Task<decimal> IndirectSalesOrderRevenue()
+        public async Task<decimal> IndirectSalesOrderRevenue(DashboardMobile_FilterDTO filter)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
 
-            var query = from i in DataContext.IndirectSalesOrder
-                        where i.SaleEmployeeId == CurrentContext.UserId &&
-                        i.RequestStateId == RequestStateEnum.APPROVED.Id
-                        select i;
+            DateTime Now = StaticParams.DateTimeNow;
+            DateTime Start = new DateTime(Now.Year, Now.Month, 1).AddHours(0 - CurrentContext.TimeZone);
+            DateTime End = new DateTime(Now.AddHours(CurrentContext.TimeZone).Year, Now.AddHours(CurrentContext.TimeZone).Month, 1).AddHours(0 - CurrentContext.TimeZone);
+            (Start, End) = ConvertTime(filter.Time); // lấy ra startDate và EndDate theo filter time
+
+            var query = from ind in DataContext.IndirectSalesOrder
+                        where ind.RequestStateId == RequestStateEnum.APPROVED.Id
+                        where ind.OrderDate >= Start
+                        where ind.OrderDate <= End
+                        select ind;
 
             var results = await query.ToListAsync();
-            return results.Select(x => x.Total).DefaultIfEmpty(0).Sum();
+            return results.Select(x => x.Total)
+                .DefaultIfEmpty(0)
+                .Sum();
         }
 
         [Route(DashboardMobileRoute.TopIndirectSaleEmployeeRevenue), HttpPost]
-        public async Task<List<DashboardMobile_TopRevenueBySalesEmployeeDTO>> TopIndirectSaleEmployeeRevenue(DashboardMobile_TopRevenueBySalesEmployeeFilterDTO filter)
+        public async Task<List<DashboardMobile_TopRevenueBySalesEmployeeDTO>> TopIndirectSaleEmployeeRevenue(DashboardMobile_FilterDTO filter)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
@@ -201,36 +240,49 @@ namespace DMS.Rpc.dashboards.mobile
 
         #region DirectSalesOrder
         [Route(DashboardMobileRoute.CountDirectSalesOrder), HttpPost]
-        public async Task<long> DirectSalesOrder()
+        public async Task<long> DirectSalesOrder(DashboardMobile_FilterDTO filter)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
 
-            var query = from i in DataContext.DirectSalesOrder
-                        where i.SaleEmployeeId == CurrentContext.UserId &&
-                        i.RequestStateId != RequestStateEnum.NEW.Id
-                        select i;
+            DateTime Now = StaticParams.DateTimeNow;
+            DateTime Start = new DateTime(Now.Year, Now.Month, 1).AddHours(0 - CurrentContext.TimeZone);
+            DateTime End = new DateTime(Now.AddHours(CurrentContext.TimeZone).Year, Now.AddHours(CurrentContext.TimeZone).Month, 1).AddHours(0 - CurrentContext.TimeZone);
+            (Start, End) = ConvertTime(filter.Time); // lấy ra startDate và EndDate theo filter time
 
+            var query = from di in DataContext.DirectSalesOrder
+                        where di.RequestStateId == RequestStateEnum.APPROVED.Id
+                        where di.OrderDate >= Start
+                        where di.OrderDate <= End
+                        select di;
             return await query.CountAsync();
         }
 
         [Route(DashboardMobileRoute.DirectSalesOrderRevenue), HttpPost]
-        public async Task<decimal> DirectSalesOrderRevenue()
+        public async Task<decimal> DirectSalesOrderRevenue(DashboardMobile_FilterDTO filter)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
 
-            var query = from i in DataContext.DirectSalesOrder
-                        where i.SaleEmployeeId == CurrentContext.UserId &&
-                        i.RequestStateId == RequestStateEnum.APPROVED.Id
-                        select i;
+            DateTime Now = StaticParams.DateTimeNow;
+            DateTime Start = new DateTime(Now.Year, Now.Month, 1).AddHours(0 - CurrentContext.TimeZone);
+            DateTime End = new DateTime(Now.AddHours(CurrentContext.TimeZone).Year, Now.AddHours(CurrentContext.TimeZone).Month, 1).AddHours(0 - CurrentContext.TimeZone);
+            (Start, End) = ConvertTime(filter.Time); // lấy ra startDate và EndDate theo filter time
+
+            var query = from di in DataContext.DirectSalesOrder
+                        where di.RequestStateId == RequestStateEnum.APPROVED.Id
+                        where di.OrderDate >= Start
+                        where di.OrderDate <= End
+                        select di;
 
             var results = await query.ToListAsync();
-            return results.Select(x => x.Total).DefaultIfEmpty(0).Sum();
+            return results.Select(x => x.Total)
+                .DefaultIfEmpty(0)
+                .Sum();
         }
 
         [Route(DashboardMobileRoute.TopDirectSaleEmployeeRevenue), HttpPost]
-        public async Task<List<DashboardMobile_TopRevenueBySalesEmployeeDTO>> TopDirectSaleEmployeeRevenue(DashboardMobile_TopRevenueBySalesEmployeeFilterDTO filter)
+        public async Task<List<DashboardMobile_TopRevenueBySalesEmployeeDTO>> TopDirectSaleEmployeeRevenue(DashboardMobile_FilterDTO filter)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
