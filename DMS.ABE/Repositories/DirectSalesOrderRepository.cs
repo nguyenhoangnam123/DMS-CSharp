@@ -970,26 +970,7 @@ namespace DMS.ABE.Repositories
             if (DirectSalesOrderDAO == null)
                 return false;
             DirectSalesOrderDAO.Id = DirectSalesOrder.Id;
-            DirectSalesOrderDAO.Code = DirectSalesOrder.Code;
-            DirectSalesOrderDAO.BuyerStoreId = DirectSalesOrder.BuyerStoreId;
-            DirectSalesOrderDAO.PhoneNumber = DirectSalesOrder.PhoneNumber;
-            DirectSalesOrderDAO.StoreAddress = DirectSalesOrder.StoreAddress;
-            DirectSalesOrderDAO.DeliveryAddress = DirectSalesOrder.DeliveryAddress;
-            DirectSalesOrderDAO.SaleEmployeeId = DirectSalesOrder.SaleEmployeeId;
-            DirectSalesOrderDAO.OrderDate = DirectSalesOrder.OrderDate;
-            DirectSalesOrderDAO.DeliveryDate = DirectSalesOrder.DeliveryDate;
-            DirectSalesOrderDAO.EditedPriceStatusId = DirectSalesOrder.EditedPriceStatusId;
-            DirectSalesOrderDAO.Note = DirectSalesOrder.Note;
-            DirectSalesOrderDAO.RequestStateId = DirectSalesOrder.RequestStateId;
-            DirectSalesOrderDAO.SubTotal = DirectSalesOrder.SubTotal;
-            DirectSalesOrderDAO.GeneralDiscountPercentage = DirectSalesOrder.GeneralDiscountPercentage;
-            DirectSalesOrderDAO.GeneralDiscountAmount = DirectSalesOrder.GeneralDiscountAmount;
-            DirectSalesOrderDAO.PromotionCode = DirectSalesOrder.PromotionCode;
-            DirectSalesOrderDAO.PromotionValue = DirectSalesOrder.PromotionValue;
-            DirectSalesOrderDAO.TotalTaxAmount = DirectSalesOrder.TotalTaxAmount;
-            DirectSalesOrderDAO.TotalAfterTax = DirectSalesOrder.TotalAfterTax;
-            DirectSalesOrderDAO.Total = DirectSalesOrder.Total;
-            DirectSalesOrderDAO.StoreCheckingId = DirectSalesOrder.StoreCheckingId;
+            DirectSalesOrderDAO.StoreApprovalStateId = DirectSalesOrder.StoreApprovalStateId; // thay đổi trạng thái phê duyệt cửa hàng
             DirectSalesOrderDAO.UpdatedAt = StaticParams.DateTimeNow;
             await DataContext.SaveChangesAsync();
             await SaveReference(DirectSalesOrder);
