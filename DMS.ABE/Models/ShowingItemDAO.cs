@@ -7,7 +7,6 @@ namespace DMS.ABE.Models
     {
         public ShowingItemDAO()
         {
-            ShowingInventories = new HashSet<ShowingInventoryDAO>();
             ShowingItemImageMappings = new HashSet<ShowingItemImageMappingDAO>();
             ShowingOrderContents = new HashSet<ShowingOrderContentDAO>();
         }
@@ -30,7 +29,6 @@ namespace DMS.ABE.Models
         public virtual ShowingCategoryDAO ShowingCategory { get; set; }
         public virtual StatusDAO Status { get; set; }
         public virtual UnitOfMeasureDAO UnitOfMeasure { get; set; }
-        public virtual ICollection<ShowingInventoryDAO> ShowingInventories { get; set; }
         public virtual ICollection<ShowingItemImageMappingDAO> ShowingItemImageMappings { get; set; }
         public virtual ICollection<ShowingOrderContentDAO> ShowingOrderContents { get; set; }
     }

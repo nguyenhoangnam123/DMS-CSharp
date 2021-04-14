@@ -24,7 +24,6 @@ namespace DMS.ABE.Models
             PromotionCodes = new HashSet<PromotionCodeDAO>();
             Promotions = new HashSet<PromotionDAO>();
             ShowingOrders = new HashSet<ShowingOrderDAO>();
-            ShowingWarehouses = new HashSet<ShowingWarehouseDAO>();
             StoreCheckings = new HashSet<StoreCheckingDAO>();
             StoreScoutings = new HashSet<StoreScoutingDAO>();
             StoreUncheckings = new HashSet<StoreUncheckingDAO>();
@@ -69,7 +68,6 @@ namespace DMS.ABE.Models
         public virtual ICollection<PromotionCodeDAO> PromotionCodes { get; set; }
         public virtual ICollection<PromotionDAO> Promotions { get; set; }
         public virtual ICollection<ShowingOrderDAO> ShowingOrders { get; set; }
-        public virtual ICollection<ShowingWarehouseDAO> ShowingWarehouses { get; set; }
         public virtual ICollection<StoreCheckingDAO> StoreCheckings { get; set; }
         public virtual ICollection<StoreScoutingDAO> StoreScoutings { get; set; }
         public virtual ICollection<StoreUncheckingDAO> StoreUncheckings { get; set; }

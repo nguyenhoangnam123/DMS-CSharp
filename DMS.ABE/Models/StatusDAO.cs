@@ -35,7 +35,6 @@ namespace DMS.ABE.Models
             ShowingCategories = new HashSet<ShowingCategoryDAO>();
             ShowingItems = new HashSet<ShowingItemDAO>();
             ShowingOrders = new HashSet<ShowingOrderDAO>();
-            ShowingWarehouses = new HashSet<ShowingWarehouseDAO>();
             StoreGroupings = new HashSet<StoreGroupingDAO>();
             StoreScoutingTypes = new HashSet<StoreScoutingTypeDAO>();
             StoreTypes = new HashSet<StoreTypeDAO>();
@@ -85,7 +84,6 @@ namespace DMS.ABE.Models
         public virtual ICollection<ShowingCategoryDAO> ShowingCategories { get; set; }
         public virtual ICollection<ShowingItemDAO> ShowingItems { get; set; }
         public virtual ICollection<ShowingOrderDAO> ShowingOrders { get; set; }
-        public virtual ICollection<ShowingWarehouseDAO> ShowingWarehouses { get; set; }
         public virtual ICollection<StoreGroupingDAO> StoreGroupings { get; set; }
         public virtual ICollection<StoreScoutingTypeDAO> StoreScoutingTypes { get; set; }
         public virtual ICollection<StoreTypeDAO> StoreTypes { get; set; }

@@ -139,13 +139,10 @@ namespace DMS.ABE.Models
         public virtual DbSet<SalesOrderTypeDAO> SalesOrderType { get; set; }
         public virtual DbSet<SexDAO> Sex { get; set; }
         public virtual DbSet<ShowingCategoryDAO> ShowingCategory { get; set; }
-        public virtual DbSet<ShowingInventoryDAO> ShowingInventory { get; set; }
-        public virtual DbSet<ShowingInventoryHistoryDAO> ShowingInventoryHistory { get; set; }
         public virtual DbSet<ShowingItemDAO> ShowingItem { get; set; }
         public virtual DbSet<ShowingItemImageMappingDAO> ShowingItemImageMapping { get; set; }
         public virtual DbSet<ShowingOrderDAO> ShowingOrder { get; set; }
         public virtual DbSet<ShowingOrderContentDAO> ShowingOrderContent { get; set; }
-        public virtual DbSet<ShowingWarehouseDAO> ShowingWarehouse { get; set; }
         public virtual DbSet<StatusDAO> Status { get; set; }
         public virtual DbSet<StoreDAO> Store { get; set; }
         public virtual DbSet<StoreApprovalStateDAO> StoreApprovalState { get; set; }
@@ -206,7 +203,7 @@ namespace DMS.ABE.Models
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-                optionsBuilder.UseSqlServer("data source=192.168.20.200;initial catalog=dms;persist security info=True;user id=sa;password=123@123a;multipleactiveresultsets=True;");
+                optionsBuilder.UseSqlServer("data source=192.168.20.200;initial catalog=DMS.ABE;persist security info=True;user id=sa;password=123@123a;multipleactiveresultsets=True;");
             }
         }
 
@@ -270,6 +267,8 @@ namespace DMS.ABE.Models
             modelBuilder.Entity<AlbumImageMappingDAO>(entity =>
             {
                 entity.HasKey(e => new { e.ImageId, e.AlbumId });
+
+                entity.HasComment("Bảng lưu danh sách ảnh của 1 album");
 
                 entity.Property(e => e.DeletedAt).HasColumnType("datetime");
 
@@ -431,6 +430,8 @@ namespace DMS.ABE.Models
             {
                 entity.HasKey(e => new { e.AppUserId, e.StoreId });
 
+                entity.HasComment("Bảng định nghĩa các cửa hàng thuộc vùng đi tuyến");
+
                 entity.HasOne(d => d.AppUser)
                     .WithMany(p => p.AppUserStoreMappings)
                     .HasForeignKey(d => d.AppUserId)
@@ -531,6 +532,8 @@ namespace DMS.ABE.Models
 
             modelBuilder.Entity<BrandInStoreDAO>(entity =>
             {
+                entity.HasComment("Danh sách các thương hiệu trong 1 cửa hàng");
+
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.DeletedAt).HasColumnType("datetime");
@@ -559,6 +562,8 @@ namespace DMS.ABE.Models
             modelBuilder.Entity<BrandInStoreProductGroupingMappingDAO>(entity =>
             {
                 entity.HasKey(e => new { e.BrandInStoreId, e.ProductGroupingId });
+
+                entity.HasComment("Nhóm sản phẩm của nhãn hiệu trong cửa hàng");
 
                 entity.HasOne(d => d.BrandInStore)
                     .WithMany(p => p.BrandInStoreProductGroupingMappings)
@@ -677,6 +682,8 @@ namespace DMS.ABE.Models
 
             modelBuilder.Entity<DirectSalesOrderDAO>(entity =>
             {
+                entity.HasComment("Header và Footer đơn hàng trực tiếp");
+
                 entity.Property(e => e.Id).HasComment("Id");
 
                 entity.Property(e => e.BuyerStoreId).HasComment("Cửa hàng mua");
@@ -809,6 +816,8 @@ namespace DMS.ABE.Models
 
             modelBuilder.Entity<DirectSalesOrderContentDAO>(entity =>
             {
+                entity.HasComment("Danh sách sản phẩm bán của 1 đơn hàng trực tiếp");
+
                 entity.Property(e => e.Amount).HasColumnType("decimal(18, 4)");
 
                 entity.Property(e => e.DiscountAmount).HasColumnType("decimal(18, 4)");
@@ -864,6 +873,8 @@ namespace DMS.ABE.Models
 
             modelBuilder.Entity<DirectSalesOrderPromotionDAO>(entity =>
             {
+                entity.HasComment("Danh sách sản phẩm khuyến mãi của 1 đơn hàng trực tiếp");
+
                 entity.Property(e => e.Note).HasMaxLength(4000);
 
                 entity.HasOne(d => d.DirectSalesOrder)
@@ -908,6 +919,8 @@ namespace DMS.ABE.Models
 
             modelBuilder.Entity<DirectSalesOrderTransactionDAO>(entity =>
             {
+                entity.HasComment("Danh sách tất cả các sản phẩm bán và khuyến mãi");
+
                 entity.Property(e => e.Discount).HasColumnType("decimal(18, 4)");
 
                 entity.Property(e => e.OrderDate).HasColumnType("datetime");
@@ -1009,6 +1022,8 @@ namespace DMS.ABE.Models
 
             modelBuilder.Entity<ERouteDAO>(entity =>
             {
+                entity.HasComment("Thiết lập tuyến");
+
                 entity.Property(e => e.Code)
                     .IsRequired()
                     .HasMaxLength(500);
@@ -1068,6 +1083,8 @@ namespace DMS.ABE.Models
 
             modelBuilder.Entity<ERouteChangeRequestDAO>(entity =>
             {
+                entity.HasComment("Yêu cầu thay đổi tuyến");
+
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.DeletedAt).HasColumnType("datetime");
@@ -1095,6 +1112,8 @@ namespace DMS.ABE.Models
 
             modelBuilder.Entity<ERouteChangeRequestContentDAO>(entity =>
             {
+                entity.HasComment("Bảng chi tiết của một yêu cầu thay đổi tuyến");
+
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.DeletedAt).HasColumnType("datetime");
@@ -1116,6 +1135,8 @@ namespace DMS.ABE.Models
 
             modelBuilder.Entity<ERouteContentDAO>(entity =>
             {
+                entity.HasComment("Bảng chi tiết của thiết lập tuyến");
+
                 entity.HasOne(d => d.ERoute)
                     .WithMany(p => p.ERouteContents)
                     .HasForeignKey(d => d.ERouteId)
@@ -1131,6 +1152,8 @@ namespace DMS.ABE.Models
 
             modelBuilder.Entity<ERouteContentDayDAO>(entity =>
             {
+                entity.HasComment("Bảng định nghĩa chu kì đi tuyến của từng tuyến");
+
                 entity.HasOne(d => d.ERouteContent)
                     .WithMany(p => p.ERouteContentDays)
                     .HasForeignKey(d => d.ERouteContentId)
@@ -1308,6 +1331,8 @@ namespace DMS.ABE.Models
 
             modelBuilder.Entity<IndirectSalesOrderDAO>(entity =>
             {
+                entity.HasComment("Đơn hàng gián tiếp");
+
                 entity.HasIndex(e => e.BuyerStoreId);
 
                 entity.HasIndex(e => e.Id)
@@ -1427,6 +1452,8 @@ namespace DMS.ABE.Models
 
             modelBuilder.Entity<IndirectSalesOrderContentDAO>(entity =>
             {
+                entity.HasComment(" Các sản phẩm bán của đơn hàng gián tiếp");
+
                 entity.HasIndex(e => e.IndirectSalesOrderId);
 
                 entity.HasIndex(e => e.ItemId);
@@ -1518,6 +1545,8 @@ namespace DMS.ABE.Models
 
             modelBuilder.Entity<IndirectSalesOrderPromotionDAO>(entity =>
             {
+                entity.HasComment("Các sản phẩm khuyến mãi của đơn hàng gián tiếp");
+
                 entity.HasIndex(e => e.IndirectSalesOrderId);
 
                 entity.HasIndex(e => e.ItemId);
@@ -1571,6 +1600,8 @@ namespace DMS.ABE.Models
 
             modelBuilder.Entity<IndirectSalesOrderTransactionDAO>(entity =>
             {
+                entity.HasComment(" Tổng hợp các sản phẩm của đơn hàng gián tiếp");
+
                 entity.HasIndex(e => e.IndirectSalesOrderId);
 
                 entity.HasIndex(e => e.ItemId);
@@ -1785,6 +1816,8 @@ namespace DMS.ABE.Models
 
             modelBuilder.Entity<KpiGeneralDAO>(entity =>
             {
+                entity.HasComment("KPI chung");
+
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.DeletedAt).HasColumnType("datetime");
@@ -3897,58 +3930,6 @@ namespace DMS.ABE.Models
                     .HasConstraintName("FK_ShowingCategory_Status");
             });
 
-            modelBuilder.Entity<ShowingInventoryDAO>(entity =>
-            {
-                entity.ToTable("ShowingInventory", "POSM");
-
-                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
-
-                entity.Property(e => e.DeletedAt).HasColumnType("datetime");
-
-                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
-
-                entity.HasOne(d => d.AppUser)
-                    .WithMany(p => p.ShowingInventories)
-                    .HasForeignKey(d => d.AppUserId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_ShowingInventory_AppUser");
-
-                entity.HasOne(d => d.ShowingItem)
-                    .WithMany(p => p.ShowingInventories)
-                    .HasForeignKey(d => d.ShowingItemId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_ShowingInventory_ShowingItem");
-
-                entity.HasOne(d => d.ShowingWarehouse)
-                    .WithMany(p => p.ShowingInventories)
-                    .HasForeignKey(d => d.ShowingWarehouseId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_ShowingInventory_ShowingWarehouse");
-            });
-
-            modelBuilder.Entity<ShowingInventoryHistoryDAO>(entity =>
-            {
-                entity.ToTable("ShowingInventoryHistory", "POSM");
-
-                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
-
-                entity.Property(e => e.DeletedAt).HasColumnType("datetime");
-
-                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
-
-                entity.HasOne(d => d.AppUser)
-                    .WithMany(p => p.ShowingInventoryHistories)
-                    .HasForeignKey(d => d.AppUserId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_ShowingInventoryHistory_AppUser");
-
-                entity.HasOne(d => d.ShowingInventory)
-                    .WithMany(p => p.ShowingInventoryHistories)
-                    .HasForeignKey(d => d.ShowingInventoryId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_ShowingInventoryHistory_ShowingInventory");
-            });
-
             modelBuilder.Entity<ShowingItemDAO>(entity =>
             {
                 entity.ToTable("ShowingItem", "POSM");
@@ -4039,12 +4020,6 @@ namespace DMS.ABE.Models
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_ShowingOrder_Organization");
 
-                entity.HasOne(d => d.ShowingWarehouse)
-                    .WithMany(p => p.ShowingOrders)
-                    .HasForeignKey(d => d.ShowingWarehouseId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_ShowingOrder_ShowingWarehouse");
-
                 entity.HasOne(d => d.Status)
                     .WithMany(p => p.ShowingOrders)
                     .HasForeignKey(d => d.StatusId)
@@ -4083,54 +4058,6 @@ namespace DMS.ABE.Models
                     .HasForeignKey(d => d.UnitOfMeasureId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_ShowingOrderContent_UnitOfMeasure");
-            });
-
-            modelBuilder.Entity<ShowingWarehouseDAO>(entity =>
-            {
-                entity.ToTable("ShowingWarehouse", "POSM");
-
-                entity.Property(e => e.Address).HasMaxLength(500);
-
-                entity.Property(e => e.Code)
-                    .IsRequired()
-                    .HasMaxLength(500);
-
-                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
-
-                entity.Property(e => e.DeletedAt).HasColumnType("datetime");
-
-                entity.Property(e => e.Name)
-                    .IsRequired()
-                    .HasMaxLength(500);
-
-                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
-
-                entity.HasOne(d => d.District)
-                    .WithMany(p => p.ShowingWarehouses)
-                    .HasForeignKey(d => d.DistrictId)
-                    .HasConstraintName("FK_ShowingWarehouse_District");
-
-                entity.HasOne(d => d.Organization)
-                    .WithMany(p => p.ShowingWarehouses)
-                    .HasForeignKey(d => d.OrganizationId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_ShowingWarehouse_Organization");
-
-                entity.HasOne(d => d.Province)
-                    .WithMany(p => p.ShowingWarehouses)
-                    .HasForeignKey(d => d.ProvinceId)
-                    .HasConstraintName("FK_ShowingWarehouse_Province");
-
-                entity.HasOne(d => d.Status)
-                    .WithMany(p => p.ShowingWarehouses)
-                    .HasForeignKey(d => d.StatusId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_ShowingWarehouse_Status");
-
-                entity.HasOne(d => d.Ward)
-                    .WithMany(p => p.ShowingWarehouses)
-                    .HasForeignKey(d => d.WardId)
-                    .HasConstraintName("FK_ShowingWarehouse_Ward");
             });
 
             modelBuilder.Entity<StatusDAO>(entity =>
