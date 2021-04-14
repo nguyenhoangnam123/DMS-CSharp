@@ -941,6 +941,7 @@ namespace DMS.ABE.Repositories
             DirectSalesOrderDAO.EditedPriceStatusId = DirectSalesOrder.EditedPriceStatusId;
             DirectSalesOrderDAO.Note = DirectSalesOrder.Note;
             DirectSalesOrderDAO.RequestStateId = DirectSalesOrder.RequestStateId;
+            DirectSalesOrderDAO.StoreApprovalStateId = DirectSalesOrder.StoreApprovalStateId; // trang thai phe duyet cua ha
             DirectSalesOrderDAO.SubTotal = DirectSalesOrder.SubTotal;
             DirectSalesOrderDAO.GeneralDiscountPercentage = DirectSalesOrder.GeneralDiscountPercentage;
             DirectSalesOrderDAO.GeneralDiscountAmount = DirectSalesOrder.GeneralDiscountAmount;
