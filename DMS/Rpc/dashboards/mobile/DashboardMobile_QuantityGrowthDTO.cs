@@ -21,18 +21,22 @@ namespace DMS.Rpc.dashboards.mobile
     {
         public long Day { get; set; }
         public decimal IndirectSalesOrderCounter { get; set; }
+        public decimal DirectSalesOrderCounter { get; set; }
     }
 
     public class DashboardMobile_QuantityGrowthByQuarterDTO : DataDTO
     {
         public long Month { get; set; }
         public decimal IndirectSalesOrderCounter { get; set; }
+        public decimal DirectSalesOrderCounter { get; set; }
+
     }
 
     public class DashboardMobile_QuantityGrowthByYearDTO : DataDTO
     {
         public long Month { get; set; }
         public decimal IndirectSalesOrderCounter { get; set; }
+        public decimal DirectSalesOrderCounter { get; set; }
     }
 
     public class DashboardMobile_QuantityGrowthFilterDTO : FilterDTO
