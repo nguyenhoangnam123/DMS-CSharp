@@ -636,7 +636,7 @@ namespace DMS.Rpc.store
                 for (int i = StartRow; i <= worksheet.Dimension.End.Row; i++)
                 {
                     #region Lấy thông tin từng dòng
-                    string stt = worksheet.Cells[i + StartRow, SttColumnn].Value?.ToString();
+                    string stt = worksheet.Cells[i, SttColumnn].Value?.ToString();
                     if (stt != null && stt.ToLower() == "END".ToLower())
                         break;
                     bool convert = long.TryParse(stt, out long Stt);
@@ -644,18 +644,18 @@ namespace DMS.Rpc.store
                         continue;
                     Store_BrandInStoreImportDTO Store_BrandInStoreImportDTO = new Store_BrandInStoreImportDTO();
                     Store_BrandInStoreImportDTOs.Add(Store_BrandInStoreImportDTO);
-                    Store_BrandInStoreImportDTO.StoreCode = worksheet.Cells[i + StartRow, StoreCodeColumn].Value?.ToString();
+                    Store_BrandInStoreImportDTO.StoreCode = worksheet.Cells[i, StoreCodeColumn].Value?.ToString();
 
-                    Store_BrandInStoreImportDTO.BrandCode1 = worksheet.Cells[i + StartRow, BrandCode1Column].Value?.ToString();
-                    Store_BrandInStoreImportDTO.ProductGrouping1 = worksheet.Cells[i + StartRow, ProductGrouping1Column].Value?.ToString();
-                    Store_BrandInStoreImportDTO.BrandCode2 = worksheet.Cells[i + StartRow, BrandCode2Column].Value?.ToString();
-                    Store_BrandInStoreImportDTO.ProductGrouping2 = worksheet.Cells[i + StartRow, ProductGrouping2Column].Value?.ToString();
-                    Store_BrandInStoreImportDTO.BrandCode3 = worksheet.Cells[i + StartRow, BrandCode3Column].Value?.ToString();
-                    Store_BrandInStoreImportDTO.ProductGrouping3 = worksheet.Cells[i + StartRow, ProductGrouping3Column].Value?.ToString();
-                    Store_BrandInStoreImportDTO.BrandCode4 = worksheet.Cells[i + StartRow, BrandCode4Column].Value?.ToString();
-                    Store_BrandInStoreImportDTO.ProductGrouping4 = worksheet.Cells[i + StartRow, ProductGrouping4Column].Value?.ToString();
-                    Store_BrandInStoreImportDTO.BrandCode5 = worksheet.Cells[i + StartRow, BrandCode5Column].Value?.ToString();
-                    Store_BrandInStoreImportDTO.ProductGrouping5 = worksheet.Cells[i + StartRow, ProductGrouping5Column].Value?.ToString();
+                    Store_BrandInStoreImportDTO.BrandCode1 = worksheet.Cells[i, BrandCode1Column].Value?.ToString();
+                    Store_BrandInStoreImportDTO.ProductGrouping1 = worksheet.Cells[i, ProductGrouping1Column].Value?.ToString();
+                    Store_BrandInStoreImportDTO.BrandCode2 = worksheet.Cells[i, BrandCode2Column].Value?.ToString();
+                    Store_BrandInStoreImportDTO.ProductGrouping2 = worksheet.Cells[i, ProductGrouping2Column].Value?.ToString();
+                    Store_BrandInStoreImportDTO.BrandCode3 = worksheet.Cells[i, BrandCode3Column].Value?.ToString();
+                    Store_BrandInStoreImportDTO.ProductGrouping3 = worksheet.Cells[i, ProductGrouping3Column].Value?.ToString();
+                    Store_BrandInStoreImportDTO.BrandCode4 = worksheet.Cells[i, BrandCode4Column].Value?.ToString();
+                    Store_BrandInStoreImportDTO.ProductGrouping4 = worksheet.Cells[i, ProductGrouping4Column].Value?.ToString();
+                    Store_BrandInStoreImportDTO.BrandCode5 = worksheet.Cells[i, BrandCode5Column].Value?.ToString();
+                    Store_BrandInStoreImportDTO.ProductGrouping5 = worksheet.Cells[i, ProductGrouping5Column].Value?.ToString();
                     #endregion
                 }
             }
