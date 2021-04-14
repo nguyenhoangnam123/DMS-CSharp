@@ -103,6 +103,7 @@ namespace DMS.ABE.Services.MProduct
                     ProductFilter.Id.NotIn = ProductIds;
                 } // lay het cac san pham khong duoc thich
                 List<Product> Products = await UOW.ProductRepository.List(ProductFilter);
+                ProductIds = Products.Select(x => x.Id).ToList();
                 ItemFilter ItemFilter = new ItemFilter
                 {
                     ProductId = new IdFilter { In = ProductIds },
