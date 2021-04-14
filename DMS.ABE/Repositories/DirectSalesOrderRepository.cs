@@ -1,4 +1,4 @@
-using DMS.ABE.Common;
+﻿using DMS.ABE.Common;
 using DMS.ABE.Entities;
 using DMS.ABE.Enums;
 using DMS.ABE.Models;
@@ -102,6 +102,8 @@ namespace DMS.ABE.Repositories
                 query = query.Where(q => q.Note, filter.Note);
             if (filter.RequestStateId != null)
                 query = query.Where(q => q.RequestStateId, filter.RequestStateId);
+            if (filter.StoreApprovalStateId != null)
+                query = query.Where(q => q.StoreApprovalStateId, filter.StoreApprovalStateId);
             if (filter.StoreUserCreatorId != null)
                 query = query.Where(q => q.StoreUserCreatorId, filter.StoreUserCreatorId);
             if (filter.SubTotal != null)
@@ -950,6 +952,8 @@ namespace DMS.ABE.Repositories
             DirectSalesOrderDAO.RowId = Guid.NewGuid();
             DirectSalesOrderDAO.StoreCheckingId = DirectSalesOrder.StoreCheckingId;
             DirectSalesOrderDAO.CreatorId = DirectSalesOrder.CreatorId;
+            DirectSalesOrderDAO.StoreUserCreatorId = DirectSalesOrder.StoreUserCreatorId; // người tạo là storeUser
+            DirectSalesOrderDAO.DirectSalesOrderSourceTypeId = DirectSalesOrder.DirectSalesOrderSourceTypeId;
             DirectSalesOrderDAO.CreatedAt = StaticParams.DateTimeNow;
             DirectSalesOrderDAO.UpdatedAt = StaticParams.DateTimeNow;
             DataContext.DirectSalesOrder.Add(DirectSalesOrderDAO);
