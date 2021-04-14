@@ -191,30 +191,6 @@ namespace DMS.Services.MShowingOrder
             return ShowingOrder.IsValidated;
         }
 
-        private async Task<bool> ValidateShowingWarehouse(ShowingOrder ShowingOrder)
-        {
-            if (ShowingOrder.ShowingWarehouseId == 0)
-            {
-                ShowingOrder.AddError(nameof(ShowingOrderValidator), nameof(ShowingOrder.ShowingWarehouse), ErrorCode.ShowingWarehouseEmpty);
-            }
-            else
-            {
-                AppUser AppUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
-                ShowingWarehouseFilter ShowingWarehouseFilter = new ShowingWarehouseFilter
-                {
-                    Id = new IdFilter { Equal = ShowingOrder.ShowingWarehouseId },
-                    OrganizationId = new IdFilter { Equal = AppUser.OrganizationId },
-                    StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id }
-                };
-
-                var count = await UOW.ShowingWarehouseRepository.Count(ShowingWarehouseFilter);
-                if (count == 0)
-                    ShowingOrder.AddError(nameof(ShowingOrderValidator), nameof(ShowingOrder.ShowingWarehouse), ErrorCode.ShowingWarehouseIdNotExisted);
-            }
-
-            return ShowingOrder.IsValidated;
-        }
-
         public async Task<bool> Create(ShowingOrder ShowingOrder)
         {
             await ValidateDate(ShowingOrder);
@@ -222,7 +198,6 @@ namespace DMS.Services.MShowingOrder
             await ValidateStores(ShowingOrder);
             await ValidateStatus(ShowingOrder);
             await ValidateContent(ShowingOrder);
-            await ValidateShowingWarehouse(ShowingOrder);
             return ShowingOrder.IsValidated;
         }
 
@@ -234,7 +209,6 @@ namespace DMS.Services.MShowingOrder
                 await ValidateOrganization(ShowingOrder);
                 await ValidateStatus(ShowingOrder);
                 await ValidateContent(ShowingOrder);
-                await ValidateShowingWarehouse(ShowingOrder);
             }
             return ShowingOrder.IsValidated;
         }

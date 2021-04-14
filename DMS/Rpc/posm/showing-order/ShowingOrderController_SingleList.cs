@@ -82,34 +82,7 @@ namespace DMS.Rpc.posm.showing_order
                 .Select(x => new ShowingOrder_OrganizationDTO(x)).ToList();
             return ShowingOrder_OrganizationDTOs;
         }
-        [Route(ShowingOrderRoute.SingleListShowingWarehouse), HttpPost]
-        public async Task<List<ShowingOrder_ShowingWarehouseDTO>> SingleListShowingWarehouse([FromBody] ShowingOrder_ShowingWarehouseFilterDTO ShowingOrder_ShowingWarehouseFilterDTO)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
 
-            ShowingWarehouseFilter ShowingWarehouseFilter = new ShowingWarehouseFilter();
-            ShowingWarehouseFilter.Skip = 0;
-            ShowingWarehouseFilter.Take = 20;
-            ShowingWarehouseFilter.OrderBy = ShowingWarehouseOrder.Id;
-            ShowingWarehouseFilter.OrderType = OrderType.ASC;
-            ShowingWarehouseFilter.Selects = ShowingWarehouseSelect.ALL;
-            ShowingWarehouseFilter.Id = ShowingOrder_ShowingWarehouseFilterDTO.Id;
-            ShowingWarehouseFilter.Code = ShowingOrder_ShowingWarehouseFilterDTO.Code;
-            ShowingWarehouseFilter.Name = ShowingOrder_ShowingWarehouseFilterDTO.Name;
-            ShowingWarehouseFilter.Address = ShowingOrder_ShowingWarehouseFilterDTO.Address;
-            ShowingWarehouseFilter.OrganizationId = ShowingOrder_ShowingWarehouseFilterDTO.OrganizationId;
-            ShowingWarehouseFilter.ProvinceId = ShowingOrder_ShowingWarehouseFilterDTO.ProvinceId;
-            ShowingWarehouseFilter.DistrictId = ShowingOrder_ShowingWarehouseFilterDTO.DistrictId;
-            ShowingWarehouseFilter.WardId = ShowingOrder_ShowingWarehouseFilterDTO.WardId;
-            ShowingWarehouseFilter.StatusId = ShowingOrder_ShowingWarehouseFilterDTO.StatusId;
-            ShowingWarehouseFilter.RowId = ShowingOrder_ShowingWarehouseFilterDTO.RowId;
-            ShowingWarehouseFilter.StatusId = new IdFilter{ Equal = 1 };
-            List<ShowingWarehouse> ShowingWarehouses = await ShowingWarehouseService.List(ShowingWarehouseFilter);
-            List<ShowingOrder_ShowingWarehouseDTO> ShowingOrder_ShowingWarehouseDTOs = ShowingWarehouses
-                .Select(x => new ShowingOrder_ShowingWarehouseDTO(x)).ToList();
-            return ShowingOrder_ShowingWarehouseDTOs;
-        }
         [Route(ShowingOrderRoute.SingleListStatus), HttpPost]
         public async Task<List<ShowingOrder_StatusDTO>> SingleListStatus([FromBody] ShowingOrder_StatusFilterDTO ShowingOrder_StatusFilterDTO)
         {

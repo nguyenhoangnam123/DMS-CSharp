@@ -139,32 +139,6 @@ namespace DMS.Services.MShowingOrder
                 }
                 await UOW.ShowingOrderRepository.BulkMerge(ShowingOrders);
 
-                #region cập nhật lại tồn kho
-                var ShowingItemIds = ShowingOrder.ShowingOrderContents.Select(x => x.ShowingItemId).ToList();
-                var ShowingInventories = await UOW.ShowingInventoryRepository.List(new ShowingInventoryFilter
-                {
-                    Skip = 0,
-                    Take = int.MaxValue,
-                    ShowingItemId = new IdFilter { In = ShowingItemIds },
-                    ShowingWarehouseId = new IdFilter { Equal = ShowingOrder.ShowingWarehouse.Id },
-                    Selects = ShowingInventorySelect.SaleStock | ShowingInventorySelect.ShowingItem | ShowingInventorySelect.ShowingWarehouse
-                });
-
-                var StoreCounter = ShowingOrder.Stores.Count();
-                foreach (var ShowingOrderContent in ShowingOrder.ShowingOrderContents)
-                {
-                    ShowingInventory ShowingInventory = ShowingInventories.Where(x => x.ShowingItemId == ShowingOrderContent.ShowingItemId).FirstOrDefault();
-                    if (ShowingInventory != null)
-                    {
-                        ShowingInventory.AppUserId = CurrentContext.UserId;
-                        ShowingInventory.SaleStock -= (ShowingOrderContent.Quantity * StoreCounter);
-                        if (ShowingInventory.AccountingStock.HasValue)
-                            ShowingInventory.AccountingStock -= (ShowingOrderContent.Quantity * StoreCounter);
-                    }
-                }
-                await UOW.ShowingInventoryRepository.BulkMerge(ShowingInventories);
-                #endregion
-
                 NotifyUsed(ShowingOrder);
                 await Logging.CreateAuditLog(ShowingOrder, new { }, nameof(ShowingOrderService));
                 return ShowingOrder;
@@ -185,47 +159,6 @@ namespace DMS.Services.MShowingOrder
                 var oldData = await UOW.ShowingOrderRepository.Get(ShowingOrder.Id);
                 await Calculator(ShowingOrder);
                 await UOW.ShowingOrderRepository.Update(ShowingOrder);
-
-                #region cập nhật lại tồn kho
-                var OldShowingItemIds = oldData.ShowingOrderContents.Select(x => x.ShowingItemId).ToList();
-                var NewShowingItemIds = ShowingOrder.ShowingOrderContents.Select(x => x.ShowingItemId).ToList();
-                var ShowingItemIds = new List<long>();
-                ShowingItemIds.AddRange(NewShowingItemIds);
-                ShowingItemIds.AddRange(OldShowingItemIds);
-                ShowingItemIds = ShowingItemIds.Distinct().ToList();
-                var ShowingInventories = await UOW.ShowingInventoryRepository.List(new ShowingInventoryFilter
-                {
-                    Skip = 0,
-                    Take = int.MaxValue,
-                    ShowingItemId = new IdFilter { In = ShowingItemIds },
-                    ShowingWarehouseId = new IdFilter { Equal = ShowingOrder.ShowingWarehouse.Id },
-                    Selects = ShowingInventorySelect.SaleStock | ShowingInventorySelect.ShowingItem
-                });
-
-                foreach (var ShowingOrderContent in oldData.ShowingOrderContents)
-                {
-                    //cộng trả lại tồn kho của các các item cũ
-                    ShowingInventory ShowingInventory = ShowingInventories.Where(x => x.ShowingItemId == ShowingOrderContent.ShowingItemId).FirstOrDefault();
-                    if (ShowingInventory != null)
-                    {
-                        ShowingInventory.SaleStock += ShowingOrderContent.Quantity;
-                        if (ShowingInventory.AccountingStock.HasValue)
-                            ShowingInventory.AccountingStock += ShowingOrderContent.Quantity;
-                    }
-                }
-                foreach (var ShowingOrderContent in ShowingOrder.ShowingOrderContents)
-                {
-                    //trừ lại tồn kho
-                    ShowingInventory ShowingInventory = ShowingInventories.Where(x => x.ShowingItemId == ShowingOrderContent.ShowingItemId).FirstOrDefault();
-                    if (ShowingInventory != null)
-                    {
-                        ShowingInventory.SaleStock -= ShowingOrderContent.Quantity;
-                        if (ShowingInventory.AccountingStock.HasValue)
-                            ShowingInventory.AccountingStock -= ShowingOrderContent.Quantity;
-                    }
-                }
-                await UOW.ShowingInventoryRepository.BulkMerge(ShowingInventories);
-                #endregion
 
                 NotifyUsed(ShowingOrder);
                 ShowingOrder = await UOW.ShowingOrderRepository.Get(ShowingOrder.Id);
