@@ -13,6 +13,7 @@ using Microsoft.EntityFrameworkCore;
 using RestSharp;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -1349,18 +1350,24 @@ namespace DMS.Rpc
             foreach (Type type in routeTypes)
             {
                 MenuDAO Menu = Menus.Where(m => m.Code == type.Name && m.Name != "Root").FirstOrDefault();
+                var DisplayName = type.GetCustomAttributes(typeof(DisplayNameAttribute), true)
+               .Select(x => ((DisplayNameAttribute)x).DisplayName)
+               .DefaultIfEmpty(type.Name)
+               .FirstOrDefault();
+
                 if (Menu == null)
                 {
                     Menu = new MenuDAO
                     {
                         Code = type.Name,
-                        Name = type.Name,
+                        Name = DisplayName,
                         IsDeleted = false,
                     };
                     Menus.Add(Menu);
                 }
                 else
                 {
+                    Menu.Name = DisplayName;
                     Menu.IsDeleted = false;
                 }
             }
