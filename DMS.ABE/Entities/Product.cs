@@ -87,6 +87,7 @@ namespace DMS.ABE.Entities
         public IdFilter ProductGroupingId { get; set; }
         public IdFilter UsedVariationId { get; set; }
         public bool? IsNew { get; set; }
+        public bool? IsFavorite { get; set; }
         public string Search { get; set; }
 
         public List<ProductFilter> OrFilter { get; set; }

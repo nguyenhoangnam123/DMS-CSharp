@@ -244,7 +244,7 @@ namespace DMS.ABE.Rpc.product
             ProductFilter.Skip = Product_ProductFilterDTO.Skip;
             ProductFilter.Take = Product_ProductFilterDTO.Take;
             ProductFilter.OrderBy = Product_ProductFilterDTO.OrderBy;
-            ProductFilter.OrderType = OrderType.DESC; // mặc định từ mới -> cũ
+            ProductFilter.OrderType = Product_ProductFilterDTO.OrderType;
 
 
             ProductFilter.Description = Product_ProductFilterDTO.Description;
@@ -252,6 +252,8 @@ namespace DMS.ABE.Rpc.product
             ProductFilter.Search = Product_ProductFilterDTO.Search;
             ProductFilter.CategoryId = Product_ProductFilterDTO.CategoryId;
             ProductFilter.IsNew = Product_ProductFilterDTO.IsNew; // filter sản phẩm mới
+            ProductFilter.IsFavorite = Product_ProductFilterDTO.IsFavorite; // filter theo ua thich
+            ProductFilter.SalePrice = Product_ProductFilterDTO.SalePrice;
             return ProductFilter;
         }
 

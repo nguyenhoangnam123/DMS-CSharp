@@ -80,16 +80,29 @@ namespace DMS.ABE.Services.MProduct
             try
             {
                 Store Store = await GetStore();
-                List<Product> Products = await UOW.ProductRepository.List(ProductFilter);
-                List<long> ProductIds = Products.Select(p => p.Id).ToList();
                 List<StoreUserFavoriteProductMapping> StoreUserFavoriteProductMappings = await UOW.StoreUserFavoriteProductMappingRepository.List(
-                        new StoreUserFavoriteProductMappingFilter
-                        {
-                            FavoriteProductId = new IdFilter { In = ProductIds },
-                            StoreUserId = new IdFilter { Equal = CurrentContext.StoreUserId },
-                            Selects = StoreUserFavoriteProductMappingSelect.FavoriteProduct | StoreUserFavoriteProductMappingSelect.StoreUser
-                        }
-                    );
+                    new StoreUserFavoriteProductMappingFilter
+                    {
+                        StoreUserId = new IdFilter { Equal = CurrentContext.StoreUserId },
+                        Selects = StoreUserFavoriteProductMappingSelect.FavoriteProduct | StoreUserFavoriteProductMappingSelect.StoreUser
+                    }
+                ); // lay ra tat ca cac mapping cua storeUser
+                List<long> ProductIds = StoreUserFavoriteProductMappings
+                    .Select(x => x.FavoriteProductId)
+                    .ToList(); // lay ra list cac product duoc like
+                if (ProductFilter.Id == null)
+                {
+                    ProductFilter.Id = new IdFilter();
+                }
+                if (ProductFilter.IsFavorite.HasValue && ProductFilter.IsFavorite.Value)
+                {
+                    ProductFilter.Id.In = ProductIds;
+                } // lay het cac san pham duoc like
+                if (ProductFilter.IsFavorite.HasValue && !ProductFilter.IsFavorite.Value)
+                {
+                    ProductFilter.Id.NotIn = ProductIds;
+                } // lay het cac san pham khong duoc thich
+                List<Product> Products = await UOW.ProductRepository.List(ProductFilter);
                 ItemFilter ItemFilter = new ItemFilter
                 {
                     ProductId = new IdFilter { In = ProductIds },
@@ -108,7 +121,7 @@ namespace DMS.ABE.Services.MProduct
                     Product.VariationCounter = Items.Where(i => i.ProductId == Product.Id).Count();
                     Product.IsFavorite = false;
                     int LikeCount = StoreUserFavoriteProductMappings.Where(x => x.FavoriteProductId == Product.Id).Count();
-                    if(LikeCount > 0) Product.IsFavorite = true;
+                    if (LikeCount > 0) Product.IsFavorite = true;
                 }
                 return Products;
             }
@@ -132,7 +145,7 @@ namespace DMS.ABE.Services.MProduct
             Product.IsFavorite = false;
             int LikeCount = await UOW.StoreUserFavoriteProductMappingRepository.Count(new StoreUserFavoriteProductMappingFilter
             {
-                FavoriteProductId = new IdFilter { Equal = Id},
+                FavoriteProductId = new IdFilter { Equal = Id },
                 StoreUserId = new IdFilter { Equal = CurrentContext.StoreUserId }
             });
             if (LikeCount > 0)

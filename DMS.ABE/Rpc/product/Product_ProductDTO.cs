@@ -97,6 +97,7 @@ namespace DMS.ABE.Rpc.product
         public IdFilter ProductGroupingId { get; set; }
         public IdFilter CategoryId { get; set; }
         public bool IsNew { get; set; }
+        public bool? IsFavorite { get; set; }
         public string Search { get; set; }
         public ProductOrder OrderBy { get; set; }
     }
