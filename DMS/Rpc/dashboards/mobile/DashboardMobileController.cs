@@ -735,7 +735,7 @@ namespace DMS.Rpc.dashboards.mobile
             return Result;
         } // top 5 doanh thu đơn trực tiếp theo nhân viên
 
-        [Route(DashboardMobileRoute.TopIndirecItemRevenue), HttpPost]
+        [Route(DashboardMobileRoute.TopDirecItemRevenue), HttpPost]
         public async Task<List<DashboardMobile_TopRevenueByItemDTO>> TopDirecItemRevenue(DashboardMobile_TopRevenueByItemFilterDTO filter)
         {
             if (!ModelState.IsValid)
