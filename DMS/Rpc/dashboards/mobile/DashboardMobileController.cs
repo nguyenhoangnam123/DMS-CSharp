@@ -476,9 +476,9 @@ namespace DMS.Rpc.dashboards.mobile
                                 IndirectSalesOrderCounter = x.Count()
                             };
 
-                var DashboardMobile_IndirectSalesOrderGrowthByMonthDTOs = await query.ToListAsync();
-                DashboardMobile_QuantityGrowthDTO DashboardMobile_QuantityGrowthDTO = new DashboardMobile_QuantityGrowthDTO();
-                DashboardMobile_QuantityGrowthDTO.IndirectSalesOrderQuantityGrowthByMonths = new List<DashboardMobile_QuantityGrowthByMonthDTO>();
+                var OrderGrowthByMonthDTOs = await query.ToListAsync();
+                DashboardMobile_QuantityGrowthDTO QuantityGrowthDTO = new DashboardMobile_QuantityGrowthDTO();
+                QuantityGrowthDTO.IndirectSalesOrderQuantityGrowthByMonths = new List<DashboardMobile_QuantityGrowthByMonthDTO>();
                 var number_of_day_in_this_month = DateTime.DaysInMonth(Start.AddHours(CurrentContext.TimeZone).Year, Start.AddHours(CurrentContext.TimeZone).Month);
                 for (int i = 1; i < number_of_day_in_this_month + 1; i++)
                 {
@@ -487,17 +487,17 @@ namespace DMS.Rpc.dashboards.mobile
                         Day = i,
                         IndirectSalesOrderCounter = 0
                     };
-                    DashboardMobile_QuantityGrowthDTO.IndirectSalesOrderQuantityGrowthByMonths.Add(IndirectSalesOrderQuantityGrowthByMonth);
+                    QuantityGrowthDTO.IndirectSalesOrderQuantityGrowthByMonths.Add(IndirectSalesOrderQuantityGrowthByMonth);
                 }
 
-                foreach (var IndirectSalesOrderGrowthByMonth in DashboardMobile_QuantityGrowthDTO.IndirectSalesOrderQuantityGrowthByMonths)
+                foreach (var IndirectSalesOrderGrowthByMonth in QuantityGrowthDTO.IndirectSalesOrderQuantityGrowthByMonths)
                 {
-                    var data = DashboardMobile_IndirectSalesOrderGrowthByMonthDTOs.Where(x => x.Day == IndirectSalesOrderGrowthByMonth.Day).FirstOrDefault();
+                    var data = OrderGrowthByMonthDTOs.Where(x => x.Day == IndirectSalesOrderGrowthByMonth.Day).FirstOrDefault();
                     if (data != null)
                         IndirectSalesOrderGrowthByMonth.IndirectSalesOrderCounter = data.IndirectSalesOrderCounter;
                 }
 
-                return DashboardMobile_QuantityGrowthDTO;
+                return QuantityGrowthDTO;
             }
             else if (filter.Time.Equal.Value == LAST_MONTH)
             {
@@ -512,9 +512,9 @@ namespace DMS.Rpc.dashboards.mobile
                                 IndirectSalesOrderCounter = x.Count()
                             };
 
-                var DashboardMobile_IndirectSalesOrderGrowthByMonthDTOs = await query.ToListAsync();
-                DashboardMobile_QuantityGrowthDTO DashboardMobile_QuantityGrowthDTO = new DashboardMobile_QuantityGrowthDTO();
-                DashboardMobile_QuantityGrowthDTO.IndirectSalesOrderQuantityGrowthByMonths = new List<DashboardMobile_QuantityGrowthByMonthDTO>();
+                var OrderGrowthByMonthDTOs = await query.ToListAsync();
+                DashboardMobile_QuantityGrowthDTO QuantityGrowthDTO = new DashboardMobile_QuantityGrowthDTO();
+                QuantityGrowthDTO.IndirectSalesOrderQuantityGrowthByMonths = new List<DashboardMobile_QuantityGrowthByMonthDTO>();
                 var number_of_day_in_this_month = DateTime.DaysInMonth(Start.AddHours(CurrentContext.TimeZone).Year, Start.AddHours(CurrentContext.TimeZone).Month);
                 for (int i = 1; i < number_of_day_in_this_month + 1; i++)
                 {
@@ -523,17 +523,17 @@ namespace DMS.Rpc.dashboards.mobile
                         Day = i,
                         IndirectSalesOrderCounter = 0
                     };
-                    DashboardMobile_QuantityGrowthDTO.IndirectSalesOrderQuantityGrowthByMonths.Add(IndirectSalesOrderQuantityGrowthByMonth);
+                    QuantityGrowthDTO.IndirectSalesOrderQuantityGrowthByMonths.Add(IndirectSalesOrderQuantityGrowthByMonth);
                 }
 
-                foreach (var IndirectSalesOrderGrowthByMonth in DashboardMobile_QuantityGrowthDTO.IndirectSalesOrderQuantityGrowthByMonths)
+                foreach (var IndirectSalesOrderGrowthByMonth in QuantityGrowthDTO.IndirectSalesOrderQuantityGrowthByMonths)
                 {
-                    var data = DashboardMobile_IndirectSalesOrderGrowthByMonthDTOs.Where(x => x.Day == IndirectSalesOrderGrowthByMonth.Day).FirstOrDefault();
+                    var data = OrderGrowthByMonthDTOs.Where(x => x.Day == IndirectSalesOrderGrowthByMonth.Day).FirstOrDefault();
                     if (data != null)
                         IndirectSalesOrderGrowthByMonth.IndirectSalesOrderCounter = data.IndirectSalesOrderCounter;
                 }
 
-                return DashboardMobile_QuantityGrowthDTO;
+                return QuantityGrowthDTO;
             }
             else if (filter.Time.Equal.Value == THIS_QUARTER)
             {
@@ -550,9 +550,9 @@ namespace DMS.Rpc.dashboards.mobile
                                 IndirectSalesOrderCounter = x.Count()
                             };
 
-                var DashboardMobile_IndirectSalesOrderGrowthByQuarterDTOs = await query.ToListAsync();
-                DashboardMobile_QuantityGrowthDTO DashboardMobile_QuantityGrowthDTO = new DashboardMobile_QuantityGrowthDTO();
-                DashboardMobile_QuantityGrowthDTO.IndirectSalesOrderQuantityGrowthByQuaters = new List<DashboardMobile_QuantityGrowthByQuarterDTO>();
+                var OrderGrowthByMonthDTOs = await query.ToListAsync();
+                DashboardMobile_QuantityGrowthDTO QuantityGrowthDTO = new DashboardMobile_QuantityGrowthDTO();
+                QuantityGrowthDTO.IndirectSalesOrderQuantityGrowthByQuaters = new List<DashboardMobile_QuantityGrowthByQuarterDTO>();
                 int start = 3 * (this_quarter - 1) + 1;
                 int end = start + 3;
                 for (int i = start; i < end; i++)
@@ -562,17 +562,17 @@ namespace DMS.Rpc.dashboards.mobile
                         Month = i,
                         IndirectSalesOrderCounter = 0
                     };
-                    DashboardMobile_QuantityGrowthDTO.IndirectSalesOrderQuantityGrowthByQuaters.Add(IndirectSalesOrderQuantityGrowthByQuarter);
+                    QuantityGrowthDTO.IndirectSalesOrderQuantityGrowthByQuaters.Add(IndirectSalesOrderQuantityGrowthByQuarter);
                 }
 
-                foreach (var IndirectSalesOrderGrowthByQuater in DashboardMobile_QuantityGrowthDTO.IndirectSalesOrderQuantityGrowthByQuaters)
+                foreach (var IndirectSalesOrderGrowthByQuater in QuantityGrowthDTO.IndirectSalesOrderQuantityGrowthByQuaters)
                 {
-                    var data = DashboardMobile_IndirectSalesOrderGrowthByQuarterDTOs.Where(x => x.Month == IndirectSalesOrderGrowthByQuater.Month).FirstOrDefault();
+                    var data = OrderGrowthByMonthDTOs.Where(x => x.Month == IndirectSalesOrderGrowthByQuater.Month).FirstOrDefault();
                     if (data != null)
                         IndirectSalesOrderGrowthByQuater.IndirectSalesOrderCounter = data.IndirectSalesOrderCounter;
                 }
 
-                return DashboardMobile_QuantityGrowthDTO;
+                return QuantityGrowthDTO;
             }
             else if (filter.Time.Equal.Value == LAST_QUATER)
             {
@@ -586,9 +586,9 @@ namespace DMS.Rpc.dashboards.mobile
                                 IndirectSalesOrderCounter = x.Count()
                             };
 
-                var DashboardMobile_IndirectSalesOrderGrowthByQuarterDTOs = await query.ToListAsync();
-                DashboardMobile_QuantityGrowthDTO DashboardMobile_QuantityGrowthDTO = new DashboardMobile_QuantityGrowthDTO();
-                DashboardMobile_QuantityGrowthDTO.IndirectSalesOrderQuantityGrowthByQuaters = new List<DashboardMobile_QuantityGrowthByQuarterDTO>();
+                var OrderGrowthByMonthDTOs = await query.ToListAsync();
+                DashboardMobile_QuantityGrowthDTO QuantityGrowthDTO = new DashboardMobile_QuantityGrowthDTO();
+                QuantityGrowthDTO.IndirectSalesOrderQuantityGrowthByQuaters = new List<DashboardMobile_QuantityGrowthByQuarterDTO>();
                 int start = 3 * (last_quarter - 1) + 1;
                 int end = start + 3;
                 for (int i = start; i < end; i++)
@@ -598,17 +598,17 @@ namespace DMS.Rpc.dashboards.mobile
                         Month = i,
                         IndirectSalesOrderCounter = 0
                     };
-                    DashboardMobile_QuantityGrowthDTO.IndirectSalesOrderQuantityGrowthByQuaters.Add(IndirectSalesOrderGrowthByQuarter);
+                    QuantityGrowthDTO.IndirectSalesOrderQuantityGrowthByQuaters.Add(IndirectSalesOrderGrowthByQuarter);
                 }
 
-                foreach (var IndirectSalesOrderGrowthByQuater in DashboardMobile_QuantityGrowthDTO.IndirectSalesOrderQuantityGrowthByQuaters)
+                foreach (var IndirectSalesOrderGrowthByQuater in QuantityGrowthDTO.IndirectSalesOrderQuantityGrowthByQuaters)
                 {
-                    var data = DashboardMobile_IndirectSalesOrderGrowthByQuarterDTOs.Where(x => x.Month == IndirectSalesOrderGrowthByQuater.Month).FirstOrDefault();
+                    var data = OrderGrowthByMonthDTOs.Where(x => x.Month == IndirectSalesOrderGrowthByQuater.Month).FirstOrDefault();
                     if (data != null)
                         IndirectSalesOrderGrowthByQuater.IndirectSalesOrderCounter = data.IndirectSalesOrderCounter;
                 }
 
-                return DashboardMobile_QuantityGrowthDTO;
+                return QuantityGrowthDTO;
             }
             else if (filter.Time.Equal.Value == YEAR)
             {
@@ -620,9 +620,9 @@ namespace DMS.Rpc.dashboards.mobile
                                 IndirectSalesOrderCounter = x.Count()
                             };
 
-                var DashboardMobile_IndirectSalesOrderGrowthByYearDTO = await query.ToListAsync();
-                DashboardMobile_QuantityGrowthDTO DashboardMobile_QuantityGrowthDTO = new DashboardMobile_QuantityGrowthDTO();
-                DashboardMobile_QuantityGrowthDTO.IndirectSalesOrderQuantityGrowthByYears = new List<DashboardMobile_QuantityGrowthByYearDTO>();
+                var OrderGrowthByMonthDTOs = await query.ToListAsync();
+                DashboardMobile_QuantityGrowthDTO QuantityGrowthDTO = new DashboardMobile_QuantityGrowthDTO();
+                QuantityGrowthDTO.IndirectSalesOrderQuantityGrowthByYears = new List<DashboardMobile_QuantityGrowthByYearDTO>();
                 for (int i = 1; i <= 12; i++)
                 {
                     DashboardMobile_QuantityGrowthByYearDTO IndirectSalesOrderGrowthByYear = new DashboardMobile_QuantityGrowthByYearDTO
@@ -630,17 +630,17 @@ namespace DMS.Rpc.dashboards.mobile
                         Month = i,
                         IndirectSalesOrderCounter = 0
                     };
-                    DashboardMobile_QuantityGrowthDTO.IndirectSalesOrderQuantityGrowthByYears.Add(IndirectSalesOrderGrowthByYear);
+                    QuantityGrowthDTO.IndirectSalesOrderQuantityGrowthByYears.Add(IndirectSalesOrderGrowthByYear);
                 }
 
-                foreach (var IndirectSalesOrderGrowthByYear in DashboardMobile_QuantityGrowthDTO.IndirectSalesOrderQuantityGrowthByYears)
+                foreach (var IndirectSalesOrderGrowthByYear in QuantityGrowthDTO.IndirectSalesOrderQuantityGrowthByYears)
                 {
-                    var data = DashboardMobile_IndirectSalesOrderGrowthByYearDTO.Where(x => x.Month == IndirectSalesOrderGrowthByYear.Month).FirstOrDefault();
+                    var data = OrderGrowthByMonthDTOs.Where(x => x.Month == IndirectSalesOrderGrowthByYear.Month).FirstOrDefault();
                     if (data != null)
                         IndirectSalesOrderGrowthByYear.IndirectSalesOrderCounter = data.IndirectSalesOrderCounter;
                 }
 
-                return DashboardMobile_QuantityGrowthDTO;
+                return QuantityGrowthDTO;
             }
             return new DashboardMobile_QuantityGrowthDTO();
         } //  tăng trưởng số lượng đơn gián tiếp
