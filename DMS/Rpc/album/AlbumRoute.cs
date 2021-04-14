@@ -5,7 +5,7 @@ using System.ComponentModel;
 
 namespace DMS.Rpc.album
 {
-    [DisplayName("Album anh")]
+    [DisplayName("Album ảnh")]
     public class AlbumRoute : Root
     {
         public const string Parent = Module + "/gallery";
