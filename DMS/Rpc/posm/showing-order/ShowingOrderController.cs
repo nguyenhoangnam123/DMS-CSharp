@@ -14,7 +14,6 @@ using DMS.Entities;
 using DMS.Services.MShowingOrder;
 using DMS.Services.MAppUser;
 using DMS.Services.MOrganization;
-using DMS.Services.MShowingWarehouse;
 using DMS.Services.MStatus;
 using DMS.Services.MShowingItem;
 using DMS.Services.MUnitOfMeasure;
@@ -31,7 +30,6 @@ namespace DMS.Rpc.posm.showing_order
         private IAppUserService AppUserService;
         private IShowingCategoryService ShowingCategoryService;
         private IOrganizationService OrganizationService;
-        private IShowingWarehouseService ShowingWarehouseService;
         private IStatusService StatusService;
         private IShowingItemService ShowingItemService;
         private IUnitOfMeasureService UnitOfMeasureService;
@@ -43,7 +41,6 @@ namespace DMS.Rpc.posm.showing_order
             IAppUserService AppUserService,
             IShowingCategoryService ShowingCategoryService,
             IOrganizationService OrganizationService,
-            IShowingWarehouseService ShowingWarehouseService,
             IStatusService StatusService,
             IShowingItemService ShowingItemService,
             IUnitOfMeasureService UnitOfMeasureService,
@@ -56,7 +53,6 @@ namespace DMS.Rpc.posm.showing_order
             this.AppUserService = AppUserService;
             this.ShowingCategoryService = ShowingCategoryService;
             this.OrganizationService = OrganizationService;
-            this.ShowingWarehouseService = ShowingWarehouseService;
             this.StatusService = StatusService;
             this.ShowingItemService = ShowingItemService;
             this.UnitOfMeasureService = UnitOfMeasureService;
