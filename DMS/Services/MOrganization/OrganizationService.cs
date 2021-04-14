@@ -15,7 +15,7 @@ namespace DMS.Services.MOrganization
         Task<List<Organization>> List(OrganizationFilter OrganizationFilter);
         Task<Organization> Get(long Id);
         OrganizationFilter ToFilter(OrganizationFilter OrganizationFilter);
-        Task<Organization> UpdateIsDisplay(Organization Organization);
+        Task<bool> UpdateIsDisplay(long Id);
     }
 
     public class OrganizationService : BaseService, IOrganizationService
@@ -119,18 +119,24 @@ namespace DMS.Services.MOrganization
             return filter;
         }
 
-        public async Task<Organization> UpdateIsDisplay(Organization Organization)
+        public async Task<bool> UpdateIsDisplay(long Id)
         {
-            if (!await OrganizationValidator.Update(Organization))
-                return Organization;
+            if (!await OrganizationValidator.Update(new Organization
+            {
+                Id = Id
+            }))
+                return false;
             try
             {
-                var oldData = await UOW.OrganizationRepository.Get(Organization.Id);
-
-
+                var oldData = await UOW.OrganizationRepository.Get(Id);
+                var Organization = new Organization
+                {
+                    Id = oldData.Id,
+                    IsDisplay = !oldData.IsDisplay,
+                }; // toggle isDisplay
                 await UOW.OrganizationRepository.UpdateIsDisplay(Organization);
                 await Logging.CreateAuditLog(Organization, oldData, nameof(OrganizationService));
-                return Organization;
+                return true;
             }
             catch (Exception ex)
             {

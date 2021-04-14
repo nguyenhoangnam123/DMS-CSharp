@@ -71,22 +71,16 @@ namespace DMS.Rpc.organization
             return new Organization_OrganizationDTO(Organization);
         }
 
-        [Route(OrganizationRoute.UpdateIsDisplay), HttpPost]
-        public async Task<ActionResult<Organization_OrganizationDTO>> UpdateIsDisplay([FromBody] Organization_OrganizationDTO Organization_OrganizationDTO)
+        [Route(OrganizationRoute.ToggleIsDisplay), HttpPost]
+        public async Task<ActionResult<bool>> ToggleIsDisplay([FromBody] long  Id)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
 
-            if (!await HasPermission(Organization_OrganizationDTO.Id))
+            if (!await HasPermission(Id))
                 return Forbid();
 
-            Organization Organization = ConvertDTOToEntity(Organization_OrganizationDTO);
-            Organization = await OrganizationService.UpdateIsDisplay(Organization);
-            Organization_OrganizationDTO = new Organization_OrganizationDTO(Organization);
-            if (Organization.IsValidated)
-                return Organization_OrganizationDTO;
-            else
-                return BadRequest(Organization_OrganizationDTO);
+            return await OrganizationService.UpdateIsDisplay(Id);
         }
 
         [Route(OrganizationRoute.Export), HttpPost]
