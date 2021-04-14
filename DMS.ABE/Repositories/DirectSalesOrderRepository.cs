@@ -102,6 +102,8 @@ namespace DMS.ABE.Repositories
                 query = query.Where(q => q.Note, filter.Note);
             if (filter.RequestStateId != null)
                 query = query.Where(q => q.RequestStateId, filter.RequestStateId);
+            if (filter.StoreUserCreatorId != null)
+                query = query.Where(q => q.StoreUserCreatorId, filter.StoreUserCreatorId);
             if (filter.SubTotal != null)
                 query = query.Where(q => q.SubTotal, filter.SubTotal);
             if (filter.GeneralDiscountPercentage != null)
