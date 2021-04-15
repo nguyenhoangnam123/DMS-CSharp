@@ -25,6 +25,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_indirect_sales_order_by_stor
         public const string FilterListStoreType = Default + "/filter-list-store-type";
         public const string FilterListStoreGrouping = Default + "/filter-list-store-grouping";
         public const string FilterListStoreStatus = Default + "/filter-list-store-status";
+        public const string FilterListProductGrouping = Default + "/filter-list-product-grouping";
 
         public static Dictionary<string, long> Filters = new Dictionary<string, long>
         {
@@ -40,7 +41,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_indirect_sales_order_by_stor
             { "Tìm kiếm", new List<string> {
                 Parent,
                 Master, Count, List, Total, Export, 
-                FilterListOrganization, FilterListStore, FilterListStoreType, FilterListStoreGrouping, FilterListStoreStatus, FilterListItem } },
+                FilterListOrganization, FilterListStore, FilterListStoreType, FilterListStoreGrouping, FilterListStoreStatus, FilterListItem, FilterListProductGrouping } },
 
         };
     }

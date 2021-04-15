@@ -21,6 +21,7 @@ using NGS.Templater;
 using System.Diagnostics;
 using Thinktecture.EntityFrameworkCore.TempTables;
 using Thinktecture;
+using DMS.Services.MProductGrouping;
 
 namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_by_employee_and_item
 {
@@ -33,6 +34,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_by_employ
         private IStoreService StoreService;
         private IStoreGroupingService StoreGroupingService;
         private IStoreTypeService StoreTypeService;
+        private IProductGroupingService ProductGroupingService;
         private ICurrentContext CurrentContext;
         public ReportDirectSalesOrderByEmployeeAndItemController(
             DataContext DataContext,
@@ -42,6 +44,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_by_employ
             IStoreService StoreService,
             IStoreGroupingService StoreGroupingService,
             IStoreTypeService StoreTypeService,
+            IProductGroupingService ProductGroupingService,
             ICurrentContext CurrentContext)
         {
             this.DataContext = DataContext;
@@ -51,6 +54,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_by_employ
             this.StoreService = StoreService;
             this.StoreGroupingService = StoreGroupingService;
             this.StoreTypeService = StoreTypeService;
+            this.ProductGroupingService = ProductGroupingService;
             this.CurrentContext = CurrentContext;
         }
 
@@ -132,6 +136,23 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_by_employ
             List<ReportDirectSalesOrderByEmployeeAndItem_ItemDTO> ReportDirectSalesOrderByEmployeeAndItem_ItemDTOs = Items
                 .Select(x => new ReportDirectSalesOrderByEmployeeAndItem_ItemDTO(x)).ToList();
             return ReportDirectSalesOrderByEmployeeAndItem_ItemDTOs;
+        }
+
+        [Route(ReportDirectSalesOrderByEmployeeAndItemRoute.FilterListProductGrouping), HttpPost]
+        public async Task<List<ReportDirectSalesOrderByEmployeeAndItem_ProductGroupingDTO>> FilterListProductGrouping([FromBody] ReportDirectSalesOrderByEmployeeAndItem_ProductGroupingFilterDTO ReportDirectSalesOrderByEmployeeAndItem_ProductGroupingFilterDTO)
+        {
+            ProductGroupingFilter ProductGroupingFilter = new ProductGroupingFilter();
+            ProductGroupingFilter.Skip = 0;
+            ProductGroupingFilter.Take = int.MaxValue;
+            ProductGroupingFilter.OrderBy = ProductGroupingOrder.Id;
+            ProductGroupingFilter.OrderType = OrderType.ASC;
+            ProductGroupingFilter.Selects = ProductGroupingSelect.Id | ProductGroupingSelect.Code
+                | ProductGroupingSelect.Name | ProductGroupingSelect.Parent;
+
+            List<ProductGrouping> ProductGroupings = await ProductGroupingService.List(ProductGroupingFilter);
+            List<ReportDirectSalesOrderByEmployeeAndItem_ProductGroupingDTO> ReportDirectSalesOrderByEmployeeAndItem_ProductGroupingDTOs = ProductGroupings
+                .Select(x => new ReportDirectSalesOrderByEmployeeAndItem_ProductGroupingDTO(x)).ToList();
+            return ReportDirectSalesOrderByEmployeeAndItem_ProductGroupingDTOs;
         }
         #endregion
 

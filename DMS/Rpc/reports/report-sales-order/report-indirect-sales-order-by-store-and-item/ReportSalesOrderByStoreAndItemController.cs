@@ -22,6 +22,7 @@ using Thinktecture.EntityFrameworkCore.TempTables;
 using Thinktecture;
 using DMS.Services.MStoreStatus;
 using DMS.Services.MAppUser;
+using DMS.Services.MProductGrouping;
 
 namespace DMS.Rpc.reports.report_sales_order.report_indirect_sales_order_by_store_and_item
 {
@@ -35,6 +36,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_indirect_sales_order_by_stor
         private IStoreGroupingService StoreGroupingService;
         private IStoreTypeService StoreTypeService;
         private IStoreStatusService StoreStatusService;
+        private IProductGroupingService ProductGroupingService;
         private ICurrentContext CurrentContext;
         public ReportSalesOrderByStoreAndItemController(
             DataContext DataContext,
@@ -45,6 +47,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_indirect_sales_order_by_stor
             IStoreGroupingService StoreGroupingService,
             IStoreTypeService StoreTypeService,
             IStoreStatusService StoreStatusService,
+            IProductGroupingService ProductGroupingService,
             ICurrentContext CurrentContext)
         {
             this.DataContext = DataContext;
@@ -55,6 +58,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_indirect_sales_order_by_stor
             this.StoreGroupingService = StoreGroupingService;
             this.StoreTypeService = StoreTypeService;
             this.StoreStatusService = StoreStatusService;
+            this.ProductGroupingService = ProductGroupingService;
             this.CurrentContext = CurrentContext;
         }
 
@@ -183,6 +187,30 @@ namespace DMS.Rpc.reports.report_sales_order.report_indirect_sales_order_by_stor
         }
 
         [Route(ReportSalesOrderByStoreAndItemRoute.FilterListItem), HttpPost]
+
+        [Route(ReportSalesOrderByStoreAndItemRoute.FilterListProductGrouping), HttpPost]
+        public async Task<List<ReportSalesOrderByStoreAndItem_ProductGroupingDTO>> FilterListProductGrouping([FromBody] ReportSalesOrderByStoreAndItem_ProductGroupingFilterDTO ReportSalesOrderByStoreAndItem_ProductGroupingFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            ProductGroupingFilter ProductGroupingFilter = new ProductGroupingFilter();
+            ProductGroupingFilter.Skip = 0;
+            ProductGroupingFilter.Take = int.MaxValue;
+            ProductGroupingFilter.OrderBy = ProductGroupingOrder.Id;
+            ProductGroupingFilter.OrderType = OrderType.ASC;
+            ProductGroupingFilter.Selects = ProductGroupingSelect.ALL;
+            ProductGroupingFilter.Code = ReportSalesOrderByStoreAndItem_ProductGroupingFilterDTO.Code;
+            ProductGroupingFilter.Name = ReportSalesOrderByStoreAndItem_ProductGroupingFilterDTO.Name;
+
+            if (ProductGroupingFilter.Id == null) ProductGroupingFilter.Id = new IdFilter();
+            ProductGroupingFilter.Id.In = await FilterProductGrouping(ProductGroupingService, CurrentContext);
+            List<ProductGrouping> ReportSalesOrderByStoreAndItemGroupings = await ProductGroupingService.List(ProductGroupingFilter);
+            List<ReportSalesOrderByStoreAndItem_ProductGroupingDTO> ReportSalesOrderByStoreAndItem_ProductGroupingDTOs = ReportSalesOrderByStoreAndItemGroupings
+                .Select(x => new ReportSalesOrderByStoreAndItem_ProductGroupingDTO(x)).ToList();
+            return ReportSalesOrderByStoreAndItem_ProductGroupingDTOs;
+        }
+
         public async Task<List<ReportSalesOrderByStoreAndItem_ItemDTO>> FilterListItem([FromBody] ReportSalesOrderByStoreAndItem_ItemFilterDTO ReportSalesOrderByStoreAndItem_ItemFilterDTO)
         {
             if (!ModelState.IsValid)

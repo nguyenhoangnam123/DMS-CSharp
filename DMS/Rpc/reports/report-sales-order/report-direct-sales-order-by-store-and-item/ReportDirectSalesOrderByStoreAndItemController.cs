@@ -22,6 +22,7 @@ using DMS.Services.MStoreStatus;
 using Thinktecture.EntityFrameworkCore.TempTables;
 using Thinktecture;
 using DMS.Services.MAppUser;
+using DMS.Services.MProductGrouping;
 
 namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_by_store_and_item
 {
@@ -35,6 +36,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_by_store_
         private IStoreGroupingService StoreGroupingService;
         private IStoreTypeService StoreTypeService;
         private IStoreStatusService StoreStatusService;
+        private IProductGroupingService ProductGroupingService;
         private ICurrentContext CurrentContext;
         public ReportDirectSalesOrderByStoreAndItemController(
             DataContext DataContext,
@@ -45,6 +47,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_by_store_
             IStoreGroupingService StoreGroupingService,
             IStoreTypeService StoreTypeService,
             IStoreStatusService StoreStatusService,
+            IProductGroupingService ProductGroupingService,
             ICurrentContext CurrentContext)
         {
             this.DataContext = DataContext;
@@ -55,6 +58,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_by_store_
             this.StoreGroupingService = StoreGroupingService;
             this.StoreTypeService = StoreTypeService;
             this.StoreStatusService = StoreStatusService;
+            this.ProductGroupingService = ProductGroupingService;
             this.CurrentContext = CurrentContext;
         }
 
@@ -204,6 +208,23 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_by_store_
             List<ReportDirectSalesOrderByStoreAndItem_StoreStatusDTO> ReportDirectSalesOrderByStoreAndItem_StoreStatusDTOs = StoreStatuses
                 .Select(x => new ReportDirectSalesOrderByStoreAndItem_StoreStatusDTO(x)).ToList();
             return ReportDirectSalesOrderByStoreAndItem_StoreStatusDTOs;
+        }
+
+        [Route(ReportDirectSalesOrderByStoreAndItemRoute.FilterListProductGrouping), HttpPost]
+        public async Task<List<ReportDirectSalesOrderByStoreAndItem_ProductGroupingDTO>> FilterListProductGrouping([FromBody] ReportDirectSalesOrderByStoreAndItem_ProductGroupingFilterDTO ReportDirectSalesOrderByStoreAndItem_ProductGroupingFilterDTO)
+        {
+            ProductGroupingFilter ProductGroupingFilter = new ProductGroupingFilter();
+            ProductGroupingFilter.Skip = 0;
+            ProductGroupingFilter.Take = int.MaxValue;
+            ProductGroupingFilter.OrderBy = ProductGroupingOrder.Id;
+            ProductGroupingFilter.OrderType = OrderType.ASC;
+            ProductGroupingFilter.Selects = ProductGroupingSelect.Id | ProductGroupingSelect.Code
+                | ProductGroupingSelect.Name | ProductGroupingSelect.Parent;
+
+            List<ProductGrouping> ProductGroupings = await ProductGroupingService.List(ProductGroupingFilter);
+            List<ReportDirectSalesOrderByStoreAndItem_ProductGroupingDTO> ReportDirectSalesOrderByStoreAndItem_ProductGroupingDTOs = ProductGroupings
+                .Select(x => new ReportDirectSalesOrderByStoreAndItem_ProductGroupingDTO(x)).ToList();
+            return ReportDirectSalesOrderByStoreAndItem_ProductGroupingDTOs;
         }
 
         [Route(ReportDirectSalesOrderByStoreAndItemRoute.Count), HttpPost]
@@ -700,7 +721,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_by_store_
         }
 
         private async Task<ReportDirectSalesOrderByStoreAndItem_TotalDTO> TotalData(
-            ReportDirectSalesOrderByStoreAndItem_ReportDirectSalesOrderByStoreAndItemFilterDTO ReportDirectSalesOrderByStoreAndItem_ReportDirectSalesOrderByStoreAndItemFilterDTO, 
+            ReportDirectSalesOrderByStoreAndItem_ReportDirectSalesOrderByStoreAndItemFilterDTO ReportDirectSalesOrderByStoreAndItem_ReportDirectSalesOrderByStoreAndItemFilterDTO,
             DateTime Start, DateTime End)
         {
             long? StoreId = ReportDirectSalesOrderByStoreAndItem_ReportDirectSalesOrderByStoreAndItemFilterDTO.StoreId?.Equal;

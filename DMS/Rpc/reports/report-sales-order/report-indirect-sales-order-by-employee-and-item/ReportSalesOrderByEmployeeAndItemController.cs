@@ -21,6 +21,7 @@ using NGS.Templater;
 using System.Diagnostics;
 using Thinktecture.EntityFrameworkCore.TempTables;
 using Thinktecture;
+using DMS.Services.MProductGrouping;
 
 namespace DMS.Rpc.reports.report_sales_order.report_indirect_sales_order_by_employee_and_item
 {
@@ -33,6 +34,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_indirect_sales_order_by_empl
         private IStoreService StoreService;
         private IStoreGroupingService StoreGroupingService;
         private IStoreTypeService StoreTypeService;
+        private IProductGroupingService ProductGroupingService;
         private ICurrentContext CurrentContext;
         public ReportSalesOrderByEmployeeAndItemController(
             DataContext DataContext,
@@ -42,6 +44,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_indirect_sales_order_by_empl
             IStoreService StoreService,
             IStoreGroupingService StoreGroupingService,
             IStoreTypeService StoreTypeService,
+            IProductGroupingService ProductGroupingService,
             ICurrentContext CurrentContext)
         {
             this.DataContext = DataContext;
@@ -51,6 +54,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_indirect_sales_order_by_empl
             this.StoreService = StoreService;
             this.StoreGroupingService = StoreGroupingService;
             this.StoreTypeService = StoreTypeService;
+            this.ProductGroupingService = ProductGroupingService;
             this.CurrentContext = CurrentContext;
         }
 
@@ -132,6 +136,23 @@ namespace DMS.Rpc.reports.report_sales_order.report_indirect_sales_order_by_empl
             List<ReportSalesOrderByEmployeeAndItem_ItemDTO> ReportSalesOrderByEmployeeAndItem_ItemDTOs = Items
                 .Select(x => new ReportSalesOrderByEmployeeAndItem_ItemDTO(x)).ToList();
             return ReportSalesOrderByEmployeeAndItem_ItemDTOs;
+        }
+
+        [Route(ReportSalesOrderByEmployeeAndItemRoute.FilterListProductGrouping), HttpPost]
+        public async Task<List<ReportSalesOrderByEmployeeAndItem_ProductGroupingDTO>> FilterListProductGrouping([FromBody] ReportSalesOrderByEmployeeAndItem_ProductGroupingFilterDTO ReportSalesOrderByEmployeeAndItem_ProductGroupingFilterDTO)
+        {
+            ProductGroupingFilter ProductGroupingFilter = new ProductGroupingFilter();
+            ProductGroupingFilter.Skip = 0;
+            ProductGroupingFilter.Take = int.MaxValue;
+            ProductGroupingFilter.OrderBy = ProductGroupingOrder.Id;
+            ProductGroupingFilter.OrderType = OrderType.ASC;
+            ProductGroupingFilter.Selects = ProductGroupingSelect.Id | ProductGroupingSelect.Code
+                | ProductGroupingSelect.Name | ProductGroupingSelect.Parent;
+
+            List<ProductGrouping> ProductGroupings = await ProductGroupingService.List(ProductGroupingFilter);
+            List<ReportSalesOrderByEmployeeAndItem_ProductGroupingDTO> ReportSalesOrderByEmployeeAndItem_ProductGroupingDTOs = ProductGroupings
+                .Select(x => new ReportSalesOrderByEmployeeAndItem_ProductGroupingDTO(x)).ToList();
+            return ReportSalesOrderByEmployeeAndItem_ProductGroupingDTOs;
         }
         #endregion
 
@@ -570,7 +591,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_indirect_sales_order_by_empl
         }
 
         private async Task<ReportSalesOrderByEmployeeAndItem_TotalDTO> TotalData(
-            ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO, 
+            ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO,
             DateTime Start, DateTime End)
         {
             long? SaleEmployeeId = ReportSalesOrderByEmployeeAndItem_ReportSalesOrderByEmployeeAndItemFilterDTO.AppUserId?.Equal;
