@@ -18,6 +18,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_indirect_sales_order_by_empl
         public IdFilter OrganizationId { get; set; }
         public IdFilter AppUserId { get; set; }
         public IdFilter ItemId { get; set; }
+        public IdFilter ProductGroupingId { get; set; }
         public DateFilter OrderDate { get; set; }
         internal bool HasValue => (OrganizationId != null && OrganizationId.HasValue) ||
             (AppUserId != null && AppUserId.HasValue) ||

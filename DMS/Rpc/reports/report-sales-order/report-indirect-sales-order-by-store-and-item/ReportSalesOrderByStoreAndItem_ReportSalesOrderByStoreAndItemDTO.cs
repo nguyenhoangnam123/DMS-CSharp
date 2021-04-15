@@ -22,6 +22,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_indirect_sales_order_by_stor
         public IdFilter StoreTypeId { get; set; }
         public IdFilter StoreGroupingId { get; set; }
         public IdFilter StoreStatusId { get; set; }
+        public IdFilter ProductGroupingId { get; set; }
         internal bool HasValue => (OrganizationId != null && OrganizationId.HasValue) ||
             (OrderDate != null && OrderDate.HasValue) ||
             (StoreId != null && StoreId.HasValue) ||
