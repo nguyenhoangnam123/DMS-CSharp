@@ -3,6 +3,9 @@ using System.Collections.Generic;
 
 namespace DMS.Models
 {
+    /// <summary>
+    /// B&#7843;ng l&#432;u danh s&#225;ch &#7843;nh c&#7911;a 1 album
+    /// </summary>
     public partial class AlbumImageMappingDAO
     {
         public long ImageId { get; set; }

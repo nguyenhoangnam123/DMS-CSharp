@@ -143,6 +143,8 @@ namespace DMS.Models
         public virtual DbSet<ShowingItemImageMappingDAO> ShowingItemImageMapping { get; set; }
         public virtual DbSet<ShowingOrderDAO> ShowingOrder { get; set; }
         public virtual DbSet<ShowingOrderContentDAO> ShowingOrderContent { get; set; }
+        public virtual DbSet<ShowingOrderContentWithDrawDAO> ShowingOrderContentWithDraw { get; set; }
+        public virtual DbSet<ShowingOrderWithDrawDAO> ShowingOrderWithDraw { get; set; }
         public virtual DbSet<StatusDAO> Status { get; set; }
         public virtual DbSet<StoreDAO> Store { get; set; }
         public virtual DbSet<StoreApprovalStateDAO> StoreApprovalState { get; set; }
@@ -4060,6 +4062,34 @@ namespace DMS.Models
                     .HasConstraintName("FK_ShowingOrderContent_UnitOfMeasure");
             });
 
+            modelBuilder.Entity<ShowingOrderContentWithDrawDAO>(entity =>
+            {
+                entity.HasNoKey();
+
+                entity.ToTable("ShowingOrderContentWithDraw", "POSM");
+
+                entity.Property(e => e.Amount).HasColumnType("decimal(18, 4)");
+            });
+
+            modelBuilder.Entity<ShowingOrderWithDrawDAO>(entity =>
+            {
+                entity.HasNoKey();
+
+                entity.ToTable("ShowingOrderWithDraw", "POSM");
+
+                entity.Property(e => e.Code).HasMaxLength(50);
+
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.Date).HasColumnType("datetime");
+
+                entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.Total).HasColumnType("decimal(18, 4)");
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+            });
+
             modelBuilder.Entity<StatusDAO>(entity =>
             {
                 entity.ToTable("Status", "ENUM");
@@ -4788,6 +4818,8 @@ namespace DMS.Models
                 entity.Property(e => e.Content)
                     .IsRequired()
                     .HasMaxLength(500);
+
+                entity.Property(e => e.FileUrl).HasMaxLength(500);
 
                 entity.HasOne(d => d.Survey)
                     .WithMany(p => p.SurveyQuestions)

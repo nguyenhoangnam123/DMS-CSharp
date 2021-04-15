@@ -15,6 +15,7 @@ namespace DMS.Models
 
         public long Id { get; set; }
         public long SurveyId { get; set; }
+        public string FileUrl { get; set; }
         public string Content { get; set; }
         public long SurveyQuestionTypeId { get; set; }
         public bool IsMandatory { get; set; }

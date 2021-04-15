@@ -3,6 +3,9 @@ using System.Collections.Generic;
 
 namespace DMS.Models
 {
+    /// <summary>
+    /// B&#7843;ng chi ti&#7871;t c&#7911;a m&#7897;t y&#234;u c&#7847;u thay &#273;&#7893;i tuy&#7871;n
+    /// </summary>
     public partial class ERouteChangeRequestContentDAO
     {
         public long Id { get; set; }

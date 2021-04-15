@@ -3,6 +3,9 @@ using System.Collections.Generic;
 
 namespace DMS.Models
 {
+    /// <summary>
+    /// B&#7843;ng chi ti&#7871;t c&#7911;a thi&#7871;t l&#7853;p tuy&#7871;n
+    /// </summary>
     public partial class ERouteContentDAO
     {
         public ERouteContentDAO()

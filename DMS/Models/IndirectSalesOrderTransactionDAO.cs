@@ -3,6 +3,9 @@ using System.Collections.Generic;
 
 namespace DMS.Models
 {
+    /// <summary>
+    /// &#160;T&#7893;ng h&#7907;p c&#225;c s&#7843;n ph&#7849;m c&#7911;a &#273;&#417;n h&#224;ng gi&#225;n ti&#7871;p
+    /// </summary>
     public partial class IndirectSalesOrderTransactionDAO
     {
         public long Id { get; set; }
