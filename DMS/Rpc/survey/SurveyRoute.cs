@@ -23,6 +23,7 @@ namespace DMS.Rpc.survey
         public const string AnswerStatistics = Default + "/answer-statistics";
         public const string GetSurveyForm = Default + "/get-survey-form";
         public const string SaveSurveyForm = Default + "/save-survey-form";
+        public const string SaveQuestionFile = Default + "/save-question-file";
 
         public const string FilterListAppUser = Default + "/filter-list-app-user";
         public const string FilterListStatus = Default + "/filter-list-status";

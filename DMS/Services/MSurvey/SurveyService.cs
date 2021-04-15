@@ -10,6 +10,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using DMS.Handlers;
+using System.IO;
+using RestSharp;
 
 namespace DMS.Services.MSurvey
 {
@@ -23,6 +25,7 @@ namespace DMS.Services.MSurvey
         Task<Survey> Delete(Survey Survey);
         Task<Survey> GetForm(long Id);
         Task<Survey> SaveForm(Survey Survey);
+        Task<DMS.Entities.File> SaveFile(DMS.Entities.File File);
         SurveyFilter ToFilter(SurveyFilter SurveyFilter);
     }
 
@@ -476,6 +479,37 @@ namespace DMS.Services.MSurvey
                     throw new MessageException(ex.InnerException);
                 }
             }
+        }
+
+        public async Task<DMS.Entities.File> SaveFile(DMS.Entities.File File)
+        {
+            FileInfo fileInfo = new FileInfo(File.Name);
+            string path = $"/category/{StaticParams.DateTimeNow.ToString("yyyyMMdd")}/{Guid.NewGuid()}{fileInfo.Extension}";
+
+            RestClient restClient = new RestClient(InternalServices.UTILS);
+            RestRequest restRequest = new RestRequest("/rpc/utils/file/upload");
+            restRequest.RequestFormat = DataFormat.Json;
+            restRequest.Method = Method.POST;
+            restRequest.AddCookie("Token", CurrentContext.Token);
+            restRequest.AddCookie("X-Language", CurrentContext.Language);
+            restRequest.AddHeader("Content-Type", "multipart/form-data");
+            restRequest.AddFile("file", File.Content, File.Name);
+            restRequest.AddParameter("path", path);
+            try
+            {
+                var response = restClient.Execute<DMS.Entities.File>(restRequest);
+                if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    File.Id = response.Data.Id;
+                    File.Path = "/rpc/utils/file/download" + response.Data.Path;
+                }
+                return File;
+            }
+            catch
+            {
+                return null;
+            }
+            return null;
         }
     }
 }

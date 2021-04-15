@@ -8,6 +8,7 @@ using DMS.Services.MStatus;
 using DMS.Services.MSurvey;
 using DMS.Services.MSurveyResult;
 using GleamTech.FileSystems.AzureBlob;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using OfficeOpenXml;
 using System;
@@ -16,6 +17,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using File = DMS.Entities.File;
 
 namespace DMS.Rpc.survey
 {
@@ -675,6 +677,30 @@ namespace DMS.Rpc.survey
             return Survey_SurveyOptionTypeDTOs;
         }
 
+        [Route(SurveyRoute.SaveQuestionFile), HttpPost]
+        public async Task<ActionResult<Survey_FileDTO>> SaveQuestionFile(IFormFile file)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+            MemoryStream memoryStream = new MemoryStream();
+            file.CopyTo(memoryStream);
+            File File = new File
+            {
+                Name = file.FileName,
+                Content = memoryStream.ToArray()
+            };
+            //Image = await StoreCheckingService.SaveImage(Image);
+            //if (Image == null)
+            //    return BadRequest();
+            //Survey_FileDTO Survey_FileDTO = new Survey_FileDTO
+            //{
+            //    Id = Image.Id,
+            //    Name = Image.Name,
+            //    Url = Image.Url,
+            //};
+
+            return Ok(new Survey_FileDTO());
+        }
     }
 }
 
