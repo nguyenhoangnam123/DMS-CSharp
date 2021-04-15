@@ -1,23 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using DMS.Common;
-using DMS.Helpers;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using System.IO;
-using OfficeOpenXml;
 using DMS.Entities;
-using DMS.Services.MShowingOrder;
-using DMS.Services.MAppUser;
-using DMS.Services.MOrganization;
-using DMS.Services.MShowingWarehouse;
-using DMS.Services.MStatus;
-using DMS.Services.MShowingItem;
-using DMS.Services.MUnitOfMeasure;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 
 namespace DMS.Rpc.posm.showing_order
 {
@@ -36,7 +21,7 @@ namespace DMS.Rpc.posm.showing_order
         public const string Update = Default + "/update";
         public const string Delete = Default + "/delete";
         public const string Export = Default + "/export";
-        
+
         public const string FilterListAppUser = Default + "/filter-list-app-user";
         public const string FilterListShowingCategory = Default + "/filter-list-showing-category";
         public const string FilterListOrganization = Default + "/filter-list-organization";
@@ -71,51 +56,51 @@ namespace DMS.Rpc.posm.showing_order
             { nameof(ShowingOrderFilter.RowId), FieldTypeEnum.ID.Id },
         };
 
-        private static List<string> FilterList = new List<string> { 
-            FilterListAppUser, FilterListShowingCategory, FilterListOrganization, FilterListShowingWarehouse, FilterListStatus, FilterListStore, FilterListShowingItem, 
+        private static List<string> FilterList = new List<string> {
+            FilterListAppUser, FilterListShowingCategory, FilterListOrganization, FilterListShowingWarehouse, FilterListStatus, FilterListStore, FilterListShowingItem,
             FilterListUnitOfMeasure,
         };
-        private static List<string> SingleList = new List<string> { 
-            SingleListAppUser, SingleListOrganization, SingleListShowingWarehouse, SingleListStatus, SingleListShowingItem, SingleListUnitOfMeasure, 
+        private static List<string> SingleList = new List<string> {
+            SingleListAppUser, SingleListOrganization, SingleListShowingWarehouse, SingleListStatus, SingleListShowingItem, SingleListUnitOfMeasure,
         };
         private static List<string> CountList = new List<string> {
             CountShowingItem, ListShowingItem, CountStore, ListStore
         };
-        
+
         public static Dictionary<string, IEnumerable<string>> Action = new Dictionary<string, IEnumerable<string>>
         {
-            { "Tìm kiếm", new List<string> { 
+            { "Tìm kiếm", new List<string> {
                     Parent,
                     Master, Preview, Count, List,
-                    Get,  
+                    Get,
                 }.Concat(FilterList)
             },
-            { "Thêm", new List<string> { 
+            { "Thêm", new List<string> {
                     Parent,
                     Master, Preview, Count, List, Get,
-                    Detail, Create, 
+                    Detail, Create,
                 }.Concat(SingleList).Concat(FilterList).Concat(CountList)
             },
 
-            { "Sửa", new List<string> { 
-                    Parent,            
+            { "Sửa", new List<string> {
+                    Parent,
                     Master, Preview, Count, List, Get,
-                    Detail, Update, 
+                    Detail, Update,
                 }.Concat(SingleList).Concat(FilterList).Concat(CountList)
             },
 
-            { "Xoá", new List<string> { 
+            { "Xoá", new List<string> {
                     Parent,
                     Master, Preview, Count, List, Get,
-                    Delete, 
-                }.Concat(SingleList).Concat(FilterList) 
+                    Delete,
+                }.Concat(SingleList).Concat(FilterList)
             },
 
-            { "Xuất excel", new List<string> { 
+            { "Xuất excel", new List<string> {
                     Parent,
                     Master, Preview, Count, List, Get,
-                    Export 
-                }.Concat(FilterList) 
+                    Export
+                }.Concat(FilterList)
             },
         };
     }

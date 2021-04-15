@@ -86,8 +86,6 @@ namespace DMS.ABE.Repositories
             }
             if (filter.Date != null && filter.Date.HasValue)
                 query = query.Where(q => q.Date, filter.Date);
-            if (filter.ShowingWarehouseId != null && filter.ShowingWarehouseId.HasValue)
-                query = query.Where(q => q.ShowingWarehouseId, filter.ShowingWarehouseId);
             if (filter.StatusId != null && filter.StatusId.HasValue)
                 query = query.Where(q => q.StatusId, filter.StatusId);
             if (filter.Total != null && filter.Total.HasValue)
@@ -118,8 +116,6 @@ namespace DMS.ABE.Repositories
                     queryable = queryable.Where(q => q.StoreId, filter.StoreId);
                 if (ShowingOrderFilter.Date != null && ShowingOrderFilter.Date.HasValue)
                     queryable = queryable.Where(q => q.Date, filter.Date);
-                if (ShowingOrderFilter.ShowingWarehouseId != null && ShowingOrderFilter.ShowingWarehouseId.HasValue)
-                    queryable = queryable.Where(q => q.ShowingWarehouseId, filter.ShowingWarehouseId);
                 if (ShowingOrderFilter.StatusId != null && ShowingOrderFilter.StatusId.HasValue)
                     queryable = queryable.Where(q => q.StatusId, filter.StatusId);
                 if (ShowingOrderFilter.Total != null && ShowingOrderFilter.Total.HasValue)
@@ -156,9 +152,6 @@ namespace DMS.ABE.Repositories
                         case ShowingOrderOrder.Date:
                             query = query.OrderBy(q => q.Date);
                             break;
-                        case ShowingOrderOrder.ShowingWarehouse:
-                            query = query.OrderBy(q => q.ShowingWarehouseId);
-                            break;
                         case ShowingOrderOrder.Status:
                             query = query.OrderBy(q => q.StatusId);
                             break;
@@ -191,9 +184,6 @@ namespace DMS.ABE.Repositories
                         case ShowingOrderOrder.Date:
                             query = query.OrderByDescending(q => q.Date);
                             break;
-                        case ShowingOrderOrder.ShowingWarehouse:
-                            query = query.OrderByDescending(q => q.ShowingWarehouseId);
-                            break;
                         case ShowingOrderOrder.Status:
                             query = query.OrderByDescending(q => q.StatusId);
                             break;
@@ -220,7 +210,6 @@ namespace DMS.ABE.Repositories
                 OrganizationId = filter.Selects.Contains(ShowingOrderSelect.Organization) ? q.OrganizationId : default(long),
                 StoreId = filter.Selects.Contains(ShowingOrderSelect.Store) ? q.StoreId : default(long),
                 Date = filter.Selects.Contains(ShowingOrderSelect.Date) ? q.Date : default(DateTime),
-                ShowingWarehouseId = filter.Selects.Contains(ShowingOrderSelect.ShowingWarehouse) ? q.ShowingWarehouseId : default(long),
                 StatusId = filter.Selects.Contains(ShowingOrderSelect.Status) ? q.StatusId : default(long),
                 Total = filter.Selects.Contains(ShowingOrderSelect.Total) ? q.Total : default(decimal),
                 RowId = filter.Selects.Contains(ShowingOrderSelect.Row) ? q.RowId : default(Guid),
@@ -258,19 +247,6 @@ namespace DMS.ABE.Repositories
                     Email = q.Organization.Email,
                     Address = q.Organization.Address,
                     RowId = q.Organization.RowId,
-                } : null,
-                ShowingWarehouse = filter.Selects.Contains(ShowingOrderSelect.ShowingWarehouse) && q.ShowingWarehouse != null ? new ShowingWarehouse
-                {
-                    Id = q.ShowingWarehouse.Id,
-                    Code = q.ShowingWarehouse.Code,
-                    Name = q.ShowingWarehouse.Name,
-                    Address = q.ShowingWarehouse.Address,
-                    OrganizationId = q.ShowingWarehouse.OrganizationId,
-                    ProvinceId = q.ShowingWarehouse.ProvinceId,
-                    DistrictId = q.ShowingWarehouse.DistrictId,
-                    WardId = q.ShowingWarehouse.WardId,
-                    StatusId = q.ShowingWarehouse.StatusId,
-                    RowId = q.ShowingWarehouse.RowId,
                 } : null,
                 Status = filter.Selects.Contains(ShowingOrderSelect.Status) && q.Status != null ? new Status
                 {
@@ -354,7 +330,6 @@ namespace DMS.ABE.Repositories
                 OrganizationId = x.OrganizationId,
                 StoreId = x.StoreId,
                 Date = x.Date,
-                ShowingWarehouseId = x.ShowingWarehouseId,
                 StatusId = x.StatusId,
                 Total = x.Total,
                 RowId = x.RowId,
@@ -392,19 +367,6 @@ namespace DMS.ABE.Repositories
                     Email = x.Organization.Email,
                     Address = x.Organization.Address,
                     RowId = x.Organization.RowId,
-                },
-                ShowingWarehouse = x.ShowingWarehouse == null ? null : new ShowingWarehouse
-                {
-                    Id = x.ShowingWarehouse.Id,
-                    Code = x.ShowingWarehouse.Code,
-                    Name = x.ShowingWarehouse.Name,
-                    Address = x.ShowingWarehouse.Address,
-                    OrganizationId = x.ShowingWarehouse.OrganizationId,
-                    ProvinceId = x.ShowingWarehouse.ProvinceId,
-                    DistrictId = x.ShowingWarehouse.DistrictId,
-                    WardId = x.ShowingWarehouse.WardId,
-                    StatusId = x.ShowingWarehouse.StatusId,
-                    RowId = x.ShowingWarehouse.RowId,
                 },
                 Status = x.Status == null ? null : new Status
                 {
@@ -515,7 +477,6 @@ namespace DMS.ABE.Repositories
                 OrganizationId = x.OrganizationId,
                 StoreId = x.StoreId,
                 Date = x.Date,
-                ShowingWarehouseId = x.ShowingWarehouseId,
                 StatusId = x.StatusId,
                 Total = x.Total,
                 RowId = x.RowId,
@@ -553,19 +514,6 @@ namespace DMS.ABE.Repositories
                     Email = x.Organization.Email,
                     Address = x.Organization.Address,
                     RowId = x.Organization.RowId,
-                },
-                ShowingWarehouse = x.ShowingWarehouse == null ? null : new ShowingWarehouse
-                {
-                    Id = x.ShowingWarehouse.Id,
-                    Code = x.ShowingWarehouse.Code,
-                    Name = x.ShowingWarehouse.Name,
-                    Address = x.ShowingWarehouse.Address,
-                    OrganizationId = x.ShowingWarehouse.OrganizationId,
-                    ProvinceId = x.ShowingWarehouse.ProvinceId,
-                    DistrictId = x.ShowingWarehouse.DistrictId,
-                    WardId = x.ShowingWarehouse.WardId,
-                    StatusId = x.ShowingWarehouse.StatusId,
-                    RowId = x.ShowingWarehouse.RowId,
                 },
                 Status = x.Status == null ? null : new Status
                 {
@@ -665,7 +613,6 @@ namespace DMS.ABE.Repositories
             ShowingOrderDAO.OrganizationId = ShowingOrder.OrganizationId;
             ShowingOrderDAO.StoreId = ShowingOrder.StoreId;
             ShowingOrderDAO.Date = ShowingOrder.Date;
-            ShowingOrderDAO.ShowingWarehouseId = ShowingOrder.ShowingWarehouseId;
             ShowingOrderDAO.StatusId = ShowingOrder.StatusId;
             ShowingOrderDAO.Total = ShowingOrder.Total;
             ShowingOrderDAO.RowId = ShowingOrder.RowId;
@@ -689,7 +636,6 @@ namespace DMS.ABE.Repositories
             ShowingOrderDAO.OrganizationId = ShowingOrder.OrganizationId;
             ShowingOrderDAO.StoreId = ShowingOrder.StoreId;
             ShowingOrderDAO.Date = ShowingOrder.Date;
-            ShowingOrderDAO.ShowingWarehouseId = ShowingOrder.ShowingWarehouseId;
             ShowingOrderDAO.StatusId = ShowingOrder.StatusId;
             ShowingOrderDAO.Total = ShowingOrder.Total;
             ShowingOrderDAO.RowId = ShowingOrder.RowId;
@@ -717,7 +663,6 @@ namespace DMS.ABE.Repositories
                 ShowingOrderDAO.OrganizationId = ShowingOrder.OrganizationId;
                 ShowingOrderDAO.StoreId = ShowingOrder.StoreId;
                 ShowingOrderDAO.Date = ShowingOrder.Date;
-                ShowingOrderDAO.ShowingWarehouseId = ShowingOrder.ShowingWarehouseId;
                 ShowingOrderDAO.StatusId = ShowingOrder.StatusId;
                 ShowingOrderDAO.Total = ShowingOrder.Total;
                 ShowingOrderDAO.RowId = ShowingOrder.RowId;

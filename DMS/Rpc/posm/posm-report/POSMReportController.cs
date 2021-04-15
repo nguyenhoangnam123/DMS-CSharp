@@ -14,7 +14,6 @@ using DMS.Entities;
 using DMS.Services.MShowingOrder;
 using DMS.Services.MAppUser;
 using DMS.Services.MOrganization;
-using DMS.Services.MShowingWarehouse;
 using DMS.Services.MStatus;
 using DMS.Services.MShowingItem;
 using DMS.Services.MUnitOfMeasure;

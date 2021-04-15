@@ -1,22 +1,9 @@
-using System;
+using DMS.Common;
+using DMS.Entities;
+using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using DMS.Common;
-using DMS.Helpers;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using System.IO;
-using OfficeOpenXml;
-using DMS.Entities;
-using DMS.Services.MShowingOrder;
-using DMS.Services.MAppUser;
-using DMS.Services.MOrganization;
-using DMS.Services.MShowingWarehouse;
-using DMS.Services.MStatus;
-using DMS.Services.MShowingItem;
-using DMS.Services.MUnitOfMeasure;
 
 namespace DMS.Rpc.posm.showing_order
 {
@@ -108,34 +95,6 @@ namespace DMS.Rpc.posm.showing_order
             List<ShowingOrder_OrganizationDTO> ShowingOrder_OrganizationDTOs = Organizations
                 .Select(x => new ShowingOrder_OrganizationDTO(x)).ToList();
             return ShowingOrder_OrganizationDTOs;
-        }
-        [Route(ShowingOrderRoute.FilterListShowingWarehouse), HttpPost]
-        public async Task<List<ShowingOrder_ShowingWarehouseDTO>> FilterListShowingWarehouse([FromBody] ShowingOrder_ShowingWarehouseFilterDTO ShowingOrder_ShowingWarehouseFilterDTO)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
-
-            ShowingWarehouseFilter ShowingWarehouseFilter = new ShowingWarehouseFilter();
-            ShowingWarehouseFilter.Skip = 0;
-            ShowingWarehouseFilter.Take = 20;
-            ShowingWarehouseFilter.OrderBy = ShowingWarehouseOrder.Id;
-            ShowingWarehouseFilter.OrderType = OrderType.ASC;
-            ShowingWarehouseFilter.Selects = ShowingWarehouseSelect.ALL;
-            ShowingWarehouseFilter.Id = ShowingOrder_ShowingWarehouseFilterDTO.Id;
-            ShowingWarehouseFilter.Code = ShowingOrder_ShowingWarehouseFilterDTO.Code;
-            ShowingWarehouseFilter.Name = ShowingOrder_ShowingWarehouseFilterDTO.Name;
-            ShowingWarehouseFilter.Address = ShowingOrder_ShowingWarehouseFilterDTO.Address;
-            ShowingWarehouseFilter.OrganizationId = ShowingOrder_ShowingWarehouseFilterDTO.OrganizationId;
-            ShowingWarehouseFilter.ProvinceId = ShowingOrder_ShowingWarehouseFilterDTO.ProvinceId;
-            ShowingWarehouseFilter.DistrictId = ShowingOrder_ShowingWarehouseFilterDTO.DistrictId;
-            ShowingWarehouseFilter.WardId = ShowingOrder_ShowingWarehouseFilterDTO.WardId;
-            ShowingWarehouseFilter.StatusId = ShowingOrder_ShowingWarehouseFilterDTO.StatusId;
-            ShowingWarehouseFilter.RowId = ShowingOrder_ShowingWarehouseFilterDTO.RowId;
-
-            List<ShowingWarehouse> ShowingWarehouses = await ShowingWarehouseService.List(ShowingWarehouseFilter);
-            List<ShowingOrder_ShowingWarehouseDTO> ShowingOrder_ShowingWarehouseDTOs = ShowingWarehouses
-                .Select(x => new ShowingOrder_ShowingWarehouseDTO(x)).ToList();
-            return ShowingOrder_ShowingWarehouseDTOs;
         }
         [Route(ShowingOrderRoute.FilterListStatus), HttpPost]
         public async Task<List<ShowingOrder_StatusDTO>> FilterListStatus([FromBody] ShowingOrder_StatusFilterDTO ShowingOrder_StatusFilterDTO)
