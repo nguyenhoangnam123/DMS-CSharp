@@ -446,6 +446,19 @@ namespace DMS.Rpc.reports.report_sales_order.report_indirect_sales_order_by_stor
             long? StoreGroupingId = ReportSalesOrderByStoreAndItem_ReportSalesOrderByStoreAndItemFilterDTO.StoreGroupingId?.Equal;
             long? StoreStatusId = ReportSalesOrderByStoreAndItem_ReportSalesOrderByStoreAndItemFilterDTO.StoreStatusId?.Equal;
             List<long> ItemIds = ReportSalesOrderByStoreAndItem_ReportSalesOrderByStoreAndItemFilterDTO.ItemId?.In;
+            long? ProductGroupingId = ReportSalesOrderByStoreAndItem_ReportSalesOrderByStoreAndItemFilterDTO.ProductGroupingId?.Equal;
+
+            if (ProductGroupingId.HasValue)
+            {
+                var ItemDAOs = await ItemService.List(new ItemFilter
+                {
+                    ProductGroupingId = new IdFilter { Equal = ProductGroupingId.Value },
+                    Selects = ItemSelect.Id
+                });
+                ItemIds = ItemIds.Union(ItemDAOs.Select(x => x.Id).ToList())
+                    .Distinct()
+                    .ToList();
+            }
 
             List<long> OrganizationIds = await FilterOrganization(OrganizationService, CurrentContext);
             List<OrganizationDAO> OrganizationDAOs = await DataContext.Organization.Where(o => o.DeletedAt == null && (OrganizationIds.Count == 0 || OrganizationIds.Contains(o.Id))).ToListAsync();

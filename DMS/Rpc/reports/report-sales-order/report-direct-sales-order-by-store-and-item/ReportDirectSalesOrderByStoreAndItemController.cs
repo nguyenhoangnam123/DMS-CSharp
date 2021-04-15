@@ -437,6 +437,7 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_by_store_
             long? StoreGroupingId = ReportDirectSalesOrderByStoreAndItem_ReportDirectSalesOrderByStoreAndItemFilterDTO.StoreGroupingId?.Equal;
             long? StoreStatusId = ReportDirectSalesOrderByStoreAndItem_ReportDirectSalesOrderByStoreAndItemFilterDTO.StoreStatusId?.Equal;
             List<long> ItemIds = ReportDirectSalesOrderByStoreAndItem_ReportDirectSalesOrderByStoreAndItemFilterDTO.ItemId?.In;
+            long? ProductGroupingId = ReportDirectSalesOrderByStoreAndItem_ReportDirectSalesOrderByStoreAndItemFilterDTO.ProductGroupingId?.Equal;
 
             List<long> OrganizationIds = await FilterOrganization(OrganizationService, CurrentContext);
             List<OrganizationDAO> OrganizationDAOs = await DataContext.Organization.Where(o => o.DeletedAt == null && (OrganizationIds.Count == 0 || OrganizationIds.Contains(o.Id))).ToListAsync();
@@ -477,6 +478,18 @@ namespace DMS.Rpc.reports.report_sales_order.report_direct_sales_order_by_store_
             {
                 var listId = new List<long> { StoreGroupingId.Value };
                 StoreGroupingIds = StoreGroupingIds.Intersect(listId).ToList();
+            }
+
+            if (ProductGroupingId.HasValue)
+            {
+                var ItemDAOs = await ItemService.List(new ItemFilter
+                {
+                    ProductGroupingId = new IdFilter { Equal = ProductGroupingId.Value },
+                    Selects = ItemSelect.Id
+                });
+                ItemIds = ItemIds.Union(ItemDAOs.Select(x => x.Id).ToList())
+                    .Distinct()
+                    .ToList();
             }
 
             ITempTableQuery<TempTable<long>> tempTableQuery = await DataContext
