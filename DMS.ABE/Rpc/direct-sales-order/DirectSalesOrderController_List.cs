@@ -27,8 +27,8 @@ namespace DMS.ABE.Rpc.direct_sales_order
                 throw new BindException(ModelState);
 
             AppUserFilter AppUserFilter = new AppUserFilter();
-            AppUserFilter.Skip = 0;
-            AppUserFilter.Take = 20;
+            AppUserFilter.Skip = DirectSalesOrder_AppUserFilterDTO.Skip;
+            AppUserFilter.Take = DirectSalesOrder_AppUserFilterDTO.Take;
             AppUserFilter.OrderBy = AppUserOrder.Id;
             AppUserFilter.OrderType = OrderType.ASC;
             AppUserFilter.Selects = AppUserSelect.ALL;
@@ -56,8 +56,8 @@ namespace DMS.ABE.Rpc.direct_sales_order
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
             AppUserFilter AppUserFilter = new AppUserFilter {
-                Skip = 0,
-                Take = 20,
+                Skip = DirectSalesOrder_AppUserFilterDTO.Skip,
+                Take = DirectSalesOrder_AppUserFilterDTO.Take,
                 OrderBy = AppUserOrder.Id,
                 OrderType = OrderType.ASC,
                 Selects = AppUserSelect.ALL,
@@ -80,8 +80,8 @@ namespace DMS.ABE.Rpc.direct_sales_order
                 throw new BindException(ModelState);
             AppUserFilter AppUserFilter = new AppUserFilter
             {
-                Skip = 0,
-                Take = 20,
+                Skip = DirectSalesOrder_AppUserFilterDTO.Skip,
+                Take = DirectSalesOrder_AppUserFilterDTO.Take,
                 OrderBy = AppUserOrder.Id,
                 OrderType = OrderType.ASC,
                 Selects = AppUserSelect.ALL,
