@@ -648,7 +648,7 @@ namespace DMS.Rpc.dashboards.mobile
 
         #region DirectSalesOrder
         [Route(DashboardMobileRoute.CountDirectSalesOrder), HttpPost]
-        public async Task<long> DirectSalesOrder(DashboardMobile_FilterDTO filter)
+        public async Task<long> DirectSalesOrder([FromBody] DashboardMobile_FilterDTO filter)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
@@ -667,7 +667,7 @@ namespace DMS.Rpc.dashboards.mobile
         }
 
         [Route(DashboardMobileRoute.DirectSalesOrderRevenue), HttpPost]
-        public async Task<decimal> DirectSalesOrderRevenue(DashboardMobile_FilterDTO filter)
+        public async Task<decimal> DirectSalesOrderRevenue([FromBody] DashboardMobile_FilterDTO filter)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
@@ -690,7 +690,7 @@ namespace DMS.Rpc.dashboards.mobile
         }
 
         [Route(DashboardMobileRoute.TopDirectSaleEmployeeRevenue), HttpPost]
-        public async Task<List<DashboardMobile_TopRevenueBySalesEmployeeDTO>> TopDirectSaleEmployeeRevenue(DashboardMobile_FilterDTO filter)
+        public async Task<List<DashboardMobile_TopRevenueBySalesEmployeeDTO>> TopDirectSaleEmployeeRevenue([FromBody] DashboardMobile_FilterDTO filter)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
@@ -736,7 +736,7 @@ namespace DMS.Rpc.dashboards.mobile
         } // top 5 doanh thu đơn trực tiếp theo nhân viên
 
         [Route(DashboardMobileRoute.TopDirecItemRevenue), HttpPost]
-        public async Task<List<DashboardMobile_TopRevenueByItemDTO>> TopDirecItemRevenue(DashboardMobile_TopRevenueByItemFilterDTO filter)
+        public async Task<List<DashboardMobile_TopRevenueByItemDTO>> TopDirecItemRevenue([FromBody] DashboardMobile_TopRevenueByItemFilterDTO filter)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
