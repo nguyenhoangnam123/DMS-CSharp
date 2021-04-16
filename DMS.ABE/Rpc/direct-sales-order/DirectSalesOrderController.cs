@@ -1,23 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using DMS.ABE.Common;
-using DMS.ABE.Helpers;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using System.IO;
-using OfficeOpenXml;
-using System.Dynamic;
+﻿using DMS.ABE.Common;
 using DMS.ABE.Entities;
-using DMS.ABE.Services.MDirectSalesOrder;
-using DMS.ABE.Services.MStore;
+using DMS.ABE.Enums;
+using DMS.ABE.Helpers;
 using DMS.ABE.Services.MAppUser;
+using DMS.ABE.Services.MDirectSalesOrder;
+using DMS.ABE.Services.MExportTemplate;
 using DMS.ABE.Services.MOrganization;
-using DMS.ABE.Rpc;
-using RestSharp;
+using DMS.ABE.Services.MStore;
 using DMS.ABE.Services.MStoreUser;
+using GleamTech.DocumentUltimate;
+using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
+using System.Dynamic;
+using System.IO;
+using System.Linq;
+using System.Net.Mime;
+using System.Threading.Tasks;
 
 namespace DMS.ABE.Rpc.direct_sales_order
 {
@@ -28,6 +26,7 @@ namespace DMS.ABE.Rpc.direct_sales_order
         private IAppUserService AppUserService;
         private IOrganizationService OrganizationService;
         private IDirectSalesOrderService DirectSalesOrderService;
+        private IExportTemplateService ExportTemplateService;
         private ICurrentContext CurrentContext;
         public DirectSalesOrderController(
             IStoreService StoreService,
@@ -35,6 +34,7 @@ namespace DMS.ABE.Rpc.direct_sales_order
             IOrganizationService OrganizationService,
             IDirectSalesOrderService DirectSalesOrderService,
             IStoreUserService StoreUserService,
+            IExportTemplateService ExportTemplateService,
             ICurrentContext CurrentContext
         )
         {
@@ -43,6 +43,7 @@ namespace DMS.ABE.Rpc.direct_sales_order
             this.OrganizationService = OrganizationService;
             this.DirectSalesOrderService = DirectSalesOrderService;
             this.StoreUserService = StoreUserService;
+            this.ExportTemplateService = ExportTemplateService;
             this.CurrentContext = CurrentContext;
         }
 
@@ -71,7 +72,7 @@ namespace DMS.ABE.Rpc.direct_sales_order
         }
 
         [Route(DirectSalesOrderRoute.Get), HttpPost]
-        public async Task<ActionResult<DirectSalesOrder_DirectSalesOrderDTO>> Get([FromBody]DirectSalesOrder_DirectSalesOrderDTO DirectSalesOrder_DirectSalesOrderDTO)
+        public async Task<ActionResult<DirectSalesOrder_DirectSalesOrderDTO>> Get([FromBody] DirectSalesOrder_DirectSalesOrderDTO DirectSalesOrder_DirectSalesOrderDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
@@ -108,6 +109,73 @@ namespace DMS.ABE.Rpc.direct_sales_order
                 return Ok(DirectSalesOrder_DirectSalesOrderDTO);
             else
                 return BadRequest(DirectSalesOrder_DirectSalesOrderDTO);
+        }
+
+        [Route(DirectSalesOrderRoute.PrintDirectOrder), HttpGet]
+        public async Task<ActionResult> PrintDirectOrder([FromQuery] long Id)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+            var DirectSalesOrder = await DirectSalesOrderService.Get(Id);
+            if (DirectSalesOrder == null)
+                return Content("Đơn hàng không tồn tại");
+            DirectSalesOrder_PrintDirectOrderDTO DirectSalesOrder_PrintDTO = new DirectSalesOrder_PrintDirectOrderDTO(DirectSalesOrder);
+            var culture = System.Globalization.CultureInfo.GetCultureInfo("en-EN");
+            var STT = 1;
+            if (DirectSalesOrder_PrintDTO.Contents != null)
+            {
+                foreach (var DirectSalesOrderContent in DirectSalesOrder_PrintDTO.Contents)
+                {
+                    DirectSalesOrderContent.STT = STT++;
+                    DirectSalesOrderContent.AmountString = DirectSalesOrderContent.Amount.ToString("N0", culture);
+                    DirectSalesOrderContent.PrimaryPriceString = DirectSalesOrderContent.PrimaryPrice.ToString("N0", culture);
+                    DirectSalesOrderContent.QuantityString = DirectSalesOrderContent.Quantity.ToString("N0", culture);
+                    DirectSalesOrderContent.RequestedQuantityString = DirectSalesOrderContent.RequestedQuantity.ToString("N0", culture);
+                    DirectSalesOrderContent.SalePriceString = DirectSalesOrderContent.SalePrice.ToString("N0", culture);
+                    DirectSalesOrderContent.DiscountString = DirectSalesOrderContent.DiscountPercentage.HasValue ? DirectSalesOrderContent.DiscountPercentage.Value.ToString("N0", culture) + "%" : "";
+                    DirectSalesOrderContent.TaxPercentageString = DirectSalesOrderContent.TaxPercentage.HasValue ? DirectSalesOrderContent.TaxPercentage.Value.ToString("N0", culture) + "%" : "";
+                }
+            }
+            if (DirectSalesOrder_PrintDTO.Promotions != null)
+            {
+                foreach (var DirectSalesOrderPromotion in DirectSalesOrder_PrintDTO.Promotions)
+                {
+                    DirectSalesOrderPromotion.STT = STT++;
+                    DirectSalesOrderPromotion.QuantityString = DirectSalesOrderPromotion.Quantity.ToString("N0", culture);
+                    DirectSalesOrderPromotion.RequestedQuantityString = DirectSalesOrderPromotion.RequestedQuantity.ToString("N0", culture);
+                }
+            }
+
+            DirectSalesOrder_PrintDTO.SubTotalString = DirectSalesOrder_PrintDTO.SubTotal.ToString("N0", culture);
+            DirectSalesOrder_PrintDTO.Discount = DirectSalesOrder_PrintDTO.GeneralDiscountAmount.HasValue ? DirectSalesOrder_PrintDTO.GeneralDiscountAmount.Value.ToString("N0", culture) : "";
+            DirectSalesOrder_PrintDTO.sOrderDate = DirectSalesOrder_PrintDTO.OrderDate.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy");
+            DirectSalesOrder_PrintDTO.sDeliveryDate = DirectSalesOrder_PrintDTO.DeliveryDate.HasValue ? DirectSalesOrder_PrintDTO.DeliveryDate.Value.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy") : string.Empty;
+            DirectSalesOrder_PrintDTO.TotalString = DirectSalesOrder_PrintDTO.Total.ToString("N0", culture);
+            DirectSalesOrder_PrintDTO.TotalText = Utils.ConvertAmountTostring((long)DirectSalesOrder_PrintDTO.Total);
+
+            ExportTemplate ExportTemplate = await ExportTemplateService.Get(ExportTemplateEnum.PRINT_DIRECT_MOBILE.Id);
+            if (ExportTemplate == null)
+                return BadRequest("Chưa có mẫu in đơn hàng");
+
+            dynamic Data = new ExpandoObject();
+            Data.Order = DirectSalesOrder_PrintDTO;
+            MemoryStream MemoryStream = new MemoryStream();
+            MemoryStream input = new MemoryStream(ExportTemplate.Content);
+            MemoryStream output = new MemoryStream();
+            using (var document = StaticParams.DocumentFactory.Open(input, output, "docx"))
+            {
+                document.Process(Data);
+            };
+            var documentConverter = new DocumentConverter(output, DocumentFormat.Docx);
+            documentConverter.ConvertTo(MemoryStream, DocumentFormat.Pdf);
+
+            ContentDisposition cd = new ContentDisposition
+            {
+                FileName = $"Don-hang-gian-tiep-{DirectSalesOrder.Code}.pdf",
+                Inline = true,
+            };
+            Response.Headers.Add("Content-Disposition", cd.ToString());
+            return File(MemoryStream.ToArray(), "application/pdf;charset=utf-8");
         }
 
         private DirectSalesOrder ConvertDTOToEntity(DirectSalesOrder_DirectSalesOrderDTO DirectSalesOrder_DirectSalesOrderDTO)

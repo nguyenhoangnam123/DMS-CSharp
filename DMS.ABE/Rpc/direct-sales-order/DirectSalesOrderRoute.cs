@@ -23,6 +23,7 @@ namespace DMS.ABE.Rpc.direct_sales_order
         public const string SingleListAppUser = Default + "/single-list-app-user"; // chọn nhân viên kinh doanh
         public const string ListAppUser = Default + "/list-app-user";
         public const string CountAppUser = Default + "/count-app-user";
+        public const string PrintDirectOrder = Default + "/print-direct-order";
 
         public static Dictionary<string, long> Filters = new Dictionary<string, long>
         {

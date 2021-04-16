@@ -993,7 +993,7 @@ namespace DMS.Rpc.mobile.general_mobile
             GeneralMobile_PrintDTO.TotalString = GeneralMobile_PrintDTO.Total.ToString("N0", culture);
             GeneralMobile_PrintDTO.TotalText = Utils.ConvertAmountTostring((long)GeneralMobile_PrintDTO.Total);
 
-            ExportTemplate ExportTemplate = await ExportTemplateService.Get(ExportTemplateEnum.PRINT_INDIRECT_MOBILE.Id);
+            ExportTemplate ExportTemplate = await ExportTemplateService.Get(ExportTemplateEnum.PRINT_DIRECT_MOBILE.Id);
             if (ExportTemplate == null)
                 return BadRequest("Chưa có mẫu in đơn hàng");
 
