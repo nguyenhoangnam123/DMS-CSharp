@@ -1549,8 +1549,6 @@ namespace DMS.Rpc
             InitPromotionDiscountTypeEnum();
             InitRewardStatusEnum();
             InitTransactionTypeEnum();
-            InitEntityTypeEnum();
-            InitEntityComponentEnum();
             InitStoreApprovalStateEnum();
             InitErpApprovalStateEnum();
             InitDirectSalesOrderSourceTypeEnum();
@@ -1997,28 +1995,6 @@ namespace DMS.Rpc
             }).ToList();
             DataContext.RequestState.BulkSynchronize(RequestStateEnumList);
 
-        }
-
-        private void InitEntityTypeEnum()
-        {
-            List<EntityTypeDAO> EntityTypeDAOs = EntityTypeEnum.EntityTypeEnumList.Select(item => new EntityTypeDAO
-            {
-                Id = item.Id,
-                Code = item.Code,
-                Name = item.Name,
-            }).ToList();
-            DataContext.EntityType.BulkSynchronize(EntityTypeDAOs);
-        }
-
-        private void InitEntityComponentEnum()
-        {
-            List<EntityComponentDAO> EntityComponentDAOs = EntityComponentEnum.EntityComponentEnumList.Select(item => new EntityComponentDAO
-            {
-                Id = item.Id,
-                Code = item.Code,
-                Name = item.Name,
-            }).ToList();
-            DataContext.EntityComponent.BulkSynchronize(EntityComponentDAOs);
         }
 
         private void InitStoreApprovalStateEnum()
