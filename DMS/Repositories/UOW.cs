@@ -33,6 +33,7 @@ namespace DMS.Repositories
         IFieldRepository FieldRepository { get; }
         IIdGenerateRepository IdGenerateRepository { get; }
         IImageRepository ImageRepository { get; }
+        IFileRepository FileRepository { get; }
         IIndirectSalesOrderContentRepository IndirectSalesOrderContentRepository { get; }
         IIndirectSalesOrderRepository IndirectSalesOrderRepository { get; }
         IIndirectSalesOrderPromotionRepository IndirectSalesOrderPromotionRepository { get; }
@@ -166,6 +167,7 @@ namespace DMS.Repositories
         public IFieldRepository FieldRepository { get; private set; }
         public IIdGenerateRepository IdGenerateRepository { get; private set; }
         public IImageRepository ImageRepository { get; private set; }
+        public IFileRepository FileRepository { get; private set; }
         public IIndirectSalesOrderContentRepository IndirectSalesOrderContentRepository { get; private set; }
         public IIndirectSalesOrderRepository IndirectSalesOrderRepository { get; private set; }
         public IIndirectSalesOrderPromotionRepository IndirectSalesOrderPromotionRepository { get; private set; }
@@ -298,6 +300,7 @@ namespace DMS.Repositories
             FieldRepository = new FieldRepository(DataContext);
             IdGenerateRepository = new IdGenerateRepository(DataContext);
             ImageRepository = new ImageRepository(DataContext);
+            FileRepository = new FileRepository(DataContext);
             IndirectSalesOrderContentRepository = new IndirectSalesOrderContentRepository(DataContext);
             IndirectSalesOrderRepository = new IndirectSalesOrderRepository(DataContext);
             IndirectSalesOrderPromotionRepository = new IndirectSalesOrderPromotionRepository(DataContext);

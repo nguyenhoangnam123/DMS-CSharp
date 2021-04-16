@@ -1308,11 +1308,11 @@ namespace DMS.Models
                     .IsRequired()
                     .HasMaxLength(4000);
 
-                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
-
-                entity.Property(e => e.Url)
+                entity.Property(e => e.Path)
                     .IsRequired()
                     .HasMaxLength(4000);
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
             });
 
             modelBuilder.Entity<IdGeneratorDAO>(entity =>

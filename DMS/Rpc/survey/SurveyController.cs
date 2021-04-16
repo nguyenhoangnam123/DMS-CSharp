@@ -689,17 +689,42 @@ namespace DMS.Rpc.survey
                 Name = file.FileName,
                 Content = memoryStream.ToArray()
             };
-            //Image = await StoreCheckingService.SaveImage(Image);
-            //if (Image == null)
-            //    return BadRequest();
-            //Survey_FileDTO Survey_FileDTO = new Survey_FileDTO
-            //{
-            //    Id = Image.Id,
-            //    Name = Image.Name,
-            //    Url = Image.Url,
-            //};
+            File = await SurveyService.SaveFile(File);
+            if (File == null)
+                return BadRequest();
+            Survey_FileDTO Survey_FileDTO = new Survey_FileDTO
+            {
+                Id = File.Id,
+                Name = File.Name,
+                Path = File.Path,
+            };
 
-            return Ok(new Survey_FileDTO());
+            return Ok(Survey_FileDTO);
+        }
+
+        [Route(SurveyRoute.SaveQuestionImage), HttpPost]
+        public async Task<ActionResult<Survey_ImageDTO>> SaveImage(IFormFile file)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+            MemoryStream memoryStream = new MemoryStream();
+            file.CopyTo(memoryStream);
+            Image Image = new Image
+            {
+                Name = file.FileName,
+                Content = memoryStream.ToArray(),
+            };
+            Image = await SurveyService.SaveImage(Image);
+            if (Image == null)
+                return BadRequest();
+            Survey_ImageDTO product_ImageDTO = new Survey_ImageDTO
+            {
+                Id = Image.Id,
+                Name = Image.Name,
+                Url = Image.Url,
+                ThumbnailUrl = Image.ThumbnailUrl,
+            };
+            return Ok(product_ImageDTO);
         }
     }
 }

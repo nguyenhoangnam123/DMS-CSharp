@@ -1,5 +1,8 @@
 ﻿using DMS.Common;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
@@ -54,17 +57,28 @@ namespace  DMS.Entities
     public class FileFilter : FilterEntity
     {
         public IdFilter Id { get; set; }
+        public StringFilter Name { get; set; }
         public StringFilter Path { get; set; }
         public LongFilter Level { get; set; }
-        public bool? IsFile { get; set; }
+        public List<FileFilter> OrFilter { get; set; }
         public FileOrder OrderBy { get; set; }
+        public FileSelect Selects { get; set; }
     }
 
+    [JsonConverter(typeof(StringEnumConverter))]
     public enum FileOrder
     {
         Id = 1,
-        Path = 2,
-        Level = 3,
-        IsFile = 4,
+        Name = 2,
+        Path = 3,
+    }
+
+    [Flags]
+    public enum FileSelect : long
+    {
+        ALL = E.ALL,
+        Id = E._0,
+        Name = E._1,
+        Path = E._2,
     }
 }

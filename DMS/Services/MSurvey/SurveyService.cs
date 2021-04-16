@@ -12,6 +12,8 @@ using System.Threading.Tasks;
 using DMS.Handlers;
 using System.IO;
 using RestSharp;
+using DMS.Services.MImage;
+using DMS.Services.MFile;
 
 namespace DMS.Services.MSurvey
 {
@@ -26,6 +28,7 @@ namespace DMS.Services.MSurvey
         Task<Survey> GetForm(long Id);
         Task<Survey> SaveForm(Survey Survey);
         Task<DMS.Entities.File> SaveFile(DMS.Entities.File File);
+        Task<DMS.Entities.Image> SaveImage(DMS.Entities.Image Image);
         SurveyFilter ToFilter(SurveyFilter SurveyFilter);
     }
 
@@ -34,6 +37,8 @@ namespace DMS.Services.MSurvey
         private IUOW UOW;
         private ILogging Logging;
         private INotificationService NotificationService;
+        private IImageService ImageService;
+        private IFileService FileService;
         private ICurrentContext CurrentContext;
         private IRabbitManager RabbitManager;
         private ISurveyValidator SurveyValidator;
@@ -42,6 +47,8 @@ namespace DMS.Services.MSurvey
             IUOW UOW,
             ILogging Logging,
             INotificationService NotificationService,
+            IImageService ImageService,
+            IFileService FileService,
             ICurrentContext CurrentContext,
             IRabbitManager RabbitManager,
             ISurveyValidator SurveyValidator
@@ -50,6 +57,8 @@ namespace DMS.Services.MSurvey
             this.UOW = UOW;
             this.Logging = Logging;
             this.NotificationService = NotificationService;
+            this.ImageService = ImageService;
+            this.FileService = FileService;
             this.CurrentContext = CurrentContext;
             this.RabbitManager = RabbitManager;
             this.SurveyValidator = SurveyValidator;
@@ -486,30 +495,17 @@ namespace DMS.Services.MSurvey
             FileInfo fileInfo = new FileInfo(File.Name);
             string path = $"/category/{StaticParams.DateTimeNow.ToString("yyyyMMdd")}/{Guid.NewGuid()}{fileInfo.Extension}";
 
-            RestClient restClient = new RestClient(InternalServices.UTILS);
-            RestRequest restRequest = new RestRequest("/rpc/utils/file/upload");
-            restRequest.RequestFormat = DataFormat.Json;
-            restRequest.Method = Method.POST;
-            restRequest.AddCookie("Token", CurrentContext.Token);
-            restRequest.AddCookie("X-Language", CurrentContext.Language);
-            restRequest.AddHeader("Content-Type", "multipart/form-data");
-            restRequest.AddFile("file", File.Content, File.Name);
-            restRequest.AddParameter("path", path);
-            try
-            {
-                var response = restClient.Execute<DMS.Entities.File>(restRequest);
-                if (response.StatusCode == System.Net.HttpStatusCode.OK)
-                {
-                    File.Id = response.Data.Id;
-                    File.Path = "/rpc/utils/file/download" + response.Data.Path;
-                }
-                return File;
-            }
-            catch
-            {
-                return null;
-            }
-            return null;
+            File = await FileService.Create(File, path);
+            return File;
+        }
+
+        public async Task<Image> SaveImage(Image Image)
+        {
+            FileInfo fileInfo = new FileInfo(Image.Name);
+            string path = $"/category/{StaticParams.DateTimeNow.ToString("yyyyMMdd")}/{Guid.NewGuid()}{fileInfo.Extension}";
+            string thumbnailPath = $"/category/{StaticParams.DateTimeNow.ToString("yyyyMMdd")}/{Guid.NewGuid()}{fileInfo.Extension}";
+            Image = await ImageService.Create(Image, path, thumbnailPath, 128, 128);
+            return Image;
         }
     }
 }

@@ -24,6 +24,7 @@ namespace DMS.Rpc.survey
         public const string GetSurveyForm = Default + "/get-survey-form";
         public const string SaveSurveyForm = Default + "/save-survey-form";
         public const string SaveQuestionFile = Default + "/save-question-file";
+        public const string SaveQuestionImage = Default + "/save-question-image";
 
         public const string FilterListAppUser = Default + "/filter-list-app-user";
         public const string FilterListStatus = Default + "/filter-list-status";
@@ -71,7 +72,7 @@ namespace DMS.Rpc.survey
                 Parent,
                 Master, Count, List, Get,
                 FilterListAppUser, FilterListStatus, FilterListSurveyQuestionType,
-                GetSurveyForm, SaveSurveyForm } },
+                GetSurveyForm, SaveSurveyForm, SaveQuestionFile, SaveQuestionImage } },
             { "Xuất Excel", new List<string> {
                 Parent,
                 Master, Count, List, Get, Export,

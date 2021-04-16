@@ -149,7 +149,6 @@ namespace DMS.Services.MImage
             {
                 return null;
             }
-            return null;
         }
 
         public async Task<DMS.Entities.Image> Create(DMS.Entities.Image Image, string path, string thumbnailPath, int width, int height)
