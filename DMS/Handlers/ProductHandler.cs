@@ -54,6 +54,7 @@ namespace DMS.Handlers
                     if (ProductDAO == null)
                     {
                         ProductDAO = new ProductDAO();
+                        ProductDAO.IsNew = false;
                     }
                     ProductDAO.Id = Product.Id;
                     ProductDAO.CreatedAt = Product.CreatedAt;
@@ -73,7 +74,6 @@ namespace DMS.Handlers
                     ProductDAO.StatusId = Product.StatusId;
                     ProductDAO.OtherName = Product.OtherName;
                     ProductDAO.TechnicalName = Product.TechnicalName;
-                    ProductDAO.IsNew = Product.IsNew;
                     ProductDAO.UsedVariationId = Product.UsedVariationId;
                     ProductDAO.RowId = Product.RowId;
                     ProductDAO.Used = Product.Used;
