@@ -4858,16 +4858,16 @@ namespace DMS.Models
 
             modelBuilder.Entity<SurveyQuestionFileMappingDAO>(entity =>
             {
-                entity.HasNoKey();
+                entity.HasKey(e => new { e.SurveyQuestionId, e.FileId });
 
                 entity.HasOne(d => d.File)
-                    .WithMany()
+                    .WithMany(p => p.SurveyQuestionFileMappings)
                     .HasForeignKey(d => d.FileId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_SurveyQuestionFileMapping_File");
 
                 entity.HasOne(d => d.SurveyQuestion)
-                    .WithMany()
+                    .WithMany(p => p.SurveyQuestionFileMappings)
                     .HasForeignKey(d => d.SurveyQuestionId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_SurveyQuestionFileMapping_SurveyQuestion");
@@ -4875,16 +4875,16 @@ namespace DMS.Models
 
             modelBuilder.Entity<SurveyQuestionImageMappingDAO>(entity =>
             {
-                entity.HasNoKey();
+                entity.HasKey(e => new { e.SurveyQuestionId, e.ImageId });
 
                 entity.HasOne(d => d.Image)
-                    .WithMany()
+                    .WithMany(p => p.SurveyQuestionImageMappings)
                     .HasForeignKey(d => d.ImageId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_SurveyQuestionImageMapping_Image");
 
                 entity.HasOne(d => d.SurveyQuestion)
-                    .WithMany()
+                    .WithMany(p => p.SurveyQuestionImageMappings)
                     .HasForeignKey(d => d.SurveyQuestionId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_SurveyQuestionImageMapping_SurveyQuestion");
