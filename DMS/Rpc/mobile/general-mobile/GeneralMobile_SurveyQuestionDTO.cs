@@ -16,6 +16,8 @@ namespace DMS.Rpc.mobile.general_mobile
         public List<GeneralMobile_SurveyOptionDTO> SurveyOptions { get; set; }
         public Dictionary<long, Dictionary<long, bool>> TableResult { get; set; }
         public Dictionary<long, bool> ListResult { get; set; }
+        public List<GeneralMobile_SurveyQuestionImageMappingDTO> SurveyQuestionImageMappings { get; set; }
+        public List<GeneralMobile_SurveyQuestionFileMappingDTO> SurveyQuestionFileMappings { get; set; }
         public string TextResult { get; set; }
         public GeneralMobile_SurveyQuestionDTO() { }
         public GeneralMobile_SurveyQuestionDTO(SurveyQuestion SurveyQuestion)
@@ -30,6 +32,8 @@ namespace DMS.Rpc.mobile.general_mobile
             this.TextResult = SurveyQuestion.TextResult;
             this.SurveyQuestionType = SurveyQuestion.SurveyQuestionType == null ? null : new GeneralMobile_SurveyQuestionTypeDTO(SurveyQuestion.SurveyQuestionType);
             this.SurveyOptions = SurveyQuestion.SurveyOptions?.Select(so => new GeneralMobile_SurveyOptionDTO(so)).ToList();
+            this.SurveyQuestionImageMappings = SurveyQuestion.SurveyQuestionImageMappings == null ? null : SurveyQuestion.SurveyQuestionImageMappings.Select(x => new GeneralMobile_SurveyQuestionImageMappingDTO(x)).ToList();
+            this.SurveyQuestionFileMappings = SurveyQuestion.SurveyQuestionFileMappings == null ? null : SurveyQuestion.SurveyQuestionFileMappings.Select(x => new GeneralMobile_SurveyQuestionFileMappingDTO(x)).ToList();
             this.Errors = SurveyQuestion.Errors;
         }
     }

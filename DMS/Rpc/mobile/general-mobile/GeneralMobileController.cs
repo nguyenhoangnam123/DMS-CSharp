@@ -481,9 +481,6 @@ namespace DMS.Rpc.mobile.general_mobile
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
 
-            //if (!await HasPermission(GeneralMobile_SurveyDTO.Id))
-            //    return Forbid();
-
             Survey Survey = await SurveyService.GetForm(GeneralMobile_SurveyDTO.Id);
             GeneralMobile_SurveyDTO = new GeneralMobile_SurveyDTO(Survey);
             if (Survey.IsValidated)
