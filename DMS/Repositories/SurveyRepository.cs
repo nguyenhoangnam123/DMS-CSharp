@@ -269,7 +269,13 @@ namespace DMS.Repositories
                 .Select(x => new SurveyQuestionImageMapping
                 {
                     ImageId = x.ImageId,
-                    SurveyQuestionId = x.SurveyQuestionId
+                    SurveyQuestionId = x.SurveyQuestionId,
+                    Image = new Image { 
+                        Id = x.Image.Id,
+                        Name =x.Image.Name,
+                        Url = x.Image.Url,
+                        ThumbnailUrl = x.Image.ThumbnailUrl,
+                    }
                 })
                 .ToListAsync();
             List<SurveyQuestionFileMapping> SurveyQuestionFileMappings = await DataContext.SurveyQuestionFileMapping.AsNoTracking()
@@ -277,7 +283,13 @@ namespace DMS.Repositories
                 .Select(x => new SurveyQuestionFileMapping
                 {
                     FileId = x.FileId,
-                    SurveyQuestionId = x.SurveyQuestionId
+                    SurveyQuestionId = x.SurveyQuestionId,
+                    File = new File
+                    {
+                        Id = x.File.Id,
+                        Name = x.File.Name,
+                        Path = x.File.Path
+                    }
                 })
                 .ToListAsync();
             foreach (var SurveyQuestion in Survey.SurveyQuestions)
