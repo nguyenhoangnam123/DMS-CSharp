@@ -717,6 +717,12 @@ namespace DMS.ABE.Repositories
                     Code = x.RequestState.Code,
                     Name = x.RequestState.Name,
                 },
+                StoreApprovalState = x.StoreApprovalState == null ? null : new StoreApprovalState
+                {
+                    Id = x.StoreApprovalState.Id,
+                    Code = x.StoreApprovalState.Code,
+                    Name = x.StoreApprovalState.Name,
+                },
                 SaleEmployee = x.SaleEmployee == null ? null : new AppUser
                 {
                     Id = x.SaleEmployee.Id,
