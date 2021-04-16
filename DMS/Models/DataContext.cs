@@ -41,6 +41,7 @@ namespace DMS.Models
         public virtual DbSet<ExportTemplateDAO> ExportTemplate { get; set; }
         public virtual DbSet<FieldDAO> Field { get; set; }
         public virtual DbSet<FieldTypeDAO> FieldType { get; set; }
+        public virtual DbSet<FileDAO> File { get; set; }
         public virtual DbSet<IdGeneratorDAO> IdGenerator { get; set; }
         public virtual DbSet<ImageDAO> Image { get; set; }
         public virtual DbSet<IndirectSalesOrderDAO> IndirectSalesOrder { get; set; }
@@ -169,6 +170,8 @@ namespace DMS.Models
         public virtual DbSet<SurveyOptionDAO> SurveyOption { get; set; }
         public virtual DbSet<SurveyOptionTypeDAO> SurveyOptionType { get; set; }
         public virtual DbSet<SurveyQuestionDAO> SurveyQuestion { get; set; }
+        public virtual DbSet<SurveyQuestionFileMappingDAO> SurveyQuestionFileMapping { get; set; }
+        public virtual DbSet<SurveyQuestionImageMappingDAO> SurveyQuestionImageMapping { get; set; }
         public virtual DbSet<SurveyQuestionTypeDAO> SurveyQuestionType { get; set; }
         public virtual DbSet<SurveyRespondentTypeDAO> SurveyRespondentType { get; set; }
         public virtual DbSet<SurveyResultDAO> SurveyResult { get; set; }
@@ -1289,6 +1292,27 @@ namespace DMS.Models
                 entity.Property(e => e.Name)
                     .IsRequired()
                     .HasMaxLength(50);
+            });
+
+            modelBuilder.Entity<FileDAO>(entity =>
+            {
+                entity.ToTable("File", "MDM");
+
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.MimeType).HasMaxLength(50);
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(4000);
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.Url)
+                    .IsRequired()
+                    .HasMaxLength(4000);
             });
 
             modelBuilder.Entity<IdGeneratorDAO>(entity =>
@@ -4819,8 +4843,6 @@ namespace DMS.Models
                     .IsRequired()
                     .HasMaxLength(500);
 
-                entity.Property(e => e.FileUrl).HasMaxLength(500);
-
                 entity.HasOne(d => d.Survey)
                     .WithMany(p => p.SurveyQuestions)
                     .HasForeignKey(d => d.SurveyId)
@@ -4832,6 +4854,40 @@ namespace DMS.Models
                     .HasForeignKey(d => d.SurveyQuestionTypeId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_SurveyQuestion_SurveyQuestionType");
+            });
+
+            modelBuilder.Entity<SurveyQuestionFileMappingDAO>(entity =>
+            {
+                entity.HasNoKey();
+
+                entity.HasOne(d => d.File)
+                    .WithMany()
+                    .HasForeignKey(d => d.FileId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_SurveyQuestionFileMapping_File");
+
+                entity.HasOne(d => d.SurveyQuestion)
+                    .WithMany()
+                    .HasForeignKey(d => d.SurveyQuestionId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_SurveyQuestionFileMapping_SurveyQuestion");
+            });
+
+            modelBuilder.Entity<SurveyQuestionImageMappingDAO>(entity =>
+            {
+                entity.HasNoKey();
+
+                entity.HasOne(d => d.Image)
+                    .WithMany()
+                    .HasForeignKey(d => d.ImageId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_SurveyQuestionImageMapping_Image");
+
+                entity.HasOne(d => d.SurveyQuestion)
+                    .WithMany()
+                    .HasForeignKey(d => d.SurveyQuestionId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_SurveyQuestionImageMapping_SurveyQuestion");
             });
 
             modelBuilder.Entity<SurveyQuestionTypeDAO>(entity =>
