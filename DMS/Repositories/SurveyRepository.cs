@@ -264,9 +264,27 @@ namespace DMS.Repositories
                          Name = x.SurveyOptionType.Name,
                      },
                  }).ToListAsync();
+            List<SurveyQuestionImageMapping> SurveyQuestionImageMappings = await DataContext.SurveyQuestionImageMapping.AsNoTracking()
+                .Where(x => questionIds.Contains(x.SurveyQuestionId))
+                .Select(x => new SurveyQuestionImageMapping
+                {
+                    ImageId = x.ImageId,
+                    SurveyQuestionId = x.SurveyQuestionId
+                })
+                .ToListAsync();
+            List<SurveyQuestionFileMapping> SurveyQuestionFileMappings = await DataContext.SurveyQuestionFileMapping.AsNoTracking()
+                .Where(x => questionIds.Contains(x.SurveyQuestionId))
+                .Select(x => new SurveyQuestionFileMapping
+                {
+                    FileId = x.FileId,
+                    SurveyQuestionId = x.SurveyQuestionId
+                })
+                .ToListAsync();
             foreach (var SurveyQuestion in Survey.SurveyQuestions)
             {
                 SurveyQuestion.SurveyOptions = SurveyOptions.Where(x => x.SurveyQuestionId == SurveyQuestion.Id).ToList();
+                SurveyQuestion.SurveyQuestionImageMappings = SurveyQuestionImageMappings.Where(x => x.SurveyQuestionId == SurveyQuestion.Id).ToList();
+                SurveyQuestion.SurveyQuestionFileMappings = SurveyQuestionFileMappings.Where(x => x.SurveyQuestionId == SurveyQuestion.Id).ToList();
             }
             return Survey;
         }
@@ -313,6 +331,8 @@ namespace DMS.Repositories
         {
             var SurveyQuestionIds = await DataContext.SurveyQuestion.Where(x => x.SurveyId == Survey.Id).Select(x => x.Id).ToListAsync();
             await DataContext.SurveyOption.Where(x => SurveyQuestionIds.Contains(x.SurveyQuestionId)).DeleteFromQueryAsync();
+            await DataContext.SurveyQuestionImageMapping.Where(x => SurveyQuestionIds.Contains(x.SurveyQuestionId)).DeleteFromQueryAsync();
+            await DataContext.SurveyQuestionFileMapping.Where(x => SurveyQuestionIds.Contains(x.SurveyQuestionId)).DeleteFromQueryAsync();
             await DataContext.SurveyQuestion.Where(x => SurveyQuestionIds.Contains(x.Id)).DeleteFromQueryAsync();
             await DataContext.Survey.Where(x => x.Id == Survey.Id).UpdateFromQueryAsync(x => new SurveyDAO { DeletedAt = StaticParams.DateTimeNow });
             return true;
@@ -320,8 +340,15 @@ namespace DMS.Repositories
 
         private async Task SaveReference(Survey Survey)
         {
-            await DataContext.SurveyOption.Where(x => x.SurveyQuestion.SurveyId == Survey.Id).DeleteFromQueryAsync();
             await DataContext.SurveyQuestion.Where(x => x.SurveyId == Survey.Id).DeleteFromQueryAsync();
+            if(Survey.SurveyQuestions != null)
+            {
+                List<long> SurveyQuestionIds = Survey.SurveyQuestions.Select(x => x.Id).ToList();
+                await DataContext.SurveyQuestionFileMapping.Where(x => SurveyQuestionIds.Contains(x.SurveyQuestionId)).DeleteFromQueryAsync();
+                await DataContext.SurveyQuestionImageMapping.Where(x => SurveyQuestionIds.Contains(x.SurveyQuestionId)).DeleteFromQueryAsync();
+                await DataContext.SurveyOption.Where(x => SurveyQuestionIds.Contains(x.SurveyQuestionId)).DeleteFromQueryAsync();
+            }
+
             if (Survey.SurveyQuestions != null)
             {
                 List<SurveyQuestionDAO> SurveyQuestionDAOs = new List<SurveyQuestionDAO>();
@@ -358,7 +385,38 @@ namespace DMS.Repositories
                         SurveyOptionDAOs.Add(SurveyOptionDAO);
                     }
                 }
+
+                List<SurveyQuestionImageMappingDAO> SurveyQuestionImageMappingDAOs = new List<SurveyQuestionImageMappingDAO>();
+                foreach (SurveyQuestion SurveyQuestion in Survey.SurveyQuestions)
+                {
+                    foreach (SurveyQuestionImageMapping SurveyQuestionImageMapping in SurveyQuestion.SurveyQuestionImageMappings)
+                    {
+                        SurveyQuestionImageMappingDAO SurveyQuestionImageMappingDAO = new SurveyQuestionImageMappingDAO
+                        {
+                            ImageId = SurveyQuestionImageMapping.ImageId,
+                            SurveyQuestionId = SurveyQuestion.Id,
+                        };
+                        SurveyQuestionImageMappingDAOs.Add(SurveyQuestionImageMappingDAO);
+                    }
+                }
+
+                List<SurveyQuestionFileMappingDAO> SurveyQuestionFileMappingDAOs = new List<SurveyQuestionFileMappingDAO>();
+                foreach (SurveyQuestion SurveyQuestion in Survey.SurveyQuestions)
+                {
+                    foreach (SurveyQuestionFileMapping SurveyQuestionFileMapping in SurveyQuestion.SurveyQuestionFileMappings)
+                    {
+                        SurveyQuestionFileMappingDAO SurveyQuestionFileMappingDAO = new SurveyQuestionFileMappingDAO
+                        {
+                            FileId = SurveyQuestionFileMapping.FileId,
+                            SurveyQuestionId = SurveyQuestion.Id,
+                        };
+                        SurveyQuestionFileMappingDAOs.Add(SurveyQuestionFileMappingDAO);
+                    }
+                }
+
                 await DataContext.SurveyOption.BulkMergeAsync(SurveyOptionDAOs);
+                await DataContext.SurveyQuestionImageMapping.BulkMergeAsync(SurveyQuestionImageMappingDAOs);
+                await DataContext.SurveyQuestionFileMapping.BulkMergeAsync(SurveyQuestionFileMappingDAOs);
             }
         }
     }

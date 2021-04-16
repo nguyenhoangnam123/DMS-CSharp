@@ -469,6 +469,15 @@ namespace DMS.Rpc.survey
                         SurveyOptionTypeId = x.SurveyOptionTypeId,
                         SurveyQuestionId = x.SurveyOptionTypeId
                     }).ToList(),
+                    SurveyQuestionFileMappings = x.SurveyQuestionFileMappings?.Select(x => new SurveyQuestionFileMapping { 
+                        FileId = x.FileId,
+                        SurveyQuestionId = x.SurveyQuestionId
+                    }).ToList(),
+                    SurveyQuestionImageMappings = x.SurveyQuestionImageMappings?.Select(x => new SurveyQuestionImageMapping
+                    {
+                        ImageId = x.ImageId,
+                        SurveyQuestionId = x.SurveyQuestionId
+                    }).ToList(),
                     TableResult = x.TableResult,
                     ListResult = x.ListResult,
                 }).ToList();
