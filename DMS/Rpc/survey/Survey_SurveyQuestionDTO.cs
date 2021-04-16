@@ -16,6 +16,8 @@ namespace DMS.Rpc.survey
         public List<Survey_SurveyOptionDTO> SurveyOptions { get; set; }
         public Dictionary<long, Dictionary<long, bool>> TableResult { get; set; }
         public Dictionary<long, bool> ListResult { get; set; }
+        public List<Survey_SurveyQuestionImageMappingDTO> SurveyQuestionImageMappings { get; set; }
+        public List<Survey_SurveyQuestionFileMappingDTO> SurveyQuestionFileMappings { get; set; }
         public Survey_SurveyQuestionDTO() { }
         public Survey_SurveyQuestionDTO(SurveyQuestion SurveyQuestion)
         {
@@ -28,6 +30,8 @@ namespace DMS.Rpc.survey
             this.ListResult = SurveyQuestion.ListResult;
             this.SurveyQuestionType = SurveyQuestion.SurveyQuestionType == null ? null : new Survey_SurveyQuestionTypeDTO(SurveyQuestion.SurveyQuestionType);
             this.SurveyOptions = SurveyQuestion.SurveyOptions?.Select(so => new Survey_SurveyOptionDTO(so)).ToList();
+            this.SurveyQuestionImageMappings = SurveyQuestion.SurveyQuestionImageMappings == null ? null : SurveyQuestion.SurveyQuestionImageMappings.Select(x => new Survey_SurveyQuestionImageMappingDTO(x)).ToList();
+            this.SurveyQuestionFileMappings = SurveyQuestion.SurveyQuestionFileMappings == null ? null : SurveyQuestion.SurveyQuestionFileMappings.Select(x => new Survey_SurveyQuestionFileMappingDTO(x)).ToList();
             this.Errors = SurveyQuestion.Errors;
         }
     }
