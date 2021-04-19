@@ -101,7 +101,7 @@ namespace DMS.Rpc.dashboards.mobile
                 .Distinct()
                 .CountAsync();
             return count;
-        } // số lượt viếng thăm
+        } // số dai  viếng thăm
 
         #region IndirectSalesOrder
         [Route(DashboardMobileRoute.CountIndirectSalesOrder), HttpPost]
@@ -159,35 +159,43 @@ namespace DMS.Rpc.dashboards.mobile
 
             var query = from transaction in DataContext.IndirectSalesOrderTransaction
                         join ind in DataContext.IndirectSalesOrder on transaction.IndirectSalesOrderId equals ind.Id
-                        where ind.RequestStateId == RequestStateEnum.APPROVED.Id
-                        where transaction.OrderDate >= Start
-                        where transaction.OrderDate <= End
-                        select transaction; // query tu transaction don hang gian tiep co trang thai phe duyet hoan thanh
+                        where ind.RequestStateId == RequestStateEnum.APPROVED.Id &&
+                        transaction.OrderDate >= Start &&
+                        transaction.OrderDate <= End
+                        group transaction by transaction.SalesEmployeeId into transGroup
+                        select transGroup; // query tu transaction don hang gian tiep co trang thai phe duyet hoan thanh
 
-            List<DashboardMobile_TopRevenueBySalesEmployeeDTO> Result = await query
-                .GroupBy(x => x.SalesEmployeeId)
-                .Select(group => new DashboardMobile_TopRevenueBySalesEmployeeDTO
+            List<DashboardMobile_TopRevenueBySalesEmployeeDTO> Result = new List<DashboardMobile_TopRevenueBySalesEmployeeDTO>();
+            var transactionGroups = await query
+                .Select(x => new DirectSalesOrderTransactionDAO
                 {
-                    SaleEmployeeId = group.Key,
-                    Revenue = group.Where(x => x.Revenue.HasValue).Sum(y => y.Revenue.Value)
+                    SalesEmployeeId = x.Key,
+                    Revenue = x.Sum(x => x.Revenue)
                 })
-                .OrderByDescending(o => o.Revenue)
-                .Take(5)
-                .ToListAsync(); // lấy ra top 5 nhân viên có tổng doanh thu đơn hàng cao nhất
-
-            List<long> UserIds = Result.Select(x => x.SaleEmployeeId).ToList();
-
+                .ToListAsync();
+            List<long> UserIds = transactionGroups
+                .Select(x => x.SalesEmployeeId)
+                .ToList();
             List<AppUserDAO> AppUserDAOs = await DataContext.AppUser
                 .Where(x => UserIds.Contains(x.Id))
                 .ToListAsync();
 
-            Parallel.ForEach(Result, Item =>
+            foreach (var groupItem in transactionGroups)
             {
-                Item.SaleEmployeeName = AppUserDAOs
-                    .Where(x => x.Id == Item.SaleEmployeeId)
-                    .Select(y => y.DisplayName)
+                long SaleEmployeeId = groupItem.SalesEmployeeId;
+                AppUserDAO SaleEmpolyee = AppUserDAOs
+                    .Where(x => x.Id == SaleEmployeeId)
                     .FirstOrDefault();
-            }); // gán tên nhân viên cho kết quả
+                DashboardMobile_TopRevenueBySalesEmployeeDTO Item = new DashboardMobile_TopRevenueBySalesEmployeeDTO();
+                Item.SaleEmployeeId = SaleEmployeeId;
+                Item.SaleEmployeeName = SaleEmpolyee.DisplayName;
+                Item.Revenue = groupItem.Revenue.HasValue ? groupItem.Revenue.Value : 0;
+                Result.Add(Item);
+            }
+            Result = Result
+                .OrderByDescending(x => x.Revenue)
+                .Take(5)
+                .ToList();
 
             return Result;
         } // top 5 doanh thu đơn gián tiếp theo nhân viên
@@ -205,35 +213,40 @@ namespace DMS.Rpc.dashboards.mobile
 
             var query = from transaction in DataContext.IndirectSalesOrderTransaction
                         join ind in DataContext.IndirectSalesOrder on transaction.IndirectSalesOrderId equals ind.Id
-                        where ind.RequestStateId == RequestStateEnum.APPROVED.Id
-                        where transaction.OrderDate >= Start
-                        where transaction.OrderDate <= End
-                        select transaction; // query tu transaction don hang gian tiep co trang thai phe duyet hoan thanh
+                        where ind.RequestStateId == RequestStateEnum.APPROVED.Id &&
+                        transaction.OrderDate >= Start &&
+                        transaction.OrderDate <= End
+                        group transaction by transaction.ItemId into transGroup
+                        select transGroup; // query tu transaction don hang gian tiep co trang thai phe duyet hoan thanh
 
-            List<DashboardMobile_TopRevenueByItemDTO> Result = await query
-                .GroupBy(x => x.ItemId)
-                .Select(group => new DashboardMobile_TopRevenueByItemDTO
+            List<DashboardMobile_TopRevenueByItemDTO> Result = new List<DashboardMobile_TopRevenueByItemDTO>();
+            var transactionGroups = await query
+                .Select(x => new DirectSalesOrderTransactionDAO
                 {
-                    ItemId = group.Key,
-                    Revenue = group.Where(x => x.Revenue.HasValue).Sum(y => y.Revenue.Value)
+                    ItemId = x.Key,
+                    Revenue = x.Sum(x => x.Revenue)
                 })
-                .OrderByDescending(o => o.Revenue)
-                .Take(5)
-                .ToListAsync(); // lấy ra top 5 nhân viên có tổng doanh thu đơn hàng cao nhất
-
-            List<long> ItemIds = Result.Select(x => x.ItemId).ToList();
-
+                .ToListAsync();
+            List<long> ItemIds = transactionGroups.Select(x => x.ItemId).ToList();
             List<ItemDAO> ItemDAOs = await DataContext.Item
                 .Where(x => ItemIds.Contains(x.Id))
                 .ToListAsync();
-
-            Parallel.ForEach(Result, Item =>
+            foreach (var groupItem in transactionGroups)
             {
-                Item.ItemName = ItemDAOs
-                    .Where(x => x.Id == Item.ItemId)
-                    .Select(y => y.Name)
+                long ItemId = groupItem.ItemId;
+                ItemDAO Item = ItemDAOs
+                    .Where(x => x.Id == ItemId)
                     .FirstOrDefault();
-            }); // gán tên item cho kết quả
+                DashboardMobile_TopRevenueByItemDTO ResultItem = new DashboardMobile_TopRevenueByItemDTO();
+                ResultItem.ItemName = Item.Name;
+                ResultItem.ItemId = Item.Id;
+                ResultItem.Revenue = groupItem.Revenue.HasValue ? groupItem.Revenue.Value : 0;
+                Result.Add(ResultItem);
+            }
+            Result = Result
+                .OrderByDescending(x => x.Revenue)
+                .Take(5)
+                .ToList();
 
             return Result;
         } // top 5 doanh thu đơn gián tiếp theo item
@@ -702,35 +715,43 @@ namespace DMS.Rpc.dashboards.mobile
 
             var query = from transaction in DataContext.DirectSalesOrderTransaction
                         join di in DataContext.DirectSalesOrder on transaction.DirectSalesOrderId equals di.Id
-                        where di.RequestStateId == RequestStateEnum.APPROVED.Id
-                        where transaction.OrderDate >= Start
-                        where transaction.OrderDate <= End
-                        select transaction; // query tu transaction don hang gian tiep co trang thai phe duyet hoan thanh
+                        where di.RequestStateId == RequestStateEnum.APPROVED.Id &&
+                        transaction.OrderDate >= Start &&
+                        transaction.OrderDate <= End
+                        group transaction by transaction.SalesEmployeeId into transGroup
+                        select transGroup; // query tu transaction don hang gian tiep co trang thai phe duyet hoan thanh
 
-            List<DashboardMobile_TopRevenueBySalesEmployeeDTO> Result = await query
-                .GroupBy(x => x.SalesEmployeeId)
-                .Select(group => new DashboardMobile_TopRevenueBySalesEmployeeDTO
+            List<DashboardMobile_TopRevenueBySalesEmployeeDTO> Result = new List<DashboardMobile_TopRevenueBySalesEmployeeDTO>();
+            var transactionGroups = await query
+                .Select(x => new DirectSalesOrderTransactionDAO
                 {
-                    SaleEmployeeId = group.Key,
-                    Revenue = group.Where(x => x.Revenue.HasValue).Sum(y => y.Revenue.Value)
+                    SalesEmployeeId = x.Key,
+                    Revenue = x.Sum(x => x.Revenue)
                 })
-                .OrderByDescending(o => o.Revenue)
-                .Take(5)
-                .ToListAsync(); // lấy ra top 5 nhân viên có tổng doanh thu đơn hàng cao nhất
-
-            List<long> UserIds = Result.Select(x => x.SaleEmployeeId).ToList();
-
+                .ToListAsync();
+            List<long> UserIds = transactionGroups
+                .Select(x => x.SalesEmployeeId)
+                .ToList();
             List<AppUserDAO> AppUserDAOs = await DataContext.AppUser
                 .Where(x => UserIds.Contains(x.Id))
                 .ToListAsync();
 
-            Parallel.ForEach(Result, Item =>
+            foreach (var groupItem in transactionGroups)
             {
-                Item.SaleEmployeeName = AppUserDAOs
-                    .Where(x => x.Id == Item.SaleEmployeeId)
-                    .Select(y => y.DisplayName)
+                long SaleEmployeeId = groupItem.SalesEmployeeId;
+                AppUserDAO SaleEmpolyee = AppUserDAOs
+                    .Where(x => x.Id == SaleEmployeeId)
                     .FirstOrDefault();
-            }); // gán tên nhân viên cho kết quả
+                DashboardMobile_TopRevenueBySalesEmployeeDTO Item = new DashboardMobile_TopRevenueBySalesEmployeeDTO();
+                Item.SaleEmployeeId = SaleEmployeeId;
+                Item.SaleEmployeeName = SaleEmpolyee.DisplayName;
+                Item.Revenue = groupItem.Revenue.HasValue ? groupItem.Revenue.Value : 0;
+                Result.Add(Item);
+            }
+            Result = Result
+                .OrderByDescending(x => x.Revenue)
+                .Take(5)
+                .ToList();
 
             return Result;
         } // top 5 doanh thu đơn trực tiếp theo nhân viên
@@ -747,36 +768,41 @@ namespace DMS.Rpc.dashboards.mobile
             (Start, End) = ConvertTime(filter.Time); // lấy ra startDate và EndDate theo filter time
 
             var query = from transaction in DataContext.DirectSalesOrderTransaction
-                        join di in DataContext.IndirectSalesOrder on transaction.DirectSalesOrderId equals di.Id
-                        where di.RequestStateId == RequestStateEnum.APPROVED.Id
-                        where transaction.OrderDate >= Start
-                        where transaction.OrderDate <= End
-                        select transaction; // query tu transaction don hang gian tiep co trang thai phe duyet hoan thanh
+                        join di in DataContext.DirectSalesOrder on transaction.DirectSalesOrderId equals di.Id
+                        where di.RequestStateId == RequestStateEnum.APPROVED.Id &&
+                        transaction.OrderDate >= Start &&
+                        transaction.OrderDate <= End
+                        group transaction by transaction.ItemId into transGroup
+                        select transGroup; // query tu transaction don hang gian tiep co trang thai phe duyet hoan thanh
 
-            List<DashboardMobile_TopRevenueByItemDTO> Result = await query
-                .GroupBy(x => x.ItemId)
-                .Select(group => new DashboardMobile_TopRevenueByItemDTO
+            List<DashboardMobile_TopRevenueByItemDTO> Result = new List<DashboardMobile_TopRevenueByItemDTO>();
+            var transactionGroups = await query
+                .Select(x => new DirectSalesOrderTransactionDAO
                 {
-                    ItemId = group.Key,
-                    Revenue = group.Where(x => x.Revenue.HasValue).Sum(y => y.Revenue.Value)
+                    ItemId = x.Key,
+                    Revenue = x.Sum(x => x.Revenue)
                 })
-                .OrderByDescending(o => o.Revenue)
-                .Take(5)
-                .ToListAsync(); // lấy ra top 5 nhân viên có tổng doanh thu đơn hàng cao nhất
-
-            List<long> ItemIds = Result.Select(x => x.ItemId).ToList();
-
+                .ToListAsync();
+            List<long> ItemIds = transactionGroups.Select(x => x.ItemId).ToList();
             List<ItemDAO> ItemDAOs = await DataContext.Item
                 .Where(x => ItemIds.Contains(x.Id))
                 .ToListAsync();
-
-            Parallel.ForEach(Result, Item =>
+            foreach (var groupItem in transactionGroups)
             {
-                Item.ItemName = ItemDAOs
-                    .Where(x => x.Id == Item.ItemId)
-                    .Select(y => y.Name)
+                long ItemId = groupItem.ItemId;
+                ItemDAO Item = ItemDAOs
+                    .Where(x => x.Id == ItemId)
                     .FirstOrDefault();
-            }); // gán tên item cho kết quả
+                DashboardMobile_TopRevenueByItemDTO ResultItem = new DashboardMobile_TopRevenueByItemDTO();
+                ResultItem.ItemName = Item.Name;
+                ResultItem.ItemId = Item.Id;
+                ResultItem.Revenue = groupItem.Revenue.HasValue ? groupItem.Revenue.Value : 0;
+                Result.Add(ResultItem);
+            }
+            Result = Result
+                .OrderByDescending(x => x.Revenue)
+                .Take(5)
+                .ToList();
 
             return Result;
         } // top 5 doanh thu đơn gián tiếp theo item
