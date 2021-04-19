@@ -374,28 +374,28 @@ namespace DMS.Rpc.dashboards.store_information
                         .BulkInsertValuesIntoTempTableAsync<long>(StoreIds);
 
             var query = from s in DataContext.Store
-                    join bs in DataContext.BrandInStore on s.Id equals bs.StoreId into x
-                    from sub in x.DefaultIfEmpty()
-                    join tt in tempTableQuery.Query on s.Id equals tt.Column1
-                    where OrganizationIds.Contains(s.OrganizationId) &&
-                        (ProvinceId.HasValue == false || (s.ProvinceId.HasValue && s.ProvinceId == ProvinceId.Value)) &&
-                        (DistrictId.HasValue == false || (s.DistrictId.HasValue && s.DistrictId == DistrictId.Value)) &&
-                        (BrandId.HasValue == false || (sub.BrandId == BrandId.Value)) &&
-                        s.StatusId == StatusEnum.ACTIVE.Id &&
-                        s.DeletedAt == null &&
-                        sub.DeletedAt == null
-                    select new DashboardStoreInformation_StoreDTO
-                    {
-                        Id = s.Id,
-                        Code = s.Code,
-                        Name = s.Name,
-                        Address = s.Address,
-                        Latitude = s.Latitude,
-                        Longitude = s.Longitude,
-                        Telephone = s.OwnerPhone,
-                        StoreStatusId = s.StoreStatusId,
-                        IsScouting = false
-                    };
+                        join tt in tempTableQuery.Query on s.Id equals tt.Column1
+                        join bs in DataContext.BrandInStore on s.Id equals bs.StoreId into x
+                        from sub in x.DefaultIfEmpty()
+                        where OrganizationIds.Contains(s.OrganizationId) &&
+                            (ProvinceId.HasValue == false || (s.ProvinceId.HasValue && s.ProvinceId == ProvinceId.Value)) &&
+                            (DistrictId.HasValue == false || (s.DistrictId.HasValue && s.DistrictId == DistrictId.Value)) &&
+                            (BrandId.HasValue == false || (sub.BrandId == BrandId.Value)) &&
+                            s.StatusId == StatusEnum.ACTIVE.Id &&
+                            s.DeletedAt == null &&
+                            sub.DeletedAt == null
+                        select new DashboardStoreInformation_StoreDTO
+                        {
+                            Id = s.Id,
+                            Code = s.Code,
+                            Name = s.Name,
+                            Address = s.Address,
+                            Latitude = s.Latitude,
+                            Longitude = s.Longitude,
+                            Telephone = s.OwnerPhone,
+                            StoreStatusId = s.StoreStatusId,
+                            IsScouting = false
+                        };
 
             List<DashboardStoreInformation_StoreDTO> DashboardMonitor_StoreDTOs = await query.Distinct().ToListAsync();
             StoreIds = DashboardMonitor_StoreDTOs.Select(x => x.Id).ToList();
@@ -538,7 +538,7 @@ namespace DMS.Rpc.dashboards.store_information
                          };
             var BrandInStoreProductGroupingMappings = await query3.ToListAsync();
 
-            List<DashboardStoreInformation_ProductGroupingStatisticsDTO> 
+            List<DashboardStoreInformation_ProductGroupingStatisticsDTO>
                 DashboardStoreInformation_ProductGroupingStatisticsDTOs = await query
                 .Where(x => BrandId.HasValue == false || x.BrandId == BrandId)
                 .ToListAsync();
@@ -605,30 +605,30 @@ namespace DMS.Rpc.dashboards.store_information
             var SurveyedStoreCounter = query.Select(x => x.Id).Distinct().Count();
 
             var query2 = from bs in DataContext.BrandInStore
-                        join b in DataContext.Brand on bs.BrandId equals b.Id
-                        join s in DataContext.Store on bs.StoreId equals s.Id
-                        join tt in tempTableQuery.Query on s.Id equals tt.Column1
-                        where OrganizationIds.Contains(s.OrganizationId) &&
-                        (ProvinceId.HasValue == false || (s.ProvinceId.HasValue && s.ProvinceId == ProvinceId.Value)) &&
-                        (DistrictId.HasValue == false || (s.DistrictId.HasValue && s.DistrictId == DistrictId.Value)) &&
-                        (BrandId.HasValue == false || (bs.BrandId == BrandId.Value)) &&
-                        bs.Top == Top &&
-                        s.StatusId == StatusEnum.ACTIVE.Id &&
-                        b.StatusId == StatusEnum.ACTIVE.Id &&
-                        s.DeletedAt == null &&
-                        b.DeletedAt == null &&
-                        bs.DeletedAt == null
-                        select new BrandInStore
-                        {
-                            Id = bs.Id,
-                            BrandId = b.Id,
-                            StoreId = s.Id,
-                            Brand = new Brand
-                            {
-                                Code = b.Code,
-                                Name = b.Name,
-                            }
-                        };
+                         join b in DataContext.Brand on bs.BrandId equals b.Id
+                         join s in DataContext.Store on bs.StoreId equals s.Id
+                         join tt in tempTableQuery.Query on s.Id equals tt.Column1
+                         where OrganizationIds.Contains(s.OrganizationId) &&
+                         (ProvinceId.HasValue == false || (s.ProvinceId.HasValue && s.ProvinceId == ProvinceId.Value)) &&
+                         (DistrictId.HasValue == false || (s.DistrictId.HasValue && s.DistrictId == DistrictId.Value)) &&
+                         (BrandId.HasValue == false || (bs.BrandId == BrandId.Value)) &&
+                         bs.Top == Top &&
+                         s.StatusId == StatusEnum.ACTIVE.Id &&
+                         b.StatusId == StatusEnum.ACTIVE.Id &&
+                         s.DeletedAt == null &&
+                         b.DeletedAt == null &&
+                         bs.DeletedAt == null
+                         select new BrandInStore
+                         {
+                             Id = bs.Id,
+                             BrandId = b.Id,
+                             StoreId = s.Id,
+                             Brand = new Brand
+                             {
+                                 Code = b.Code,
+                                 Name = b.Name,
+                             }
+                         };
 
             var BrandInStores = await query2.ToListAsync();
             List<DashboardStoreInformation_TopBrandDTO> DashboardStoreInformation_TopBrandDTOs = BrandInStores
