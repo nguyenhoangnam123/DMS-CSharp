@@ -352,13 +352,13 @@ namespace DMS.Repositories
 
         private async Task SaveReference(Survey Survey)
         {
-            await DataContext.SurveyQuestion.Where(x => x.SurveyId == Survey.Id).DeleteFromQueryAsync();
             if(Survey.SurveyQuestions != null)
             {
                 List<long> SurveyQuestionIds = Survey.SurveyQuestions.Select(x => x.Id).ToList();
                 await DataContext.SurveyQuestionFileMapping.Where(x => SurveyQuestionIds.Contains(x.SurveyQuestionId)).DeleteFromQueryAsync();
                 await DataContext.SurveyQuestionImageMapping.Where(x => SurveyQuestionIds.Contains(x.SurveyQuestionId)).DeleteFromQueryAsync();
                 await DataContext.SurveyOption.Where(x => SurveyQuestionIds.Contains(x.SurveyQuestionId)).DeleteFromQueryAsync();
+                await DataContext.SurveyQuestion.Where(x => x.SurveyId == Survey.Id).DeleteFromQueryAsync();
             }
 
             if (Survey.SurveyQuestions != null)
