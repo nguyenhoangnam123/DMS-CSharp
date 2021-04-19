@@ -401,28 +401,34 @@ namespace DMS.Repositories
                 List<SurveyQuestionImageMappingDAO> SurveyQuestionImageMappingDAOs = new List<SurveyQuestionImageMappingDAO>();
                 foreach (SurveyQuestion SurveyQuestion in Survey.SurveyQuestions)
                 {
-                    foreach (SurveyQuestionImageMapping SurveyQuestionImageMapping in SurveyQuestion.SurveyQuestionImageMappings)
+                    if(SurveyQuestion.SurveyQuestionImageMappings != null)
                     {
-                        SurveyQuestionImageMappingDAO SurveyQuestionImageMappingDAO = new SurveyQuestionImageMappingDAO
+                        foreach (SurveyQuestionImageMapping SurveyQuestionImageMapping in SurveyQuestion.SurveyQuestionImageMappings)
                         {
-                            ImageId = SurveyQuestionImageMapping.ImageId,
-                            SurveyQuestionId = SurveyQuestion.Id,
-                        };
-                        SurveyQuestionImageMappingDAOs.Add(SurveyQuestionImageMappingDAO);
+                            SurveyQuestionImageMappingDAO SurveyQuestionImageMappingDAO = new SurveyQuestionImageMappingDAO
+                            {
+                                ImageId = SurveyQuestionImageMapping.ImageId,
+                                SurveyQuestionId = SurveyQuestion.Id,
+                            };
+                            SurveyQuestionImageMappingDAOs.Add(SurveyQuestionImageMappingDAO);
+                        }
                     }
                 }
 
                 List<SurveyQuestionFileMappingDAO> SurveyQuestionFileMappingDAOs = new List<SurveyQuestionFileMappingDAO>();
                 foreach (SurveyQuestion SurveyQuestion in Survey.SurveyQuestions)
                 {
-                    foreach (SurveyQuestionFileMapping SurveyQuestionFileMapping in SurveyQuestion.SurveyQuestionFileMappings)
+                    if(SurveyQuestion.SurveyQuestionFileMappings != null)
                     {
-                        SurveyQuestionFileMappingDAO SurveyQuestionFileMappingDAO = new SurveyQuestionFileMappingDAO
+                        foreach (SurveyQuestionFileMapping SurveyQuestionFileMapping in SurveyQuestion.SurveyQuestionFileMappings)
                         {
-                            FileId = SurveyQuestionFileMapping.FileId,
-                            SurveyQuestionId = SurveyQuestion.Id,
-                        };
-                        SurveyQuestionFileMappingDAOs.Add(SurveyQuestionFileMappingDAO);
+                            SurveyQuestionFileMappingDAO SurveyQuestionFileMappingDAO = new SurveyQuestionFileMappingDAO
+                            {
+                                FileId = SurveyQuestionFileMapping.FileId,
+                                SurveyQuestionId = SurveyQuestion.Id,
+                            };
+                            SurveyQuestionFileMappingDAOs.Add(SurveyQuestionFileMappingDAO);
+                        }
                     }
                 }
 
