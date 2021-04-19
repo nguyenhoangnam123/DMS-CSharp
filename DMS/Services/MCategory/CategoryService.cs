@@ -1,4 +1,4 @@
-using DMS.Common;
+﻿using DMS.Common;
 using DMS.Helpers;
 using System;
 using System.Collections.Generic;
@@ -43,7 +43,28 @@ namespace DMS.Services.MCategory
         {
             try
             {
-                int result = await UOW.CategoryRepository.Count(CategoryFilter);
+                CategoryFilter.Skip = 0;
+                CategoryFilter.Take = int.MaxValue;
+                List<Category> Categories = await UOW.CategoryRepository.List(CategoryFilter); // lay ra cac categories thoa man
+                List<Category> AllCategories = await UOW.CategoryRepository.List(new CategoryFilter
+                {
+                    Skip = 0,
+                    Take = int.MaxValue,
+                    Selects = CategorySelect.Id | CategorySelect.Code | CategorySelect.Name | CategorySelect.Image | CategorySelect.Parent | CategorySelect.Path | CategorySelect.Level
+                }); // lay het cac categories
+                foreach (Category Category in Categories)
+                {
+                    Category.HasChildren = AllCategories.Any(x => x.ParentId.HasValue && x.ParentId.Value == Category.Id);
+                }
+                if (CategoryFilter.HasChildren)
+                {
+                    Categories = Categories.Where(x => x.HasChildren).ToList();
+                }
+                else
+                {
+                    Categories = Categories.Where(x => x.HasChildren == false).ToList();
+                }
+                int result = Categories.Count;
                 return result;
             }
             catch (Exception ex)
@@ -65,8 +86,34 @@ namespace DMS.Services.MCategory
         {
             try
             {
-                List<Category> Categorys = await UOW.CategoryRepository.List(CategoryFilter);
-                return Categorys;
+                CategoryFilter.Skip = 0;
+                CategoryFilter.Take = int.MaxValue;
+                List<Category> Categories = await UOW.CategoryRepository.List(CategoryFilter); // lay ra cac categories thoa man
+                List<Category> AllCategories = await UOW.CategoryRepository.List(new CategoryFilter
+                {
+                    Skip = 0,
+                    Take = int.MaxValue,
+                    Selects = CategorySelect.Id | CategorySelect.Code | CategorySelect.Name | CategorySelect.Image | CategorySelect.Parent | CategorySelect.Path | CategorySelect.Level
+                }); // lay het cac categories
+                foreach (Category Category in Categories)
+                {
+                    Category.HasChildren = AllCategories.Any(x => x.ParentId.HasValue && x.ParentId.Value == Category.Id);
+                }
+                if (CategoryFilter.HasChildren)
+                {
+                    Categories = Categories.Where(x => x.HasChildren).ToList();
+                }
+                else
+                {
+                    Categories = Categories.Where(x => x.HasChildren == false).ToList();
+                }
+                List<long> CategoryIds = Categories.Select(x => x.Id).ToList();
+                if (CategoryFilter.HasChildren)
+                {
+                    List<Category> Children = AllCategories.Where(x => x.ParentId.HasValue && CategoryIds.Contains(x.ParentId.Value)).ToList(); // lấy ra tất cả con
+                    Categories = Categories.Union(Children).ToList();
+                }
+                return Categories;
             }
             catch (Exception ex)
             {

@@ -450,6 +450,31 @@ namespace DMS.Rpc.mobile.general_mobile
             return StoreDraftTypeEnum.StoreDraftTypeEnumList;
         }
 
+        [Route(GeneralMobileRoute.SingleListCategory), HttpPost]
+        public async Task<List<GeneralMobile_CategoryDTO>> SingleListCategory([FromBody] GeneralMobile_CategoryFilterDTO GeneralMobile_CategoryFilterDTO){
+
+
+            CategoryFilter CategoryFilter = new CategoryFilter();
+            CategoryFilter.Skip = 0;
+            CategoryFilter.Take = int.MaxValue;
+            CategoryFilter.OrderBy = CategoryOrder.Id;
+            CategoryFilter.OrderType = OrderType.ASC;
+            CategoryFilter.Selects = CategorySelect.ALL;
+
+            CategoryFilter.Id = GeneralMobile_CategoryFilterDTO.Id;
+            CategoryFilter.Code = GeneralMobile_CategoryFilterDTO.Code;
+            CategoryFilter.Name = GeneralMobile_CategoryFilterDTO.Name;
+            CategoryFilter.Level = GeneralMobile_CategoryFilterDTO.Level;
+            CategoryFilter.ParentId = GeneralMobile_CategoryFilterDTO.ParentId;
+            CategoryFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+            CategoryFilter.HasChildren = false; // mac dinh chi lay nut la
+
+            List<Category> Categories = await CategoryService.List(CategoryFilter);
+            List<GeneralMobile_CategoryDTO> GeneralMobile_CategoryDTOs = Categories
+                .Select(x => new GeneralMobile_CategoryDTO(x)).ToList();
+            return GeneralMobile_CategoryDTOs;
+        }
+
         [Route(GeneralMobileRoute.CountBanner), HttpPost]
         public async Task<ActionResult<int>> CountBanner([FromBody] GeneralMobile_BannerFilterDTO GeneralMobile_BannerFilterDTO)
         {

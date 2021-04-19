@@ -49,6 +49,7 @@ using Microsoft.EntityFrameworkCore;
 using DMS.Services.MDirectSalesOrder;
 using DMS.Services.MSystemConfiguration;
 using DMS.Services.MExportTemplate;
+using DMS.Services.MCategory;
 
 namespace DMS.Rpc.mobile.general_mobile
 {
@@ -85,6 +86,7 @@ namespace DMS.Rpc.mobile.general_mobile
         private INotificationService NotificationService;
         private IRewardHistoryService RewardHistoryService;
         private ISystemConfigurationService SystemConfigurationService;
+        private ICategoryService CategoryService;
         private ICurrentContext CurrentContext;
         private DataContext DataContext;
         public MobileController(
@@ -119,6 +121,7 @@ namespace DMS.Rpc.mobile.general_mobile
             INotificationService NotificationService,
             IRewardHistoryService RewardHistoryService,
             ISystemConfigurationService SystemConfigurationService,
+            ICategoryService CategoryService,
             ICurrentContext CurrentContext,
             DataContext DataContext
         )
@@ -154,6 +157,7 @@ namespace DMS.Rpc.mobile.general_mobile
             this.NotificationService = NotificationService;
             this.RewardHistoryService = RewardHistoryService;
             this.SystemConfigurationService = SystemConfigurationService;
+            this.CategoryService = CategoryService;
             this.CurrentContext = CurrentContext;
             this.DataContext = DataContext;
         }
