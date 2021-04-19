@@ -23,7 +23,7 @@ namespace DMS.Rpc.survey
         public const string AnswerStatistics = Default + "/answer-statistics";
         public const string GetSurveyForm = Default + "/get-survey-form";
         public const string SaveSurveyForm = Default + "/save-survey-form";
-        public const string SaveQuestionFile = Default + "/save-question-file";
+        public const string SaveQuestionMultiFile = Default + "/save-question-multi-file";
         public const string SaveQuestionImage = Default + "/save-question-image";
 
         public const string FilterListAppUser = Default + "/filter-list-app-user";
@@ -72,7 +72,7 @@ namespace DMS.Rpc.survey
                 Parent,
                 Master, Count, List, Get,
                 FilterListAppUser, FilterListStatus, FilterListSurveyQuestionType,
-                GetSurveyForm, SaveSurveyForm, SaveQuestionFile, SaveQuestionImage } },
+                GetSurveyForm, SaveSurveyForm, SaveQuestionMultiFile, SaveQuestionImage } },
             { "Xuất Excel", new List<string> {
                 Parent,
                 Master, Count, List, Get, Export,

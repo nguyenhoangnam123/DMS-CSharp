@@ -686,31 +686,6 @@ namespace DMS.Rpc.survey
             return Survey_SurveyOptionTypeDTOs;
         }
 
-        [Route(SurveyRoute.SaveQuestionFile), HttpPost]
-        public async Task<ActionResult<Survey_FileDTO>> SaveQuestionFile(IFormFile file)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
-            MemoryStream memoryStream = new MemoryStream();
-            file.CopyTo(memoryStream);
-            File File = new File
-            {
-                Name = file.FileName,
-                Content = memoryStream.ToArray()
-            };
-            File = await SurveyService.SaveFile(File);
-            if (File == null)
-                return BadRequest();
-            Survey_FileDTO Survey_FileDTO = new Survey_FileDTO
-            {
-                Id = File.Id,
-                Name = File.Name,
-                Path = File.Path,
-            };
-
-            return Ok(Survey_FileDTO);
-        }
-
         [Route(SurveyRoute.SaveQuestionImage), HttpPost]
         public async Task<ActionResult<Survey_ImageDTO>> SaveImage(IFormFile file)
         {
@@ -734,6 +709,29 @@ namespace DMS.Rpc.survey
                 ThumbnailUrl = Image.ThumbnailUrl,
             };
             return Ok(product_ImageDTO);
+        }
+
+        [HttpPost]
+        [Route(SurveyRoute.SaveQuestionMultiFile)]
+        public async Task<ActionResult<List<Survey_FileDTO>>> MultiUpload([FromForm] List<IFormFile> files)
+        {
+            List<Survey_FileDTO> Survey_FileDTOs = new List<Survey_FileDTO>();
+            foreach (IFormFile file in files)
+            {
+                MemoryStream memoryStream = new MemoryStream();
+                file.CopyTo(memoryStream);
+                File File = new File
+                {
+                    Name = file.FileName,
+                    Content = memoryStream.ToArray(),
+                };
+                File = await SurveyService.SaveFile(File);
+                if (File == null)
+                    return BadRequest();
+                Survey_FileDTO Company_FileDTO = new Survey_FileDTO(File);
+                Survey_FileDTOs.Add(Company_FileDTO);
+            }
+            return Survey_FileDTOs;
         }
     }
 }
