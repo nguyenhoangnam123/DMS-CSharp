@@ -113,6 +113,56 @@ namespace DMS.Repositories
                 }
             }
 
+            if (filter.CategoryId != null && filter.CategoryId.HasValue) {
+                if (filter.CategoryId.Equal != null)
+                {
+                    CategoryDAO CategoryDAO = DataContext.Category
+                        .Where(o => o.Id == filter.CategoryId.Equal.Value).FirstOrDefault();
+                    query = from q in query
+                            join pr in DataContext.Product on q.ProductId equals pr.Id
+                            join cat in DataContext.Category on pr.CategoryId equals cat.Id
+                            where cat.Path.StartsWith(CategoryDAO.Path)
+                            select q;
+                }
+                if (filter.CategoryId.NotEqual != null)
+                {
+                    CategoryDAO CategoryDAO = DataContext.Category
+                        .Where(o => o.Id == filter.CategoryId.NotEqual.Value).FirstOrDefault();
+                    query = from q in query
+                            join pr in DataContext.Product on q.ProductId equals pr.Id
+                            join cat in DataContext.Category on pr.CategoryId equals cat.Id
+                            where !cat.Path.StartsWith(CategoryDAO.Path)
+                            select q;
+                }
+                if (filter.CategoryId.In != null)
+                {
+                    List<CategoryDAO> CategoryDAOs = DataContext.Category
+                        .Where(o => o.DeletedAt == null && o.StatusId == 1).ToList();
+                    List<CategoryDAO> Parents = CategoryDAOs.Where(o => filter.CategoryId.In.Contains(o.Id)).ToList();
+                    List<CategoryDAO> Branches = CategoryDAOs.Where(o => Parents.Any(p => o.Path.StartsWith(p.Path))).ToList();
+                    List<long> Ids = Branches.Select(o => o.Id).ToList();
+                    query = from q in query
+                            join pr in DataContext.Product on q.ProductId equals pr.Id
+                            join cat in DataContext.Category on pr.CategoryId equals cat.Id
+                            where Ids.Contains(cat.Id)
+                            select q;
+                }
+                if (filter.CategoryId.NotIn != null)
+                {
+                    List<CategoryDAO> CategoryDAOs = DataContext.Category
+                        .Where(o => o.DeletedAt == null && o.StatusId == 1).ToList();
+                    List<CategoryDAO> Parents = CategoryDAOs.Where(o => filter.CategoryId.NotIn.Contains(o.Id)).ToList();
+                    List<CategoryDAO> Branches = CategoryDAOs.Where(o => Parents.Any(p => o.Path.StartsWith(p.Path))).ToList();
+                    List<long> Ids = Branches.Select(o => o.Id).ToList();
+                    query = from q in query
+                            join pr in DataContext.Product on q.ProductId equals pr.Id
+                            join cat in DataContext.Category on pr.CategoryId equals cat.Id
+                            where !Ids.Contains(cat.Id)
+                            select q;
+                }
+
+            }
+
             if (filter.ProductTypeId != null && filter.ProductTypeId.HasValue)
                 query = query.Where(q => q.Product.ProductTypeId, filter.ProductTypeId);
 

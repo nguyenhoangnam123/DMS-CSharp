@@ -54,6 +54,7 @@ namespace DMS.Entities
         public IdFilter ProductTypeId { get; set; }
         public IdFilter SupplierId { get; set; }
         public IdFilter StatusId { get; set; }
+        public IdFilter CategoryId { get; set; }
         public bool? IsNew { get; set; }
         public List<ItemFilter> OrFilter { get; set; }
         public ItemOrder OrderBy { get; set; }
