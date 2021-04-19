@@ -493,7 +493,7 @@ namespace DMS.Services.MSurvey
         public async Task<DMS.Entities.File> SaveFile(DMS.Entities.File File)
         {
             FileInfo fileInfo = new FileInfo(File.Name);
-            string path = $"/category/{StaticParams.DateTimeNow.ToString("yyyyMMdd")}/{Guid.NewGuid()}{fileInfo.Extension}";
+            string path = $"/survey-question/{StaticParams.DateTimeNow.ToString("yyyyMMdd")}/{Guid.NewGuid()}{fileInfo.Extension}";
 
             File = await FileService.Create(File, path);
             return File;
@@ -502,8 +502,8 @@ namespace DMS.Services.MSurvey
         public async Task<Image> SaveImage(Image Image)
         {
             FileInfo fileInfo = new FileInfo(Image.Name);
-            string path = $"/category/{StaticParams.DateTimeNow.ToString("yyyyMMdd")}/{Guid.NewGuid()}{fileInfo.Extension}";
-            string thumbnailPath = $"/category/{StaticParams.DateTimeNow.ToString("yyyyMMdd")}/{Guid.NewGuid()}{fileInfo.Extension}";
+            string path = $"/survey-question/{StaticParams.DateTimeNow.ToString("yyyyMMdd")}/{Guid.NewGuid()}{fileInfo.Extension}";
+            string thumbnailPath = $"/survey-question/{StaticParams.DateTimeNow.ToString("yyyyMMdd")}/{Guid.NewGuid()}{fileInfo.Extension}";
             Image = await ImageService.Create(Image, path, thumbnailPath, 128, 128);
             return Image;
         }
