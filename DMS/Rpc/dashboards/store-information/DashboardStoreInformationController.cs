@@ -382,8 +382,7 @@ namespace DMS.Rpc.dashboards.store_information
                             (DistrictId.HasValue == false || (s.DistrictId.HasValue && s.DistrictId == DistrictId.Value)) &&
                             (BrandId.HasValue == false || (sub.BrandId == BrandId.Value)) &&
                             s.StatusId == StatusEnum.ACTIVE.Id &&
-                            s.DeletedAt == null &&
-                            sub.DeletedAt == null
+                            s.DeletedAt == null
                         select new DashboardStoreInformation_StoreDTO
                         {
                             Id = s.Id,
