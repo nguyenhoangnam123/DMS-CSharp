@@ -9,6 +9,8 @@ namespace DMS.Rpc.mobile.general_mobile
         public GeneralMobile_ImageDTO Image { get; set; }
         public GeneralMobile_SurveyQuestionDTO SurveyQuestion { get; set; }
 
+        public GeneralMobile_SurveyQuestionImageMappingDTO() { }
+
         public GeneralMobile_SurveyQuestionImageMappingDTO(SurveyQuestionImageMapping SurveyQuestionImageMapping)
         {
             this.SurveyQuestionId = SurveyQuestionImageMapping.SurveyQuestionId;

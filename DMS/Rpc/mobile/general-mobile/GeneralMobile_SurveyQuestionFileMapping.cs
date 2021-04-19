@@ -8,6 +8,8 @@ namespace DMS.Rpc.mobile.general_mobile
         public GeneralMobile_FileDTO File { get; set; }
         public GeneralMobile_SurveyQuestionDTO SurveyQuestion { get; set; }
 
+        public GeneralMobile_SurveyQuestionFileMappingDTO() { }
+
         public GeneralMobile_SurveyQuestionFileMappingDTO(SurveyQuestionFileMapping SurveyQuestionFileMapping)
         {
             this.SurveyQuestionId = SurveyQuestionFileMapping.SurveyQuestionId;
