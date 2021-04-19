@@ -9,6 +9,8 @@ namespace DMS.Rpc.survey
         public Survey_ImageDTO Image { get; set; }
         public Survey_SurveyQuestionDTO SurveyQuestion { get; set; }
 
+        public Survey_SurveyQuestionImageMappingDTO() { }
+
         public Survey_SurveyQuestionImageMappingDTO(SurveyQuestionImageMapping SurveyQuestionImageMapping)
         {
             this.SurveyQuestionId = SurveyQuestionImageMapping.SurveyQuestionId;

@@ -8,6 +8,8 @@ namespace DMS.Rpc.survey
         public Survey_FileDTO File { get; set; }
         public Survey_SurveyQuestionDTO SurveyQuestion { get; set; }
 
+        public Survey_SurveyQuestionFileMappingDTO() { }
+
         public Survey_SurveyQuestionFileMappingDTO(SurveyQuestionFileMapping SurveyQuestionFileMapping)
         {
             this.SurveyQuestionId = SurveyQuestionFileMapping.SurveyQuestionId;
