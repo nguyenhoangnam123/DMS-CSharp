@@ -23,6 +23,7 @@ namespace DMS.Models
             PromotionCodeStoreMappings = new HashSet<PromotionCodeStoreMappingDAO>();
             PromotionStoreMappings = new HashSet<PromotionStoreMappingDAO>();
             RewardHistories = new HashSet<RewardHistoryDAO>();
+            ShowingOrderWithDraws = new HashSet<ShowingOrderWithDrawDAO>();
             ShowingOrders = new HashSet<ShowingOrderDAO>();
             StoreCheckingImageMappings = new HashSet<StoreCheckingImageMappingDAO>();
             StoreCheckings = new HashSet<StoreCheckingDAO>();
@@ -97,6 +98,7 @@ namespace DMS.Models
         public virtual ICollection<PromotionCodeStoreMappingDAO> PromotionCodeStoreMappings { get; set; }
         public virtual ICollection<PromotionStoreMappingDAO> PromotionStoreMappings { get; set; }
         public virtual ICollection<RewardHistoryDAO> RewardHistories { get; set; }
+        public virtual ICollection<ShowingOrderWithDrawDAO> ShowingOrderWithDraws { get; set; }
         public virtual ICollection<ShowingOrderDAO> ShowingOrders { get; set; }
         public virtual ICollection<StoreCheckingImageMappingDAO> StoreCheckingImageMappings { get; set; }
         public virtual ICollection<StoreCheckingDAO> StoreCheckings { get; set; }

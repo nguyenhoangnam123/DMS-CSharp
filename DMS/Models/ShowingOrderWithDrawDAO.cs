@@ -26,6 +26,7 @@ namespace DMS.Models
         public virtual AppUserDAO AppUser { get; set; }
         public virtual OrganizationDAO Organization { get; set; }
         public virtual StatusDAO Status { get; set; }
+        public virtual StoreDAO Store { get; set; }
         public virtual ICollection<ShowingOrderContentWithDrawDAO> ShowingOrderContentWithDraws { get; set; }
     }
 }

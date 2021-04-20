@@ -4150,6 +4150,12 @@ namespace DMS.Models
                     .HasForeignKey(d => d.StatusId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_ShowingOrderWithDraw_Status");
+
+                entity.HasOne(d => d.Store)
+                    .WithMany(p => p.ShowingOrderWithDraws)
+                    .HasForeignKey(d => d.StoreId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ShowingOrderWithDraw_Store");
             });
 
             modelBuilder.Entity<StatusDAO>(entity =>
