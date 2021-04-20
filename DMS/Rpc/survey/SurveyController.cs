@@ -101,9 +101,14 @@ namespace DMS.Rpc.survey
                 return Forbid();
 
             Survey Survey = ConvertDTOToEntity(Survey_SurveyDTO);
-            (Survey_SurveyDTO.StartAt, Survey_SurveyDTO.EndAt) = ConvertDate(Survey_SurveyDTO.StartAt, Survey_SurveyDTO.EndAt); // lấy ra đầu ngày bắt đầu, cuối ngày kết thúc
+            DateTime StartAt = Survey_SurveyDTO.StartAt;
+            DateTime? EndAt = Survey_SurveyDTO.EndAt;
+            (StartAt, EndAt) = ConvertDate(Survey_SurveyDTO.StartAt, Survey_SurveyDTO.EndAt); // lấy ra đầu ngày bắt đầu, cuối ngày kết thúc
             if (Survey.StartAt == default(DateTime))
                 Survey.StartAt = StaticParams.DateTimeNow; // nếu không nhập ngày bắt đầu thì mặc định là thời điểm hiện tại
+            else 
+                Survey.StartAt = StartAt;
+            Survey.EndAt = EndAt;
 
             Survey = await SurveyService.Create(Survey);
             Survey_SurveyDTO = new Survey_SurveyDTO(Survey);
@@ -123,9 +128,14 @@ namespace DMS.Rpc.survey
                 return Forbid();
 
             Survey Survey = ConvertDTOToEntity(Survey_SurveyDTO);
-            (Survey_SurveyDTO.StartAt, Survey_SurveyDTO.EndAt) = ConvertDate(Survey_SurveyDTO.StartAt, Survey_SurveyDTO.EndAt); // lấy ra đầu ngày bắt đầu, cuối ngày kết thúc
+            DateTime StartAt = Survey_SurveyDTO.StartAt;
+            DateTime? EndAt = Survey_SurveyDTO.EndAt;
+            (StartAt, EndAt) = ConvertDate(Survey_SurveyDTO.StartAt, Survey_SurveyDTO.EndAt); // lấy ra đầu ngày bắt đầu, cuối ngày kết thúc
             if (Survey.StartAt == default(DateTime))
                 Survey.StartAt = StaticParams.DateTimeNow; // nếu không nhập ngày bắt đầu thì mặc định là thời điểm hiện tại
+            else
+                Survey.StartAt = StartAt;
+            Survey.EndAt = EndAt;
 
             Survey = await SurveyService.Update(Survey);
             Survey_SurveyDTO = new Survey_SurveyDTO(Survey);
