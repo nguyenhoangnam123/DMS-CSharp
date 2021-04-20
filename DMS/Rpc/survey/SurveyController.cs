@@ -101,8 +101,10 @@ namespace DMS.Rpc.survey
                 return Forbid();
 
             Survey Survey = ConvertDTOToEntity(Survey_SurveyDTO);
+            ConvertDate(Survey_SurveyDTO.StartAt, Survey_SurveyDTO.EndAt); // lấy ra đầu ngày bắt đầu, cuối ngày kết thúc
             if (Survey.StartAt == default(DateTime))
-                Survey.StartAt = StaticParams.DateTimeNow;
+                Survey.StartAt = StaticParams.DateTimeNow; // nếu không nhập ngày bắt đầu thì mặc định là thời điểm hiện tại
+
             Survey = await SurveyService.Create(Survey);
             Survey_SurveyDTO = new Survey_SurveyDTO(Survey);
             if (Survey.IsValidated)
@@ -121,6 +123,10 @@ namespace DMS.Rpc.survey
                 return Forbid();
 
             Survey Survey = ConvertDTOToEntity(Survey_SurveyDTO);
+            ConvertDate(Survey_SurveyDTO.StartAt, Survey_SurveyDTO.EndAt); // lấy ra đầu ngày bắt đầu, cuối ngày kết thúc
+            if (Survey.StartAt == default(DateTime))
+                Survey.StartAt = StaticParams.DateTimeNow; // nếu không nhập ngày bắt đầu thì mặc định là thời điểm hiện tại
+
             Survey = await SurveyService.Update(Survey);
             Survey_SurveyDTO = new Survey_SurveyDTO(Survey);
             if (Survey.IsValidated)
@@ -732,6 +738,25 @@ namespace DMS.Rpc.survey
                 Survey_FileDTOs.Add(Company_FileDTO);
             }
             return Survey_FileDTOs;
+        }
+
+        private void ConvertDate(DateTime StartAt, DateTime? EndAt)
+        {
+            if(StartAt != null || StartAt != default(DateTime))
+            {
+                StartAt = StartAt.AddHours(CurrentContext.TimeZone)
+                    .Date
+                    .AddHours(0 - CurrentContext.TimeZone);
+            }
+            if(EndAt != null || EndAt != default(DateTime))
+            {
+                EndAt = EndAt.Value
+                    .AddHours(CurrentContext.TimeZone)
+                    .Date
+                    .AddHours(0 - CurrentContext.TimeZone)
+                    .AddDays(1)
+                    .AddSeconds(-1);
+            }
         }
     }
 }
