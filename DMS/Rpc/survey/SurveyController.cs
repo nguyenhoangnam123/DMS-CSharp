@@ -101,14 +101,14 @@ namespace DMS.Rpc.survey
                 return Forbid();
 
             Survey Survey = ConvertDTOToEntity(Survey_SurveyDTO);
-            DateTime StartAt = Survey_SurveyDTO.StartAt;
-            DateTime? EndAt = Survey_SurveyDTO.EndAt;
-            (StartAt, EndAt) = ConvertDate(Survey_SurveyDTO.StartAt, Survey_SurveyDTO.EndAt); // lấy ra đầu ngày bắt đầu, cuối ngày kết thúc
+
             if (Survey.StartAt == default(DateTime))
-                Survey.StartAt = StaticParams.DateTimeNow; // nếu không nhập ngày bắt đầu thì mặc định là thời điểm hiện tại
-            else 
-                Survey.StartAt = StartAt;
-            Survey.EndAt = EndAt;
+                Survey.StartAt = StaticParams.DateTimeNow;
+            else
+                Survey.StartAt = StartDay(Survey.StartAt);
+            if (Survey.EndAt != null || Survey.EndAt.HasValue)
+                Survey.EndAt = EndDay(Survey.EndAt.Value);
+
 
             Survey = await SurveyService.Create(Survey);
             Survey_SurveyDTO = new Survey_SurveyDTO(Survey);
@@ -128,14 +128,13 @@ namespace DMS.Rpc.survey
                 return Forbid();
 
             Survey Survey = ConvertDTOToEntity(Survey_SurveyDTO);
-            DateTime StartAt = Survey_SurveyDTO.StartAt;
-            DateTime? EndAt = Survey_SurveyDTO.EndAt;
-            (StartAt, EndAt) = ConvertDate(Survey_SurveyDTO.StartAt, Survey_SurveyDTO.EndAt); // lấy ra đầu ngày bắt đầu, cuối ngày kết thúc
+
             if (Survey.StartAt == default(DateTime))
-                Survey.StartAt = StaticParams.DateTimeNow; // nếu không nhập ngày bắt đầu thì mặc định là thời điểm hiện tại
+                Survey.StartAt = StaticParams.DateTimeNow;
             else
-                Survey.StartAt = StartAt;
-            Survey.EndAt = EndAt;
+                Survey.StartAt = StartDay(Survey.StartAt);
+            if (Survey.EndAt != null || Survey.EndAt.HasValue)
+                Survey.EndAt = EndDay(Survey.EndAt.Value);
 
             Survey = await SurveyService.Update(Survey);
             Survey_SurveyDTO = new Survey_SurveyDTO(Survey);
@@ -750,24 +749,22 @@ namespace DMS.Rpc.survey
             return Survey_FileDTOs;
         }
 
-        private Tuple<DateTime, DateTime?> ConvertDate(DateTime StartAt, DateTime? EndAt)
+        private DateTime StartDay(DateTime date)
         {
-            if(StartAt != null || StartAt != default(DateTime))
-            {
-                StartAt = StartAt.AddHours(CurrentContext.TimeZone)
+                return date
+                    .AddHours(CurrentContext.TimeZone)
                     .Date
                     .AddHours(0 - CurrentContext.TimeZone);
-            }
-            if(EndAt != null || EndAt != default(DateTime))
-            {
-                EndAt = EndAt.Value
+        }
+
+        private DateTime EndDay(DateTime date)
+        {
+                return date
                     .AddHours(CurrentContext.TimeZone)
                     .Date
                     .AddHours(0 - CurrentContext.TimeZone)
                     .AddDays(1)
                     .AddSeconds(-1);
-            }
-            return Tuple.Create(StartAt, EndAt);
         }
     }
 }
