@@ -1297,7 +1297,7 @@ namespace DMS.Rpc.mobile.general_mobile
             StoreScoutingFilter.Code = GeneralMobile_StoreScoutingFilterDTO.Code;
             StoreScoutingFilter.Name = GeneralMobile_StoreScoutingFilterDTO.Name;
             StoreScoutingFilter.CreatedAt = GeneralMobile_StoreScoutingFilterDTO.CreatedAt;
-            StoreScoutingFilter.AppUserId = new IdFilter { Equal = appUser.Id };
+            //StoreScoutingFilter.AppUserId = new IdFilter { Equal = appUser.Id };
             StoreScoutingFilter.DistrictId = GeneralMobile_StoreScoutingFilterDTO.DistrictId;
             StoreScoutingFilter.OrganizationId = new IdFilter { Equal = appUser.OrganizationId };
             StoreScoutingFilter.ProvinceId = GeneralMobile_StoreScoutingFilterDTO.ProvinceId;
