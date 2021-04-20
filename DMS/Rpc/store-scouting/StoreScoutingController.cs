@@ -731,6 +731,7 @@ namespace DMS.Rpc.store_scouting
             AppUserFilter.Id = StoreScouting_AppUserFilterDTO.Id;
             AppUserFilter.Username = StoreScouting_AppUserFilterDTO.Username;
             AppUserFilter.DisplayName = StoreScouting_AppUserFilterDTO.DisplayName;
+            AppUserFilter.OrganizationId = StoreScouting_AppUserFilterDTO.OrganizationId;
 
             if (AppUserFilter.Id == null) AppUserFilter.Id = new IdFilter();
             AppUserFilter.Id.In = await FilterAppUser(AppUserService, OrganizationService, CurrentContext);
