@@ -16,7 +16,7 @@ namespace DMS.Entities
         public long Quantity { get; set; }
         public decimal Amount { get; set; }
         public ShowingItem ShowingItem { get; set; }
-        public ShowingOrder ShowingOrder { get; set; }
+        public ShowingOrderWithDraw ShowingOrderWithDraw { get; set; }
         public UnitOfMeasure UnitOfMeasure { get; set; }
         
         public bool Equals(ShowingOrderContentWithDraw other)
@@ -40,7 +40,7 @@ namespace DMS.Entities
     public class ShowingOrderContentWithDrawFilter : FilterEntity
     {
         public IdFilter Id { get; set; }
-        public IdFilter ShowingOrderId { get; set; }
+        public IdFilter ShowingOrderWithDrawId { get; set; }
         public IdFilter ShowingItemId { get; set; }
         public IdFilter UnitOfMeasureId { get; set; }
         public DecimalFilter SalePrice { get; set; }
@@ -55,7 +55,7 @@ namespace DMS.Entities
     public enum ShowingOrderContentWithDrawOrder
     {
         Id = 0,
-        ShowingOrder = 1,
+        ShowingOrderWithDraw = 1,
         ShowingItem = 2,
         UnitOfMeasure = 3,
         SalePrice = 4,
@@ -68,7 +68,7 @@ namespace DMS.Entities
     {
         ALL = E.ALL,
         Id = E._0,
-        ShowingOrder = E._1,
+        ShowingOrderWithDraw = E._1,
         ShowingItem = E._2,
         UnitOfMeasure = E._3,
         SalePrice = E._4,
