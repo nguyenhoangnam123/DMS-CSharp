@@ -4094,6 +4094,8 @@ namespace DMS.Models
 
                 entity.Property(e => e.Amount).HasColumnType("decimal(18, 4)");
 
+                entity.Property(e => e.SalePrice).HasColumnType("decimal(18, 4)");
+
                 entity.HasOne(d => d.ShowingItem)
                     .WithMany(p => p.ShowingOrderContentWithDraws)
                     .HasForeignKey(d => d.ShowingItemId)
