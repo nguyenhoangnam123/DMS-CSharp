@@ -104,6 +104,8 @@ namespace DMS.Repositories
         IShowingItemRepository ShowingItemRepository { get; }
         IShowingOrderContentRepository ShowingOrderContentRepository { get; }
         IShowingOrderRepository ShowingOrderRepository { get; }
+        IShowingOrderContentWithDrawRepository ShowingOrderContentWithDrawRepository { get; }
+        IShowingOrderWithDrawRepository ShowingOrderWithDrawRepository { get; }
         IStatusRepository StatusRepository { get; }
         IStoreScoutingRepository StoreScoutingRepository { get; }
         IStoreScoutingTypeRepository StoreScoutingTypeRepository { get; }
@@ -238,6 +240,8 @@ namespace DMS.Repositories
         public IShowingItemRepository ShowingItemRepository { get; private set; }
         public IShowingOrderContentRepository ShowingOrderContentRepository { get; private set; }
         public IShowingOrderRepository ShowingOrderRepository { get; private set; }
+        public IShowingOrderContentWithDrawRepository ShowingOrderContentWithDrawRepository { get; }
+        public IShowingOrderWithDrawRepository ShowingOrderWithDrawRepository { get; }
         public IStatusRepository StatusRepository { get; private set; }
         public IStoreScoutingRepository StoreScoutingRepository { get; private set; }
         public IStoreScoutingTypeRepository StoreScoutingTypeRepository { get; private set; }
@@ -371,6 +375,8 @@ namespace DMS.Repositories
             ShowingItemRepository = new ShowingItemRepository(DataContext);
             ShowingOrderContentRepository = new ShowingOrderContentRepository(DataContext);
             ShowingOrderRepository = new ShowingOrderRepository(DataContext);
+            ShowingOrderContentWithDrawRepository = new ShowingOrderContentWithDrawRepository(DataContext);
+            ShowingOrderWithDrawRepository = new ShowingOrderWithDrawRepository(DataContext);
             StatusRepository = new StatusRepository(DataContext);
             StoreScoutingStatusRepository = new StoreScoutingStatusRepository(DataContext);
             StoreScoutingRepository = new StoreScoutingRepository(DataContext);
