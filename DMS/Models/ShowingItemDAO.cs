@@ -8,6 +8,7 @@ namespace DMS.Models
         public ShowingItemDAO()
         {
             ShowingItemImageMappings = new HashSet<ShowingItemImageMappingDAO>();
+            ShowingOrderContentWithDraws = new HashSet<ShowingOrderContentWithDrawDAO>();
             ShowingOrderContents = new HashSet<ShowingOrderContentDAO>();
         }
 
@@ -30,6 +31,7 @@ namespace DMS.Models
         public virtual StatusDAO Status { get; set; }
         public virtual UnitOfMeasureDAO UnitOfMeasure { get; set; }
         public virtual ICollection<ShowingItemImageMappingDAO> ShowingItemImageMappings { get; set; }
+        public virtual ICollection<ShowingOrderContentWithDrawDAO> ShowingOrderContentWithDraws { get; set; }
         public virtual ICollection<ShowingOrderContentDAO> ShowingOrderContents { get; set; }
     }
 }

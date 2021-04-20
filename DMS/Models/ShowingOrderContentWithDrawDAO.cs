@@ -9,8 +9,11 @@ namespace DMS.Models
         public long ShowingOrderWithDrawId { get; set; }
         public long ShowingItemId { get; set; }
         public long UnitOfMeasureId { get; set; }
-        public long SalesPrice { get; set; }
+        public long SalePrice { get; set; }
         public long Quantity { get; set; }
         public decimal Amount { get; set; }
+
+        public virtual ShowingItemDAO ShowingItem { get; set; }
+        public virtual ShowingOrderWithDrawDAO ShowingOrderWithDraw { get; set; }
     }
 }

@@ -33,6 +33,7 @@ namespace DMS.Models
             RequestWorkflowHistories = new HashSet<RequestWorkflowHistoryDAO>();
             RequestWorkflowStepMappings = new HashSet<RequestWorkflowStepMappingDAO>();
             RewardHistories = new HashSet<RewardHistoryDAO>();
+            ShowingOrderWithDraws = new HashSet<ShowingOrderWithDrawDAO>();
             ShowingOrders = new HashSet<ShowingOrderDAO>();
             StoreAppUsers = new HashSet<StoreDAO>();
             StoreCheckingImageMappings = new HashSet<StoreCheckingImageMappingDAO>();
@@ -152,6 +153,7 @@ namespace DMS.Models
         public virtual ICollection<RequestWorkflowHistoryDAO> RequestWorkflowHistories { get; set; }
         public virtual ICollection<RequestWorkflowStepMappingDAO> RequestWorkflowStepMappings { get; set; }
         public virtual ICollection<RewardHistoryDAO> RewardHistories { get; set; }
+        public virtual ICollection<ShowingOrderWithDrawDAO> ShowingOrderWithDraws { get; set; }
         public virtual ICollection<ShowingOrderDAO> ShowingOrders { get; set; }
         public virtual ICollection<StoreDAO> StoreAppUsers { get; set; }
         public virtual ICollection<StoreCheckingImageMappingDAO> StoreCheckingImageMappings { get; set; }

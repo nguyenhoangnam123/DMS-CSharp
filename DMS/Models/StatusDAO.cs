@@ -34,6 +34,7 @@ namespace DMS.Models
             Roles = new HashSet<RoleDAO>();
             ShowingCategories = new HashSet<ShowingCategoryDAO>();
             ShowingItems = new HashSet<ShowingItemDAO>();
+            ShowingOrderWithDraws = new HashSet<ShowingOrderWithDrawDAO>();
             ShowingOrders = new HashSet<ShowingOrderDAO>();
             StoreGroupings = new HashSet<StoreGroupingDAO>();
             StoreScoutingTypes = new HashSet<StoreScoutingTypeDAO>();
@@ -83,6 +84,7 @@ namespace DMS.Models
         public virtual ICollection<RoleDAO> Roles { get; set; }
         public virtual ICollection<ShowingCategoryDAO> ShowingCategories { get; set; }
         public virtual ICollection<ShowingItemDAO> ShowingItems { get; set; }
+        public virtual ICollection<ShowingOrderWithDrawDAO> ShowingOrderWithDraws { get; set; }
         public virtual ICollection<ShowingOrderDAO> ShowingOrders { get; set; }
         public virtual ICollection<StoreGroupingDAO> StoreGroupings { get; set; }
         public virtual ICollection<StoreScoutingTypeDAO> StoreScoutingTypes { get; set; }

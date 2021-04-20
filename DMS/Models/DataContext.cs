@@ -4090,18 +4090,28 @@ namespace DMS.Models
 
             modelBuilder.Entity<ShowingOrderContentWithDrawDAO>(entity =>
             {
-                entity.HasNoKey();
-
                 entity.ToTable("ShowingOrderContentWithDraw", "POSM");
 
                 entity.Property(e => e.Amount).HasColumnType("decimal(18, 4)");
+
+                entity.HasOne(d => d.ShowingItem)
+                    .WithMany(p => p.ShowingOrderContentWithDraws)
+                    .HasForeignKey(d => d.ShowingItemId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ShowingOrderContentWithDraw_ShowingItem");
+
+                entity.HasOne(d => d.ShowingOrderWithDraw)
+                    .WithMany(p => p.ShowingOrderContentWithDraws)
+                    .HasForeignKey(d => d.ShowingOrderWithDrawId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ShowingOrderContentWithDraw_ShowingOrderWithDraw");
             });
 
             modelBuilder.Entity<ShowingOrderWithDrawDAO>(entity =>
             {
-                entity.HasNoKey();
-
                 entity.ToTable("ShowingOrderWithDraw", "POSM");
+
+                entity.Property(e => e.Id).ValueGeneratedNever();
 
                 entity.Property(e => e.Code).HasMaxLength(50);
 
@@ -4114,6 +4124,24 @@ namespace DMS.Models
                 entity.Property(e => e.Total).HasColumnType("decimal(18, 4)");
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.HasOne(d => d.AppUser)
+                    .WithMany(p => p.ShowingOrderWithDraws)
+                    .HasForeignKey(d => d.AppUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ShowingOrderWithDraw_AppUser");
+
+                entity.HasOne(d => d.Organization)
+                    .WithMany(p => p.ShowingOrderWithDraws)
+                    .HasForeignKey(d => d.OrganizationId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ShowingOrderWithDraw_Organization");
+
+                entity.HasOne(d => d.Status)
+                    .WithMany(p => p.ShowingOrderWithDraws)
+                    .HasForeignKey(d => d.StatusId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ShowingOrderWithDraw_Status");
             });
 
             modelBuilder.Entity<StatusDAO>(entity =>
