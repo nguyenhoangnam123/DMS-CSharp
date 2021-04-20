@@ -4104,6 +4104,12 @@ namespace DMS.Models
                     .WithMany(p => p.ShowingOrderContentWithDraws)
                     .HasForeignKey(d => d.ShowingOrderWithDrawId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ShowingOrderContentWithDraw_ShowingOrderContentWithDraw2");
+
+                entity.HasOne(d => d.UnitOfMeasure)
+                    .WithMany(p => p.ShowingOrderContentWithDraws)
+                    .HasForeignKey(d => d.UnitOfMeasureId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_ShowingOrderContentWithDraw_ShowingOrderWithDraw");
             });
 

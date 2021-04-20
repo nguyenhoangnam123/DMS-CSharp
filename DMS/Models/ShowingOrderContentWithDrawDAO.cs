@@ -15,5 +15,6 @@ namespace DMS.Models
 
         public virtual ShowingItemDAO ShowingItem { get; set; }
         public virtual ShowingOrderWithDrawDAO ShowingOrderWithDraw { get; set; }
+        public virtual UnitOfMeasureDAO UnitOfMeasure { get; set; }
     }
 }
