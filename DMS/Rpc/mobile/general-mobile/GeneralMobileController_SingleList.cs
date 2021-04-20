@@ -1267,12 +1267,13 @@ namespace DMS.Rpc.mobile.general_mobile
             StoreScoutingFilter.Code = GeneralMobile_StoreScoutingFilterDTO.Code;
             StoreScoutingFilter.Name = GeneralMobile_StoreScoutingFilterDTO.Name;
             StoreScoutingFilter.CreatedAt = GeneralMobile_StoreScoutingFilterDTO.CreatedAt;
-            StoreScoutingFilter.AppUserId = new IdFilter { Equal = appUser.Id };
+            //StoreScoutingFilter.AppUserId = new IdFilter { Equal = appUser.Id };
             StoreScoutingFilter.DistrictId = GeneralMobile_StoreScoutingFilterDTO.DistrictId;
             StoreScoutingFilter.OrganizationId = new IdFilter { Equal = appUser.OrganizationId };
             StoreScoutingFilter.ProvinceId = GeneralMobile_StoreScoutingFilterDTO.ProvinceId;
             StoreScoutingFilter.WardId = GeneralMobile_StoreScoutingFilterDTO.WardId;
-            StoreScoutingFilter.StoreScoutingStatusId = GeneralMobile_StoreScoutingFilterDTO.StoreScoutingStatusId;
+            //StoreScoutingFilter.StoreScoutingStatusId = GeneralMobile_StoreScoutingFilterDTO.StoreScoutingStatusId;
+            StoreScoutingFilter.StoreScoutingStatusId = new IdFilter { Equal = StoreScoutingStatusEnum.NOTOPEN.Id }; // chi lay cac cua hang cam co chua mo
             StoreScoutingFilter.OwnerPhone = GeneralMobile_StoreScoutingFilterDTO.OwnerPhone;
 
             return await StoreScoutingService.Count(StoreScoutingFilter);
