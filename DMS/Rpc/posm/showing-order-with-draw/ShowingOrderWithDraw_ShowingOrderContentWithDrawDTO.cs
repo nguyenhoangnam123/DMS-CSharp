@@ -3,7 +3,7 @@ using DMS.Entities;
 
 namespace DMS.Rpc.posm.showing_order_with_draw
 {
-    public class ShowingOrderWithDraw_ShowingOrderWithDrawContentDTO : DataDTO
+    public class ShowingOrderWithDraw_ShowingOrderContentWithDrawDTO : DataDTO
     {
         public long Id { get; set; }
         public long ShowingOrderWithDrawId { get; set; }
@@ -15,8 +15,8 @@ namespace DMS.Rpc.posm.showing_order_with_draw
         public ShowingOrderWithDraw_ShowingItemDTO ShowingItem { get; set; }
         public ShowingOrderWithDraw_UnitOfMeasureDTO UnitOfMeasure { get; set; }
 
-        public ShowingOrderWithDraw_ShowingOrderWithDrawContentDTO() { }
-        public ShowingOrderWithDraw_ShowingOrderWithDrawContentDTO(ShowingOrderContentWithDraw ShowingOrderContentWithDraw)
+        public ShowingOrderWithDraw_ShowingOrderContentWithDrawDTO() { }
+        public ShowingOrderWithDraw_ShowingOrderContentWithDrawDTO(ShowingOrderContentWithDraw ShowingOrderContentWithDraw)
         {
             this.Id = ShowingOrderContentWithDraw.Id;
             this.ShowingOrderWithDrawId = ShowingOrderContentWithDraw.ShowingOrderWithDrawId;

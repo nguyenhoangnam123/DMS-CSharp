@@ -13,7 +13,7 @@ namespace DMS.Rpc.posm.showing_order_with_draw
         public const string Master = Module + "/posm-order/showing-order/showing-order-master";
         public const string Detail = Module + "/posm-order/showing-order/showing-order-detail/*";
         public const string Preview = Module + "/showing-order/showing-order-preview";
-        private const string Default = Rpc + Module + "/showing-order";
+        private const string Default = Rpc + Module + "/showing-order-with-draw";
         public const string Count = Default + "/count";
         public const string List = Default + "/list";
         public const string Get = Default + "/get";

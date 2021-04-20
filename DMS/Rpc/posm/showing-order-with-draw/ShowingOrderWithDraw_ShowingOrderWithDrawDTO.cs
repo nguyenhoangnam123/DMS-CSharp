@@ -24,7 +24,7 @@ namespace DMS.Rpc.posm.showing_order_with_draw
         public ShowingOrderWithDraw_ShowingWarehouseDTO ShowingWarehouse { get; set; }
         public ShowingOrderWithDraw_StatusDTO Status { get; set; }
         public ShowingOrderWithDraw_StoreDTO Store { get; set; }
-        public List<ShowingOrderWithDraw_ShowingOrderWithDrawContentDTO> ShowingOrderWithDrawContents { get; set; }
+        public List<ShowingOrderWithDraw_ShowingOrderContentWithDrawDTO> ShowingOrderContentWithDraws { get; set; }
         public List<ShowingOrderWithDraw_StoreDTO> Stores { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
@@ -46,7 +46,7 @@ namespace DMS.Rpc.posm.showing_order_with_draw
             this.ShowingWarehouse = ShowingOrderWithDraw.ShowingWarehouse == null ? null : new ShowingOrderWithDraw_ShowingWarehouseDTO(ShowingOrderWithDraw.ShowingWarehouse);
             this.Status = ShowingOrderWithDraw.Status == null ? null : new ShowingOrderWithDraw_StatusDTO(ShowingOrderWithDraw.Status);
             this.Store = ShowingOrderWithDraw.Store == null ? null : new ShowingOrderWithDraw_StoreDTO(ShowingOrderWithDraw.Store);
-            this.ShowingOrderWithDrawContents = ShowingOrderWithDraw.ShowingOrderContentWithDraws?.Select(x => new ShowingOrderWithDraw_ShowingOrderWithDrawContentDTO(x)).ToList();
+            this.ShowingOrderContentWithDraws = ShowingOrderWithDraw.ShowingOrderContentWithDraws?.Select(x => new ShowingOrderWithDraw_ShowingOrderContentWithDrawDTO(x)).ToList();
             this.CreatedAt = ShowingOrderWithDraw.CreatedAt;
             this.UpdatedAt = ShowingOrderWithDraw.UpdatedAt;
             this.Errors = ShowingOrderWithDraw.Errors;

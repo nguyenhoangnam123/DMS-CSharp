@@ -223,8 +223,4 @@
     </None>
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Rpc\posm\showing-order-with-draw\" />
-  </ItemGroup>
-
 </Project>
