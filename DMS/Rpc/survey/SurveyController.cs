@@ -7,7 +7,6 @@ using DMS.Services.MOrganization;
 using DMS.Services.MStatus;
 using DMS.Services.MSurvey;
 using DMS.Services.MSurveyResult;
-using GleamTech.FileSystems.AzureBlob;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using OfficeOpenXml;
@@ -15,7 +14,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using File = DMS.Entities.File;
 
@@ -484,7 +482,8 @@ namespace DMS.Rpc.survey
                         SurveyOptionTypeId = x.SurveyOptionTypeId,
                         SurveyQuestionId = x.SurveyOptionTypeId
                     }).ToList(),
-                    SurveyQuestionFileMappings = x.SurveyQuestionFileMappings?.Select(x => new SurveyQuestionFileMapping { 
+                    SurveyQuestionFileMappings = x.SurveyQuestionFileMappings?.Select(x => new SurveyQuestionFileMapping
+                    {
                         FileId = x.FileId,
                         SurveyQuestionId = x.SurveyQuestionId
                     }).ToList(),
@@ -751,20 +750,20 @@ namespace DMS.Rpc.survey
 
         private DateTime StartDay(DateTime date)
         {
-                return date
-                    .AddHours(CurrentContext.TimeZone)
-                    .Date
-                    .AddHours(0 - CurrentContext.TimeZone);
+            return date
+                .AddHours(CurrentContext.TimeZone)
+                .Date
+                .AddHours(0 - CurrentContext.TimeZone);
         }
 
         private DateTime EndDay(DateTime date)
         {
-                return date
-                    .AddHours(CurrentContext.TimeZone)
-                    .Date
-                    .AddHours(0 - CurrentContext.TimeZone)
-                    .AddDays(1)
-                    .AddSeconds(-1);
+            return date
+                .AddHours(CurrentContext.TimeZone)
+                .Date
+                .AddHours(0 - CurrentContext.TimeZone)
+                .AddDays(1)
+                .AddSeconds(-1);
         }
     }
 }

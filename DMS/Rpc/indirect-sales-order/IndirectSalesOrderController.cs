@@ -2,8 +2,10 @@
 using DMS.Entities;
 using DMS.Enums;
 using DMS.Helpers;
+using DMS.Models;
 using DMS.Services.MAppUser;
 using DMS.Services.MEditedPriceStatus;
+using DMS.Services.MExportTemplate;
 using DMS.Services.MIndirectSalesOrder;
 using DMS.Services.MOrganization;
 using DMS.Services.MProduct;
@@ -18,19 +20,15 @@ using DMS.Services.MTaxType;
 using DMS.Services.MUnitOfMeasure;
 using DMS.Services.MUnitOfMeasureGrouping;
 using DMS.Services.MWorkflow;
-using GleamTech.DocumentUltimate;
-using DMS.Helpers;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Dynamic;
 using System.IO;
 using System.Linq;
 using System.Net.Mime;
 using System.Threading.Tasks;
-using System;
-using DMS.Models;
-using Microsoft.EntityFrameworkCore;
-using DMS.Services.MExportTemplate;
 
 namespace DMS.Rpc.indirect_sales_order
 {
@@ -655,14 +653,14 @@ namespace DMS.Rpc.indirect_sales_order
                 RowId = x.RowId,
                 Contents = new List<IndirectSalesOrder_ExportDetailContentDTO>()
             }).ToList();
-            
+
             foreach (var Export in Exports)
             {
                 var Organization = Organizations.Where(x => x.Id == Export.OrganizationId).FirstOrDefault();
                 if (Organization != null)
                     Export.OrganizationName = Organization.Name;
 
-                if(Export.RequestStateId == RequestStateEnum.APPROVED.Id)
+                if (Export.RequestStateId == RequestStateEnum.APPROVED.Id)
                 {
                     var RequestWorkflowStepMapping = IndirectSalesOrder_RequestWorkflowStepMappingDTOs
                     .Where(x => x.RequestId == Export.RowId)

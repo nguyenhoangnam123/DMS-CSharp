@@ -1,55 +1,48 @@
 ﻿using DMS.Common;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using DMS.Entities;
 using DMS.Enums;
+using DMS.Helpers;
+using DMS.Models;
 using DMS.Services.MAlbum;
 using DMS.Services.MAppUser;
+using DMS.Services.MBanner;
+using DMS.Services.MBrand;
+using DMS.Services.MCategory;
+using DMS.Services.MColor;
+using DMS.Services.MDirectSalesOrder;
+using DMS.Services.MDistrict;
 using DMS.Services.MERoute;
+using DMS.Services.MExportTemplate;
 using DMS.Services.MIndirectSalesOrder;
+using DMS.Services.MLuckyNumber;
+using DMS.Services.MNotification;
 using DMS.Services.MProblem;
+using DMS.Services.MProblemType;
 using DMS.Services.MProduct;
+using DMS.Services.MProductGrouping;
+using DMS.Services.MProvince;
+using DMS.Services.MRewardHistory;
 using DMS.Services.MStore;
 using DMS.Services.MStoreChecking;
 using DMS.Services.MStoreGrouping;
+using DMS.Services.MStoreScouting;
+using DMS.Services.MStoreScoutingType;
+using DMS.Services.MStoreStatus;
 using DMS.Services.MStoreType;
+using DMS.Services.MSupplier;
 using DMS.Services.MSurvey;
+using DMS.Services.MSystemConfiguration;
 using DMS.Services.MTaxType;
+using DMS.Services.MWard;
+using GeoCoordinatePortable;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using DMS.Services.MBanner;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using DMS.Services.MStoreScouting;
-using DMS.Services.MProvince;
-using DMS.Services.MDistrict;
-using DMS.Services.MWard;
-using DMS.Services.MBrand;
-using DMS.Services.MSupplier;
-using DMS.Services.MProductGrouping;
-using System.Text;
-using DMS.Services.MNotification;
-using DMS.Services.MProblemType;
-using DMS.Services.MColor;
-using DMS.Models;
-using GeoCoordinatePortable;
-using DMS.Services.MStoreScoutingType;
-using DMS.Services.MStoreStatus;
-using DMS.Services.MRewardHistory;
-using DMS.Services.MLuckyNumber;
-using DMS.Helpers;
-using System.Dynamic;
-using System.Net.Mime;
-using GleamTech.DocumentUltimate;
-using Newtonsoft.Json;
-using Microsoft.EntityFrameworkCore;
-using DMS.Services.MDirectSalesOrder;
-using DMS.Services.MSystemConfiguration;
-using DMS.Services.MExportTemplate;
-using DMS.Services.MCategory;
 
 namespace DMS.Rpc.mobile.general_mobile
 {
@@ -374,77 +367,77 @@ namespace DMS.Rpc.mobile.general_mobile
                 return BadRequest(GeneralMobile_DirectSalesOrderDTO);
         }
 
-        [Route(GeneralMobileRoute.PreviewIndirectOrder), HttpPost]
-        public async Task<ActionResult> PreviewIndirectOrder([FromForm] string data)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
+        //[Route(GeneralMobileRoute.PreviewIndirectOrder), HttpPost]
+        //public async Task<ActionResult> PreviewIndirectOrder([FromForm] string data)
+        //{
+        //    if (!ModelState.IsValid)
+        //        throw new BindException(ModelState);
 
-            if (string.IsNullOrWhiteSpace(data))
-                return BadRequest();
+        //    if (string.IsNullOrWhiteSpace(data))
+        //        return BadRequest();
 
-            GeneralMobile_IndirectSalesOrderDTO GeneralMobile_IndirectSalesOrderDTO = JsonConvert.DeserializeObject<GeneralMobile_IndirectSalesOrderDTO>(data);
-            IndirectSalesOrder IndirectSalesOrder = ConvertIndirectSalesOrderDTOToEntity(GeneralMobile_IndirectSalesOrderDTO);
-            IndirectSalesOrder.BaseLanguage = CurrentContext.Language;
-            IndirectSalesOrder.StoreCheckingId = GeneralMobile_IndirectSalesOrderDTO.StoreCheckingId;
-            IndirectSalesOrder = await IndirectSalesOrderService.PreviewIndirectOrder(IndirectSalesOrder);
+        //    GeneralMobile_IndirectSalesOrderDTO GeneralMobile_IndirectSalesOrderDTO = JsonConvert.DeserializeObject<GeneralMobile_IndirectSalesOrderDTO>(data);
+        //    IndirectSalesOrder IndirectSalesOrder = ConvertIndirectSalesOrderDTOToEntity(GeneralMobile_IndirectSalesOrderDTO);
+        //    IndirectSalesOrder.BaseLanguage = CurrentContext.Language;
+        //    IndirectSalesOrder.StoreCheckingId = GeneralMobile_IndirectSalesOrderDTO.StoreCheckingId;
+        //    IndirectSalesOrder = await IndirectSalesOrderService.PreviewIndirectOrder(IndirectSalesOrder);
 
-            GeneralMobile_PrintIndirectOrderDTO GeneralMobile_PrintDTO = new GeneralMobile_PrintIndirectOrderDTO(IndirectSalesOrder);
-            var culture = System.Globalization.CultureInfo.GetCultureInfo("en-EN");
-            var STT = 1;
-            if (GeneralMobile_PrintDTO.Contents != null)
-            {
-                foreach (var IndirectSalesOrderContent in GeneralMobile_PrintDTO.Contents)
-                {
-                    IndirectSalesOrderContent.STT = STT++;
-                    IndirectSalesOrderContent.AmountString = IndirectSalesOrderContent.Amount.ToString("N0", culture);
-                    IndirectSalesOrderContent.PrimaryPriceString = IndirectSalesOrderContent.PrimaryPrice.ToString("N0", culture);
-                    IndirectSalesOrderContent.QuantityString = IndirectSalesOrderContent.Quantity.ToString("N0", culture);
-                    IndirectSalesOrderContent.RequestedQuantityString = IndirectSalesOrderContent.RequestedQuantity.ToString("N0", culture);
-                    IndirectSalesOrderContent.SalePriceString = IndirectSalesOrderContent.SalePrice.ToString("N0", culture);
-                    IndirectSalesOrderContent.DiscountString = IndirectSalesOrderContent.DiscountPercentage.HasValue ? IndirectSalesOrderContent.DiscountPercentage.Value.ToString("N0", culture) + "%" : "";
-                    IndirectSalesOrderContent.TaxPercentageString = IndirectSalesOrderContent.TaxPercentage.HasValue ? IndirectSalesOrderContent.TaxPercentage.Value.ToString("N0", culture) + "%" : "";
-                }
-            }
-            if (GeneralMobile_PrintDTO.Promotions != null)
-            {
-                foreach (var IndirectSalesOrderPromotion in GeneralMobile_PrintDTO.Promotions)
-                {
-                    IndirectSalesOrderPromotion.STT = STT++;
-                    IndirectSalesOrderPromotion.QuantityString = IndirectSalesOrderPromotion.Quantity.ToString("N0", culture);
-                    IndirectSalesOrderPromotion.RequestedQuantityString = IndirectSalesOrderPromotion.RequestedQuantity.ToString("N0", culture);
-                }
-            }
+        //    GeneralMobile_PrintIndirectOrderDTO GeneralMobile_PrintDTO = new GeneralMobile_PrintIndirectOrderDTO(IndirectSalesOrder);
+        //    var culture = System.Globalization.CultureInfo.GetCultureInfo("en-EN");
+        //    var STT = 1;
+        //    if (GeneralMobile_PrintDTO.Contents != null)
+        //    {
+        //        foreach (var IndirectSalesOrderContent in GeneralMobile_PrintDTO.Contents)
+        //        {
+        //            IndirectSalesOrderContent.STT = STT++;
+        //            IndirectSalesOrderContent.AmountString = IndirectSalesOrderContent.Amount.ToString("N0", culture);
+        //            IndirectSalesOrderContent.PrimaryPriceString = IndirectSalesOrderContent.PrimaryPrice.ToString("N0", culture);
+        //            IndirectSalesOrderContent.QuantityString = IndirectSalesOrderContent.Quantity.ToString("N0", culture);
+        //            IndirectSalesOrderContent.RequestedQuantityString = IndirectSalesOrderContent.RequestedQuantity.ToString("N0", culture);
+        //            IndirectSalesOrderContent.SalePriceString = IndirectSalesOrderContent.SalePrice.ToString("N0", culture);
+        //            IndirectSalesOrderContent.DiscountString = IndirectSalesOrderContent.DiscountPercentage.HasValue ? IndirectSalesOrderContent.DiscountPercentage.Value.ToString("N0", culture) + "%" : "";
+        //            IndirectSalesOrderContent.TaxPercentageString = IndirectSalesOrderContent.TaxPercentage.HasValue ? IndirectSalesOrderContent.TaxPercentage.Value.ToString("N0", culture) + "%" : "";
+        //        }
+        //    }
+        //    if (GeneralMobile_PrintDTO.Promotions != null)
+        //    {
+        //        foreach (var IndirectSalesOrderPromotion in GeneralMobile_PrintDTO.Promotions)
+        //        {
+        //            IndirectSalesOrderPromotion.STT = STT++;
+        //            IndirectSalesOrderPromotion.QuantityString = IndirectSalesOrderPromotion.Quantity.ToString("N0", culture);
+        //            IndirectSalesOrderPromotion.RequestedQuantityString = IndirectSalesOrderPromotion.RequestedQuantity.ToString("N0", culture);
+        //        }
+        //    }
 
-            GeneralMobile_PrintDTO.SubTotalString = GeneralMobile_PrintDTO.SubTotal.ToString("N0", culture);
-            GeneralMobile_PrintDTO.Discount = GeneralMobile_PrintDTO.GeneralDiscountAmount.HasValue ? GeneralMobile_PrintDTO.GeneralDiscountAmount.Value.ToString("N0", culture) : "";
-            GeneralMobile_PrintDTO.TotalString = GeneralMobile_PrintDTO.Total.ToString("N0", culture);
-            GeneralMobile_PrintDTO.sOrderDate = GeneralMobile_PrintDTO.OrderDate.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy");
-            GeneralMobile_PrintDTO.sDeliveryDate = GeneralMobile_PrintDTO.DeliveryDate.HasValue ? GeneralMobile_PrintDTO.DeliveryDate.Value.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy") : string.Empty;
-            GeneralMobile_PrintDTO.TotalText = Utils.ConvertAmountTostring((long)GeneralMobile_PrintDTO.Total);
+        //    GeneralMobile_PrintDTO.SubTotalString = GeneralMobile_PrintDTO.SubTotal.ToString("N0", culture);
+        //    GeneralMobile_PrintDTO.Discount = GeneralMobile_PrintDTO.GeneralDiscountAmount.HasValue ? GeneralMobile_PrintDTO.GeneralDiscountAmount.Value.ToString("N0", culture) : "";
+        //    GeneralMobile_PrintDTO.TotalString = GeneralMobile_PrintDTO.Total.ToString("N0", culture);
+        //    GeneralMobile_PrintDTO.sOrderDate = GeneralMobile_PrintDTO.OrderDate.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy");
+        //    GeneralMobile_PrintDTO.sDeliveryDate = GeneralMobile_PrintDTO.DeliveryDate.HasValue ? GeneralMobile_PrintDTO.DeliveryDate.Value.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy") : string.Empty;
+        //    GeneralMobile_PrintDTO.TotalText = Utils.ConvertAmountTostring((long)GeneralMobile_PrintDTO.Total);
 
-            string path = "Templates/Print_Indirect_Mobile.docx";
-            byte[] arr = System.IO.File.ReadAllBytes(path);
-            dynamic Data = new ExpandoObject();
-            Data.Order = GeneralMobile_PrintDTO;
-            MemoryStream MemoryStream = new MemoryStream();
-            MemoryStream input = new MemoryStream(arr);
-            MemoryStream output = new MemoryStream();
-            using (var document = StaticParams.DocumentFactory.Open(input, output, "docx"))
-            {
-                document.Process(Data);
-            };
-            var documentConverter = new DocumentConverter(output, DocumentFormat.Docx);
-            documentConverter.ConvertTo(MemoryStream, DocumentFormat.Pdf);
+        //    string path = "Templates/Print_Indirect_Mobile.docx";
+        //    byte[] arr = System.IO.File.ReadAllBytes(path);
+        //    dynamic Data = new ExpandoObject();
+        //    Data.Order = GeneralMobile_PrintDTO;
+        //    MemoryStream MemoryStream = new MemoryStream();
+        //    MemoryStream input = new MemoryStream(arr);
+        //    MemoryStream output = new MemoryStream();
+        //    using (var document = StaticParams.DocumentFactory.Open(input, output, "docx"))
+        //    {
+        //        document.Process(Data);
+        //    };
+        //    var documentConverter = new DocumentConverter(output, DocumentFormat.Docx);
+        //    documentConverter.ConvertTo(MemoryStream, DocumentFormat.Pdf);
 
-            ContentDisposition cd = new ContentDisposition
-            {
-                FileName = $"Don-hang-gian-tiep-preview.pdf",
-                Inline = true,
-            };
-            Response.Headers.Add("Content-Disposition", cd.ToString());
-            return File(MemoryStream.ToArray(), "application/pdf;charset=utf-8");
-        }
+        //    ContentDisposition cd = new ContentDisposition
+        //    {
+        //        FileName = $"Don-hang-gian-tiep-preview.pdf",
+        //        Inline = true,
+        //    };
+        //    Response.Headers.Add("Content-Disposition", cd.ToString());
+        //    return File(MemoryStream.ToArray(), "application/pdf;charset=utf-8");
+        //}
 
         [Route(GeneralMobileRoute.CreateProblem), HttpPost]
         public async Task<ActionResult<GeneralMobile_ProblemDTO>> CreateProblem([FromBody] GeneralMobile_ProblemDTO GeneralMobile_ProblemDTO)
@@ -883,143 +876,143 @@ namespace DMS.Rpc.mobile.general_mobile
                 return false;
         }
 
-        [Route(GeneralMobileRoute.PrintIndirectOrder), HttpGet]
-        public async Task<ActionResult> PrintIndirectOrder([FromQuery] long Id)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
-            var IndirectSalesOrder = await IndirectSalesOrderService.Get(Id);
-            if (IndirectSalesOrder == null)
-                return Content("Đơn hàng không tồn tại");
-            GeneralMobile_PrintIndirectOrderDTO GeneralMobile_PrintDTO = new GeneralMobile_PrintIndirectOrderDTO(IndirectSalesOrder);
-            var culture = System.Globalization.CultureInfo.GetCultureInfo("en-EN");
-            var STT = 1;
-            if (GeneralMobile_PrintDTO.Contents != null)
-            {
-                foreach (var IndirectSalesOrderContent in GeneralMobile_PrintDTO.Contents)
-                {
-                    IndirectSalesOrderContent.STT = STT++;
-                    IndirectSalesOrderContent.AmountString = IndirectSalesOrderContent.Amount.ToString("N0", culture);
-                    IndirectSalesOrderContent.PrimaryPriceString = IndirectSalesOrderContent.PrimaryPrice.ToString("N0", culture);
-                    IndirectSalesOrderContent.QuantityString = IndirectSalesOrderContent.Quantity.ToString("N0", culture);
-                    IndirectSalesOrderContent.RequestedQuantityString = IndirectSalesOrderContent.RequestedQuantity.ToString("N0", culture);
-                    IndirectSalesOrderContent.SalePriceString = IndirectSalesOrderContent.SalePrice.ToString("N0", culture);
-                    IndirectSalesOrderContent.DiscountString = IndirectSalesOrderContent.DiscountPercentage.HasValue ? IndirectSalesOrderContent.DiscountPercentage.Value.ToString("N0", culture) + "%" : "";
-                    IndirectSalesOrderContent.TaxPercentageString = IndirectSalesOrderContent.TaxPercentage.HasValue ? IndirectSalesOrderContent.TaxPercentage.Value.ToString("N0", culture) + "%" : "";
-                }
-            }
-            if (GeneralMobile_PrintDTO.Promotions != null)
-            {
-                foreach (var IndirectSalesOrderPromotion in GeneralMobile_PrintDTO.Promotions)
-                {
-                    IndirectSalesOrderPromotion.STT = STT++;
-                    IndirectSalesOrderPromotion.QuantityString = IndirectSalesOrderPromotion.Quantity.ToString("N0", culture);
-                    IndirectSalesOrderPromotion.RequestedQuantityString = IndirectSalesOrderPromotion.RequestedQuantity.ToString("N0", culture);
-                }
-            }
+        //[Route(GeneralMobileRoute.PrintIndirectOrder), HttpGet]
+        //public async Task<ActionResult> PrintIndirectOrder([FromQuery] long Id)
+        //{
+        //    if (!ModelState.IsValid)
+        //        throw new BindException(ModelState);
+        //    var IndirectSalesOrder = await IndirectSalesOrderService.Get(Id);
+        //    if (IndirectSalesOrder == null)
+        //        return Content("Đơn hàng không tồn tại");
+        //    GeneralMobile_PrintIndirectOrderDTO GeneralMobile_PrintDTO = new GeneralMobile_PrintIndirectOrderDTO(IndirectSalesOrder);
+        //    var culture = System.Globalization.CultureInfo.GetCultureInfo("en-EN");
+        //    var STT = 1;
+        //    if (GeneralMobile_PrintDTO.Contents != null)
+        //    {
+        //        foreach (var IndirectSalesOrderContent in GeneralMobile_PrintDTO.Contents)
+        //        {
+        //            IndirectSalesOrderContent.STT = STT++;
+        //            IndirectSalesOrderContent.AmountString = IndirectSalesOrderContent.Amount.ToString("N0", culture);
+        //            IndirectSalesOrderContent.PrimaryPriceString = IndirectSalesOrderContent.PrimaryPrice.ToString("N0", culture);
+        //            IndirectSalesOrderContent.QuantityString = IndirectSalesOrderContent.Quantity.ToString("N0", culture);
+        //            IndirectSalesOrderContent.RequestedQuantityString = IndirectSalesOrderContent.RequestedQuantity.ToString("N0", culture);
+        //            IndirectSalesOrderContent.SalePriceString = IndirectSalesOrderContent.SalePrice.ToString("N0", culture);
+        //            IndirectSalesOrderContent.DiscountString = IndirectSalesOrderContent.DiscountPercentage.HasValue ? IndirectSalesOrderContent.DiscountPercentage.Value.ToString("N0", culture) + "%" : "";
+        //            IndirectSalesOrderContent.TaxPercentageString = IndirectSalesOrderContent.TaxPercentage.HasValue ? IndirectSalesOrderContent.TaxPercentage.Value.ToString("N0", culture) + "%" : "";
+        //        }
+        //    }
+        //    if (GeneralMobile_PrintDTO.Promotions != null)
+        //    {
+        //        foreach (var IndirectSalesOrderPromotion in GeneralMobile_PrintDTO.Promotions)
+        //        {
+        //            IndirectSalesOrderPromotion.STT = STT++;
+        //            IndirectSalesOrderPromotion.QuantityString = IndirectSalesOrderPromotion.Quantity.ToString("N0", culture);
+        //            IndirectSalesOrderPromotion.RequestedQuantityString = IndirectSalesOrderPromotion.RequestedQuantity.ToString("N0", culture);
+        //        }
+        //    }
 
-            GeneralMobile_PrintDTO.SubTotalString = GeneralMobile_PrintDTO.SubTotal.ToString("N0", culture);
-            GeneralMobile_PrintDTO.Discount = GeneralMobile_PrintDTO.GeneralDiscountAmount.HasValue ? GeneralMobile_PrintDTO.GeneralDiscountAmount.Value.ToString("N0", culture) : "";
-            GeneralMobile_PrintDTO.sOrderDate = GeneralMobile_PrintDTO.OrderDate.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy");
-            GeneralMobile_PrintDTO.sDeliveryDate = GeneralMobile_PrintDTO.DeliveryDate.HasValue ? GeneralMobile_PrintDTO.DeliveryDate.Value.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy") : string.Empty;
-            GeneralMobile_PrintDTO.TotalString = GeneralMobile_PrintDTO.Total.ToString("N0", culture);
-            GeneralMobile_PrintDTO.TotalText = Utils.ConvertAmountTostring((long)GeneralMobile_PrintDTO.Total);
+        //    GeneralMobile_PrintDTO.SubTotalString = GeneralMobile_PrintDTO.SubTotal.ToString("N0", culture);
+        //    GeneralMobile_PrintDTO.Discount = GeneralMobile_PrintDTO.GeneralDiscountAmount.HasValue ? GeneralMobile_PrintDTO.GeneralDiscountAmount.Value.ToString("N0", culture) : "";
+        //    GeneralMobile_PrintDTO.sOrderDate = GeneralMobile_PrintDTO.OrderDate.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy");
+        //    GeneralMobile_PrintDTO.sDeliveryDate = GeneralMobile_PrintDTO.DeliveryDate.HasValue ? GeneralMobile_PrintDTO.DeliveryDate.Value.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy") : string.Empty;
+        //    GeneralMobile_PrintDTO.TotalString = GeneralMobile_PrintDTO.Total.ToString("N0", culture);
+        //    GeneralMobile_PrintDTO.TotalText = Utils.ConvertAmountTostring((long)GeneralMobile_PrintDTO.Total);
 
-            ExportTemplate ExportTemplate = await ExportTemplateService.Get(ExportTemplateEnum.PRINT_INDIRECT_MOBILE.Id);
-            if (ExportTemplate == null)
-                return BadRequest("Chưa có mẫu in đơn hàng");
+        //    ExportTemplate ExportTemplate = await ExportTemplateService.Get(ExportTemplateEnum.PRINT_INDIRECT_MOBILE.Id);
+        //    if (ExportTemplate == null)
+        //        return BadRequest("Chưa có mẫu in đơn hàng");
 
-            //string path = "Templates/Print_Indirect_Mobile.docx";
-            //byte[] arr = System.IO.File.ReadAllBytes(path);
-            dynamic Data = new ExpandoObject();
-            Data.Order = GeneralMobile_PrintDTO;
-            MemoryStream MemoryStream = new MemoryStream();
-            MemoryStream input = new MemoryStream(ExportTemplate.Content);
-            MemoryStream output = new MemoryStream();
-            using (var document = StaticParams.DocumentFactory.Open(input, output, "docx"))
-            {
-                document.Process(Data);
-            };
-            var documentConverter = new DocumentConverter(output, DocumentFormat.Docx);
-            documentConverter.ConvertTo(MemoryStream, DocumentFormat.Pdf);
+        //    //string path = "Templates/Print_Indirect_Mobile.docx";
+        //    //byte[] arr = System.IO.File.ReadAllBytes(path);
+        //    dynamic Data = new ExpandoObject();
+        //    Data.Order = GeneralMobile_PrintDTO;
+        //    MemoryStream MemoryStream = new MemoryStream();
+        //    MemoryStream input = new MemoryStream(ExportTemplate.Content);
+        //    MemoryStream output = new MemoryStream();
+        //    using (var document = StaticParams.DocumentFactory.Open(input, output, "docx"))
+        //    {
+        //        document.Process(Data);
+        //    };
+        //    var documentConverter = new DocumentConverter(output, DocumentFormat.Docx);
+        //    documentConverter.ConvertTo(MemoryStream, DocumentFormat.Pdf);
 
-            ContentDisposition cd = new ContentDisposition
-            {
-                FileName = $"Don-hang-gian-tiep-{IndirectSalesOrder.Code}.pdf",
-                Inline = true,
-            };
-            Response.Headers.Add("Content-Disposition", cd.ToString());
-            return File(MemoryStream.ToArray(), "application/pdf;charset=utf-8");
-        }
+        //    ContentDisposition cd = new ContentDisposition
+        //    {
+        //        FileName = $"Don-hang-gian-tiep-{IndirectSalesOrder.Code}.pdf",
+        //        Inline = true,
+        //    };
+        //    Response.Headers.Add("Content-Disposition", cd.ToString());
+        //    return File(MemoryStream.ToArray(), "application/pdf;charset=utf-8");
+        //}
 
-        [Route(GeneralMobileRoute.PrintDirectOrder), HttpGet]
-        public async Task<ActionResult> PrintDirectOrder([FromQuery] long Id)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
-            var DirectSalesOrder = await DirectSalesOrderService.Get(Id);
-            if (DirectSalesOrder == null)
-                return Content("Đơn hàng không tồn tại");
-            GeneralMobile_PrintDirectOrderDTO GeneralMobile_PrintDTO = new GeneralMobile_PrintDirectOrderDTO(DirectSalesOrder);
-            var culture = System.Globalization.CultureInfo.GetCultureInfo("en-EN");
-            var STT = 1;
-            if (GeneralMobile_PrintDTO.Contents != null)
-            {
-                foreach (var DirectSalesOrderContent in GeneralMobile_PrintDTO.Contents)
-                {
-                    DirectSalesOrderContent.STT = STT++;
-                    DirectSalesOrderContent.AmountString = DirectSalesOrderContent.Amount.ToString("N0", culture);
-                    DirectSalesOrderContent.PrimaryPriceString = DirectSalesOrderContent.PrimaryPrice.ToString("N0", culture);
-                    DirectSalesOrderContent.QuantityString = DirectSalesOrderContent.Quantity.ToString("N0", culture);
-                    DirectSalesOrderContent.RequestedQuantityString = DirectSalesOrderContent.RequestedQuantity.ToString("N0", culture);
-                    DirectSalesOrderContent.SalePriceString = DirectSalesOrderContent.SalePrice.ToString("N0", culture);
-                    DirectSalesOrderContent.DiscountString = DirectSalesOrderContent.DiscountPercentage.HasValue ? DirectSalesOrderContent.DiscountPercentage.Value.ToString("N0", culture) + "%" : "";
-                    DirectSalesOrderContent.TaxPercentageString = DirectSalesOrderContent.TaxPercentage.HasValue ? DirectSalesOrderContent.TaxPercentage.Value.ToString("N0", culture) + "%" : "";
-                }
-            }
-            if (GeneralMobile_PrintDTO.Promotions != null)
-            {
-                foreach (var DirectSalesOrderPromotion in GeneralMobile_PrintDTO.Promotions)
-                {
-                    DirectSalesOrderPromotion.STT = STT++;
-                    DirectSalesOrderPromotion.QuantityString = DirectSalesOrderPromotion.Quantity.ToString("N0", culture);
-                    DirectSalesOrderPromotion.RequestedQuantityString = DirectSalesOrderPromotion.RequestedQuantity.ToString("N0", culture);
-                }
-            }
+        //[Route(GeneralMobileRoute.PrintDirectOrder), HttpGet]
+        //public async Task<ActionResult> PrintDirectOrder([FromQuery] long Id)
+        //{
+        //    if (!ModelState.IsValid)
+        //        throw new BindException(ModelState);
+        //    var DirectSalesOrder = await DirectSalesOrderService.Get(Id);
+        //    if (DirectSalesOrder == null)
+        //        return Content("Đơn hàng không tồn tại");
+        //    GeneralMobile_PrintDirectOrderDTO GeneralMobile_PrintDTO = new GeneralMobile_PrintDirectOrderDTO(DirectSalesOrder);
+        //    var culture = System.Globalization.CultureInfo.GetCultureInfo("en-EN");
+        //    var STT = 1;
+        //    if (GeneralMobile_PrintDTO.Contents != null)
+        //    {
+        //        foreach (var DirectSalesOrderContent in GeneralMobile_PrintDTO.Contents)
+        //        {
+        //            DirectSalesOrderContent.STT = STT++;
+        //            DirectSalesOrderContent.AmountString = DirectSalesOrderContent.Amount.ToString("N0", culture);
+        //            DirectSalesOrderContent.PrimaryPriceString = DirectSalesOrderContent.PrimaryPrice.ToString("N0", culture);
+        //            DirectSalesOrderContent.QuantityString = DirectSalesOrderContent.Quantity.ToString("N0", culture);
+        //            DirectSalesOrderContent.RequestedQuantityString = DirectSalesOrderContent.RequestedQuantity.ToString("N0", culture);
+        //            DirectSalesOrderContent.SalePriceString = DirectSalesOrderContent.SalePrice.ToString("N0", culture);
+        //            DirectSalesOrderContent.DiscountString = DirectSalesOrderContent.DiscountPercentage.HasValue ? DirectSalesOrderContent.DiscountPercentage.Value.ToString("N0", culture) + "%" : "";
+        //            DirectSalesOrderContent.TaxPercentageString = DirectSalesOrderContent.TaxPercentage.HasValue ? DirectSalesOrderContent.TaxPercentage.Value.ToString("N0", culture) + "%" : "";
+        //        }
+        //    }
+        //    if (GeneralMobile_PrintDTO.Promotions != null)
+        //    {
+        //        foreach (var DirectSalesOrderPromotion in GeneralMobile_PrintDTO.Promotions)
+        //        {
+        //            DirectSalesOrderPromotion.STT = STT++;
+        //            DirectSalesOrderPromotion.QuantityString = DirectSalesOrderPromotion.Quantity.ToString("N0", culture);
+        //            DirectSalesOrderPromotion.RequestedQuantityString = DirectSalesOrderPromotion.RequestedQuantity.ToString("N0", culture);
+        //        }
+        //    }
 
-            GeneralMobile_PrintDTO.SubTotalString = GeneralMobile_PrintDTO.SubTotal.ToString("N0", culture);
-            GeneralMobile_PrintDTO.Discount = GeneralMobile_PrintDTO.GeneralDiscountAmount.HasValue ? GeneralMobile_PrintDTO.GeneralDiscountAmount.Value.ToString("N0", culture) : "";
-            GeneralMobile_PrintDTO.sOrderDate = GeneralMobile_PrintDTO.OrderDate.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy");
-            GeneralMobile_PrintDTO.sDeliveryDate = GeneralMobile_PrintDTO.DeliveryDate.HasValue ? GeneralMobile_PrintDTO.DeliveryDate.Value.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy") : string.Empty;
-            GeneralMobile_PrintDTO.TotalString = GeneralMobile_PrintDTO.Total.ToString("N0", culture);
-            GeneralMobile_PrintDTO.TotalText = Utils.ConvertAmountTostring((long)GeneralMobile_PrintDTO.Total);
+        //    GeneralMobile_PrintDTO.SubTotalString = GeneralMobile_PrintDTO.SubTotal.ToString("N0", culture);
+        //    GeneralMobile_PrintDTO.Discount = GeneralMobile_PrintDTO.GeneralDiscountAmount.HasValue ? GeneralMobile_PrintDTO.GeneralDiscountAmount.Value.ToString("N0", culture) : "";
+        //    GeneralMobile_PrintDTO.sOrderDate = GeneralMobile_PrintDTO.OrderDate.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy");
+        //    GeneralMobile_PrintDTO.sDeliveryDate = GeneralMobile_PrintDTO.DeliveryDate.HasValue ? GeneralMobile_PrintDTO.DeliveryDate.Value.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy") : string.Empty;
+        //    GeneralMobile_PrintDTO.TotalString = GeneralMobile_PrintDTO.Total.ToString("N0", culture);
+        //    GeneralMobile_PrintDTO.TotalText = Utils.ConvertAmountTostring((long)GeneralMobile_PrintDTO.Total);
 
-            ExportTemplate ExportTemplate = await ExportTemplateService.Get(ExportTemplateEnum.PRINT_DIRECT_MOBILE.Id);
-            if (ExportTemplate == null)
-                return BadRequest("Chưa có mẫu in đơn hàng");
+        //    ExportTemplate ExportTemplate = await ExportTemplateService.Get(ExportTemplateEnum.PRINT_DIRECT_MOBILE.Id);
+        //    if (ExportTemplate == null)
+        //        return BadRequest("Chưa có mẫu in đơn hàng");
 
-            //string path = "Templates/Print_Indirect_Mobile.docx";
-            //byte[] arr = System.IO.File.ReadAllBytes(path);
-            dynamic Data = new ExpandoObject();
-            Data.Order = GeneralMobile_PrintDTO;
-            MemoryStream MemoryStream = new MemoryStream();
-            MemoryStream input = new MemoryStream(ExportTemplate.Content);
-            MemoryStream output = new MemoryStream();
-            using (var document = StaticParams.DocumentFactory.Open(input, output, "docx"))
-            {
-                document.Process(Data);
-            };
-            var documentConverter = new DocumentConverter(output, DocumentFormat.Docx);
-            documentConverter.ConvertTo(MemoryStream, DocumentFormat.Pdf);
+        //    //string path = "Templates/Print_Indirect_Mobile.docx";
+        //    //byte[] arr = System.IO.File.ReadAllBytes(path);
+        //    dynamic Data = new ExpandoObject();
+        //    Data.Order = GeneralMobile_PrintDTO;
+        //    MemoryStream MemoryStream = new MemoryStream();
+        //    MemoryStream input = new MemoryStream(ExportTemplate.Content);
+        //    MemoryStream output = new MemoryStream();
+        //    using (var document = StaticParams.DocumentFactory.Open(input, output, "docx"))
+        //    {
+        //        document.Process(Data);
+        //    };
+        //    var documentConverter = new DocumentConverter(output, DocumentFormat.Docx);
+        //    documentConverter.ConvertTo(MemoryStream, DocumentFormat.Pdf);
 
-            ContentDisposition cd = new ContentDisposition
-            {
-                FileName = $"Don-hang-gian-tiep-{DirectSalesOrder.Code}.pdf",
-                Inline = true,
-            };
-            Response.Headers.Add("Content-Disposition", cd.ToString());
-            return File(MemoryStream.ToArray(), "application/pdf;charset=utf-8");
-        }
+        //    ContentDisposition cd = new ContentDisposition
+        //    {
+        //        FileName = $"Don-hang-gian-tiep-{DirectSalesOrder.Code}.pdf",
+        //        Inline = true,
+        //    };
+        //    Response.Headers.Add("Content-Disposition", cd.ToString());
+        //    return File(MemoryStream.ToArray(), "application/pdf;charset=utf-8");
+        //}
 
         [Route(GeneralMobileRoute.StoreReport), HttpPost]
         public async Task<ActionResult<GeneralMobile_StoreReportDTO>> StoreReport([FromBody] GeneralMobile_StoreReportFilterDTO GeneralMobile_StoreReportFilterDTO)
@@ -1072,7 +1065,7 @@ namespace DMS.Rpc.mobile.general_mobile
 
             GeneralMobile_StoreStatisticDTO GeneralMobile_StoreStatisticDTO = new GeneralMobile_StoreStatisticDTO();
 
-            if(GeneralMobile_StoreStatisticFilterDTO.SalesOrderTypeId?.Equal == SalesOrderTypeEnum.DIRECT.Id)
+            if (GeneralMobile_StoreStatisticFilterDTO.SalesOrderTypeId?.Equal == SalesOrderTypeEnum.DIRECT.Id)
             {
                 var query = from t in DataContext.DirectSalesOrderTransaction
                             join o in DataContext.DirectSalesOrder on t.DirectSalesOrderId equals o.Id

@@ -1,36 +1,34 @@
 ﻿using DMS.Common;
 using DMS.Entities;
 using DMS.Enums;
+using DMS.Helpers;
+using DMS.Models;
 using DMS.Services.MAppUser;
-using DMS.Services.MEditedPriceStatus;
 using DMS.Services.MDirectSalesOrder;
+using DMS.Services.MEditedPriceStatus;
+using DMS.Services.MExportTemplate;
 using DMS.Services.MOrganization;
 using DMS.Services.MProduct;
 using DMS.Services.MProductGrouping;
 using DMS.Services.MProductType;
 using DMS.Services.MStore;
 using DMS.Services.MStoreGrouping;
+using DMS.Services.MStoreStatus;
 using DMS.Services.MStoreType;
 using DMS.Services.MSupplier;
+using DMS.Services.MTaxType;
 using DMS.Services.MUnitOfMeasure;
 using DMS.Services.MUnitOfMeasureGrouping;
 using DMS.Services.MWorkflow;
-using DMS.Services.MTaxType;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Dynamic;
-using DMS.Helpers;
-using DMS.Helpers;
-using System.IO;
-using GleamTech.DocumentUltimate;
-using System.Net.Mime;
-using DMS.Services.MStoreStatus;
-using System;
-using DMS.Models;
 using Microsoft.EntityFrameworkCore;
-using DMS.Services.MExportTemplate;
+using System;
+using System.Collections.Generic;
+using System.Dynamic;
+using System.IO;
+using System.Linq;
+using System.Net.Mime;
+using System.Threading.Tasks;
 
 namespace DMS.Rpc.direct_sales_order
 {
@@ -235,7 +233,7 @@ namespace DMS.Rpc.direct_sales_order
 
 
         [Route(DirectSalesOrderRoute.Get), HttpPost]
-        public async Task<ActionResult<DirectSalesOrder_DirectSalesOrderDTO>> Get([FromBody]DirectSalesOrder_DirectSalesOrderDTO DirectSalesOrder_DirectSalesOrderDTO)
+        public async Task<ActionResult<DirectSalesOrder_DirectSalesOrderDTO>> Get([FromBody] DirectSalesOrder_DirectSalesOrderDTO DirectSalesOrder_DirectSalesOrderDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);

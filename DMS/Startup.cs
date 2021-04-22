@@ -4,7 +4,6 @@ using DMS.Helpers;
 using DMS.Models;
 using DMS.Rpc;
 using DMS.Services;
-using GleamTech.AspNet.Core;
 using Hangfire;
 using Hangfire.SqlServer;
 using Hangfire.Storage;
@@ -67,7 +66,7 @@ namespace DMS
                     options.SerializerSettings.DateFormatString = "yyyy-MM-ddTHH:mm:ss.fffK";
                 });
 
-            services.AddGleamTech();
+            //services.AddGleamTech();
             services.AddSingleton<ObjectPoolProvider, DefaultObjectPoolProvider>();
             services.AddSingleton<IPooledObjectPolicy<IModel>, RabbitModelPooledObjectPolicy>();
             services.AddSingleton<IRabbitManager, RabbitManager>();
@@ -191,7 +190,7 @@ namespace DMS
         {
             app.UseRouting();
             app.UseMiddleware<ErrorHandlingMiddleware>();
-            app.UseGleamTech();
+            //app.UseGleamTech();
             app.UseAuthentication();
             app.UseAuthorization();
             app.UseEndpoints(endpoints =>
