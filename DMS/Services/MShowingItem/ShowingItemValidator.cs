@@ -193,7 +193,7 @@ namespace DMS.Services.MShowingItem
         {
             if (ShowingItem.Used)
                 ShowingItem.AddError(nameof(ShowingItemValidator), nameof(ShowingItem.Used), ErrorCode.ShowingItemInUsed);
-            return true;
+            return ShowingItem.IsValidated;
         }
 
         public async Task<bool>Create(ShowingItem ShowingItem)
