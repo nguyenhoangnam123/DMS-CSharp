@@ -1,21 +1,21 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using DMS.Common;
-using DMS.Helpers;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using System.IO;
-using OfficeOpenXml;
-using System.Dynamic;
 using DMS.Entities;
-using DMS.Services.MKpiProductGrouping;
+using DMS.Helpers;
 using DMS.Services.MAppUser;
 using DMS.Services.MKpiPeriod;
+using DMS.Services.MKpiProductGrouping;
 using DMS.Services.MKpiProductGroupingType;
+using DMS.Services.MProduct;
 using DMS.Services.MStatus;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using OfficeOpenXml;
+using System;
+using System.Collections.Generic;
+using System.Dynamic;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace DMS.Rpc.kpi_product_grouping
 {
@@ -26,6 +26,7 @@ namespace DMS.Rpc.kpi_product_grouping
         private IKpiProductGroupingTypeService KpiProductGroupingTypeService;
         private IStatusService StatusService;
         private IKpiProductGroupingService KpiProductGroupingService;
+        private IItemService ItemService;
         private ICurrentContext CurrentContext;
         public KpiProductGroupingController(
             IAppUserService AppUserService,
@@ -33,6 +34,7 @@ namespace DMS.Rpc.kpi_product_grouping
             IKpiProductGroupingTypeService KpiProductGroupingTypeService,
             IStatusService StatusService,
             IKpiProductGroupingService KpiProductGroupingService,
+            IItemService ItemService,
             ICurrentContext CurrentContext
         )
         {
@@ -41,6 +43,7 @@ namespace DMS.Rpc.kpi_product_grouping
             this.KpiProductGroupingTypeService = KpiProductGroupingTypeService;
             this.StatusService = StatusService;
             this.KpiProductGroupingService = KpiProductGroupingService;
+            this.ItemService = ItemService;
             this.CurrentContext = CurrentContext;
         }
 
@@ -71,7 +74,7 @@ namespace DMS.Rpc.kpi_product_grouping
         }
 
         [Route(KpiProductGroupingRoute.Get), HttpPost]
-        public async Task<ActionResult<KpiProductGrouping_KpiProductGroupingDTO>> Get([FromBody]KpiProductGrouping_KpiProductGroupingDTO KpiProductGrouping_KpiProductGroupingDTO)
+        public async Task<ActionResult<KpiProductGrouping_KpiProductGroupingDTO>> Get([FromBody] KpiProductGrouping_KpiProductGroupingDTO KpiProductGrouping_KpiProductGroupingDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
@@ -88,7 +91,7 @@ namespace DMS.Rpc.kpi_product_grouping
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
             if (!await HasPermission(KpiProductGrouping_KpiProductGroupingDTO.Id))
                 return Forbid();
 
@@ -106,7 +109,7 @@ namespace DMS.Rpc.kpi_product_grouping
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
             if (!await HasPermission(KpiProductGrouping_KpiProductGroupingDTO.Id))
                 return Forbid();
 
@@ -136,7 +139,7 @@ namespace DMS.Rpc.kpi_product_grouping
             else
                 return BadRequest(KpiProductGrouping_KpiProductGroupingDTO);
         }
-        
+
         [Route(KpiProductGroupingRoute.BulkDelete), HttpPost]
         public async Task<ActionResult<bool>> BulkDelete([FromBody] List<long> Ids)
         {
@@ -156,7 +159,7 @@ namespace DMS.Rpc.kpi_product_grouping
                 return BadRequest(KpiProductGroupings.Where(x => !x.IsValidated));
             return true;
         }
-        
+
         [Route(KpiProductGroupingRoute.Import), HttpPost]
         public async Task<ActionResult> Import(IFormFile file)
         {
@@ -228,7 +231,7 @@ namespace DMS.Rpc.kpi_product_grouping
                     string EmployeeIdValue = worksheet.Cells[i + StartRow, EmployeeIdColumn].Value?.ToString();
                     string CreatorIdValue = worksheet.Cells[i + StartRow, CreatorIdColumn].Value?.ToString();
                     string RowIdValue = worksheet.Cells[i + StartRow, RowIdColumn].Value?.ToString();
-                    
+
                     KpiProductGrouping KpiProductGrouping = new KpiProductGrouping();
                     AppUser Creator = Creators.Where(x => x.Id.ToString() == CreatorIdValue).FirstOrDefault();
                     KpiProductGrouping.CreatorId = Creator == null ? 0 : Creator.Id;
@@ -245,7 +248,7 @@ namespace DMS.Rpc.kpi_product_grouping
                     Status Status = Statuses.Where(x => x.Id.ToString() == StatusIdValue).FirstOrDefault();
                     KpiProductGrouping.StatusId = Status == null ? 0 : Status.Id;
                     KpiProductGrouping.Status = Status;
-                    
+
                     KpiProductGroupings.Add(KpiProductGrouping);
                 }
             }
@@ -285,13 +288,13 @@ namespace DMS.Rpc.kpi_product_grouping
                 return BadRequest(Errors);
             }
         }
-        
+
         [Route(KpiProductGroupingRoute.Export), HttpPost]
         public async Task<ActionResult> Export([FromBody] KpiProductGrouping_KpiProductGroupingFilterDTO KpiProductGrouping_KpiProductGroupingFilterDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
             MemoryStream memoryStream = new MemoryStream();
             using (ExcelPackage excel = new ExcelPackage(memoryStream))
             {
@@ -304,7 +307,7 @@ namespace DMS.Rpc.kpi_product_grouping
 
                 var KpiProductGroupingHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "OrganizationId",
                         "KpiYearId",
@@ -335,7 +338,7 @@ namespace DMS.Rpc.kpi_product_grouping
                 }
                 excel.GenerateWorksheet("KpiProductGrouping", KpiProductGroupingHeaders, KpiProductGroupingData);
                 #endregion
-                
+
                 #region AppUser
                 var AppUserFilter = new AppUserFilter();
                 AppUserFilter.Selects = AppUserSelect.ALL;
@@ -347,7 +350,7 @@ namespace DMS.Rpc.kpi_product_grouping
 
                 var AppUserHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "Username",
                         "DisplayName",
@@ -407,7 +410,7 @@ namespace DMS.Rpc.kpi_product_grouping
 
                 var KpiPeriodHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "Code",
                         "Name",
@@ -437,7 +440,7 @@ namespace DMS.Rpc.kpi_product_grouping
 
                 var KpiProductGroupingTypeHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "Code",
                         "Name",
@@ -467,7 +470,7 @@ namespace DMS.Rpc.kpi_product_grouping
 
                 var StatusHeaders = new List<string[]>()
                 {
-                    new string[] { 
+                    new string[] {
                         "Id",
                         "Code",
                         "Name",
@@ -496,7 +499,7 @@ namespace DMS.Rpc.kpi_product_grouping
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
             string path = "Templates/KpiProductGrouping_Template.xlsx";
             byte[] arr = System.IO.File.ReadAllBytes(path);
             MemoryStream input = new MemoryStream(arr);

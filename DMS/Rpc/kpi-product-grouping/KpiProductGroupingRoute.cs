@@ -46,6 +46,11 @@ namespace DMS.Rpc.kpi_product_grouping
         public const string SingleListKpiProductGroupingType = Default + "/single-list-kpi-product-grouping-type";
         public const string SingleListStatus = Default + "/single-list-status";
 
+        public const string ListAppUser = Default + "list-app-user";
+        public const string CountAppUser = Default + "count-app-user";
+        public const string ListItem = Default + "list-item";
+        public const string CountItem = Default + "count-item";
+
 
         public static Dictionary<string, long> Filters = new Dictionary<string, long>
         {
