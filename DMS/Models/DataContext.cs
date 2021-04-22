@@ -63,6 +63,12 @@ namespace DMS.Models
         public virtual DbSet<KpiItemContentKpiCriteriaItemMappingDAO> KpiItemContentKpiCriteriaItemMapping { get; set; }
         public virtual DbSet<KpiItemTypeDAO> KpiItemType { get; set; }
         public virtual DbSet<KpiPeriodDAO> KpiPeriod { get; set; }
+        public virtual DbSet<KpiProductGroupingDAO> KpiProductGrouping { get; set; }
+        public virtual DbSet<KpiProductGroupingContentDAO> KpiProductGroupingContent { get; set; }
+        public virtual DbSet<KpiProductGroupingContentCriteriaMappingDAO> KpiProductGroupingContentCriteriaMapping { get; set; }
+        public virtual DbSet<KpiProductGroupingContentItemMappingDAO> KpiProductGroupingContentItemMapping { get; set; }
+        public virtual DbSet<KpiProductGroupingCriteriaDAO> KpiProductGroupingCriteria { get; set; }
+        public virtual DbSet<KpiProductGroupingTypeDAO> KpiProductGroupingType { get; set; }
         public virtual DbSet<KpiYearDAO> KpiYear { get; set; }
         public virtual DbSet<LastestEventMessageDAO> LastestEventMessage { get; set; }
         public virtual DbSet<LuckyNumberDAO> LuckyNumber { get; set; }
@@ -2031,6 +2037,118 @@ namespace DMS.Models
                 entity.Property(e => e.Code).HasMaxLength(50);
 
                 entity.Property(e => e.Name).HasMaxLength(50);
+            });
+
+            modelBuilder.Entity<KpiProductGroupingDAO>(entity =>
+            {
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.HasOne(d => d.Creator)
+                    .WithMany(p => p.KpiProductGroupingCreators)
+                    .HasForeignKey(d => d.CreatorId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_KpiProductGrouping_AppUser1");
+
+                entity.HasOne(d => d.Employee)
+                    .WithMany(p => p.KpiProductGroupingEmployees)
+                    .HasForeignKey(d => d.EmployeeId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_KpiProductGrouping_AppUser");
+
+                entity.HasOne(d => d.KpiPeriod)
+                    .WithMany(p => p.KpiProductGroupings)
+                    .HasForeignKey(d => d.KpiPeriodId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_KpiProductGrouping_KpiPeriod");
+
+                entity.HasOne(d => d.KpiProductGroupingType)
+                    .WithMany(p => p.KpiProductGroupings)
+                    .HasForeignKey(d => d.KpiProductGroupingTypeId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_KpiProductGrouping_KpiProductGroupingType");
+
+                entity.HasOne(d => d.Status)
+                    .WithMany(p => p.KpiProductGroupings)
+                    .HasForeignKey(d => d.StatusId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_KpiProductGrouping_Status");
+            });
+
+            modelBuilder.Entity<KpiProductGroupingContentDAO>(entity =>
+            {
+                entity.HasOne(d => d.KpiProductGrouping)
+                    .WithMany(p => p.KpiProductGroupingContents)
+                    .HasForeignKey(d => d.KpiProductGroupingId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_KpiProductGroupingContent_KpiProductGrouping");
+            });
+
+            modelBuilder.Entity<KpiProductGroupingContentCriteriaMappingDAO>(entity =>
+            {
+                entity.HasKey(e => new { e.KpiProductGroupingContentId, e.KpiProductGroupingCriteriaId });
+
+                entity.HasOne(d => d.KpiProductGroupingContent)
+                    .WithMany(p => p.KpiProductGroupingContentCriteriaMappings)
+                    .HasForeignKey(d => d.KpiProductGroupingContentId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_KpiProductGroupingContentCriteriaMapping_KpiProductGroupingContent");
+
+                entity.HasOne(d => d.KpiProductGroupingCriteria)
+                    .WithMany(p => p.KpiProductGroupingContentCriteriaMappings)
+                    .HasForeignKey(d => d.KpiProductGroupingCriteriaId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_KpiProductGroupingContentCriteriaMapping_KpiProductGroupingCriteria");
+            });
+
+            modelBuilder.Entity<KpiProductGroupingContentItemMappingDAO>(entity =>
+            {
+                entity.HasKey(e => new { e.KpiProductGroupingContentId, e.ItemId });
+
+                entity.HasOne(d => d.Item)
+                    .WithMany(p => p.KpiProductGroupingContentItemMappings)
+                    .HasForeignKey(d => d.ItemId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_KpiProductGroupingContentItemMapping_Item");
+
+                entity.HasOne(d => d.KpiProductGroupingContent)
+                    .WithMany(p => p.KpiProductGroupingContentItemMappings)
+                    .HasForeignKey(d => d.KpiProductGroupingContentId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_KpiProductGroupingContentItemMapping_KpiProductGroupingContent");
+            });
+
+            modelBuilder.Entity<KpiProductGroupingCriteriaDAO>(entity =>
+            {
+                entity.ToTable("KpiProductGroupingCriteria", "ENUM");
+
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(500);
+            });
+
+            modelBuilder.Entity<KpiProductGroupingTypeDAO>(entity =>
+            {
+                entity.ToTable("KpiProductGroupingType", "ENUM");
+
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(50);
             });
 
             modelBuilder.Entity<KpiYearDAO>(entity =>

@@ -26,6 +26,8 @@ namespace DMS.Models
             KpiGeneralEmployees = new HashSet<KpiGeneralDAO>();
             KpiItemCreators = new HashSet<KpiItemDAO>();
             KpiItemEmployees = new HashSet<KpiItemDAO>();
+            KpiProductGroupingCreators = new HashSet<KpiProductGroupingDAO>();
+            KpiProductGroupingEmployees = new HashSet<KpiProductGroupingDAO>();
             PriceListItemHistories = new HashSet<PriceListItemHistoryDAO>();
             PriceLists = new HashSet<PriceListDAO>();
             ProblemHistories = new HashSet<ProblemHistoryDAO>();
@@ -146,6 +148,8 @@ namespace DMS.Models
         public virtual ICollection<KpiGeneralDAO> KpiGeneralEmployees { get; set; }
         public virtual ICollection<KpiItemDAO> KpiItemCreators { get; set; }
         public virtual ICollection<KpiItemDAO> KpiItemEmployees { get; set; }
+        public virtual ICollection<KpiProductGroupingDAO> KpiProductGroupingCreators { get; set; }
+        public virtual ICollection<KpiProductGroupingDAO> KpiProductGroupingEmployees { get; set; }
         public virtual ICollection<PriceListItemHistoryDAO> PriceListItemHistories { get; set; }
         public virtual ICollection<PriceListDAO> PriceLists { get; set; }
         public virtual ICollection<ProblemHistoryDAO> ProblemHistories { get; set; }
