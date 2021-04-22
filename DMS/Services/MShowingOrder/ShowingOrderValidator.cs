@@ -145,24 +145,6 @@ namespace DMS.Services.MShowingOrder
                     StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id },
                     Id = new IdFilter { In = ShowingItemIds }
                 });
-                //AppUser AppUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
-                //ShowingInventoryFilter ShowingInventoryFilter = new ShowingInventoryFilter
-                //{
-                //    Skip = 0,
-                //    Take = int.MaxValue,
-                //    ShowingItemId = new IdFilter { In = ShowingItemIds },
-                //    ShowingWarehouseId = new IdFilter { Equal = ShowingOrder.ShowingWarehouseId },
-                //    Selects = ShowingInventorySelect.SaleStock | ShowingInventorySelect.ShowingItem
-                //};
-
-                //var ShowingInventories = await UOW.ShowingInventoryRepository.List(ShowingInventoryFilter);
-                //var list = ShowingInventories.GroupBy(x => x.ShowingItemId).Select(x => new { ShowingItemId = x.Key, SaleStock = x.Sum(s => s.SaleStock) }).ToList();
-
-                //foreach (var ShowingItem in ShowingItems)
-                //{
-                //    ShowingItem.SaleStock = list.Where(i => i.ShowingItemId == ShowingItem.Id).Select(i => i.SaleStock).FirstOrDefault();
-                //    ShowingItem.HasInventory = ShowingItem.SaleStock > 0;
-                //}
 
                 foreach (var ShowingOrderContent in ShowingOrder.ShowingOrderContents)
                 {
@@ -176,14 +158,6 @@ namespace DMS.Services.MShowingOrder
                         if (ShowingItem == null)
                         {
                             ShowingOrderContent.AddError(nameof(ShowingOrderValidator), nameof(ShowingOrderContent.ShowingItem), ErrorCode.ShowingItemNotExisted);
-                        }
-                        else
-                        {
-                            var StoreCounter = ShowingOrder.Stores.Count();
-                            if (ShowingItem.SalePrice <= 0 || ShowingItem.SalePrice < ShowingOrderContent.Quantity * StoreCounter)
-                            {
-                                ShowingOrderContent.ShowingItem.AddError(nameof(ShowingOrderValidator), nameof(ShowingOrderContent.ShowingItem.SaleStock), ErrorCode.SaleStockEmpty);
-                            }
                         }
                     }
                 }

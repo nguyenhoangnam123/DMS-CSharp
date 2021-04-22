@@ -13,7 +13,7 @@ namespace DMS.Handlers
     public class ShowingItemHandler : Handler
     {
         private string UsedKey => $"{Name}.Used";
-        public override string Name => nameof(ShowingItemHandler);
+        public override string Name => nameof(ShowingItem);
 
         public override void QueueBind(IModel channel, string queue, string exchange)
         {
