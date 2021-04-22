@@ -181,6 +181,7 @@ namespace DMS.Rpc.posm.showing_category
             ShowingCategory ShowingCategory = new ShowingCategory();
             ShowingCategory.Id = ShowingCategory_ShowingCategoryDTO.Id;
             ShowingCategory.Code = ShowingCategory_ShowingCategoryDTO.Code;
+            ShowingCategory.Description = ShowingCategory_ShowingCategoryDTO.Description;
             ShowingCategory.Name = ShowingCategory_ShowingCategoryDTO.Name;
             ShowingCategory.ParentId = ShowingCategory_ShowingCategoryDTO.ParentId;
             ShowingCategory.Path = ShowingCategory_ShowingCategoryDTO.Path;
