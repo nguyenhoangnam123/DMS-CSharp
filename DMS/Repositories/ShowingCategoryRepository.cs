@@ -177,6 +177,7 @@ namespace DMS.Repositories
             {
                 Id = filter.Selects.Contains(ShowingCategorySelect.Id) ? q.Id : default(long),
                 Code = filter.Selects.Contains(ShowingCategorySelect.Code) ? q.Code : default(string),
+                Description = filter.Selects.Contains(ShowingCategorySelect.Description) ? q.Description : default(string),
                 Name = filter.Selects.Contains(ShowingCategorySelect.Name) ? q.Name : default(string),
                 ParentId = filter.Selects.Contains(ShowingCategorySelect.Parent) ? q.ParentId : default(long?),
                 Path = filter.Selects.Contains(ShowingCategorySelect.Path) ? q.Path : default(string),
@@ -296,6 +297,7 @@ namespace DMS.Repositories
                 Id = x.Id,
                 Code = x.Code,
                 Name = x.Name,
+                Description = x.Description,
                 ParentId = x.ParentId,
                 Path = x.Path,
                 Level = x.Level,
@@ -342,6 +344,7 @@ namespace DMS.Repositories
             ShowingCategoryDAO ShowingCategoryDAO = new ShowingCategoryDAO();
             ShowingCategoryDAO.Id = ShowingCategory.Id;
             ShowingCategoryDAO.Code = ShowingCategory.Code;
+            ShowingCategoryDAO.Description = ShowingCategory.Description;
             ShowingCategoryDAO.Name = ShowingCategory.Name;
             ShowingCategoryDAO.ParentId = ShowingCategory.ParentId;
             ShowingCategoryDAO.Path = ShowingCategory.Path;
@@ -369,6 +372,7 @@ namespace DMS.Repositories
                 return false;
             ShowingCategoryDAO.Id = ShowingCategory.Id;
             ShowingCategoryDAO.Code = ShowingCategory.Code;
+            ShowingCategoryDAO.Description = ShowingCategory.Description;
             ShowingCategoryDAO.Name = ShowingCategory.Name;
             ShowingCategoryDAO.ParentId = ShowingCategory.ParentId;
             ShowingCategoryDAO.Path = ShowingCategory.Path;

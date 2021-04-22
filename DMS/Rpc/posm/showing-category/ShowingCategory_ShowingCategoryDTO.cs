@@ -10,6 +10,7 @@ namespace DMS.Rpc.posm.showing_category
     {
         public long Id { get; set; }
         public string Code { get; set; }
+        public string Description { get; set; }
         public string Name { get; set; }
         public long? ParentId { get; set; }
         public string Path { get; set; }
@@ -28,6 +29,7 @@ namespace DMS.Rpc.posm.showing_category
         {
             this.Id = ShowingCategory.Id;
             this.Code = ShowingCategory.Code;
+            this.Description = ShowingCategory.Description;
             this.Name = ShowingCategory.Name;
             this.ParentId = ShowingCategory.ParentId;
             this.Path = ShowingCategory.Path;

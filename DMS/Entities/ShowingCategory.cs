@@ -10,6 +10,7 @@ namespace DMS.Entities
     {
         public long Id { get; set; }
         public string Code { get; set; }
+        public string Description { get; set; }
         public string Name { get; set; }
         public long? ParentId { get; set; }
         public string Path { get; set; }
@@ -95,5 +96,6 @@ namespace DMS.Entities
         Image = E._7,
         Row = E._11,
         Used = E._12,
+        Description = E._13,
     }
 }
