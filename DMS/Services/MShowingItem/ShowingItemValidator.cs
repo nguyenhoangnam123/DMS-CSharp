@@ -189,6 +189,13 @@ namespace DMS.Services.MShowingItem
             return ShowingItem.IsValidated;
         }
 
+        private async Task<bool> ValidateUsed(ShowingItem ShowingItem)
+        {
+            if (ShowingItem.Used)
+                ShowingItem.AddError(nameof(ShowingItemValidator), nameof(ShowingItem.Used), ErrorCode.ShowingItemInUsed);
+            return true;
+        }
+
         public async Task<bool>Create(ShowingItem ShowingItem)
         {
             await ValidateCode(ShowingItem);
@@ -218,6 +225,7 @@ namespace DMS.Services.MShowingItem
         {
             if (await ValidateId(ShowingItem))
             {
+                await ValidateUsed(ShowingItem);// validate Used
             }
             return ShowingItem.IsValidated;
         }
