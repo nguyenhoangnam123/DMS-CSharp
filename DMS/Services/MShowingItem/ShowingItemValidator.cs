@@ -191,7 +191,8 @@ namespace DMS.Services.MShowingItem
 
         private async Task<bool> ValidateUsed(ShowingItem ShowingItem)
         {
-            if (ShowingItem.Used)
+            var oldData = await UOW.ShowingItemRepository.Get(ShowingItem.Id);
+            if (oldData.Used)
                 ShowingItem.AddError(nameof(ShowingItemValidator), nameof(ShowingItem.Used), ErrorCode.ShowingItemInUsed);
             return ShowingItem.IsValidated;
         }
