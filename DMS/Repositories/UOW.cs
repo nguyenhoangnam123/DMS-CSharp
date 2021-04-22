@@ -142,6 +142,10 @@ namespace DMS.Repositories
         IWorkflowStepRepository WorkflowStepRepository { get; }
         IWorkflowTypeRepository WorkflowTypeRepository { get; }
         IStoreUserRepository StoreUserRepository { get; }
+        IKpiProductGroupingRepository KpiProductGroupingRepository { get; }
+        IKpiProductGroupingContentRepository KpiProductGroupingContentRepository { get; }
+        IKpiProductGroupingCriteriaRepository KpiProductGroupingCriteriaRepository { get; }
+        IKpiProductGroupingTypeRepository KpiProductGroupingTypeRepository { get; }
     }
 
     public class UOW : IUOW
@@ -278,6 +282,10 @@ namespace DMS.Repositories
         public IWorkflowStepRepository WorkflowStepRepository { get; private set; }
         public IWorkflowTypeRepository WorkflowTypeRepository { get; private set; }
         public IStoreUserRepository StoreUserRepository { get; private set; }
+        public IKpiProductGroupingRepository KpiProductGroupingRepository { get; private set;  }
+        public IKpiProductGroupingContentRepository KpiProductGroupingContentRepository { get; private set; }
+        public IKpiProductGroupingCriteriaRepository KpiProductGroupingCriteriaRepository { get; private set; }
+        public IKpiProductGroupingTypeRepository KpiProductGroupingTypeRepository { get; private set; }
 
         public UOW(DataContext DataContext)
         {
@@ -413,6 +421,9 @@ namespace DMS.Repositories
             WorkflowStepRepository = new WorkflowStepRepository(DataContext);
             WorkflowTypeRepository = new WorkflowTypeRepository(DataContext);
             StoreUserRepository = new StoreUserRepository(DataContext);
+            KpiProductGroupingRepository = new KpiProductGroupingRepository(DataContext);
+            KpiProductGroupingContentRepository = new KpiProductGroupingContentRepository(DataContext);
+            KpiProductGroupingTypeRepository = new KpiProductGroupingTypeRepository(DataContext);
         }
         public async Task Begin()
         {

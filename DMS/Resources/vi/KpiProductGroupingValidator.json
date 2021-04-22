@@ -1,0 +1,40 @@
+{
+  "KpiProductGrouping": {
+    "Id": {
+    },
+    "OrganizationId": {
+    },
+    "KpiYearId": {
+    },
+    "KpiPeriodId": {
+    },
+    "KpiProductGroupingTypeId": {
+    },
+    "StatusId": {
+    },
+    "EmployeeId": {
+    },
+    "CreatorId": {
+    },
+    "CreatedAt": {
+    },
+    "UpdatedAt": {
+    },
+    "DeletedAt": {
+    },
+    "RowId": {
+    },
+    "Creator": {
+    },
+    "Employee": {
+    },
+    "KpiPeriod": {
+    },
+    "KpiProductGroupingType": {
+    },
+    "Status": {
+    },
+    "KpiProductGroupingContents": {
+    },
+  }
+}
