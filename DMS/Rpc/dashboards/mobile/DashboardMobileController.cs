@@ -58,9 +58,9 @@ namespace DMS.Rpc.dashboards.mobile
             Periods.Add(new DashboardMobile_EnumList { Id = TODAY, Name = "Hôm nay" });
             Periods.Add(new DashboardMobile_EnumList { Id = THIS_WEEK, Name = "Tuần này" });
             Periods.Add(new DashboardMobile_EnumList { Id = THIS_MONTH, Name = "Tháng này" });
-            Periods.Add(new DashboardMobile_EnumList { Id = LAST_MONTH, Name = "Tháng trước" });
+            //Periods.Add(new DashboardMobile_EnumList { Id = LAST_MONTH, Name = "Tháng trước" });
             Periods.Add(new DashboardMobile_EnumList { Id = THIS_QUARTER, Name = "Quý này" });
-            Periods.Add(new DashboardMobile_EnumList { Id = LAST_QUATER, Name = "Quý trước" });
+            //Periods.Add(new DashboardMobile_EnumList { Id = LAST_QUATER, Name = "Quý trước" });
             Periods.Add(new DashboardMobile_EnumList { Id = YEAR, Name = "Năm" });
             return Periods;
         }
@@ -923,7 +923,7 @@ namespace DMS.Rpc.dashboards.mobile
                         Month = i,
                         Revenue = 0
                     };
-                    DashboardMobile_RevenueGrowthDTO.IndirectRevenueGrowthByQuaters.Add(RevenueGrowthByQuarter);
+                    DashboardMobile_RevenueGrowthDTO.DirectRevenueGrowthByQuaters.Add(RevenueGrowthByQuarter);
                 }
 
                 foreach (var RevenueGrowthByQuarter in DashboardMobile_RevenueGrowthDTO.DirectRevenueGrowthByQuaters)
@@ -969,7 +969,7 @@ namespace DMS.Rpc.dashboards.mobile
                     DashboardMobile_RevenueGrowthDTO.DirectRevenueGrowthByQuaters.Add(RevenueGrowthByQuarter);
                 }
 
-                foreach (var RevenueGrowthByQuarter in DashboardMobile_RevenueGrowthDTO.IndirectRevenueGrowthByQuaters)
+                foreach (var RevenueGrowthByQuarter in DashboardMobile_RevenueGrowthDTO.DirectRevenueGrowthByQuaters)
                 {
                     DateTime LocalStart = new DateTime(Now.AddHours(CurrentContext.TimeZone).Year, (int)RevenueGrowthByQuarter.Month, 1).AddHours(0 - CurrentContext.TimeZone);
                     DateTime LocalEnd = LocalStart.AddHours(CurrentContext.TimeZone).AddMonths(1).AddSeconds(-1).AddHours(0 - CurrentContext.TimeZone);
@@ -1193,7 +1193,7 @@ namespace DMS.Rpc.dashboards.mobile
                             select new DashboardMobile_QuantityGrowthByYearDTO
                             {
                                 Month = x.Key,
-                                IndirectSalesOrderCounter = x.Count()
+                                DirectSalesOrderCounter = x.Count()
                             };
 
                 var DashboardMobile_DirectSalesOrderGrowthByYearDTO = await query.ToListAsync();
