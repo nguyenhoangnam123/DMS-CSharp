@@ -14,7 +14,7 @@ namespace DMS.Rpc.organization
         public const string Count = Default + "/count";
         public const string List = Default + "/list";
         public const string Get = Default + "/get";
-        public const string ToggleIsDisplay = Default + "/toggle-is-display";
+        public const string UpdateIsDisplay = Default + "/update-is-display";
         public const string Export = Default + "/export";
         public const string ExportAppUser = Default + "/export-app-user";
 
@@ -37,7 +37,7 @@ namespace DMS.Rpc.organization
                 FilterListOrganization, FilterListStatus, FilterListAppUser, } },
             { "Sửa", new List<string> {
                 Parent,
-                Master, Count, List, Get, ToggleIsDisplay,
+                Master, Count, List, Get, UpdateIsDisplay,
                 FilterListOrganization, FilterListStatus, FilterListAppUser, } },
             { "Xuất excel", new List<string> {
                 Parent,
