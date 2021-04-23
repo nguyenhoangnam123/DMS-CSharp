@@ -2,10 +2,16 @@ using DMS.Common;
 using DMS.Entities;
 using DMS.Helpers;
 using DMS.Services.MAppUser;
+using DMS.Services.MBrand;
+using DMS.Services.MCategory;
 using DMS.Services.MKpiPeriod;
 using DMS.Services.MKpiProductGrouping;
 using DMS.Services.MKpiProductGroupingType;
+using DMS.Services.MKpiYear;
+using DMS.Services.MOrganization;
 using DMS.Services.MProduct;
+using DMS.Services.MProductGrouping;
+using DMS.Services.MProductType;
 using DMS.Services.MStatus;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -27,6 +33,12 @@ namespace DMS.Rpc.kpi_product_grouping
         private IStatusService StatusService;
         private IKpiProductGroupingService KpiProductGroupingService;
         private IItemService ItemService;
+        private IKpiYearService KpiYearService;
+        private IOrganizationService OrganizationService;
+        private ICategoryService CategoryService;
+        private IProductTypeService ProductTypeService;
+        private IProductGroupingService ProductGroupingService;
+        private IBrandService BrandService;
         private ICurrentContext CurrentContext;
         public KpiProductGroupingController(
             IAppUserService AppUserService,
@@ -35,6 +47,12 @@ namespace DMS.Rpc.kpi_product_grouping
             IStatusService StatusService,
             IKpiProductGroupingService KpiProductGroupingService,
             IItemService ItemService,
+            IKpiYearService KpiYearService,
+            IOrganizationService OrganizationService,
+            ICategoryService CategoryService,
+            IProductTypeService ProductTypeService,
+            IProductGroupingService ProductGroupingService,
+            IBrandService BrandService,
             ICurrentContext CurrentContext
         )
         {
@@ -44,6 +62,12 @@ namespace DMS.Rpc.kpi_product_grouping
             this.StatusService = StatusService;
             this.KpiProductGroupingService = KpiProductGroupingService;
             this.ItemService = ItemService;
+            this.KpiYearService = KpiYearService;
+            this.OrganizationService = OrganizationService;
+            this.CategoryService = CategoryService;
+            this.ProductTypeService = ProductTypeService;
+            this.ProductGroupingService = ProductGroupingService;
+            this.BrandService = BrandService;
             this.CurrentContext = CurrentContext;
         }
 

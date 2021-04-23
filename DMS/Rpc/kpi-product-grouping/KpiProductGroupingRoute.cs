@@ -37,9 +37,15 @@ namespace DMS.Rpc.kpi_product_grouping
         public const string BulkDelete = Default + "/bulk-delete";
         
         public const string FilterListAppUser = Default + "/filter-list-app-user";
+        public const string FilterListOrganization = Default + "/filter-list-organization";
         public const string FilterListKpiPeriod = Default + "/filter-list-kpi-period";
+        public const string FilterListKpiYear = Default + "/filter-list-kpi-year";
         public const string FilterListKpiProductGroupingType = Default + "/filter-list-kpi-product-grouping-type";
         public const string FilterListStatus = Default + "/filter-list-status";
+        public const string FilterListCategory = Default + "/filter-list-category";
+        public const string FilterListProductType = Default + "/filter-list-product-type";
+        public const string FilterListProductGrouping = Default + "/filter-list-product-grouping";
+        public const string FilterListBrand = Default + "/filter-list-brand";
 
         public const string SingleListAppUser = Default + "/single-list-app-user";
         public const string SingleListKpiPeriod = Default + "/single-list-kpi-period";
@@ -66,7 +72,8 @@ namespace DMS.Rpc.kpi_product_grouping
         };
 
         private static List<string> FilterList = new List<string> { 
-            FilterListAppUser,FilterListKpiPeriod,FilterListKpiProductGroupingType,FilterListStatus,
+            FilterListAppUser,FilterListOrganization, FilterListKpiPeriod,FilterListKpiYear, FilterListKpiProductGroupingType, 
+            FilterListStatus, FilterListCategory, FilterListProductType, FilterListProductGrouping, FilterListBrand
         };
         private static List<string> SingleList = new List<string> { 
             SingleListAppUser, SingleListKpiPeriod, SingleListKpiProductGroupingType, SingleListStatus, 
