@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -203,6 +204,7 @@ namespace DMS.ABE.Rpc.product
                 Skip = Product_CategoryFilterDTO.Skip,
                 Take = Product_CategoryFilterDTO.Take,
                 HasChildren = Product_CategoryFilterDTO.HasChildren,
+                StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id }, // mặc định lấy category đang active 
                 Selects = CategorySelect.Id | CategorySelect.Code | CategorySelect.Name | CategorySelect.Image | CategorySelect.Parent | CategorySelect.Path | CategorySelect.Level
             };
             int count = await CategoryService.Count(CategoryFilter);
@@ -227,6 +229,7 @@ namespace DMS.ABE.Rpc.product
                 Skip = Product_CategoryFilterDTO.Skip,
                 Take = Product_CategoryFilterDTO.Take,
                 HasChildren = Product_CategoryFilterDTO.HasChildren,
+                StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id }, // mặc định lấy category đang active 
                 Selects = CategorySelect.Id | CategorySelect.Code | CategorySelect.Name | CategorySelect.Image | CategorySelect.Parent | CategorySelect.Path | CategorySelect.Level
             };
             List<Category> Categories = await CategoryService.List(CategoryFilter);
