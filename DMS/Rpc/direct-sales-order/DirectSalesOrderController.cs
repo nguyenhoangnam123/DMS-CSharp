@@ -252,7 +252,10 @@ namespace DMS.Rpc.direct_sales_order
             foreach (var DirectSalesOrderContent in DirectSalesOrder_DirectSalesOrderDTO.DirectSalesOrderContents)
             {
                 TaxType TaxType = TaxTypes.Where(x => x.Percentage == DirectSalesOrderContent.TaxPercentage).FirstOrDefault();
-                DirectSalesOrderContent.TaxType = new DirectSalesOrder_TaxTypeDTO(TaxType);
+                if(TaxType != null)
+                {
+                    DirectSalesOrderContent.TaxType = new DirectSalesOrder_TaxTypeDTO(TaxType);
+                }
             }
             return DirectSalesOrder_DirectSalesOrderDTO;
         }
