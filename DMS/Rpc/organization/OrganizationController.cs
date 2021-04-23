@@ -71,16 +71,22 @@ namespace DMS.Rpc.organization
             return new Organization_OrganizationDTO(Organization);
         }
 
-        [Route(OrganizationRoute.ToggleIsDisplay), HttpPost]
-        public async Task<ActionResult<bool>> ToggleIsDisplay([FromBody] long  Id)
+        [Route(OrganizationRoute.UpdateIsDisplay), HttpPost]
+        public async Task<ActionResult<Organization_OrganizationDTO>> UpdateIsDisplay([FromBody] Organization_OrganizationDTO Organization_OrganizationDTO)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
 
-            if (!await HasPermission(Id))
+            if (!await HasPermission(Organization_OrganizationDTO.Id))
                 return Forbid();
 
-            return await OrganizationService.UpdateIsDisplay(Id);
+            Organization Organization = ConvertDTOToEntity(Organization_OrganizationDTO);
+            Organization = await OrganizationService.UpdateIsDisplay(Organization);
+            Organization_OrganizationDTO = new Organization_OrganizationDTO(Organization);
+            if (Organization.IsValidated)
+                return Organization_OrganizationDTO;
+            else
+                return BadRequest(Organization_OrganizationDTO);
         }
 
         [Route(OrganizationRoute.Export), HttpPost]
@@ -185,6 +191,62 @@ namespace DMS.Rpc.organization
                     return false;
             }
             return true;
+        }
+
+        private Organization ConvertDTOToEntity(Organization_OrganizationDTO Organization_OrganizationDTO)
+        {
+            Organization Organization = new Organization();
+            Organization.Id = Organization_OrganizationDTO.Id;
+            Organization.Code = Organization_OrganizationDTO.Code;
+            Organization.Name = Organization_OrganizationDTO.Name;
+            Organization.ParentId = Organization_OrganizationDTO.ParentId;
+            Organization.Path = Organization_OrganizationDTO.Path;
+            Organization.Level = Organization_OrganizationDTO.Level;
+            Organization.StatusId = Organization_OrganizationDTO.StatusId;
+            Organization.Phone = Organization_OrganizationDTO.Phone;
+            Organization.Address = Organization_OrganizationDTO.Address;
+            Organization.Email = Organization_OrganizationDTO.Email;
+            Organization.IsDisplay = Organization_OrganizationDTO.IsDisplay;
+            Organization.Parent = Organization_OrganizationDTO.Parent == null ? null : new Organization
+            {
+                Id = Organization_OrganizationDTO.Parent.Id,
+                Code = Organization_OrganizationDTO.Parent.Code,
+                Name = Organization_OrganizationDTO.Parent.Name,
+                ParentId = Organization_OrganizationDTO.Parent.ParentId,
+                Path = Organization_OrganizationDTO.Parent.Path,
+                Level = Organization_OrganizationDTO.Parent.Level,
+                StatusId = Organization_OrganizationDTO.Parent.StatusId,
+                Phone = Organization_OrganizationDTO.Parent.Phone,
+                Address = Organization_OrganizationDTO.Parent.Address,
+                Email = Organization_OrganizationDTO.Parent.Email,
+            };
+            Organization.Status = Organization_OrganizationDTO.Status == null ? null : new Status
+            {
+                Id = Organization_OrganizationDTO.Status.Id,
+                Code = Organization_OrganizationDTO.Status.Code,
+                Name = Organization_OrganizationDTO.Status.Name,
+            };
+            Organization.AppUsers = Organization_OrganizationDTO.AppUsers?
+                .Select(x => new AppUser
+                {
+                    Id = x.Id,
+                    Username = x.Username,
+                    DisplayName = x.DisplayName,
+                    Address = x.Address,
+                    Email = x.Email,
+                    Phone = x.Phone,
+                    Department = x.Department,
+                    SexId = x.SexId,
+                    StatusId = x.StatusId,
+                    Status = x.Status == null ? null : new Status
+                    {
+                        Id = x.Status.Id,
+                        Code = x.Status.Code,
+                        Name = x.Status.Name,
+                    },
+                }).ToList();
+            Organization.BaseLanguage = CurrentContext.Language;
+            return Organization;
         }
 
         private OrganizationFilter ConvertFilterDTOToFilterEntity(Organization_OrganizationFilterDTO Organization_OrganizationFilterDTO)
@@ -344,16 +406,6 @@ namespace DMS.Rpc.organization
             List<Organization_AppUserDTO> Organization_AppUserDTOs = AppUsers
                 .Select(x => new Organization_AppUserDTO(x)).ToList();
             return Organization_AppUserDTOs;
-        }
-
-        private Organization ConvertDTOToEntity(Organization_OrganizationDTO Organization_OrganizationDTO)
-        {
-            Organization Organization = new Organization();
-            Organization.Id = Organization_OrganizationDTO.Id;
-            Organization.Code = Organization_OrganizationDTO.Code;
-            Organization.IsDisplay = Organization_OrganizationDTO.IsDisplay;
-            Organization.BaseLanguage = CurrentContext.Language;
-            return Organization;
         }
     }
 }

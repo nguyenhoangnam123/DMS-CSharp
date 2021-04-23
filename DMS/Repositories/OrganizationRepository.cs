@@ -427,11 +427,11 @@ namespace DMS.Repositories
 
         public async Task<bool> UpdateIsDisplay(Organization Organization)
         {
-            OrganizationDAO OrganizationDAO = DataContext.Organization.Where(x => x.Id == Organization.Id).FirstOrDefault();
-            if (OrganizationDAO == null)
-                return false;
-            OrganizationDAO.IsDisplay = Organization.IsDisplay;
-            OrganizationDAO.UpdatedAt = StaticParams.DateTimeNow;
+            await DataContext.Organization.Where(x => x.Id == Organization.Id).UpdateFromQueryAsync(x => new OrganizationDAO
+            {
+                IsDisplay = Organization.IsDisplay,
+                UpdatedAt = StaticParams.DateTimeNow
+            });
             await DataContext.SaveChangesAsync();
             return true;
         }
