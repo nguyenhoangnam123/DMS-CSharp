@@ -10,9 +10,9 @@ namespace DMS.Rpc.posm.showing_order_with_draw
     public class ShowingOrderWithDrawRoute : Root
     {
         public const string Parent = Module + "/posm-order";
-        public const string Master = Module + "/posm-order/showing-order/showing-order-master";
-        public const string Detail = Module + "/posm-order/showing-order/showing-order-detail/*";
-        public const string Preview = Module + "/showing-order/showing-order-preview";
+        public const string Master = Module + "/posm-order/showing-order-with-draw/showing-order-with-draw-master";
+        public const string Detail = Module + "/posm-order/showing-order-with-draw/showing-order-with-draw-detail/*";
+        public const string Preview = Module + "/showing-order/showing-order-with-draw-preview";
         private const string Default = Rpc + Module + "/showing-order-with-draw";
         public const string Count = Default + "/count";
         public const string List = Default + "/list";
