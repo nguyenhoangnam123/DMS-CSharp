@@ -4239,8 +4239,6 @@ namespace DMS.Models
             {
                 entity.ToTable("ShowingOrderWithDraw", "POSM");
 
-                entity.Property(e => e.Id).ValueGeneratedNever();
-
                 entity.Property(e => e.Code).HasMaxLength(50);
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
