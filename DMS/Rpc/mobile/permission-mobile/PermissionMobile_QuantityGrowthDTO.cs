@@ -42,5 +42,6 @@ namespace DMS.Rpc.mobile.permission_mobile
     public class PermissionMobile_QuantityGrowthFilterDTO : FilterDTO
     {
         public IdFilter Time { get; set; }
+        public IdFilter EmployeeId { get; set; }
     }
 }

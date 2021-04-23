@@ -289,8 +289,8 @@ namespace DMS.Rpc.mobile.permission_mobile
                     x.DeletedAt == null)
                 .Select(x => new KpiItemDAO
                 {
-                    Id= x.Id,
-                    EmployeeId= x.EmployeeId,
+                    Id = x.Id,
+                    EmployeeId = x.EmployeeId,
                 }).ToListAsync();
             var KpiItemIds = KpiItems.Select(x => x.Id).ToList();
             if (KpiItems.Count > 0)
@@ -402,7 +402,7 @@ namespace DMS.Rpc.mobile.permission_mobile
                             }
                         }
 
-                        if(subResults.Count > 0)
+                        if (subResults.Count > 0)
                         {
                             foreach (var ItemId in ItemIds)
                             {
@@ -439,7 +439,7 @@ namespace DMS.Rpc.mobile.permission_mobile
                         }
                     }
                 }
-            } 
+            }
 
             return KpiItemDTOs;
         }
@@ -660,7 +660,7 @@ namespace DMS.Rpc.mobile.permission_mobile
             List<long> AppUserIds = await ListAppUserId(filter.EmployeeId); // lấy ra appUserIds
 
             var query = from sc in DataContext.StoreChecking
-                        where AppUserIds.Contains(sc.SaleEmployeeId) 
+                        where AppUserIds.Contains(sc.SaleEmployeeId)
                         && (sc.CheckOutAt.HasValue && sc.CheckOutAt.Value >= Start && sc.CheckOutAt.Value <= End)
                         select sc;
 
@@ -753,9 +753,12 @@ namespace DMS.Rpc.mobile.permission_mobile
             DateTime End = new DateTime(Now.AddHours(CurrentContext.TimeZone).Year, Now.AddHours(CurrentContext.TimeZone).Month, 1).AddHours(0 - CurrentContext.TimeZone);
             (Start, End) = ConvertTime(filter.Time); // lấy ra startDate và EndDate theo filter time
 
+            List<long> AppUserIds = await ListAppUserId(filter.EmployeeId); // lấy ra appUserIds
+
             var query = from transaction in DataContext.IndirectSalesOrderTransaction
                         join ind in DataContext.IndirectSalesOrder on transaction.IndirectSalesOrderId equals ind.Id
                         where ind.RequestStateId == RequestStateEnum.APPROVED.Id
+                        && AppUserIds.Contains(ind.SaleEmployeeId)
                         && transaction.OrderDate >= Start
                         && transaction.OrderDate <= End
                         group transaction by transaction.SalesEmployeeId into transGroup
@@ -807,9 +810,12 @@ namespace DMS.Rpc.mobile.permission_mobile
             DateTime End = new DateTime(Now.AddHours(CurrentContext.TimeZone).Year, Now.AddHours(CurrentContext.TimeZone).Month, 1).AddHours(0 - CurrentContext.TimeZone);
             (Start, End) = ConvertTime(filter.Time); // lấy ra startDate và EndDate theo filter time
 
+            List<long> AppUserIds = await ListAppUserId(filter.EmployeeId); // lấy ra appUserIds
+
             var query = from transaction in DataContext.IndirectSalesOrderTransaction
                         join ind in DataContext.IndirectSalesOrder on transaction.IndirectSalesOrderId equals ind.Id
                         where ind.RequestStateId == RequestStateEnum.APPROVED.Id
+                        && AppUserIds.Contains(ind.SaleEmployeeId)
                         && transaction.OrderDate >= Start
                         && transaction.OrderDate <= End
                         group transaction by transaction.ItemId into transGroup
@@ -855,20 +861,12 @@ namespace DMS.Rpc.mobile.permission_mobile
             DateTime End = LocalEndDay(CurrentContext);
             (Start, End) = ConvertTime(filter.Time);
 
+            List<long> AppUserIds = await ListAppUserId(filter.EmployeeId); // lấy ra appUserIds
+            var query = FilterIndirectTransaction(AppUserIds, Start, End);
+
             if (filter.Time.Equal.HasValue == false
                 || filter.Time.Equal.Value == THIS_MONTH)
             {
-                var query = from t in DataContext.IndirectSalesOrderTransaction
-                            join i in DataContext.IndirectSalesOrder on t.IndirectSalesOrderId equals i.Id
-                            where i.RequestStateId == RequestStateEnum.APPROVED.Id
-                            && t.OrderDate >= Start
-                            && t.OrderDate <= End
-                            select new IndirectSalesOrderTransactionDAO
-                            {
-                                OrderDate = t.OrderDate,
-                                Revenue = t.Revenue
-                            };
-
                 var Transactions = await query.ToListAsync();
                 PermissionMobile_RevenueGrowthDTO RevenueGrowthDTO = new PermissionMobile_RevenueGrowthDTO();
                 RevenueGrowthDTO.IndirectRevenueGrowthByMonths = new List<PermissionMobile_RevenueGrowthByMonthDTO>();
@@ -898,17 +896,6 @@ namespace DMS.Rpc.mobile.permission_mobile
             }
             else if (filter.Time.Equal.Value == LAST_MONTH)
             {
-                var query = from t in DataContext.IndirectSalesOrderTransaction
-                            join i in DataContext.IndirectSalesOrder on t.IndirectSalesOrderId equals i.Id
-                            where i.RequestStateId == RequestStateEnum.APPROVED.Id
-                            && t.OrderDate >= Start
-                            && t.OrderDate <= End
-                            select new IndirectSalesOrderTransactionDAO
-                            {
-                                OrderDate = t.OrderDate,
-                                Revenue = t.Revenue
-                            };
-
                 var Transactions = await query.ToListAsync();
                 PermissionMobile_RevenueGrowthDTO RevenueGrowthDTO = new PermissionMobile_RevenueGrowthDTO();
                 RevenueGrowthDTO.IndirectRevenueGrowthByMonths = new List<PermissionMobile_RevenueGrowthByMonthDTO>();
@@ -939,17 +926,6 @@ namespace DMS.Rpc.mobile.permission_mobile
             else if (filter.Time.Equal.Value == THIS_QUARTER)
             {
                 var this_quarter = Convert.ToInt32(Math.Ceiling(Now.AddHours(CurrentContext.TimeZone).Month / 3m));
-                var query = from t in DataContext.IndirectSalesOrderTransaction
-                            join i in DataContext.IndirectSalesOrder on t.IndirectSalesOrderId equals i.Id
-                            where i.RequestStateId == RequestStateEnum.APPROVED.Id
-                            && t.OrderDate >= Start
-                            && t.OrderDate <= End
-                            select new IndirectSalesOrderTransactionDAO
-                            {
-                                OrderDate = t.OrderDate,
-                                Revenue = t.Revenue
-                            };
-
                 var Transactions = await query.ToListAsync();
                 PermissionMobile_RevenueGrowthDTO RevenueGrowthDTO = new PermissionMobile_RevenueGrowthDTO();
                 RevenueGrowthDTO.IndirectRevenueGrowthByQuaters = new List<PermissionMobile_RevenueGrowthByQuarterDTO>();
@@ -982,17 +958,6 @@ namespace DMS.Rpc.mobile.permission_mobile
             {
                 var this_quarter = Convert.ToInt32(Math.Ceiling(Now.AddHours(CurrentContext.TimeZone).Month / 3m));
                 var last_quarter = (this_quarter + 3) % 4;
-                var query = from t in DataContext.IndirectSalesOrderTransaction
-                            join i in DataContext.IndirectSalesOrder on t.IndirectSalesOrderId equals i.Id
-                            where i.RequestStateId == RequestStateEnum.APPROVED.Id
-                            && t.OrderDate >= Start
-                            && t.OrderDate <= End
-                            select new IndirectSalesOrderTransactionDAO
-                            {
-                                OrderDate = t.OrderDate,
-                                Revenue = t.Revenue
-                            };
-
                 var Transactions = await query.ToListAsync();
                 PermissionMobile_RevenueGrowthDTO RevenueGrowthDTO = new PermissionMobile_RevenueGrowthDTO();
                 RevenueGrowthDTO.IndirectRevenueGrowthByQuaters = new List<PermissionMobile_RevenueGrowthByQuarterDTO>();
@@ -1023,17 +988,6 @@ namespace DMS.Rpc.mobile.permission_mobile
             }
             else if (filter.Time.Equal.Value == YEAR)
             {
-                var query = from t in DataContext.IndirectSalesOrderTransaction
-                            join i in DataContext.IndirectSalesOrder on t.IndirectSalesOrderId equals i.Id
-                            where i.RequestStateId == RequestStateEnum.APPROVED.Id
-                            && t.OrderDate >= Start
-                            && t.OrderDate <= End
-                            select new IndirectSalesOrderTransactionDAO
-                            {
-                                OrderDate = t.OrderDate,
-                                Revenue = t.Revenue
-                            };
-
                 var Transactions = await query.ToListAsync();
                 PermissionMobile_RevenueGrowthDTO RevenueGrowthDTO = new PermissionMobile_RevenueGrowthDTO();
                 RevenueGrowthDTO.IndirectRevenueGrowthByYears = new List<PermissionMobile_RevenueGrowthByYearDTO>();
@@ -1071,13 +1025,12 @@ namespace DMS.Rpc.mobile.permission_mobile
             DateTime End = LocalEndDay(CurrentContext);
             (Start, End) = ConvertTime(filter.Time);
 
+            List<long> AppUserIds = await ListAppUserId(filter.EmployeeId); // lấy ra appUserIds
+
             if (filter.Time.Equal.HasValue == false
                 || filter.Time.Equal.Value == THIS_MONTH)
             {
-                var query = from i in DataContext.IndirectSalesOrder
-                            where i.RequestStateId == RequestStateEnum.APPROVED.Id
-                            && i.OrderDate >= Start
-                            && i.OrderDate <= End
+                var query = from i in FilterIndirectSalesOrder(AppUserIds, Start, End)
                             group i by i.OrderDate.Day into x
                             select new PermissionMobile_QuantityGrowthByMonthDTO
                             {
@@ -1110,10 +1063,7 @@ namespace DMS.Rpc.mobile.permission_mobile
             }
             else if (filter.Time.Equal.Value == LAST_MONTH)
             {
-                var query = from i in DataContext.IndirectSalesOrder
-                            where i.RequestStateId == RequestStateEnum.APPROVED.Id
-                            && i.OrderDate >= Start
-                            && i.OrderDate <= End
+                var query = from i in FilterIndirectSalesOrder(AppUserIds, Start, End)
                             group i by i.OrderDate.Day into x
                             select new PermissionMobile_QuantityGrowthByMonthDTO
                             {
@@ -1148,10 +1098,7 @@ namespace DMS.Rpc.mobile.permission_mobile
             {
                 var this_quarter = Convert.ToInt32(Math.Ceiling(Now.AddHours(CurrentContext.TimeZone).Month / 3m));
 
-                var query = from i in DataContext.IndirectSalesOrder
-                            where i.RequestStateId == RequestStateEnum.APPROVED.Id
-                            && i.OrderDate >= Start
-                            && i.OrderDate <= End
+                var query = from i in FilterIndirectSalesOrder(AppUserIds, Start, End)
                             group i by i.OrderDate.Month into x
                             select new PermissionMobile_QuantityGrowthByQuarterDTO
                             {
@@ -1187,7 +1134,7 @@ namespace DMS.Rpc.mobile.permission_mobile
             {
                 var this_quarter = Convert.ToInt32(Math.Ceiling(Now.AddHours(CurrentContext.TimeZone).Month / 3m));
                 var last_quarter = (this_quarter + 3) % 4;
-                var query = from i in DataContext.IndirectSalesOrder
+                var query = from i in FilterIndirectSalesOrder(AppUserIds, Start, End)
                             group i by i.OrderDate.Month into x
                             select new PermissionMobile_QuantityGrowthByQuarterDTO
                             {
@@ -1221,7 +1168,7 @@ namespace DMS.Rpc.mobile.permission_mobile
             }
             else if (filter.Time.Equal.Value == YEAR)
             {
-                var query = from i in DataContext.IndirectSalesOrder
+                var query = from i in FilterIndirectSalesOrder(AppUserIds, Start, End)
                             group i by i.OrderDate.Month into x
                             select new PermissionMobile_QuantityGrowthByYearDTO
                             {
@@ -1315,11 +1262,14 @@ namespace DMS.Rpc.mobile.permission_mobile
             DateTime End = new DateTime(Now.AddHours(CurrentContext.TimeZone).Year, Now.AddHours(CurrentContext.TimeZone).Month, 1).AddHours(0 - CurrentContext.TimeZone);
             (Start, End) = ConvertTime(filter.Time); // lấy ra startDate và EndDate theo filter time
 
+            List<long> AppUserIds = await ListAppUserId(filter.EmployeeId); // lấy ra appUserIds
+
             var query = from transaction in DataContext.DirectSalesOrderTransaction
                         join di in DataContext.DirectSalesOrder on transaction.DirectSalesOrderId equals di.Id
-                        where di.RequestStateId == RequestStateEnum.APPROVED.Id &&
-                        transaction.OrderDate >= Start &&
-                        transaction.OrderDate <= End
+                        where di.RequestStateId == RequestStateEnum.APPROVED.Id
+                        && AppUserIds.Contains(di.SaleEmployeeId)
+                        && transaction.OrderDate >= Start
+                        && transaction.OrderDate <= End
                         group transaction by transaction.SalesEmployeeId into transGroup
                         select transGroup; // query tu transaction don hang gian tiep co trang thai phe duyet hoan thanh
 
@@ -1369,11 +1319,14 @@ namespace DMS.Rpc.mobile.permission_mobile
             DateTime End = new DateTime(Now.AddHours(CurrentContext.TimeZone).Year, Now.AddHours(CurrentContext.TimeZone).Month, 1).AddHours(0 - CurrentContext.TimeZone);
             (Start, End) = ConvertTime(filter.Time); // lấy ra startDate và EndDate theo filter time
 
+            List<long> AppUserIds = await ListAppUserId(filter.EmployeeId); // lấy ra appUserIds
+
             var query = from transaction in DataContext.DirectSalesOrderTransaction
                         join di in DataContext.DirectSalesOrder on transaction.DirectSalesOrderId equals di.Id
-                        where di.RequestStateId == RequestStateEnum.APPROVED.Id &&
-                        transaction.OrderDate >= Start &&
-                        transaction.OrderDate <= End
+                        where di.RequestStateId == RequestStateEnum.APPROVED.Id
+                        && AppUserIds.Contains(di.SaleEmployeeId)
+                        && transaction.OrderDate >= Start
+                        && transaction.OrderDate <= End
                         group transaction by transaction.ItemId into transGroup
                         select transGroup; // query tu transaction don hang gian tiep co trang thai phe duyet hoan thanh
 
@@ -1417,20 +1370,12 @@ namespace DMS.Rpc.mobile.permission_mobile
             DateTime End = LocalEndDay(CurrentContext);
             (Start, End) = ConvertTime(filter.Time);
 
+            List<long> AppUserIds = await ListAppUserId(filter.EmployeeId); // lấy ra appUserIds
+            var query = FilterDirectTransaction(AppUserIds, Start, End);
+
             if (filter.Time.Equal.HasValue == false
                 || filter.Time.Equal.Value == THIS_MONTH)
             {
-                var query = from t in DataContext.DirectSalesOrderTransaction
-                            join i in DataContext.DirectSalesOrder on t.DirectSalesOrderId equals i.Id
-                            where i.RequestStateId == RequestStateEnum.APPROVED.Id
-                            && t.OrderDate >= Start
-                            && t.OrderDate <= End
-                            select new DirectSalesOrderTransactionDAO
-                            {
-                                OrderDate = t.OrderDate,
-                                Revenue = t.Revenue
-                            };
-
                 var DirectSalesOrderTransactionDAOs = await query.ToListAsync();
                 PermissionMobile_RevenueGrowthDTO PermissionMobile_RevenueGrowthDTO = new PermissionMobile_RevenueGrowthDTO();
                 PermissionMobile_RevenueGrowthDTO.DirectRevenueGrowthByMonths = new List<PermissionMobile_RevenueGrowthByMonthDTO>();
@@ -1460,17 +1405,6 @@ namespace DMS.Rpc.mobile.permission_mobile
             }
             else if (filter.Time.Equal.Value == LAST_MONTH)
             {
-                var query = from t in DataContext.DirectSalesOrderTransaction
-                            join i in DataContext.DirectSalesOrder on t.DirectSalesOrderId equals i.Id
-                            where i.RequestStateId == RequestStateEnum.APPROVED.Id
-                            && t.OrderDate >= Start
-                            && t.OrderDate <= End
-                            select new DirectSalesOrderTransactionDAO
-                            {
-                                OrderDate = t.OrderDate,
-                                Revenue = t.Revenue
-                            };
-
                 var DirectSalesOrderTransactionDAOs = await query.ToListAsync();
                 PermissionMobile_RevenueGrowthDTO PermissionMobile_RevenueGrowthDTO = new PermissionMobile_RevenueGrowthDTO();
                 PermissionMobile_RevenueGrowthDTO.DirectRevenueGrowthByMonths = new List<PermissionMobile_RevenueGrowthByMonthDTO>();
@@ -1501,17 +1435,6 @@ namespace DMS.Rpc.mobile.permission_mobile
             else if (filter.Time.Equal.Value == THIS_QUARTER)
             {
                 var this_quarter = Convert.ToInt32(Math.Ceiling(Now.AddHours(CurrentContext.TimeZone).Month / 3m));
-                var query = from t in DataContext.DirectSalesOrderTransaction
-                            join i in DataContext.DirectSalesOrder on t.DirectSalesOrderId equals i.Id
-                            where i.RequestStateId == RequestStateEnum.APPROVED.Id
-                            && t.OrderDate >= Start
-                            && t.OrderDate <= End
-                            select new DirectSalesOrderTransactionDAO
-                            {
-                                OrderDate = t.OrderDate,
-                                Revenue = t.Revenue
-                            };
-
                 var DirectSalesOrderTransactionDAOs = await query.ToListAsync();
                 PermissionMobile_RevenueGrowthDTO PermissionMobile_RevenueGrowthDTO = new PermissionMobile_RevenueGrowthDTO();
                 PermissionMobile_RevenueGrowthDTO.DirectRevenueGrowthByQuaters = new List<PermissionMobile_RevenueGrowthByQuarterDTO>();
@@ -1544,17 +1467,6 @@ namespace DMS.Rpc.mobile.permission_mobile
             {
                 var this_quarter = Convert.ToInt32(Math.Ceiling(Now.AddHours(CurrentContext.TimeZone).Month / 3m));
                 var last_quarter = (this_quarter + 3) % 4;
-                var query = from t in DataContext.DirectSalesOrderTransaction
-                            join i in DataContext.DirectSalesOrder on t.DirectSalesOrderId equals i.Id
-                            where i.RequestStateId == RequestStateEnum.APPROVED.Id
-                            && t.OrderDate >= Start
-                            && t.OrderDate <= End
-                            select new DirectSalesOrderTransactionDAO
-                            {
-                                OrderDate = t.OrderDate,
-                                Revenue = t.Revenue
-                            };
-
                 var DirectSalesOrderTransactionDAOs = await query.ToListAsync();
                 PermissionMobile_RevenueGrowthDTO PermissionMobile_RevenueGrowthDTO = new PermissionMobile_RevenueGrowthDTO();
                 PermissionMobile_RevenueGrowthDTO.DirectRevenueGrowthByQuaters = new List<PermissionMobile_RevenueGrowthByQuarterDTO>();
@@ -1585,17 +1497,6 @@ namespace DMS.Rpc.mobile.permission_mobile
             }
             else if (filter.Time.Equal.Value == YEAR)
             {
-                var query = from t in DataContext.DirectSalesOrderTransaction
-                            join i in DataContext.DirectSalesOrder on t.DirectSalesOrderId equals i.Id
-                            where i.RequestStateId == RequestStateEnum.APPROVED.Id
-                            && t.OrderDate >= Start
-                            && t.OrderDate <= End
-                            select new DirectSalesOrderTransactionDAO
-                            {
-                                OrderDate = t.OrderDate,
-                                Revenue = t.Revenue
-                            };
-
                 var DirectSalesOrderTransactionDAOs = await query.ToListAsync();
                 PermissionMobile_RevenueGrowthDTO PermissionMobile_RevenueGrowthDTO = new PermissionMobile_RevenueGrowthDTO();
                 PermissionMobile_RevenueGrowthDTO.DirectRevenueGrowthByYears = new List<PermissionMobile_RevenueGrowthByYearDTO>();
@@ -1633,13 +1534,12 @@ namespace DMS.Rpc.mobile.permission_mobile
             DateTime End = LocalEndDay(CurrentContext);
             (Start, End) = ConvertTime(filter.Time);
 
+            List<long> AppUserIds = await ListAppUserId(filter.EmployeeId); // lấy ra appUserIds
+
             if (filter.Time.Equal.HasValue == false
                 || filter.Time.Equal.Value == THIS_MONTH)
             {
-                var query = from i in DataContext.DirectSalesOrder
-                            where i.RequestStateId == RequestStateEnum.APPROVED.Id
-                            && i.OrderDate >= Start
-                            && i.OrderDate <= End
+                var query = from i in FilterDirectSalesOrder(AppUserIds, Start, End)
                             group i by i.OrderDate.Day into x
                             select new PermissionMobile_QuantityGrowthByMonthDTO
                             {
@@ -1672,10 +1572,7 @@ namespace DMS.Rpc.mobile.permission_mobile
             }
             else if (filter.Time.Equal.Value == LAST_MONTH)
             {
-                var query = from i in DataContext.DirectSalesOrder
-                            where i.RequestStateId == RequestStateEnum.APPROVED.Id
-                            && i.OrderDate >= Start
-                            && i.OrderDate <= End
+                var query = from i in FilterDirectSalesOrder(AppUserIds, Start, End)
                             group i by i.OrderDate.Day into x
                             select new PermissionMobile_QuantityGrowthByMonthDTO
                             {
@@ -1710,10 +1607,7 @@ namespace DMS.Rpc.mobile.permission_mobile
             {
                 var this_quarter = Convert.ToInt32(Math.Ceiling(Now.AddHours(CurrentContext.TimeZone).Month / 3m));
 
-                var query = from i in DataContext.DirectSalesOrder
-                            where i.RequestStateId == RequestStateEnum.APPROVED.Id
-                            && i.OrderDate >= Start
-                            && i.OrderDate <= End
+                var query = from i in FilterDirectSalesOrder(AppUserIds, Start, End)
                             group i by i.OrderDate.Month into x
                             select new PermissionMobile_QuantityGrowthByQuarterDTO
                             {
@@ -1749,10 +1643,7 @@ namespace DMS.Rpc.mobile.permission_mobile
             {
                 var this_quarter = Convert.ToInt32(Math.Ceiling(Now.AddHours(CurrentContext.TimeZone).Month / 3m));
                 var last_quarter = (this_quarter + 3) % 4;
-                var query = from i in DataContext.DirectSalesOrder
-                            where i.RequestStateId == RequestStateEnum.APPROVED.Id
-                            && i.OrderDate >= Start
-                            && i.OrderDate <= End
+                var query = from i in FilterDirectSalesOrder(AppUserIds, Start, End)
                             group i by i.OrderDate.Month into x
                             select new PermissionMobile_QuantityGrowthByQuarterDTO
                             {
@@ -1786,10 +1677,7 @@ namespace DMS.Rpc.mobile.permission_mobile
             }
             else if (filter.Time.Equal.Value == YEAR)
             {
-                var query = from i in DataContext.DirectSalesOrder
-                            where i.RequestStateId == RequestStateEnum.APPROVED.Id
-                            && i.OrderDate >= Start
-                            && i.OrderDate <= End
+                var query = from i in FilterDirectSalesOrder(AppUserIds, Start, End)
                             group i by i.OrderDate.Month into x
                             select new PermissionMobile_QuantityGrowthByYearDTO
                             {
@@ -1954,5 +1842,59 @@ namespace DMS.Rpc.mobile.permission_mobile
             }
             return AppUserIds;
         } // lấy ra list AppUserId theo filter hoặc currentContext
+
+        private IQueryable<IndirectSalesOrderTransactionDAO> FilterIndirectTransaction(List<long> AppUserIds, DateTime Start, DateTime End)
+        {
+            var query = from t in DataContext.IndirectSalesOrderTransaction
+                        join i in DataContext.IndirectSalesOrder on t.IndirectSalesOrderId equals i.Id
+                        where i.RequestStateId == RequestStateEnum.APPROVED.Id
+                        && AppUserIds.Contains(i.SaleEmployeeId)
+                        && t.OrderDate >= Start
+                        && t.OrderDate <= End
+                        select new IndirectSalesOrderTransactionDAO
+                        {
+                            OrderDate = t.OrderDate,
+                            Revenue = t.Revenue
+                        };
+            return query;
+        }
+
+        private IQueryable<DirectSalesOrderTransactionDAO> FilterDirectTransaction(List<long> AppUserIds, DateTime Start, DateTime End)
+        {
+            var query = from t in DataContext.DirectSalesOrderTransaction
+                        join i in DataContext.DirectSalesOrder on t.DirectSalesOrderId equals i.Id
+                        where i.RequestStateId == RequestStateEnum.APPROVED.Id
+                        && AppUserIds.Contains(i.SaleEmployeeId)
+                        && t.OrderDate >= Start
+                        && t.OrderDate <= End
+                        select new DirectSalesOrderTransactionDAO
+                        {
+                            OrderDate = t.OrderDate,
+                            Revenue = t.Revenue
+                        };
+            return query;
+        }
+
+        private IQueryable<IndirectSalesOrderDAO> FilterIndirectSalesOrder(List<long> AppUserIds, DateTime Start, DateTime End)
+        {
+            var query = from i in DataContext.IndirectSalesOrder
+                        where i.RequestStateId == RequestStateEnum.APPROVED.Id
+                        && AppUserIds.Contains(i.SaleEmployeeId)
+                        && i.OrderDate >= Start
+                        && i.OrderDate <= End
+                        select i;
+            return query;
+        }
+
+        private IQueryable<DirectSalesOrderDAO> FilterDirectSalesOrder(List<long> AppUserIds, DateTime Start, DateTime End)
+        {
+            var query = from i in DataContext.DirectSalesOrder
+                        where i.RequestStateId == RequestStateEnum.APPROVED.Id
+                        && AppUserIds.Contains(i.SaleEmployeeId)
+                        && i.OrderDate >= Start
+                        && i.OrderDate <= End
+                        select i;
+            return query;
+        }
     }
 }
