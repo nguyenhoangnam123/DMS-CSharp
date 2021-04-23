@@ -417,6 +417,7 @@ namespace DMS.ABE.Repositories
                 ProductId = x.ProductId,
                 Code = x.Code,
                 Name = x.Name,
+                StatusId = x.StatusId,
                 ScanCode = x.ScanCode,
                 SalePrice = x.SalePrice,
                 RetailPrice = x.RetailPrice,
