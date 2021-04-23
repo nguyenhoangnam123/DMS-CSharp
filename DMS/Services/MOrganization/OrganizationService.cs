@@ -126,7 +126,7 @@ namespace DMS.Services.MOrganization
                 var oldData = await UOW.OrganizationRepository.Get(Organization.Id);
                 await UOW.OrganizationRepository.UpdateIsDisplay(Organization);
                 await Logging.CreateAuditLog(Organization, oldData, nameof(OrganizationService));
-                return true;
+                return Organization;
             }
             catch (Exception ex)
             {
