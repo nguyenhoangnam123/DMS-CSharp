@@ -22,9 +22,14 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
 using OfficeOpenXml;
+using Org.BouncyCastle.Crypto.Parameters;
+using Org.BouncyCastle.OpenSsl;
+using Org.BouncyCastle.Security;
 using RabbitMQ.Client;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using Thinktecture;
@@ -138,10 +143,27 @@ namespace DMS
                     ValidateAudience = false,
                     IssuerSigningKeyResolver = (token, secutiryToken, kid, validationParameters) =>
                     {
-                        var secretKey = Configuration["Config:SecretKey"];
-                        var key = Encoding.ASCII.GetBytes(secretKey);
-                        SecurityKey issuerSigningKey = new SymmetricSecurityKey(key);
-                        return new List<SecurityKey>() { issuerSigningKey };
+                        string PublicRSAKeyBase64 = Configuration["Config:PublicRSAKey"];
+                        byte[] PublicRSAKeyBytes = Convert.FromBase64String(PublicRSAKeyBase64);
+                        string PublicRSAKey = Encoding.Default.GetString(PublicRSAKeyBytes);
+
+                        RSAParameters rsaParams;
+                        using (var tr = new StringReader(PublicRSAKey))
+                        {
+                            var pemReader = new PemReader(tr);
+                            var publicRsaParams = pemReader.ReadObject() as RsaKeyParameters;
+                            if (publicRsaParams == null)
+                            {
+                                throw new Exception("Could not read RSA public key");
+                            }
+                            rsaParams = DotNetUtilities.ToRSAParameters(publicRsaParams);
+                        }
+
+                        RSA rsa = RSA.Create();
+                        rsa.ImportParameters(rsaParams);
+
+                        SecurityKey RSASecurityKey = new RsaSecurityKey(rsa);
+                        return new List<SecurityKey> { RSASecurityKey };
                     }
                 };
             });
