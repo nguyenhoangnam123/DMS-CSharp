@@ -602,6 +602,29 @@ namespace DMS.Rpc.kpi_product_grouping
                 Code = KpiProductGrouping_KpiProductGroupingDTO.Status.Code,
                 Name = KpiProductGrouping_KpiProductGroupingDTO.Status.Name,
             };
+            KpiProductGrouping.KpiProductGroupingContents = KpiProductGrouping_KpiProductGroupingDTO.KpiProductGroupingContents?
+                .Select(x => new KpiProductGroupingContent
+                {
+                    Id = x.Id,
+                    ProductGroupingId = x.ProductGroupingId,
+                    ProductGrouping = x.ProductGrouping == null ? null : new ProductGrouping
+                    {
+                        Id = x.ProductGrouping.Id,
+                        Code = x.ProductGrouping.Code,
+                        Name = x.ProductGrouping.Name,
+                        ParentId = x.ProductGrouping.ParentId,
+                        Path = x.ProductGrouping.Path,
+                    },
+                    KpiProductGroupingContentCriteriaMappings = x.KpiProductGroupingContentCriteriaMappings.Select(p => new KpiProductGroupingContentCriteriaMapping
+                    {
+                        KpiProductGroupingCriteriaId = p.Key,
+                        Value = p.Value,
+                    }).ToList(), // map chi tieu voi gia tri
+                    KpiProductGroupingContentItemMappings = x.KpiProductGroupingContentItemMappings.Select(p => new KpiProductGroupingContentItemMapping { 
+                        ItemId = p.ItemId
+                    }).ToList(), // map content voi itemId
+                }).ToList();
+
             KpiProductGrouping.BaseLanguage = CurrentContext.Language;
             return KpiProductGrouping;
         }

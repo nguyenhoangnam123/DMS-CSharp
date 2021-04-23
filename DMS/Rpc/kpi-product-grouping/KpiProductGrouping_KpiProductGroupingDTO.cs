@@ -24,6 +24,10 @@ namespace DMS.Rpc.kpi_product_grouping
         public KpiProductGrouping_StatusDTO Status { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
+
+        public List<KpiProductGrouping_AppUserDTO> Employees { get; set; }
+        public List<KpiProductGrouping_KpiProductGroupingContentDTO> KpiProductGroupingContents { get; set; }
+
         public KpiProductGrouping_KpiProductGroupingDTO() {}
         public KpiProductGrouping_KpiProductGroupingDTO(KpiProductGrouping KpiProductGrouping)
         {
@@ -41,6 +45,9 @@ namespace DMS.Rpc.kpi_product_grouping
             this.KpiPeriod = KpiProductGrouping.KpiPeriod == null ? null : new KpiProductGrouping_KpiPeriodDTO(KpiProductGrouping.KpiPeriod);
             this.KpiProductGroupingType = KpiProductGrouping.KpiProductGroupingType == null ? null : new KpiProductGrouping_KpiProductGroupingTypeDTO(KpiProductGrouping.KpiProductGroupingType);
             this.Status = KpiProductGrouping.Status == null ? null : new KpiProductGrouping_StatusDTO(KpiProductGrouping.Status);
+            this.KpiProductGroupingContents = KpiProductGrouping.KpiProductGroupingContents == null ? null : KpiProductGrouping.KpiProductGroupingContents
+                .Select(x => new KpiProductGrouping_KpiProductGroupingContentDTO(x))
+                .ToList();
             this.CreatedAt = KpiProductGrouping.CreatedAt;
             this.UpdatedAt = KpiProductGrouping.UpdatedAt;
             this.Errors = KpiProductGrouping.Errors;

@@ -13,7 +13,11 @@ namespace DMS.Entities
         public long ProductGroupingId { get; set; }
         public Guid RowId { get; set; }
         public KpiProductGrouping KpiProductGrouping { get; set; }
-        
+        public ProductGrouping ProductGrouping { get; set; }
+
+        public List<KpiProductGroupingContentCriteriaMapping> KpiProductGroupingContentCriteriaMappings { get; set; }
+        public List<KpiProductGroupingContentItemMapping> KpiProductGroupingContentItemMappings { get; set; }
+
         public bool Equals(KpiProductGroupingContent other)
         {
             if (other == null) return false;

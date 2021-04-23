@@ -25,7 +25,10 @@ namespace DMS.Entities
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public DateTime? DeletedAt { get; set; }
-        
+
+        public List<AppUser> Employees { get; set; }
+        public List<KpiProductGroupingContent> KpiProductGroupingContents { get; set; }
+
         public bool Equals(KpiProductGrouping other)
         {
             if (other == null) return false;
