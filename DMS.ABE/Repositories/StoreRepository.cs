@@ -623,15 +623,12 @@ namespace DMS.ABE.Repositories
                 RowId = q.RowId,
             }).ToListAsync();
 
+            var StoreIds = Stores.Select(x => x.Id).ToList();
+            ITempTableQuery<TempTable<long>> tempTableQuery = await DataContext
+                    .BulkInsertValuesIntoTempTableAsync<long>(StoreIds);
+
             if (filter.Selects.Contains(StoreSelect.StoreImageMappings))
             {
-                var StoreIds = Stores.Select(x => x.Id).ToList();
-                ITempTableQuery<TempTable<long>> tempTableQuery = await DataContext
-                        .BulkInsertValuesIntoTempTableAsync<long>(StoreIds);
-                query = query.Join(tempTableQuery.Query,
-                                   c => c.Id,
-                                   t => t.Column1,
-                                   (c, t) => c);
                 var StoreImageMappings = await DataContext.StoreImageMapping
                     .Join(tempTableQuery.Query,
                             c => c.StoreId,
@@ -651,6 +648,29 @@ namespace DMS.ABE.Repositories
                 foreach (var Store in Stores)
                 {
                     Store.StoreImageMappings = StoreImageMappings.Where(x => x.StoreId == Store.Id).Skip(0).Take(1).ToList();
+                }
+            }
+
+            if (filter.Selects.Contains(StoreSelect.StoreAppUserMappings))
+            {
+                var StoreAppUserMappings = await DataContext.AppUserStoreMapping
+                .Join(tempTableQuery.Query,
+                        c => c.StoreId,
+                        t => t.Column1,
+                        (c, t) => c).Select(x => new AppUserStoreMapping
+                        {
+                            StoreId = x.StoreId,
+                            AppUserId = x.AppUserId,
+                            AppUser = x.AppUser == null ? null : new AppUser
+                            {
+                                Id = x.AppUser.Id,
+                                Username = x.AppUser.Username,
+                                DisplayName = x.AppUser.DisplayName,
+                            }
+                        }).ToListAsync();
+                foreach (var Store in Stores)
+                {
+                    Store.StoreAppUserMappings = StoreAppUserMappings.Where(x => x.StoreId == Store.Id).Skip(0).Take(1).ToList();
                 }
             }
 
@@ -883,8 +903,8 @@ namespace DMS.ABE.Repositories
             }).ToListAsync();
 
             var queryBrandInStores = from bs in DataContext.BrandInStore
-                                          join tt in tempTableQuery.Query on bs.StoreId equals tt.Column1
-                                          select bs;
+                                     join tt in tempTableQuery.Query on bs.StoreId equals tt.Column1
+                                     select bs;
             var BrandInStores = await queryBrandInStores
                 .Select(x => new BrandInStore
                 {
