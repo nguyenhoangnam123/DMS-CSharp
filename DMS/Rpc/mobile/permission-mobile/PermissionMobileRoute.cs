@@ -46,6 +46,9 @@ namespace DMS.Rpc.mobile.permission_mobile
 
         public const string SingleListPeriod = Default + "/single-list-period";
 
+        // list path
+        public const string ListPath = Default + "/list-path";
+
 
 
         public static Dictionary<string, long> Filters = new Dictionary<string, long>
@@ -58,32 +61,32 @@ namespace DMS.Rpc.mobile.permission_mobile
         public static Dictionary<string, IEnumerable<string>> Action = new Dictionary<string, IEnumerable<string>>
         {
             { "Thống kê Kpi nhân viên theo tháng", new List<string>{
-                ListCurrentKpiGeneral, ListCurrentKpiItem, ListCurrentKpiNewItem, CountAppUser, ListAppUser
-            } },
-            { "Thống kê doanh thu đơn hàng, sô lượt viếng thăm, số cửa hàng viếng thăm theo kỳ", new List<string>{
-                CountIndirectSalesOrder, IndirectSalesOrderRevenue, CountDirectSalesOrder, DirectSalesOrderRevenue, TopIndirectSaleEmployeeRevenue,
-                TopIndirecProductRevenue, TopDirectSaleEmployeeRevenue, TopDirecProductRevenue, IndirectRevenueGrowth, IndirectQuantityGrowth,
-                CountStoreChecking, CountStore, DirectRevenueGrowth, DirectQuantityGrowth, SingleListPeriod
+                ListCurrentKpiGeneral, ListCurrentKpiItem, ListCurrentKpiNewItem, CountAppUser, ListAppUser,
+                ListPath,
             } },
             { "Quyền Dashboard nhân viên theo đơn gián tiếp", new List<string> {
                 CountStoreChecking, CountStore, CountIndirectSalesOrder, IndirectSalesOrderRevenue,
-                SingleListPeriod
+                SingleListPeriod,
+                ListPath
             } },
             { "Quyền Dashboard nhân viên theo đơn trực tiếp", new List<string> {
                 CountStoreChecking, CountStore, CountDirectSalesOrder, DirectSalesOrderRevenue,
-                SingleListPeriod
+                SingleListPeriod,
+                ListPath
             } },
             { "Quyền Dashboard quản lý theo đơn gián tiếp", new List<string> {
                 CountStoreChecking, CountStore, CountIndirectSalesOrder, IndirectSalesOrderRevenue,
                 TopIndirectSaleEmployeeRevenue, TopIndirecProductRevenue,
                 IndirectRevenueGrowth, IndirectQuantityGrowth,
-                SingleListPeriod
+                SingleListPeriod,
+                ListPath
             } },
             { "Quyền Dashboard quản lý theo đơn trực tiếp", new List<string> {
                 CountStoreChecking, CountStore, CountDirectSalesOrder, DirectSalesOrderRevenue,
                 TopDirectSaleEmployeeRevenue, TopDirecProductRevenue,
                 DirectRevenueGrowth, DirectQuantityGrowth,
-                SingleListPeriod
+                SingleListPeriod,
+                ListPath
             } },
         };
     }

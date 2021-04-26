@@ -6,6 +6,7 @@ using DMS.Models;
 using DMS.Services.MAppUser;
 using DMS.Services.MOrganization;
 using DMS.Services.MProduct;
+using DMS.Services.MRole;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -29,7 +30,7 @@ namespace DMS.Rpc.mobile.permission_mobile
         private IOrganizationService OrganizationService;
         private IItemService ItemService;
         private IProductService ProductService;
-        
+        private IPermissionService PermissionService;
         private ICurrentContext CurrentContext;
         private DataContext DataContext;
 
@@ -38,6 +39,7 @@ namespace DMS.Rpc.mobile.permission_mobile
             IOrganizationService OrganizationService,
             IItemService ItemService,
             IProductService ProductService,
+            IPermissionService PermissionService,
             ICurrentContext CurrentContext,
             DataContext DataContext)
         {
@@ -45,8 +47,15 @@ namespace DMS.Rpc.mobile.permission_mobile
             this.OrganizationService = OrganizationService;
             this.ItemService = ItemService;
             this.ProductService = ProductService;
+            this.PermissionService = PermissionService;
             this.CurrentContext = CurrentContext;
             this.DataContext = DataContext;
+        }
+
+        [Route(PermissionMobileRoute.ListPath), HttpPost]
+        public async Task<List<string>> ListPath()
+        {
+            return await PermissionService.ListPath(CurrentContext.UserId);
         }
 
         #region Dashboard KPI
