@@ -98,7 +98,7 @@ namespace DMS.ABE.Services.MCategory
                     Skip = 0,
                     Take = int.MaxValue,
                     StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id }, // mặc định lấy category đang active 
-                    Selects = CategorySelect.Id | CategorySelect.Code | CategorySelect.Name | CategorySelect.Image | CategorySelect.Parent | CategorySelect.Path | CategorySelect.Level
+                    Selects = CategorySelect.Id | CategorySelect.Code | CategorySelect.Name | CategorySelect.Status | CategorySelect.Image | CategorySelect.Parent | CategorySelect.Path | CategorySelect.Level
                 }); // lay het cac categories
                 foreach (Category Category in Categories)
                 {
