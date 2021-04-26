@@ -1074,6 +1074,10 @@ namespace DMS.Services.MDirectSalesOrder
             Dictionary<string, string> Parameters = await MapParameters(DirectSalesOrder);
             GenericEnum RequestState = await WorkflowService.Send(DirectSalesOrder.RowId, WorkflowTypeEnum.DIRECT_SALES_ORDER.Id, DirectSalesOrder.OrganizationId, Parameters);
             DirectSalesOrder.RequestStateId = RequestState.Id;
+            if (RequestState.Id == RequestStateEnum.APPROVED.Id)
+            {
+                DirectSalesOrder.StoreApprovalStateId = StoreApprovalStateEnum.PENDING.Id;
+            } // neu phe duyet workflow, don hang co trang thai StoreApprovalState la pending
             await UOW.DirectSalesOrderRepository.UpdateState(DirectSalesOrder);
 
             DirectSalesOrder = await UOW.DirectSalesOrderRepository.Get(DirectSalesOrder.Id);
@@ -1092,6 +1096,10 @@ namespace DMS.Services.MDirectSalesOrder
             await WorkflowService.Approve(DirectSalesOrder.RowId, WorkflowTypeEnum.DIRECT_SALES_ORDER.Id, Parameters);
             RequestState RequestState = await WorkflowService.GetRequestState(DirectSalesOrder.RowId);
             DirectSalesOrder.RequestStateId = RequestState.Id;
+            if(RequestState.Id == RequestStateEnum.APPROVED.Id)
+            {
+                DirectSalesOrder.StoreApprovalStateId = StoreApprovalStateEnum.PENDING.Id;
+            } // neu phe duyet workflow, don hang co trang thai StoreApprovalState la pending
             await UOW.DirectSalesOrderRepository.UpdateState(DirectSalesOrder);
 
             DirectSalesOrder = await UOW.DirectSalesOrderRepository.Get(DirectSalesOrder.Id);

@@ -1461,6 +1461,7 @@ namespace DMS.Repositories
                 .UpdateFromQueryAsync(x => new DirectSalesOrderDAO
                 {
                     RequestStateId = DirectSalesOrder.RequestStateId,
+                    StoreApprovalStateId = DirectSalesOrder.StoreApprovalStateId,
                     UpdatedAt = StaticParams.DateTimeNow
                 });
             return true;
