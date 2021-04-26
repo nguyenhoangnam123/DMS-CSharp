@@ -182,7 +182,7 @@ namespace DMS.Services.MShowingItem
 
         private async Task<bool> ValidateSalePrice(ShowingItem ShowingItem)
         {
-            if (ShowingItem.SalePrice < 0)
+            if (ShowingItem.SalePrice == 0)
             {
                 ShowingItem.AddError(nameof(ShowingItemValidator), nameof(ShowingItem.SalePrice), ErrorCode.SalePriceInvalid);
             }
