@@ -94,6 +94,24 @@ namespace DMS.Services.MStore
             try
             {
                 List<Store> Stores = await UOW.StoreRepository.List(StoreFilter);
+
+                var StoreIds = Stores.Select(x => x.Id).ToList();
+                StoreUserFilter StoreUserFilter = new StoreUserFilter
+                {
+                    Skip = 0,
+                    Take = int.MaxValue,
+                    StoreId = new IdFilter { In = StoreIds },
+                    Selects = StoreUserSelect.ALL
+                };
+                List<StoreUser> StoreUsers = await UOW.StoreUserRepository.List(StoreUserFilter);
+                foreach (var Store in Stores)
+                {
+                    Store.StoreUser = StoreUsers.Where(x => x.StoreId == Store.Id).FirstOrDefault();
+                    if (Store.StoreUser != null)
+                    {
+                        Store.StoreUserId = Store.StoreUser.Id;
+                    }
+                }
                 return Stores;
             }
             catch (Exception ex)

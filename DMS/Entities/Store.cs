@@ -187,5 +187,6 @@ namespace DMS.Entities
         HasChecking = E._27,
         CodeDraft = E._28,
         Creator = E._29,
+        StoreUser = E._30,
     }
 }
