@@ -37,6 +37,7 @@ namespace DMS.Rpc.store
         public long? AppUserId { get; set; }
         public long CreatorId { get; set; }
         public long? StoreScoutingId { get; set; }
+        public long? StoreUserId { get; set; }
         public long StoreStatusId { get; set; }
         public Store_AppUserDTO AppUser { get; set; }
         public Store_AppUserDTO Creator { get; set; }
@@ -50,6 +51,7 @@ namespace DMS.Rpc.store
         public Store_WardDTO Ward { get; set; }
         public Store_StoreScoutingDTO StoreScouting { get; set; }
         public Store_StoreStatusDTO StoreStatus { get; set; }
+        public Store_StoreUserDTO StoreUser { get; set; }
         public List<Store_StoreImageMappingDTO> StoreImageMappings { get; set; }
         public List<Store_StoreCheckingDTO> StoreCheckings { get; set; }
         public List<Store_BrandInStoreDTO> BrandInStores { get; set; }
@@ -97,6 +99,7 @@ namespace DMS.Rpc.store
             this.Ward = Store.Ward == null ? null : new Store_WardDTO(Store.Ward);
             this.StoreScouting = Store.StoreScouting == null ? null : new Store_StoreScoutingDTO(Store.StoreScouting);
             this.AppUser = Store.AppUser == null ? null : new Store_AppUserDTO(Store.AppUser);
+            this.StoreUser = Store.StoreUser == null ? null : new Store_StoreUserDTO(Store.StoreUser);
             this.Creator = Store.Creator == null ? null : new Store_AppUserDTO(Store.Creator);
             this.StoreStatus = Store.StoreStatus == null ? null : new Store_StoreStatusDTO(Store.StoreStatus);
             this.StoreImageMappings = Store.StoreImageMappings?.Select(x => new Store_StoreImageMappingDTO(x)).ToList();
