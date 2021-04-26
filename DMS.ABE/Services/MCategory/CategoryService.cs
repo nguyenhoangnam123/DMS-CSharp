@@ -97,6 +97,7 @@ namespace DMS.ABE.Services.MCategory
                 List<Category> AllCategories = await UOW.CategoryRepository.List(new CategoryFilter { 
                     Skip = 0,
                     Take = int.MaxValue,
+                    StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id }, // mặc định lấy category đang active 
                     Selects = CategorySelect.Id | CategorySelect.Code | CategorySelect.Name | CategorySelect.Image | CategorySelect.Parent | CategorySelect.Path | CategorySelect.Level
                 }); // lay het cac categories
                 foreach (Category Category in Categories)

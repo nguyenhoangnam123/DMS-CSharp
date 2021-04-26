@@ -230,7 +230,7 @@ namespace DMS.ABE.Rpc.product
                 Take = Product_CategoryFilterDTO.Take,
                 HasChildren = Product_CategoryFilterDTO.HasChildren,
                 StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id }, // mặc định lấy category đang active 
-                Selects = CategorySelect.Id | CategorySelect.Code | CategorySelect.Name | CategorySelect.Image | CategorySelect.Parent | CategorySelect.Path | CategorySelect.Level
+                Selects = CategorySelect.Id | CategorySelect.Code | CategorySelect.Name | CategorySelect.Status | CategorySelect.Image | CategorySelect.Parent | CategorySelect.Path | CategorySelect.Level
             };
             List<Category> Categories = await CategoryService.List(CategoryFilter);
             List<Product_CategoryDTO> Category_CategoryDTOs = Categories
