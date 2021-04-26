@@ -1,31 +1,29 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using DMS.Common;
-using DMS.Helpers;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using System.IO;
-using OfficeOpenXml;
 using DMS.Entities;
-using DMS.Services.MLuckyNumber;
-using DMS.Services.MRewardStatus;
-using System.Dynamic;
-using System.Text;
 using DMS.Enums;
-using DMS.Services.MOrganization;
-using DMS.Services.MAppUser;
+using DMS.Helpers;
 using DMS.Models;
-using DMS.Services.MStore;
-using Microsoft.EntityFrameworkCore;
-using Thinktecture.EntityFrameworkCore.TempTables;
-using Thinktecture;
+using DMS.Services.MAppUser;
+using DMS.Services.MLuckyNumber;
+using DMS.Services.MLuckyNumberGrouping;
+using DMS.Services.MOrganization;
 using DMS.Services.MRewardHistory;
 using DMS.Services.MRewardHistoryContent;
-using OfficeOpenXml.ConditionalFormatting;
-using DMS.Services.MLuckyNumberGrouping;
+using DMS.Services.MRewardStatus;
+using DMS.Services.MStore;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using OfficeOpenXml;
+using System;
+using System.Collections.Generic;
+using System.Dynamic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Thinktecture;
+using Thinktecture.EntityFrameworkCore.TempTables;
 
 namespace DMS.Rpc.lucky_number
 {
@@ -272,7 +270,7 @@ namespace DMS.Rpc.lucky_number
 
                     Organization Organization = Organizations.Where(x => x.Code == OrganizationCodeValue).FirstOrDefault();
                     LuckyNumberGrouping LuckyNumberGrouping = LuckyNumberGroupings.Where(x => x.OrganizationId == Organization.Id).FirstOrDefault();
-                    if(LuckyNumberGrouping == null)
+                    if (LuckyNumberGrouping == null)
                     {
                         LuckyNumberGrouping = new LuckyNumberGrouping()
                         {
@@ -282,11 +280,11 @@ namespace DMS.Rpc.lucky_number
                             StartDate = StaticParams.DateTimeNow,
                             Code = Guid.NewGuid().ToString(),
                             Name = "LuckyNumbers",
-                            
+
                         };
                         LuckyNumberGroupings.Add(LuckyNumberGrouping);
                     }
-                    if(LuckyNumberGrouping.LuckyNumbers == null)
+                    if (LuckyNumberGrouping.LuckyNumbers == null)
                         LuckyNumberGrouping.LuckyNumbers = new List<LuckyNumber>();
                     Codes.Add(CodeValue);
                     string NameValue = worksheet.Cells[i, NameColumn].Value?.ToString();
@@ -451,7 +449,10 @@ namespace DMS.Rpc.lucky_number
             MemoryStream input = new MemoryStream(arr);
             MemoryStream output = new MemoryStream();
             dynamic Data = new ExpandoObject();
-            Data.Organizations = Organizations;
+            Data.Organizations = Organizations.Select(x => new { 
+                Code = Utils.ReplaceHexadecimalSymbols(x.Code),
+                Name = Utils.ReplaceHexadecimalSymbols(x.Name),
+            });
             using (var document = StaticParams.DocumentFactory.Open(input, output, "xlsx"))
             {
                 document.Process(Data);

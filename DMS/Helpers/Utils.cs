@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace DMS.Helpers
 {
@@ -145,5 +146,11 @@ namespace DMS.Helpers
                     return "";
             }
         }
+
+        public static string ReplaceHexadecimalSymbols(string txt)
+        {
+            string r = "[\x00-\x08\x0B\x0C\x0E-\x1F\x26]";
+            return Regex.Replace(txt, r, "", RegexOptions.Compiled);
+        } // loai bo nhung ki tu khong hop le trong CSV
     }
 }
