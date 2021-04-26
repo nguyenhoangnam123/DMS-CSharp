@@ -53,10 +53,10 @@ namespace DMS.ABE.Services.MDirectSalesOrder
                     return null;
                 DirectSalesOrder.StoreUserCreatorId = CurrentContext.StoreUserId;
                 DirectSalesOrder.Code = DirectSalesOrder.Id.ToString();
-                DirectSalesOrder.DirectSalesOrderSourceTypeId = DirectSalesOrderSourceTypeEnum.FROM_AMS.Id; // set source Type
+                DirectSalesOrder.DirectSalesOrderSourceTypeId = DirectSalesOrderSourceTypeEnum.FROM_STORE.Id; // set source Type
                 DirectSalesOrder.OrderDate = StaticParams.DateTimeNow; // khi tao moi don hang trne mobile mac dinh OrderDate = DateTime Now
                 DirectSalesOrder.RequestStateId = RequestStateEnum.APPROVED.Id; // don hang tao tren mobile ko co wf => requestStateId = Approved
-                DirectSalesOrder.StoreApprovalStateId = StoreApprovalStateEnum.PENDING.Id; // trang thai doi cua hang duyet
+                DirectSalesOrder.StoreApprovalStateId = StoreApprovalStateEnum.APPROVED.Id; // don tao boi app dai ly co trang thai phe duyet 
                 DirectSalesOrder.EditedPriceStatusId = EditedPriceStatusEnum.INACTIVE.Id; // don hang tao tu ams.abe mac dinh khong cho sua gia
                 AppUser SaleEmployee = await UOW.AppUserRepository.Get(DirectSalesOrder.SaleEmployeeId);
                 if(SaleEmployee != null)

@@ -8,12 +8,12 @@ namespace DMS.Enums
 {
     public class DirectSalesOrderSourceTypeEnum
     {
-        public static GenericEnum FROM_DMS = new GenericEnum { Id = 1, Code = "FROM_DMS", Name = "Được tạo trên DMS" };
-        public static GenericEnum FROM_AMS = new GenericEnum { Id = 2, Code = "FROM_AMS", Name = "Được tạo trên AMS" };
+        public static GenericEnum FROM_EMPLOYEE = new GenericEnum { Id = 1, Code = "CREATED_BY_SALE_EMPLOYEE", Name = "Tạo bởi nhân viên" };
+        public static GenericEnum FROM_STORE = new GenericEnum { Id = 2, Code = "CREATED_BY_STORE", Name = "Tạo bởi đại lý" };
 
         public static List<GenericEnum> DirectSalesOrderSourceTypeEnumList = new List<GenericEnum>
         {
-            FROM_DMS, FROM_AMS
+            FROM_EMPLOYEE, FROM_STORE
         };
     }
 }

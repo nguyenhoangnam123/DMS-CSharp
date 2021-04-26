@@ -87,6 +87,7 @@ namespace DMS.Rpc.store
             this.Used = Store.Used;
             this.StoreScoutingId = Store.StoreScoutingId;
             this.AppUserId = Store.AppUserId;
+            this.StoreUserId = Store.StoreUserId;
             this.CreatorId = Store.CreatorId;
             this.StoreStatusId = Store.StoreStatusId;
             this.District = Store.District == null ? null : new Store_DistrictDTO(Store.District);
