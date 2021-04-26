@@ -1,9 +1,11 @@
 ﻿using DMS.Common;
+using DMS.Entities;
 using DMS.Enums;
 using DMS.Helpers;
 using DMS.Models;
 using DMS.Services.MAppUser;
 using DMS.Services.MOrganization;
+using DMS.Services.MProduct;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -25,17 +27,24 @@ namespace DMS.Rpc.mobile.permission_mobile
 
         private IAppUserService AppUserService;
         private IOrganizationService OrganizationService;
+        private IItemService ItemService;
+        private IProductService ProductService;
+        
         private ICurrentContext CurrentContext;
         private DataContext DataContext;
 
         public PermissionMobileController(
             IAppUserService AppUserService,
             IOrganizationService OrganizationService,
+            IItemService ItemService,
+            IProductService ProductService,
             ICurrentContext CurrentContext,
             DataContext DataContext)
         {
             this.AppUserService = AppUserService;
             this.OrganizationService = OrganizationService;
+            this.ItemService = ItemService;
+            this.ProductService = ProductService;
             this.CurrentContext = CurrentContext;
             this.DataContext = DataContext;
         }
@@ -799,8 +808,8 @@ namespace DMS.Rpc.mobile.permission_mobile
             return Result;
         } // top 5 doanh thu đơn gián tiếp theo nhân viên
 
-        [Route(PermissionMobileRoute.TopIndirecItemRevenue), HttpPost]
-        public async Task<List<PermissionMobile_TopRevenueByItemDTO>> TopIndirecItemRevenue([FromBody] PermissionMobile_TopRevenueByItemFilterDTO filter)
+        [Route(PermissionMobileRoute.TopIndirecProductRevenue), HttpPost]
+        public async Task<List<PermissionMobile_TopRevenueByItemDTO>> TopIndirecProductRevenue([FromBody] PermissionMobile_TopRevenueByItemFilterDTO filter)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
@@ -829,22 +838,48 @@ namespace DMS.Rpc.mobile.permission_mobile
                     Revenue = x.Sum(x => x.Revenue)
                 })
                 .ToListAsync();
+
             List<long> ItemIds = transactionGroups.Select(x => x.ItemId).ToList();
-            List<ItemDAO> ItemDAOs = await DataContext.Item
-                .Where(x => ItemIds.Contains(x.Id))
-                .ToListAsync();
+            List<Item> Items = await ItemService.List(new ItemFilter
+            {
+                Id = new IdFilter { In = ItemIds },
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = ItemSelect.Id | ItemSelect.Product
+            });
+            List<long> ProductIds = Items.Select(x => x.Product.Id).Distinct().ToList();
+            List<Product> Products = await ProductService.List(new ProductFilter { 
+                Id = new IdFilter { In = ProductIds },
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = ProductSelect.Id | ProductSelect.Name
+            });
+
             foreach (var groupItem in transactionGroups)
             {
                 long ItemId = groupItem.ItemId;
-                ItemDAO Item = ItemDAOs
+                Item Item = Items
                     .Where(x => x.Id == ItemId)
                     .FirstOrDefault();
                 PermissionMobile_TopRevenueByItemDTO ResultItem = new PermissionMobile_TopRevenueByItemDTO();
-                ResultItem.ItemName = Item.Name;
-                ResultItem.ItemId = Item.Id;
+                ResultItem.ProductId = Item.Product.Id;
                 ResultItem.Revenue = groupItem.Revenue.HasValue ? groupItem.Revenue.Value : 0;
                 Result.Add(ResultItem);
             }
+            Result = Result
+                .GroupBy(x => x.ProductId)
+                .Select(y => new PermissionMobile_TopRevenueByItemDTO
+                {
+                    ProductId = y.Key,
+                    Revenue = y.Sum(r => r.Revenue)
+                })
+                .ToList(); // group doanh thu theo id san pham
+            foreach (var ResultItem in Result)
+            {
+                Product Product = Products.Where(x => x.Id == ResultItem.ProductId).FirstOrDefault();
+                ResultItem.ProductName = Product.Name;
+            }
+
             Result = Result
                 .OrderByDescending(x => x.Revenue)
                 .Take(5)
@@ -1308,8 +1343,8 @@ namespace DMS.Rpc.mobile.permission_mobile
             return Result;
         } // top 5 doanh thu đơn trực tiếp theo nhân viên
 
-        [Route(PermissionMobileRoute.TopDirecItemRevenue), HttpPost]
-        public async Task<List<PermissionMobile_TopRevenueByItemDTO>> TopDirecItemRevenue([FromBody] PermissionMobile_TopRevenueByItemFilterDTO filter)
+        [Route(PermissionMobileRoute.TopDirecProductRevenue), HttpPost]
+        public async Task<List<PermissionMobile_TopRevenueByItemDTO>> TopDirecProductRevenue([FromBody] PermissionMobile_TopRevenueByItemFilterDTO filter)
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
@@ -1338,22 +1373,50 @@ namespace DMS.Rpc.mobile.permission_mobile
                     Revenue = x.Sum(x => x.Revenue)
                 })
                 .ToListAsync();
+
             List<long> ItemIds = transactionGroups.Select(x => x.ItemId).ToList();
-            List<ItemDAO> ItemDAOs = await DataContext.Item
-                .Where(x => ItemIds.Contains(x.Id))
-                .ToListAsync();
+            List<Item> Items = await ItemService.List(new ItemFilter
+            {
+                Id = new IdFilter { In = ItemIds },
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = ItemSelect.Id | ItemSelect.Product
+            });
+
+            List<long> ProductIds = Items.Select(x => x.Product.Id).Distinct().ToList();
+            List<Product> Products = await ProductService.List(new ProductFilter
+            {
+                Id = new IdFilter { In = ProductIds },
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = ProductSelect.Id | ProductSelect.Name
+            });
+
             foreach (var groupItem in transactionGroups)
             {
                 long ItemId = groupItem.ItemId;
-                ItemDAO Item = ItemDAOs
+                Item Item = Items
                     .Where(x => x.Id == ItemId)
                     .FirstOrDefault();
                 PermissionMobile_TopRevenueByItemDTO ResultItem = new PermissionMobile_TopRevenueByItemDTO();
-                ResultItem.ItemName = Item.Name;
-                ResultItem.ItemId = Item.Id;
+                ResultItem.ProductId = Item.Product.Id;
                 ResultItem.Revenue = groupItem.Revenue.HasValue ? groupItem.Revenue.Value : 0;
                 Result.Add(ResultItem);
             }
+            Result = Result
+                .GroupBy(x => x.ProductId)
+                .Select(y => new PermissionMobile_TopRevenueByItemDTO
+                {
+                    ProductId = y.Key,
+                    Revenue = y.Sum(r => r.Revenue)
+                })
+                .ToList(); // group doanh thu theo id san pham
+            foreach (var ResultItem in Result)
+            {
+                Product Product = Products.Where(x => x.Id == ResultItem.ProductId).FirstOrDefault();
+                ResultItem.ProductName = Product.Name;
+            }
+
             Result = Result
                 .OrderByDescending(x => x.Revenue)
                 .Take(5)
@@ -1831,7 +1894,7 @@ namespace DMS.Rpc.mobile.permission_mobile
         private async Task<List<long>> ListAppUserId(IdFilter EmpployeeFilter)
         {
             List<long> AppUserIds = new List<long>();
-            if (EmpployeeFilter.Equal.HasValue)
+            if (EmpployeeFilter.Equal != null)
             {
                 AppUserIds.Add(EmpployeeFilter.Equal.Value);
             }

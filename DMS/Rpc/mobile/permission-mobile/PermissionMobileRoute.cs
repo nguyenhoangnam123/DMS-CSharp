@@ -33,10 +33,10 @@ namespace DMS.Rpc.mobile.permission_mobile
         public const string DirectSalesOrderRevenue = Default + "/direct-sales-order-revenue"; // doanh thu đơn trực tiếp
 
         public const string TopIndirectSaleEmployeeRevenue = Default + "/top-indirect-sale-employee-revenue"; // top 5 doanh thu đơn gián tiếp theo nhân viên
-        public const string TopIndirecItemRevenue = Default + "/top-indirect-item-revenue"; // top 5 doanh thu đơn gián tiếp theo nhân viên
+        public const string TopIndirecProductRevenue = Default + "/top-indirect-product-revenue"; // top 5 doanh thu đơn gián tiếp theo nhân viên
 
         public const string TopDirectSaleEmployeeRevenue = Default + "/top-direct-sale-employee-revenue"; // top 5 doanh thu đơn gián tiếp theo nhân viên
-        public const string TopDirecItemRevenue = Default + "/top-direct-item-revenue"; // top 5 doanh thu đơn gián tiếp theo nhân viên
+        public const string TopDirecProductRevenue = Default + "/top-direct-product-revenue"; // top 5 doanh thu đơn gián tiếp theo nhân viên
 
         public const string IndirectRevenueGrowth = Default + "/indirect-revenue-growth"; // bieu do tang truong doanh thu gian tiep
         public const string IndirectQuantityGrowth = Default + "/indirect-quantity-growth"; // bieu do tang truong so luong gian tiep
@@ -62,7 +62,7 @@ namespace DMS.Rpc.mobile.permission_mobile
             } },
             { "Thống kê doanh thu đơn hàng, sô lượt viếng thăm, số cửa hàng viếng thăm theo kỳ", new List<string>{
                 CountIndirectSalesOrder, IndirectSalesOrderRevenue, CountDirectSalesOrder, DirectSalesOrderRevenue, TopIndirectSaleEmployeeRevenue,
-                TopIndirecItemRevenue, TopDirectSaleEmployeeRevenue, TopDirecItemRevenue, IndirectRevenueGrowth, IndirectQuantityGrowth,
+                TopIndirecProductRevenue, TopDirectSaleEmployeeRevenue, TopDirecProductRevenue, IndirectRevenueGrowth, IndirectQuantityGrowth,
                 CountStoreChecking, CountStore, DirectRevenueGrowth, DirectQuantityGrowth, SingleListPeriod
             } }
         };

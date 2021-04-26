@@ -8,8 +8,8 @@ namespace DMS.Rpc.mobile.permission_mobile
 {
     public class PermissionMobile_TopRevenueByItemDTO : DataDTO
     {
-        public long ItemId { get; set; }
-        public string ItemName { get; set; }
+        public long ProductId { get; set; }
+        public string ProductName { get; set; }
         public decimal Revenue { get; set; }
     }
 
