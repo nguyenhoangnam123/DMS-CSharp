@@ -64,7 +64,27 @@ namespace DMS.Rpc.mobile.permission_mobile
                 CountIndirectSalesOrder, IndirectSalesOrderRevenue, CountDirectSalesOrder, DirectSalesOrderRevenue, TopIndirectSaleEmployeeRevenue,
                 TopIndirecProductRevenue, TopDirectSaleEmployeeRevenue, TopDirecProductRevenue, IndirectRevenueGrowth, IndirectQuantityGrowth,
                 CountStoreChecking, CountStore, DirectRevenueGrowth, DirectQuantityGrowth, SingleListPeriod
-            } }
+            } },
+            { "Quyền Dashboard nhân viên theo đơn gián tiếp", new List<string> {
+                CountStoreChecking, CountStore, CountIndirectSalesOrder, IndirectSalesOrderRevenue,
+                SingleListPeriod
+            } },
+            { "Quyền Dashboard nhân viên theo đơn trực tiếp", new List<string> {
+                CountStoreChecking, CountStore, CountDirectSalesOrder, DirectSalesOrderRevenue,
+                SingleListPeriod
+            } },
+            { "Quyền Dashboard quản lý theo đơn gián tiếp", new List<string> {
+                CountStoreChecking, CountStore, CountIndirectSalesOrder, IndirectSalesOrderRevenue,
+                TopIndirectSaleEmployeeRevenue, TopIndirecProductRevenue,
+                IndirectRevenueGrowth, IndirectQuantityGrowth,
+                SingleListPeriod
+            } },
+            { "Quyền Dashboard quản lý theo đơn trực tiếp", new List<string> {
+                CountStoreChecking, CountStore, CountDirectSalesOrder, DirectSalesOrderRevenue,
+                TopDirectSaleEmployeeRevenue, TopDirecProductRevenue,
+                DirectRevenueGrowth, DirectQuantityGrowth,
+                SingleListPeriod
+            } },
         };
     }
 }
