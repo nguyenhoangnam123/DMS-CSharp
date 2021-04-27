@@ -13,6 +13,7 @@ namespace DMS.ABE.Services.MDirectSalesOrder
     {
         Task<bool> Create(DirectSalesOrder DirectSalesOrder);
         Task<bool> Update(DirectSalesOrder DirectSalesOrder);
+        Task<bool> Approve(DirectSalesOrder DirectSalesOrder);
     }
 
     public class DirectSalesOrderValidator : IDirectSalesOrderValidator
@@ -45,7 +46,8 @@ namespace DMS.ABE.Services.MDirectSalesOrder
             PromotionCodeHasUsed,
             OrganizationInvalid,
             StoreInvalid,
-            ItemInvalid
+            ItemInvalid,
+            RequestStateInvalid,
         }
         private IUOW UOW;
         private ICurrentContext CurrentContext;
@@ -194,6 +196,15 @@ namespace DMS.ABE.Services.MDirectSalesOrder
             return DirectSalesOrder.IsValidated;
         }
 
+        private async Task<bool> ValidateRequestState(DirectSalesOrder DirectSalesOrder)
+        {
+            if (DirectSalesOrder.RequestStateId != RequestStateEnum.APPROVED.Id)
+            {
+                DirectSalesOrder.AddError(nameof(DirectSalesOrderValidator), nameof(DirectSalesOrder.RequestStateId), ErrorCode.RequestStateInvalid);
+            }
+            return DirectSalesOrder.IsValidated;
+        }
+
         public async Task<bool> Create(DirectSalesOrder DirectSalesOrder)
         {
             await ValidateStore(DirectSalesOrder);
@@ -208,12 +219,22 @@ namespace DMS.ABE.Services.MDirectSalesOrder
         {
             if (await ValidateId(DirectSalesOrder))
             {
+                await ValidateRequestState(DirectSalesOrder);// đơn hàng phải ở trạng thái phê duyệt wf
                 await ValidateStore(DirectSalesOrder);
                 await ValidateEmployee(DirectSalesOrder);
                 await ValidateOrderDate(DirectSalesOrder);
                 await ValidateDeliveryDate(DirectSalesOrder);
                 //await ValidateContent(DirectSalesOrder);
                 await ValidateEditedPrice(DirectSalesOrder);
+            }
+            return DirectSalesOrder.IsValidated;
+        }
+
+        public async Task<bool> Approve(DirectSalesOrder DirectSalesOrder)
+        {
+            if (await ValidateId(DirectSalesOrder))
+            {
+                await ValidateRequestState(DirectSalesOrder);// đơn hàng phải ở trạng thái phê duyệt wf
             }
             return DirectSalesOrder.IsValidated;
         }

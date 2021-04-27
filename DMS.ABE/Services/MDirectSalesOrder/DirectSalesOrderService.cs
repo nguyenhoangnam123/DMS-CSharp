@@ -17,7 +17,7 @@ namespace DMS.ABE.Services.MDirectSalesOrder
         Task<int> Count(DirectSalesOrderFilter DirectSalesOrderFilter);
         Task<DirectSalesOrder> Get(long Id);
         Task<DirectSalesOrder> Create(DirectSalesOrder DirectSalesOrder);
-        Task<DirectSalesOrder> Update(DirectSalesOrder DirectSalesOrder);
+        Task<DirectSalesOrder> Approve(DirectSalesOrder DirectSalesOrder);
     }
     public class DirectSalesOrderService : BaseService, IDirectSalesOrderService
     {
@@ -92,23 +92,20 @@ namespace DMS.ABE.Services.MDirectSalesOrder
             }
         }
 
-        public async Task<DirectSalesOrder> Update(DirectSalesOrder DirectSalesOrder)
+        public async Task<DirectSalesOrder> Approve(DirectSalesOrder DirectSalesOrder)
         {
-            if (!await DirectSalesOrderValidator.Update(DirectSalesOrder))
+            if (!await DirectSalesOrderValidator.Approve(DirectSalesOrder))
                 return DirectSalesOrder;
             try
             {
                 var oldData = await UOW.DirectSalesOrderRepository.Get(DirectSalesOrder.Id);
-                if(oldData.RequestStateId == RequestStateEnum.APPROVED.Id)
-                {
-                    oldData.StoreApprovalStateId = DirectSalesOrder.StoreApprovalStateId;
-                } // nếu đơn hàng ở trạng thái phê duyệt thì mới cho phép update trạng thái phê duyệt của cửa hàng trên mobile
+                oldData.StoreApprovalStateId = StoreApprovalStateEnum.APPROVED.Id; // update StoreApprovalStateId
                 await UOW.Begin();
                 await UOW.DirectSalesOrderRepository.Update(DirectSalesOrder);
                 await UOW.Commit();
                 DirectSalesOrder = await UOW.DirectSalesOrderRepository.Get(DirectSalesOrder.Id);
                 Sync(DirectSalesOrder);
-                await Logging.CreateAuditLog(DirectSalesOrder, oldData, nameof(DirectSalesOrderService)); // ghi log
+                await Logging.CreateAuditLog(DirectSalesOrder, oldData, nameof(DirectSalesOrderService));
                 return DirectSalesOrder;
             }
             catch (Exception Exception)

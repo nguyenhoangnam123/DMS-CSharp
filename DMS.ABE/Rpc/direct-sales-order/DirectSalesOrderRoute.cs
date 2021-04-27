@@ -15,6 +15,7 @@ namespace DMS.ABE.Rpc.direct_sales_order
         public const string Count = Default + "/count";
         public const string Create = Default + "/create";
         public const string Update = Default + "/update";
+        public const string Approve = Default + "/approve";
         public const string Get = Default + "/get";
 
         public const string DMSCreateRoute = "/rpc/dms/direct-sales-order/create";
