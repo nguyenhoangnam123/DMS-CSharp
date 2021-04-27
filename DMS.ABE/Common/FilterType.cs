@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
+using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
@@ -314,6 +315,124 @@ namespace DMS.ABE.Common
         }
     }
 
+    public static class MgFilterExtension
+    {
+        public static FilterDefinition<TSource> MgWhere<TSource>(this FilterDefinition<TSource> source, Expression<Func<TSource, object>> propertyName, StringFilter filter)
+        {
+            FilterDefinition<TSource> BuilderFilter = source;
+            if (!string.IsNullOrEmpty(filter.Equal))
+                BuilderFilter &= Builders<TSource>.Filter.Eq(propertyName, filter.Equal);
+            if (!string.IsNullOrEmpty(filter.NotEqual))
+                BuilderFilter &= Builders<TSource>.Filter.Ne(propertyName, filter.NotEqual);
+            if (!string.IsNullOrEmpty(filter.Contain))
+                BuilderFilter &= Builders<TSource>.Filter.Regex(propertyName, new MongoDB.Bson.BsonRegularExpression(filter.Contain));
+            if (!string.IsNullOrEmpty(filter.EndWith))
+                BuilderFilter &= Builders<TSource>.Filter.Regex(propertyName, new MongoDB.Bson.BsonRegularExpression(filter.EndWith + "$"));
+            if (!string.IsNullOrEmpty(filter.EndWith))
+                BuilderFilter &= Builders<TSource>.Filter.Regex(propertyName, new MongoDB.Bson.BsonRegularExpression("^" + filter.StartWith));
+            if (!string.IsNullOrEmpty(filter.NotContain))
+                BuilderFilter &= Builders<TSource>.Filter.Not(Builders<TSource>.Filter.Regex(propertyName, filter.NotContain));
+            if (!string.IsNullOrEmpty(filter.NotEndWith))
+                BuilderFilter &= Builders<TSource>.Filter.Not(Builders<TSource>.Filter.Regex(propertyName, new MongoDB.Bson.BsonRegularExpression(filter.NotEndWith + "$")));
+            if (!string.IsNullOrEmpty(filter.NotStartWith))
+                BuilderFilter &= Builders<TSource>.Filter.Not(Builders<TSource>.Filter.Regex(propertyName, new MongoDB.Bson.BsonRegularExpression("^" + filter.NotStartWith)));
+
+            return BuilderFilter;
+        }
+
+        public static FilterDefinition<TSource> MgWhere<TSource>(this FilterDefinition<TSource> source, Expression<Func<TSource, DateTime?>> propertyName, DateFilter filter)
+        {
+            FilterDefinition<TSource> BuilderFilter = source;
+            if (filter.Equal.HasValue)
+                BuilderFilter &= Builders<TSource>.Filter.Eq(propertyName, filter.Equal);
+            if (filter.NotEqual.HasValue)
+                BuilderFilter &= Builders<TSource>.Filter.Ne(propertyName, filter.NotEqual);
+            if (filter.Less.HasValue)
+                BuilderFilter &= Builders<TSource>.Filter.Lt(propertyName, filter.Less);
+            if (filter.LessEqual.HasValue)
+                BuilderFilter &= Builders<TSource>.Filter.Lte(propertyName, filter.LessEqual);
+            if (filter.Greater.HasValue)
+                BuilderFilter &= Builders<TSource>.Filter.Gt(propertyName, filter.Greater);
+            if (filter.GreaterEqual.HasValue)
+                BuilderFilter &= Builders<TSource>.Filter.Gte(propertyName, filter.GreaterEqual);
+
+            return BuilderFilter;
+        }
+
+        public static FilterDefinition<TSource> MgWhere<TSource>(this FilterDefinition<TSource> source, Expression<Func<TSource, long?>> propertyName, LongFilter filter)
+        {
+            FilterDefinition<TSource> BuilderFilter = source;
+            if (filter.Equal.HasValue)
+                BuilderFilter &= Builders<TSource>.Filter.Eq(propertyName, filter.Equal);
+            if (filter.NotEqual.HasValue)
+                BuilderFilter &= Builders<TSource>.Filter.Ne(propertyName, filter.NotEqual);
+            if (filter.Less.HasValue)
+                BuilderFilter &= Builders<TSource>.Filter.Lt(propertyName, filter.Less);
+            if (filter.LessEqual.HasValue)
+                BuilderFilter &= Builders<TSource>.Filter.Lte(propertyName, filter.LessEqual);
+            if (filter.Greater.HasValue)
+                BuilderFilter &= Builders<TSource>.Filter.Gt(propertyName, filter.Greater);
+            if (filter.GreaterEqual.HasValue)
+                BuilderFilter &= Builders<TSource>.Filter.Gte(propertyName, filter.GreaterEqual);
+
+            return BuilderFilter;
+        }
+
+        public static FilterDefinition<TSource> MgWhere<TSource>(this FilterDefinition<TSource> source, Expression<Func<TSource, decimal?>> propertyName, DecimalFilter filter)
+        {
+            FilterDefinition<TSource> BuilderFilter = source;
+            if (filter.Equal.HasValue)
+                BuilderFilter &= Builders<TSource>.Filter.Eq(propertyName, filter.Equal);
+            if (filter.NotEqual.HasValue)
+                BuilderFilter &= Builders<TSource>.Filter.Ne(propertyName, filter.NotEqual);
+            if (filter.Less.HasValue)
+                BuilderFilter &= Builders<TSource>.Filter.Lt(propertyName, filter.Less);
+            if (filter.LessEqual.HasValue)
+                BuilderFilter &= Builders<TSource>.Filter.Lte(propertyName, filter.LessEqual);
+            if (filter.Greater.HasValue)
+                BuilderFilter &= Builders<TSource>.Filter.Gt(propertyName, filter.Greater);
+            if (filter.GreaterEqual.HasValue)
+                BuilderFilter &= Builders<TSource>.Filter.Gte(propertyName, filter.GreaterEqual);
+
+            return BuilderFilter;
+        }
+
+        public static FilterDefinition<TSource> MgWhere<TSource>(this FilterDefinition<TSource> source, Expression<Func<TSource, string>> propertyName, GuidFilter filter)
+        {
+            var expression = (MemberExpression)propertyName.Body;
+            string name = expression.Member.Name;
+
+            FilterDefinition<TSource> BuilderFilter = source;
+            if (filter.Equal.HasValue)
+                BuilderFilter &= Builders<TSource>.Filter.Eq(propertyName, filter.Equal.ToString());
+            if (filter.NotEqual.HasValue)
+                BuilderFilter &= Builders<TSource>.Filter.Ne(propertyName, filter.NotEqual.ToString());
+            if (filter.In != null)
+                BuilderFilter &= Builders<TSource>.Filter.AnyIn(name, filter.In.Select(x => x.ToString()));
+            if (filter.NotIn != null)
+                BuilderFilter &= Builders<TSource>.Filter.Not(Builders<TSource>.Filter.AnyIn(name, filter.NotIn.Select(x => x.ToString())));
+
+            return BuilderFilter;
+        }
+
+        public static FilterDefinition<TSource> MgWhere<TSource>(this FilterDefinition<TSource> source, Expression<Func<TSource, long?>> propertyName, IdFilter filter)
+        {
+            var expression = (MemberExpression)propertyName.Body;
+            string name = expression.Member.Name;
+
+            FilterDefinition<TSource> BuilderFilter = source;
+            if (filter.Equal.HasValue)
+                BuilderFilter &= Builders<TSource>.Filter.Eq(propertyName, filter.Equal);
+            if (filter.NotEqual.HasValue)
+                BuilderFilter &= Builders<TSource>.Filter.Ne(propertyName, filter.NotEqual);
+            if (filter.In != null)
+                BuilderFilter &= Builders<TSource>.Filter.AnyIn(name, filter.In);
+            if (filter.NotIn != null)
+                BuilderFilter &= Builders<TSource>.Filter.Not(Builders<TSource>.Filter.AnyIn(name, filter.NotIn));
+
+            return BuilderFilter;
+        }
+    }
 
     public static class FilterExtension
     {
@@ -361,28 +480,28 @@ namespace DMS.ABE.Common
         public static IQueryable<TSource> Where<TSource, TKey>(this IQueryable<TSource> source, Expression<Func<TSource, TKey>> propertyName, StringFilter filter)
         {
             if (!string.IsNullOrEmpty(filter.Equal))
-                source = source.Where(BuildPredicate(propertyName, "==", filter.Equal));
+                source = source.Where(BuildPredicate(propertyName, "==", filter.Equal.ToLower()));
 
             if (!string.IsNullOrEmpty(filter.NotEqual))
-                source = source.Where(BuildPredicate(propertyName, "!=", filter.NotEqual));
+                source = source.Where(BuildPredicate(propertyName, "!=", filter.NotEqual.ToLower()));
 
             if (!string.IsNullOrEmpty(filter.Contain))
-                source = source.Where(BuildPredicate(propertyName, "Contains", filter.Contain));
+                source = source.Where(BuildPredicate(propertyName, "Contains", filter.Contain.ToLower()));
 
             if (!string.IsNullOrEmpty(filter.NotContain))
-                source = source.Where(BuildPredicate(propertyName, "NotContains", filter.NotContain));
+                source = source.Where(BuildPredicate(propertyName, "NotContains", filter.NotContain.ToLower()));
 
             if (!string.IsNullOrEmpty(filter.StartWith))
-                source = source.Where(BuildPredicate(propertyName, "StartsWith", filter.StartWith));
+                source = source.Where(BuildPredicate(propertyName, "StartsWith", filter.StartWith.ToLower()));
 
             if (!string.IsNullOrEmpty(filter.NotStartWith))
-                source = source.Where(BuildPredicate(propertyName, "NotStartsWith", filter.NotStartWith));
+                source = source.Where(BuildPredicate(propertyName, "NotStartsWith", filter.NotStartWith.ToLower()));
 
             if (!string.IsNullOrEmpty(filter.EndWith))
-                source = source.Where(BuildPredicate(propertyName, "EndsWith", filter.EndWith));
+                source = source.Where(BuildPredicate(propertyName, "EndsWith", filter.EndWith.ToLower()));
 
             if (!string.IsNullOrEmpty(filter.NotEndWith))
-                source = source.Where(BuildPredicate(propertyName, "NotEndsWith", filter.NotEndWith));
+                source = source.Where(BuildPredicate(propertyName, "NotEndsWith", filter.NotEndWith.ToLower()));
             return source;
         }
 
@@ -512,6 +631,11 @@ namespace DMS.ABE.Common
         public static Expression<Func<TSource, bool>> BuildPredicate<TSource, TKey>(Expression<Func<TSource, TKey>> propertyName, string comparison, string value)
         {
             var left = propertyName.Body;
+            if (left.Type == typeof(string))
+            {
+                left = Expression.Call(left, typeof(string).GetMethod("ToLower", System.Type.EmptyTypes));
+            }
+
             Expression body;
             switch (comparison)
             {
@@ -528,7 +652,11 @@ namespace DMS.ABE.Common
                     body = MakeComparison(left, comparison, value);
                     break;
             }
-
+            if (left.Type == typeof(string))
+            {
+                var nullCheck = Expression.NotEqual(left, Expression.Constant(null, left.Type));
+                left = Expression.And(nullCheck, body);
+            }
             return Expression.Lambda<Func<TSource, bool>>(body, propertyName.Parameters);
         }
 
@@ -585,7 +713,6 @@ namespace DMS.ABE.Common
             return Expression.MakeBinary(type, left, right);
         }
     }
-
     public class HintCommandInterceptor : DbCommandInterceptor
     {
         public override InterceptionResult<DbDataReader> ReaderExecuting(
