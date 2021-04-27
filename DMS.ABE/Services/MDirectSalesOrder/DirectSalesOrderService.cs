@@ -138,7 +138,14 @@ namespace DMS.ABE.Services.MDirectSalesOrder
         {
             try
             {
-                DirectSalesOrderFilter.StoreUserCreatorId = new IdFilter { Equal = CurrentContext.StoreUserId }; // filter nguoi tao la currentUser
+                long StoreUserId = CurrentContext.StoreUserId;
+                List<StoreUser> StoreUsers = await UOW.StoreUserRepository.List(new StoreUserFilter
+                {
+                    Id = new IdFilter { Equal = StoreUserId },
+                    Selects = StoreUserSelect.Id | StoreUserSelect.Store
+                });
+                StoreUser StoreUser = StoreUsers.FirstOrDefault();
+                DirectSalesOrderFilter.BuyerStoreId = new IdFilter { Equal = StoreUser.StoreId }; // filter đơn hàng có của hàng mua là cửa hàng của storeUser
                 DirectSalesOrderFilter.RequestStateId = new IdFilter { Equal = RequestStateEnum.APPROVED.Id }; // chi hien thi don hang co trang thai wf la approved
                 List<DirectSalesOrder> DirectSalesOrders = await UOW.DirectSalesOrderRepository.List(DirectSalesOrderFilter);
                 return DirectSalesOrders;
@@ -161,7 +168,14 @@ namespace DMS.ABE.Services.MDirectSalesOrder
         {
             try
             {
-                DirectSalesOrderFilter.StoreUserCreatorId = new IdFilter { Equal = CurrentContext.StoreUserId }; // filter nguoi tao la currentUser
+                long StoreUserId = CurrentContext.StoreUserId;
+                List<StoreUser> StoreUsers = await UOW.StoreUserRepository.List(new StoreUserFilter
+                {
+                    Id = new IdFilter { Equal = StoreUserId },
+                    Selects = StoreUserSelect.Id | StoreUserSelect.Store
+                });
+                StoreUser StoreUser = StoreUsers.FirstOrDefault();
+                DirectSalesOrderFilter.BuyerStoreId = new IdFilter { Equal = StoreUser.StoreId }; // filter đơn hàng có của hàng mua là cửa hàng của storeUser
                 DirectSalesOrderFilter.RequestStateId = new IdFilter { Equal = RequestStateEnum.APPROVED.Id }; // chi hien thi don hang co trang thai wf la approved
                 int result = await UOW.DirectSalesOrderRepository.Count(DirectSalesOrderFilter);
                 return result;
