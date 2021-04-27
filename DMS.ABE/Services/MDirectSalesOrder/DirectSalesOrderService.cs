@@ -18,6 +18,7 @@ namespace DMS.ABE.Services.MDirectSalesOrder
         Task<DirectSalesOrder> Get(long Id);
         Task<DirectSalesOrder> Create(DirectSalesOrder DirectSalesOrder);
         Task<DirectSalesOrder> Approve(DirectSalesOrder DirectSalesOrder);
+        Task<DirectSalesOrder> Reject(DirectSalesOrder DirectSalesOrder);
     }
     public class DirectSalesOrderService : BaseService, IDirectSalesOrderService
     {
@@ -100,6 +101,40 @@ namespace DMS.ABE.Services.MDirectSalesOrder
             {
                 var oldData = await UOW.DirectSalesOrderRepository.Get(DirectSalesOrder.Id);
                 oldData.StoreApprovalStateId = StoreApprovalStateEnum.APPROVED.Id; // update StoreApprovalStateId
+                await UOW.Begin();
+                await UOW.DirectSalesOrderRepository.Update(DirectSalesOrder);
+                await UOW.Commit();
+                DirectSalesOrder = await UOW.DirectSalesOrderRepository.Get(DirectSalesOrder.Id);
+                Sync(DirectSalesOrder);
+                await Logging.CreateAuditLog(DirectSalesOrder, oldData, nameof(DirectSalesOrderService));
+                return DirectSalesOrder;
+            }
+            catch (Exception Exception)
+            {
+                await UOW.Rollback();
+
+                if (Exception.InnerException == null)
+                {
+                    await Logging.CreateSystemLog(Exception, nameof(DirectSalesOrderService));
+                    throw new MessageException(Exception);
+                }
+                else
+                {
+                    await Logging.CreateSystemLog(Exception.InnerException, nameof(DirectSalesOrderService));
+                    throw new MessageException(Exception.InnerException);
+                }
+            }
+
+        }
+
+        public async Task<DirectSalesOrder> Reject(DirectSalesOrder DirectSalesOrder)
+        {
+            if (!await DirectSalesOrderValidator.Approve(DirectSalesOrder))
+                return DirectSalesOrder;
+            try
+            {
+                var oldData = await UOW.DirectSalesOrderRepository.Get(DirectSalesOrder.Id);
+                oldData.StoreApprovalStateId = StoreApprovalStateEnum.REJECTED.Id; // update StoreApprovalStateId
                 await UOW.Begin();
                 await UOW.DirectSalesOrderRepository.Update(DirectSalesOrder);
                 await UOW.Commit();
