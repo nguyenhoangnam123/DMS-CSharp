@@ -156,10 +156,6 @@ namespace DMS.Services.MShowingOrderWithDraw
                         {
                             ShowingOrderWithDrawContent.AddError(nameof(ShowingOrderWithDrawValidator), nameof(ShowingOrderWithDrawContent.ShowingItem), ErrorCode.ShowingItemNotExisted);
                         }
-                        else
-                        {
-                            var StoreCounter = ShowingOrderWithDraw.Stores.Count();
-                        }
                     }
                 }
             }
