@@ -33,7 +33,7 @@ namespace DMS.Services.MShowingItem
             NameOverLength,
             UnitOfMeasureNotExisted,
             UnitOfMeasureEmpty,
-            SalePriceInvalid,
+            SalePriceEmpty,
             StatusEmpty,
             ShowingCategoryEmpty,
             ShowingCategoryNotExisted,
@@ -184,7 +184,7 @@ namespace DMS.Services.MShowingItem
         {
             if (ShowingItem.SalePrice == 0)
             {
-                ShowingItem.AddError(nameof(ShowingItemValidator), nameof(ShowingItem.SalePrice), ErrorCode.SalePriceInvalid);
+                ShowingItem.AddError(nameof(ShowingItemValidator), nameof(ShowingItem.SalePrice), ErrorCode.SalePriceEmpty);
             }
             return ShowingItem.IsValidated;
         }
