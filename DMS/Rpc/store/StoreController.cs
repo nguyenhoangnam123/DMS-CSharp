@@ -596,7 +596,7 @@ namespace DMS.Rpc.store
                 Take = int.MaxValue,
                 Selects = ProductGroupingSelect.ALL
             });
-            List<Store> All = await StoreService.List(new StoreFilter
+            List<Store> All = await StoreService.Export(new StoreFilter
             {
                 Skip = 0,
                 Take = int.MaxValue,

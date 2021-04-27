@@ -623,11 +623,12 @@ namespace DMS.Repositories
                 RowId = q.RowId,
             }).ToListAsync();
 
+            var StoreIds = Stores.Select(x => x.Id).ToList();
+            ITempTableQuery<TempTable<long>> tempTableQuery = await DataContext
+                    .BulkInsertValuesIntoTempTableAsync<long>(StoreIds);
+
             if (filter.Selects.Contains(StoreSelect.StoreImageMappings))
             {
-                var StoreIds = Stores.Select(x => x.Id).ToList();
-                ITempTableQuery<TempTable<long>> tempTableQuery = await DataContext
-                        .BulkInsertValuesIntoTempTableAsync<long>(StoreIds);
                 query = query.Join(tempTableQuery.Query,
                                    c => c.Id,
                                    t => t.Column1,
@@ -654,6 +655,30 @@ namespace DMS.Repositories
                 }
             }
 
+            if(filter.Selects.Contains(StoreSelect.StoreUser))
+            {
+                query = query.Join(tempTableQuery.Query,
+                   c => c.Id,
+                   t => t.Column1,
+                   (c, t) => c);
+                var StoreUsers = await DataContext.StoreUser
+                    .Join(tempTableQuery.Query,
+                            c => c.StoreId,
+                            t => t.Column1,
+                            (c, t) => c).Select(x => new StoreUser
+                            {
+                                Id = x.Id,
+                                StoreId = x.StoreId,
+                                Username = x.Username,
+                                DisplayName = x.DisplayName
+                            }).ToListAsync();
+                foreach (var Store in Stores)
+                {
+                    Store.StoreUser = StoreUsers.Where(x => x.StoreId == Store.Id).Skip(0).Take(1).FirstOrDefault();
+                    if(Store.StoreUser != null)
+                        Store.StoreUserId = Store.StoreUser.Id;
+                }
+            }
             return Stores;
         }
 
