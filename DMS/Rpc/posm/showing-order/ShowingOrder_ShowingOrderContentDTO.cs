@@ -13,8 +13,11 @@ namespace DMS.Rpc.posm.showing_order
         public long ShowingItemId { get; set; }
         public long UnitOfMeasureId { get; set; }
         public decimal SalePrice { get; set; }
+        public string eSalePrice { get; set; }
         public long Quantity { get; set; }
+        public string eQuantity { get; set; }
         public decimal Amount { get; set; }
+        public string eAmount { get; set; }
         public ShowingOrder_ShowingItemDTO ShowingItem { get; set; }   
         public ShowingOrder_UnitOfMeasureDTO UnitOfMeasure { get; set; }   
 

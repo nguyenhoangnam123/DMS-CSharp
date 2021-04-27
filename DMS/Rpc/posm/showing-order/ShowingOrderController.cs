@@ -173,15 +173,16 @@ namespace DMS.Rpc.posm.showing_order
             ShowingOrder_ShowingOrderFilterDTO.Take = int.MaxValue;
             List<ShowingOrder_ShowingOrderDTO> ShowingOrder_ShowingOrderDTOs = (await List(ShowingOrder_ShowingOrderFilterDTO)).Value;
             var Ids = ShowingOrder_ShowingOrderDTOs.Select(x => x.Id).ToList();
+            var culture = System.Globalization.CultureInfo.GetCultureInfo("en-EN");
             var ShowingOrder_ShowingOrderContentDTOs = await DataContext.ShowingOrderContent
                 .Where(x => Ids.Contains(x.ShowingOrderId))
                 .Select(x => new ShowingOrder_ShowingOrderContentDTO
                 {
                     Id = x.Id,
                     ShowingItemId = x.ShowingItemId,
-                    Amount = x.Amount,
-                    Quantity = x.Quantity,
-                    SalePrice = x.SalePrice,
+                    eAmount = x.Amount.ToString("N0", culture),
+                    eQuantity = x.Quantity.ToString("N0", culture),
+                    eSalePrice = x.SalePrice.ToString("N0", culture),
                     UnitOfMeasureId = x.UnitOfMeasureId,
                     ShowingOrderId = x.ShowingOrderId,
                     ShowingItem = x.ShowingItem == null ? null : new ShowingOrder_ShowingItemDTO
@@ -210,6 +211,8 @@ namespace DMS.Rpc.posm.showing_order
             foreach (var ShowingOrder_ShowingOrderDTO in ShowingOrder_ShowingOrderDTOs)
             {
                 ShowingOrder_ShowingOrderDTO.STT = stt++;
+                ShowingOrder_ShowingOrderDTO.eDate = ShowingOrder_ShowingOrderDTO.Date.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy");
+                ShowingOrder_ShowingOrderDTO.eTotal = ShowingOrder_ShowingOrderDTO.Total.ToString("N0", culture);
                 ShowingOrder_ShowingOrderDTO.ShowingOrderContents = ShowingOrder_ShowingOrderContentDTOs.Where(x => x.ShowingOrderId == ShowingOrder_ShowingOrderDTO.Id).ToList();
             }
 

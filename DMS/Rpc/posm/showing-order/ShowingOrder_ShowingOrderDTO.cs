@@ -15,9 +15,11 @@ namespace DMS.Rpc.posm.showing_order
         public long OrganizationId { get; set; }
         public long StoreId { get; set; }
         public DateTime Date { get; set; }
+        public string eDate { get; set; }
         public long ShowingWarehouseId { get; set; }
         public long StatusId { get; set; }
         public decimal Total { get; set; }
+        public string eTotal { get; set; }
         public Guid RowId { get; set; }
         public ShowingOrder_AppUserDTO AppUser { get; set; }
         public ShowingOrder_OrganizationDTO Organization { get; set; }

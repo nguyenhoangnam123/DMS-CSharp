@@ -75,6 +75,7 @@ namespace DMS.Rpc.posm.showing_order
         public long? StoreScoutingId { get; set; }
         
         public long StoreStatusId { get; set; }
+        public ShowingOrder_StoreStatusDTO StoreStatus { get; set; }
         
 
         public ShowingOrder_StoreDTO() {}
@@ -148,6 +149,8 @@ namespace DMS.Rpc.posm.showing_order
             this.Organization = Store.Organization == null ? null : new ShowingOrder_OrganizationDTO(Store.Organization);
 
             this.StoreType = Store.StoreType == null ? null : new ShowingOrder_StoreTypeDTO(Store.StoreType);
+
+            this.StoreStatus = Store.StoreStatus == null ? null : new ShowingOrder_StoreStatusDTO(Store.StoreStatus);
 
             this.Errors = Store.Errors;
         }
