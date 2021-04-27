@@ -317,15 +317,18 @@ namespace DMS.Services.MShowingOrderWithDraw
             }
 
             {
-                List<long> StoreIds = ShowingOrderWithDraw.Stores.Select(x => x.Id).Distinct().ToList();
-                List<EventMessage<Store>> storeMessages = StoreIds.Select(x => new EventMessage<Store>
+                if(ShowingOrderWithDraw.Stores != null)
                 {
-                    Content = new Store { Id = x },
-                    EntityName = nameof(Store),
-                    RowId = Guid.NewGuid(),
-                    Time = StaticParams.DateTimeNow,
-                }).ToList();
-                RabbitManager.PublishList(storeMessages, RoutingKeyEnum.StoreUsed);
+                    List<long> StoreIds = ShowingOrderWithDraw.Stores.Select(x => x.Id).Distinct().ToList();
+                    List<EventMessage<Store>> storeMessages = StoreIds.Select(x => new EventMessage<Store>
+                    {
+                        Content = new Store { Id = x },
+                        EntityName = nameof(Store),
+                        RowId = Guid.NewGuid(),
+                        Time = StaticParams.DateTimeNow,
+                    }).ToList();
+                    RabbitManager.PublishList(storeMessages, RoutingKeyEnum.StoreUsed);
+                }
             }
 
             {
