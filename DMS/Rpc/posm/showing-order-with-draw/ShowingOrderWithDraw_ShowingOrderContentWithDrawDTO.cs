@@ -10,8 +10,11 @@ namespace DMS.Rpc.posm.showing_order_with_draw
         public long ShowingItemId { get; set; }
         public long UnitOfMeasureId { get; set; }
         public decimal SalePrice { get; set; }
+        public string eSalePrice { get; set; } // for export excel
         public long Quantity { get; set; }
+        public string eQuantity { get; set; } // for export excel
         public decimal Amount { get; set; }
+        public string eAmount { get; set; } // for export excel
         public ShowingOrderWithDraw_ShowingItemDTO ShowingItem { get; set; }
         public ShowingOrderWithDraw_UnitOfMeasureDTO UnitOfMeasure { get; set; }
 

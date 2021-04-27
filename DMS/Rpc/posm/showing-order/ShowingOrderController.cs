@@ -173,7 +173,7 @@ namespace DMS.Rpc.posm.showing_order
             ShowingOrder_ShowingOrderFilterDTO.Take = int.MaxValue;
             List<ShowingOrder_ShowingOrderDTO> ShowingOrder_ShowingOrderDTOs = (await List(ShowingOrder_ShowingOrderFilterDTO)).Value;
             var Ids = ShowingOrder_ShowingOrderDTOs.Select(x => x.Id).ToList();
-            var culture = System.Globalization.CultureInfo.GetCultureInfo("en-EN");
+            var culture = System.Globalization.CultureInfo.GetCultureInfo("en-EN"); // define locale
             var ShowingOrder_ShowingOrderContentDTOs = await DataContext.ShowingOrderContent
                 .Where(x => Ids.Contains(x.ShowingOrderId))
                 .Select(x => new ShowingOrder_ShowingOrderContentDTO
@@ -236,7 +236,7 @@ namespace DMS.Rpc.posm.showing_order
                 document.Process(Data);
             };
 
-            return File(output.ToArray(), "application/octet-stream", "POSMExport.xlsx");
+            return File(output.ToArray(), "application/octet-stream", "POSM_Export.xlsx");
         }
 
         private async Task<bool> HasPermission(long Id)

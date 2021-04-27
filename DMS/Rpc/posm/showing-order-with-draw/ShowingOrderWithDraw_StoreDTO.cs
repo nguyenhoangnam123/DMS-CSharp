@@ -67,6 +67,7 @@ namespace DMS.Rpc.posm.showing_order_with_draw
 
         public ShowingOrderWithDraw_OrganizationDTO Organization { get; set; }
         public ShowingOrderWithDraw_StoreTypeDTO StoreType { get; set; }
+        public ShowingOrderWithDraw_StoreStatusDTO StoreStatus { get; set; }
         
         public Guid RowId { get; set; }
         
@@ -148,6 +149,8 @@ namespace DMS.Rpc.posm.showing_order_with_draw
             this.Organization = Store.Organization == null ? null : new ShowingOrderWithDraw_OrganizationDTO(Store.Organization);
 
             this.StoreType = Store.StoreType == null ? null : new ShowingOrderWithDraw_StoreTypeDTO(Store.StoreType);
+            
+            this.StoreStatus = Store.StoreStatus == null ? null : new ShowingOrderWithDraw_StoreStatusDTO(Store.StoreStatus);
 
             this.Errors = Store.Errors;
         }

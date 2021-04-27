@@ -170,15 +170,16 @@ namespace DMS.Rpc.posm.showing_order_with_draw
             ShowingOrderWithDraw_ShowingOrderWithDrawFilterDTO.Take = int.MaxValue;
             List<ShowingOrderWithDraw_ShowingOrderWithDrawDTO> ShowingOrderWithDraw_ShowingOrderWithDrawDTOs = (await List(ShowingOrderWithDraw_ShowingOrderWithDrawFilterDTO)).Value;
             var Ids = ShowingOrderWithDraw_ShowingOrderWithDrawDTOs.Select(x => x.Id).ToList();
+            var culture = System.Globalization.CultureInfo.GetCultureInfo("en-EN"); // define locale
             var ShowingOrderWithDraw_ShowingOrderContentWithDrawDTOs = await DataContext.ShowingOrderContentWithDraw
                 .Where(x => Ids.Contains(x.ShowingOrderWithDrawId))
                 .Select(x => new ShowingOrderWithDraw_ShowingOrderContentWithDrawDTO
                 {
                     Id = x.Id,
                     ShowingItemId = x.ShowingItemId,
-                    Amount = x.Amount,
-                    Quantity = x.Quantity,
-                    SalePrice = x.SalePrice,
+                    eAmount = x.Amount.ToString("N0", culture),
+                    eQuantity = x.Quantity.ToString("N0", culture),
+                    eSalePrice = x.SalePrice.ToString("N0", culture),
                     UnitOfMeasureId = x.UnitOfMeasureId,
                     ShowingOrderWithDrawId = x.ShowingOrderWithDrawId,
                     ShowingItem = x.ShowingItem == null ? null : new ShowingOrderWithDraw_ShowingItemDTO
@@ -207,6 +208,8 @@ namespace DMS.Rpc.posm.showing_order_with_draw
             foreach (var ShowingOrderWithDraw_ShowingOrderWithDrawDTO in ShowingOrderWithDraw_ShowingOrderWithDrawDTOs)
             {
                 ShowingOrderWithDraw_ShowingOrderWithDrawDTO.STT = stt++;
+                ShowingOrderWithDraw_ShowingOrderWithDrawDTO.eDate = ShowingOrderWithDraw_ShowingOrderWithDrawDTO.Date.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy");
+                ShowingOrderWithDraw_ShowingOrderWithDrawDTO.eTotal = ShowingOrderWithDraw_ShowingOrderWithDrawDTO.Total.ToString("N0", culture);
                 ShowingOrderWithDraw_ShowingOrderWithDrawDTO.ShowingOrderContentWithDraws = ShowingOrderWithDraw_ShowingOrderContentWithDrawDTOs.Where(x => x.ShowingOrderWithDrawId == ShowingOrderWithDraw_ShowingOrderWithDrawDTO.Id).ToList();
             }
 
@@ -216,7 +219,7 @@ namespace DMS.Rpc.posm.showing_order_with_draw
                 x.ParentId.HasValue == false)
                 .FirstOrDefaultAsync();
 
-            string path = "Templates/POSM_Export.xlsx";
+            string path = "Templates/POSMWITHDRAW_Export.xlsx";
             byte[] arr = System.IO.File.ReadAllBytes(path);
             MemoryStream input = new MemoryStream(arr);
             MemoryStream output = new MemoryStream();
@@ -230,7 +233,7 @@ namespace DMS.Rpc.posm.showing_order_with_draw
                 document.Process(Data);
             };
 
-            return File(output.ToArray(), "application/octet-stream", "POSMExport.xlsx");
+            return File(output.ToArray(), "application/octet-stream", "POSM_WITHDRAW_Export.xlsx");
         }
 
         private async Task<bool> HasPermission(long Id)
