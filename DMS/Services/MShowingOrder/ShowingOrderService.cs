@@ -260,6 +260,7 @@ namespace DMS.Services.MShowingOrder
                 StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id },
                 Id = new IdFilter { In = ShowingItemIds }
             });
+            ShowingOrder.Total = 0; // tính lại total nên gán total = 0
             foreach (var ShowingOrderContent in ShowingOrder.ShowingOrderContents)
             {
                 ShowingItem ShowingItem = ShowingItems.Where(x => x.Id == ShowingOrderContent.ShowingItemId).FirstOrDefault();

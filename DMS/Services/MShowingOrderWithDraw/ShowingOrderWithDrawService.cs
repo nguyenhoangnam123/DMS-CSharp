@@ -279,6 +279,7 @@ namespace DMS.Services.MShowingOrderWithDraw
                 StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id },
                 Id = new IdFilter { In = ShowingItemIds }
             });
+            ShowingOrderWithDraw.Total = 0; // tính lại tổng giá trị thu hồi
             foreach (var ShowingOrderWithDrawContent in ShowingOrderWithDraw.ShowingOrderContentWithDraws)
             {
                 ShowingItem ShowingItem = ShowingItems.Where(x => x.Id == ShowingOrderWithDrawContent.ShowingItemId).FirstOrDefault();
