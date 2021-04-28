@@ -249,7 +249,7 @@ namespace DMS.ABE.Rpc.product
             ProductFilter.OrderBy = Product_ProductFilterDTO.OrderBy;
             ProductFilter.OrderType = Product_ProductFilterDTO.OrderType;
 
-
+            ProductFilter.Id = Product_ProductFilterDTO.Id;
             ProductFilter.Description = Product_ProductFilterDTO.Description;
             ProductFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id }; // mặc định sản phẩm đang active
             ProductFilter.Search = Product_ProductFilterDTO.Search;
