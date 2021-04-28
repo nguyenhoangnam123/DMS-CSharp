@@ -46,11 +46,6 @@ namespace DMS.Rpc.mobile.permission_mobile
 
         public const string SingleListPeriod = Default + "/single-list-period";
 
-        // list path
-        public const string ListPath = Default + "/list-path";
-
-
-
         public static Dictionary<string, long> Filters = new Dictionary<string, long>
         {
             { "OrganizationId", FieldTypeEnum.ID.Id },
@@ -62,31 +57,26 @@ namespace DMS.Rpc.mobile.permission_mobile
         {
             { "Thống kê Kpi nhân viên theo tháng", new List<string>{
                 ListCurrentKpiGeneral, ListCurrentKpiItem, ListCurrentKpiNewItem, CountAppUser, ListAppUser,
-                ListPath,
             } },
             { "Quyền Dashboard nhân viên theo đơn gián tiếp", new List<string> {
                 CountStoreChecking, CountStore, CountIndirectSalesOrder, IndirectSalesOrderRevenue,
                 SingleListPeriod,
-                ListPath
             } },
             { "Quyền Dashboard nhân viên theo đơn trực tiếp", new List<string> {
                 CountStoreChecking, CountStore, CountDirectSalesOrder, DirectSalesOrderRevenue,
                 SingleListPeriod,
-                ListPath
             } },
             { "Quyền Dashboard quản lý theo đơn gián tiếp", new List<string> {
                 CountStoreChecking, CountStore, CountIndirectSalesOrder, IndirectSalesOrderRevenue,
                 TopIndirectSaleEmployeeRevenue, TopIndirecProductRevenue,
                 IndirectRevenueGrowth, IndirectQuantityGrowth,
                 SingleListPeriod,
-                ListPath
             } },
             { "Quyền Dashboard quản lý theo đơn trực tiếp", new List<string> {
                 CountStoreChecking, CountStore, CountDirectSalesOrder, DirectSalesOrderRevenue,
                 TopDirectSaleEmployeeRevenue, TopDirecProductRevenue,
                 DirectRevenueGrowth, DirectQuantityGrowth,
                 SingleListPeriod,
-                ListPath
             } },
         };
     }

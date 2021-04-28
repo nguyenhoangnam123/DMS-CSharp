@@ -127,6 +127,9 @@ namespace DMS.Rpc.mobile.general_mobile
         public const string CountBrand = Default + "/count-brand";
         public const string ListBrand = Default + "/list-brand";
 
+        // list path
+        public const string ListPath = Default + "/list-path";
+
         public static Dictionary<string, long> Filters = new Dictionary<string, long>
         {
         };
@@ -134,7 +137,7 @@ namespace DMS.Rpc.mobile.general_mobile
         public static Dictionary<string, IEnumerable<string>> Action = new Dictionary<string, IEnumerable<string>>
         {
             { "Tìm kiếm", new List<string> {
-                Master, CountStoreChecking, ListStoreChecking, GetStoreChecking,
+                Master, CountStoreChecking, ListStoreChecking, GetStoreChecking, ListPath
                 } },
             { "Checkin", new List<string> {
                 Master, CountStoreChecking, ListStoreChecking, GetStoreChecking, CountProductGrouping, ListProductGrouping, CountBrand, ListBrand,
@@ -142,13 +145,17 @@ namespace DMS.Rpc.mobile.general_mobile
                 CreateIndirectSalesOrder, CreateProblem, SaveImage, GetSurveyForm, SaveSurveyForm, CreateDirectSalesOrder,
                 CountItem, ListItem, ListItemDirectOrder, CountStorePlanned, ListStorePlanned, CountStoreUnPlanned, ListStoreUnPlanned, CountStoreInScope, ListStoreInScope, CountProblem, ListProblem, CountSurvey, ListSurvey, CountStoreScouting, ListStoreScouting,
                 SingleListAlbum, SingleListAppUser, SingleListStore, SingleListStoreStatus, SingleListTaxType, SingleListUnitOfMeasure, SingleListProblemType, SingleListStoreScoutingType, SingleListProvince, SingleListDistrict, SingleListWard, SingleListStoreDraftType,
-                SingleListSalesOrderType, SingleListCategory} },
+                SingleListSalesOrderType, SingleListCategory,
+                ListPath
+            } },
             { "Quay thưởng", new List<string>{
                 Master, CountStoreChecking, ListStoreChecking, GetStoreChecking,
                 Detail, ListRewardHistory,  CountRewardHistory, GetRewardHistory, LuckyDraw, CreateRewardHistory,
                 CountItem, ListItem, CountStorePlanned, ListStorePlanned, CountStoreUnPlanned, ListStoreUnPlanned, CountStoreInScope, ListStoreInScope, CountProblem, ListProblem, CountSurvey, ListSurvey, CountStoreScouting, ListStoreScouting,
                 SingleListAlbum, SingleListAppUser, SingleListStore, SingleListStoreStatus, SingleListTaxType, SingleListUnitOfMeasure, SingleListProblemType, SingleListStoreScoutingType, SingleListProvince, SingleListDistrict, SingleListWard, SingleListStoreDraftType,
-                SingleListSalesOrderType, SingleListCategory} },
+                SingleListSalesOrderType, SingleListCategory,
+                ListPath
+            } },
        
         };
     }

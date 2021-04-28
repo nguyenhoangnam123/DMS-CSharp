@@ -22,6 +22,7 @@ using DMS.Services.MProduct;
 using DMS.Services.MProductGrouping;
 using DMS.Services.MProvince;
 using DMS.Services.MRewardHistory;
+using DMS.Services.MRole;
 using DMS.Services.MStore;
 using DMS.Services.MStoreChecking;
 using DMS.Services.MStoreGrouping;
@@ -80,6 +81,7 @@ namespace DMS.Rpc.mobile.general_mobile
         private IRewardHistoryService RewardHistoryService;
         private ISystemConfigurationService SystemConfigurationService;
         private ICategoryService CategoryService;
+        private IPermissionService PermissionService;
         private ICurrentContext CurrentContext;
         private DataContext DataContext;
         public MobileController(
@@ -115,6 +117,7 @@ namespace DMS.Rpc.mobile.general_mobile
             IRewardHistoryService RewardHistoryService,
             ISystemConfigurationService SystemConfigurationService,
             ICategoryService CategoryService,
+            IPermissionService PermissionService,
             ICurrentContext CurrentContext,
             DataContext DataContext
         )
@@ -151,6 +154,7 @@ namespace DMS.Rpc.mobile.general_mobile
             this.RewardHistoryService = RewardHistoryService;
             this.SystemConfigurationService = SystemConfigurationService;
             this.CategoryService = CategoryService;
+            this.PermissionService = PermissionService;
             this.CurrentContext = CurrentContext;
             this.DataContext = DataContext;
         }
@@ -1106,6 +1110,12 @@ namespace DMS.Rpc.mobile.general_mobile
             }
 
             return GeneralMobile_StoreStatisticDTO;
+        }
+
+        [Route(GeneralMobileRoute.ListPath), HttpPost]
+        public async Task<List<string>> ListPath()
+        {
+            return await PermissionService.ListPath(CurrentContext.UserId);
         }
 
         private Tuple<DateTime, DateTime> ConvertTime(IdFilter Time)
