@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace DMS.Rpc.posm.showing_order_with_draw
 {
-    [DisplayName("Quản lý POSM")]
+    [DisplayName("Thu hồi POSM")]
     public class ShowingOrderWithDrawRoute : Root
     {
         public const string Parent = Module + "/posm-order";
