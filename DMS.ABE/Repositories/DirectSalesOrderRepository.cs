@@ -977,6 +977,7 @@ namespace DMS.ABE.Repositories
             if (DirectSalesOrderDAO == null)
                 return false;
             DirectSalesOrderDAO.Id = DirectSalesOrder.Id;
+            DirectSalesOrderDAO.Code = DirectSalesOrder.Code;
             DirectSalesOrderDAO.StoreApprovalStateId = DirectSalesOrder.StoreApprovalStateId; // thay đổi trạng thái phê duyệt cửa hàng
             DirectSalesOrderDAO.UpdatedAt = StaticParams.DateTimeNow;
             await DataContext.SaveChangesAsync();
