@@ -670,7 +670,14 @@ namespace DMS.Repositories
                                 Id = x.Id,
                                 StoreId = x.StoreId,
                                 Username = x.Username,
-                                DisplayName = x.DisplayName
+                                DisplayName = x.DisplayName,
+                                StatusId = x.StatusId,
+                                Status = x.Status == null ? null : new Status
+                                {
+                                    Id = x.Status.Id,
+                                    Code = x.Status.Code,
+                                    Name = x.Status.Name,
+                                }
                             }).ToListAsync();
                 foreach (var Store in Stores)
                 {
