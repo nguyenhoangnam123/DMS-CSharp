@@ -1,5 +1,5 @@
 ﻿{
-  "ShowingOrder": {
+  "ShowingOrderWithDraw": {
     "Id": {
       "IdNotExisted": "Id không tồn tại"
     },
@@ -21,10 +21,10 @@
     "Status": {
       "StatusNotExisted": "Trạng thái không tồn tại"
     },
-    "ShowingOrderContents": {
+    "ShowingOrderContentWithDraws": {
       "ContentEmpty": "Chưa chọn sản phẩm trưng bày"
     },
-    "ShowingOrderContent": {
+    "ShowingOrderContentWithDraw": {
       "Quantity": {
         "QuantityEmpty": "Chưa nhập số lượng"
       },
