@@ -53,7 +53,7 @@ namespace DMS.ABE.Entities
         public GuidFilter RowId { get; set; }
         public DateFilter CreatedAt { get; set; }
         public DateFilter UpdatedAt { get; set; }
-        public bool HasChildren { get; set; }
+        public bool? HasChildren { get; set; }
         public List<CategoryFilter> OrFilter { get; set; }
         public CategoryOrder OrderBy { get; set; }
         public CategorySelect Selects { get; set; }

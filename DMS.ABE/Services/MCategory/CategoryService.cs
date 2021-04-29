@@ -61,14 +61,14 @@ namespace DMS.ABE.Services.MCategory
                 {
                     Category.HasChildren = AllCategories.Any(x => x.ParentId.HasValue && x.ParentId.Value == Category.Id);
                 }
-                if (CategoryFilter.HasChildren)
+                if (CategoryFilter.HasChildren.HasValue && CategoryFilter.HasChildren.Value)
                 {
                     Categories = Categories.Where(x => x.HasChildren).ToList();
-                }
-                else
+                } // có category con
+                else if (CategoryFilter.HasChildren.HasValue && !CategoryFilter.HasChildren.Value)
                 {
-                    Categories = Categories.Where(x => x.HasChildren == false).ToList();
-                }
+                    Categories = Categories.Where(x => !x.HasChildren).ToList();
+                } // không có category con
                 int result = Categories.Count;
                 return result;
             }
@@ -104,14 +104,14 @@ namespace DMS.ABE.Services.MCategory
                 {
                     Category.HasChildren = AllCategories.Any(x => x.ParentId.HasValue && x.ParentId.Value == Category.Id);
                 }
-                if (CategoryFilter.HasChildren)
+                if (CategoryFilter.HasChildren.HasValue && CategoryFilter.HasChildren.Value)
                 {
                     Categories = Categories.Where(x => x.HasChildren).ToList();
-                }
-                else
+                } // có category con
+                else if(CategoryFilter.HasChildren.HasValue && !CategoryFilter.HasChildren.Value)
                 {
-                    Categories = Categories.Where(x => x.HasChildren == false).ToList();
-                }
+                    Categories = Categories.Where(x => !x.HasChildren).ToList();
+                } // không có category con
                 List<long> CategoryIds = Categories.Select(x => x.Id).ToList();
                 List<Product> Products = await UOW.ProductRepository.List(new ProductFilter
                 {
@@ -121,11 +121,11 @@ namespace DMS.ABE.Services.MCategory
                     Take = int.MaxValue,
                     OrderBy = ProductOrder.Id,
                 });
-                if (CategoryFilter.HasChildren)
+                if (CategoryFilter.HasChildren.HasValue && CategoryFilter.HasChildren.Value || CategoryFilter.HasChildren == null)
                 {
                     List<Category> Children = AllCategories.Where(x => x.ParentId.HasValue && CategoryIds.Contains(x.ParentId.Value)).ToList(); // lấy ra tất cả con
                     Categories = Categories.Union(Children).ToList();
-                }
+                } // lấy ra đống con đi kèm nếu điều kiện có con = true hoặc bỏ trống
                 foreach (Category Category in Categories)
                 {
                     Category.ProductCounter = Products.Where(x => x.CategoryId == Category.Id).Count();

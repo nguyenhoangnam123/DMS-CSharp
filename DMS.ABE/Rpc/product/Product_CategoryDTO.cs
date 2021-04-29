@@ -60,7 +60,7 @@ namespace DMS.ABE.Rpc.product
         public GuidFilter RowId { get; set; }
         public DateFilter CreatedAt { get; set; }
         public DateFilter UpdatedAt { get; set; }
-        public bool HasChildren { get; set; }
+        public bool? HasChildren { get; set; }
         public CategoryOrder OrderBy { get; set; }
     }
 }
