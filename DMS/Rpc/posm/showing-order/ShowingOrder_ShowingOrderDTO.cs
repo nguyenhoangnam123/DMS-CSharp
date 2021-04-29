@@ -49,6 +49,7 @@ namespace DMS.Rpc.posm.showing_order
             this.Status = ShowingOrder.Status == null ? null : new ShowingOrder_StatusDTO(ShowingOrder.Status);
             this.Store = ShowingOrder.Store == null ? null : new ShowingOrder_StoreDTO(ShowingOrder.Store);
             this.ShowingOrderContents = ShowingOrder.ShowingOrderContents?.Select(x => new ShowingOrder_ShowingOrderContentDTO(x)).ToList();
+            this.Stores = ShowingOrder.Stores == null ? null : ShowingOrder.Stores.Select(x => new  ShowingOrder_StoreDTO(ShowingOrder.Store)).ToList();
             this.CreatedAt = ShowingOrder.CreatedAt;
             this.UpdatedAt = ShowingOrder.UpdatedAt;
             this.Errors = ShowingOrder.Errors;
