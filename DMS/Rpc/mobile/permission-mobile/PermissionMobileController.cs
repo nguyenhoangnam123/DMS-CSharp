@@ -801,6 +801,7 @@ namespace DMS.Rpc.mobile.permission_mobile
                 Result.Add(Item);
             }
             Result = Result
+                .Where(x => x.Revenue > 0)
                 .OrderByDescending(x => x.Revenue)
                 .Take(5)
                 .ToList();
@@ -885,6 +886,7 @@ namespace DMS.Rpc.mobile.permission_mobile
             }
 
             Result = Result
+                .Where(x => x.Revenue > 0)
                 .OrderByDescending(x => x.Revenue)
                 .Take(5)
                 .ToList();
@@ -1340,6 +1342,7 @@ namespace DMS.Rpc.mobile.permission_mobile
                 Result.Add(Item);
             }
             Result = Result
+                .Where(x => x.Revenue > 0)
                 .OrderByDescending(x => x.Revenue)
                 .Take(5)
                 .ToList();
@@ -1425,6 +1428,7 @@ namespace DMS.Rpc.mobile.permission_mobile
             }
 
             Result = Result
+                .Where(x => x.Revenue > 0)
                 .OrderByDescending(x => x.Revenue)
                 .Take(5)
                 .ToList();
