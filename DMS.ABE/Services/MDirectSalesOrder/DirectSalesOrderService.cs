@@ -393,11 +393,12 @@ namespace DMS.ABE.Services.MDirectSalesOrder
                 }
             }
 
-            //nhân giá với thuế
             foreach (var item in Items)
             {
-                item.SalePrice = result[item.Id] * (1 + item.Product.TaxType.Percentage / 100);
+                //item.SalePrice = result[item.Id] * (1 + item.Product.TaxType.Percentage / 100);
+                item.SalePrice = result[item.Id];
             }
+            // gia hien thi tren man hinh khong tinh thue
             return Items;
         } // áp giá cho list item
 
