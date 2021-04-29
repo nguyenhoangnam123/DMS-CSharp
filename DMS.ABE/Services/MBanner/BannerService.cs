@@ -50,6 +50,11 @@ namespace DMS.ABE.Services.MBanner
         {
             try
             {
+                Store Store = await GetStore();
+                if (Store != null)
+                {
+                    BannerFilter.OrganizationId = new IdFilter { Equal = Store.OrganizationId };
+                } // filter banner theo org cua hang
                 int result = await UOW.BannerRepository.Count(BannerFilter);
                 return result;
             }
@@ -72,6 +77,11 @@ namespace DMS.ABE.Services.MBanner
         {
             try
             {
+                Store Store = await GetStore();
+                if(Store != null)
+                {
+                    BannerFilter.OrganizationId = new IdFilter { Equal = Store.OrganizationId };
+                } // filter banner theo org cua hang
                 List<Banner> Banners = await UOW.BannerRepository.List(BannerFilter);
                 return Banners;
             }
@@ -267,6 +277,22 @@ namespace DMS.ABE.Services.MBanner
         {
 
             return filter;
+        }
+
+        private async Task<Store> GetStore()
+        {
+            var StoreUserId = CurrentContext.StoreUserId;
+            StoreUser StoreUser = await UOW.StoreUserRepository.Get(StoreUserId);
+            if (StoreUser == null)
+            {
+                return null;
+            } // check storeUser co ton tai khong
+            Store Store = await UOW.StoreRepository.Get(StoreUser.StoreId);
+            if (Store == null)
+            {
+                return null;
+            } // check store tuong ung vs storeUser co ton tai khong
+            return Store;
         }
     }
 }
