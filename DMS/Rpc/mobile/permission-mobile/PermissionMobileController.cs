@@ -862,10 +862,13 @@ namespace DMS.Rpc.mobile.permission_mobile
                 Item Item = Items
                     .Where(x => x.Id == ItemId)
                     .FirstOrDefault();
-                PermissionMobile_TopRevenueByItemDTO ResultItem = new PermissionMobile_TopRevenueByItemDTO();
-                ResultItem.ProductId = Item.Product.Id;
-                ResultItem.Revenue = groupItem.Revenue.HasValue ? groupItem.Revenue.Value : 0;
-                Result.Add(ResultItem);
+                if(Item != null)
+                {
+                    PermissionMobile_TopRevenueByItemDTO ResultItem = new PermissionMobile_TopRevenueByItemDTO();
+                    ResultItem.ProductId = Item.Product.Id;
+                    ResultItem.Revenue = groupItem.Revenue.HasValue ? groupItem.Revenue.Value : 0;
+                    Result.Add(ResultItem);
+                }
             }
             Result = Result
                 .GroupBy(x => x.ProductId)
@@ -1399,10 +1402,13 @@ namespace DMS.Rpc.mobile.permission_mobile
                 Item Item = Items
                     .Where(x => x.Id == ItemId)
                     .FirstOrDefault();
-                PermissionMobile_TopRevenueByItemDTO ResultItem = new PermissionMobile_TopRevenueByItemDTO();
-                ResultItem.ProductId = Item.Product.Id;
-                ResultItem.Revenue = groupItem.Revenue.HasValue ? groupItem.Revenue.Value : 0;
-                Result.Add(ResultItem);
+                if(Item != null)
+                {
+                    PermissionMobile_TopRevenueByItemDTO ResultItem = new PermissionMobile_TopRevenueByItemDTO();
+                    ResultItem.ProductId = Item.Product.Id;
+                    ResultItem.Revenue = groupItem.Revenue.HasValue ? groupItem.Revenue.Value : 0;
+                    Result.Add(ResultItem);
+                }
             }
             Result = Result
                 .GroupBy(x => x.ProductId)
