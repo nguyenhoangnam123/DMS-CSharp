@@ -53,6 +53,7 @@ namespace DMS.ABE.Services.MDirectSalesOrder
                 if (Store == null)
                     return null;
                 DirectSalesOrder.StoreUserCreatorId = CurrentContext.StoreUserId;
+                DirectSalesOrder.BuyerStoreId = Store.Id; // cửa hàng mua là cửa hàng của storeUser hiện tại
                 DirectSalesOrder.Code = DirectSalesOrder.Id.ToString();
                 DirectSalesOrder.DirectSalesOrderSourceTypeId = DirectSalesOrderSourceTypeEnum.FROM_STORE.Id; // set source Type
                 DirectSalesOrder.OrderDate = StaticParams.DateTimeNow; // khi tao moi don hang trne mobile mac dinh OrderDate = DateTime Now
