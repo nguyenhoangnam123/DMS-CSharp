@@ -225,8 +225,11 @@ namespace DMS.Rpc.direct_sales_order
             DirectSalesOrder_DirectSalesOrderDTO = new DirectSalesOrder_DirectSalesOrderDTO(DirectSalesOrder);
             foreach (var DirectSalesOrderContent in DirectSalesOrder_DirectSalesOrderDTO.DirectSalesOrderContents)
             {
-                TaxType TaxType = TaxTypes.Where(x => x.Percentage == DirectSalesOrderContent.TaxPercentage).FirstOrDefault();
-                DirectSalesOrderContent.TaxType = new DirectSalesOrder_TaxTypeDTO(TaxType);
+                TaxType TaxType = TaxTypes.Where(x => x.Percentage == DirectSalesOrderContent.TaxPercentage).FirstOrDefault(); // phần trăm thuế ở content có thể null
+                if(TaxType != null)
+                {
+                    DirectSalesOrderContent.TaxType = new DirectSalesOrder_TaxTypeDTO(TaxType);
+                }
             }
             return DirectSalesOrder_DirectSalesOrderDTO;
         }
