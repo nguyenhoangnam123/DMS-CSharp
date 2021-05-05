@@ -61,6 +61,7 @@ namespace DMS.ABE.Rpc.product
             {
                 Skip = 0,
                 Take = 1,
+                Id = new IdFilter { Equal = Product_ProductPotentialDTO.ProductId  },
                 Selects = ProductSelect.Category,
             });
             Product Product = ProductEntitiess.FirstOrDefault();
