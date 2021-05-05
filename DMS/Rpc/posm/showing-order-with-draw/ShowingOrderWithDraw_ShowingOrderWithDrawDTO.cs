@@ -49,6 +49,7 @@ namespace DMS.Rpc.posm.showing_order_with_draw
             this.Status = ShowingOrderWithDraw.Status == null ? null : new ShowingOrderWithDraw_StatusDTO(ShowingOrderWithDraw.Status);
             this.Store = ShowingOrderWithDraw.Store == null ? null : new ShowingOrderWithDraw_StoreDTO(ShowingOrderWithDraw.Store);
             this.ShowingOrderContentWithDraws = ShowingOrderWithDraw.ShowingOrderContentWithDraws?.Select(x => new ShowingOrderWithDraw_ShowingOrderContentWithDrawDTO(x)).ToList();
+            this.Stores = ShowingOrderWithDraw.Stores?.Select(x => new ShowingOrderWithDraw_StoreDTO(x)).ToList();
             this.CreatedAt = ShowingOrderWithDraw.CreatedAt;
             this.UpdatedAt = ShowingOrderWithDraw.UpdatedAt;
             this.Errors = ShowingOrderWithDraw.Errors;
