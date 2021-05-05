@@ -268,7 +268,6 @@ namespace DMS.Rpc.organization
             OrganizationFilter.Phone = Organization_OrganizationFilterDTO.Phone;
             OrganizationFilter.Address = Organization_OrganizationFilterDTO.Address;
             OrganizationFilter.Email = Organization_OrganizationFilterDTO.Email;
-            OrganizationFilter.IsDisplay = true;
             return OrganizationFilter;
         }
 
