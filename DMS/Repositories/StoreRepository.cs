@@ -189,6 +189,25 @@ namespace DMS.Repositories
                     query = query.Where(q => q.StoreStatusId, filter.StoreStatusId);
                 }
             }
+            if(filter.StoreUserStatusId != null && filter.StoreUserStatusId.HasValue)
+            {
+                if(filter.StoreUserStatusId.Equal == StoreUserStatusEnum.NOT_YET_CREATED.Id)
+                {
+                    query = query.Where(q => q.StoreUsers.FirstOrDefault() == null);
+                } // filter các cửa hàng chưa mở tài khoản
+                if (filter.StoreUserStatusId.Equal == StoreUserStatusEnum.ALREADY_CREATED.Id)
+                {
+                    query = query
+                        .Where(q => q.StoreUsers.FirstOrDefault() != null)
+                        .Where(q => q.StoreUsers.FirstOrDefault().StatusId == StatusEnum.ACTIVE.Id);
+                } // filter các cửa hàng chưa mở tài khoản
+                if (filter.StoreUserStatusId.Equal == StoreUserStatusEnum.ALREADY_LOCKED.Id)
+                {
+                    query = query
+                        .Where(q => q.StoreUsers.FirstOrDefault() != null)
+                        .Where(q => q.StoreUsers.FirstOrDefault().StatusId == StatusEnum.INACTIVE.Id);
+                } // filter các cửa hàng chưa mở tài khoản
+            }
 
             query = OrFilter(query, filter);
             query = query.Distinct();

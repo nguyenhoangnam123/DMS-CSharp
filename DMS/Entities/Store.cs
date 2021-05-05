@@ -97,6 +97,7 @@ namespace DMS.Entities
         public IdFilter ProvinceId { get; set; }
         public IdFilter DistrictId { get; set; }
         public IdFilter WardId { get; set; }
+        public IdFilter StoreUserStatusId { get; set; }
         public StringFilter Address { get; set; }
         public StringFilter UnsignAddress { get; set; }
         public StringFilter DeliveryAddress { get; set; }

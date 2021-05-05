@@ -1612,6 +1612,8 @@ namespace DMS.Rpc.store
             StoreFilter.OrganizationId = Store_StoreFilterDTO.OrganizationId;
             StoreFilter.StoreTypeId = Store_StoreFilterDTO.StoreTypeId;
             StoreFilter.StoreGroupingId = Store_StoreFilterDTO.StoreGroupingId;
+            StoreFilter.StoreUserStatusId = Store_StoreFilterDTO.StoreUserStatusId;
+
             StoreFilter.Telephone = Store_StoreFilterDTO.Telephone;
             StoreFilter.ProvinceId = Store_StoreFilterDTO.ProvinceId;
             StoreFilter.DistrictId = Store_StoreFilterDTO.DistrictId;

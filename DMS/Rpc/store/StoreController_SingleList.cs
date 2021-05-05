@@ -227,6 +227,12 @@ namespace DMS.Rpc.store
             return Store_StoreTypeDTOs;
         }
 
+        [Route(StoreRoute.FilterListStoreUserStatus), HttpPost]
+        public async Task<List<GenericEnum>> FilterListStoreUserStatus()
+        {
+            return StoreUserStatusEnum.StoreUserStatusEnumList;
+        }
+
         [Route(StoreRoute.SingleListAppUser), HttpPost]
         public async Task<List<Store_AppUserDTO>> SingleListAppUser([FromBody] Store_AppUserFilterDTO Store_AppUserFilterDTO)
         {
