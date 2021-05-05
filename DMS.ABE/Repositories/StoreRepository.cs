@@ -670,7 +670,7 @@ namespace DMS.ABE.Repositories
                         }).ToListAsync();
                 foreach (var Store in Stores)
                 {
-                    Store.StoreAppUserMappings = StoreAppUserMappings.Where(x => x.StoreId == Store.Id).Skip(0).Take(1).ToList();
+                    Store.StoreAppUserMappings = StoreAppUserMappings.Where(x => x.StoreId == Store.Id).Skip(0).Take(int.MaxValue).ToList();
                 }
             }
 
