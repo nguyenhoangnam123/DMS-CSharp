@@ -227,6 +227,9 @@ namespace DMS.Rpc.posm.showing_order_with_draw
             Data.Start = Start.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy");
             Data.End = End.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy");
             Data.Data = ShowingOrderWithDraw_ShowingOrderWithDrawDTOs;
+            Data.Total = ShowingOrderWithDraw_ShowingOrderWithDrawDTOs
+                .Sum(x => x.Total)
+                .ToString("N0", culture);
             Data.RootName = OrgRoot == null ? "" : OrgRoot.Name.ToUpper();
             using (var document = StaticParams.DocumentFactory.Open(input, output, "xlsx"))
             {

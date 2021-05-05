@@ -179,7 +179,7 @@ namespace DMS.Services.MStore
                     Skip = 0,
                     Take = 1,
                     StoreId = new IdFilter { Equal = Id },
-                    Selects = StoreUserSelect.Id | StoreUserSelect.Username,
+                    Selects = StoreUserSelect.Id | StoreUserSelect.Username | StoreUserSelect.Status,
                 });
 
             if(StoreUsers.FirstOrDefault() != null)

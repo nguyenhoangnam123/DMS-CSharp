@@ -230,6 +230,9 @@ namespace DMS.Rpc.posm.showing_order
             Data.Start = Start.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy");
             Data.End = End.AddHours(CurrentContext.TimeZone).ToString("dd-MM-yyyy");
             Data.Data = ShowingOrder_ShowingOrderDTOs;
+            Data.Total = ShowingOrder_ShowingOrderDTOs
+                .Sum(x => x.Total)
+                .ToString("N0", culture);
             Data.RootName = OrgRoot == null ? "" : OrgRoot.Name.ToUpper();
             using (var document = StaticParams.DocumentFactory.Open(input, output, "xlsx"))
             {
