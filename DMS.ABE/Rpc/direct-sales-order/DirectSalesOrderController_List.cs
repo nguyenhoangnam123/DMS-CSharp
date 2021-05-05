@@ -110,7 +110,7 @@ namespace DMS.ABE.Rpc.direct_sales_order
                 Selects = StoreSelect.Id | StoreSelect.StoreAppUserMappings | StoreSelect.Organization
             }); // lay ra pham vi di tuyen + ou cua cua hang
             Store Store = Stores.FirstOrDefault();
-            if (Store.StoreAppUserMappings == null)
+            if (Store.StoreAppUserMappings.Count == 0)
             {
                 AppUserFilter.OrganizationId = new IdFilter { Equal = Store.OrganizationId };
             } // neu khong co pham vi di tuyen, filter AU theo Id OU
