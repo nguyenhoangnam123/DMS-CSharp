@@ -172,16 +172,22 @@ namespace DMS.Services.MStore
             };
             int count = await UOW.StoreCheckingRepository.Count(StoreCheckingFilter);
             Store.HasChecking = count != 0 ? true : false;
-            //Store.RequestState = await WorkflowService.GetRequestState(Store.RowId);
-            //if (Store.RequestState == null)
-            //{
-            //    Store.RequestWorkflowStepMappings = new List<RequestWorkflowStepMapping>();
-            //}
-            //else
-            //{
-            //    Store.RequestStateId = Store.RequestState.Id;
-            //    Store.RequestWorkflowStepMappings = await WorkflowService.ListRequestWorkflowStepMapping(Store.RowId);
-            //}
+
+            List<StoreUser> StoreUsers = await UOW.StoreUserRepository.List(
+                new StoreUserFilter
+                {
+                    Skip = 0,
+                    Take = 1,
+                    StoreId = new IdFilter { Equal = Id },
+                    Selects = StoreUserSelect.Username,
+                });
+
+            if(StoreUsers.FirstOrDefault() != null)
+            {
+                Store.StoreUser = StoreUsers.FirstOrDefault();
+                Store.StoreUserId = Store.StoreUser.Id;
+            }
+
             return Store;
         }
 
@@ -199,7 +205,7 @@ namespace DMS.Services.MStore
                 var Counter = await UOW.IdGenerateRepository.GetCounter();
                 StoreCodeGenerate(Store, Counter);
 
-                if(Store.BrandInStores != null)
+                if (Store.BrandInStores != null)
                 {
                     Store.BrandInStores.ForEach(x => x.CreatorId = CurrentContext.UserId);
                 }
@@ -327,7 +333,7 @@ namespace DMS.Services.MStore
                     }
                 }
 
-                if (Store.StoreStatusId  != oldData.StoreStatusId)
+                if (Store.StoreStatusId != oldData.StoreStatusId)
                 {
                     StoreStatusHistory StoreStatusHistory = new StoreStatusHistory
                     {
@@ -350,7 +356,7 @@ namespace DMS.Services.MStore
 
                 await UOW.Begin();
                 await UOW.StoreRepository.Update(Store);
-                if(Store.StatusId == StatusEnum.INACTIVE.Id)
+                if (Store.StatusId == StatusEnum.INACTIVE.Id)
                 {
                     await UOW.AppUserStoreMappingRepository.Delete(null, oldData.Id);
                 }
@@ -768,7 +774,7 @@ namespace DMS.Services.MStore
                     EventMessageWards.Add(EventMessageWard);
                 }
 
-                if(Store.BrandInStores != null)
+                if (Store.BrandInStores != null)
                 {
                     foreach (var BrandInStore in Store.BrandInStores)
                     {
