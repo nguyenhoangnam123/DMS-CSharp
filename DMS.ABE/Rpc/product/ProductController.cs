@@ -62,7 +62,7 @@ namespace DMS.ABE.Rpc.product
                 Skip = 0,
                 Take = 1,
                 Id = new IdFilter { Equal = Product_ProductPotentialDTO.ProductId  },
-                Selects = ProductSelect.Category,
+                Selects = ProductSelect.ALL,
             });
             Product Product = ProductEntitiess.FirstOrDefault();
             if (Product == null)
