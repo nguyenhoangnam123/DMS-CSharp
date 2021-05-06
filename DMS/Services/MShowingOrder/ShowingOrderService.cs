@@ -121,7 +121,7 @@ namespace DMS.Services.MShowingOrder
                 }
                 await UOW.ShowingOrderRepository.BulkMerge(ShowingOrders);
                 NotifyUsed(ShowingOrder);
-                Sync(ShowingOrders);
+                Sync(ShowingOrders, RoutingKeyEnum.POSMTransactionCreate);
                 await Logging.CreateAuditLog(ShowingOrder, new { }, nameof(ShowingOrderService));
                 return ShowingOrder;
             }
@@ -143,7 +143,7 @@ namespace DMS.Services.MShowingOrder
                 await UOW.ShowingOrderRepository.Update(ShowingOrder);
 
                 NotifyUsed(ShowingOrder);
-                Sync(new List<ShowingOrder> { ShowingOrder });
+                Sync(new List<ShowingOrder> { ShowingOrder }, RoutingKeyEnum.POSMTransactionUpdate);
                 ShowingOrder = await UOW.ShowingOrderRepository.Get(ShowingOrder.Id);
                 await Logging.CreateAuditLog(ShowingOrder, oldData, nameof(ShowingOrderService));
                 return ShowingOrder;
@@ -163,6 +163,9 @@ namespace DMS.Services.MShowingOrder
             try
             {
                 await UOW.ShowingOrderRepository.Delete(ShowingOrder);
+                Sync(new List<ShowingOrder> {
+                    ShowingOrder
+                }, RoutingKeyEnum.POSMTransactionDelete);
                 await Logging.CreateAuditLog(new { }, ShowingOrder, nameof(ShowingOrderService));
                 return ShowingOrder;
             }
@@ -338,7 +341,7 @@ namespace DMS.Services.MShowingOrder
             }
         }
 
-        private void Sync(List<ShowingOrder> ShowingOrders)
+        private void Sync(List<ShowingOrder> ShowingOrders, GenericEnum routeKey)
         {
             List<Fact_POSMTransaction> Transactions = new List<Fact_POSMTransaction>();
             foreach (ShowingOrder Order in ShowingOrders)
@@ -369,7 +372,7 @@ namespace DMS.Services.MShowingOrder
                 RowId = Guid.NewGuid(),
                 Time = StaticParams.DateTimeNow,
             }).ToList();
-            RabbitManager.PublishList(TransactionMessages, RoutingKeyEnum.POSMTransactionCreate); // tạo POSMtransaction trên DMS Report
+            RabbitManager.PublishList(TransactionMessages, routeKey); // POSMtransaction trên DMS Report
         }
     }
 }

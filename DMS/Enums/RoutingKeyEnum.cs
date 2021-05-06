@@ -52,5 +52,6 @@ namespace DMS.Enums
 
         public static GenericEnum POSMTransactionCreate = new GenericEnum { Id = 123, Code = "ShowingCategory.Create", Name = "Fact_POSMTransaction Create" };
         public static GenericEnum POSMTransactionUpdate = new GenericEnum { Id = 124, Code = "ShowingCategory.Update", Name = "Fact_POSMTransaction Update" };
+        public static GenericEnum POSMTransactionDelete = new GenericEnum { Id = 125, Code = "ShowingCategory.Delete", Name = "Fact_POSMTransaction Delete" };
     }
 }

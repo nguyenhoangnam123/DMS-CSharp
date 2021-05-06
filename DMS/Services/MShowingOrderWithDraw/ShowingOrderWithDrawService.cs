@@ -121,7 +121,7 @@ namespace DMS.Services.MShowingOrderWithDraw
                 }
                 await UOW.ShowingOrderWithDrawRepository.BulkMerge(ShowingOrderWithDraws);
                 NotifyUsed(ShowingOrderWithDraw);
-                Sync(ShowingOrderWithDraws);
+                Sync(ShowingOrderWithDraws, RoutingKeyEnum.POSMTransactionCreate);
                 await Logging.CreateAuditLog(ShowingOrderWithDraw, new { }, nameof(ShowingOrderWithDrawService));
                 return ShowingOrderWithDraw;
             }
@@ -145,7 +145,7 @@ namespace DMS.Services.MShowingOrderWithDraw
                 NotifyUsed(ShowingOrderWithDraw);
                 Sync(new List<ShowingOrderWithDraw> {
                     ShowingOrderWithDraw
-                });
+                }, RoutingKeyEnum.POSMTransactionUpdate);
                 ShowingOrderWithDraw = await UOW.ShowingOrderWithDrawRepository.Get(ShowingOrderWithDraw.Id);
                 await Logging.CreateAuditLog(ShowingOrderWithDraw, oldData, nameof(ShowingOrderWithDrawService));
                 return ShowingOrderWithDraw;
@@ -165,6 +165,9 @@ namespace DMS.Services.MShowingOrderWithDraw
             try
             {
                 await UOW.ShowingOrderWithDrawRepository.Delete(ShowingOrderWithDraw);
+                Sync(new List<ShowingOrderWithDraw> {
+                    ShowingOrderWithDraw
+                }, RoutingKeyEnum.POSMTransactionDelete);
                 await Logging.CreateAuditLog(new { }, ShowingOrderWithDraw, nameof(ShowingOrderWithDrawService));
                 return ShowingOrderWithDraw;
             }
@@ -340,7 +343,7 @@ namespace DMS.Services.MShowingOrderWithDraw
             }
         }
 
-        private void Sync(List<ShowingOrderWithDraw> ShowingOrderWithDraws)
+        private void Sync(List<ShowingOrderWithDraw> ShowingOrderWithDraws, GenericEnum routeKey)
         {
             List<Fact_POSMTransaction> Transactions = new List<Fact_POSMTransaction>();
             foreach (ShowingOrderWithDraw Order in ShowingOrderWithDraws)
@@ -371,7 +374,7 @@ namespace DMS.Services.MShowingOrderWithDraw
                 RowId = Guid.NewGuid(),
                 Time = StaticParams.DateTimeNow,
             }).ToList();
-            RabbitManager.PublishList(TransactionMessages, RoutingKeyEnum.POSMTransactionCreate); // tạo POSMtransaction trên DMS Report
+            RabbitManager.PublishList(TransactionMessages, routeKey); // POSMtransaction trên DMS Report
         }
     }
 }
