@@ -244,7 +244,7 @@ namespace DMS.ABE.Rpc.product
             ProductFilter ProductFilter = new ProductFilter();
             ProductFilter.Selects = ProductSelect.Code | ProductSelect.Name
                 | ProductSelect.Id | ProductSelect.ProductProductGroupingMapping | ProductSelect.ProductType
-                | ProductSelect.Status | ProductSelect.UsedVariation | ProductSelect.Category | ProductSelect.VariationGrouping;
+                | ProductSelect.Status | ProductSelect.UsedVariation | ProductSelect.Category | ProductSelect.VariationGrouping | ProductSelect.TaxType;
             ProductFilter.Skip = Product_ProductFilterDTO.Skip;
             ProductFilter.Take = Product_ProductFilterDTO.Take;
             ProductFilter.OrderBy = Product_ProductFilterDTO.OrderBy;

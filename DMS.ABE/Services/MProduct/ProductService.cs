@@ -116,14 +116,29 @@ namespace DMS.ABE.Services.MProduct
                 };
                 List<Item> Items = await UOW.ItemRepository.List(ItemFilter);
                 Items = await ApplyPrice(Items, Store.Id); // ap gia theo priceList
+                Dictionary<Product, decimal> Dict = new Dictionary<Product, decimal>(); // dictionary de order Product theo Item salePrice
                 foreach (Product Product in Products)
                 {
-                    Product.Items = Items.Where(x => x.ProductId == Product.Id).ToList();
+                    Item Item = Items.Where(x => x.ProductId == Product.Id).FirstOrDefault();
+                    Product.Items = new List<Item> { Item  }; // moi product lay ra mot item duy nhat
                     Product.VariationCounter = Items.Where(i => i.ProductId == Product.Id).Count();
                     Product.IsFavorite = false;
                     int LikeCount = StoreUserFavoriteProductMappings.Where(x => x.FavoriteProductId == Product.Id).Count();
                     if (LikeCount > 0) Product.IsFavorite = true;
+                    Dict.Add(Product, Item.SalePrice.Value);
                 }
+                if(ProductFilter.OrderBy == ProductOrder.SalePrice)
+                {
+                    if(ProductFilter.OrderType == OrderType.DESC)
+                    {
+                        Dict = Dict.OrderByDescending(x => x.Value).ToDictionary(x => x.Key, x=> x.Value);
+                    }
+                    if (ProductFilter.OrderType == OrderType.ASC)
+                    {
+                        Dict = Dict.OrderBy(x => x.Value).ToDictionary(x => x.Key, x => x.Value);
+                    }
+                }
+                Products = new List<Product>(Dict.Keys);
                 return Products;
             }
             catch (Exception ex)
