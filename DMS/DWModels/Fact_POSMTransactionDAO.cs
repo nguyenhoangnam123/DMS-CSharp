@@ -8,7 +8,6 @@ namespace DMS.DWModels
         public long Id { get; set; }
         public long? ShowingOrderId { get; set; }
         public long? ShowingOrderWithDrawId { get; set; }
-        public long POSMTransactionId { get; set; }
         public long OrganizationId { get; set; }
         public long StoreId { get; set; }
         public long ItemId { get; set; }
