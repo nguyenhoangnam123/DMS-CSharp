@@ -970,7 +970,11 @@ namespace DMS.DWModels
 
                 entity.Property(e => e.Date).HasColumnType("datetime");
 
+                entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+
                 entity.Property(e => e.SalePrice).HasColumnType("decimal(18, 4)");
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
             });
 
             modelBuilder.Entity<Fact_ProblemDAO>(entity =>

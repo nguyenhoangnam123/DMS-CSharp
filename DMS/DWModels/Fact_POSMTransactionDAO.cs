@@ -17,6 +17,8 @@ namespace DMS.DWModels
         public long TransactionTypeId { get; set; }
         public DateTime Date { get; set; }
         public DateTime CreatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; }
+        public DateTime? DeletedAt { get; set; }
         public decimal Amount { get; set; }
     }
 }
