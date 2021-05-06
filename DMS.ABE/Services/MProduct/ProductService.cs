@@ -107,7 +107,6 @@ namespace DMS.ABE.Services.MProduct
                 ItemFilter ItemFilter = new ItemFilter
                 {
                     ProductId = new IdFilter { In = ProductIds },
-                    StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id },
                     Selects = ItemSelect.ALL,
                     OrderBy = ItemOrder.Id,
                     OrderType = OrderType.ASC,
@@ -137,7 +136,7 @@ namespace DMS.ABE.Services.MProduct
                     {
                         Dict = Dict.OrderBy(x => x.Value).ToDictionary(x => x.Key, x => x.Value);
                     }
-                }
+                } // sap xep lai dict theo gia cua Item
                 Products = new List<Product>(Dict.Keys);
                 return Products;
             }
