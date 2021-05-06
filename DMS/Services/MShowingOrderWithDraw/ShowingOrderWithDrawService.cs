@@ -1,16 +1,13 @@
 ﻿using DMS.Common;
-using DMS.Helpers;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using OfficeOpenXml;
-using DMS.Repositories;
 using DMS.Entities;
 using DMS.Enums;
 using DMS.Handlers;
-using DMS.DWEntities;
+using DMS.Helpers;
+using DMS.Repositories;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace DMS.Services.MShowingOrderWithDraw
 {
@@ -306,7 +303,7 @@ namespace DMS.Services.MShowingOrderWithDraw
             }
 
             {
-                if(ShowingOrderWithDraw.Stores != null)
+                if (ShowingOrderWithDraw.Stores != null)
                 {
                     List<long> StoreIds = ShowingOrderWithDraw.Stores.Select(x => x.Id).Distinct().ToList();
                     List<EventMessage<Store>> storeMessages = StoreIds.Select(x => new EventMessage<Store>
@@ -345,12 +342,12 @@ namespace DMS.Services.MShowingOrderWithDraw
 
         private void Sync(List<ShowingOrderWithDraw> ShowingOrderWithDraws, GenericEnum routeKey)
         {
-            List<Fact_POSMTransaction> Transactions = new List<Fact_POSMTransaction>();
+            List<POSMTransaction> Transactions = new List<POSMTransaction>();
             foreach (ShowingOrderWithDraw Order in ShowingOrderWithDraws)
             {
                 foreach (var Content in Order.ShowingOrderContentWithDraws)
                 {
-                    Fact_POSMTransaction Transaction = new Fact_POSMTransaction
+                    POSMTransaction Transaction = new POSMTransaction
                     {
                         ShowingOrderWithDrawId = Order.Id,
                         OrganizationId = Order.OrganizationId,
@@ -367,10 +364,10 @@ namespace DMS.Services.MShowingOrderWithDraw
                     Transactions.Add(Transaction);
                 }
             }
-            List<EventMessage<Fact_POSMTransaction>> TransactionMessages = Transactions.Select(x => new EventMessage<Fact_POSMTransaction>
+            List<EventMessage<POSMTransaction>> TransactionMessages = Transactions.Select(x => new EventMessage<POSMTransaction>
             {
                 Content = x,
-                EntityName = nameof(Fact_POSMTransaction),
+                EntityName = nameof(POSMTransaction),
                 RowId = Guid.NewGuid(),
                 Time = StaticParams.DateTimeNow,
             }).ToList();

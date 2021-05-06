@@ -1,16 +1,15 @@
 ﻿using DMS.Common;
 using System;
-using System.Diagnostics.CodeAnalysis;
 
-namespace DMS.DWEntities
+namespace DMS.Entities
 {
-    public class Dim_POSMTransactionType : DataEntity, IEquatable<Dim_POSMTransactionType>
+    public class POSMTransactionType : DataEntity, IEquatable<POSMTransactionType>
     {
         public long POSMTransactionTypeId { get; set; }
         public string Code { get; set; }
         public string Name { get; set; }
 
-        public bool Equals(Dim_POSMTransactionType other)
+        public bool Equals(POSMTransactionType other)
         {
             return other != null && POSMTransactionTypeId == other.POSMTransactionTypeId;
         }
