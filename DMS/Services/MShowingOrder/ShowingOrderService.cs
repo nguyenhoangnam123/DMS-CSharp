@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using OfficeOpenXml;
 using DMS.Repositories;
 using DMS.Entities;
+using DMS.DWEntities;
 using DMS.Enums;
 using DMS.Handlers;
 
@@ -119,8 +120,8 @@ namespace DMS.Services.MShowingOrder
                     }
                 }
                 await UOW.ShowingOrderRepository.BulkMerge(ShowingOrders);
-
                 NotifyUsed(ShowingOrder);
+                Sync(ShowingOrders);
                 await Logging.CreateAuditLog(ShowingOrder, new { }, nameof(ShowingOrderService));
                 return ShowingOrder;
             }
@@ -142,6 +143,7 @@ namespace DMS.Services.MShowingOrder
                 await UOW.ShowingOrderRepository.Update(ShowingOrder);
 
                 NotifyUsed(ShowingOrder);
+                Sync(new List<ShowingOrder> { ShowingOrder });
                 ShowingOrder = await UOW.ShowingOrderRepository.Get(ShowingOrder.Id);
                 await Logging.CreateAuditLog(ShowingOrder, oldData, nameof(ShowingOrderService));
                 return ShowingOrder;
@@ -334,6 +336,40 @@ namespace DMS.Services.MShowingOrder
                 };
                 RabbitManager.PublishSingle(OrganizationMessage, RoutingKeyEnum.OrganizationUsed);
             }
+        }
+
+        private void Sync(List<ShowingOrder> ShowingOrders)
+        {
+            List<Fact_POSMTransaction> Transactions = new List<Fact_POSMTransaction>();
+            foreach (ShowingOrder Order in ShowingOrders)
+            {
+                foreach (var Content in Order.ShowingOrderContents)
+                {
+                    Fact_POSMTransaction Transaction = new Fact_POSMTransaction
+                    {
+                        ShowingOrderId = Order.Id,
+                        OrganizationId = Order.OrganizationId,
+                        StoreId = Order.StoreId,
+                        ItemId = Content.ShowingItemId,
+                        Quantity = Content.Quantity,
+                        SalePrice = Content.SalePrice,
+                        UnitOfMeasureId = Content.UnitOfMeasureId,
+                        Amount = Content.Amount,
+                        Date = Order.Date,
+                        CreatedAt = StaticParams.DateTimeNow,
+                        TransactionTypeId = POSMTransactionTypeEnum.ORDER.Id
+                    };
+                    Transactions.Add(Transaction);
+                }
+            }
+            List<EventMessage<Fact_POSMTransaction>> TransactionMessages = Transactions.Select(x => new EventMessage<Fact_POSMTransaction>
+            {
+                Content = x,
+                EntityName = nameof(Fact_POSMTransaction),
+                RowId = Guid.NewGuid(),
+                Time = StaticParams.DateTimeNow,
+            }).ToList();
+            RabbitManager.PublishList(TransactionMessages, RoutingKeyEnum.POSMTransactionCreate); // tạo POSMtransaction trên DMS Report
         }
     }
 }

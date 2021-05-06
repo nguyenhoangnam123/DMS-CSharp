@@ -10,6 +10,7 @@ using DMS.Repositories;
 using DMS.Entities;
 using DMS.Enums;
 using DMS.Handlers;
+using DMS.DWEntities;
 
 namespace DMS.Services.MShowingOrderWithDraw
 {
@@ -82,25 +83,6 @@ namespace DMS.Services.MShowingOrderWithDraw
             try
             {
                 List<ShowingItem> ShowingItems = await UOW.ShowingItemRepository.List(ShowingItemFilter);
-                //var Ids = ShowingItems.Select(x => x.Id).ToList();
-
-                //ShowingInventoryFilter ShowingInventoryFilter = new ShowingInventoryFilter
-                //{
-                //    Skip = 0,
-                //    Take = int.MaxValue,
-                //    ShowingItemId = new IdFilter { In = Ids },
-                //    ShowingWarehouseId = ShowingItemFilter.ShowingWarehouseId,
-                //    Selects = ShowingInventorySelect.SaleStock | ShowingInventorySelect.ShowingItem
-                //};
-
-                //var ShowingInventories = await UOW.ShowingInventoryRepository.List(ShowingInventoryFilter);
-                //var list = ShowingInventories.GroupBy(x => x.ShowingItemId).Select(x => new { ShowingItemId = x.Key, SaleStock = x.Sum(s => s.SaleStock) }).ToList();
-
-                //foreach (var ShowingItem in ShowingItems)
-                //{
-                //    ShowingItem.SaleStock = list.Where(i => i.ShowingItemId == ShowingItem.Id).Select(i => i.SaleStock).FirstOrDefault();
-                //    ShowingItem.HasInventory = ShowingItem.SaleStock > 0;
-                //}
                 return ShowingItems;
             }
             catch (Exception ex)
@@ -138,8 +120,8 @@ namespace DMS.Services.MShowingOrderWithDraw
                     }
                 }
                 await UOW.ShowingOrderWithDrawRepository.BulkMerge(ShowingOrderWithDraws);
-
                 NotifyUsed(ShowingOrderWithDraw);
+                Sync(ShowingOrderWithDraws);
                 await Logging.CreateAuditLog(ShowingOrderWithDraw, new { }, nameof(ShowingOrderWithDrawService));
                 return ShowingOrderWithDraw;
             }
@@ -161,6 +143,9 @@ namespace DMS.Services.MShowingOrderWithDraw
                 await UOW.ShowingOrderWithDrawRepository.Update(ShowingOrderWithDraw);
 
                 NotifyUsed(ShowingOrderWithDraw);
+                Sync(new List<ShowingOrderWithDraw> {
+                    ShowingOrderWithDraw
+                });
                 ShowingOrderWithDraw = await UOW.ShowingOrderWithDrawRepository.Get(ShowingOrderWithDraw.Id);
                 await Logging.CreateAuditLog(ShowingOrderWithDraw, oldData, nameof(ShowingOrderWithDrawService));
                 return ShowingOrderWithDraw;
@@ -353,6 +338,40 @@ namespace DMS.Services.MShowingOrderWithDraw
                 };
                 RabbitManager.PublishSingle(OrganizationMessage, RoutingKeyEnum.OrganizationUsed);
             }
+        }
+
+        private void Sync(List<ShowingOrderWithDraw> ShowingOrderWithDraws)
+        {
+            List<Fact_POSMTransaction> Transactions = new List<Fact_POSMTransaction>();
+            foreach (ShowingOrderWithDraw Order in ShowingOrderWithDraws)
+            {
+                foreach (var Content in Order.ShowingOrderContentWithDraws)
+                {
+                    Fact_POSMTransaction Transaction = new Fact_POSMTransaction
+                    {
+                        ShowingOrderWithDrawId = Order.Id,
+                        OrganizationId = Order.OrganizationId,
+                        StoreId = Order.StoreId,
+                        ItemId = Content.ShowingItemId,
+                        Quantity = Content.Quantity,
+                        SalePrice = Content.SalePrice,
+                        UnitOfMeasureId = Content.UnitOfMeasureId,
+                        Amount = Content.Amount,
+                        Date = Order.Date,
+                        CreatedAt = StaticParams.DateTimeNow,
+                        TransactionTypeId = POSMTransactionTypeEnum.ORDER.Id
+                    };
+                    Transactions.Add(Transaction);
+                }
+            }
+            List<EventMessage<Fact_POSMTransaction>> TransactionMessages = Transactions.Select(x => new EventMessage<Fact_POSMTransaction>
+            {
+                Content = x,
+                EntityName = nameof(Fact_POSMTransaction),
+                RowId = Guid.NewGuid(),
+                Time = StaticParams.DateTimeNow,
+            }).ToList();
+            RabbitManager.PublishList(TransactionMessages, RoutingKeyEnum.POSMTransactionCreate); // tạo POSMtransaction trên DMS Report
         }
     }
 }
