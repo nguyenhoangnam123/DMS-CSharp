@@ -1,4 +1,5 @@
 using DMS.Common;
+using DMS.DWModels;
 using DMS.Handlers;
 using DMS.Helpers;
 using DMS.Models;
@@ -71,6 +72,7 @@ namespace DMS
             services.AddSingleton<IPooledObjectPolicy<IModel>, RabbitModelPooledObjectPolicy>();
             services.AddSingleton<IRabbitManager, RabbitManager>();
             services.AddHostedService<ConsumeRabbitMQHostedService>();
+            
             services.AddDbContext<DataContext>(options =>
             {
                 options.UseSqlServer(Configuration.GetConnectionString("DataContext"), sqlOptions =>
@@ -79,6 +81,15 @@ namespace DMS
                 });
                 options.AddInterceptors(new HintCommandInterceptor());
             });
+            services.AddDbContext<DWContext>(options =>
+            {
+                options.UseSqlServer(Configuration.GetConnectionString("DWContext"), sqlOptions =>
+                {
+                    sqlOptions.AddTempTableSupport();
+                });
+                options.AddInterceptors(new HintCommandInterceptor());
+            });
+
             EntityFrameworkManager.ContextFactory = context =>
             {
                 var optionsBuilder = new DbContextOptionsBuilder<DataContext>();
