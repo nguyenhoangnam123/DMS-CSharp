@@ -7,6 +7,8 @@ namespace DMS.DWEntities
     public class Fact_POSMTransaction : DataEntity, IEquatable<Fact_POSMTransaction>
     {
         public long Id { get; set; }
+        public long? ShowingOrderId { get; set; }
+        public long? ShowingOrderWithDrawId { get; set; }
         public long POSMTransactionId { get; set; }
         public long OrganizationId { get; set; }
         public long StoreId { get; set; }

@@ -48,6 +48,8 @@ namespace DMS.Enums
         public static GenericEnum WardUsed = new GenericEnum { Id = 119, Code = "Ward.Used", Name = "Ward Used" };
         public static GenericEnum StoreUserUsed = new GenericEnum { Id = 120, Code = "StoreUser.Used", Name = "StoreUser Used" };
         public static GenericEnum ShowingItemUsed = new GenericEnum { Id = 121, Code = "ShowingItem.Used", Name = "ShowingItem Used" };
-        public static GenericEnum ShowingCategoryUsed = new GenericEnum { Id = 121, Code = "ShowingCategory.Used", Name = "ShowingCategory Used" };
+        public static GenericEnum ShowingCategoryUsed = new GenericEnum { Id = 122, Code = "ShowingCategory.Used", Name = "ShowingCategory Used" };
+
+        public static GenericEnum POSMTransactionCreate = new GenericEnum { Id = 123, Code = "ShowingCategory.Create", Name = "Fact_POSMTransaction Create" };
     }
 }
