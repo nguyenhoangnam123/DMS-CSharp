@@ -1,9 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using DMS.Common;
+using System;
+using System.Diagnostics.CodeAnalysis;
 
-namespace DMS.DWModels
+namespace DMS.DWEntities
 {
-    public partial class Fact_POSMTransactionDAO
+    public class Fact_POSMTransaction : DataEntity, IEquatable<Fact_POSMTransaction>
     {
         public long Id { get; set; }
         public long POSMTransactionId { get; set; }
@@ -17,5 +18,10 @@ namespace DMS.DWModels
         public DateTime Date { get; set; }
         public DateTime CreatedAt { get; set; }
         public decimal Amount { get; set; }
+
+        public bool Equals(Fact_POSMTransaction other)
+        {
+            return other != null && Id == other.Id;
+        }
     }
 }

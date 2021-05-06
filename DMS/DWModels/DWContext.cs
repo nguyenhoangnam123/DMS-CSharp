@@ -964,11 +964,13 @@ namespace DMS.DWModels
 
             modelBuilder.Entity<Fact_POSMTransactionDAO>(entity =>
             {
+                entity.Property(e => e.Amount).HasColumnType("decimal(18, 4)");
+
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.Date).HasColumnType("datetime");
 
-                entity.Property(e => e.TransactionAmount).HasColumnType("decimal(18, 4)");
+                entity.Property(e => e.SalePrice).HasColumnType("decimal(18, 4)");
             });
 
             modelBuilder.Entity<Fact_ProblemDAO>(entity =>
