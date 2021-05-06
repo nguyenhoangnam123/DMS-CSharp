@@ -50,8 +50,7 @@ namespace DMS.Enums
         public static GenericEnum ShowingItemUsed = new GenericEnum { Id = 121, Code = "ShowingItem.Used", Name = "ShowingItem Used" };
         public static GenericEnum ShowingCategoryUsed = new GenericEnum { Id = 122, Code = "ShowingCategory.Used", Name = "ShowingCategory Used" };
 
-        public static GenericEnum POSMTransactionCreate = new GenericEnum { Id = 123, Code = "ShowingCategory.Create", Name = "Fact_POSMTransaction Create" };
-        public static GenericEnum POSMTransactionUpdate = new GenericEnum { Id = 124, Code = "ShowingCategory.Update", Name = "Fact_POSMTransaction Update" };
-        public static GenericEnum POSMTransactionDelete = new GenericEnum { Id = 125, Code = "ShowingCategory.Delete", Name = "Fact_POSMTransaction Delete" };
+        public static GenericEnum ShowingOrderSync = new GenericEnum { Id = 123, Code = "ShowingOrder.Sync", Name = "ShowingOrder Sync" };
+        public static GenericEnum ShowingOrderWithDrawSync = new GenericEnum { Id = 124, Code = "ShowingOrderWithDraw.Sync", Name = "ShowingOrderWithDraw Sync" };
     }
 }

@@ -118,7 +118,7 @@ namespace DMS.Services.MShowingOrder
                 }
                 await UOW.ShowingOrderRepository.BulkMerge(ShowingOrders);
                 NotifyUsed(ShowingOrder);
-                Sync(ShowingOrders, RoutingKeyEnum.POSMTransactionCreate);
+                Sync(ShowingOrders);
                 await Logging.CreateAuditLog(ShowingOrder, new { }, nameof(ShowingOrderService));
                 return ShowingOrder;
             }
@@ -140,7 +140,7 @@ namespace DMS.Services.MShowingOrder
                 await UOW.ShowingOrderRepository.Update(ShowingOrder);
 
                 NotifyUsed(ShowingOrder);
-                Sync(new List<ShowingOrder> { ShowingOrder }, RoutingKeyEnum.POSMTransactionUpdate);
+                Sync(new List<ShowingOrder> { ShowingOrder });
                 ShowingOrder = await UOW.ShowingOrderRepository.Get(ShowingOrder.Id);
                 await Logging.CreateAuditLog(ShowingOrder, oldData, nameof(ShowingOrderService));
                 return ShowingOrder;
@@ -162,7 +162,7 @@ namespace DMS.Services.MShowingOrder
                 await UOW.ShowingOrderRepository.Delete(ShowingOrder);
                 Sync(new List<ShowingOrder> {
                     ShowingOrder
-                }, RoutingKeyEnum.POSMTransactionDelete);
+                });
                 await Logging.CreateAuditLog(new { }, ShowingOrder, nameof(ShowingOrderService));
                 return ShowingOrder;
             }
@@ -338,38 +338,16 @@ namespace DMS.Services.MShowingOrder
             }
         }
 
-        private void Sync(List<ShowingOrder> ShowingOrders, GenericEnum routeKey)
+        private void Sync(List<ShowingOrder> ShowingOrders)
         {
-            List<POSMTransaction> Transactions = new List<POSMTransaction>();
-            foreach (ShowingOrder Order in ShowingOrders)
-            {
-                foreach (var Content in Order.ShowingOrderContents)
-                {
-                    POSMTransaction Transaction = new POSMTransaction
-                    {
-                        ShowingOrderId = Order.Id,
-                        OrganizationId = Order.OrganizationId,
-                        StoreId = Order.StoreId,
-                        ItemId = Content.ShowingItemId,
-                        Quantity = Content.Quantity,
-                        SalePrice = Content.SalePrice,
-                        UnitOfMeasureId = Content.UnitOfMeasureId,
-                        Amount = Content.Amount,
-                        Date = Order.Date,
-                        CreatedAt = StaticParams.DateTimeNow,
-                        TransactionTypeId = POSMTransactionTypeEnum.ORDER.Id
-                    };
-                    Transactions.Add(Transaction);
-                }
-            }
-            List<EventMessage<POSMTransaction>> TransactionMessages = Transactions.Select(x => new EventMessage<POSMTransaction>
+            List<EventMessage<ShowingOrder>> TransactionMessages = ShowingOrders.Select(x => new EventMessage<ShowingOrder>
             {
                 Content = x,
-                EntityName = nameof(POSMTransaction),
+                EntityName = nameof(ShowingOrder),
                 RowId = Guid.NewGuid(),
                 Time = StaticParams.DateTimeNow,
             }).ToList();
-            RabbitManager.PublishList(TransactionMessages, routeKey); // POSMtransaction trên DMS Report
+            RabbitManager.PublishList(TransactionMessages, RoutingKeyEnum.ShowingOrderSync); // POSMtransaction trên DMS Report
         }
     }
 }
