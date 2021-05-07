@@ -78,6 +78,7 @@ namespace DMS.ABE.Entities
         public IdFilter UnitOfMeasureId { get; set; }
         public IdFilter UnitOfMeasureGroupingId { get; set; }
         public DecimalFilter SalePrice { get; set; }
+        public DecimalFilter ItemSalePrice { get; set; }
         public DecimalFilter RetailPrice { get; set; }
         public IdFilter TaxTypeId { get; set; }
         public IdFilter StatusId { get; set; }
@@ -117,6 +118,7 @@ namespace DMS.ABE.Entities
         IsNew = 18,
         UsedVariation = 19,
         Category = 20,
+        ItemSalePrice = 21,
     }
 
     [Flags]

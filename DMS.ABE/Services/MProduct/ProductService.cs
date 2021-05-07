@@ -87,21 +87,68 @@ namespace DMS.ABE.Services.MProduct
                         Selects = StoreUserFavoriteProductMappingSelect.FavoriteProduct | StoreUserFavoriteProductMappingSelect.StoreUser
                     }
                 ); // lay ra tat ca cac mapping cua storeUser
+
                 List<long> ProductIds = StoreUserFavoriteProductMappings
                     .Select(x => x.FavoriteProductId)
                     .ToList(); // lay ra list cac product duoc like
-                if (ProductFilter.Id == null)
+
+                if (ProductFilter.ItemSalePrice != null)
                 {
+                    List<Item> ItemList = await UOW.ItemRepository.List(new ItemFilter
+                    {
+                        Skip = 0,
+                        Take = int.MaxValue,
+                        Selects = ItemSelect.Id | ItemSelect.ProductId | ItemSelect.SalePrice
+                    });
+                    ItemList = await ApplyPrice(ItemList, Store.Id); // ap gia theo priceList
+                    ItemList = ItemList
+                        .Where(x => x.SalePrice >= ProductFilter.ItemSalePrice.GreaterEqual && x.SalePrice <= ProductFilter.ItemSalePrice.LessEqual)
+                        .ToList(); // lọc giá item sau khi đã áp giá theo filter
+                    var Ids = ItemList.Select(x => x.ProductId)
+                        .Distinct()
+                        .ToList();
+                    if (ProductFilter.Id.In != null)
+                    {
+                        ProductFilter.Id.In = ProductFilter.Id.In
+                            .Where(x => Ids
+                            .Contains(x))
+                            .ToList(); // tổ hợp ProductFilter Id
+                    }
+                    else
+                    {
+                        ProductFilter.Id.In = Ids;
+                    }
+                } // lay productId theo gia Item
+
+                if (ProductFilter.Id == null)
                     ProductFilter.Id = new IdFilter();
-                }
                 if (ProductFilter.IsFavorite.HasValue && ProductFilter.IsFavorite.Value)
                 {
-                    ProductFilter.Id.In = ProductIds;
-                } // lay het cac san pham duoc like
+                    if(ProductFilter.Id.In != null)
+                    {
+                        ProductFilter.Id.In = ProductFilter.Id.In
+                            .Where(x => ProductIds.Contains(x))
+                            .ToList();
+                    }
+                    else
+                    {
+                        ProductFilter.Id.In = ProductIds; // lay het cac san pham duoc like
+                    }
+                }
                 if (ProductFilter.IsFavorite.HasValue && !ProductFilter.IsFavorite.Value)
                 {
-                    ProductFilter.Id.NotIn = ProductIds;
-                } // lay het cac san pham khong duoc thich
+                    if(ProductFilter.Id.NotIn != null)
+                    {
+                        ProductFilter.Id.NotIn = ProductFilter.Id.NotIn
+                            .Where(x => ProductIds.Contains(x))
+                            .ToList();
+                    }
+                    else
+                    {
+                        ProductFilter.Id.NotIn = ProductIds; // lay het cac san pham khong duoc thich
+                    }
+                }
+
                 List<Product> Products = await UOW.ProductRepository.List(ProductFilter);
                 ProductIds = Products.Select(x => x.Id).ToList();
                 ItemFilter ItemFilter = new ItemFilter
@@ -115,29 +162,15 @@ namespace DMS.ABE.Services.MProduct
                 };
                 List<Item> Items = await UOW.ItemRepository.List(ItemFilter);
                 Items = await ApplyPrice(Items, Store.Id); // ap gia theo priceList
-                Dictionary<Product, decimal> Dict = new Dictionary<Product, decimal>(); // dictionary de order Product theo Item salePrice
                 foreach (Product Product in Products)
                 {
                     Item Item = Items.Where(x => x.ProductId == Product.Id).FirstOrDefault();
-                    Product.Items = new List<Item> { Item  }; // moi product lay ra mot item duy nhat
+                    Product.Items = new List<Item> { Item }; // moi product lay ra mot item duy nhat
                     Product.VariationCounter = Items.Where(i => i.ProductId == Product.Id).Count();
                     Product.IsFavorite = false;
                     int LikeCount = StoreUserFavoriteProductMappings.Where(x => x.FavoriteProductId == Product.Id).Count();
                     if (LikeCount > 0) Product.IsFavorite = true;
-                    Dict.Add(Product, Item.SalePrice.Value);
                 }
-                if(ProductFilter.OrderBy == ProductOrder.SalePrice)
-                {
-                    if(ProductFilter.OrderType == OrderType.DESC)
-                    {
-                        Dict = Dict.OrderByDescending(x => x.Value).ToDictionary(x => x.Key, x=> x.Value);
-                    }
-                    if (ProductFilter.OrderType == OrderType.ASC)
-                    {
-                        Dict = Dict.OrderBy(x => x.Value).ToDictionary(x => x.Key, x => x.Value);
-                    }
-                } // sap xep lai dict theo gia cua Item
-                Products = new List<Product>(Dict.Keys);
                 return Products;
             }
             catch (Exception ex)

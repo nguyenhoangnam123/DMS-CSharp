@@ -258,6 +258,7 @@ namespace DMS.ABE.Rpc.product
             ProductFilter.IsNew = Product_ProductFilterDTO.IsNew; // filter sản phẩm mới
             ProductFilter.IsFavorite = Product_ProductFilterDTO.IsFavorite; // filter theo ua thich
             ProductFilter.SalePrice = Product_ProductFilterDTO.SalePrice;
+            ProductFilter.ItemSalePrice = Product_ProductFilterDTO.ItemSalePrice; // filter theo giá item
             return ProductFilter;
         }
 

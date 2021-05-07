@@ -88,6 +88,7 @@ namespace DMS.ABE.Rpc.product
         public IdFilter UnitOfMeasureId { get; set; }
         public IdFilter UnitOfMeasureGroupingId { get; set; }
         public DecimalFilter SalePrice { get; set; }
+        public DecimalFilter ItemSalePrice { get; set; }
         public DecimalFilter RetailPrice { get; set; }
         public IdFilter TaxTypeId { get; set; }
         public IdFilter StatusId { get; set; }
