@@ -57,6 +57,19 @@ namespace DMS.ABE.Services.MProduct
         {
             try
             {
+                Store Store = await GetStore();
+                List<StoreUserFavoriteProductMapping> StoreUserFavoriteProductMappings = await UOW.StoreUserFavoriteProductMappingRepository.List(
+                    new StoreUserFavoriteProductMappingFilter
+                    {
+                        StoreUserId = new IdFilter { Equal = CurrentContext.StoreUserId },
+                        Selects = StoreUserFavoriteProductMappingSelect.FavoriteProduct | StoreUserFavoriteProductMappingSelect.StoreUser
+                    }
+                ); // lay ra tat ca cac mapping cua storeUser
+                List<long> ProductIds = StoreUserFavoriteProductMappings
+                    .Select(x => x.FavoriteProductId)
+                    .ToList(); // lay ra list cac product duoc like
+
+                ProductFilter = await SetProductFilter(ProductFilter, ProductIds, Store); // tính lại productFilter
                 int result = await UOW.ProductRepository.Count(ProductFilter);
                 return result;
             }
@@ -87,68 +100,11 @@ namespace DMS.ABE.Services.MProduct
                         Selects = StoreUserFavoriteProductMappingSelect.FavoriteProduct | StoreUserFavoriteProductMappingSelect.StoreUser
                     }
                 ); // lay ra tat ca cac mapping cua storeUser
-
                 List<long> ProductIds = StoreUserFavoriteProductMappings
                     .Select(x => x.FavoriteProductId)
                     .ToList(); // lay ra list cac product duoc like
 
-                if (ProductFilter.ItemSalePrice != null)
-                {
-                    List<Item> ItemList = await UOW.ItemRepository.List(new ItemFilter
-                    {
-                        Skip = 0,
-                        Take = int.MaxValue,
-                        Selects = ItemSelect.Id | ItemSelect.ProductId | ItemSelect.SalePrice
-                    });
-                    ItemList = await ApplyPrice(ItemList, Store.Id); // ap gia theo priceList
-                    ItemList = ItemList
-                        .Where(x => x.SalePrice >= ProductFilter.ItemSalePrice.GreaterEqual && x.SalePrice <= ProductFilter.ItemSalePrice.LessEqual)
-                        .ToList(); // lọc giá item sau khi đã áp giá theo filter
-                    var Ids = ItemList.Select(x => x.ProductId)
-                        .Distinct()
-                        .ToList();
-                    if (ProductFilter.Id.In != null)
-                    {
-                        ProductFilter.Id.In = ProductFilter.Id.In
-                            .Where(x => Ids
-                            .Contains(x))
-                            .ToList(); // tổ hợp ProductFilter Id
-                    }
-                    else
-                    {
-                        ProductFilter.Id.In = Ids;
-                    }
-                } // lay productId theo gia Item
-
-                if (ProductFilter.Id == null)
-                    ProductFilter.Id = new IdFilter();
-                if (ProductFilter.IsFavorite.HasValue && ProductFilter.IsFavorite.Value)
-                {
-                    if(ProductFilter.Id.In != null)
-                    {
-                        ProductFilter.Id.In = ProductFilter.Id.In
-                            .Where(x => ProductIds.Contains(x))
-                            .ToList();
-                    }
-                    else
-                    {
-                        ProductFilter.Id.In = ProductIds; // lay het cac san pham duoc like
-                    }
-                }
-                if (ProductFilter.IsFavorite.HasValue && !ProductFilter.IsFavorite.Value)
-                {
-                    if(ProductFilter.Id.NotIn != null)
-                    {
-                        ProductFilter.Id.NotIn = ProductFilter.Id.NotIn
-                            .Where(x => ProductIds.Contains(x))
-                            .ToList();
-                    }
-                    else
-                    {
-                        ProductFilter.Id.NotIn = ProductIds; // lay het cac san pham khong duoc thich
-                    }
-                }
-
+                ProductFilter = await SetProductFilter(ProductFilter, ProductIds, Store); // tính lại productFilter
                 List<Product> Products = await UOW.ProductRepository.List(ProductFilter);
                 ProductIds = Products.Select(x => x.Id).ToList();
                 ItemFilter ItemFilter = new ItemFilter
@@ -410,5 +366,67 @@ namespace DMS.ABE.Services.MProduct
             } // check store tuong ung vs storeUser co ton tai khong
             return Store;
         }
+
+        private async Task<ProductFilter> SetProductFilter(ProductFilter ProductFilter, List<long> ProductIds, Store Store)
+        {
+
+            if (ProductFilter.ItemSalePrice != null)
+            {
+                List<Item> ItemList = await UOW.ItemRepository.List(new ItemFilter
+                {
+                    Skip = 0,
+                    Take = int.MaxValue,
+                    Selects = ItemSelect.Id | ItemSelect.ProductId | ItemSelect.SalePrice
+                });
+                ItemList = await ApplyPrice(ItemList, Store.Id); // ap gia theo priceList
+                ItemList = ItemList
+                    .Where(x => x.SalePrice >= ProductFilter.ItemSalePrice.GreaterEqual && x.SalePrice <= ProductFilter.ItemSalePrice.LessEqual)
+                    .ToList(); // lọc giá item sau khi đã áp giá theo filter
+                var Ids = ItemList.Select(x => x.ProductId)
+                    .Distinct()
+                    .ToList();
+                if (ProductFilter.Id.In != null)
+                {
+                    ProductFilter.Id.In = ProductFilter.Id.In
+                        .Where(x => Ids
+                        .Contains(x))
+                        .ToList(); // tổ hợp ProductFilter Id
+                }
+                else
+                {
+                    ProductFilter.Id.In = Ids;
+                }
+            } // lay productId theo gia Item
+
+            if (ProductFilter.Id == null)
+                ProductFilter.Id = new IdFilter();
+            if (ProductFilter.IsFavorite.HasValue && ProductFilter.IsFavorite.Value)
+            {
+                if (ProductFilter.Id.In != null)
+                {
+                    ProductFilter.Id.In = ProductFilter.Id.In
+                        .Where(x => ProductIds.Contains(x))
+                        .ToList();
+                }
+                else
+                {
+                    ProductFilter.Id.In = ProductIds; // lay het cac san pham duoc like
+                }
+            }
+            if (ProductFilter.IsFavorite.HasValue && !ProductFilter.IsFavorite.Value)
+            {
+                if (ProductFilter.Id.NotIn != null)
+                {
+                    ProductFilter.Id.NotIn = ProductFilter.Id.NotIn
+                        .Where(x => ProductIds.Contains(x))
+                        .ToList();
+                }
+                else
+                {
+                    ProductFilter.Id.NotIn = ProductIds; // lay het cac san pham khong duoc thich
+                }
+            }
+            return ProductFilter;
+        } // tính lại ProductFilter theo Item SalePrice và sản phẩm được yêu thích
     }
 }
