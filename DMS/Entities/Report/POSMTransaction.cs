@@ -11,7 +11,7 @@ namespace DMS.Entities
         public long OrganizationId { get; set; }
         public long AppUserId { get; set; }
         public long StoreId { get; set; }
-        public long ItemId { get; set; }
+        public long ShowingItemId { get; set; }
         public long Quantity { get; set; }
         public decimal SalePrice { get; set; }
         public long UnitOfMeasureId { get; set; }
