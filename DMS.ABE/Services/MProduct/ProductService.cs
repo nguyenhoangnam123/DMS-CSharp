@@ -379,9 +379,24 @@ namespace DMS.ABE.Services.MProduct
                     Selects = ItemSelect.Id | ItemSelect.ProductId | ItemSelect.SalePrice
                 });
                 ItemList = await ApplyPrice(ItemList, Store.Id); // ap gia theo priceList
-                ItemList = ItemList
+                if(ProductFilter.ItemSalePrice.GreaterEqual.HasValue)
+                {
+                    ItemList = ItemList
+                    .Where(x => x.SalePrice >= ProductFilter.ItemSalePrice.GreaterEqual)
+                    .ToList(); // lọc giá item sau khi đã áp giá theo filter
+                }
+                if(ProductFilter.ItemSalePrice.LessEqual.HasValue)
+                {
+                    ItemList = ItemList
+                    .Where(x => x.SalePrice <= ProductFilter.ItemSalePrice.LessEqual)
+                    .ToList(); // lọc giá item sau khi đã áp giá theo filter
+                }
+                if (ProductFilter.ItemSalePrice.GreaterEqual.HasValue && ProductFilter.ItemSalePrice.LessEqual.HasValue)
+                {
+                    ItemList = ItemList
                     .Where(x => x.SalePrice >= ProductFilter.ItemSalePrice.GreaterEqual && x.SalePrice <= ProductFilter.ItemSalePrice.LessEqual)
                     .ToList(); // lọc giá item sau khi đã áp giá theo filter
+                }
                 var Ids = ItemList.Select(x => x.ProductId)
                     .Distinct()
                     .ToList();
