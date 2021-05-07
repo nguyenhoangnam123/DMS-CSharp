@@ -32,9 +32,11 @@ namespace DMS.Rpc.posm.posm_report
         public long ShowingItemId { get; set; }
         public string ShowingItemCode { get; set; }
         public string ShowingItemName { get; set; }
+        public long UnitOfMeasureId { get; set; }
         public string UnitOfMeasure { get; set; }
         public decimal SalePrice { get; set; }
-        public long Quantity { get; set; }
+        public long OrderQuantity { get; set; }
+        public long OrderWithDrawQuantity { get; set; }
         public decimal Amount { get; set; }
     }
 

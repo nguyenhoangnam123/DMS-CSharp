@@ -25,6 +25,7 @@ using DMS.Models;
 using Microsoft.EntityFrameworkCore;
 using Thinktecture.EntityFrameworkCore.TempTables;
 using Thinktecture;
+using DMS.DWModels;
 
 namespace DMS.Rpc.posm.posm_report
 {
@@ -39,6 +40,7 @@ namespace DMS.Rpc.posm.posm_report
         private IStoreGroupingService StoreGroupingService;
         private IStoreTypeService StoreTypeService;
         private DataContext DataContext;
+        private DWContext DWContext;
         private ICurrentContext CurrentContext;
         public POSMReportController(
             IAppUserService AppUserService,
@@ -50,6 +52,7 @@ namespace DMS.Rpc.posm.posm_report
             IStoreGroupingService StoreGroupingService,
             IStoreTypeService StoreTypeService,
             DataContext DataContext,
+            DWContext DWContext,
             ICurrentContext CurrentContext
         )
         {
@@ -62,6 +65,7 @@ namespace DMS.Rpc.posm.posm_report
             this.StoreGroupingService = StoreGroupingService;
             this.StoreTypeService = StoreTypeService;
             this.DataContext = DataContext;
+            this.DWContext = DWContext;
             this.CurrentContext = CurrentContext;
         }
 
@@ -470,6 +474,240 @@ namespace DMS.Rpc.posm.posm_report
             }
 
             return POSMReport_POSMReportDTOs;
+        }
+
+        private async Task<ActionResult<List<POSMReport_POSMReportDTO>>> ListReportData([FromBody] POSMReport_POSMReportFilterDTO POSMReport_ShowingOrderFilterDTO, DateTime Start, DateTime End)
+        {
+            #region filter
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            long? StoreId = POSMReport_ShowingOrderFilterDTO.StoreId?.Equal;
+            long? StoreTypeId = POSMReport_ShowingOrderFilterDTO.StoreTypeId?.Equal;
+            long? StoreGroupingId = POSMReport_ShowingOrderFilterDTO.StoreGroupingId?.Equal;
+            List<long> ShowingItemIds = POSMReport_ShowingOrderFilterDTO.ShowingItemId?.In;
+
+            List<long> OrganizationIds = await FilterOrganization(OrganizationService, CurrentContext);
+            List<OrganizationDAO> OrganizationDAOs = await DataContext.Organization.Where(o => o.DeletedAt == null && OrganizationIds.Contains(o.Id)).ToListAsync();
+            OrganizationDAO OrganizationDAO = null;
+            if (POSMReport_ShowingOrderFilterDTO.OrganizationId?.Equal != null)
+            {
+                OrganizationDAO = await DataContext.Organization.Where(o => o.Id == POSMReport_ShowingOrderFilterDTO.OrganizationId.Equal.Value).FirstOrDefaultAsync();
+                OrganizationDAOs = OrganizationDAOs.Where(o => o.Path.StartsWith(OrganizationDAO.Path)).ToList();
+            }
+            OrganizationIds = OrganizationDAOs.Select(o => o.Id).ToList();
+
+            AppUserFilter AppUserFilter = new AppUserFilter
+            {
+                OrganizationId = new IdFilter { In = OrganizationIds },
+                Id = new IdFilter { },
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = AppUserSelect.Id | AppUserSelect.DisplayName | AppUserSelect.Organization
+            };
+            AppUserFilter.Id.In = await FilterAppUser(AppUserService, OrganizationService, CurrentContext);
+            var AppUsers = await AppUserService.List(AppUserFilter);
+            var AppUserIds = AppUsers.Select(x => x.Id).ToList();
+
+            List<long> StoreIds = await FilterStore(StoreService, OrganizationService, CurrentContext);
+            if (StoreId.HasValue)
+            {
+                var listId = new List<long> { StoreId.Value };
+                StoreIds = StoreIds.Intersect(listId).ToList();
+            }
+            List<long> StoreTypeIds = await FilterStoreType(StoreTypeService, CurrentContext);
+            if (StoreTypeId.HasValue)
+            {
+                var listId = new List<long> { StoreTypeId.Value };
+                StoreTypeIds = StoreTypeIds.Intersect(listId).ToList();
+            }
+            List<long> StoreGroupingIds = await FilterStoreGrouping(StoreGroupingService, CurrentContext);
+            if (StoreGroupingId.HasValue)
+            {
+                var listId = new List<long> { StoreGroupingId.Value };
+                StoreGroupingIds = StoreGroupingIds.Intersect(listId).ToList();
+            }
+
+            ITempTableQuery<TempTable<long>> tempTableQuery = await DataContext
+                       .BulkInsertValuesIntoTempTableAsync<long>(StoreIds);
+
+            #endregion
+
+            #region lấy data từ filter
+            var query = from transaction in DWContext.Fact_POSMTransaction
+                        join s in DataContext.Store on transaction.StoreId equals s.Id
+                        join shw in DataContext.ShowingItem on transaction.ShowingItemId equals shw.Id
+                        join uom in DataContext.UnitOfMeasure on transaction.UnitOfMeasureId equals uom.Id
+                        where Start <= transaction.Date && transaction.Date <= End &&
+                        AppUserIds.Contains(transaction.AppUserId) &&
+                        (StoreTypeIds.Contains(s.StoreTypeId)) &&
+                        (
+                            (
+                                StoreGroupingId.HasValue == false &&
+                                (s.StoreGroupingId.HasValue == false || StoreGroupingIds.Contains(s.StoreGroupingId.Value))
+                            ) ||
+                            (
+                                StoreGroupingId.HasValue &&
+                                StoreGroupingId.Value == s.StoreGroupingId.Value
+                            )
+                        ) &&
+                        OrganizationIds.Contains(transaction.OrganizationId) &&
+                        transaction.DeletedAt == null
+                        select new {
+                            OrganizationId = transaction.OrganizationId,
+                            StoreId = transaction.StoreId,
+                            ShowingItemId = transaction.ShowingItemId,
+                            UnitOfMeasureId = transaction.Id,
+                            ShowingItemName = shw.Name,
+                            ShowingItemCode = shw.Code,
+                            UnitOfMeasureName = uom.Name,
+                            SalePrice = transaction.SalePrice,
+                            Quantity = transaction.Quantity,
+                            Amount = transaction.Amount,
+                            TransactionTypeId = transaction.TransactionTypeId
+                        };
+
+            var Ids = await query
+                .Distinct()
+                .OrderBy(x => x.OrganizationId)
+                .Select(x => new
+                {
+                    StoreId = x.StoreId,
+                    OrganizationId = x.OrganizationId,
+                    ShowingItemId = x.ShowingItemId
+                })
+                .Skip(POSMReport_ShowingOrderFilterDTO.Skip)
+                .Take(POSMReport_ShowingOrderFilterDTO.Take)
+                .ToListAsync(); // phân trang báo cáo theo Org và Store
+            OrganizationIds = Ids.Select(x => x.OrganizationId)
+                .Distinct()
+                .ToList();
+            StoreIds = Ids.Select(x => x.StoreId)
+                .Distinct()
+                .ToList();
+            ShowingItemIds = Ids.Select(x => x.ShowingItemId)
+                .Distinct()
+                .ToList();
+            var Organizations = await DataContext.Organization
+                .Where(x => OrganizationIds.Contains(x.Id))
+                .OrderBy(x => x.Id)
+                .Select(x => new OrganizationDAO
+                {
+                    Id = x.Id,
+                    Name = x.Name
+                }).ToListAsync(); // lấy ra toàn bộ Org trong danh sách phân trang
+            var Stores = await DataContext.Store.Where(x => StoreIds.Contains(x.Id))
+                .Select(x => new StoreDAO
+                {
+                    Id = x.Id,
+                    Code = x.Code,
+                    CodeDraft = x.CodeDraft,
+                    Name = x.Name,
+                    Address = x.Address,
+                    StoreStatus = x.StoreStatus == null ? null : new StoreStatusDAO
+                    {
+                        Name = x.StoreStatus.Name
+                    }
+                }).ToListAsync(); // lấy ra toàn bộ store trong danh sách phân trang
+            var ShowingItems = await DataContext.ShowingItem.Where(x => ShowingItemIds.Contains(x.Id))
+                .Select(x => new ShowingItemDAO
+                {
+                    Id = x.Id,
+                    Code = x.Code,
+                    Name = x.Name,
+
+                }).ToListAsync();
+            #endregion
+
+            #region tổng hợp dữ liệu
+            List<POSMReport_POSMReportDTO> POSMReport_POSMReportDTOs = new List<POSMReport_POSMReportDTO>();
+            foreach (var Organization in Organizations)
+            {
+                POSMReport_POSMReportDTO POSMReport_POSMReportDTO = new POSMReport_POSMReportDTO()
+                {
+                    OrganizationId = Organization.Id,
+                    OrganizationName = Organization.Name,
+                    Stores = new List<POSMReport_POSMStoreDTO>()
+                };
+                POSMReport_POSMReportDTO.Stores = Ids
+                        .Where(x => x.OrganizationId == Organization.Id)
+                        .Select(x => new POSMReport_POSMStoreDTO
+                        {
+                            Id = x.StoreId,
+                            OrganizationId = Organization.Id
+                        }).ToList();
+                POSMReport_POSMReportDTOs.Add(POSMReport_POSMReportDTO);
+            } // tạo group cửa hàng bởi Organization
+
+            foreach (POSMReport_POSMReportDTO POSMReport_POSMReportDTO in POSMReport_POSMReportDTOs)
+            {
+                foreach (POSMReport_POSMStoreDTO POSMReport_POSMStoreDTO in POSMReport_POSMReportDTO.Stores)
+                {
+                    var Store = Stores.Where(x => x.Id == POSMReport_POSMStoreDTO.Id).FirstOrDefault();
+                    if (Store != null)
+                    {
+                        POSMReport_POSMStoreDTO.Code = Store.Code;
+                        POSMReport_POSMStoreDTO.CodeDraft = Store.CodeDraft;
+                        POSMReport_POSMStoreDTO.Name = Store.Name;
+                        POSMReport_POSMStoreDTO.Address = Store.Address;
+                        POSMReport_POSMStoreDTO.StoreStatusName = Store.StoreStatus.Name;
+                    }
+                    var LineTransaction = query
+                        .Where(x => x.OrganizationId == POSMReport_POSMStoreDTO.OrganizationId && x.StoreId == POSMReport_POSMStoreDTO.Id)
+                        .ToList();
+                    var OrderTransaction = LineTransaction
+                        .Where(x => x.TransactionTypeId == POSMTransactionTypeEnum.ORDER.Id)
+                        .ToList(); // lấy ra toàn bộ đơn cấp mới
+                    var OrderWithDrawTransaction = LineTransaction
+                        .Where(x => x.TransactionTypeId == POSMTransactionTypeEnum.ORDER_WITHDRAW.Id)
+                        .ToList(); // lấy ra toàn bộ đơn thu hồi
+                    decimal OrderTotal = OrderTransaction.Select(x => x.Amount).DefaultIfEmpty(0).Sum();
+                    decimal OrderWithDrawTotal = OrderWithDrawTransaction.Select(x => x.Amount).DefaultIfEmpty(0).Sum();
+                    POSMReport_POSMStoreDTO.Total = OrderTotal - OrderWithDrawTotal; // tổng giá trị trưng bày
+                    POSMReport_POSMStoreDTO.Contents = new List<POSMReport_POSMReportContentDTO>();
+                    foreach (var TransactionItem in LineTransaction)
+                    {
+                        POSMReport_POSMReportContentDTO ShowingItemContent = POSMReport_POSMStoreDTO.Contents
+                            .Where(x => x.ShowingItemId == TransactionItem.ShowingItemId)
+                            .Where(x => x.UnitOfMeasureId == TransactionItem.UnitOfMeasureId)
+                            .Where(x => x.SalePrice == TransactionItem.SalePrice)
+                            .FirstOrDefault(); // tìm dòng giống nhau item, đơn vị và giá
+                        if(ShowingItemContent != null)
+                        {
+                            if (TransactionItem.TransactionTypeId == POSMTransactionTypeEnum.ORDER.Id)
+                            {
+                                ShowingItemContent.OrderQuantity += TransactionItem.Quantity;
+                                ShowingItemContent.Amount += TransactionItem.Amount;
+                            } // nếu cấp mới thì thêm vào OrderQuantity và cộng thêm giá trị
+                            if (TransactionItem.TransactionTypeId == POSMTransactionTypeEnum.ORDER_WITHDRAW.Id)
+                            {
+                                ShowingItemContent.OrderWithDrawQuantity += TransactionItem.Quantity;
+                                ShowingItemContent.Amount -= TransactionItem.Amount;
+                            } // nếu thu hồi thì thêm vào OrderWithDrawQuantity và trừ vào giá trị
+                        } // nếu dòng theo ShowingItem, UOM, SalePrice có sẵn
+                        else
+                        {
+                            ShowingItemContent = new POSMReport_POSMReportContentDTO
+                            {
+                                ShowingItemId = TransactionItem.ShowingItemId,
+                                ShowingItemCode = TransactionItem.ShowingItemCode,
+                                ShowingItemName = TransactionItem.ShowingItemName,
+                                UnitOfMeasure = TransactionItem.UnitOfMeasureName
+                            };
+                            if (TransactionItem.TransactionTypeId == POSMTransactionTypeEnum.ORDER.Id)
+                            {
+                                ShowingItemContent.OrderQuantity = TransactionItem.Quantity;
+                            }
+                            if (TransactionItem.TransactionTypeId == POSMTransactionTypeEnum.ORDER_WITHDRAW.Id)
+                            {
+                                ShowingItemContent.OrderWithDrawQuantity = TransactionItem.Quantity;
+                            }
+                            ShowingItemContent.Amount -= TransactionItem.Amount;
+                        } // nếu chưa có dòng nào theo ShowingItem, UOM, SalePrice
+                    }
+                }    
+            }    
+            #endregion
         }
     }
 }
