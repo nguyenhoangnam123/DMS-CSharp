@@ -342,6 +342,11 @@ namespace DMS.Services.MShowingOrderWithDraw
 
         private void Sync(List<ShowingOrderWithDraw> ShowingOrderWithDraws)
         {
+            foreach (var ShowingOrderWithDraw in ShowingOrderWithDraws)
+            {
+                ShowingOrderWithDraw.CreatedAt = StaticParams.DateTimeNow;
+                ShowingOrderWithDraw.UpdatedAt = StaticParams.DateTimeNow;
+            }
             List<EventMessage<ShowingOrderWithDraw>> TransactionMessages = ShowingOrderWithDraws.Select(x => new EventMessage<ShowingOrderWithDraw>
             {
                 Content = x,

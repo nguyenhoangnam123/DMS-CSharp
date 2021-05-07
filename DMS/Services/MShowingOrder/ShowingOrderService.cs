@@ -340,6 +340,11 @@ namespace DMS.Services.MShowingOrder
 
         private void Sync(List<ShowingOrder> ShowingOrders)
         {
+            foreach(var ShowingOrder in ShowingOrders)
+            {
+                ShowingOrder.CreatedAt = StaticParams.DateTimeNow;
+                ShowingOrder.UpdatedAt = StaticParams.DateTimeNow;
+            }
             List<EventMessage<ShowingOrder>> TransactionMessages = ShowingOrders.Select(x => new EventMessage<ShowingOrder>
             {
                 Content = x,
