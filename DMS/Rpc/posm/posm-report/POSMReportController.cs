@@ -135,34 +135,33 @@ namespace DMS.Rpc.posm.posm_report
                 StoreGroupingIds = StoreGroupingIds.Intersect(listId).ToList();
             }
 
-            ITempTableQuery<TempTable<long>> tempTableQuery = await DataContext
+            ITempTableQuery<TempTable<long>> tempTableQuery = await DWContext
                        .BulkInsertValuesIntoTempTableAsync<long>(StoreIds);
 
-            var query = from so in DataContext.ShowingOrder
-                        join soc in DataContext.ShowingOrderContent on so.Id equals soc.ShowingOrderId
-                        join s in DataContext.Store on so.StoreId equals s.Id
-                        join tt in tempTableQuery.Query on so.StoreId equals tt.Column1
-                        where Start <= so.Date && so.Date <= End &&
-                        (ShowingItemIds == null || ShowingItemIds.Count == 0 || ShowingItemIds.Contains(soc.ShowingItemId)) &&
-                        AppUserIds.Contains(so.AppUserId) &&
-                        (StoreTypeIds.Contains(s.StoreTypeId)) &&
-                        (
+            var query = from transaction in DWContext.Fact_POSMTransaction
+                        join s in DWContext.Dim_Store on transaction.StoreId equals s.StoreId
+                        join tt in tempTableQuery.Query on transaction.StoreId equals tt.Column1
+                        join shw in DWContext.Dim_ShowingItem on transaction.ShowingItemId equals shw.ShowingItemId
+                        join uom in DWContext.Dim_UnitOfMeasure on transaction.UnitOfMeasureId equals uom.UnitOfMeasureId
+                        where Start <= transaction.Date && transaction.Date <= End &&
+                            AppUserIds.Contains(transaction.AppUserId) &&
+                            (StoreTypeIds.Contains(s.StoreTypeId)) &&
                             (
-                                StoreGroupingId.HasValue == false &&
-                                (s.StoreGroupingId.HasValue == false || StoreGroupingIds.Contains(s.StoreGroupingId.Value))
-                            ) ||
-                            (
-                                StoreGroupingId.HasValue &&
-                                StoreGroupingId.Value == s.StoreGroupingId.Value
-                            )
-                        ) &&
-                        OrganizationIds.Contains(s.OrganizationId) &&
-                        so.StatusId == StatusEnum.ACTIVE.Id &&
-                        s.DeletedAt == null
+                                (
+                                    StoreGroupingId.HasValue == false &&
+                                    (s.StoreGroupingId.HasValue == false || StoreGroupingIds.Contains(s.StoreGroupingId.Value))
+                                ) ||
+                                (
+                                    StoreGroupingId.HasValue &&
+                                    StoreGroupingId.Value == s.StoreGroupingId.Value
+                                )
+                            ) &&
+                            OrganizationIds.Contains(transaction.OrganizationId) &&
+                            transaction.DeletedAt == null
                         select new
                         {
-                            StoreId = s.Id,
-                            OrganizationId = so.OrganizationId
+                            StoreId = transaction.Id,
+                            OrganizationId = transaction.OrganizationId
                         };
             return await query.Distinct().CountAsync();
         }
@@ -310,22 +309,22 @@ namespace DMS.Rpc.posm.posm_report
                         join s in DWContext.Dim_Store on transaction.StoreId equals s.StoreId
                         join tt in tempTableQuery.Query on transaction.StoreId equals tt.Column1
                         join shw in DWContext.Dim_ShowingItem on transaction.ShowingItemId equals shw.ShowingItemId
-                        //join uom in DWContext.Dim_UnitOfMeasure on transaction.UnitOfMeasureId equals uom.UnitOfMeasureId
+                        join uom in DWContext.Dim_UnitOfMeasure on transaction.UnitOfMeasureId equals uom.UnitOfMeasureId
                         where Start <= transaction.Date && transaction.Date <= End &&
-                        AppUserIds.Contains(transaction.AppUserId) &&
-                        (StoreTypeIds.Contains(s.StoreTypeId)) &&
-                        (
+                            AppUserIds.Contains(transaction.AppUserId) &&
+                            (StoreTypeIds.Contains(s.StoreTypeId)) &&
                             (
-                                StoreGroupingId.HasValue == false &&
-                                (s.StoreGroupingId.HasValue == false || StoreGroupingIds.Contains(s.StoreGroupingId.Value))
-                            ) ||
-                            (
-                                StoreGroupingId.HasValue &&
-                                StoreGroupingId.Value == s.StoreGroupingId.Value
-                            )
-                        ) &&
-                        OrganizationIds.Contains(transaction.OrganizationId) &&
-                        transaction.DeletedAt == null
+                                (
+                                    StoreGroupingId.HasValue == false &&
+                                    (s.StoreGroupingId.HasValue == false || StoreGroupingIds.Contains(s.StoreGroupingId.Value))
+                                ) ||
+                                (
+                                    StoreGroupingId.HasValue &&
+                                    StoreGroupingId.Value == s.StoreGroupingId.Value
+                                )
+                            ) &&
+                            OrganizationIds.Contains(transaction.OrganizationId) &&
+                            transaction.DeletedAt == null
                         select new
                         {
                             OrganizationId = transaction.OrganizationId,
@@ -334,7 +333,7 @@ namespace DMS.Rpc.posm.posm_report
                             UnitOfMeasureId = transaction.UnitOfMeasureId,
                             ShowingItemName = shw.Name,
                             ShowingItemCode = shw.Code,
-                            //UnitOfMeasureName = uom.Name,
+                            UnitOfMeasureName = uom.Name,
                             SalePrice = transaction.SalePrice,
                             Quantity = transaction.Quantity,
                             Amount = transaction.Amount,
@@ -434,7 +433,7 @@ namespace DMS.Rpc.posm.posm_report
                             .Where(x => x.UnitOfMeasureId == TransactionItem.UnitOfMeasureId)
                             .Where(x => x.SalePrice == TransactionItem.SalePrice)
                             .FirstOrDefault(); // tìm dòng giống nhau item, đơn vị và giá
-                        if(ShowingItemContent != null)
+                        if (ShowingItemContent != null)
                         {
                             if (TransactionItem.TransactionTypeId == POSMTransactionTypeEnum.ORDER.Id)
                             {
@@ -454,8 +453,8 @@ namespace DMS.Rpc.posm.posm_report
                                 ShowingItemId = TransactionItem.ShowingItemId,
                                 ShowingItemCode = TransactionItem.ShowingItemCode,
                                 ShowingItemName = TransactionItem.ShowingItemName,
-                                SalePrice = TransactionItem.SalePrice
-                                //UnitOfMeasure = TransactionItem.UnitOfMeasureName
+                                SalePrice = TransactionItem.SalePrice,
+                                UnitOfMeasure = TransactionItem.UnitOfMeasureName
                             };
                             if (TransactionItem.TransactionTypeId == POSMTransactionTypeEnum.ORDER.Id)
                             {
@@ -470,7 +469,7 @@ namespace DMS.Rpc.posm.posm_report
                             POSMReport_POSMStoreDTO.Contents.Add(ShowingItemContent);
                         } // nếu chưa có dòng nào theo ShowingItem, UOM, SalePrice
                     }
-                }    
+                }
             }
 
             return POSMReport_POSMReportDTOs;
