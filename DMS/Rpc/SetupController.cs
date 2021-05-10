@@ -89,67 +89,19 @@ namespace DMS.Rpc
             {
                 StoreEventMessages.Add(new EventMessage<Store>(Store, Store.RowId));
             }
-            RabbitManager.PublishList(StoreEventMessages, RoutingKeyEnum.StoreSync);
+            foreach (Store Store in Stores)
+            {
+                StoreEventMessages.Add(new EventMessage<Store>(Store, Store.RowId));
+            }
+            for (int i = 0; i < StoreEventMessages.Count; i += 10000)
+            {
+                int skip = i;
+                int take = StoreEventMessages.Count - i > 10000 ? 10000 : StoreEventMessages.Count - i;
+                List<EventMessage<Store>> Sub = StoreEventMessages.Skip(skip).Take(take).ToList();
+                RabbitManager.PublishList(Sub, RoutingKeyEnum.StoreSync);
+            }
 
             return Ok();
-        }
-
-        [HttpGet, Route("rpc/dms/setup/dw-init-store")]
-        public async Task DWInitStore()
-        {
-            try
-            {
-                List<Store> Stores = await UOW.StoreRepository.List(new StoreFilter
-                {
-                    Skip = 0,
-                    Take = int.MaxValue,
-                    Selects = StoreSelect.ALL,
-                });
-
-                List<Dim_StoreDAO> StoreDAOs = new List<Dim_StoreDAO>();
-                foreach (Store Store in Stores)
-                {
-                    Dim_StoreDAO StoreDAO = new Dim_StoreDAO();
-                    StoreDAO.StoreId = Store.Id;
-                    StoreDAO.Code = Store.Code;
-                    StoreDAO.CodeDraft = Store.CodeDraft;
-                    StoreDAO.Name = Store.Name;
-                    StoreDAO.UnsignName = Store.UnsignName;
-                    StoreDAO.ParentStoreId = Store.ParentStoreId;
-                    StoreDAO.OrganizationId = Store.OrganizationId;
-                    StoreDAO.StoreTypeId = Store.StoreTypeId;
-                    StoreDAO.StoreGroupingId = Store.StoreGroupingId;
-                    StoreDAO.Telephone = Store.Telephone;
-                    StoreDAO.ProvinceId = Store.ProvinceId;
-                    StoreDAO.DistrictId = Store.DistrictId;
-                    StoreDAO.WardId = Store.WardId;
-                    StoreDAO.Address = Store.Address;
-                    StoreDAO.UnsignAddress = Store.UnsignAddress;
-                    StoreDAO.DeliveryAddress = Store.DeliveryAddress;
-                    StoreDAO.Latitude = Store.Latitude;
-                    StoreDAO.Longitude = Store.Longitude;
-                    StoreDAO.DeliveryLatitude = Store.DeliveryLatitude;
-                    StoreDAO.DeliveryLongitude = Store.DeliveryLongitude;
-                    StoreDAO.OwnerName = Store.OwnerName;
-                    StoreDAO.OwnerPhone = Store.OwnerPhone;
-                    StoreDAO.OwnerEmail = Store.OwnerEmail;
-                    StoreDAO.TaxCode = Store.TaxCode;
-                    StoreDAO.LegalEntity = Store.LegalEntity;
-                    StoreDAO.AppUserId = Store.AppUserId;
-                    StoreDAO.CreatorId = Store.CreatorId;
-                    StoreDAO.StoreStatusId = Store.StoreStatusId;
-                    StoreDAO.StatusId = Store.StatusId;
-                    StoreDAO.CreatedAt = Store.CreatedAt;
-                    StoreDAO.UpdatedAt = Store.UpdatedAt;
-                    StoreDAO.DeletedAt = Store.DeletedAt;
-                    StoreDAOs.Add(StoreDAO);
-                }
-                DWContext.Dim_Store.BulkMerge(StoreDAOs);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
         }
 
         [HttpGet, Route("rpc/dms/setup/dw-publish-organization")]
@@ -330,7 +282,14 @@ namespace DMS.Rpc
             {
                 StoreEventMessages.Add(new EventMessage<Store>(Store, Store.RowId));
             }
-            RabbitManager.PublishList(StoreEventMessages, RoutingKeyEnum.StoreSync);
+            for (int i=0; i< Stores.Count; i+= 1000)
+            {
+                int skip = i;
+                int take = Stores.Count - i > 1000 ? 1000 : Stores.Count - i;
+                List<Store> Sub = Stores.Skip(skip).Take(take).ToList();
+                RabbitManager.PublishList(StoreEventMessages, RoutingKeyEnum.StoreSync);
+            }
+            
             #endregion
 
             return Ok();

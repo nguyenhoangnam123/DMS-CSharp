@@ -639,6 +639,7 @@ namespace DMS.Repositories
                 } : null,
                 Used = q.Used,
                 CreatedAt = q.CreatedAt,
+                UpdatedAt = q.UpdatedAt,
                 RowId = q.RowId,
             }).ToListAsync();
 
