@@ -602,6 +602,10 @@ namespace DMS.DWModels
 
                 entity.Property(e => e.CodeDraft).HasMaxLength(500);
 
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+
                 entity.Property(e => e.DeliveryAddress).HasMaxLength(3000);
 
                 entity.Property(e => e.DeliveryLatitude).HasColumnType("decimal(18, 15)");
@@ -633,6 +637,8 @@ namespace DMS.DWModels
                 entity.Property(e => e.UnsignAddress).HasMaxLength(3000);
 
                 entity.Property(e => e.UnsignName).HasMaxLength(500);
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
             });
 
             modelBuilder.Entity<Dim_StoreGroupingDAO>(entity =>

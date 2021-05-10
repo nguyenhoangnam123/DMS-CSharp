@@ -32,6 +32,9 @@ namespace DMS.DWModels
         public string LegalEntity { get; set; }
         public long? AppUserId { get; set; }
         public long StatusId { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; }
+        public DateTime? DeletedAt { get; set; }
         public long StoreStatusId { get; set; }
     }
 }
