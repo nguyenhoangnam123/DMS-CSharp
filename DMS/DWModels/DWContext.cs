@@ -25,6 +25,7 @@ namespace DMS.DWModels
         public virtual DbSet<Dim_ProductTypeDAO> Dim_ProductType { get; set; }
         public virtual DbSet<Dim_ProvinceDAO> Dim_Province { get; set; }
         public virtual DbSet<Dim_RequestStateDAO> Dim_RequestState { get; set; }
+        public virtual DbSet<Dim_ShowingItemDAO> Dim_ShowingItem { get; set; }
         public virtual DbSet<Dim_StatusDAO> Dim_Status { get; set; }
         public virtual DbSet<Dim_StoreDAO> Dim_Store { get; set; }
         public virtual DbSet<Dim_StoreGroupingDAO> Dim_StoreGrouping { get; set; }
@@ -546,6 +547,32 @@ namespace DMS.DWModels
                 entity.Property(e => e.Name)
                     .IsRequired()
                     .HasMaxLength(50);
+            });
+
+            modelBuilder.Entity<Dim_ShowingItemDAO>(entity =>
+            {
+                entity.HasKey(e => e.ShowingItemId)
+                    .HasName("PK_ShowingItem");
+
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(255);
+
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.Description).HasMaxLength(4000);
+
+                entity.Property(e => e.ERPCode).HasMaxLength(500);
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(255);
+
+                entity.Property(e => e.SalePrice).HasColumnType("decimal(18, 4)");
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
             });
 
             modelBuilder.Entity<Dim_StatusDAO>(entity =>
