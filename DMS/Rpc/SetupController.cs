@@ -79,11 +79,8 @@ namespace DMS.Rpc
                 Skip = 0,
                 Take = int.MaxValue,
 
-                Selects = StoreSelect.Id,
+                Selects = StoreSelect.ALL,
             });
-
-            List<long> StoreIds = Stores.Select(x => x.Id).ToList();
-            Stores = await UOW.StoreRepository.List(StoreIds);
 
             List<EventMessage<Store>> StoreEventMessages = new List<EventMessage<Store>>();
             foreach (Store Store in Stores)
