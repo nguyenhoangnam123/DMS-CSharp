@@ -16,6 +16,7 @@ namespace DMS.Repositories
     {
         Task<int> Count(AppUserFilter AppUserFilter);
         Task<List<AppUser>> List(AppUserFilter AppUserFilter);
+        Task<List<AppUser>> List(List<long> Ids);
         Task<AppUser> Get(long Id);
         Task<bool> Update(AppUser AppUser);
         Task<bool> SimpleUpdate(AppUser AppUser);
@@ -352,6 +353,76 @@ namespace DMS.Repositories
             AppUserDAOs = DynamicFilter(AppUserDAOs, filter);
             AppUserDAOs = DynamicOrder(AppUserDAOs, filter);
             List<AppUser> AppUsers = await DynamicSelect(AppUserDAOs, filter);
+            return AppUsers;
+        }
+
+        public async Task<List<AppUser>> List(List<long> Ids)
+        {
+            List<AppUser> AppUsers = await DataContext.AppUser.AsNoTracking()
+                .Where(x => Ids.Contains(x.Id)).Select(x => new AppUser()
+                {
+                    Id = x.Id,
+                    Username = x.Username,
+                    DisplayName = x.DisplayName,
+                    Address = x.Address,
+                    Avatar = x.Avatar,
+                    Birthday = x.Birthday,
+                    Email = x.Email,
+                    Phone = x.Phone,
+                    StatusId = x.StatusId,
+                    SexId = x.SexId,
+                    Department = x.Department,
+                    OrganizationId = x.OrganizationId,
+                    RowId = x.RowId,
+                    CreatedAt = x.CreatedAt,
+                    UpdatedAt = x.UpdatedAt,
+                    DeletedAt = x.DeletedAt,
+                    Organization = x.Organization == null ? null : new Organization
+                    {
+                        Id = x.Organization.Id,
+                        Code = x.Organization.Code,
+                        Name = x.Organization.Name,
+                        Address = x.Organization.Address,
+                        Phone = x.Organization.Phone,
+                        Path = x.Organization.Path,
+                        ParentId = x.Organization.ParentId,
+                        Email = x.Organization.Email,
+                        StatusId = x.Organization.StatusId,
+                        Level = x.Organization.Level,
+                        RowId = x.Organization.RowId,
+                    },
+                    Status = x.Status == null ? null : new Status
+                    {
+                        Id = x.Status.Id,
+                        Code = x.Status.Code,
+                        Name = x.Status.Name,
+                    },
+                    Sex = x.Sex == null ? null : new Sex
+                    {
+                        Id = x.Sex.Id,
+                        Code = x.Sex.Code,
+                        Name = x.Sex.Name,
+                    }
+                }).ToListAsync();
+
+            var AppUserRoleMappings = await DataContext.AppUserRoleMapping
+                .Where(x => Ids.Contains(x.AppUserId))
+                .Select(x => new AppUserRoleMapping
+                {
+                    AppUserId = x.AppUserId,
+                    RoleId = x.RoleId,
+                    Role = x.Role == null ? null : new Role
+                    {
+                        Id = x.Role.Id,
+                        Name = x.Role.Name,
+                        Code = x.Role.Code,
+                    },
+                }).ToListAsync();
+
+            foreach (var AppUser in AppUsers)
+            {
+                AppUser.AppUserRoleMappings = AppUserRoleMappings.Where(x => x.AppUserId == AppUser.Id).ToList();
+            }
             return AppUsers;
         }
 

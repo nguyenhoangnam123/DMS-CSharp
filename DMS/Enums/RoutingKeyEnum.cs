@@ -52,5 +52,7 @@ namespace DMS.Enums
 
         public static GenericEnum ShowingOrderSync = new GenericEnum { Id = 123, Code = "ShowingOrder.Sync", Name = "ShowingOrder Sync" };
         public static GenericEnum ShowingOrderWithDrawSync = new GenericEnum { Id = 124, Code = "ShowingOrderWithDraw.Sync", Name = "ShowingOrderWithDraw Sync" };
+        public static GenericEnum ShowingItemSync = new GenericEnum { Id = 125, Code = "ShowingItem.Sync", Name = "ShowingItem Sync" };
+        public static GenericEnum UnitOfMeasureSync = new GenericEnum { Id = 126, Code = "UnitOfMeasure.Sync", Name = "UnitOfMeasure Sync" };
     }
 }

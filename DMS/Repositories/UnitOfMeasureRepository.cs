@@ -14,6 +14,7 @@ namespace DMS.Repositories
     {
         Task<int> Count(UnitOfMeasureFilter UnitOfMeasureFilter);
         Task<List<UnitOfMeasure>> List(UnitOfMeasureFilter UnitOfMeasureFilter);
+        Task<List<UnitOfMeasure>> List(List<long> Ids);
         Task<UnitOfMeasure> Get(long Id);
     }
     public class UnitOfMeasureRepository : IUnitOfMeasureRepository
@@ -149,6 +150,31 @@ namespace DMS.Repositories
             UnitOfMeasureDAOs = DynamicFilter(UnitOfMeasureDAOs, filter);
             UnitOfMeasureDAOs = DynamicOrder(UnitOfMeasureDAOs, filter);
             List<UnitOfMeasure> UnitOfMeasures = await DynamicSelect(UnitOfMeasureDAOs, filter);
+            return UnitOfMeasures;
+        }
+
+        public async Task<List<UnitOfMeasure>> List(List<long> Ids)
+        {
+            IQueryable<UnitOfMeasureDAO> UnitOfMeasureDAOs = DataContext.UnitOfMeasure.AsNoTracking();
+            List<UnitOfMeasure> UnitOfMeasures = UnitOfMeasureDAOs.Where(q => q.Id, new IdFilter { In = Ids }).Select(x => new UnitOfMeasure()
+            {
+                Id = x.Id,
+                Code = x.Code,
+                Name = x.Name,
+                Description = x.Description,
+                StatusId = x.StatusId,
+                Used = x.Used,
+                CreatedAt = x.CreatedAt,
+                UpdatedAt = x.UpdatedAt,
+                DeletedAt = x.DeletedAt,
+                RowId = x.RowId,
+                Status = x.Status == null ? null : new Status
+                {
+                    Id = x.Status.Id,
+                    Code = x.Status.Code,
+                    Name = x.Status.Name,
+                },
+            }).ToList();
             return UnitOfMeasures;
         }
 

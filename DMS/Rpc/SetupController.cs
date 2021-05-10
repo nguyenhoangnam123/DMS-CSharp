@@ -38,93 +38,183 @@ namespace DMS.Rpc
             this.UOW = UOW;
         }
 
-        //[HttpGet, Route("rpc/dms/setup/save-image")]
-        //public async Task SaveImage()
-        //{
-        //    string folderPath = @"E:\Downloads\Ma SP - Dong Luc";
-        //    List<FileInfo> FileInfos = new List<FileInfo>();
-        //    foreach (string file in Directory.EnumerateFiles(folderPath, "*.jpg"))
-        //    {
-        //        FileInfo FileInfo = new FileInfo(file);
-        //        FileInfos.Add(FileInfo);
-        //    }
+        #region publish DMS_DW
+        [HttpGet, Route("rpc/dms/setup/dw-publish")]
+        public async Task<ActionResult> DWPublish()
+        {
+            await DWPublishShowingItem();
+            await DWPublishStore();
+            await DWPublishOrganization();
+            await DWPublishAppUser();
+            await DWPublishStoreGrouping();
+            await DWPublishStoreType();
+            await DWPublishUnitOfMeasure();
 
-        //    var FileNames = FileInfos.Select(x => x.Name.Replace(".jpg", string.Empty)).ToList();
-        //    var Items = await DataContext.Item.Where(x => FileNames.Contains(x.Code)).ToListAsync();
+            return Ok();
+        }
 
-        //    List<ItemImageMappingDAO> ItemImageMappingDAOs = new List<ItemImageMappingDAO>();
-        //    foreach (var FileInfo in FileInfos)
-        //    {
-        //        var contents = await System.IO.File.ReadAllBytesAsync(FileInfo.FullName);
+        [HttpGet, Route("rpc/dms/setup/dw-publish-showing-item")]
+        public async Task<ActionResult> DWPublishShowingItem()
+        {
+            List<ShowingItem> ShowingItems = await UOW.ShowingItemRepository.List(new ShowingItemFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = ShowingItemSelect.Id,
+            });
 
-        //        Image Image = new Image()
-        //        {
-        //            Name = FileInfo.Name,
-        //            Content = contents
-        //        };
-        //        var Item = Items.Where(x => x.Code == FileInfo.Name).FirstOrDefault();
-        //        if (Item != null)
-        //        {
-        //            Image = await ItemService.SaveImage(Image);
+            List<long> ShowingItemIds = ShowingItems.Select(x => x.Id).ToList();
+            ShowingItems = await UOW.ShowingItemRepository.List(ShowingItemIds);
+            List<EventMessage<ShowingItem>> ShowingItemEventMessages = ShowingItems.Select(x => new EventMessage<ShowingItem>
+            (x, x.RowId)).ToList();
+            RabbitManager.PublishList(ShowingItemEventMessages, RoutingKeyEnum.ShowingItemSync);
+            return Ok();
+        }
 
-        //            ItemImageMappingDAO ItemImageMappingDAO = new ItemImageMappingDAO()
-        //            {
-        //                ItemId = Item.Id,
-        //                ImageId = Image.Id
-        //            };
-        //            ItemImageMappingDAOs.Add(ItemImageMappingDAO);
+        [HttpGet, Route("rpc/dms/setup/dw-publish-store")]
+        public async Task<ActionResult> DWPublishStore()
+        {
+            List<Store> Stores = await UOW.StoreRepository.List(new StoreFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
 
-        //        }
-        //    }
-        //    await DataContext.ItemImageMapping.BulkMergeAsync(ItemImageMappingDAOs);
-        //}
+                Selects = StoreSelect.Id,
+            });
 
-        //[HttpGet, Route("rpc/dms/setup/fix")]
-        //public async Task Count()
-        //{
-        //    List<IndirectSalesOrderDAO> IndirectSalesOrderDAOs = await DataContext.IndirectSalesOrder.ToListAsync();
-        //    List<IndirectSalesOrderContentDAO> IndirectSalesOrderContentDAOs = await DataContext.IndirectSalesOrderContent.ToListAsync();
-        //    List<IndirectSalesOrderTransactionDAO> IndirectSalesOrderTransactionDAOs = await DataContext.IndirectSalesOrderTransaction.ToListAsync();
+            List<long> StoreIds = Stores.Select(x => x.Id).ToList();
+            Stores = await UOW.StoreRepository.List(StoreIds);
 
-        //    foreach (var IndirectSalesOrderDAO in IndirectSalesOrderDAOs)
-        //    {
-        //        var subIndirectSalesOrderContents = IndirectSalesOrderContentDAOs.Where(X => X.IndirectSalesOrderId == IndirectSalesOrderDAO.Id).ToList();
-        //        var subIndirectSalesOrderTransactions = IndirectSalesOrderTransactionDAOs.Where(X => X.IndirectSalesOrderId == IndirectSalesOrderDAO.Id).ToList();
-        //        foreach (var IndirectSalesOrderContentDAO in subIndirectSalesOrderContents)
-        //        {
-        //            IndirectSalesOrderTransactionDAO IndirectSalesOrderTransactionDAO = subIndirectSalesOrderTransactions
-        //                .Where(x => x.IndirectSalesOrderId == IndirectSalesOrderDAO.Id)
-        //                .Where(x => x.SalesEmployeeId == IndirectSalesOrderDAO.SaleEmployeeId)
-        //                .Where(x => x.OrganizationId == IndirectSalesOrderDAO.OrganizationId)
-        //                .Where(x => x.BuyerStoreId == IndirectSalesOrderDAO.BuyerStoreId)
-        //                .Where(x => x.ItemId == IndirectSalesOrderContentDAO.ItemId)
-        //                .Where(x => x.TypeId == TransactionTypeEnum.SALES_CONTENT.Id)
-        //                .FirstOrDefault();
-        //            if(IndirectSalesOrderTransactionDAO != null)
-        //            {
-        //                IndirectSalesOrderTransactionDAO.Revenue = IndirectSalesOrderContentDAO.Amount - IndirectSalesOrderContentDAO.GeneralDiscountAmount ?? 0;
-        //            }
-        //        }
-        //    }
+            List<EventMessage<Store>> StoreEventMessages = new List<EventMessage<Store>>();
+            foreach (Store Store in Stores)
+            {
+                StoreEventMessages.Add(new EventMessage<Store>(Store, Store.RowId));
+            }
+            RabbitManager.PublishList(StoreEventMessages, RoutingKeyEnum.StoreSync);
 
-        //    await DataContext.IndirectSalesOrderTransaction.BulkMergeAsync(IndirectSalesOrderTransactionDAOs);
-        //}
+            return Ok();
+        }
 
-        //[HttpGet, Route("rpc/dms/setup/store-gen-code")]
-        //public async Task StoreGenCode()
-        //{
-        //    List<StoreDAO> Stores = await DataContext.Store.OrderByDescending(x => x.CreatedAt).ToListAsync();
-        //    List<OrganizationDAO> Organizations = await DataContext.Organization.OrderByDescending(x => x.CreatedAt).ToListAsync();
-        //    List<StoreTypeDAO> StoreTypes = await DataContext.StoreType.OrderByDescending(x => x.CreatedAt).ToListAsync();
-        //    var counter = Stores.Count();
-        //    foreach (var Store in Stores)
-        //    {
-        //        var Organization = Organizations.Where(x => x.Id == Store.OrganizationId).Select(x => x.Code).FirstOrDefault();
-        //        var StoreType = StoreTypes.Where(x => x.Id == Store.StoreTypeId).Select(x => x.Code).FirstOrDefault();
-        //        Store.Code = $"{Organization}.{StoreType}.{(10000000 + counter--).ToString().Substring(1)}";
-        //    }
-        //    await DataContext.SaveChangesAsync();
-        //}
+        [HttpGet, Route("rpc/dms/setup/dw-publish-organization")]
+        public async Task<ActionResult> DWPublishOrganization()
+        {
+            List<Organization> Organizations = await UOW.OrganizationRepository.List(new OrganizationFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+
+                Selects = OrganizationSelect.Id,
+            });
+
+            List<long> OrganizationIds = Organizations.Select(x => x.Id).ToList();
+            Organizations = await UOW.OrganizationRepository.List(OrganizationIds);
+
+            List<EventMessage<Organization>> OrganizationEventMessages = new List<EventMessage<Organization>>();
+            foreach (Organization Organization in Organizations)
+            {
+                OrganizationEventMessages.Add(new EventMessage<Organization>(Organization, Organization.RowId));
+            }
+            RabbitManager.PublishList(OrganizationEventMessages, RoutingKeyEnum.OrganizationSync);
+
+            return Ok();
+        }
+
+        [HttpGet, Route("rpc/dms/setup/dw-publish-app-user")]
+        public async Task<ActionResult> DWPublishAppUser()
+        {
+            List<AppUser> AppUsers = await UOW.AppUserRepository.List(new AppUserFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+
+                Selects = AppUserSelect.Id,
+            });
+
+            List<long> AppUserIds = AppUsers.Select(x => x.Id).ToList();
+            AppUsers = await UOW.AppUserRepository.List(AppUserIds);
+
+            List<EventMessage<AppUser>> AppUserEventMessages = new List<EventMessage<AppUser>>();
+            foreach (AppUser AppUser in AppUsers)
+            {
+                AppUserEventMessages.Add(new EventMessage<AppUser>(AppUser, AppUser.RowId));
+            }
+            RabbitManager.PublishList(AppUserEventMessages, RoutingKeyEnum.AppUserSync);
+
+            return Ok();
+        }
+
+        [HttpGet, Route("rpc/dms/setup/dw-publish-store-grouping")]
+        public async Task<ActionResult> DWPublishStoreGrouping()
+        {
+            List<StoreGrouping> StoreGroupings = await UOW.StoreGroupingRepository.List(new StoreGroupingFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+
+                Selects = StoreGroupingSelect.Id,
+            });
+
+            List<long> StoreGroupingIds = StoreGroupings.Select(x => x.Id).ToList();
+            StoreGroupings = await UOW.StoreGroupingRepository.List(StoreGroupingIds);
+
+            List<EventMessage<StoreGrouping>> StoreGroupingEventMessages = new List<EventMessage<StoreGrouping>>();
+            foreach (StoreGrouping StoreGrouping in StoreGroupings)
+            {
+                StoreGroupingEventMessages.Add(new EventMessage<StoreGrouping>(StoreGrouping, StoreGrouping.RowId));
+            }
+            RabbitManager.PublishList(StoreGroupingEventMessages, RoutingKeyEnum.StoreGroupingSync);
+
+            return Ok();
+        }
+
+        [HttpGet, Route("rpc/dms/setup/dw-publish-store-type")]
+        public async Task<ActionResult> DWPublishStoreType()
+        {
+            List<StoreType> StoreTypes = await UOW.StoreTypeRepository.List(new StoreTypeFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+
+                Selects = StoreTypeSelect.Id,
+            });
+
+            List<long> StoreTypeIds = StoreTypes.Select(x => x.Id).ToList();
+            StoreTypes = await UOW.StoreTypeRepository.List(StoreTypeIds);
+
+            List<EventMessage<StoreType>> StoreTypeEventMessages = new List<EventMessage<StoreType>>();
+            foreach (StoreType StoreType in StoreTypes)
+            {
+                StoreTypeEventMessages.Add(new EventMessage<StoreType>(StoreType, StoreType.RowId));
+            }
+            RabbitManager.PublishList(StoreTypeEventMessages, RoutingKeyEnum.StoreTypeSync);
+
+            return Ok();
+        }
+
+        [HttpGet, Route("rpc/dms/setup/dw-publish-unit-of-measure")]
+        public async Task<ActionResult> DWPublishUnitOfMeasure()
+        {
+            List<UnitOfMeasure> UnitOfMeasures = await UOW.UnitOfMeasureRepository.List(new UnitOfMeasureFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+
+                Selects = UnitOfMeasureSelect.Id,
+            });
+
+            List<long> UnitOfMeasureIds = UnitOfMeasures.Select(x => x.Id).ToList();
+            UnitOfMeasures = await UOW.UnitOfMeasureRepository.List(UnitOfMeasureIds);
+
+            List<EventMessage<UnitOfMeasure>> UnitOfMeasureEventMessages = new List<EventMessage<UnitOfMeasure>>();
+            foreach (UnitOfMeasure UnitOfMeasure in UnitOfMeasures)
+            {
+                UnitOfMeasureEventMessages.Add(new EventMessage<UnitOfMeasure>(UnitOfMeasure, UnitOfMeasure.RowId));
+            }
+            RabbitManager.PublishList(UnitOfMeasureEventMessages, RoutingKeyEnum.UnitOfMeasureSync);
+
+            return Ok();
+        }
+        #endregion
 
         [HttpGet, Route("rpc/dms/setup/es-publish")]
         public async Task<ActionResult> ESPublish()
@@ -134,7 +224,7 @@ namespace DMS.Rpc
             await ESPublishStoreGrouping();
             await ESPublishStoreType();
             await ESPublishStoreStatus();
-            
+
             return Ok();
         }
         [HttpGet, Route("rpc/dms/setup/es-publish-direct-sales-order")]

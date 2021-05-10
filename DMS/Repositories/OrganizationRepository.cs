@@ -14,6 +14,7 @@ namespace DMS.Repositories
     {
         Task<int> Count(OrganizationFilter OrganizationFilter);
         Task<List<Organization>> List(OrganizationFilter OrganizationFilter);
+        Task<List<Organization>> List(List<long> Ids);
         Task<Organization> Get(long Id);
         Task<bool> UpdateIsDisplay(Organization Organization);
     }
@@ -352,6 +353,73 @@ namespace DMS.Repositories
             OrganizationDAOs = DynamicFilter(OrganizationDAOs, filter);
             OrganizationDAOs = DynamicOrder(OrganizationDAOs, filter);
             List<Organization> Organizations = await DynamicSelect(OrganizationDAOs, filter);
+            return Organizations;
+        }
+
+        public async Task<List<Organization>> List(List<long> Ids)
+        {
+            List<Organization> Organizations = await DataContext.Organization.AsNoTracking()
+            .Where(x => Ids.Contains(x.Id)).Select(x => new Organization()
+            {
+                CreatedAt = x.CreatedAt,
+                UpdatedAt = x.UpdatedAt,
+                DeletedAt = x.DeletedAt,
+                Id = x.Id,
+                Code = x.Code,
+                Name = x.Name,
+                ParentId = x.ParentId,
+                Path = x.Path,
+                Level = x.Level,
+                StatusId = x.StatusId,
+                Phone = x.Phone,
+                Email = x.Email,
+                Address = x.Address,
+                RowId = x.RowId,
+                Parent = x.Parent == null ? null : new Organization
+                {
+                    Id = x.Parent.Id,
+                    Code = x.Parent.Code,
+                    Name = x.Parent.Name,
+                    ParentId = x.Parent.ParentId,
+                    Path = x.Parent.Path,
+                    Level = x.Parent.Level,
+                    StatusId = x.Parent.StatusId,
+                    Phone = x.Parent.Phone,
+                    Email = x.Parent.Email,
+                    Address = x.Parent.Address,
+                    RowId = x.Parent.RowId,
+                },
+                Status = x.Status == null ? null : new Status
+                {
+                    Id = x.Status.Id,
+                    Code = x.Status.Code,
+                    Name = x.Status.Name,
+                },
+            }).ToListAsync();
+
+            var AppUsers = await DataContext.AppUser.Where(x => Ids.Contains(x.OrganizationId)).ToListAsync();
+            foreach (var Organization in Organizations)
+            {
+                Organization.AppUsers = AppUsers.Where(x => x.OrganizationId == Organization.Id).Select(x => new AppUser
+                {
+                    CreatedAt = x.CreatedAt,
+                    UpdatedAt = x.UpdatedAt,
+                    DeletedAt = x.DeletedAt,
+                    Id = x.Id,
+                    Username = x.Username,
+                    DisplayName = x.DisplayName,
+                    Address = x.Address,
+                    Email = x.Email,
+                    Phone = x.Phone,
+                    SexId = x.SexId,
+                    Birthday = x.Birthday,
+                    Avatar = x.Avatar,
+                    Department = x.Department,
+                    OrganizationId = x.OrganizationId,
+                    StatusId = x.StatusId,
+                    RowId = x.RowId,
+                }).ToList();
+            }
             return Organizations;
         }
 
