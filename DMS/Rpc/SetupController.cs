@@ -1,4 +1,5 @@
 ﻿using DMS.Common;
+using DMS.DWModels;
 using DMS.Entities;
 using DMS.Enums;
 using DMS.Handlers;
@@ -25,15 +26,17 @@ namespace DMS.Rpc
     public class SetupController : ControllerBase
     {
         private DataContext DataContext;
+        private DWContext DWContext;
         private IItemService ItemService;
         private IMaintenanceService MaintenanceService;
         private IRabbitManager RabbitManager;
         private IUOW UOW;
-        public SetupController(DataContext DataContext, IItemService ItemService, IMaintenanceService MaintenanceService, IRabbitManager RabbitManager, IUOW UOW)
+        public SetupController(DataContext DataContext, DWContext DWContext,  IItemService ItemService, IMaintenanceService MaintenanceService, IRabbitManager RabbitManager, IUOW UOW)
         {
             this.ItemService = ItemService;
             this.MaintenanceService = MaintenanceService;
             this.DataContext = DataContext;
+            this.DWContext = DWContext;
             this.RabbitManager = RabbitManager;
             this.UOW = UOW;
         }
@@ -78,7 +81,6 @@ namespace DMS.Rpc
             {
                 Skip = 0,
                 Take = int.MaxValue,
-
                 Selects = StoreSelect.ALL,
             });
 
@@ -90,6 +92,64 @@ namespace DMS.Rpc
             RabbitManager.PublishList(StoreEventMessages, RoutingKeyEnum.StoreSync);
 
             return Ok();
+        }
+
+        [HttpGet, Route("rpc/dms/setup/dw-init-store")]
+        public async Task DWInitStore()
+        {
+            try
+            {
+                List<Store> Stores = await UOW.StoreRepository.List(new StoreFilter
+                {
+                    Skip = 0,
+                    Take = int.MaxValue,
+                    Selects = StoreSelect.ALL,
+                });
+
+                List<Dim_StoreDAO> StoreDAOs = new List<Dim_StoreDAO>();
+                foreach (Store Store in Stores)
+                {
+                    Dim_StoreDAO StoreDAO = new Dim_StoreDAO();
+                    StoreDAO.StoreId = Store.Id;
+                    StoreDAO.Code = Store.Code;
+                    StoreDAO.CodeDraft = Store.CodeDraft;
+                    StoreDAO.Name = Store.Name;
+                    StoreDAO.UnsignName = Store.UnsignName;
+                    StoreDAO.ParentStoreId = Store.ParentStoreId;
+                    StoreDAO.OrganizationId = Store.OrganizationId;
+                    StoreDAO.StoreTypeId = Store.StoreTypeId;
+                    StoreDAO.StoreGroupingId = Store.StoreGroupingId;
+                    StoreDAO.Telephone = Store.Telephone;
+                    StoreDAO.ProvinceId = Store.ProvinceId;
+                    StoreDAO.DistrictId = Store.DistrictId;
+                    StoreDAO.WardId = Store.WardId;
+                    StoreDAO.Address = Store.Address;
+                    StoreDAO.UnsignAddress = Store.UnsignAddress;
+                    StoreDAO.DeliveryAddress = Store.DeliveryAddress;
+                    StoreDAO.Latitude = Store.Latitude;
+                    StoreDAO.Longitude = Store.Longitude;
+                    StoreDAO.DeliveryLatitude = Store.DeliveryLatitude;
+                    StoreDAO.DeliveryLongitude = Store.DeliveryLongitude;
+                    StoreDAO.OwnerName = Store.OwnerName;
+                    StoreDAO.OwnerPhone = Store.OwnerPhone;
+                    StoreDAO.OwnerEmail = Store.OwnerEmail;
+                    StoreDAO.TaxCode = Store.TaxCode;
+                    StoreDAO.LegalEntity = Store.LegalEntity;
+                    StoreDAO.AppUserId = Store.AppUserId;
+                    StoreDAO.CreatorId = Store.CreatorId;
+                    StoreDAO.StoreStatusId = Store.StoreStatusId;
+                    StoreDAO.StatusId = Store.StatusId;
+                    StoreDAO.CreatedAt = Store.CreatedAt;
+                    StoreDAO.UpdatedAt = Store.UpdatedAt;
+                    StoreDAO.DeletedAt = Store.DeletedAt;
+                    StoreDAOs.Add(StoreDAO);
+                }
+                DWContext.Dim_Store.BulkMerge(StoreDAOs);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
         [HttpGet, Route("rpc/dms/setup/dw-publish-organization")]
