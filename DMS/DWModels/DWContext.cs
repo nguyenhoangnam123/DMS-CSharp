@@ -651,6 +651,10 @@ namespace DMS.DWModels
                     .IsRequired()
                     .HasMaxLength(500);
 
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+
                 entity.Property(e => e.Name)
                     .IsRequired()
                     .HasMaxLength(500);
@@ -658,6 +662,8 @@ namespace DMS.DWModels
                 entity.Property(e => e.Path)
                     .IsRequired()
                     .HasMaxLength(400);
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
             });
 
             modelBuilder.Entity<Dim_StoreScoutingDAO>(entity =>
@@ -723,9 +729,15 @@ namespace DMS.DWModels
                     .IsRequired()
                     .HasMaxLength(500);
 
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+
                 entity.Property(e => e.Name)
                     .IsRequired()
                     .HasMaxLength(500);
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
             });
 
             modelBuilder.Entity<Dim_SupplierDAO>(entity =>
