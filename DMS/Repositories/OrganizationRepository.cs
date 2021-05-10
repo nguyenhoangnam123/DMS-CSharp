@@ -324,6 +324,7 @@ namespace DMS.Repositories
                     StatusId = q.Parent.StatusId,
                     Phone = q.Parent.Phone,
                     Address = q.Parent.Address,
+                    IsDisplay = q.Parent.IsDisplay,
                     Email = q.Parent.Email,
                 } : null,
                 Status = filter.Selects.Contains(OrganizationSelect.Status) && q.Status != null ? new Status
