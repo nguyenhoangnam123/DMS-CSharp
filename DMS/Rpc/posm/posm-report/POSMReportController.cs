@@ -300,7 +300,7 @@ namespace DMS.Rpc.posm.posm_report
                 StoreGroupingIds = StoreGroupingIds.Intersect(listId).ToList();
             }
 
-            ITempTableQuery<TempTable<long>> tempTableQuery = await DataContext
+            ITempTableQuery<TempTable<long>> tempTableQuery = await DWContext
                        .BulkInsertValuesIntoTempTableAsync<long>(StoreIds);
 
             #endregion
@@ -308,8 +308,9 @@ namespace DMS.Rpc.posm.posm_report
             #region lấy data từ filter
             var query = from transaction in DWContext.Fact_POSMTransaction
                         join s in DWContext.Dim_Store on transaction.StoreId equals s.StoreId
+                        join tt in tempTableQuery.Query on transaction.StoreId equals tt.Column1
                         join shw in DWContext.Dim_ShowingItem on transaction.ShowingItemId equals shw.ShowingItemId
-                        join uom in DWContext.Dim_UnitOfMeasure on transaction.UnitOfMeasureId equals uom.UnitOfMeasureId
+                        //join uom in DWContext.Dim_UnitOfMeasure on transaction.UnitOfMeasureId equals uom.UnitOfMeasureId
                         where Start <= transaction.Date && transaction.Date <= End &&
                         AppUserIds.Contains(transaction.AppUserId) &&
                         (StoreTypeIds.Contains(s.StoreTypeId)) &&
@@ -325,14 +326,15 @@ namespace DMS.Rpc.posm.posm_report
                         ) &&
                         OrganizationIds.Contains(transaction.OrganizationId) &&
                         transaction.DeletedAt == null
-                        select new {
+                        select new
+                        {
                             OrganizationId = transaction.OrganizationId,
                             StoreId = transaction.StoreId,
                             ShowingItemId = transaction.ShowingItemId,
-                            UnitOfMeasureId = transaction.Id,
+                            UnitOfMeasureId = transaction.UnitOfMeasureId,
                             ShowingItemName = shw.Name,
                             ShowingItemCode = shw.Code,
-                            UnitOfMeasureName = uom.Name,
+                            //UnitOfMeasureName = uom.Name,
                             SalePrice = transaction.SalePrice,
                             Quantity = transaction.Quantity,
                             Amount = transaction.Amount,
@@ -360,35 +362,24 @@ namespace DMS.Rpc.posm.posm_report
             ShowingItemIds = Ids.Select(x => x.ShowingItemId)
                 .Distinct()
                 .ToList();
-            var Organizations = await DataContext.Organization
-                .Where(x => OrganizationIds.Contains(x.Id))
-                .OrderBy(x => x.Id)
-                .Select(x => new OrganizationDAO
+            var Organizations = await DWContext.Dim_Organization
+                .Where(x => OrganizationIds.Contains(x.OrganizationId))
+                .OrderBy(x => x.OrganizationId)
+                .Select(x => new Dim_OrganizationDAO
                 {
-                    Id = x.Id,
+                    OrganizationId = x.OrganizationId,
                     Name = x.Name
                 }).ToListAsync(); // lấy ra toàn bộ Org trong danh sách phân trang
-            var Stores = await DataContext.Store.Where(x => StoreIds.Contains(x.Id))
-                .Select(x => new StoreDAO
+            var Stores = await DWContext.Dim_Store
+                .Where(x => StoreIds.Contains(x.StoreId))
+                .Select(x => new Dim_StoreDAO
                 {
-                    Id = x.Id,
+                    StoreId = x.StoreId,
                     Code = x.Code,
                     CodeDraft = x.CodeDraft,
                     Name = x.Name,
                     Address = x.Address,
-                    StoreStatus = x.StoreStatus == null ? null : new StoreStatusDAO
-                    {
-                        Name = x.StoreStatus.Name
-                    }
                 }).ToListAsync(); // lấy ra toàn bộ store trong danh sách phân trang
-            var ShowingItems = await DataContext.ShowingItem.Where(x => ShowingItemIds.Contains(x.Id))
-                .Select(x => new ShowingItemDAO
-                {
-                    Id = x.Id,
-                    Code = x.Code,
-                    Name = x.Name,
-
-                }).ToListAsync();
             #endregion
 
             #region tổng hợp dữ liệu
@@ -397,16 +388,16 @@ namespace DMS.Rpc.posm.posm_report
             {
                 POSMReport_POSMReportDTO POSMReport_POSMReportDTO = new POSMReport_POSMReportDTO()
                 {
-                    OrganizationId = Organization.Id,
+                    OrganizationId = Organization.OrganizationId,
                     OrganizationName = Organization.Name,
                     Stores = new List<POSMReport_POSMStoreDTO>()
                 };
                 POSMReport_POSMReportDTO.Stores = Ids
-                        .Where(x => x.OrganizationId == Organization.Id)
+                        .Where(x => x.OrganizationId == Organization.OrganizationId)
                         .Select(x => new POSMReport_POSMStoreDTO
                         {
                             Id = x.StoreId,
-                            OrganizationId = Organization.Id
+                            OrganizationId = Organization.OrganizationId
                         }).ToList();
                 POSMReport_POSMReportDTOs.Add(POSMReport_POSMReportDTO);
             } // tạo group cửa hàng bởi Organization
@@ -415,14 +406,13 @@ namespace DMS.Rpc.posm.posm_report
             {
                 foreach (POSMReport_POSMStoreDTO POSMReport_POSMStoreDTO in POSMReport_POSMReportDTO.Stores)
                 {
-                    var Store = Stores.Where(x => x.Id == POSMReport_POSMStoreDTO.Id).FirstOrDefault();
+                    var Store = Stores.Where(x => x.StoreId == POSMReport_POSMStoreDTO.Id).FirstOrDefault();
                     if (Store != null)
                     {
                         POSMReport_POSMStoreDTO.Code = Store.Code;
                         POSMReport_POSMStoreDTO.CodeDraft = Store.CodeDraft;
                         POSMReport_POSMStoreDTO.Name = Store.Name;
                         POSMReport_POSMStoreDTO.Address = Store.Address;
-                        POSMReport_POSMStoreDTO.StoreStatusName = Store.StoreStatus.Name;
                     }
                     var LineTransaction = query
                         .Where(x => x.OrganizationId == POSMReport_POSMStoreDTO.OrganizationId && x.StoreId == POSMReport_POSMStoreDTO.Id)
@@ -464,17 +454,20 @@ namespace DMS.Rpc.posm.posm_report
                                 ShowingItemId = TransactionItem.ShowingItemId,
                                 ShowingItemCode = TransactionItem.ShowingItemCode,
                                 ShowingItemName = TransactionItem.ShowingItemName,
-                                UnitOfMeasure = TransactionItem.UnitOfMeasureName
+                                SalePrice = TransactionItem.SalePrice
+                                //UnitOfMeasure = TransactionItem.UnitOfMeasureName
                             };
                             if (TransactionItem.TransactionTypeId == POSMTransactionTypeEnum.ORDER.Id)
                             {
                                 ShowingItemContent.OrderQuantity = TransactionItem.Quantity;
+                                ShowingItemContent.Amount += TransactionItem.Amount;
                             }
                             if (TransactionItem.TransactionTypeId == POSMTransactionTypeEnum.ORDER_WITHDRAW.Id)
                             {
                                 ShowingItemContent.OrderWithDrawQuantity = TransactionItem.Quantity;
+                                ShowingItemContent.Amount -= TransactionItem.Amount;
                             }
-                            ShowingItemContent.Amount -= TransactionItem.Amount;
+                            POSMReport_POSMStoreDTO.Contents.Add(ShowingItemContent);
                         } // nếu chưa có dòng nào theo ShowingItem, UOM, SalePrice
                     }
                 }    

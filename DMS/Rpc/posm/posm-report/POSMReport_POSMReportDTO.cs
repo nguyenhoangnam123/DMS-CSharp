@@ -21,7 +21,6 @@ namespace DMS.Rpc.posm.posm_report
         public string Code { get; set; }
         public string CodeDraft { get; set; }
         public string Name { get; set; }
-        public string StoreStatusName { get; set; }
         public string Address { get; set; }
         public decimal Total { get; set; }
         public List<POSMReport_POSMReportContentDTO> Contents { get; set; }

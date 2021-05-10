@@ -71,6 +71,7 @@ namespace DMS.DWModels
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.ConfigureTempTable<long>();
             modelBuilder.Entity<AggregatedCounterDAO>(entity =>
             {
                 entity.HasKey(e => e.Key)
