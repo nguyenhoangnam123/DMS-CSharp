@@ -224,8 +224,8 @@ namespace DMS.Rpc.posm.posm_report
         //    var SumQuantity = POSMReport_POSMReportDTOs.SelectMany(x => x.Stores).SelectMany(x => x.Contents).Select(x => x.Quantity).DefaultIfEmpty(0).Sum();
 
         //    var OrgRoot = await DataContext.Organization
-        //        .Where(x => x.DeletedAt == null && 
-        //        x.StatusId == StatusEnum.ACTIVE.Id && 
+        //        .Where(x => x.DeletedAt == null &&
+        //        x.StatusId == StatusEnum.ACTIVE.Id &&
         //        x.ParentId.HasValue == false)
         //        .FirstOrDefaultAsync();
 
@@ -307,9 +307,9 @@ namespace DMS.Rpc.posm.posm_report
 
             #region lấy data từ filter
             var query = from transaction in DWContext.Fact_POSMTransaction
-                        join s in DataContext.Store on transaction.StoreId equals s.Id
-                        join shw in DataContext.ShowingItem on transaction.ShowingItemId equals shw.Id
-                        join uom in DataContext.UnitOfMeasure on transaction.UnitOfMeasureId equals uom.Id
+                        join s in DWContext.Dim_Store on transaction.StoreId equals s.StoreId
+                        join shw in DWContext.Dim_ShowingItem on transaction.ShowingItemId equals shw.ShowingItemId
+                        join uom in DWContext.Dim_UnitOfMeasure on transaction.UnitOfMeasureId equals uom.UnitOfMeasureId
                         where Start <= transaction.Date && transaction.Date <= End &&
                         AppUserIds.Contains(transaction.AppUserId) &&
                         (StoreTypeIds.Contains(s.StoreTypeId)) &&
