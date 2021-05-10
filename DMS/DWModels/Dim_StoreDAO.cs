@@ -30,6 +30,7 @@ namespace DMS.DWModels
         public string OwnerEmail { get; set; }
         public string TaxCode { get; set; }
         public string LegalEntity { get; set; }
+        public long CreatorId { get; set; }
         public long? AppUserId { get; set; }
         public long StatusId { get; set; }
         public DateTime CreatedAt { get; set; }
