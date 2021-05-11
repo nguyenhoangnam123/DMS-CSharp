@@ -41,8 +41,39 @@ namespace DMS.Repositories
                 query = query.Where(q => q.UpdatedAt, filter.UpdatedAt);
             if (filter.Id != null && filter.Id.HasValue)
                 query = query.Where(q => q.Id, filter.Id);
-            if (filter.OrganizationId != null && filter.OrganizationId.HasValue)
-                query = query.Where(q => q.OrganizationId, filter.OrganizationId);
+            if (filter.OrganizationId != null)
+            {
+                if (filter.OrganizationId.Equal != null)
+                {
+                    OrganizationDAO OrganizationDAO = DataContext.Organization
+                        .Where(o => o.Id == filter.OrganizationId.Equal.Value).FirstOrDefault();
+                    query = query.Where(q => q.Organization.Path.StartsWith(OrganizationDAO.Path));
+                }
+                if (filter.OrganizationId.NotEqual != null)
+                {
+                    OrganizationDAO OrganizationDAO = DataContext.Organization
+                        .Where(o => o.Id == filter.OrganizationId.NotEqual.Value).FirstOrDefault();
+                    query = query.Where(q => !q.Organization.Path.StartsWith(OrganizationDAO.Path));
+                }
+                if (filter.OrganizationId.In != null)
+                {
+                    List<OrganizationDAO> OrganizationDAOs = DataContext.Organization
+                        .Where(o => o.DeletedAt == null && o.StatusId == 1).ToList();
+                    List<OrganizationDAO> Parents = OrganizationDAOs.Where(o => filter.OrganizationId.In.Contains(o.Id)).ToList();
+                    List<OrganizationDAO> Branches = OrganizationDAOs.Where(o => Parents.Any(p => o.Path.StartsWith(p.Path))).ToList();
+                    List<long> Ids = Branches.Select(o => o.Id).ToList();
+                    query = query.Where(q => Ids.Contains(q.OrganizationId));
+                }
+                if (filter.OrganizationId.NotIn != null)
+                {
+                    List<OrganizationDAO> OrganizationDAOs = DataContext.Organization
+                        .Where(o => o.DeletedAt == null && o.StatusId == 1).ToList();
+                    List<OrganizationDAO> Parents = OrganizationDAOs.Where(o => filter.OrganizationId.NotIn.Contains(o.Id)).ToList();
+                    List<OrganizationDAO> Branches = OrganizationDAOs.Where(o => Parents.Any(p => o.Path.StartsWith(p.Path))).ToList();
+                    List<long> Ids = Branches.Select(o => o.Id).ToList();
+                    query = query.Where(q => !Ids.Contains(q.OrganizationId));
+                }
+            }
             if (filter.KpiYearId != null && filter.KpiYearId.HasValue)
                 query = query.Where(q => q.KpiYearId, filter.KpiYearId);
             if (filter.KpiPeriodId != null && filter.KpiPeriodId.HasValue)
@@ -55,8 +86,6 @@ namespace DMS.Repositories
                 query = query.Where(q => q.EmployeeId, filter.EmployeeId);
             if (filter.CreatorId != null && filter.CreatorId.HasValue)
                 query = query.Where(q => q.CreatorId, filter.CreatorId);
-            if (filter.RowId != null && filter.RowId.HasValue)
-                query = query.Where(q => q.RowId, filter.RowId);
             query = OrFilter(query, filter);
             return query;
         }
@@ -232,12 +261,27 @@ namespace DMS.Repositories
                     Code = q.KpiProductGroupingType.Code,
                     Name = q.KpiProductGroupingType.Name,
                 } : null,
+                Organization = filter.Selects.Contains(KpiProductGroupingSelect.Organization) && q.Organization != null ? new Organization
+                {
+                    Id = q.Organization.Id,
+                    Code = q.Organization.Code,
+                    Name = q.Organization.Name,
+                    ParentId = q.Organization.ParentId,
+                    Path = q.Organization.Path,
+                    Level = q.Organization.Level,
+                    StatusId = q.Organization.StatusId,
+                    Phone = q.Organization.Phone,
+                    Email = q.Organization.Email,
+                    Address = q.Organization.Address,
+                } : null,
                 Status = filter.Selects.Contains(KpiProductGroupingSelect.Status) && q.Status != null ? new Status
                 {
                     Id = q.Status.Id,
                     Code = q.Status.Code,
                     Name = q.Status.Name,
                 } : null,
+                CreatedAt = q.CreatedAt,
+                UpdatedAt = q.UpdatedAt,
             }).ToListAsync();
             return KpiProductGroupings;
         }
@@ -414,6 +458,19 @@ namespace DMS.Repositories
                     Code = x.KpiProductGroupingType.Code,
                     Name = x.KpiProductGroupingType.Name,
                 },
+                Organization = x.Organization == null ? null : new Organization
+                {
+                    Id = x.Organization.Id,
+                    Code = x.Organization.Code,
+                    Name = x.Organization.Name,
+                    ParentId = x.Organization.ParentId,
+                    Path = x.Organization.Path,
+                    Level = x.Organization.Level,
+                    StatusId = x.Organization.StatusId,
+                    Phone = x.Organization.Phone,
+                    Email = x.Organization.Email,
+                    Address = x.Organization.Address,
+                },
                 Status = x.Status == null ? null : new Status
                 {
                     Id = x.Status.Id,
@@ -425,6 +482,58 @@ namespace DMS.Repositories
             if (KpiProductGrouping == null)
                 return null;
 
+            KpiProductGrouping.KpiProductGroupingContents = await DataContext.KpiProductGroupingContent.AsNoTracking()
+                .Where(x => x.KpiProductGroupingId == KpiProductGrouping.Id)
+                .Select(c => new KpiProductGroupingContent
+                {
+                    Id = c.Id,
+                    KpiProductGroupingId = c.ProductGroupingId,
+                    ProductGroupingId = c.ProductGroupingId,
+                    RowId = c.RowId,
+                    ProductGrouping = new ProductGrouping
+                    {
+                        Id = c.ProductGrouping.Id,
+                        Code = c.ProductGrouping.Code,
+                        Name = c.ProductGrouping.Name,
+                        Description = c.ProductGrouping.Description,
+                        ParentId = c.ProductGrouping.ParentId,
+                        Path = c.ProductGrouping.Path,
+                        Level = c.ProductGrouping.Level,
+                    }
+                })
+                .ToListAsync();
+
+            var ContentIds = KpiProductGrouping.KpiProductGroupingContents
+                .Select(x => x.Id)
+                .ToList();
+
+            List<KpiProductGroupingContentCriteriaMapping> KpiProductGroupingContentCriteriaMappings = await DataContext.KpiProductGroupingContentCriteriaMapping.AsNoTracking()
+                .Where(x => ContentIds.Contains(x.KpiProductGroupingContentId))
+                .Select(x => new KpiProductGroupingContentCriteriaMapping
+                {
+                    KpiProductGroupingContentId = x.KpiProductGroupingContentId,
+                    KpiProductGroupingCriteriaId = x.KpiProductGroupingCriteriaId,
+                    Value = x.Value,
+                    KpiProductGroupingContent = new KpiProductGroupingContent
+                    {
+                        Id = x.KpiProductGroupingContent.Id,
+                        KpiProductGroupingId = x.KpiProductGroupingContent.KpiProductGroupingId,
+                        ProductGroupingId = x.KpiProductGroupingContent.ProductGroupingId,
+                    }
+                }).ToListAsync();
+
+            List<KpiProductGroupingContentItemMapping> KpiProductGroupingContentItemMappings = await DataContext.KpiProductGroupingContentItemMapping.AsNoTracking()
+                .Where(x => ContentIds.Contains(x.KpiProductGroupingContentId))
+                .Select(x => new KpiProductGroupingContentItemMapping
+                {
+                    KpiProductGroupingContentId = x.KpiProductGroupingContentId,
+                    ItemId = x.KpiProductGroupingContentId,
+                }).ToListAsync();
+            foreach(KpiProductGroupingContent KpiProductGroupingContent in KpiProductGrouping.KpiProductGroupingContents)
+            {
+                KpiProductGroupingContent.KpiProductGroupingContentCriteriaMappings = KpiProductGroupingContentCriteriaMappings.Where(x => x.KpiProductGroupingContentId == KpiProductGroupingContent.Id).ToList();
+                KpiProductGroupingContent.KpiProductGroupingContentItemMappings = KpiProductGroupingContentItemMappings.Where(x => x.KpiProductGroupingContentId == KpiProductGroupingContent.Id).ToList();
+            }
             return KpiProductGrouping;
         }
         public async Task<bool> Create(KpiProductGrouping KpiProductGrouping)
