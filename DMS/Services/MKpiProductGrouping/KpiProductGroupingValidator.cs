@@ -6,6 +6,8 @@ using DMS.Common;
 using DMS.Entities;
 using DMS;
 using DMS.Repositories;
+using DMS.Enums;
+using DMS.Helpers;
 
 namespace DMS.Services.MKpiProductGrouping
 {
@@ -23,6 +25,19 @@ namespace DMS.Services.MKpiProductGrouping
         public enum ErrorCode
         {
             IdNotExisted,
+            OrganizationEmpty,
+            OrganizationIdNotExisted,
+            EmployeesEmpty,
+            StatusNotExisted,
+            KpiPeriodIdNotExisted,
+            KpiYearIdNotExisted,
+            KpiYearAndKpiPeriodMustInTheFuture,
+            KpiProductGroupingTypeIdNotExisted,
+            KpiProductGroupingContentsEmpty,
+            ProductGroupingNotExisted,
+            ItemEmpty,
+            ValueCannotBeNull,
+            EmployeeHasKpi
         }
 
         private IUOW UOW;
@@ -50,8 +65,209 @@ namespace DMS.Services.MKpiProductGrouping
             return count == 1;
         }
 
+        private async Task<bool> ValidateOrganization(KpiProductGrouping KpiProductGrouping)
+        {
+            if (KpiProductGrouping.OrganizationId == 0)
+            {
+                KpiProductGrouping.AddError(nameof(KpiProductGroupingValidator), nameof(KpiProductGrouping.Organization), ErrorCode.OrganizationEmpty);
+            }
+            else
+            {
+                OrganizationFilter OrganizationFilter = new OrganizationFilter
+                {
+                    Id = new IdFilter { Equal = KpiProductGrouping.OrganizationId }
+                };
+
+                var count = await UOW.OrganizationRepository.Count(OrganizationFilter);
+                if (count == 0)
+                    KpiProductGrouping.AddError(nameof(KpiProductGroupingValidator), nameof(KpiProductGrouping.Organization), ErrorCode.OrganizationIdNotExisted);
+            }
+
+            return KpiProductGrouping.IsValidated;
+        }
+
+        private async Task<bool> ValidateEmployees(KpiProductGrouping KpiProductGrouping)
+        {
+            if (KpiProductGrouping.Employees == null || !KpiProductGrouping.Employees.Any())
+                KpiProductGrouping.AddError(nameof(KpiProductGroupingValidator), nameof(KpiProductGrouping.Employees), ErrorCode.EmployeesEmpty);
+            else
+            {
+                var EmployeeIds = KpiProductGrouping.Employees.Select(x => x.Id).ToList();
+                AppUserFilter AppUserFilter = new AppUserFilter
+                {
+                    Skip = 0,
+                    Take = int.MaxValue,
+                    Id = new IdFilter { In = EmployeeIds },
+                    OrganizationId = new IdFilter(),
+                    Selects = AppUserSelect.Id
+                };
+
+                var EmployeeIdsInDB = (await UOW.AppUserRepository.List(AppUserFilter)).Select(x => x.Id).ToList();
+                var listIdsNotExisted = EmployeeIds.Except(EmployeeIdsInDB).ToList();
+
+                if (listIdsNotExisted != null && listIdsNotExisted.Any())
+                {
+                    foreach (var Id in listIdsNotExisted)
+                    {
+                        KpiProductGrouping.AddError(nameof(KpiProductGroupingValidator), nameof(KpiProductGrouping.Employees), ErrorCode.IdNotExisted);
+                    }
+                }
+
+            }
+            return KpiProductGrouping.IsValidated;
+        }
+
+        private async Task<bool> ValidateStatus(KpiProductGrouping KpiProductGrouping)
+        {
+            if (StatusEnum.ACTIVE.Id != KpiProductGrouping.StatusId && StatusEnum.INACTIVE.Id != KpiProductGrouping.StatusId)
+                KpiProductGrouping.AddError(nameof(KpiProductGroupingValidator), nameof(KpiProductGrouping.Status), ErrorCode.StatusNotExisted);
+            return KpiProductGrouping.IsValidated;
+        }
+
+        private async Task<bool> ValidateKpiPeriod(KpiProductGrouping KpiProductGrouping)
+        {
+            KpiPeriodFilter KpiPeriodFilter = new KpiPeriodFilter
+            {
+                Id = new IdFilter { Equal = KpiProductGrouping.KpiPeriodId }
+            };
+
+            int count = await UOW.KpiPeriodRepository.Count(KpiPeriodFilter);
+            if (count == 0)
+                KpiProductGrouping.AddError(nameof(KpiProductGroupingValidator), nameof(KpiProductGrouping.KpiPeriod), ErrorCode.KpiPeriodIdNotExisted);
+            return KpiProductGrouping.IsValidated;
+        }
+
+        private async Task<bool> ValidateKpiYear(KpiProductGrouping KpiProductGrouping)
+        {
+            KpiYearFilter KpiYearFilter = new KpiYearFilter
+            {
+                Id = new IdFilter { Equal = KpiProductGrouping.KpiYearId }
+            };
+
+            int count = await UOW.KpiYearRepository.Count(KpiYearFilter);
+            if (count == 0)
+                KpiProductGrouping.AddError(nameof(KpiProductGroupingValidator), nameof(KpiProductGrouping.KpiYear), ErrorCode.KpiYearIdNotExisted);
+            return KpiProductGrouping.IsValidated;
+        }
+
+        private async Task<bool> ValidateTime(KpiProductGrouping KpiProductGrouping)
+        {
+            await ValidateKpiPeriod(KpiProductGrouping);
+            await ValidateKpiYear(KpiProductGrouping);
+            if (!KpiProductGrouping.IsValidated) return false;
+            DateTime now = StaticParams.DateTimeNow;
+            DateTime StartDate, EndDate;
+            (StartDate, EndDate) = DateTimeConvert(KpiProductGrouping.KpiPeriodId, KpiProductGrouping.KpiYearId);
+            if (now > EndDate)
+                KpiProductGrouping.AddError(nameof(KpiProductGroupingValidator), nameof(KpiProductGrouping.KpiYear), ErrorCode.KpiYearAndKpiPeriodMustInTheFuture);
+            return KpiProductGrouping.IsValidated;
+        }
+
+        private async Task<bool> ValidateKpiProductGroupingType(KpiProductGrouping KpiProductGrouping)
+        {
+            KpiProductGroupingTypeFilter KpiProductGroupingTypeFilter = new KpiProductGroupingTypeFilter
+            {
+                Id = new IdFilter { Equal = KpiProductGrouping.KpiProductGroupingTypeId }
+            };
+
+            int count = await UOW.KpiProductGroupingTypeRepository.Count(KpiProductGroupingTypeFilter);
+            if (count == 0)
+                KpiProductGrouping.AddError(nameof(KpiProductGroupingValidator), nameof(KpiProductGrouping.KpiProductGroupingType), ErrorCode.KpiProductGroupingTypeIdNotExisted);
+            return KpiProductGrouping.IsValidated;
+        }
+
+
+        private async Task<bool> ValidateProductGrouping(KpiProductGrouping KpiProductGrouping)
+        {
+            if (KpiProductGrouping.KpiProductGroupingContents == null || !KpiProductGrouping.KpiProductGroupingContents.Any())
+                KpiProductGrouping.AddError(nameof(KpiProductGroupingValidator), nameof(KpiProductGrouping.KpiProductGroupingContents), ErrorCode.KpiProductGroupingContentsEmpty);
+            else {
+                var ProductGroupingIds = KpiProductGrouping.KpiProductGroupingContents
+                    .Select(x => x.ProductGroupingId)
+                    .ToList();
+                ProductGroupingFilter ProductGroupingFilter = new ProductGroupingFilter
+                {
+                    Skip = 0,
+                    Take = int.MaxValue,
+                    Selects = ProductGroupingSelect.Id,
+                    Id = new IdFilter { In = ProductGroupingIds },
+                };
+                var ProductGroupingInDB = await UOW.ProductGroupingRepository.List(ProductGroupingFilter);
+                foreach(var KpiProductGroupingContent in KpiProductGrouping.KpiProductGroupingContents)
+                {
+                    ProductGrouping ProductGrouping = ProductGroupingInDB.Where(x => x.Id == KpiProductGroupingContent.ProductGroupingId).FirstOrDefault();
+                    if(ProductGrouping == null)
+                        KpiProductGrouping.AddError(nameof(KpiProductGroupingValidator), nameof(KpiProductGroupingContent.ProductGrouping), ErrorCode.ProductGroupingNotExisted);
+                }
+            }
+            return KpiProductGrouping.IsValidated;
+        }
+
+        private async Task<bool> ValidateItem(KpiProductGrouping KpiProductGrouping)
+        {
+            foreach(var KpiProductGroupingContent in KpiProductGrouping.KpiProductGroupingContents)
+            {
+                if(KpiProductGroupingContent.KpiProductGroupingContentItemMappings == null || !KpiProductGroupingContent.KpiProductGroupingContentItemMappings.Any())
+                {
+                    KpiProductGrouping.AddError(nameof(KpiProductGroupingValidator), nameof(KpiProductGroupingContent.KpiProductGroupingContentItemMappings), ErrorCode.ItemEmpty);
+                }    
+            }
+            return KpiProductGrouping.IsValidated;
+        }
+
+        private async Task<bool> ValidateValue(KpiProductGrouping KpiProductGrouping)
+        {
+            bool flag = false;
+            foreach (var KpiProductGroupingContent in KpiProductGrouping.KpiProductGroupingContents)
+            {
+                foreach(var KpiProductGroupingContentCriteriaMapping in KpiProductGroupingContent.KpiProductGroupingContentCriteriaMappings)
+                {
+                    if(KpiProductGroupingContentCriteriaMapping.Value != null) flag = true;
+                }    
+            }
+            if(!flag) 
+                KpiProductGrouping.AddError(nameof(KpiProductGroupingValidator), nameof(KpiProductGrouping.Id), ErrorCode.ValueCannotBeNull);
+            return KpiProductGrouping.IsValidated;
+        }
+
+        private async Task<bool> ValidateOldKpi(KpiProductGrouping KpiProductGrouping)
+        {
+            var EmployeeIds = KpiProductGrouping.Employees.Select(x => x.Id).ToList();
+            KpiProductGroupingFilter KpiProductGroupingFilter = new KpiProductGroupingFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = KpiProductGroupingSelect.Id | KpiProductGroupingSelect.Employee,
+                EmployeeId = new IdFilter { In = EmployeeIds },
+                StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id },
+                KpiPeriodId = new IdFilter { Equal = KpiProductGrouping.KpiPeriodId },
+                KpiYearId = new IdFilter { Equal = KpiProductGrouping.KpiYearId },
+            };
+            var OldKpiProductGroupings = await UOW.KpiProductGroupingRepository.List(KpiProductGroupingFilter);
+            var oldEmployeeIds = OldKpiProductGroupings.Select(x => x.EmployeeId).ToList();
+            foreach (var Employee in KpiProductGrouping.Employees)
+            {
+                if (oldEmployeeIds.Contains(Employee.Id))
+                {
+                    Employee.AddError(nameof(KpiProductGroupingValidator), nameof(Employee.Id), ErrorCode.EmployeeHasKpi);
+                }
+            }
+            return KpiProductGrouping.IsValidated;
+        }
+
         public async Task<bool>Create(KpiProductGrouping KpiProductGrouping)
         {
+            await ValidateOrganization(KpiProductGrouping);
+            await ValidateEmployees(KpiProductGrouping);
+            await ValidateOldKpi(KpiProductGrouping);
+            await ValidateStatus(KpiProductGrouping);
+            await ValidateKpiPeriod(KpiProductGrouping);
+            await ValidateKpiYear(KpiProductGrouping);
+            await ValidateTime(KpiProductGrouping);
+            await ValidateKpiProductGroupingType(KpiProductGrouping);
+            await ValidateProductGrouping(KpiProductGrouping);
+            await ValidateItem(KpiProductGrouping);
+            await ValidateValue(KpiProductGrouping);
             return KpiProductGrouping.IsValidated;
         }
 
@@ -59,6 +275,13 @@ namespace DMS.Services.MKpiProductGrouping
         {
             if (await ValidateId(KpiProductGrouping))
             {
+                await ValidateOrganization(KpiProductGrouping);
+                await ValidateStatus(KpiProductGrouping);
+                await ValidateTime(KpiProductGrouping);
+                await ValidateKpiProductGroupingType(KpiProductGrouping);
+                await ValidateProductGrouping(KpiProductGrouping);
+                await ValidateItem(KpiProductGrouping);
+                await ValidateValue(KpiProductGrouping);
             }
             return KpiProductGrouping.IsValidated;
         }
@@ -83,6 +306,47 @@ namespace DMS.Services.MKpiProductGrouping
         public async Task<bool> Import(List<KpiProductGrouping> KpiProductGroupings)
         {
             return true;
+        }
+
+        private Tuple<DateTime, DateTime> DateTimeConvert(long KpiPeriodId, long KpiYearId)
+        {
+            DateTime startDate = StaticParams.DateTimeNow;
+            DateTime endDate = StaticParams.DateTimeNow;
+            if (KpiPeriodId <= Enums.KpiPeriodEnum.PERIOD_MONTH12.Id)
+            {
+                startDate = new DateTime((int)KpiYearId, (int)(KpiPeriodId % 100), 1);
+                endDate = startDate.AddMonths(1).AddSeconds(-1);
+            }
+            else
+            {
+                if (KpiPeriodId == Enums.KpiPeriodEnum.PERIOD_QUATER01.Id)
+                {
+                    startDate = new DateTime((int)KpiYearId, 1, 1);
+                    endDate = startDate.AddMonths(3).AddSeconds(-1);
+                }
+                if (KpiPeriodId == Enums.KpiPeriodEnum.PERIOD_QUATER02.Id)
+                {
+                    startDate = new DateTime((int)KpiYearId, 4, 1);
+                    endDate = startDate.AddMonths(3).AddSeconds(-1);
+                }
+                if (KpiPeriodId == Enums.KpiPeriodEnum.PERIOD_QUATER03.Id)
+                {
+                    startDate = new DateTime((int)KpiYearId, 7, 1);
+                    endDate = startDate.AddMonths(3).AddSeconds(-1);
+                }
+                if (KpiPeriodId == Enums.KpiPeriodEnum.PERIOD_QUATER04.Id)
+                {
+                    startDate = new DateTime((int)KpiYearId, 10, 1);
+                    endDate = startDate.AddMonths(3).AddSeconds(-1);
+                }
+                if (KpiPeriodId == Enums.KpiPeriodEnum.PERIOD_YEAR01.Id)
+                {
+                    startDate = new DateTime((int)KpiYearId, 1, 1);
+                    endDate = startDate.AddYears(1).AddSeconds(-1);
+                }
+            }
+
+            return Tuple.Create(startDate, endDate);
         }
     }
 }

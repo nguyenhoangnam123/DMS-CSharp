@@ -9,6 +9,7 @@ namespace DMS.Models
         {
             KpiGenerals = new HashSet<KpiGeneralDAO>();
             KpiItems = new HashSet<KpiItemDAO>();
+            KpiProductGroupings = new HashSet<KpiProductGroupingDAO>();
         }
 
         public long Id { get; set; }
@@ -17,5 +18,6 @@ namespace DMS.Models
 
         public virtual ICollection<KpiGeneralDAO> KpiGenerals { get; set; }
         public virtual ICollection<KpiItemDAO> KpiItems { get; set; }
+        public virtual ICollection<KpiProductGroupingDAO> KpiProductGroupings { get; set; }
     }
 }

@@ -1,4 +1,4 @@
-using DMS.Common;
+﻿using DMS.Common;
 using DMS.Helpers;
 using System;
 using System.Collections.Generic;
@@ -86,8 +86,19 @@ namespace DMS.Services.MKpiProductGrouping
 
             try
             {
-                await UOW.KpiProductGroupingRepository.Create(KpiProductGrouping);
-                KpiProductGrouping = await UOW.KpiProductGroupingRepository.Get(KpiProductGrouping.Id);
+                List<KpiProductGrouping> KpiProductGroupings = new List<KpiProductGrouping>();
+                if(KpiProductGrouping.Employees != null && KpiProductGrouping.Employees.Any())
+                {
+                    foreach(var Employee in KpiProductGrouping.Employees)
+                    {
+                        var newObj = Utils.Clone(KpiProductGrouping);
+                        newObj.EmployeeId = Employee.Id;
+                        newObj.CreatorId = CurrentContext.UserId;
+                        newObj.RowId = Guid.NewGuid();
+                        KpiProductGroupings.Add(newObj);
+                    } // với mỗi nhân viên tạo ra 1 kpiProductGrouping
+                }
+                await UOW.KpiProductGroupingRepository.BulkMerge(KpiProductGroupings);
                 await Logging.CreateAuditLog(KpiProductGrouping, new { }, nameof(KpiProductGroupingService));
                 return KpiProductGrouping;
             }

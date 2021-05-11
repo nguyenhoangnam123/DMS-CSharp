@@ -2072,6 +2072,12 @@ namespace DMS.Models
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_KpiProductGrouping_KpiProductGroupingType");
 
+                entity.HasOne(d => d.KpiYear)
+                    .WithMany(p => p.KpiProductGroupings)
+                    .HasForeignKey(d => d.KpiYearId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_KpiProductGrouping_KpiYear");
+
                 entity.HasOne(d => d.Organization)
                     .WithMany(p => p.KpiProductGroupings)
                     .HasForeignKey(d => d.OrganizationId)

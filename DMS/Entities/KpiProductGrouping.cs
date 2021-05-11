@@ -20,6 +20,7 @@ namespace DMS.Entities
         public AppUser Creator { get; set; }
         public AppUser Employee { get; set; }
         public KpiPeriod KpiPeriod { get; set; }
+        public KpiYear KpiYear { get; set; }
         public KpiProductGroupingType KpiProductGroupingType { get; set; }
         public Organization Organization { get; set; }
         public Status Status { get; set; }
