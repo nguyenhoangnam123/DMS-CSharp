@@ -6,6 +6,7 @@ using DMS.Services.MBrand;
 using DMS.Services.MCategory;
 using DMS.Services.MKpiPeriod;
 using DMS.Services.MKpiProductGrouping;
+using DMS.Services.MKpiProductGroupingCriteria;
 using DMS.Services.MKpiProductGroupingType;
 using DMS.Services.MKpiYear;
 using DMS.Services.MOrganization;
@@ -30,6 +31,7 @@ namespace DMS.Rpc.kpi_product_grouping
         private IAppUserService AppUserService;
         private IKpiPeriodService KpiPeriodService;
         private IKpiProductGroupingTypeService KpiProductGroupingTypeService;
+        private IKpiProductGroupingCriteriaService KpiProductGroupingCriteriaService;
         private IStatusService StatusService;
         private IKpiProductGroupingService KpiProductGroupingService;
         private IItemService ItemService;
@@ -44,6 +46,7 @@ namespace DMS.Rpc.kpi_product_grouping
             IAppUserService AppUserService,
             IKpiPeriodService KpiPeriodService,
             IKpiProductGroupingTypeService KpiProductGroupingTypeService,
+            IKpiProductGroupingCriteriaService KpiProductGroupingCriteriaService,
             IStatusService StatusService,
             IKpiProductGroupingService KpiProductGroupingService,
             IItemService ItemService,
@@ -59,6 +62,7 @@ namespace DMS.Rpc.kpi_product_grouping
             this.AppUserService = AppUserService;
             this.KpiPeriodService = KpiPeriodService;
             this.KpiProductGroupingTypeService = KpiProductGroupingTypeService;
+            this.KpiProductGroupingCriteriaService = KpiProductGroupingCriteriaService;
             this.StatusService = StatusService;
             this.KpiProductGroupingService = KpiProductGroupingService;
             this.ItemService = ItemService;
@@ -108,6 +112,48 @@ namespace DMS.Rpc.kpi_product_grouping
 
             KpiProductGrouping KpiProductGrouping = await KpiProductGroupingService.Get(KpiProductGrouping_KpiProductGroupingDTO.Id);
             return new KpiProductGrouping_KpiProductGroupingDTO(KpiProductGrouping);
+        }
+
+        [Route(KpiProductGroupingRoute.GetDraft), HttpPost]
+        public async Task<ActionResult<KpiProductGrouping_KpiProductGroupingDTO>> GetDraft()
+        {
+            long KpiYearId = StaticParams.DateTimeNow.Year;
+            long KpiPeriodId = StaticParams.DateTimeNow.Month + 100;
+            List<KpiProductGroupingCriteria> KpiProductGroupingCriterias = await KpiProductGroupingCriteriaService.List(new KpiProductGroupingCriteriaFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = KpiProductGroupingCriteriaSelect.ALL,
+            });
+            var KpiProductGrouping_KpiProductGroupingDTO = new KpiProductGrouping_KpiProductGroupingDTO();
+            (KpiProductGrouping_KpiProductGroupingDTO.CurrentMonth, KpiProductGrouping_KpiProductGroupingDTO.CurrentQuarter, KpiProductGrouping_KpiProductGroupingDTO.CurrentYear) = ConvertDateTime(StaticParams.DateTimeNow);
+            KpiProductGrouping_KpiProductGroupingDTO.KpiYearId = KpiYearId;
+            KpiProductGrouping_KpiProductGroupingDTO.KpiYear = KpiProductGrouping_KpiProductGroupingDTO.KpiYear = Enums.KpiYearEnum.KpiYearEnumList.Where(x => x.Id == KpiYearId)
+                .Select(x => new KpiProductGrouping_KpiYearDTO
+                {
+                    Id = x.Id,
+                    Code = x.Code,
+                    Name = x.Name
+                })
+                .FirstOrDefault();
+            KpiProductGrouping_KpiProductGroupingDTO.KpiPeriodId = KpiPeriodId; // trả về năm
+            KpiProductGrouping_KpiProductGroupingDTO.KpiPeriod = KpiProductGrouping_KpiProductGroupingDTO.KpiPeriod = Enums.KpiPeriodEnum.KpiPeriodEnumList.Where(x => x.Id == KpiPeriodId)
+                .Select(x => new KpiProductGrouping_KpiPeriodDTO
+                {
+                    Id = x.Id,
+                    Code = x.Code,
+                    Name = x.Name
+                })
+                .FirstOrDefault(); //  trả về kỳ
+            KpiProductGrouping_KpiProductGroupingDTO.KpiProductGroupingCriterias = KpiProductGroupingCriterias.Select(x => new KpiProductGrouping_KpiProductGroupingCriteriaDTO(x)).ToList(); // trả về các chỉ tiêu
+            KpiProductGrouping_KpiProductGroupingDTO.Status = new KpiProductGrouping_StatusDTO
+            {
+                Code = Enums.StatusEnum.ACTIVE.Code,
+                Id = Enums.StatusEnum.ACTIVE.Id,
+                Name = Enums.StatusEnum.ACTIVE.Name
+            }; // trả về trạng thái
+            KpiProductGrouping_KpiProductGroupingDTO.StatusId = Enums.StatusEnum.ACTIVE.Id;
+            return KpiProductGrouping_KpiProductGroupingDTO;
         }
 
         [Route(KpiProductGroupingRoute.Create), HttpPost]
@@ -602,6 +648,14 @@ namespace DMS.Rpc.kpi_product_grouping
                 Code = KpiProductGrouping_KpiProductGroupingDTO.Status.Code,
                 Name = KpiProductGrouping_KpiProductGroupingDTO.Status.Name,
             };
+            KpiProductGrouping.Employees = KpiProductGrouping_KpiProductGroupingDTO.Employees?.Select(x => new AppUser
+            {
+                Id = x.Id,
+                DisplayName = x.DisplayName,
+                Username = x.Username,
+                Phone = x.Phone,
+                Email = x.Email,
+            }).ToList();
             KpiProductGrouping.KpiProductGroupingContents = KpiProductGrouping_KpiProductGroupingDTO.KpiProductGroupingContents?
                 .Select(x => new KpiProductGroupingContent
                 {
@@ -650,6 +704,65 @@ namespace DMS.Rpc.kpi_product_grouping
             KpiProductGroupingFilter.CreatedAt = KpiProductGrouping_KpiProductGroupingFilterDTO.CreatedAt;
             KpiProductGroupingFilter.UpdatedAt = KpiProductGrouping_KpiProductGroupingFilterDTO.UpdatedAt;
             return KpiProductGroupingFilter;
+        }
+
+        private Tuple<GenericEnum, GenericEnum, GenericEnum> ConvertDateTime(DateTime date)
+        {
+            GenericEnum monthName = Enums.KpiPeriodEnum.PERIOD_MONTH01;
+            GenericEnum quarterName = Enums.KpiPeriodEnum.PERIOD_MONTH01;
+            GenericEnum yearName = Enums.KpiYearEnum.KpiYearEnumList.Where(x => x.Id == StaticParams.DateTimeNow.Year).FirstOrDefault();
+            switch (date.Month)
+            {
+                case 1:
+                    monthName = Enums.KpiPeriodEnum.PERIOD_MONTH01;
+                    quarterName = Enums.KpiPeriodEnum.PERIOD_QUATER01;
+                    break;
+                case 2:
+                    monthName = Enums.KpiPeriodEnum.PERIOD_MONTH02;
+                    quarterName = Enums.KpiPeriodEnum.PERIOD_QUATER01;
+                    break;
+                case 3:
+                    monthName = Enums.KpiPeriodEnum.PERIOD_MONTH03;
+                    quarterName = Enums.KpiPeriodEnum.PERIOD_QUATER01;
+                    break;
+                case 4:
+                    monthName = Enums.KpiPeriodEnum.PERIOD_MONTH04;
+                    quarterName = Enums.KpiPeriodEnum.PERIOD_QUATER02;
+                    break;
+                case 5:
+                    monthName = Enums.KpiPeriodEnum.PERIOD_MONTH05;
+                    quarterName = Enums.KpiPeriodEnum.PERIOD_QUATER02;
+                    break;
+                case 6:
+                    monthName = Enums.KpiPeriodEnum.PERIOD_MONTH06;
+                    quarterName = Enums.KpiPeriodEnum.PERIOD_QUATER02;
+                    break;
+                case 7:
+                    monthName = Enums.KpiPeriodEnum.PERIOD_MONTH07;
+                    quarterName = Enums.KpiPeriodEnum.PERIOD_QUATER03;
+                    break;
+                case 8:
+                    monthName = Enums.KpiPeriodEnum.PERIOD_MONTH08;
+                    quarterName = Enums.KpiPeriodEnum.PERIOD_QUATER03;
+                    break;
+                case 9:
+                    monthName = Enums.KpiPeriodEnum.PERIOD_MONTH09;
+                    quarterName = Enums.KpiPeriodEnum.PERIOD_QUATER03;
+                    break;
+                case 10:
+                    monthName = Enums.KpiPeriodEnum.PERIOD_MONTH10;
+                    quarterName = Enums.KpiPeriodEnum.PERIOD_QUATER04;
+                    break;
+                case 11:
+                    monthName = Enums.KpiPeriodEnum.PERIOD_MONTH11;
+                    quarterName = Enums.KpiPeriodEnum.PERIOD_QUATER04;
+                    break;
+                case 12:
+                    monthName = Enums.KpiPeriodEnum.PERIOD_MONTH12;
+                    quarterName = Enums.KpiPeriodEnum.PERIOD_QUATER04;
+                    break;
+            }
+            return Tuple.Create(monthName, quarterName, yearName);
         }
     }
 }

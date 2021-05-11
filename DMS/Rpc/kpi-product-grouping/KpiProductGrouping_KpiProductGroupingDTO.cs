@@ -17,9 +17,14 @@ namespace DMS.Rpc.kpi_product_grouping
         public long EmployeeId { get; set; }
         public long CreatorId { get; set; }
         public Guid RowId { get; set; }
+        public bool ReadOnly { get; set; }
+        public GenericEnum CurrentMonth { get; set; }
+        public GenericEnum CurrentQuarter { get; set; }
+        public GenericEnum CurrentYear { get; set; }
         public KpiProductGrouping_AppUserDTO Creator { get; set; }
         public KpiProductGrouping_AppUserDTO Employee { get; set; }
         public KpiProductGrouping_KpiPeriodDTO KpiPeriod { get; set; }
+        public KpiProductGrouping_KpiYearDTO KpiYear { get; set; }
         public KpiProductGrouping_KpiProductGroupingTypeDTO KpiProductGroupingType { get; set; }
         public KpiProductGrouping_StatusDTO Status { get; set; }
         public DateTime CreatedAt { get; set; }
@@ -27,6 +32,7 @@ namespace DMS.Rpc.kpi_product_grouping
 
         public List<KpiProductGrouping_AppUserDTO> Employees { get; set; }
         public List<KpiProductGrouping_KpiProductGroupingContentDTO> KpiProductGroupingContents { get; set; }
+        public List<KpiProductGrouping_KpiProductGroupingCriteriaDTO> KpiProductGroupingCriterias { get; set; }
 
         public KpiProductGrouping_KpiProductGroupingDTO() {}
         public KpiProductGrouping_KpiProductGroupingDTO(KpiProductGrouping KpiProductGrouping)

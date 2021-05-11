@@ -28,6 +28,7 @@ namespace DMS.Rpc.kpi_product_grouping
         public const string Count = Default + "/count";
         public const string List = Default + "/list";
         public const string Get = Default + "/get";
+        public const string GetDraft = Default + "/get-draft";
         public const string Create = Default + "/create";
         public const string Update = Default + "/update";
         public const string Delete = Default + "/delete";
@@ -93,14 +94,14 @@ namespace DMS.Rpc.kpi_product_grouping
             { "Thêm", new List<string> { 
                     Parent,
                     Master, Preview, Count, List, Get,
-                    Detail, Create, 
+                    Detail, Create, GetDraft
                 }.Concat(SingleList).Concat(FilterList).Concat(CountList)
             },
 
             { "Sửa", new List<string> { 
                     Parent,            
                     Master, Preview, Count, List, Get,
-                    Detail, Update, 
+                    Detail, Update, GetDraft
                 }.Concat(SingleList).Concat(FilterList).Concat(CountList)
             },
 
