@@ -1,4 +1,4 @@
-using DMS.Common;
+﻿using DMS.Common;
 using DMS.Helpers;
 using DMS.Entities;
 using DMS.Models;
@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using MongoDB.Driver.Core.Authentication;
 
 namespace DMS.Repositories
 {
@@ -119,7 +120,7 @@ namespace DMS.Repositories
                 initQuery = initQuery.Union(queryable);
             }
             return initQuery;
-        }    
+        }
 
         private IQueryable<KpiProductGroupingDAO> DynamicOrder(IQueryable<KpiProductGroupingDAO> query, KpiProductGroupingFilter filter)
         {
@@ -381,7 +382,7 @@ namespace DMS.Repositories
                     Name = x.Status.Name,
                 },
             }).ToListAsync();
-            
+
 
             return KpiProductGroupings;
         }
@@ -529,7 +530,7 @@ namespace DMS.Repositories
                     KpiProductGroupingContentId = x.KpiProductGroupingContentId,
                     ItemId = x.KpiProductGroupingContentId,
                 }).ToListAsync();
-            foreach(KpiProductGroupingContent KpiProductGroupingContent in KpiProductGrouping.KpiProductGroupingContents)
+            foreach (KpiProductGroupingContent KpiProductGroupingContent in KpiProductGrouping.KpiProductGroupingContents)
             {
                 KpiProductGroupingContent.KpiProductGroupingContentCriteriaMappings = KpiProductGroupingContentCriteriaMappings.Where(x => x.KpiProductGroupingContentId == KpiProductGroupingContent.Id).ToList();
                 KpiProductGroupingContent.KpiProductGroupingContentItemMappings = KpiProductGroupingContentItemMappings.Where(x => x.KpiProductGroupingContentId == KpiProductGroupingContent.Id).ToList();
@@ -547,13 +548,13 @@ namespace DMS.Repositories
             KpiProductGroupingDAO.StatusId = KpiProductGrouping.StatusId;
             KpiProductGroupingDAO.EmployeeId = KpiProductGrouping.EmployeeId;
             KpiProductGroupingDAO.CreatorId = KpiProductGrouping.CreatorId;
-            KpiProductGroupingDAO.RowId = KpiProductGrouping.RowId;
             KpiProductGroupingDAO.RowId = Guid.NewGuid();
             KpiProductGroupingDAO.CreatedAt = StaticParams.DateTimeNow;
             KpiProductGroupingDAO.UpdatedAt = StaticParams.DateTimeNow;
             DataContext.KpiProductGrouping.Add(KpiProductGroupingDAO);
             await DataContext.SaveChangesAsync();
             KpiProductGrouping.Id = KpiProductGroupingDAO.Id;
+            KpiProductGrouping.RowId = KpiProductGroupingDAO.RowId;
             await SaveReference(KpiProductGrouping);
             return true;
         }
@@ -580,36 +581,109 @@ namespace DMS.Repositories
 
         public async Task<bool> Delete(KpiProductGrouping KpiProductGrouping)
         {
-            await DataContext.KpiProductGrouping.Where(x => x.Id == KpiProductGrouping.Id).UpdateFromQueryAsync(x => new KpiProductGroupingDAO { DeletedAt = StaticParams.DateTimeNow, UpdatedAt = StaticParams.DateTimeNow });
+            await DeleteReference(new List<KpiProductGrouping>
+            {
+                KpiProductGrouping
+            });
+            await DataContext.KpiProductGrouping
+                .Where(x => x.Id == KpiProductGrouping.Id).UpdateFromQueryAsync(x => new KpiProductGroupingDAO { DeletedAt = StaticParams.DateTimeNow, UpdatedAt = StaticParams.DateTimeNow });
+
             return true;
         }
-        
+
         public async Task<bool> BulkMerge(List<KpiProductGrouping> KpiProductGroupings)
         {
-            List<KpiProductGroupingDAO> KpiProductGroupingDAOs = new List<KpiProductGroupingDAO>();
-            foreach (KpiProductGrouping KpiProductGrouping in KpiProductGroupings)
+            try
             {
-                KpiProductGroupingDAO KpiProductGroupingDAO = new KpiProductGroupingDAO();
-                KpiProductGroupingDAO.Id = KpiProductGrouping.Id;
-                KpiProductGroupingDAO.OrganizationId = KpiProductGrouping.OrganizationId;
-                KpiProductGroupingDAO.KpiYearId = KpiProductGrouping.KpiYearId;
-                KpiProductGroupingDAO.KpiPeriodId = KpiProductGrouping.KpiPeriodId;
-                KpiProductGroupingDAO.KpiProductGroupingTypeId = KpiProductGrouping.KpiProductGroupingTypeId;
-                KpiProductGroupingDAO.StatusId = KpiProductGrouping.StatusId;
-                KpiProductGroupingDAO.EmployeeId = KpiProductGrouping.EmployeeId;
-                KpiProductGroupingDAO.CreatorId = KpiProductGrouping.CreatorId;
-                KpiProductGroupingDAO.RowId = KpiProductGrouping.RowId;
-                KpiProductGroupingDAO.CreatedAt = StaticParams.DateTimeNow;
-                KpiProductGroupingDAO.UpdatedAt = StaticParams.DateTimeNow;
-                KpiProductGroupingDAOs.Add(KpiProductGroupingDAO);
+                List<KpiProductGroupingDAO> KpiProductGroupingDAOs = new List<KpiProductGroupingDAO>();
+                foreach (KpiProductGrouping KpiProductGrouping in KpiProductGroupings)
+                {
+                    KpiProductGroupingDAO KpiProductGroupingDAO = new KpiProductGroupingDAO();
+                    KpiProductGroupingDAO.Id = KpiProductGrouping.Id;
+                    KpiProductGroupingDAO.OrganizationId = KpiProductGrouping.OrganizationId;
+                    KpiProductGroupingDAO.KpiYearId = KpiProductGrouping.KpiYearId;
+                    KpiProductGroupingDAO.KpiPeriodId = KpiProductGrouping.KpiPeriodId;
+                    KpiProductGroupingDAO.KpiProductGroupingTypeId = KpiProductGrouping.KpiProductGroupingTypeId;
+                    KpiProductGroupingDAO.StatusId = KpiProductGrouping.StatusId;
+                    KpiProductGroupingDAO.EmployeeId = KpiProductGrouping.EmployeeId;
+                    KpiProductGroupingDAO.CreatorId = KpiProductGrouping.CreatorId;
+                    KpiProductGroupingDAO.RowId = KpiProductGrouping.RowId;
+                    KpiProductGroupingDAO.CreatedAt = StaticParams.DateTimeNow;
+                    KpiProductGroupingDAO.UpdatedAt = StaticParams.DateTimeNow;
+                    KpiProductGroupingDAOs.Add(KpiProductGroupingDAO);
+                }
+                await DataContext.BulkMergeAsync(KpiProductGroupingDAOs);
+                await DeleteReference(KpiProductGroupings); // xóa references
+
+                List<KpiProductGroupingContentDAO> KpiProductGroupingContentDAOs = new List<KpiProductGroupingContentDAO>();
+                List<KpiProductGroupingContentCriteriaMappingDAO> KpiProductGroupingContentCriteriaMappingDAOs = new List<KpiProductGroupingContentCriteriaMappingDAO>();
+                List<KpiProductGroupingContentItemMappingDAO> KpiProductGroupingContentItemMappingDAOs = new List<KpiProductGroupingContentItemMappingDAO>();
+                foreach (var KpiProductGrouping in KpiProductGroupings)
+                {
+                    KpiProductGrouping.Id = KpiProductGroupingDAOs.Where(x => x.RowId == KpiProductGrouping.RowId)
+                        .Select(x => x.Id)
+                        .FirstOrDefault();
+                    if(KpiProductGrouping.KpiProductGroupingContents != null && KpiProductGrouping.KpiProductGroupingContents.Any())
+                    {
+                        var ListContent = KpiProductGrouping.KpiProductGroupingContents.Select(x => new KpiProductGroupingContentDAO
+                        {
+                            KpiProductGroupingId = KpiProductGrouping.Id,
+                            ProductGroupingId = x.ProductGroupingId,
+                            KpiProductGroupingContentCriteriaMappings = x.KpiProductGroupingContentCriteriaMappings.Select(a => new KpiProductGroupingContentCriteriaMappingDAO { 
+                                KpiProductGroupingCriteriaId = a.KpiProductGroupingCriteriaId,
+                                KpiProductGroupingContentId = a.KpiProductGroupingContentId,
+                                Value = a.Value,
+                            }).ToList(),
+                            RowId = Guid.NewGuid(),
+                        });
+                        KpiProductGroupingContentDAOs.AddRange(ListContent);
+                    }
+                }
+                await DataContext.KpiProductGroupingContent.BulkMergeAsync(KpiProductGroupingContentDAOs);
+
+                foreach (KpiProductGroupingContentDAO KpiProductGroupingContentDAO in KpiProductGroupingContentDAOs)
+                {
+                    KpiProductGroupingContentDAO.Id = KpiProductGroupingContentDAOs
+                        .Where(x => x.RowId == KpiProductGroupingContentDAO.RowId).Select(x => x.Id)
+                        .FirstOrDefault();
+                    if(KpiProductGroupingContentDAO.KpiProductGroupingContentCriteriaMappings != null && KpiProductGroupingContentDAO.KpiProductGroupingContentCriteriaMappings.Any())
+                    {
+                        var ListCriteriaMappings = KpiProductGroupingContentDAO.KpiProductGroupingContentCriteriaMappings
+                            .Select(x => new KpiProductGroupingContentCriteriaMappingDAO { 
+                                KpiProductGroupingContentId = x.KpiProductGroupingContentId,
+                                KpiProductGroupingCriteriaId = x.KpiProductGroupingCriteriaId,
+                                Value = x.Value,
+                            })
+                            .ToList();
+                        KpiProductGroupingContentCriteriaMappingDAOs.AddRange(ListCriteriaMappings);
+                    }
+                    if(KpiProductGroupingContentDAO.KpiProductGroupingContentItemMappings != null && KpiProductGroupingContentDAO.KpiProductGroupingContentItemMappings.Any())
+                    {
+                        var ListItemMappings = KpiProductGroupingContentDAO.KpiProductGroupingContentItemMappings
+                            .Select(x => new KpiProductGroupingContentItemMappingDAO
+                            {
+                                KpiProductGroupingContentId = x.KpiProductGroupingContentId,
+                                ItemId = x.ItemId,
+                            }).ToList();
+                        KpiProductGroupingContentItemMappingDAOs.AddRange(ListItemMappings);
+                    }
+                }
+                await DataContext.KpiProductGroupingContentCriteriaMapping.BulkMergeAsync(KpiProductGroupingContentCriteriaMappingDAOs);
+                await DataContext.KpiProductGroupingContentItemMapping.BulkMergeAsync(KpiProductGroupingContentItemMappingDAOs);
+
+                return true;
             }
-            await DataContext.BulkMergeAsync(KpiProductGroupingDAOs);
-            return true;
+            catch (Exception Exception)
+            {
+
+                throw Exception;
+            }
         }
 
         public async Task<bool> BulkDelete(List<KpiProductGrouping> KpiProductGroupings)
         {
             List<long> Ids = KpiProductGroupings.Select(x => x.Id).ToList();
+            await DeleteReference(KpiProductGroupings);
             await DataContext.KpiProductGrouping
                 .Where(x => Ids.Contains(x.Id))
                 .UpdateFromQueryAsync(x => new KpiProductGroupingDAO { DeletedAt = StaticParams.DateTimeNow, UpdatedAt = StaticParams.DateTimeNow });
@@ -618,7 +692,88 @@ namespace DMS.Repositories
 
         private async Task SaveReference(KpiProductGrouping KpiProductGrouping)
         {
+            try
+            {
+                await DeleteReference(new List<KpiProductGrouping> {
+                        KpiProductGrouping
+                    });
+
+                #region thêm references mới
+                List<KpiProductGroupingContentDAO> KpiProductGroupingContentDAOs = new List<KpiProductGroupingContentDAO>();
+                List<KpiProductGroupingContentCriteriaMappingDAO> KpiProductGroupingContentCriteriaMappingDAOs = new List<KpiProductGroupingContentCriteriaMappingDAO>();
+                List<KpiProductGroupingContentItemMappingDAO> KpiProductGroupingContentItemMappingDAOs = new List<KpiProductGroupingContentItemMappingDAO>();
+                if (KpiProductGrouping.KpiProductGroupingContents != null && KpiProductGrouping.KpiProductGroupingContents.Any())
+                {
+                    KpiProductGrouping.KpiProductGroupingContents.ForEach(x => x.RowId = Guid.NewGuid());
+                    foreach (var KpiProductGroupingContent in KpiProductGrouping.KpiProductGroupingContents)
+                    {
+                        KpiProductGroupingContentDAO KpiProductGroupingContentDAO = new KpiProductGroupingContentDAO();
+                        KpiProductGroupingContentDAO.Id = KpiProductGroupingContent.Id;
+                        KpiProductGroupingContentDAO.KpiProductGroupingId = KpiProductGroupingContent.KpiProductGroupingId;
+                        KpiProductGroupingContentDAO.ProductGroupingId = KpiProductGroupingContent.ProductGroupingId;
+                        KpiProductGroupingContentDAO.RowId = KpiProductGroupingContent.RowId;
+                        KpiProductGroupingContentDAOs.Add(KpiProductGroupingContentDAO);
+                    }
+                    await DataContext.KpiProductGroupingContent.BulkMergeAsync(KpiProductGroupingContentDAOs);
+
+                    foreach (var KpiProductGroupingContent in KpiProductGrouping.KpiProductGroupingContents)
+                    {
+                        KpiProductGroupingContent.Id = KpiProductGroupingContentDAOs
+                            .Where(x => x.RowId == KpiProductGroupingContent.RowId)
+                            .Select(x => x.Id).FirstOrDefault(); // khi tạo mới thì các content chưa có id mặc định nên phải where theo RowId để tìm ra Id
+                        if (KpiProductGroupingContent.KpiProductGroupingContentCriteriaMappings != null)
+                        {
+                            foreach (var KpiProductGroupingContentCriteriaMapping in KpiProductGroupingContent.KpiProductGroupingContentCriteriaMappings)
+                            {
+                                KpiProductGroupingContentCriteriaMappingDAO KpiProductGroupingContentCriteriaMappingDAO = new KpiProductGroupingContentCriteriaMappingDAO();
+                                KpiProductGroupingContentCriteriaMappingDAO.KpiProductGroupingContentId = KpiProductGroupingContentCriteriaMapping.KpiProductGroupingContentId;
+                                KpiProductGroupingContentCriteriaMappingDAO.KpiProductGroupingCriteriaId = KpiProductGroupingContentCriteriaMapping.KpiProductGroupingCriteriaId;
+                                KpiProductGroupingContentCriteriaMappingDAO.Value = KpiProductGroupingContentCriteriaMapping.Value;
+                                KpiProductGroupingContentCriteriaMappingDAOs.Add(KpiProductGroupingContentCriteriaMappingDAO);
+                            }
+                            await DataContext.KpiProductGroupingContentCriteriaMapping.BulkMergeAsync(KpiProductGroupingContentCriteriaMappingDAOs); // thêm mapping content và chỉ tiêu kpi
+
+                            foreach (var KpiProductGroupingContentItemMapping in KpiProductGroupingContent.KpiProductGroupingContentItemMappings)
+                            {
+                                KpiProductGroupingContentItemMappingDAO KpiProductGroupingContentItemMappingDAO = new KpiProductGroupingContentItemMappingDAO();
+                                KpiProductGroupingContentItemMappingDAO.KpiProductGroupingContentId = KpiProductGroupingContentItemMapping.KpiProductGroupingContentId;
+                                KpiProductGroupingContentItemMappingDAO.ItemId = KpiProductGroupingContentItemMapping.ItemId;
+                                KpiProductGroupingContentItemMappingDAOs.Add(KpiProductGroupingContentItemMappingDAO);
+                            }
+                            await DataContext.KpiProductGroupingContentItemMapping.BulkMergeAsync(KpiProductGroupingContentItemMappingDAOs); // thêm mapping content và Item
+                        }
+                    }
+                }
+                #endregion
+            }
+            catch (Exception Exception)
+            {
+
+                throw Exception;
+            }
         }
-        
+
+        private async Task DeleteReference(List<KpiProductGrouping> KpiProductGroupings)
+        {
+            try
+            {
+                List<long> Ids = KpiProductGroupings.Select(x => x.Id).ToList();
+                await DataContext.KpiProductGroupingContentCriteriaMapping
+                      .Where(x => Ids.Contains(x.KpiProductGroupingContent.KpiProductGroupingId))
+                      .DeleteFromQueryAsync();
+                await DataContext.KpiProductGroupingContentItemMapping
+                     .Where(x => Ids.Contains(x.KpiProductGroupingContent.KpiProductGroupingId))
+                     .DeleteFromQueryAsync();
+                await DataContext.KpiProductGroupingContent
+                     .Where(x => Ids.Contains(x.KpiProductGroupingId))
+                     .DeleteFromQueryAsync();
+            }
+            catch (Exception Exception)
+            {
+
+                throw Exception;
+            }
+        }
+
     }
 }
