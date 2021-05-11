@@ -36,7 +36,7 @@ namespace DMS.Rpc.kpi_product_grouping
         public const string Export = Default + "/export";
         public const string ExportTemplate = Default + "/export-template";
         public const string BulkDelete = Default + "/bulk-delete";
-        
+
         public const string FilterListAppUser = Default + "/filter-list-app-user";
         public const string FilterListOrganization = Default + "/filter-list-organization";
         public const string FilterListKpiPeriod = Default + "/filter-list-kpi-period";
@@ -52,6 +52,7 @@ namespace DMS.Rpc.kpi_product_grouping
         public const string SingleListKpiPeriod = Default + "/single-list-kpi-period";
         public const string SingleListKpiProductGroupingType = Default + "/single-list-kpi-product-grouping-type";
         public const string SingleListStatus = Default + "/single-list-status";
+        public const string SingleListProductGrouping = Default + "/single-list-product-grouping";
 
         public const string ListAppUser = Default + "list-app-user";
         public const string CountAppUser = Default + "count-app-user";
@@ -72,65 +73,66 @@ namespace DMS.Rpc.kpi_product_grouping
             { nameof(KpiProductGroupingFilter.RowId), FieldTypeEnum.ID.Id },
         };
 
-        private static List<string> FilterList = new List<string> { 
-            FilterListAppUser,FilterListOrganization, FilterListKpiPeriod,FilterListKpiYear, FilterListKpiProductGroupingType, 
+        private static List<string> FilterList = new List<string> {
+            FilterListAppUser,FilterListOrganization, FilterListKpiPeriod,FilterListKpiYear, FilterListKpiProductGroupingType,
             FilterListStatus, FilterListCategory, FilterListProductType, FilterListProductGrouping, FilterListBrand
         };
-        private static List<string> SingleList = new List<string> { 
-            SingleListAppUser, SingleListKpiPeriod, SingleListKpiProductGroupingType, SingleListStatus, 
+        private static List<string> SingleList = new List<string> {
+            SingleListAppUser, SingleListKpiPeriod, SingleListKpiProductGroupingType, SingleListStatus, SingleListProductGrouping
         };
-        private static List<string> CountList = new List<string> { 
-            
+        private static List<string> CountList = new List<string>
+        {
+            ListAppUser, CountAppUser, ListItem, CountItem
         };
-        
+
         public static Dictionary<string, IEnumerable<string>> Action = new Dictionary<string, IEnumerable<string>>
         {
-            { "Tìm kiếm", new List<string> { 
+            { "Tìm kiếm", new List<string> {
                     Parent,
                     Master, Preview, Count, List,
-                    Get,  
+                    Get,
                 }.Concat(FilterList)
             },
-            { "Thêm", new List<string> { 
+            { "Thêm", new List<string> {
                     Parent,
                     Master, Preview, Count, List, Get,
-                    Detail, Create, GetDraft
+                    Detail, Create, GetDraft,
                 }.Concat(SingleList).Concat(FilterList).Concat(CountList)
             },
 
-            { "Sửa", new List<string> { 
-                    Parent,            
+            { "Sửa", new List<string> {
+                    Parent,
                     Master, Preview, Count, List, Get,
-                    Detail, Update, GetDraft
+                    Detail, Update, GetDraft,
                 }.Concat(SingleList).Concat(FilterList).Concat(CountList)
             },
 
-            { "Xoá", new List<string> { 
+            { "Xoá", new List<string> {
                     Parent,
                     Master, Preview, Count, List, Get,
-                    Delete, 
-                }.Concat(SingleList).Concat(FilterList) 
+                    Delete,
+                }.Concat(SingleList).Concat(FilterList)
             },
 
-            { "Xoá nhiều", new List<string> { 
+            { "Xoá nhiều", new List<string> {
                     Parent,
                     Master, Preview, Count, List, Get,
-                    BulkDelete 
-                }.Concat(FilterList) 
+                    BulkDelete
+                }.Concat(FilterList)
             },
 
-            { "Xuất excel", new List<string> { 
+            { "Xuất excel", new List<string> {
                     Parent,
                     Master, Preview, Count, List, Get,
-                    Export 
-                }.Concat(FilterList) 
+                    Export
+                }.Concat(FilterList)
             },
 
-            { "Nhập excel", new List<string> { 
+            { "Nhập excel", new List<string> {
                     Parent,
                     Master, Preview, Count, List, Get,
-                    ExportTemplate, Import 
-                }.Concat(FilterList) 
+                    ExportTemplate, Import
+                }.Concat(FilterList)
             },
         };
     }

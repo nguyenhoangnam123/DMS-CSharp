@@ -107,6 +107,25 @@ namespace DMS.Rpc.kpi_product_grouping
                 .Select(x => new KpiProductGrouping_StatusDTO(x)).ToList();
             return KpiProductGrouping_StatusDTOs;
         }
+        [Route(KpiProductGroupingRoute.SingleListProductGrouping), HttpPost]
+        public async Task<List<KpiProductGrouping_ProductGroupingDTO>> SingleListProductGrouping([FromBody] KpiProductGrouping_ProductGroupingFilterDTO KpiProductGrouping_ProductGroupingFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            ProductGroupingFilter ProductGroupingFilter = new ProductGroupingFilter();
+            ProductGroupingFilter.Skip = 0;
+            ProductGroupingFilter.Take = int.MaxValue;
+            ProductGroupingFilter.OrderBy = ProductGroupingOrder.Id;
+            ProductGroupingFilter.OrderType = OrderType.ASC;
+            ProductGroupingFilter.Selects = ProductGroupingSelect.Id | ProductGroupingSelect.Code
+                | ProductGroupingSelect.Name | ProductGroupingSelect.Parent;
+
+            List<ProductGrouping> KpiProductGroupingGroupings = await ProductGroupingService.List(ProductGroupingFilter);
+            List<KpiProductGrouping_ProductGroupingDTO> KpiProductGrouping_ProductGroupingDTOs = KpiProductGroupingGroupings
+                .Select(x => new KpiProductGrouping_ProductGroupingDTO(x)).ToList();
+            return KpiProductGrouping_ProductGroupingDTOs;
+        }
     }
 }
 

@@ -9,39 +9,6 @@ namespace DMS.Rpc.kpi_product_grouping
 {
     public partial class KpiProductGroupingController : RpcController
     {
-        // list AppUser
-        [Route(KpiProductGroupingRoute.ListAppUser), HttpPost]
-        public async Task<List<KpiProductGrouping_AppUserDTO>> ListAppUser([FromBody] KpiProductGrouping_AppUserFilterDTO KpiProductGrouping_AppUserFilterDTO)
-        {
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
-
-            AppUserFilter AppUserFilter = new AppUserFilter();
-            AppUserFilter.Skip = 0;
-            AppUserFilter.Take = 20;
-            AppUserFilter.OrderBy = AppUserOrder.Id;
-            AppUserFilter.OrderType = OrderType.ASC;
-            AppUserFilter.Selects = AppUserSelect.ALL;
-            AppUserFilter.Id = KpiProductGrouping_AppUserFilterDTO.Id;
-            AppUserFilter.Username = KpiProductGrouping_AppUserFilterDTO.Username;
-            AppUserFilter.DisplayName = KpiProductGrouping_AppUserFilterDTO.DisplayName;
-            AppUserFilter.Address = KpiProductGrouping_AppUserFilterDTO.Address;
-            AppUserFilter.Email = KpiProductGrouping_AppUserFilterDTO.Email;
-            AppUserFilter.Phone = KpiProductGrouping_AppUserFilterDTO.Phone;
-            AppUserFilter.SexId = KpiProductGrouping_AppUserFilterDTO.SexId;
-            AppUserFilter.Birthday = KpiProductGrouping_AppUserFilterDTO.Birthday;
-            AppUserFilter.PositionId = KpiProductGrouping_AppUserFilterDTO.PositionId;
-            AppUserFilter.Department = KpiProductGrouping_AppUserFilterDTO.Department;
-            AppUserFilter.OrganizationId = KpiProductGrouping_AppUserFilterDTO.OrganizationId;
-            AppUserFilter.ProvinceId = KpiProductGrouping_AppUserFilterDTO.ProvinceId;
-            AppUserFilter.StatusId = KpiProductGrouping_AppUserFilterDTO.StatusId;
-            AppUserFilter.StatusId = new IdFilter { Equal = 1 };
-            List<AppUser> AppUsers = await AppUserService.List(AppUserFilter);
-            List<KpiProductGrouping_AppUserDTO> KpiProductGrouping_AppUserDTOs = AppUsers
-                .Select(x => new KpiProductGrouping_AppUserDTO(x)).ToList();
-            return KpiProductGrouping_AppUserDTOs;
-        }
-        // CountAppUser
         [Route(KpiProductGroupingRoute.CountAppUser), HttpPost]
         public async Task<int> CountAppUser([FromBody] KpiProductGrouping_AppUserFilterDTO KpiProductGrouping_AppUserFilterDTO)
         {
@@ -49,29 +16,54 @@ namespace DMS.Rpc.kpi_product_grouping
                 throw new BindException(ModelState);
 
             AppUserFilter AppUserFilter = new AppUserFilter();
-            AppUserFilter.Skip = 0;
-            AppUserFilter.Take = 20;
+            AppUserFilter.Id = KpiProductGrouping_AppUserFilterDTO.Id;
+            AppUserFilter.Username = KpiProductGrouping_AppUserFilterDTO.Username;
+            AppUserFilter.DisplayName = KpiProductGrouping_AppUserFilterDTO.DisplayName;
+            AppUserFilter.Email = KpiProductGrouping_AppUserFilterDTO.Email;
+            AppUserFilter.Phone = KpiProductGrouping_AppUserFilterDTO.Phone;
+            AppUserFilter.OrganizationId = KpiProductGrouping_AppUserFilterDTO.OrganizationId;
+            AppUserFilter.StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id };
+
+            if (AppUserFilter.Id == null) AppUserFilter.Id = new IdFilter();
+            {
+                if (AppUserFilter.Id.In == null) AppUserFilter.Id.In = new List<long>();
+                AppUserFilter.Id.In.AddRange(await FilterAppUser(AppUserService, OrganizationService, CurrentContext));
+            }
+            return await KpiProductGroupingService.CountAppUser(AppUserFilter, KpiProductGrouping_AppUserFilterDTO.KpiYearId, KpiProductGrouping_AppUserFilterDTO.KpiPeriodId, KpiProductGrouping_AppUserFilterDTO.KpiItemTypeId); ;
+        }
+
+        [Route(KpiProductGroupingRoute.ListAppUser), HttpPost]
+        public async Task<List<KpiProductGrouping_AppUserDTO>> ListAppUser([FromBody] KpiProductGrouping_AppUserFilterDTO KpiProductGrouping_AppUserFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            AppUserFilter AppUserFilter = new AppUserFilter();
+            AppUserFilter.Skip = KpiProductGrouping_AppUserFilterDTO.Skip;
+            AppUserFilter.Take = KpiProductGrouping_AppUserFilterDTO.Take;
             AppUserFilter.OrderBy = AppUserOrder.Id;
             AppUserFilter.OrderType = OrderType.ASC;
             AppUserFilter.Selects = AppUserSelect.ALL;
             AppUserFilter.Id = KpiProductGrouping_AppUserFilterDTO.Id;
             AppUserFilter.Username = KpiProductGrouping_AppUserFilterDTO.Username;
             AppUserFilter.DisplayName = KpiProductGrouping_AppUserFilterDTO.DisplayName;
-            AppUserFilter.Address = KpiProductGrouping_AppUserFilterDTO.Address;
             AppUserFilter.Email = KpiProductGrouping_AppUserFilterDTO.Email;
-            AppUserFilter.Phone = KpiProductGrouping_AppUserFilterDTO.Phone;
-            AppUserFilter.SexId = KpiProductGrouping_AppUserFilterDTO.SexId;
-            AppUserFilter.Birthday = KpiProductGrouping_AppUserFilterDTO.Birthday;
-            AppUserFilter.PositionId = KpiProductGrouping_AppUserFilterDTO.PositionId;
-            AppUserFilter.Department = KpiProductGrouping_AppUserFilterDTO.Department;
             AppUserFilter.OrganizationId = KpiProductGrouping_AppUserFilterDTO.OrganizationId;
-            AppUserFilter.ProvinceId = KpiProductGrouping_AppUserFilterDTO.ProvinceId;
-            AppUserFilter.StatusId = KpiProductGrouping_AppUserFilterDTO.StatusId;
-            AppUserFilter.StatusId = new IdFilter { Equal = 1 };
-            int Total = await AppUserService.Count(AppUserFilter);
-            return Total;
+            AppUserFilter.Phone = KpiProductGrouping_AppUserFilterDTO.Phone;
+            AppUserFilter.StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id };
+
+            if (AppUserFilter.Id == null) AppUserFilter.Id = new IdFilter();
+            {
+                if (AppUserFilter.Id.In == null) AppUserFilter.Id.In = new List<long>();
+                AppUserFilter.Id.In.AddRange(await FilterAppUser(AppUserService, OrganizationService, CurrentContext));
+            }
+
+            List<AppUser> AppUsers = await KpiProductGroupingService.ListAppUser(AppUserFilter, KpiProductGrouping_AppUserFilterDTO.KpiYearId, KpiProductGrouping_AppUserFilterDTO.KpiPeriodId, KpiProductGrouping_AppUserFilterDTO.KpiItemTypeId);
+            List<KpiProductGrouping_AppUserDTO> KpiProductGrouping_AppUserDTOs = AppUsers
+                .Select(x => new KpiProductGrouping_AppUserDTO(x)).ToList();
+            return KpiProductGrouping_AppUserDTOs;
         }
-        // List Item
+
         [Route(KpiProductGroupingRoute.ListItem), HttpPost]
         public async Task<List<KpiProductGrouping_ItemDTO>> ListItem([FromBody] KpiProductGrouping_ItemFilterDTO KpiProductGrouping_ItemFilterDTO)
         {
@@ -79,12 +71,36 @@ namespace DMS.Rpc.kpi_product_grouping
                 throw new BindException(ModelState);
 
             ItemFilter ItemFilter = new ItemFilter();
+            ItemFilter.Code = KpiProductGrouping_ItemFilterDTO.Code;
+            ItemFilter.Name = KpiProductGrouping_ItemFilterDTO.Name;
+            ItemFilter.CategoryId = KpiProductGrouping_ItemFilterDTO.CategoryId;
+            ItemFilter.ProductGroupingId = KpiProductGrouping_ItemFilterDTO.ProductGroupingId;
+            ItemFilter.ProductTypeId = KpiProductGrouping_ItemFilterDTO.ProductTypeId;
+            //ItemFilter.BrandId = KpiProductGrouping_ItemFilterDTO.BrandId;
+
             List<Item> Items = await ItemService.List(ItemFilter);
             List<KpiProductGrouping_ItemDTO> KpiProductGrouping_ItemDTOs = Items
                 .Select(x => new KpiProductGrouping_ItemDTO(x)).ToList();
             return KpiProductGrouping_ItemDTOs;
         }
-        // Count Item
+
+        [Route(KpiProductGroupingRoute.CountItem), HttpPost]
+        public async Task<int> CountItem([FromBody] KpiProductGrouping_ItemFilterDTO KpiProductGrouping_ItemFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            ItemFilter ItemFilter = new ItemFilter();
+            ItemFilter.Code = KpiProductGrouping_ItemFilterDTO.Code;
+            ItemFilter.Name = KpiProductGrouping_ItemFilterDTO.Name;
+            ItemFilter.CategoryId = KpiProductGrouping_ItemFilterDTO.CategoryId;
+            ItemFilter.ProductGroupingId = KpiProductGrouping_ItemFilterDTO.ProductGroupingId;
+            ItemFilter.ProductTypeId = KpiProductGrouping_ItemFilterDTO.ProductTypeId;
+            //ItemFilter.BrandId = KpiProductGrouping_ItemFilterDTO.BrandId;
+
+            int Count = await ItemService.Count(ItemFilter);
+            return Count;
+        }
     }
 }
 

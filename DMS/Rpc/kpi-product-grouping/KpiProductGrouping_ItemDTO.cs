@@ -48,6 +48,7 @@ namespace DMS.Rpc.kpi_product_grouping
         public DecimalFilter SalePrice { get; set; }
         public DecimalFilter RetailPrice { get; set; }
         public IdFilter ProductGroupingId { get; set; }
+        public IdFilter CategoryId { get; set; }
         public IdFilter ProductTypeId { get; set; }
         public IdFilter SupplierId { get; set; }
         public IdFilter StatusId { get; set; }

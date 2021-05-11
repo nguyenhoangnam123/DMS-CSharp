@@ -128,7 +128,11 @@ namespace DMS.Rpc.kpi_product_grouping
         public DateFilter GPSUpdatedAt { get; set; }
         
         public GuidFilter RowId { get; set; }
-        
+
+        public IdFilter KpiYearId { get; set; }
+        public IdFilter KpiPeriodId { get; set; }
+        public IdFilter KpiItemTypeId { get; set; }
+
         public AppUserOrder OrderBy { get; set; }
     }
 }

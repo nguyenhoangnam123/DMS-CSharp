@@ -23,6 +23,8 @@ namespace DMS.Services.MKpiProductGrouping
         Task<List<KpiProductGrouping>> BulkDelete(List<KpiProductGrouping> KpiProductGroupings);
         Task<List<KpiProductGrouping>> Import(List<KpiProductGrouping> KpiProductGroupings);
         Task<KpiProductGroupingFilter> ToFilter(KpiProductGroupingFilter KpiProductGroupingFilter);
+        Task<int> CountAppUser(AppUserFilter AppUserFilter, IdFilter KpiYearId, IdFilter KpiPeriodId, IdFilter KpiProductGroupingTypeId);
+        Task<List<AppUser>> ListAppUser(AppUserFilter AppUserFilter, IdFilter KpiYearId, IdFilter KpiPeriodId, IdFilter KpiProductGroupingTypeId);
     }
 
     public class KpiProductGroupingService : BaseService, IKpiProductGroupingService
@@ -224,6 +226,66 @@ namespace DMS.Services.MKpiProductGrouping
                 }
             }
             return filter;
+        }
+
+        public async Task<int> CountAppUser(AppUserFilter AppUserFilter, IdFilter KpiYearId, IdFilter KpiPeriodId, IdFilter KpiProductGroupingTypeId)
+        {
+            try
+            {
+                KpiProductGroupingFilter KpiProductGroupingFilter = new KpiProductGroupingFilter
+                {
+                    Skip = 0,
+                    Take = int.MaxValue,
+                    KpiYearId = KpiYearId,
+                    KpiPeriodId = KpiPeriodId,
+                    KpiProductGroupingTypeId = KpiProductGroupingTypeId,
+                    Selects = KpiProductGroupingSelect.Id | KpiProductGroupingSelect.Employee
+                };
+
+                var KpiProductGroupings = await UOW.KpiProductGroupingRepository.List(KpiProductGroupingFilter);
+                var AppUserIds = KpiProductGroupings.Select(x => x.EmployeeId).ToList();
+
+                if (AppUserFilter.Id == null) AppUserFilter.Id = new IdFilter();
+                AppUserFilter.Id.NotIn = AppUserIds;
+
+                var count = await UOW.AppUserRepository.Count(AppUserFilter);
+                return count;
+            }
+            catch (Exception ex)
+            {
+                await Logging.CreateSystemLog(ex, nameof(KpiProductGroupingService));
+            }
+            return 0;
+        }
+
+        public async Task<List<AppUser>> ListAppUser(AppUserFilter AppUserFilter, IdFilter KpiYearId, IdFilter KpiPeriodId, IdFilter KpiProductGroupingTypeId)
+        {
+            try
+            {
+                KpiProductGroupingFilter KpiProductGroupingFilter = new KpiProductGroupingFilter
+                {
+                    Skip = 0,
+                    Take = int.MaxValue,
+                    KpiYearId = KpiYearId,
+                    KpiPeriodId = KpiPeriodId,
+                    KpiProductGroupingTypeId = KpiProductGroupingTypeId,
+                    Selects = KpiProductGroupingSelect.Id | KpiProductGroupingSelect.Employee
+                };
+
+                var KpiProductGroupings = await UOW.KpiProductGroupingRepository.List(KpiProductGroupingFilter);
+                var AppUserIds = KpiProductGroupings.Select(x => x.EmployeeId).ToList();
+                if (AppUserFilter.Id == null) AppUserFilter.Id = new IdFilter();
+                AppUserFilter.Id.NotIn = AppUserIds;
+                AppUserFilter.Selects = AppUserSelect.Id | AppUserSelect.Username | AppUserSelect.DisplayName | AppUserSelect.Phone | AppUserSelect.Email;
+
+                var AppUsers = await UOW.AppUserRepository.List(AppUserFilter);
+                return AppUsers;
+            }
+            catch (Exception ex)
+            {
+                await Logging.CreateSystemLog(ex, nameof(KpiProductGroupingService));
+            }
+            return null;
         }
     }
 }
