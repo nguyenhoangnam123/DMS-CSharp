@@ -17,6 +17,7 @@ namespace DMS.Models
             InverseParent = new HashSet<OrganizationDAO>();
             KpiGenerals = new HashSet<KpiGeneralDAO>();
             KpiItems = new HashSet<KpiItemDAO>();
+            KpiProductGroupings = new HashSet<KpiProductGroupingDAO>();
             LuckyNumberGroupings = new HashSet<LuckyNumberGroupingDAO>();
             Notifications = new HashSet<NotificationDAO>();
             PriceLists = new HashSet<PriceListDAO>();
@@ -62,6 +63,7 @@ namespace DMS.Models
         public virtual ICollection<OrganizationDAO> InverseParent { get; set; }
         public virtual ICollection<KpiGeneralDAO> KpiGenerals { get; set; }
         public virtual ICollection<KpiItemDAO> KpiItems { get; set; }
+        public virtual ICollection<KpiProductGroupingDAO> KpiProductGroupings { get; set; }
         public virtual ICollection<LuckyNumberGroupingDAO> LuckyNumberGroupings { get; set; }
         public virtual ICollection<NotificationDAO> Notifications { get; set; }
         public virtual ICollection<PriceListDAO> PriceLists { get; set; }
