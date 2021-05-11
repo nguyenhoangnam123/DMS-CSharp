@@ -31,12 +31,13 @@
     <PackageReference Include="HtmlAgilityPack" Version="1.11.24" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.8" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.8" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.8" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.1.8" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.8" />
+	<PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.14" />
+	<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.1.14" />
+	<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.14" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.8" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.10.8" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1.4" />
+    <PackageReference Include="Portable.BouncyCastle" Version="1.8.10" />
     <PackageReference Include="RabbitMQ.Client" Version="6.2.1" />
     <PackageReference Include="RestSharp" Version="106.11.4" />
     <PackageReference Include="Scrutor" Version="3.2.2" />
