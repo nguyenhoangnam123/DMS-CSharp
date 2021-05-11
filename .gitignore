@@ -14,3 +14,6 @@ DMS/DMS - Backup.csproj
 DMS/DMS.csproj.user
 DMS.ABE/obj/
 DMS.ABE/bin/
+DMS.FAST/obj/
+DMS.FAST/bin/
+DMS.FAST/appsettings.Development.json
