@@ -2092,6 +2092,12 @@ namespace DMS.Models
                     .HasForeignKey(d => d.KpiProductGroupingId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_KpiProductGroupingContent_KpiProductGrouping");
+
+                entity.HasOne(d => d.ProductGrouping)
+                    .WithMany(p => p.KpiProductGroupingContents)
+                    .HasForeignKey(d => d.ProductGroupingId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_KpiProductGroupingContent_KpiProductGroupingContent");
             });
 
             modelBuilder.Entity<KpiProductGroupingContentCriteriaMappingDAO>(entity =>

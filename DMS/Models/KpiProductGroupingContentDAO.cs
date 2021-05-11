@@ -17,6 +17,7 @@ namespace DMS.Models
         public Guid RowId { get; set; }
 
         public virtual KpiProductGroupingDAO KpiProductGrouping { get; set; }
+        public virtual ProductGroupingDAO ProductGrouping { get; set; }
         public virtual ICollection<KpiProductGroupingContentCriteriaMappingDAO> KpiProductGroupingContentCriteriaMappings { get; set; }
         public virtual ICollection<KpiProductGroupingContentItemMappingDAO> KpiProductGroupingContentItemMappings { get; set; }
     }
