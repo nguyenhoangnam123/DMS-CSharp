@@ -53,6 +53,8 @@ namespace DMS.Rpc.kpi_product_grouping
         public const string SingleListKpiProductGroupingType = Default + "/single-list-kpi-product-grouping-type";
         public const string SingleListStatus = Default + "/single-list-status";
         public const string SingleListProductGrouping = Default + "/single-list-product-grouping";
+        public const string SingleListKpiYear = Default + "/single-list-kpi-year";
+        public const string SingleListOrganization = Default + "/single-list-organization";
 
         public const string ListAppUser = Default + "/list-app-user";
         public const string CountAppUser = Default + "/count-app-user";
@@ -78,7 +80,7 @@ namespace DMS.Rpc.kpi_product_grouping
             FilterListStatus, FilterListCategory, FilterListProductType, FilterListProductGrouping, FilterListBrand
         };
         private static List<string> SingleList = new List<string> {
-            SingleListAppUser, SingleListKpiPeriod, SingleListKpiProductGroupingType, SingleListStatus, SingleListProductGrouping
+            SingleListAppUser, SingleListKpiPeriod, SingleListKpiProductGroupingType, SingleListStatus, SingleListProductGrouping, SingleListKpiYear, SingleListOrganization
         };
         private static List<string> CountList = new List<string>
         {

@@ -126,6 +126,52 @@ namespace DMS.Rpc.kpi_product_grouping
                 .Select(x => new KpiProductGrouping_ProductGroupingDTO(x)).ToList();
             return KpiProductGrouping_ProductGroupingDTOs;
         }
+        [Route(KpiProductGroupingRoute.SingleListKpiYear), HttpPost]
+        public async Task<List<KpiProductGrouping_KpiYearDTO>> SingleListKpiYear([FromBody] KpiProductGrouping_KpiYearFilterDTO KpiProductGrouping_KpiYearFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            KpiYearFilter KpiYearFilter = new KpiYearFilter();
+            KpiYearFilter.Skip = 0;
+            KpiYearFilter.Take = 20;
+            KpiYearFilter.OrderBy = KpiYearOrder.Id;
+            KpiYearFilter.OrderType = OrderType.ASC;
+            KpiYearFilter.Selects = KpiYearSelect.ALL;
+            KpiYearFilter.Id = KpiProductGrouping_KpiYearFilterDTO.Id;
+            KpiYearFilter.Code = KpiProductGrouping_KpiYearFilterDTO.Code;
+            KpiYearFilter.Name = KpiProductGrouping_KpiYearFilterDTO.Name;
+
+            List<KpiYear> KpiYears = await KpiYearService.List(KpiYearFilter);
+            List<KpiProductGrouping_KpiYearDTO> KpiProductGrouping_KpiYearDTOs = KpiYears
+                .Select(x => new KpiProductGrouping_KpiYearDTO(x)).ToList();
+            return KpiProductGrouping_KpiYearDTOs;
+        }
+        [Route(KpiProductGroupingRoute.SingleListOrganization), HttpPost]
+        public async Task<List<KpiProductGrouping_OrganizationDTO>> SingleListOrganization([FromBody] KpiProductGrouping_OrganizationFilterDTO KpiProductGrouping_OrganizationFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            OrganizationFilter OrganizationFilter = new OrganizationFilter();
+            OrganizationFilter.Skip = 0;
+            OrganizationFilter.Take = int.MaxValue;
+            OrganizationFilter.OrderBy = OrganizationOrder.Id;
+            OrganizationFilter.OrderType = OrderType.ASC;
+            OrganizationFilter.Selects = OrganizationSelect.ALL;
+            OrganizationFilter.Id = KpiProductGrouping_OrganizationFilterDTO.Id;
+            OrganizationFilter.Code = KpiProductGrouping_OrganizationFilterDTO.Code;
+            OrganizationFilter.Name = KpiProductGrouping_OrganizationFilterDTO.Name;
+            OrganizationFilter.IsDisplay = true;
+
+            if (OrganizationFilter.Id == null) OrganizationFilter.Id = new IdFilter();
+            OrganizationFilter.Id.In = await FilterOrganization(OrganizationService, CurrentContext);
+
+            List<Organization> Organizations = await OrganizationService.List(OrganizationFilter);
+            List<KpiProductGrouping_OrganizationDTO> KpiProductGrouping_OrganizationDTOs = Organizations
+                .Select(x => new KpiProductGrouping_OrganizationDTO(x)).ToList();
+            return KpiProductGrouping_OrganizationDTOs;
+        }
     }
 }
 
