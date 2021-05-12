@@ -20,10 +20,10 @@ namespace DMS.Rpc.kpi_product_grouping
 {
     public class KpiProductGroupingRoute : Root
     {
-        public const string Parent = Module + "/kpi-product-grouping";
-        public const string Master = Module + "/kpi-product-grouping/kpi-product-grouping-master";
-        public const string Detail = Module + "/kpi-product-grouping/kpi-product-grouping-detail";
-        public const string Preview = Module + "/kpi-product-grouping/kpi-product-grouping-preview";
+        public const string Parent = Module + "/kpi-management";
+        public const string Master = Module + "/kpi-management/kpi-product-grouping/kpi-product-grouping-master";
+        public const string Detail = Module + "/kpi-management/kpi-product-grouping/kpi-product-grouping-detail/*";
+        public const string Preview = Module + "/kpi-management/kpi-product-grouping/kpi-product-grouping-preview";
         private const string Default = Rpc + Module + "/kpi-product-grouping";
         public const string Count = Default + "/count";
         public const string List = Default + "/list";
