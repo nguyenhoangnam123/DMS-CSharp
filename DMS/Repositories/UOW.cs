@@ -423,6 +423,7 @@ namespace DMS.Repositories
             StoreUserRepository = new StoreUserRepository(DataContext);
             KpiProductGroupingRepository = new KpiProductGroupingRepository(DataContext);
             KpiProductGroupingContentRepository = new KpiProductGroupingContentRepository(DataContext);
+            KpiProductGroupingCriteriaRepository = new KpiProductGroupingCriteriaRepository(DataContext);
             KpiProductGroupingTypeRepository = new KpiProductGroupingTypeRepository(DataContext);
         }
         public async Task Begin()
