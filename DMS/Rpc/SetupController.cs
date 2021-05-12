@@ -1789,6 +1789,14 @@ namespace DMS.Rpc
                 Name = item.Name,
             }).ToList();
             DataContext.KpiProductGroupingType.BulkSynchronize(KpiProductGroupingTypeDAOs);
+
+            List<KpiProductGroupingCriteriaDAO> KpiProductGroupingCriteriaTypeDAOs = KpiProductGroupingCriteriaEnum.KpiProductGroupingCriteriaEnumList.Select(item => new KpiProductGroupingCriteriaDAO
+            {
+                Id = item.Id,
+                Code = item.Code,
+                Name = item.Name,
+            }).ToList();
+            DataContext.KpiProductGroupingCriteria.BulkSynchronize(KpiProductGroupingCriteriaTypeDAOs);
         }
 
         private void InitEditedPriceStatusEnum()

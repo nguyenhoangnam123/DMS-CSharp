@@ -17,6 +17,8 @@ namespace DMS.Rpc.mobile.permission_mobile
         public const string ListCurrentKpiGeneral = Default + "/list-current-kpi-general";
         public const string ListCurrentKpiItem = Default + "/list-current-kpi-item";
         public const string ListCurrentKpiNewItem = Default + "/list-current-kpi-new-item";
+        public const string ListCurrentKpiProductGrouping = Default + "/list-current-kpi-product-grouping";
+        public const string ListCurrentKpiNewProductGrouping = Default + "/list-current-kpi-new-product-grouping";
 
         public const string SalesQuantity = Default + "/sales-quantity";
         public const string KpiGeneral = Default + "/kpi-general";
@@ -56,7 +58,7 @@ namespace DMS.Rpc.mobile.permission_mobile
         public static Dictionary<string, IEnumerable<string>> Action = new Dictionary<string, IEnumerable<string>>
         {
             { "Thống kê Kpi nhân viên theo tháng", new List<string>{
-                ListCurrentKpiGeneral, ListCurrentKpiItem, ListCurrentKpiNewItem, CountAppUser, ListAppUser,
+                ListCurrentKpiGeneral, ListCurrentKpiItem, ListCurrentKpiNewItem, ListCurrentKpiProductGrouping, ListCurrentKpiNewProductGrouping, CountAppUser, ListAppUser,
             } },
             { "Quyền Dashboard nhân viên theo đơn gián tiếp", new List<string> {
                 CountStoreChecking, CountStore, CountIndirectSalesOrder, IndirectSalesOrderRevenue,

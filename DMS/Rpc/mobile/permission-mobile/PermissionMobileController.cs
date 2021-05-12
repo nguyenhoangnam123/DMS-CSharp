@@ -8,9 +8,11 @@ using DMS.Services.MOrganization;
 using DMS.Services.MProduct;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using MongoDB.Driver.Core.Authentication;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 
 namespace DMS.Rpc.mobile.permission_mobile
@@ -641,6 +643,429 @@ namespace DMS.Rpc.mobile.permission_mobile
             }
 
             return KpiItemDTOs;
+        }
+
+        [Route(PermissionMobileRoute.ListCurrentKpiProductGrouping), HttpPost]
+        public async Task<List<PermissionMobile_EmployeeKpiProductGroupingReportDTO>> ListCurrentKpiProductGrouping([FromBody] PermissionMobile_EmployeeKpiProductGroupingReportFilterDTO PermissionMobile_EmployeeKpiProductGroupingReportFilterDTO)
+        {
+            var KpiProductGroupingDTOs = new List<PermissionMobile_EmployeeKpiProductGroupingReportDTO>();
+
+            #region chuẩn bị dữ liệu filter: thời gian tính kpi, AppUserIds
+            // lây ra tháng hiện tại + năm hiện tại
+            long KpiYearId = StaticParams.DateTimeNow.Year;
+            long KpiPeriodId = StaticParams.DateTimeNow.Month + 100;
+            GenericEnum CurrentMonth;
+            GenericEnum CurrentQuarter;
+            GenericEnum CurrentYear;
+            (CurrentMonth, CurrentQuarter, CurrentYear) = ConvertDateTime(StaticParams.DateTimeNow);
+            DateTime Start = new DateTime(StaticParams.DateTimeNow.Year, StaticParams.DateTimeNow.Month, 1);
+            Start = Start.AddHours(0 - CurrentContext.TimeZone);
+            DateTime End = new DateTime(StaticParams.DateTimeNow.Year, StaticParams.DateTimeNow.Month, 1).AddMonths(1).AddSeconds(-1).AddHours(0 - CurrentContext.TimeZone);
+
+            List<long> AppUserIds = new List<long>();
+            if (PermissionMobile_EmployeeKpiProductGroupingReportFilterDTO.EmployeeId.Equal.HasValue)
+            {
+                AppUserIds.Add(PermissionMobile_EmployeeKpiProductGroupingReportFilterDTO.EmployeeId.Equal.Value);
+            }
+            else
+            {
+                List<long> Ids = await FilterAppUser(AppUserService, OrganizationService, CurrentContext);
+                AppUserIds.AddRange(Ids);
+            }
+            #endregion
+
+            #region lấy giữ liệu kpi
+            List<KpiProductGroupingDAO> KpiProductGroupings = await DataContext.KpiProductGrouping.AsNoTracking().Where(x =>
+                    AppUserIds.Contains(x.EmployeeId) &&
+                    x.StatusId == StatusEnum.ACTIVE.Id &&
+                    x.KpiPeriodId == KpiPeriodId &&
+                    x.KpiYearId == CurrentYear.Id &&
+                    x.KpiProductGroupingTypeId == KpiProductGroupingTypeEnum.ALL_NEW_PRODUCT.Id &&
+                    x.DeletedAt == null)
+                .Select(x => new KpiProductGroupingDAO
+                {
+                    Id = x.Id,
+                    EmployeeId = x.EmployeeId
+                }).ToListAsync();
+            #endregion
+
+            #region tổng hợp dữ liệu
+            if(KpiProductGroupings.Count > 0)
+            {
+                List<long> KpiProductGroupingIds = KpiProductGroupings.Select(x => x.Id).ToList();
+                List<KpiProductGroupingContentDAO> KpiProductGroupingContentDAOs = await DataContext.KpiProductGroupingContent.AsNoTracking()
+                    .Where(x => KpiProductGroupingIds.Contains(x.KpiProductGroupingId))
+                    .Select(c => new KpiProductGroupingContentDAO
+                    {
+                        Id = c.Id,
+                        ProductGroupingId = c.ProductGroupingId,
+                        KpiProductGroupingId = c.KpiProductGroupingId,
+                        KpiProductGrouping = c.KpiProductGrouping == null ? null : new KpiProductGroupingDAO
+                        { 
+                            EmployeeId = c.KpiProductGrouping.EmployeeId
+                        }
+                    }).ToListAsync(); // lấy ra toàn bộ content của kpi
+                if(KpiProductGroupingContentDAOs.Count > 0)
+                {
+                    List<long> KpiProductGroupingContentIds = KpiProductGroupingContentDAOs.Select(x => x.Id).ToList();
+                    List<KpiProductGroupingContentCriteriaMappingDAO> KpiProductGroupingContentCriteriaMappingDAOs = await DataContext.KpiProductGroupingContentCriteriaMapping.AsNoTracking()
+                        .Where(x => KpiProductGroupingContentIds.Contains(x.KpiProductGroupingContentId))
+                        .Select(c => new KpiProductGroupingContentCriteriaMappingDAO
+                        {
+                            KpiProductGroupingContentId = c.KpiProductGroupingContentId,
+                            KpiProductGroupingCriteriaId = c.KpiProductGroupingCriteriaId,
+                            Value = c.Value,
+                            KpiProductGroupingContent = c.KpiProductGroupingContent == null ? null : new KpiProductGroupingContentDAO
+                            {
+                                ProductGroupingId = c.KpiProductGroupingContent.ProductGroupingId
+                            }
+                        }).ToListAsync(); // lấy ra toàn bộ mapping content với chỉ tiêu
+                    List<KpiProductGroupingContentItemMappingDAO> KpiProductGroupingContentItemMappingDAOs = await DataContext.KpiProductGroupingContentItemMapping.AsNoTracking()
+                        .Where(x => KpiProductGroupingContentIds.Contains(x.KpiProductGroupingContentId))
+                        .Select(c => new KpiProductGroupingContentItemMappingDAO
+                        {
+                            ItemId = c.ItemId,
+                            KpiProductGroupingContentId = c.KpiProductGroupingContentId,
+                        }).ToListAsync(); // lấy ra toàn bộ mapping content với Item
+                    if (KpiProductGroupingContentCriteriaMappingDAOs.Count > 0 && KpiProductGroupingContentItemMappingDAOs.Count > 0)
+                    {
+                        List<long> ProductGroupingIds = KpiProductGroupingContentDAOs.Select(x => x.ProductGroupingId).ToList();
+                        List<long> ItemIds = KpiProductGroupingContentItemMappingDAOs.Select(x => x.ItemId).ToList();
+                        List<ProductGroupingDAO> ProductGroupingDAOs = await DataContext.ProductGrouping.AsNoTracking()
+                            .Where(x => ProductGroupingIds.Contains(x.Id))
+                            .ToListAsync();
+
+                        var query = from t in DataContext.IndirectSalesOrderTransaction
+                                    join i in DataContext.IndirectSalesOrder on t.IndirectSalesOrderId equals i.Id
+                                    join au in DataContext.AppUser on t.SalesEmployeeId equals au.Id
+                                    join it in DataContext.Item on t.ItemId equals it.Id
+                                    where Start <= t.OrderDate && t.OrderDate <= End &&
+                                    AppUserIds.Contains(t.SalesEmployeeId) &&
+                                    ItemIds.Contains(t.ItemId) &&
+                                    au.DeletedAt == null && it.DeletedAt == null
+                                    select new IndirectSalesOrderTransactionDAO
+                                    {
+                                        ItemId = t.ItemId,
+                                        Revenue = t.Revenue,
+                                        BuyerStoreId = t.BuyerStoreId,
+                                        SalesEmployeeId = t.SalesEmployeeId
+                                    };
+
+                        List<IndirectSalesOrderTransactionDAO> IndirectSalesOrderTransactionDAOs = await query.ToListAsync(); // lấy ra toàn bộ đơn hàng thỏa mãn điều kiện thời gian, nhân viên, Item
+                        List<GenericEnum> KpiProductGroupingCriterias = KpiProductGroupingCriteriaEnum.KpiProductGroupingCriteriaEnumList; // lấy ra toàn bộ chỉ tiêu kpi
+                        List<PermissionMobile_EmployeeKpiProductGroupingReportDTO> SubResults = new List<PermissionMobile_EmployeeKpiProductGroupingReportDTO>(); // lấy ra kết quả chưa group theo ProductGrouping
+                        foreach(var KpiProductGrouping in KpiProductGroupings)
+                        {
+                            List<KpiProductGroupingContentDAO> SubContents = KpiProductGroupingContentDAOs
+                                .Where(x => x.KpiProductGroupingId == KpiProductGrouping.Id)
+                                .ToList(); // lấy ra Content của Kpi
+                            List<long> SubContentIds = SubContents.Select(x => x.Id).ToList();
+                            List<long> SubProductGroupingIds = SubContents.Select(x => x.ProductGroupingId).ToList();
+                            List<KpiProductGroupingContentCriteriaMappingDAO> SubProductGroupingContentCriteriaMappings = KpiProductGroupingContentCriteriaMappingDAOs
+                                .Where(x => SubContentIds.Contains(x.KpiProductGroupingContentId))
+                                .ToList(); // lay ra mapping chi tieu cua content phu
+                            List<KpiProductGroupingContentItemMappingDAO> SubKpiProductGroupingContentItemMappingDAOs = KpiProductGroupingContentItemMappingDAOs
+                                 .Where(x => SubContentIds.Contains(x.KpiProductGroupingContentId))
+                                .ToList(); // lay ra mapping item cua content phu
+                            List<long> SubItemIds = SubKpiProductGroupingContentItemMappingDAOs.Select(x => x.ItemId).ToList(); // list item duoc tinh vao don hang cua content phu
+                            List<IndirectSalesOrderTransactionDAO> SubOrders = IndirectSalesOrderTransactionDAOs
+                                .Where(x => x.SalesEmployeeId == KpiProductGrouping.EmployeeId && SubItemIds.Contains(x.ItemId))
+                                .ToList();
+
+                            foreach (var ProductGroupingId in SubProductGroupingIds)
+                            {
+                                PermissionMobile_EmployeeKpiProductGroupingReportDTO PermissionMobile_EmployeeKpiProductGroupingReportDTO = new PermissionMobile_EmployeeKpiProductGroupingReportDTO {
+                                    ProductGroupingId = ProductGroupingId,
+                                    ProductGroupingName = ProductGroupingDAOs.Where(x => x.Id == ProductGroupingId).Select(x => x.Name).FirstOrDefault(),
+                                    CurrentKpiProductGroupings = new List<PermissionMobile_EmployeeKpiProductGrouping>()
+                                };
+                                foreach(var KpiProductGroupingCriteria in KpiProductGroupingCriterias)
+                                {
+                                    PermissionMobile_EmployeeKpiProductGrouping PermissionMobile_EmployeeKpiProductGrouping = new PermissionMobile_EmployeeKpiProductGrouping
+                                    {
+                                         ProductGroupingId = ProductGroupingId,
+                                         KpiProductGroupingCriteriaName = KpiProductGroupingCriteria.Name
+                                    };
+                                    PermissionMobile_EmployeeKpiProductGroupingReportDTO.CurrentKpiProductGroupings
+                                        .Add(PermissionMobile_EmployeeKpiProductGrouping);
+                                    PermissionMobile_EmployeeKpiProductGrouping.PlannedValue = SubProductGroupingContentCriteriaMappings
+                                        .Where(x => x.KpiProductGroupingCriteriaId == KpiProductGroupingCriteria.Id && x.KpiProductGroupingContent.ProductGroupingId == ProductGroupingId)
+                                        .Where(x => x.Value.HasValue)
+                                        .Select(x => (decimal)x.Value.Value)
+                                        .Sum(); // lấy ra số kế hoạch
+                                    if (KpiProductGroupingCriteria.Id == KpiProductGroupingCriteriaEnum.INDIRECT_REVENUE.Id)
+                                    {
+                                        PermissionMobile_EmployeeKpiProductGrouping.CurrentValue = SubOrders
+                                            .Select(x => x.Revenue ?? 0)
+                                            .Sum();
+                                    }
+                                    if (KpiProductGroupingCriteria.Id == KpiProductGroupingCriteriaEnum.INDIRECT_STORE.Id)
+                                    {
+                                        PermissionMobile_EmployeeKpiProductGrouping.CurrentValue = SubOrders
+                                            .Select(x => x.BuyerStoreId)
+                                            .Distinct()
+                                            .Count();
+                                    }
+                                }
+                                SubResults.Add(PermissionMobile_EmployeeKpiProductGroupingReportDTO);
+                            } // lấy ra đơn hàng thỏa mãn cùng employeeId và ItemId  
+                        }
+                        if (SubResults.Count > 0)
+                        {
+                            foreach (var ProductGroupingId in ProductGroupingIds)
+                            {
+                                PermissionMobile_EmployeeKpiProductGroupingReportDTO PermissionMobile_EmployeeKpiProductGroupingReportDTO = new PermissionMobile_EmployeeKpiProductGroupingReportDTO
+                                {
+                                    ProductGroupingId = ProductGroupingId,
+                                    ProductGroupingName = ProductGroupingDAOs.Where(x => x.Id == ProductGroupingId).Select(x => x.Name).FirstOrDefault(),
+                                    CurrentKpiProductGroupings = new List<PermissionMobile_EmployeeKpiProductGrouping>()
+                                };
+                                KpiProductGroupingDTOs.Add(PermissionMobile_EmployeeKpiProductGroupingReportDTO);
+                                var ResultGroupByProductGrouping = SubResults
+                                    .Where(x => x.ProductGroupingId == PermissionMobile_EmployeeKpiProductGroupingReportDTO.ProductGroupingId)
+                                    .ToList();
+                                foreach (var KpiProductGroupingCriteria in KpiProductGroupingCriterias)
+                                {
+                                    PermissionMobile_EmployeeKpiProductGrouping PermissionMobile_EmployeeKpiProductGrouping = new PermissionMobile_EmployeeKpiProductGrouping
+                                    {
+                                        ProductGroupingId = ProductGroupingId,
+                                        KpiProductGroupingCriteriaName = KpiProductGroupingCriteria.Name
+                                    };
+                                    PermissionMobile_EmployeeKpiProductGroupingReportDTO.CurrentKpiProductGroupings
+                                            .Add(PermissionMobile_EmployeeKpiProductGrouping);
+                                    List<PermissionMobile_EmployeeKpiProductGrouping> CurrentGroupByProductGrouping = ResultGroupByProductGrouping
+                                        .SelectMany(x => x.CurrentKpiProductGroupings)
+                                        .ToList();
+                                    PermissionMobile_EmployeeKpiProductGrouping.PlannedValue = CurrentGroupByProductGrouping
+                                         .Where(x => x.KpiProductGroupingCriteriaName == KpiProductGroupingCriteria.Name)
+                                        .Select(x => x.PlannedValue)
+                                        .Sum();
+                                    PermissionMobile_EmployeeKpiProductGrouping.CurrentValue = CurrentGroupByProductGrouping
+                                        .Where(x => x.KpiProductGroupingCriteriaName == KpiProductGroupingCriteria.Name)
+                                        .Select(x => x.CurrentValue)
+                                        .Sum();
+                                    PermissionMobile_EmployeeKpiProductGrouping.Percentage = CalculatePercentage(PermissionMobile_EmployeeKpiProductGrouping.PlannedValue, PermissionMobile_EmployeeKpiProductGrouping.CurrentValue);
+                                }    
+                            }    
+                        }
+                    }
+                }
+            }
+            #endregion
+
+            return KpiProductGroupingDTOs;
+        }
+
+        [Route(PermissionMobileRoute.ListCurrentKpiNewProductGrouping), HttpPost]
+        public async Task<List<PermissionMobile_EmployeeKpiProductGroupingReportDTO>> ListCurrentKpiNewProductGrouping([FromBody] PermissionMobile_EmployeeKpiProductGroupingReportFilterDTO PermissionMobile_EmployeeKpiProductGroupingReportFilterDTO)
+        {
+            var KpiNewProductGroupingDTOs = new List<PermissionMobile_EmployeeKpiProductGroupingReportDTO>();
+
+            #region chuẩn bị dữ liệu filter: thời gian tính kpi, AppUserIds
+            // lây ra tháng hiện tại + năm hiện tại
+            long KpiYearId = StaticParams.DateTimeNow.Year;
+            long KpiPeriodId = StaticParams.DateTimeNow.Month + 100;
+            GenericEnum CurrentMonth;
+            GenericEnum CurrentQuarter;
+            GenericEnum CurrentYear;
+            (CurrentMonth, CurrentQuarter, CurrentYear) = ConvertDateTime(StaticParams.DateTimeNow);
+            DateTime Start = new DateTime(StaticParams.DateTimeNow.Year, StaticParams.DateTimeNow.Month, 1);
+            Start = Start.AddHours(0 - CurrentContext.TimeZone);
+            DateTime End = new DateTime(StaticParams.DateTimeNow.Year, StaticParams.DateTimeNow.Month, 1).AddMonths(1).AddSeconds(-1).AddHours(0 - CurrentContext.TimeZone);
+
+            List<long> AppUserIds = new List<long>();
+            if (PermissionMobile_EmployeeKpiProductGroupingReportFilterDTO.EmployeeId.Equal.HasValue)
+            {
+                AppUserIds.Add(PermissionMobile_EmployeeKpiProductGroupingReportFilterDTO.EmployeeId.Equal.Value);
+            }
+            else
+            {
+                List<long> Ids = await FilterAppUser(AppUserService, OrganizationService, CurrentContext);
+                AppUserIds.AddRange(Ids);
+            }
+            #endregion
+
+            #region lấy giữ liệu kpi
+            List<KpiProductGroupingDAO> KpiProductGroupings = await DataContext.KpiProductGrouping.AsNoTracking().Where(x =>
+                    AppUserIds.Contains(x.EmployeeId) &&
+                    x.StatusId == StatusEnum.ACTIVE.Id &&
+                    x.KpiPeriodId == KpiPeriodId &&
+                    x.KpiYearId == CurrentYear.Id &&
+                    x.KpiProductGroupingTypeId == KpiProductGroupingTypeEnum.NEW_PRODUCT_GROUPING.Id &&
+                    x.DeletedAt == null)
+                .Select(x => new KpiProductGroupingDAO
+                {
+                    Id = x.Id,
+                    EmployeeId = x.EmployeeId
+                }).ToListAsync();
+            #endregion
+
+            #region tổng hợp dữ liệu
+            if (KpiProductGroupings.Count > 0)
+            {
+                List<long> KpiProductGroupingIds = KpiProductGroupings.Select(x => x.Id).ToList();
+                List<KpiProductGroupingContentDAO> KpiProductGroupingContentDAOs = await DataContext.KpiProductGroupingContent.AsNoTracking()
+                    .Where(x => KpiProductGroupingIds.Contains(x.KpiProductGroupingId))
+                    .Select(c => new KpiProductGroupingContentDAO
+                    {
+                        Id = c.Id,
+                        ProductGroupingId = c.ProductGroupingId,
+                        KpiProductGroupingId = c.KpiProductGroupingId,
+                        KpiProductGrouping = c.KpiProductGrouping == null ? null : new KpiProductGroupingDAO
+                        {
+                            EmployeeId = c.KpiProductGrouping.EmployeeId
+                        }
+                    }).ToListAsync(); // lấy ra toàn bộ content của kpi
+                if (KpiProductGroupingContentDAOs.Count > 0)
+                {
+                    List<long> KpiProductGroupingContentIds = KpiProductGroupingContentDAOs.Select(x => x.Id).ToList();
+                    List<KpiProductGroupingContentCriteriaMappingDAO> KpiProductGroupingContentCriteriaMappingDAOs = await DataContext.KpiProductGroupingContentCriteriaMapping.AsNoTracking()
+                        .Where(x => KpiProductGroupingContentIds.Contains(x.KpiProductGroupingContentId))
+                        .Select(c => new KpiProductGroupingContentCriteriaMappingDAO
+                        {
+                            KpiProductGroupingContentId = c.KpiProductGroupingContentId,
+                            KpiProductGroupingCriteriaId = c.KpiProductGroupingCriteriaId,
+                            Value = c.Value,
+                            KpiProductGroupingContent = c.KpiProductGroupingContent == null ? null : new KpiProductGroupingContentDAO
+                            {
+                                ProductGroupingId = c.KpiProductGroupingContent.ProductGroupingId
+                            }
+                        }).ToListAsync(); // lấy ra toàn bộ mapping content với chỉ tiêu
+                    List<KpiProductGroupingContentItemMappingDAO> KpiProductGroupingContentItemMappingDAOs = await DataContext.KpiProductGroupingContentItemMapping.AsNoTracking()
+                        .Where(x => KpiProductGroupingContentIds.Contains(x.KpiProductGroupingContentId))
+                        .Select(c => new KpiProductGroupingContentItemMappingDAO
+                        {
+                            ItemId = c.ItemId,
+                            KpiProductGroupingContentId = c.KpiProductGroupingContentId,
+                        }).ToListAsync(); // lấy ra toàn bộ mapping content với Item
+                    if (KpiProductGroupingContentCriteriaMappingDAOs.Count > 0 && KpiProductGroupingContentItemMappingDAOs.Count > 0)
+                    {
+                        List<long> ProductGroupingIds = KpiProductGroupingContentDAOs.Select(x => x.ProductGroupingId).ToList();
+                        List<long> ItemIds = KpiProductGroupingContentItemMappingDAOs.Select(x => x.ItemId).ToList();
+                        List<ProductGroupingDAO> ProductGroupingDAOs = await DataContext.ProductGrouping.AsNoTracking()
+                            .Where(x => ProductGroupingIds.Contains(x.Id))
+                            .ToListAsync();
+
+                        var query = from t in DataContext.IndirectSalesOrderTransaction
+                                    join i in DataContext.IndirectSalesOrder on t.IndirectSalesOrderId equals i.Id
+                                    join au in DataContext.AppUser on t.SalesEmployeeId equals au.Id
+                                    join it in DataContext.Item on t.ItemId equals it.Id
+                                    where Start <= t.OrderDate && t.OrderDate <= End &&
+                                    AppUserIds.Contains(t.SalesEmployeeId) &&
+                                    ItemIds.Contains(t.ItemId) &&
+                                    au.DeletedAt == null && it.DeletedAt == null
+                                    select new IndirectSalesOrderTransactionDAO
+                                    {
+                                        ItemId = t.ItemId,
+                                        Revenue = t.Revenue,
+                                        BuyerStoreId = t.BuyerStoreId,
+                                        SalesEmployeeId = t.SalesEmployeeId
+                                    };
+
+                        List<IndirectSalesOrderTransactionDAO> IndirectSalesOrderTransactionDAOs = await query.ToListAsync(); // lấy ra toàn bộ đơn hàng thỏa mãn điều kiện thời gian, nhân viên, Item
+                        List<GenericEnum> KpiProductGroupingCriterias = KpiProductGroupingCriteriaEnum.KpiProductGroupingCriteriaEnumList; // lấy ra toàn bộ chỉ tiêu kpi
+                        List<PermissionMobile_EmployeeKpiProductGroupingReportDTO> SubResults = new List<PermissionMobile_EmployeeKpiProductGroupingReportDTO>(); // lấy ra kết quả chưa group theo ProductGrouping
+                        foreach (var KpiProductGrouping in KpiProductGroupings)
+                        {
+                            List<KpiProductGroupingContentDAO> SubContents = KpiProductGroupingContentDAOs
+                                .Where(x => x.KpiProductGroupingId == KpiProductGrouping.Id)
+                                .ToList(); // lấy ra Content của Kpi
+                            List<long> SubContentIds = SubContents.Select(x => x.Id).ToList();
+                            List<long> SubProductGroupingIds = SubContents.Select(x => x.ProductGroupingId).ToList();
+                            List<KpiProductGroupingContentCriteriaMappingDAO> SubProductGroupingContentCriteriaMappings = KpiProductGroupingContentCriteriaMappingDAOs
+                                .Where(x => SubContentIds.Contains(x.KpiProductGroupingContentId))
+                                .ToList(); // lay ra mapping chi tieu cua content phu
+                            List<KpiProductGroupingContentItemMappingDAO> SubKpiProductGroupingContentItemMappingDAOs = KpiProductGroupingContentItemMappingDAOs
+                                 .Where(x => SubContentIds.Contains(x.KpiProductGroupingContentId))
+                                .ToList(); // lay ra mapping item cua content phu
+                            List<long> SubItemIds = SubKpiProductGroupingContentItemMappingDAOs.Select(x => x.ItemId).ToList(); // list item duoc tinh vao don hang cua content phu
+                            List<IndirectSalesOrderTransactionDAO> SubOrders = IndirectSalesOrderTransactionDAOs
+                                .Where(x => x.SalesEmployeeId == KpiProductGrouping.EmployeeId && SubItemIds.Contains(x.ItemId))
+                                .ToList();
+
+                            foreach (var ProductGroupingId in SubProductGroupingIds)
+                            {
+                                PermissionMobile_EmployeeKpiProductGroupingReportDTO PermissionMobile_EmployeeKpiProductGroupingReportDTO = new PermissionMobile_EmployeeKpiProductGroupingReportDTO
+                                {
+                                    ProductGroupingId = ProductGroupingId,
+                                    ProductGroupingName = ProductGroupingDAOs.Where(x => x.Id == ProductGroupingId).Select(x => x.Name).FirstOrDefault(),
+                                    CurrentKpiProductGroupings = new List<PermissionMobile_EmployeeKpiProductGrouping>()
+                                };
+                                foreach (var KpiProductGroupingCriteria in KpiProductGroupingCriterias)
+                                {
+                                    PermissionMobile_EmployeeKpiProductGrouping PermissionMobile_EmployeeKpiProductGrouping = new PermissionMobile_EmployeeKpiProductGrouping
+                                    {
+                                        ProductGroupingId = ProductGroupingId,
+                                        KpiProductGroupingCriteriaName = KpiProductGroupingCriteria.Name
+                                    };
+                                    PermissionMobile_EmployeeKpiProductGroupingReportDTO.CurrentKpiProductGroupings
+                                        .Add(PermissionMobile_EmployeeKpiProductGrouping);
+                                    PermissionMobile_EmployeeKpiProductGrouping.PlannedValue = SubProductGroupingContentCriteriaMappings
+                                        .Where(x => x.KpiProductGroupingCriteriaId == KpiProductGroupingCriteria.Id && x.KpiProductGroupingContent.ProductGroupingId == ProductGroupingId)
+                                        .Where(x => x.Value.HasValue)
+                                        .Select(x => (decimal)x.Value.Value)
+                                        .Sum(); // lấy ra số kế hoạch
+                                    if (KpiProductGroupingCriteria.Id == KpiProductGroupingCriteriaEnum.INDIRECT_REVENUE.Id)
+                                    {
+                                        PermissionMobile_EmployeeKpiProductGrouping.CurrentValue = SubOrders
+                                            .Select(x => x.Revenue ?? 0)
+                                            .Sum();
+                                    }
+                                    if (KpiProductGroupingCriteria.Id == KpiProductGroupingCriteriaEnum.INDIRECT_STORE.Id)
+                                    {
+                                        PermissionMobile_EmployeeKpiProductGrouping.CurrentValue = SubOrders
+                                            .Select(x => x.BuyerStoreId)
+                                            .Distinct()
+                                            .Count();
+                                    }
+                                }
+                                SubResults.Add(PermissionMobile_EmployeeKpiProductGroupingReportDTO);
+                            } // lấy ra đơn hàng thỏa mãn cùng employeeId và ItemId  
+                        }
+                        if (SubResults.Count > 0)
+                        {
+                            foreach (var ProductGroupingId in ProductGroupingIds)
+                            {
+                                PermissionMobile_EmployeeKpiProductGroupingReportDTO PermissionMobile_EmployeeKpiProductGroupingReportDTO = new PermissionMobile_EmployeeKpiProductGroupingReportDTO
+                                {
+                                    ProductGroupingId = ProductGroupingId,
+                                    ProductGroupingName = ProductGroupingDAOs.Where(x => x.Id == ProductGroupingId).Select(x => x.Name).FirstOrDefault(),
+                                    CurrentKpiProductGroupings = new List<PermissionMobile_EmployeeKpiProductGrouping>()
+                                };
+                                KpiNewProductGroupingDTOs.Add(PermissionMobile_EmployeeKpiProductGroupingReportDTO);
+                                var ResultGroupByProductGrouping = SubResults
+                                    .Where(x => x.ProductGroupingId == PermissionMobile_EmployeeKpiProductGroupingReportDTO.ProductGroupingId)
+                                    .ToList();
+                                foreach (var KpiProductGroupingCriteria in KpiProductGroupingCriterias)
+                                {
+                                    PermissionMobile_EmployeeKpiProductGrouping PermissionMobile_EmployeeKpiProductGrouping = new PermissionMobile_EmployeeKpiProductGrouping
+                                    {
+                                        ProductGroupingId = ProductGroupingId,
+                                        KpiProductGroupingCriteriaName = KpiProductGroupingCriteria.Name
+                                    };
+                                    PermissionMobile_EmployeeKpiProductGroupingReportDTO.CurrentKpiProductGroupings
+                                            .Add(PermissionMobile_EmployeeKpiProductGrouping);
+                                    List<PermissionMobile_EmployeeKpiProductGrouping> CurrentGroupByProductGrouping = ResultGroupByProductGrouping
+                                        .SelectMany(x => x.CurrentKpiProductGroupings)
+                                        .ToList();
+                                    PermissionMobile_EmployeeKpiProductGrouping.PlannedValue = CurrentGroupByProductGrouping
+                                         .Where(x => x.KpiProductGroupingCriteriaName == KpiProductGroupingCriteria.Name)
+                                        .Select(x => x.PlannedValue)
+                                        .Sum();
+                                    PermissionMobile_EmployeeKpiProductGrouping.CurrentValue = CurrentGroupByProductGrouping
+                                        .Where(x => x.KpiProductGroupingCriteriaName == KpiProductGroupingCriteria.Name)
+                                        .Select(x => x.CurrentValue)
+                                        .Sum();
+                                    PermissionMobile_EmployeeKpiProductGrouping.Percentage = CalculatePercentage(PermissionMobile_EmployeeKpiProductGrouping.PlannedValue, PermissionMobile_EmployeeKpiProductGrouping.CurrentValue);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            #endregion
+
+            return KpiNewProductGroupingDTOs;
         }
         #endregion
 
