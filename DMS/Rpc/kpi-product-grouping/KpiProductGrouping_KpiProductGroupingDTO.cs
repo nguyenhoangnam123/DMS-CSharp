@@ -49,6 +49,7 @@ namespace DMS.Rpc.kpi_product_grouping
             this.Creator = KpiProductGrouping.Creator == null ? null : new KpiProductGrouping_AppUserDTO(KpiProductGrouping.Creator);
             this.Employee = KpiProductGrouping.Employee == null ? null : new KpiProductGrouping_AppUserDTO(KpiProductGrouping.Employee);
             this.KpiPeriod = KpiProductGrouping.KpiPeriod == null ? null : new KpiProductGrouping_KpiPeriodDTO(KpiProductGrouping.KpiPeriod);
+            this.KpiYear = KpiProductGrouping.KpiYear == null ? null : new KpiProductGrouping_KpiYearDTO(KpiProductGrouping.KpiYear);
             this.KpiProductGroupingType = KpiProductGrouping.KpiProductGroupingType == null ? null : new KpiProductGrouping_KpiProductGroupingTypeDTO(KpiProductGrouping.KpiProductGroupingType);
             this.Status = KpiProductGrouping.Status == null ? null : new KpiProductGrouping_StatusDTO(KpiProductGrouping.Status);
             this.KpiProductGroupingContents = KpiProductGrouping.KpiProductGroupingContents == null ? null : KpiProductGrouping.KpiProductGroupingContents
