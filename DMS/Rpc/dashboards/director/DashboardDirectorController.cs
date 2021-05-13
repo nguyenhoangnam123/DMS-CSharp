@@ -1,22 +1,22 @@
 ﻿using DMS.Common;
 using DMS.Entities;
+using DMS.Enums;
+using DMS.Helpers;
 using DMS.Models;
 using DMS.Services.MAppUser;
 using DMS.Services.MIndirectSalesOrder;
 using DMS.Services.MOrganization;
+using DMS.Services.MProvince;
+using DMS.Services.MStore;
 using DMS.Services.MStoreChecking;
-using DMS.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using DMS.Enums;
-using DMS.Services.MStore;
-using Thinktecture.EntityFrameworkCore.TempTables;
 using Thinktecture;
-using DMS.Services.MProvince;
+using Thinktecture.EntityFrameworkCore.TempTables;
 
 namespace DMS.Rpc.dashboards.director
 {
@@ -857,12 +857,13 @@ namespace DMS.Rpc.dashboards.director
                         OrganizationIds.Contains(t.OrganizationId) &&
                         o.RequestStateId == RequestStateEnum.APPROVED.Id &&
                         au.DeletedAt == null && o.DeletedAt == null && i.DeletedAt == null && p.DeletedAt == null
-                        group t by p.Name into x
+                        group t by new { p.Code, p.Name } into x
                         select new DashboardDirector_Top5RevenueByProductDTO
                         {
-                            ProductName = x.Key,
+                            ProductName = x.Key.Name,
                             Revenue = x.Sum(y => y.Revenue ?? 0)
                         };
+
 
             List<DashboardDirector_Top5RevenueByProductDTO> DashboardDirector_Top5RevenueByProductDTOs = await query.OrderByDescending(x => x.Revenue)
                 .Skip(0).Take(5).ToListAsync();
@@ -1137,7 +1138,7 @@ namespace DMS.Rpc.dashboards.director
                 var IndirectSalesOrderTransactionDAOs = await query.ToListAsync();
                 DashboardDirector_RevenueFluctuationDTO DashboardDirector_RevenueFluctuationDTO = new DashboardDirector_RevenueFluctuationDTO();
                 DashboardDirector_RevenueFluctuationDTO.RevenueFluctuationByQuaters = new List<DashboardDirector_RevenueFluctuationByQuarterDTO>();
-                int start = 3 * (last_quarter - 1) + 1 ;
+                int start = 3 * (last_quarter - 1) + 1;
                 int end = start + 3;
                 for (int i = start; i < end; i++)
                 {
