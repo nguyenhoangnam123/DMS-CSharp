@@ -166,6 +166,9 @@ namespace DMS.Repositories
             if (filter.ProductTypeId != null && filter.ProductTypeId.HasValue)
                 query = query.Where(q => q.Product.ProductTypeId, filter.ProductTypeId);
 
+            if (filter.BrandId != null && filter.BrandId.HasValue)
+                query = query.Where(q => q.Product.BrandId, filter.BrandId);
+
             if (filter.StatusId != null && filter.StatusId.HasValue)
             {
                 var UsedVariationItems = query.Where(x => x.Product.UsedVariationId == UsedVariationEnum.USED.Id);
@@ -372,6 +375,12 @@ namespace DMS.Repositories
                         Id = q.Product.UnitOfMeasure.Id,
                         Code = q.Product.UnitOfMeasure.Code,
                         Name = q.Product.UnitOfMeasure.Name,
+                    },
+                    Brand = q.Product.BrandId == null ? null : new Brand { 
+                        Id = q.Product.Brand.Id,
+                        Code = q.Product.Brand.Code,
+                        Name = q.Product.Brand.Name,
+                        StatusId = q.Product.Brand.StatusId,
                     },
                     UnitOfMeasureGrouping = new UnitOfMeasureGrouping
                     {

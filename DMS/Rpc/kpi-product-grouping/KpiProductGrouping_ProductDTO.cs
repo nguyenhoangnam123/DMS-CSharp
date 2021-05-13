@@ -32,6 +32,7 @@ namespace DMS.Rpc.kpi_product_grouping
         public KpiProductGrouping_SupplierDTO Supplier { get; set; }
         public KpiProductGrouping_TaxTypeDTO TaxType { get; set; }
         public KpiProductGrouping_UnitOfMeasureDTO UnitOfMeasure { get; set; }
+        public KpiProductGrouping_BrandDTO Brand { get; set; }
         public KpiProductGrouping_UnitOfMeasureGroupingDTO UnitOfMeasureGrouping { get; set; }
         public List<KpiProductGrouping_ProductProductGroupingMappingDTO> ProductProductGroupingMappings { get; set; }
         public KpiProductGrouping_ProductDTO() { }
@@ -62,6 +63,7 @@ namespace DMS.Rpc.kpi_product_grouping
             this.Supplier = Product.Supplier == null ? null : new KpiProductGrouping_SupplierDTO(Product.Supplier);
             this.TaxType = Product.TaxType == null ? null : new KpiProductGrouping_TaxTypeDTO(Product.TaxType);
             this.UnitOfMeasure = Product.UnitOfMeasure == null ? null : new KpiProductGrouping_UnitOfMeasureDTO(Product.UnitOfMeasure);
+            this.Brand = Product.Brand == null ? null : new KpiProductGrouping_BrandDTO(Product.Brand);
             this.UnitOfMeasureGrouping = Product.UnitOfMeasureGrouping == null ? null : new KpiProductGrouping_UnitOfMeasureGroupingDTO(Product.UnitOfMeasureGrouping);
             this.ProductProductGroupingMappings = Product.ProductProductGroupingMappings?.Select(x => new KpiProductGrouping_ProductProductGroupingMappingDTO(x)).ToList();
             this.Errors = Product.Errors;

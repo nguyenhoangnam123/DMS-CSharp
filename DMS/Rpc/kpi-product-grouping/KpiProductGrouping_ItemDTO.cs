@@ -51,6 +51,7 @@ namespace DMS.Rpc.kpi_product_grouping
         public IdFilter CategoryId { get; set; }
         public IdFilter ProductTypeId { get; set; }
         public IdFilter SupplierId { get; set; }
+        public IdFilter BrandId { get; set; }
         public IdFilter StatusId { get; set; }
         public IdFilter StoreId { get; set; }
         public IdFilter SalesEmployeeId { get; set; }

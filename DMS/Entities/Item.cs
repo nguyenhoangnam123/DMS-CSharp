@@ -53,6 +53,7 @@ namespace DMS.Entities
         public IdFilter ProductGroupingId { get; set; }
         public IdFilter ProductTypeId { get; set; }
         public IdFilter SupplierId { get; set; }
+        public IdFilter BrandId { get; set; }
         public IdFilter StatusId { get; set; }
         public IdFilter CategoryId { get; set; }
         public bool? IsNew { get; set; }

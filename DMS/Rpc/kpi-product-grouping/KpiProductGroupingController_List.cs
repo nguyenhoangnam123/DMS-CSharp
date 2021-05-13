@@ -76,12 +76,13 @@ namespace DMS.Rpc.kpi_product_grouping
             ItemFilter.OrderBy = ItemOrder.Id;
             ItemFilter.OrderType = OrderType.ASC;
             ItemFilter.Selects = ItemSelect.ALL;
+            ItemFilter.Id = KpiProductGrouping_ItemFilterDTO.Id;
             ItemFilter.Code = KpiProductGrouping_ItemFilterDTO.Code;
             ItemFilter.Name = KpiProductGrouping_ItemFilterDTO.Name;
             ItemFilter.CategoryId = KpiProductGrouping_ItemFilterDTO.CategoryId;
             ItemFilter.ProductGroupingId = KpiProductGrouping_ItemFilterDTO.ProductGroupingId;
             ItemFilter.ProductTypeId = KpiProductGrouping_ItemFilterDTO.ProductTypeId;
-            //ItemFilter.BrandId = KpiProductGrouping_ItemFilterDTO.BrandId;
+            ItemFilter.BrandId = KpiProductGrouping_ItemFilterDTO.BrandId;
 
             List<Item> Items = await ItemService.List(ItemFilter);
             List<KpiProductGrouping_ItemDTO> KpiProductGrouping_ItemDTOs = Items
@@ -96,12 +97,13 @@ namespace DMS.Rpc.kpi_product_grouping
                 throw new BindException(ModelState);
 
             ItemFilter ItemFilter = new ItemFilter();
+            ItemFilter.Id = KpiProductGrouping_ItemFilterDTO.Id;
             ItemFilter.Code = KpiProductGrouping_ItemFilterDTO.Code;
             ItemFilter.Name = KpiProductGrouping_ItemFilterDTO.Name;
             ItemFilter.CategoryId = KpiProductGrouping_ItemFilterDTO.CategoryId;
             ItemFilter.ProductGroupingId = KpiProductGrouping_ItemFilterDTO.ProductGroupingId;
             ItemFilter.ProductTypeId = KpiProductGrouping_ItemFilterDTO.ProductTypeId;
-            //ItemFilter.BrandId = KpiProductGrouping_ItemFilterDTO.BrandId;
+            ItemFilter.BrandId = KpiProductGrouping_ItemFilterDTO.BrandId;
 
             int Count = await ItemService.Count(ItemFilter);
             return Count;
