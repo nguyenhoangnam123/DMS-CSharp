@@ -56,11 +56,11 @@ namespace DMS.Services.MCategory
                 {
                     Category.HasChildren = AllCategories.Any(x => x.ParentId.HasValue && x.ParentId.Value == Category.Id);
                 }
-                if (CategoryFilter.HasChildren)
+                if (CategoryFilter.HasChildren.HasValue && CategoryFilter.HasChildren.Value)
                 {
                     Categories = Categories.Where(x => x.HasChildren).ToList();
                 }
-                else
+                if (CategoryFilter.HasChildren.HasValue && !CategoryFilter.HasChildren.Value)
                 {
                     Categories = Categories.Where(x => x.HasChildren == false).ToList();
                 }
@@ -99,19 +99,16 @@ namespace DMS.Services.MCategory
                 {
                     Category.HasChildren = AllCategories.Any(x => x.ParentId.HasValue && x.ParentId.Value == Category.Id);
                 }
-                if (CategoryFilter.HasChildren)
+                if (CategoryFilter.HasChildren.HasValue && CategoryFilter.HasChildren.Value)
                 {
                     Categories = Categories.Where(x => x.HasChildren).ToList();
-                }
-                else
-                {
-                    Categories = Categories.Where(x => x.HasChildren == false).ToList();
-                }
-                List<long> CategoryIds = Categories.Select(x => x.Id).ToList();
-                if (CategoryFilter.HasChildren)
-                {
+                    List<long> CategoryIds = Categories.Select(x => x.Id).ToList();
                     List<Category> Children = AllCategories.Where(x => x.ParentId.HasValue && CategoryIds.Contains(x.ParentId.Value)).ToList(); // lấy ra tất cả con
                     Categories = Categories.Union(Children).ToList();
+                }
+                if (CategoryFilter.HasChildren.HasValue && !CategoryFilter.HasChildren.Value)
+                {
+                    Categories = Categories.Where(x => x.HasChildren == false).ToList();
                 }
                 return Categories;
             }
