@@ -650,7 +650,7 @@ namespace DMS.Repositories
                     {
                         var ListCriteriaMappings = KpiProductGroupingContentDAO.KpiProductGroupingContentCriteriaMappings
                             .Select(x => new KpiProductGroupingContentCriteriaMappingDAO { 
-                                KpiProductGroupingContentId = x.KpiProductGroupingContentId,
+                                KpiProductGroupingContentId = KpiProductGroupingContentDAO.Id,
                                 KpiProductGroupingCriteriaId = x.KpiProductGroupingCriteriaId,
                                 Value = x.Value,
                             })
@@ -662,7 +662,7 @@ namespace DMS.Repositories
                         var ListItemMappings = KpiProductGroupingContentDAO.KpiProductGroupingContentItemMappings
                             .Select(x => new KpiProductGroupingContentItemMappingDAO
                             {
-                                KpiProductGroupingContentId = x.KpiProductGroupingContentId,
+                                KpiProductGroupingContentId = KpiProductGroupingContentDAO.Id,
                                 ItemId = x.ItemId,
                             }).ToList();
                         KpiProductGroupingContentItemMappingDAOs.AddRange(ListItemMappings);
