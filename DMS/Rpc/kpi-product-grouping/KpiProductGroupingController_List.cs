@@ -71,6 +71,11 @@ namespace DMS.Rpc.kpi_product_grouping
                 throw new BindException(ModelState);
 
             ItemFilter ItemFilter = new ItemFilter();
+            ItemFilter.Skip = KpiProductGrouping_ItemFilterDTO.Skip;
+            ItemFilter.Take = KpiProductGrouping_ItemFilterDTO.Take;
+            ItemFilter.OrderBy = ItemOrder.Id;
+            ItemFilter.OrderType = OrderType.ASC;
+            ItemFilter.Selects = ItemSelect.ALL;
             ItemFilter.Code = KpiProductGrouping_ItemFilterDTO.Code;
             ItemFilter.Name = KpiProductGrouping_ItemFilterDTO.Name;
             ItemFilter.CategoryId = KpiProductGrouping_ItemFilterDTO.CategoryId;
