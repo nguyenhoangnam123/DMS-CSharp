@@ -30,6 +30,7 @@ namespace DMS.Services.MKpiProductGrouping
             EmployeesEmpty,
             StatusNotExisted,
             KpiPeriodIdNotExisted,
+            KpiYearEmpty,
             KpiYearIdNotExisted,
             KpiYearAndKpiPeriodMustInTheFuture,
             KpiProductGroupingTypeIdNotExisted,
@@ -177,7 +178,7 @@ namespace DMS.Services.MKpiProductGrouping
         }
 
 
-        private async Task<bool> ValidateProductGrouping(KpiProductGrouping KpiProductGrouping)
+        private async Task<bool> ValidateContent(KpiProductGrouping KpiProductGrouping)
         {
             if (KpiProductGrouping.KpiProductGroupingContents == null || !KpiProductGrouping.KpiProductGroupingContents.Any())
                 KpiProductGrouping.AddError(nameof(KpiProductGroupingValidator), nameof(KpiProductGrouping.KpiProductGroupingContents), ErrorCode.KpiProductGroupingContentsEmpty);
@@ -197,7 +198,7 @@ namespace DMS.Services.MKpiProductGrouping
                 {
                     ProductGrouping ProductGrouping = ProductGroupingInDB.Where(x => x.Id == KpiProductGroupingContent.ProductGroupingId).FirstOrDefault();
                     if(ProductGrouping == null)
-                        KpiProductGrouping.AddError(nameof(KpiProductGroupingValidator), nameof(KpiProductGroupingContent.ProductGrouping), ErrorCode.ProductGroupingNotExisted);
+                        KpiProductGrouping.AddError(nameof(KpiProductGroupingValidator), nameof(KpiProductGroupingContent), ErrorCode.ProductGroupingNotExisted);
                 }
             }
             return KpiProductGrouping.IsValidated;
@@ -249,7 +250,7 @@ namespace DMS.Services.MKpiProductGrouping
             {
                 if (oldEmployeeIds.Contains(Employee.Id))
                 {
-                    Employee.AddError(nameof(KpiProductGroupingValidator), nameof(Employee.Id), ErrorCode.EmployeeHasKpi);
+                    KpiProductGrouping.AddError(nameof(KpiProductGroupingValidator), nameof(KpiProductGrouping.Employee), ErrorCode.EmployeeHasKpi);
                 }
             }
             return KpiProductGrouping.IsValidated;
@@ -265,7 +266,7 @@ namespace DMS.Services.MKpiProductGrouping
             await ValidateKpiYear(KpiProductGrouping);
             await ValidateTime(KpiProductGrouping);
             await ValidateKpiProductGroupingType(KpiProductGrouping);
-            await ValidateProductGrouping(KpiProductGrouping);
+            await ValidateContent(KpiProductGrouping);
             await ValidateItem(KpiProductGrouping);
             await ValidateValue(KpiProductGrouping);
             return KpiProductGrouping.IsValidated;
@@ -279,7 +280,7 @@ namespace DMS.Services.MKpiProductGrouping
                 await ValidateStatus(KpiProductGrouping);
                 await ValidateTime(KpiProductGrouping);
                 await ValidateKpiProductGroupingType(KpiProductGrouping);
-                await ValidateProductGrouping(KpiProductGrouping);
+                await ValidateContent(KpiProductGrouping);
                 await ValidateItem(KpiProductGrouping);
                 await ValidateValue(KpiProductGrouping);
             }

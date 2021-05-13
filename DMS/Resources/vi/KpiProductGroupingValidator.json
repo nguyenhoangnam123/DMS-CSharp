@@ -1,40 +1,34 @@
-{
+﻿{
   "KpiProductGrouping": {
     "Id": {
+      "IdNotExisted":  "Kpi nhóm sản phẩm không tồn tại"
     },
     "OrganizationId": {
+      "OrganizationEmpty": "Chưa chọn đơn vị tổ chức",
+      "OrganizationIdNotExisted": "Đơn vị tổ chức không tồn tại"
     },
     "KpiYearId": {
+      "KpiYearIdNotExisted": "Năm Kpi không tồn tại",
+      "KpiYearAndKpiPeriodMustInTheFuture": "Không thể chọn thời gian trong quá khứ"
     },
     "KpiPeriodId": {
-    },
-    "KpiProductGroupingTypeId": {
-    },
-    "StatusId": {
-    },
-    "EmployeeId": {
-    },
-    "CreatorId": {
-    },
-    "CreatedAt": {
-    },
-    "UpdatedAt": {
-    },
-    "DeletedAt": {
-    },
-    "RowId": {
-    },
-    "Creator": {
+      "KpiPeriodIdNotExisted": "Kì Kpi không tồn tại"
     },
     "Employee": {
+      "EmployeeHasKpi":  "Nhân viên đã có Kpi"
     },
     "KpiPeriod": {
+      "KpiPeriodIdNotExisted": "Kì Kpi không tồn tại"
     },
     "KpiProductGroupingType": {
+      "KpiProductGroupingTypeIdNotExisted": "Chưa chọn loại Kpi"
     },
     "Status": {
+      "StatusNotExisted": "Trạng thái không tồn tại"
     },
     "KpiProductGroupingContents": {
-    },
+      "KpiProductGroupingContentsEmpty": "Chưa chọn nhóm sản phẩm kpi",
+      "ProductGroupingNotExisted": "Nhóm sản phẩm không tồn tại"
+    }
   }
 }
