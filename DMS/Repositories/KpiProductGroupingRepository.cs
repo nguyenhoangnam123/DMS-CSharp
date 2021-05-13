@@ -535,6 +535,14 @@ namespace DMS.Repositories
                 {
                     KpiProductGroupingContentId = x.KpiProductGroupingContentId,
                     ItemId = x.KpiProductGroupingContentId,
+                    Item = new Item
+                    {
+                        Id = x.Item.Id,
+                        Code = x.Item.Code,
+                        Name = x.Item.Name,
+                        ProductId = x.Item.ProductId,
+                        StatusId = x.Item.StatusId,
+                    }
                 }).ToListAsync();
             foreach (KpiProductGroupingContent KpiProductGroupingContent in KpiProductGrouping.KpiProductGroupingContents)
             {
