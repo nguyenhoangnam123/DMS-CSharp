@@ -256,6 +256,12 @@ namespace DMS.Repositories
                     Code = q.KpiPeriod.Code,
                     Name = q.KpiPeriod.Name,
                 } : null,
+                KpiYear = filter.Selects.Contains(KpiProductGroupingSelect.KpiYear) && q.KpiYear != null ? new KpiYear
+                {
+                    Id = q.KpiYear.Id,
+                    Code = q.KpiYear.Code,
+                    Name = q.KpiYear.Name,
+                } : null,
                 KpiProductGroupingType = filter.Selects.Contains(KpiProductGroupingSelect.KpiProductGroupingType) && q.KpiProductGroupingType != null ? new KpiProductGroupingType
                 {
                     Id = q.KpiProductGroupingType.Id,
