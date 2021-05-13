@@ -629,10 +629,14 @@ namespace DMS.Repositories
                         {
                             KpiProductGroupingId = KpiProductGrouping.Id,
                             ProductGroupingId = x.ProductGroupingId,
-                            KpiProductGroupingContentCriteriaMappings = x.KpiProductGroupingContentCriteriaMappings.Select(a => new KpiProductGroupingContentCriteriaMappingDAO { 
+                            KpiProductGroupingContentCriteriaMappings = x.KpiProductGroupingContentCriteriaMappings.Select(a => new KpiProductGroupingContentCriteriaMappingDAO {
                                 KpiProductGroupingCriteriaId = a.KpiProductGroupingCriteriaId,
                                 KpiProductGroupingContentId = a.KpiProductGroupingContentId,
                                 Value = a.Value,
+                            }).ToList(),
+                            KpiProductGroupingContentItemMappings = x.KpiProductGroupingContentItemMappings.Select(i => new KpiProductGroupingContentItemMappingDAO {
+                                KpiProductGroupingContentId = i.KpiProductGroupingContentId,
+                                ItemId = i.ItemId,
                             }).ToList(),
                             RowId = Guid.NewGuid(),
                         });
