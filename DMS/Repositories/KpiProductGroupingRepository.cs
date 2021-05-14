@@ -540,7 +540,7 @@ namespace DMS.Repositories
                 .Select(x => new KpiProductGroupingContentItemMapping
                 {
                     KpiProductGroupingContentId = x.KpiProductGroupingContentId,
-                    ItemId = x.KpiProductGroupingContentId,
+                    ItemId = x.ItemId,
                     Item = new Item
                     {
                         Id = x.Item.Id,
