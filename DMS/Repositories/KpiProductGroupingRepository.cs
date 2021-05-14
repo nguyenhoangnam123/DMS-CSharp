@@ -459,6 +459,12 @@ namespace DMS.Repositories
                     Code = x.KpiPeriod.Code,
                     Name = x.KpiPeriod.Name,
                 },
+                KpiYear = x.KpiYear == null ? null : new KpiYear
+                {
+                    Id = x.KpiYear.Id,
+                    Code = x.KpiYear.Code,
+                    Name = x.KpiYear.Name,
+                },
                 KpiProductGroupingType = x.KpiProductGroupingType == null ? null : new KpiProductGroupingType
                 {
                     Id = x.KpiProductGroupingType.Id,
@@ -727,7 +733,7 @@ namespace DMS.Repositories
                     {
                         KpiProductGroupingContentDAO KpiProductGroupingContentDAO = new KpiProductGroupingContentDAO();
                         KpiProductGroupingContentDAO.Id = KpiProductGroupingContent.Id;
-                        KpiProductGroupingContentDAO.KpiProductGroupingId = KpiProductGroupingContent.KpiProductGroupingId;
+                        KpiProductGroupingContentDAO.KpiProductGroupingId = KpiProductGrouping.Id;
                         KpiProductGroupingContentDAO.ProductGroupingId = KpiProductGroupingContent.ProductGroupingId;
                         KpiProductGroupingContentDAO.RowId = KpiProductGroupingContent.RowId;
                         KpiProductGroupingContentDAOs.Add(KpiProductGroupingContentDAO);
@@ -744,23 +750,23 @@ namespace DMS.Repositories
                             foreach (var KpiProductGroupingContentCriteriaMapping in KpiProductGroupingContent.KpiProductGroupingContentCriteriaMappings)
                             {
                                 KpiProductGroupingContentCriteriaMappingDAO KpiProductGroupingContentCriteriaMappingDAO = new KpiProductGroupingContentCriteriaMappingDAO();
-                                KpiProductGroupingContentCriteriaMappingDAO.KpiProductGroupingContentId = KpiProductGroupingContentCriteriaMapping.KpiProductGroupingContentId;
+                                KpiProductGroupingContentCriteriaMappingDAO.KpiProductGroupingContentId = KpiProductGroupingContent.Id;
                                 KpiProductGroupingContentCriteriaMappingDAO.KpiProductGroupingCriteriaId = KpiProductGroupingContentCriteriaMapping.KpiProductGroupingCriteriaId;
                                 KpiProductGroupingContentCriteriaMappingDAO.Value = KpiProductGroupingContentCriteriaMapping.Value;
                                 KpiProductGroupingContentCriteriaMappingDAOs.Add(KpiProductGroupingContentCriteriaMappingDAO);
                             }
-                            await DataContext.KpiProductGroupingContentCriteriaMapping.BulkMergeAsync(KpiProductGroupingContentCriteriaMappingDAOs); // thêm mapping content và chỉ tiêu kpi
 
                             foreach (var KpiProductGroupingContentItemMapping in KpiProductGroupingContent.KpiProductGroupingContentItemMappings)
                             {
                                 KpiProductGroupingContentItemMappingDAO KpiProductGroupingContentItemMappingDAO = new KpiProductGroupingContentItemMappingDAO();
-                                KpiProductGroupingContentItemMappingDAO.KpiProductGroupingContentId = KpiProductGroupingContentItemMapping.KpiProductGroupingContentId;
+                                KpiProductGroupingContentItemMappingDAO.KpiProductGroupingContentId = KpiProductGroupingContent.Id;
                                 KpiProductGroupingContentItemMappingDAO.ItemId = KpiProductGroupingContentItemMapping.ItemId;
                                 KpiProductGroupingContentItemMappingDAOs.Add(KpiProductGroupingContentItemMappingDAO);
                             }
-                            await DataContext.KpiProductGroupingContentItemMapping.BulkMergeAsync(KpiProductGroupingContentItemMappingDAOs); // thêm mapping content và Item
                         }
                     }
+                    await DataContext.KpiProductGroupingContentCriteriaMapping.BulkMergeAsync(KpiProductGroupingContentCriteriaMappingDAOs); // thêm mapping content và chỉ tiêu kpi
+                    await DataContext.KpiProductGroupingContentItemMapping.BulkMergeAsync(KpiProductGroupingContentItemMappingDAOs); // thêm mapping content và Item
                 }
                 #endregion
             }

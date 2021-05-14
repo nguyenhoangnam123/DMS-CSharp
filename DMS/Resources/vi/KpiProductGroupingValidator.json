@@ -1,7 +1,7 @@
 ﻿{
   "KpiProductGrouping": {
     "Id": {
-      "IdNotExisted":  "Kpi nhóm sản phẩm không tồn tại"
+      "IdNotExisted": "Kpi nhóm sản phẩm không tồn tại"
     },
     "OrganizationId": {
       "OrganizationEmpty": "Chưa chọn đơn vị tổ chức",
@@ -15,7 +15,7 @@
       "KpiPeriodIdNotExisted": "Kì Kpi không tồn tại"
     },
     "Employee": {
-      "EmployeeHasKpi":  "Nhân viên đã có Kpi"
+      "EmployeeHasKpi": "Nhân viên đã có Kpi"
     },
     "KpiPeriod": {
       "KpiPeriodIdNotExisted": "Kì Kpi không tồn tại"
@@ -26,9 +26,17 @@
     "Status": {
       "StatusNotExisted": "Trạng thái không tồn tại"
     },
-    "KpiProductGroupingContents": {
-      "KpiProductGroupingContentsEmpty": "Chưa chọn nhóm sản phẩm kpi",
-      "ProductGroupingNotExisted": "Nhóm sản phẩm không tồn tại"
+    "KpiProductGroupingContent": {
+      "KpiProductGrouping": {
+        "ProductGroupingEmpty": "Chưa chọn nhóm sản phẩm",
+        "ProductGroupingNotExisted": "Nhóm sản phẩm không tồn tại"
+      },
+      "KpiProductGroupingContentCriteriaMappings": {
+      },
+      "KpiProductGroupingContentItemMappings": {
+        "ItemEmpty": "Chưa chọn sản phẩm",
+        "ItemNotExisted": "Sản phẩm không tồn tại"
+      }
     }
   }
 }

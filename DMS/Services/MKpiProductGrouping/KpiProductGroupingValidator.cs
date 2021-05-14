@@ -35,8 +35,10 @@ namespace DMS.Services.MKpiProductGrouping
             KpiYearAndKpiPeriodMustInTheFuture,
             KpiProductGroupingTypeIdNotExisted,
             KpiProductGroupingContentsEmpty,
+            ProductGroupingEmpty,
             ProductGroupingNotExisted,
             ItemEmpty,
+            ItemNotExisted,
             ValueCannotBeNull,
             EmployeeHasKpi
         }
@@ -196,9 +198,11 @@ namespace DMS.Services.MKpiProductGrouping
                 var ProductGroupingInDB = await UOW.ProductGroupingRepository.List(ProductGroupingFilter);
                 foreach(var KpiProductGroupingContent in KpiProductGrouping.KpiProductGroupingContents)
                 {
+                    if(KpiProductGroupingContent.ProductGroupingId == 0)
+                        KpiProductGroupingContent.AddError(nameof(KpiProductGroupingValidator), nameof(KpiProductGroupingContent.ProductGrouping), ErrorCode.ProductGroupingEmpty);
                     ProductGrouping ProductGrouping = ProductGroupingInDB.Where(x => x.Id == KpiProductGroupingContent.ProductGroupingId).FirstOrDefault();
                     if(ProductGrouping == null)
-                        KpiProductGrouping.AddError(nameof(KpiProductGroupingValidator), nameof(KpiProductGroupingContent), ErrorCode.ProductGroupingNotExisted);
+                        KpiProductGroupingContent.AddError(nameof(KpiProductGroupingValidator), nameof(KpiProductGroupingContent.ProductGrouping), ErrorCode.ProductGroupingNotExisted);
                 }
             }
             return KpiProductGrouping.IsValidated;
@@ -206,13 +210,43 @@ namespace DMS.Services.MKpiProductGrouping
 
         private async Task<bool> ValidateItem(KpiProductGrouping KpiProductGrouping)
         {
-            foreach(var KpiProductGroupingContent in KpiProductGrouping.KpiProductGroupingContents)
+            List<KpiProductGroupingContentItemMapping> KpiProductGroupingContentItemMappings = KpiProductGrouping.KpiProductGroupingContents
+                .SelectMany(x => x.KpiProductGroupingContentItemMappings)
+                .ToList();
+            List<long> ItemIds = new List<long>();
+            List<Item> Items = new List<Item>();
+            if (KpiProductGroupingContentItemMappings.Count > 0)
+            {
+                ItemIds = KpiProductGroupingContentItemMappings
+                    .Select(x => x.ItemId)
+                    .Distinct()
+                    .ToList();
+                Items = await UOW.ItemRepository.List(new ItemFilter
+                {
+                    Skip = 0,
+                    Take = int.MaxValue,
+                    Id = new IdFilter
+                    {
+                        In = ItemIds
+                    },
+                    Selects = ItemSelect.Id
+                });
+            }
+            foreach (var KpiProductGroupingContent in KpiProductGrouping.KpiProductGroupingContents)
             {
                 if(KpiProductGroupingContent.KpiProductGroupingContentItemMappings == null || !KpiProductGroupingContent.KpiProductGroupingContentItemMappings.Any())
+                    KpiProductGroupingContent.AddError(nameof(KpiProductGroupingValidator), nameof(KpiProductGroupingContent.KpiProductGroupingContentItemMappings), ErrorCode.ItemEmpty);
+                if(Items.Count > 0)
                 {
-                    KpiProductGrouping.AddError(nameof(KpiProductGroupingValidator), nameof(KpiProductGroupingContent.KpiProductGroupingContentItemMappings), ErrorCode.ItemEmpty);
-                }    
+                    foreach (var KpiProductGroupingItemMapping in KpiProductGroupingContent.KpiProductGroupingContentItemMappings)
+                    {
+                        Item Item = Items.Where(x => x.Id == KpiProductGroupingItemMapping.ItemId).FirstOrDefault();
+                        if(Item == null)
+                            KpiProductGroupingContent.AddError(nameof(KpiProductGroupingValidator), nameof(KpiProductGroupingContent.KpiProductGroupingContentItemMappings), ErrorCode.ItemNotExisted);
+                    }
+                }
             }
+
             return KpiProductGrouping.IsValidated;
         }
 
