@@ -64,6 +64,9 @@ namespace DMS.Rpc.store
         public const string LockStoreUser = Default + "/lock-store-user";
         public const string ResetPassword = Default + "/reset-password";
 
+        // storeSync from external
+        public const string BulkCreate = Default + "/bulk-create";
+
         public static Dictionary<string, long> Filters = new Dictionary<string, long>
         {
             { nameof(StoreFilter.OrganizationId), FieldTypeEnum.ID.Id },
@@ -83,7 +86,8 @@ namespace DMS.Rpc.store
                 FilterListAppUser, FilterListDistrict, FilterListOrganization, FilterListProvince, FilterListWard, FilterListStatus, FilterListParentStore, FilterListStoreStatus, FilterListStoreGrouping, FilterListStoreType,
                 Detail, Create, CreateStoreScouting, SaveImage,
                 SingleListAppUser, SingleListBrand, SingleListDistrict, SingleListOrganization, SingleListProvince, SingleListStatus, SingleListStoreGrouping, SingleListStoreType, SingleListWard, SingleListParentStore, SingleListStoreStatus,
-                CountProductGrouping, ListProductGrouping
+                CountProductGrouping, ListProductGrouping,
+                BulkCreate
                 } },
             { "Sửa", new List<string> {
                 Parent,
@@ -91,7 +95,8 @@ namespace DMS.Rpc.store
                 FilterListAppUser, FilterListDistrict, FilterListOrganization, FilterListProvince, FilterListWard, FilterListStatus, FilterListParentStore, FilterListStoreStatus, FilterListStoreGrouping, FilterListStoreType,
                 Detail, Update, SaveImage,
                 SingleListAppUser, SingleListBrand, SingleListDistrict, SingleListOrganization, SingleListProvince, SingleListStatus, SingleListStoreGrouping, SingleListStoreType, SingleListWard, SingleListParentStore, SingleListStoreStatus,
-                CountProductGrouping, ListProductGrouping
+                CountProductGrouping, ListProductGrouping,
+                BulkCreate
                 } },
             { "Xoá", new List<string> {
                 Parent,
