@@ -242,246 +242,255 @@ namespace DMS.Rpc.kpi_tracking.kpi_product_grouping_report
         [Route(KpiProductGroupingReportRoute.List), HttpPost]
         public async Task<ActionResult<List<KpiProductGroupingReport_KpiProductGroupingReportDTO>>> List([FromBody] KpiProductGroupingReport_KpiProductGroupingReportFilterDTO KpiProductGroupingReport_KpiProductGroupingReportFilterDTO)
         {
-            #region validate dữ liệu filter bắt buộc có 
-            if (!ModelState.IsValid)
-                throw new BindException(ModelState);
-            if (KpiProductGroupingReport_KpiProductGroupingReportFilterDTO.KpiPeriodId?.Equal.HasValue == false)
-                return BadRequest(new { message = "Chưa chọn kì KPI" });
-            if (KpiProductGroupingReport_KpiProductGroupingReportFilterDTO.KpiYearId?.Equal.HasValue == false)
-                return BadRequest(new { message = "Chưa chọn năm KPI" });
-            if (KpiProductGroupingReport_KpiProductGroupingReportFilterDTO.KpiProductGroupingTypeId?.Equal.HasValue == false)
-                return BadRequest(new { message = "Chưa chọn loại KPI" });
-            #endregion
-
-            #region tính thời gian bắt đầu, kết thúc, lấy ra Id nhân viên và orgUnit từ filter
-            DateTime StartDate, EndDate;
-            long? SaleEmployeeId = KpiProductGroupingReport_KpiProductGroupingReportFilterDTO.AppUserId?.Equal;
-            long? ProductGroupingId = KpiProductGroupingReport_KpiProductGroupingReportFilterDTO.ProductGroupingId?.Equal;
-            long? KpiPeriodId = KpiProductGroupingReport_KpiProductGroupingReportFilterDTO.KpiPeriodId?.Equal.Value;
-            long? KpiYearId = KpiProductGroupingReport_KpiProductGroupingReportFilterDTO.KpiYearId?.Equal.Value;
-            long? KpiProductGroupingTypeId = KpiProductGroupingReport_KpiProductGroupingReportFilterDTO.KpiProductGroupingTypeId?.Equal.Value;
-            (StartDate, EndDate) = DateTimeConvert(KpiPeriodId.Value, KpiYearId.Value);
-
-            List<long> AppUserIds, OrganizationIds;
-            (AppUserIds, OrganizationIds) = await FilterOrganizationAndUser(KpiProductGroupingReport_KpiProductGroupingReportFilterDTO.OrganizationId,
-                AppUserService, OrganizationService, CurrentContext, DataContext);
-            #endregion
-
-            #region lấy dữ liệu báo cáo
-            var query = from kpg in DataContext.KpiProductGrouping
-                        join au in DataContext.AppUser on kpg.EmployeeId equals au.Id
-                        join kpgc in DataContext.KpiProductGroupingContent on kpg.Id equals kpgc.KpiProductGroupingId
-                        join pg in DataContext.ProductGrouping on kpgc.ProductGroupingId equals pg.Id
-                        where OrganizationIds.Contains(kpg.OrganizationId) &&
-                        AppUserIds.Contains(kpg.EmployeeId) &&
-                        (SaleEmployeeId == null || kpg.Id == SaleEmployeeId.Value) &&
-                        (ProductGroupingId == null || pg.Id == ProductGroupingId.Value) &&
-                        (kpg.KpiPeriodId == KpiPeriodId.Value) &&
-                        (kpg.KpiYearId == KpiYearId) &&
-                        (kpg.KpiProductGroupingTypeId == KpiProductGroupingTypeId.Value) &&
-                        kpg.DeletedAt == null &&
-                        kpg.StatusId == StatusEnum.ACTIVE.Id
-                        select new
-                        {
-                            KpiProductGroupingId = kpg.Id,
-                            OrganizationId = kpg.OrganizationId,
-                            SaleEmployeeId = kpg.EmployeeId,
-                            Username = au.Username,
-                            DisplayName = au.DisplayName,
-                            ProductGroupingId = pg.Id,
-                            ProductGroupingCode = pg.Code,
-                            ProductGroupingName = pg.Name,
-                        }; // grouping kpi nhóm sản phẩm theo Organization và ProductGrouping
-
-            var datas = await query.Distinct()
-                .OrderBy(x => x.OrganizationId)
-                .ThenBy(x => x.DisplayName)
-                .Skip(KpiProductGroupingReport_KpiProductGroupingReportFilterDTO.Skip)
-                .Take(KpiProductGroupingReport_KpiProductGroupingReportFilterDTO.Take)
-                .ToListAsync(); // lấy ra toàn bộ dữ liệu theo filter
-            var KpiProductGroupingIds = datas
-                .Select(x => x.KpiProductGroupingId)
-                .Distinct().ToList();
-            OrganizationIds = datas
-                .Select(x => x.OrganizationId)
-                .Distinct().ToList();
-            AppUserIds = datas
-                .Select(x => x.SaleEmployeeId)
-                .Distinct().ToList();
-            var OrganizationDAOs = await DataContext.Organization.AsNoTracking()
-                .Where(x => OrganizationIds.Contains(x.Id))
-                .OrderBy(x => x.Id)
-                .Select(x => new OrganizationDAO
-                {
-                    Id = x.Id,
-                    Name = x.Name
-                }).ToListAsync(); // lấy ra toàn bộ Org trong danh sách phân trang
-            var AppUserDAOs = await DataContext.AppUser.AsNoTracking()
-                .Where(x => AppUserIds.Contains(x.Id))
-                .OrderBy(x => x.Id)
-                .Select(x => new AppUserDAO
-                {
-                    Id = x.Id,
-                    Username = x.Username,
-                    DisplayName = x.DisplayName,
-                }).ToListAsync(); // lấy ra toàn bộ Nhân viên trong danh sách phân trang
-
-
-            var query_content = from km in DataContext.KpiProductGroupingContentCriteriaMapping
-                                join kc in DataContext.KpiProductGroupingContent on km.KpiProductGroupingContentId equals kc.Id
-                                join k in DataContext.KpiProductGrouping on kc.KpiProductGroupingId equals k.Id
-                                join pg in DataContext.ProductGrouping on kc.ProductGroupingId equals pg.Id
-                                where KpiProductGroupingIds.Contains(k.Id)
-                                select new
-                                {
-                                    SaleEmployeeId = k.EmployeeId,
-                                    ProductGroupingId = kc.ProductGroupingId,
-                                    KpiProductGroupingContentId = kc.Id,
-                                    KpiProductGroupingCriteriaId = km.KpiProductGroupingCriteriaId,
-                                    Value = km.Value,
-                                };
-
-            List<KpiProductGroupingReport_KpiProductGroupingContentCriteriaMappingDTO> KpiProductGroupingReport_KpiProductGroupingContentCriteriaMappingDTOs =
-                await query_content.Distinct().Select(x => new KpiProductGroupingReport_KpiProductGroupingContentCriteriaMappingDTO
-                {
-                    SaleEmployeeId = x.SaleEmployeeId,
-                    ProductGroupingId = x.ProductGroupingId,
-                    KpiProductGroupingContentId = x.KpiProductGroupingContentId,
-                    KpiProductGroupingCriteriaId = x.KpiProductGroupingCriteriaId,
-                    Value = x.Value,
-                }).ToListAsync();
-
-            List<long> KpiProductGroupingContentIds = KpiProductGroupingReport_KpiProductGroupingContentCriteriaMappingDTOs
-                .Select(x => x.KpiProductGroupingContentId)
-                .Distinct()
-                .ToList();
-            List<long> ProductGroupingIds = KpiProductGroupingReport_KpiProductGroupingContentCriteriaMappingDTOs
-                .Select(x => x.ProductGroupingId)
-                .Distinct().ToList();
-            List<ProductGroupingDAO> ProductGroupingDAOs = await DataContext.ProductGrouping.AsNoTracking()
-                .Where(x => ProductGroupingIds.Contains(x.Id))
-                .Select(x => new ProductGroupingDAO { 
-                    Id = x.Id,
-                    Code = x.Code,
-                    Name = x.Name,
-                })
-                .ToListAsync();
-            List<KpiProductGroupingContentItemMappingDAO> KpiProductGroupingContentItemMappingDAOs = await DataContext.KpiProductGroupingContentItemMapping.AsNoTracking()
-                .Where(x => KpiProductGroupingContentIds.Contains(x.KpiProductGroupingContentId))
-                .Select(x => new KpiProductGroupingContentItemMappingDAO
-                {
-                    ItemId = x.ItemId,
-                    KpiProductGroupingContentId = x.KpiProductGroupingContentId,
-                })
-                .ToListAsync(); // lay ra toan bo itemId duoc map voi contentIds
-            List<long> ItemIds = KpiProductGroupingContentItemMappingDAOs
-                .Select(x => x.ItemId)
-                .Distinct()
-                .ToList();
-
-            var indirect_sales_order_query = from transaction in DataContext.IndirectSalesOrderTransaction
-                                             join ind in DataContext.IndirectSalesOrder on transaction.IndirectSalesOrderId equals ind.Id
-                                             where AppUserIds.Contains(transaction.SalesEmployeeId) &&
-                                             (transaction.OrderDate >= StartDate) &&
-                                             (transaction.OrderDate <= EndDate) &&
-                                             (ind.RequestStateId == RequestStateEnum.APPROVED.Id) &&
-                                             (ItemIds.Contains(transaction.ItemId))
-                                             select transaction;
-            List<IndirectSalesOrderTransactionDAO> IndirectTransactionDAOs = await indirect_sales_order_query
-            .Distinct()
-            .Select(x => new IndirectSalesOrderTransactionDAO
+            try
             {
-                Id = x.Id,
-                SalesEmployeeId = x.SalesEmployeeId,
-                OrderDate = x.OrderDate,
-                BuyerStoreId = x.BuyerStoreId,
-                ItemId = x.ItemId,
-                Revenue = x.Revenue,
-            }).ToListAsync();
-            #endregion
+                #region validate dữ liệu filter bắt buộc có 
+                if (!ModelState.IsValid)
+                    throw new BindException(ModelState);
+                if (KpiProductGroupingReport_KpiProductGroupingReportFilterDTO.KpiPeriodId?.Equal.HasValue == false)
+                    return BadRequest(new { message = "Chưa chọn kì KPI" });
+                if (KpiProductGroupingReport_KpiProductGroupingReportFilterDTO.KpiYearId?.Equal.HasValue == false)
+                    return BadRequest(new { message = "Chưa chọn năm KPI" });
+                if (KpiProductGroupingReport_KpiProductGroupingReportFilterDTO.KpiProductGroupingTypeId?.Equal.HasValue == false)
+                    return BadRequest(new { message = "Chưa chọn loại KPI" });
+                #endregion
 
-            #region tổng hợp dữ liệu báo cáo
-            List<KpiProductGroupingReport_KpiProductGroupingReportDTO> KpiProductGroupingReport_KpiProductGroupingReportDTOs = new List<KpiProductGroupingReport_KpiProductGroupingReportDTO>();
-            foreach (var Organization in OrganizationDAOs)
-            {
-                KpiProductGroupingReport_KpiProductGroupingReportDTO KpiProductGroupingReport_KpiProductGroupingReportDTO = new KpiProductGroupingReport_KpiProductGroupingReportDTO
-                {
-                    OrganizationId = Organization.Id,
-                    OrganizationName = Organization.Name,
-                    SaleEmployees = new List<KpiProductGroupingReport_KpiSaleEmployeetDTO>(),
-                };
-                KpiProductGroupingReport_KpiProductGroupingReportDTO.SaleEmployees = datas.Where(x => x.OrganizationId == Organization.Id).Select(x => new KpiProductGroupingReport_KpiSaleEmployeetDTO
-                {
-                    Id = x.SaleEmployeeId,
-                    UserName = x.Username,
-                    DisplayName = x.DisplayName,
-                    OrganizationId = x.OrganizationId,
-                }).ToList();
-                KpiProductGroupingReport_KpiProductGroupingReportDTOs.Add(KpiProductGroupingReport_KpiProductGroupingReportDTO);
-            }
+                #region tính thời gian bắt đầu, kết thúc, lấy ra Id nhân viên và orgUnit từ filter
+                DateTime StartDate, EndDate;
+                long? SaleEmployeeId = KpiProductGroupingReport_KpiProductGroupingReportFilterDTO.AppUserId?.Equal;
+                long? ProductGroupingId = KpiProductGroupingReport_KpiProductGroupingReportFilterDTO.ProductGroupingId?.Equal;
+                long? KpiPeriodId = KpiProductGroupingReport_KpiProductGroupingReportFilterDTO.KpiPeriodId?.Equal.Value;
+                long? KpiYearId = KpiProductGroupingReport_KpiProductGroupingReportFilterDTO.KpiYearId?.Equal.Value;
+                long? KpiProductGroupingTypeId = KpiProductGroupingReport_KpiProductGroupingReportFilterDTO.KpiProductGroupingTypeId?.Equal.Value;
+                (StartDate, EndDate) = DateTimeConvert(KpiPeriodId.Value, KpiYearId.Value);
 
-            foreach (var Organization in KpiProductGroupingReport_KpiProductGroupingReportDTOs)
-            { 
-                foreach(var Employee in Organization.SaleEmployees)
-                {
+                List<long> AppUserIds, OrganizationIds;
+                (AppUserIds, OrganizationIds) = await FilterOrganizationAndUser(KpiProductGroupingReport_KpiProductGroupingReportFilterDTO.OrganizationId,
+                    AppUserService, OrganizationService, CurrentContext, DataContext);
+                #endregion
 
-                    Employee.Contents = new List<KpiProductGroupingReport_KpiProductGroupingContentDTO>();
-                    List<KpiProductGroupingReport_KpiProductGroupingContentCriteriaMappingDTO> ContentCriteriaMappings = KpiProductGroupingReport_KpiProductGroupingContentCriteriaMappingDTOs
-                        .Where(x => x.SaleEmployeeId == Employee.Id)
-                        .ToList();
-                    List<long> SubProductGroupingIds = ContentCriteriaMappings.Select(x => x.ProductGroupingId)
-                        .Distinct()
-                        .ToList();
-                    List<long> SubkpiProductGroupingContentIds = ContentCriteriaMappings.Select(x => x.KpiProductGroupingContentId)
-                        .Distinct()
-                        .ToList();
-                    List<ProductGroupingDAO> SubProductGroupings = ProductGroupingDAOs
-                        .Where(x => SubProductGroupingIds.Contains(x.Id))
-                        .ToList();
-                    foreach(var ProductGrouping in SubProductGroupings)
+                #region lấy dữ liệu báo cáo
+                var query = from kpg in DataContext.KpiProductGrouping
+                            join au in DataContext.AppUser on kpg.EmployeeId equals au.Id
+                            join kpgc in DataContext.KpiProductGroupingContent on kpg.Id equals kpgc.KpiProductGroupingId
+                            join pg in DataContext.ProductGrouping on kpgc.ProductGroupingId equals pg.Id
+                            where OrganizationIds.Contains(kpg.OrganizationId) &&
+                            AppUserIds.Contains(kpg.EmployeeId) &&
+                            (SaleEmployeeId == null || kpg.Id == SaleEmployeeId.Value) &&
+                            (ProductGroupingId == null || pg.Id == ProductGroupingId.Value) &&
+                            (kpg.KpiPeriodId == KpiPeriodId.Value) &&
+                            (kpg.KpiYearId == KpiYearId) &&
+                            (kpg.KpiProductGroupingTypeId == KpiProductGroupingTypeId.Value) &&
+                            kpg.DeletedAt == null &&
+                            kpg.StatusId == StatusEnum.ACTIVE.Id
+                            select new
+                            {
+                                KpiProductGroupingId = kpg.Id,
+                                OrganizationId = kpg.OrganizationId,
+                                SaleEmployeeId = kpg.EmployeeId,
+                                Username = au.Username,
+                                DisplayName = au.DisplayName,
+                                ProductGroupingId = pg.Id,
+                                ProductGroupingCode = pg.Code,
+                                ProductGroupingName = pg.Name,
+                            }; // grouping kpi nhóm sản phẩm theo Organization và ProductGrouping
+
+                var datas = await query.Distinct()
+                    //.OrderBy(x => x.OrganizationId)
+                    //.ThenBy(x => x.DisplayName)
+                    .Skip(KpiProductGroupingReport_KpiProductGroupingReportFilterDTO.Skip)
+                    .Take(KpiProductGroupingReport_KpiProductGroupingReportFilterDTO.Take)
+                    .ToListAsync(); // lấy ra toàn bộ dữ liệu theo filter
+                var KpiProductGroupingIds = datas
+                    .Select(x => x.KpiProductGroupingId)
+                    .Distinct().ToList();
+                OrganizationIds = datas
+                    .Select(x => x.OrganizationId)
+                    .Distinct().ToList();
+                AppUserIds = datas
+                    .Select(x => x.SaleEmployeeId)
+                    .Distinct().ToList();
+                var OrganizationDAOs = await DataContext.Organization.AsNoTracking()
+                    .Where(x => OrganizationIds.Contains(x.Id))
+                    .OrderBy(x => x.Id)
+                    .Select(x => new OrganizationDAO
                     {
-                        KpiProductGroupingReport_KpiProductGroupingContentDTO Content = new KpiProductGroupingReport_KpiProductGroupingContentDTO();
-                        Content.ProductGroupingId = ProductGrouping.Id;
-                        Content.ProductGroupingCode = ProductGrouping.Code;
-                        Content.ProductGroupingName = ProductGrouping.Name;
+                        Id = x.Id,
+                        Name = x.Name
+                    }).ToListAsync(); // lấy ra toàn bộ Org trong danh sách phân trang
+                var AppUserDAOs = await DataContext.AppUser.AsNoTracking()
+                    .Where(x => AppUserIds.Contains(x.Id))
+                    .OrderBy(x => x.Id)
+                    .Select(x => new AppUserDAO
+                    {
+                        Id = x.Id,
+                        Username = x.Username,
+                        DisplayName = x.DisplayName,
+                    }).ToListAsync(); // lấy ra toàn bộ Nhân viên trong danh sách phân trang
 
-                        Content.IndirectRevenuePlanned = ContentCriteriaMappings
-                            .Where(x => x.ProductGroupingId == ProductGrouping.Id)
-                            .Where(x => x.KpiProductGroupingCriteriaId == KpiProductGroupingCriteriaEnum.INDIRECT_REVENUE.Id)
+
+                var query_content = from km in DataContext.KpiProductGroupingContentCriteriaMapping
+                                    join kc in DataContext.KpiProductGroupingContent on km.KpiProductGroupingContentId equals kc.Id
+                                    join k in DataContext.KpiProductGrouping on kc.KpiProductGroupingId equals k.Id
+                                    join pg in DataContext.ProductGrouping on kc.ProductGroupingId equals pg.Id
+                                    where KpiProductGroupingIds.Contains(k.Id)
+                                    select new
+                                    {
+                                        SaleEmployeeId = k.EmployeeId,
+                                        ProductGroupingId = kc.ProductGroupingId,
+                                        KpiProductGroupingContentId = kc.Id,
+                                        KpiProductGroupingCriteriaId = km.KpiProductGroupingCriteriaId,
+                                        Value = km.Value,
+                                    };
+
+                List<KpiProductGroupingReport_KpiProductGroupingContentCriteriaMappingDTO> KpiProductGroupingReport_KpiProductGroupingContentCriteriaMappingDTOs =
+                    await query_content.Distinct().Select(x => new KpiProductGroupingReport_KpiProductGroupingContentCriteriaMappingDTO
+                    {
+                        SaleEmployeeId = x.SaleEmployeeId,
+                        ProductGroupingId = x.ProductGroupingId,
+                        KpiProductGroupingContentId = x.KpiProductGroupingContentId,
+                        KpiProductGroupingCriteriaId = x.KpiProductGroupingCriteriaId,
+                        Value = x.Value,
+                    }).ToListAsync();
+
+                List<long> KpiProductGroupingContentIds = KpiProductGroupingReport_KpiProductGroupingContentCriteriaMappingDTOs
+                    .Select(x => x.KpiProductGroupingContentId)
+                    .Distinct()
+                    .ToList();
+                List<long> ProductGroupingIds = KpiProductGroupingReport_KpiProductGroupingContentCriteriaMappingDTOs
+                    .Select(x => x.ProductGroupingId)
+                    .Distinct().ToList();
+                List<ProductGroupingDAO> ProductGroupingDAOs = await DataContext.ProductGrouping.AsNoTracking()
+                    .Where(x => ProductGroupingIds.Contains(x.Id))
+                    .Select(x => new ProductGroupingDAO
+                    {
+                        Id = x.Id,
+                        Code = x.Code,
+                        Name = x.Name,
+                    })
+                    .ToListAsync();
+                List<KpiProductGroupingContentItemMappingDAO> KpiProductGroupingContentItemMappingDAOs = await DataContext.KpiProductGroupingContentItemMapping.AsNoTracking()
+                    .Where(x => KpiProductGroupingContentIds.Contains(x.KpiProductGroupingContentId))
+                    .Select(x => new KpiProductGroupingContentItemMappingDAO
+                    {
+                        ItemId = x.ItemId,
+                        KpiProductGroupingContentId = x.KpiProductGroupingContentId,
+                    })
+                    .ToListAsync(); // lay ra toan bo itemId duoc map voi contentIds
+                List<long> ItemIds = KpiProductGroupingContentItemMappingDAOs
+                    .Select(x => x.ItemId)
+                    .Distinct()
+                    .ToList();
+
+                var indirect_sales_order_query = from transaction in DataContext.IndirectSalesOrderTransaction
+                                                 join ind in DataContext.IndirectSalesOrder on transaction.IndirectSalesOrderId equals ind.Id
+                                                 where AppUserIds.Contains(transaction.SalesEmployeeId) &&
+                                                 (transaction.OrderDate >= StartDate) &&
+                                                 (transaction.OrderDate <= EndDate) &&
+                                                 (ind.RequestStateId == RequestStateEnum.APPROVED.Id) &&
+                                                 (ItemIds.Contains(transaction.ItemId))
+                                                 select transaction;
+                List<IndirectSalesOrderTransactionDAO> IndirectTransactionDAOs = await indirect_sales_order_query
+                .Distinct()
+                .Select(x => new IndirectSalesOrderTransactionDAO
+                {
+                    Id = x.Id,
+                    SalesEmployeeId = x.SalesEmployeeId,
+                    OrderDate = x.OrderDate,
+                    BuyerStoreId = x.BuyerStoreId,
+                    ItemId = x.ItemId,
+                    Revenue = x.Revenue,
+                }).ToListAsync();
+                #endregion
+
+                #region tổng hợp dữ liệu báo cáo
+                List<KpiProductGroupingReport_KpiProductGroupingReportDTO> KpiProductGroupingReport_KpiProductGroupingReportDTOs = new List<KpiProductGroupingReport_KpiProductGroupingReportDTO>();
+                foreach (var Organization in OrganizationDAOs)
+                {
+                    KpiProductGroupingReport_KpiProductGroupingReportDTO KpiProductGroupingReport_KpiProductGroupingReportDTO = new KpiProductGroupingReport_KpiProductGroupingReportDTO
+                    {
+                        OrganizationId = Organization.Id,
+                        OrganizationName = Organization.Name,
+                        SaleEmployees = new List<KpiProductGroupingReport_KpiSaleEmployeetDTO>(),
+                    };
+                    KpiProductGroupingReport_KpiProductGroupingReportDTO.SaleEmployees = datas.Where(x => x.OrganizationId == Organization.Id).Select(x => new KpiProductGroupingReport_KpiSaleEmployeetDTO
+                    {
+                        Id = x.SaleEmployeeId,
+                        UserName = x.Username,
+                        DisplayName = x.DisplayName,
+                        OrganizationId = x.OrganizationId,
+                    }).ToList();
+                    KpiProductGroupingReport_KpiProductGroupingReportDTOs.Add(KpiProductGroupingReport_KpiProductGroupingReportDTO);
+                }
+
+                foreach (var Organization in KpiProductGroupingReport_KpiProductGroupingReportDTOs)
+                {
+                    foreach (var Employee in Organization.SaleEmployees)
+                    {
+
+                        Employee.Contents = new List<KpiProductGroupingReport_KpiProductGroupingContentDTO>();
+                        List<KpiProductGroupingReport_KpiProductGroupingContentCriteriaMappingDTO> ContentCriteriaMappings = KpiProductGroupingReport_KpiProductGroupingContentCriteriaMappingDTOs
                             .Where(x => x.SaleEmployeeId == Employee.Id)
-                            .Select(x => x.Value)
-                            .FirstOrDefault(); // lấy ra giá trị kế hoạch theo nhóm sản phẩm, user và loại kpi
-                        if(Content.IndirectRevenuePlanned.HasValue)
+                            .ToList();
+                        List<long> SubProductGroupingIds = ContentCriteriaMappings.Select(x => x.ProductGroupingId)
+                            .Distinct()
+                            .ToList();
+                        List<long> SubkpiProductGroupingContentIds = ContentCriteriaMappings.Select(x => x.KpiProductGroupingContentId)
+                            .Distinct()
+                            .ToList();
+                        List<ProductGroupingDAO> SubProductGroupings = ProductGroupingDAOs
+                            .Where(x => SubProductGroupingIds.Contains(x.Id))
+                            .ToList();
+                        foreach (var ProductGrouping in SubProductGroupings)
                         {
-                            List<KpiProductGroupingReport_KpiProductGroupingContentCriteriaMappingDTO> SubContentCriteriaMappings = ContentCriteriaMappings
+                            KpiProductGroupingReport_KpiProductGroupingContentDTO Content = new KpiProductGroupingReport_KpiProductGroupingContentDTO();
+                            Content.ProductGroupingId = ProductGrouping.Id;
+                            Content.ProductGroupingCode = ProductGrouping.Code;
+                            Content.ProductGroupingName = ProductGrouping.Name;
+
+                            Content.IndirectRevenuePlanned = ContentCriteriaMappings
                                 .Where(x => x.ProductGroupingId == ProductGrouping.Id)
-                                .ToList();
-                            List<long> SubContentIds = SubContentCriteriaMappings.Select(x => x.KpiProductGroupingContentId)
-                                .Distinct()
-                                .ToList();
-                            List<long> SubItemIds = KpiProductGroupingContentItemMappingDAOs.Where(x => SubContentIds.Contains(x.KpiProductGroupingContentId))
-                                .Select(x => x.ItemId)
-                                .Distinct()
-                                .ToList();
-                            List<IndirectSalesOrderTransactionDAO> SubIndirectTransactions = IndirectTransactionDAOs
-                                .Where(x => x.SalesEmployeeId == Employee.Id)
-                                .Where(x => ItemIds.Contains(x.ItemId))
-                                .ToList(); // lay transaction don gian tiep theo SalesEmployee va Item
-                            Content.IndirectRevenue = SubIndirectTransactions
-                                .Where(x => x.Revenue.HasValue)
-                                .Sum(x => x.Revenue);
-                            Content.IndirectRevenue = Math.Round(Content.IndirectRevenue.Value, 0);
-                            Content.IndirectRevenueRatio = Content.IndirectRevenuePlanned == 0 || Content.IndirectRevenuePlanned == null ?
-                                null : (decimal?)
-                                Math.Round((Content.IndirectRevenue.Value / Content.IndirectRevenuePlanned.Value) * 100, 2);
+                                .Where(x => x.KpiProductGroupingCriteriaId == KpiProductGroupingCriteriaEnum.INDIRECT_REVENUE.Id)
+                                .Where(x => x.SaleEmployeeId == Employee.Id)
+                                .Select(x => x.Value)
+                                .FirstOrDefault(); // lấy ra giá trị kế hoạch theo nhóm sản phẩm, user và loại kpi
+                            if (Content.IndirectRevenuePlanned.HasValue)
+                            {
+                                List<KpiProductGroupingReport_KpiProductGroupingContentCriteriaMappingDTO> SubContentCriteriaMappings = ContentCriteriaMappings
+                                    .Where(x => x.ProductGroupingId == ProductGrouping.Id)
+                                    .ToList();
+                                List<long> SubContentIds = SubContentCriteriaMappings.Select(x => x.KpiProductGroupingContentId)
+                                    .Distinct()
+                                    .ToList();
+                                List<long> SubItemIds = KpiProductGroupingContentItemMappingDAOs.Where(x => SubContentIds.Contains(x.KpiProductGroupingContentId))
+                                    .Select(x => x.ItemId)
+                                    .Distinct()
+                                    .ToList();
+                                List<IndirectSalesOrderTransactionDAO> SubIndirectTransactions = IndirectTransactionDAOs
+                                    .Where(x => x.SalesEmployeeId == Employee.Id)
+                                    .Where(x => ItemIds.Contains(x.ItemId))
+                                    .ToList(); // lay transaction don gian tiep theo SalesEmployee va Item
+                                Content.IndirectRevenue = SubIndirectTransactions
+                                    .Where(x => x.Revenue.HasValue)
+                                    .Sum(x => x.Revenue);
+                                Content.IndirectRevenue = Math.Round(Content.IndirectRevenue.Value, 0);
+                                Content.IndirectRevenueRatio = Content.IndirectRevenuePlanned == 0 || Content.IndirectRevenuePlanned == null ?
+                                    null : (decimal?)
+                                    Math.Round((Content.IndirectRevenue.Value / Content.IndirectRevenuePlanned.Value) * 100, 2);
+                            }
+                            Employee.Contents.Add(Content); // thêm content
                         }
-                        Employee.Contents.Add(Content); // thêm content
                     }
                 }
-            }
-            #endregion
+                #endregion
 
-            return KpiProductGroupingReport_KpiProductGroupingReportDTOs;
+                return KpiProductGroupingReport_KpiProductGroupingReportDTOs;
+            }
+            catch (Exception Exception)
+            {
+
+                throw Exception;
+            }
         }
 
         [Route(KpiProductGroupingReportRoute.Export), HttpPost]
@@ -501,7 +510,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_product_grouping_report
             #region tính thời gian bắt đầu, kết thúc, lấy ra Id nhân viên và orgUnit từ filter
             var KpiPeriod = KpiPeriodEnum.KpiPeriodEnumList.Where(x => x.Id == KpiProductGroupingReport_KpiProductGroupingReportFilterDTO.KpiPeriodId.Equal.Value).FirstOrDefault();
             var KpiYear = KpiYearEnum.KpiYearEnumList.Where(x => x.Id == KpiProductGroupingReport_KpiProductGroupingReportFilterDTO.KpiYearId.Equal.Value).FirstOrDefault();
-            var KpiProductGroupingCriteriaType = KpiItemTypeEnum.KpiItemTypeEnumList.Where(x => x.Id == KpiProductGroupingReport_KpiProductGroupingReportFilterDTO.KpiProductGroupingTypeId.Equal.Value).FirstOrDefault();
+            var KpiProductGroupingType = KpiProductGroupingTypeEnum.KpiProductGroupingTypeEnumList.Where(x => x.Id == KpiProductGroupingReport_KpiProductGroupingReportFilterDTO.KpiProductGroupingTypeId.Equal.Value).FirstOrDefault();
 
             KpiProductGroupingReport_KpiProductGroupingReportFilterDTO.Skip = 0;
             KpiProductGroupingReport_KpiProductGroupingReportFilterDTO.Take = int.MaxValue;
@@ -526,8 +535,8 @@ namespace DMS.Rpc.kpi_tracking.kpi_product_grouping_report
             dynamic Data = new ExpandoObject();
             Data.KpiPeriod = KpiPeriod.Name;
             Data.KpiYear = KpiYear.Name;
-            Data.KpiProductGroupingType = KpiProductGroupingCriteriaType.Name;
-            Data.KpiItemReports = KpiProductGroupingReport_ExportDTOs;
+            Data.KpiProductGroupingType = KpiProductGroupingType.Name;
+            Data.KpiProductGroupingReports = KpiProductGroupingReport_ExportDTOs;
             using (var document = StaticParams.DocumentFactory.Open(input, output, "xlsx"))
             {
                 document.Process(Data);

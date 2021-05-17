@@ -101,6 +101,9 @@
     <None Update="Templates\Kpi_Item_Export.xlsx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Templates\Kpi_Product_Grouping.xlsx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Templates\Kpi_Product_Grouping_Export.xlsx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

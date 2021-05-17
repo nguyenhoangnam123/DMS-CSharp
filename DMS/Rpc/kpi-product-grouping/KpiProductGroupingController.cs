@@ -1,6 +1,8 @@
 using DMS.Common;
 using DMS.Entities;
 using DMS.Helpers;
+using DMS.Models;
+using DMS.Repositories;
 using DMS.Services.MAppUser;
 using DMS.Services.MBrand;
 using DMS.Services.MCategory;
@@ -16,6 +18,8 @@ using DMS.Services.MProductType;
 using DMS.Services.MStatus;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis;
+using Microsoft.EntityFrameworkCore;
 using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
@@ -42,6 +46,7 @@ namespace DMS.Rpc.kpi_product_grouping
         private IProductGroupingService ProductGroupingService;
         private IBrandService BrandService;
         private ICurrentContext CurrentContext;
+        private DataContext DataContext;
         public KpiProductGroupingController(
             IAppUserService AppUserService,
             IKpiPeriodService KpiPeriodService,
@@ -56,7 +61,8 @@ namespace DMS.Rpc.kpi_product_grouping
             IProductTypeService ProductTypeService,
             IProductGroupingService ProductGroupingService,
             IBrandService BrandService,
-            ICurrentContext CurrentContext
+            ICurrentContext CurrentContext,
+            DataContext DataContext
         )
         {
             this.AppUserService = AppUserService;
@@ -73,6 +79,7 @@ namespace DMS.Rpc.kpi_product_grouping
             this.ProductGroupingService = ProductGroupingService;
             this.BrandService = BrandService;
             this.CurrentContext = CurrentContext;
+            this.DataContext = DataContext;
         }
 
         [Route(KpiProductGroupingRoute.Count), HttpPost]
@@ -565,21 +572,81 @@ namespace DMS.Rpc.kpi_product_grouping
         }
 
         [Route(KpiProductGroupingRoute.ExportTemplate), HttpPost]
-        public async Task<ActionResult> ExportTemplate([FromBody] KpiProductGrouping_KpiProductGroupingFilterDTO KpiProductGrouping_KpiProductGroupingFilterDTO)
+        public async Task<ActionResult> ExportTemplate()
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
 
-            string path = "Templates/KpiProductGrouping_Template.xlsx";
+            #region dữ liệu sheet chính
+            var appUser = await AppUserService.Get(CurrentContext.UserId);
+            AppUserFilter AppUserFilter = new AppUserFilter();
+            AppUserFilter.Skip = 0;
+            AppUserFilter.Take = int.MaxValue;
+            AppUserFilter.OrderBy = AppUserOrder.Id;
+            AppUserFilter.OrderType = OrderType.ASC;
+            AppUserFilter.Selects = AppUserSelect.Username | AppUserSelect.DisplayName;
+            AppUserFilter.OrganizationId = new IdFilter { Equal = appUser.OrganizationId };
+            AppUserFilter.StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id };
+
+            if (AppUserFilter.Id == null) AppUserFilter.Id = new IdFilter();
+            {
+                if (AppUserFilter.Id.In == null) AppUserFilter.Id.In = new List<long>();
+                AppUserFilter.Id.In.AddRange(await FilterAppUser(AppUserService, OrganizationService, CurrentContext));
+            }
+            List<AppUser> AppUsers = await AppUserService.List(AppUserFilter);
+            List<KpiProductGrouping_ExportDTO> KpiProductGrouping_ExportDTOs = new List<KpiProductGrouping_ExportDTO>();
+            foreach(var AppUser in AppUsers)
+            {
+                KpiProductGrouping_ExportDTO KpiProductGrouping_ExportDTO = new KpiProductGrouping_ExportDTO();
+                KpiProductGrouping_ExportDTO.Username = AppUser.Username;
+                KpiProductGrouping_ExportDTO.DisplayName = AppUser.DisplayName;
+                KpiProductGrouping_ExportDTOs.Add(KpiProductGrouping_ExportDTO);
+            }
+            #endregion
+
+
+            #region dữ liệu đổ vào các sheet khác
+            List<ProductGrouping> ProductGroupings = await ProductGroupingService.List(new ProductGroupingFilter {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = ProductGroupingSelect.Code | ProductGroupingSelect.Name,
+                OrderBy = ProductGroupingOrder.Id,
+                OrderType = OrderType.ASC
+            });
+            var query = from i in DataContext.Item
+                        join prd in DataContext.Product on i.ProductId equals prd.Id
+                        join prdg in DataContext.ProductProductGroupingMapping on prd.Id equals prdg.ProductId
+                        join prg in DataContext.ProductGrouping on prdg.ProductGroupingId equals prg.Id
+                        select new KpiProductGrouping_ItemExportDTO
+                        {
+                            ItemCode = i.Code,
+                            ItemName = i.Name,
+                            IsNew = prd.IsNew,
+                            ProductGroupingCode = prg.Code,
+                            ProductGroupingName = prg.Name,
+                        };
+
+            List<KpiProductGrouping_ItemExportDTO> Items = await query.ToListAsync();
+            List<KpiProductGrouping_ItemExportDTO> NewItems = Items.Where(x => x.IsNew).ToList();
+            #endregion
+
+            #region ghi dữ liệu vào file
+            string path = "Templates/Kpi_Product_Grouping.xlsx";
             byte[] arr = System.IO.File.ReadAllBytes(path);
             MemoryStream input = new MemoryStream(arr);
             MemoryStream output = new MemoryStream();
             dynamic Data = new ExpandoObject();
+            Data.KpiProductGroupings = KpiProductGrouping_ExportDTOs; // đổ dữ liệu vào sheet chính
+            Data.ProductGroupings = ProductGroupings; // đổ dữ liệu vào sheet chính
+            Data.Items = Items; // đổ dữ liệu vào tab sản phẩm
+            Data.NewItems = NewItems; // đổ dữ liệu vào tab sản phẩm mới
             using (var document = StaticParams.DocumentFactory.Open(input, output, "xlsx"))
             {
                 document.Process(Data);
             };
-            return File(output.ToArray(), "application/octet-stream", "KpiProductGrouping.xlsx");
+            #endregion
+
+            return File(output.ToArray(), "application/octet-stream", "Template_Kpi_ProductGrouping.xlsx");
         }
 
         private async Task<bool> HasPermission(long Id)
