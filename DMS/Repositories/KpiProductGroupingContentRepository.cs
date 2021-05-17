@@ -130,7 +130,79 @@ namespace DMS.Repositories
                     CreatorId = q.KpiProductGrouping.CreatorId,
                     RowId = q.KpiProductGrouping.RowId,
                 } : null,
+                ProductGrouping = filter.Selects.Contains(KpiProductGroupingContentSelect.ProductGrouping) && q.ProductGrouping != null ? new ProductGrouping
+                {
+                    Id = q.ProductGrouping.Id,
+                    Code = q.ProductGrouping.Code,
+                    Name = q.ProductGrouping.Name,
+                    Path = q.ProductGrouping.Path,
+                    ParentId = q.ProductGrouping.ParentId,
+                } : null,
             }).ToListAsync();
+
+            List<long> ContentIds = KpiProductGroupingContents.Select(x => x.Id).ToList();
+            List<KpiProductGroupingContentCriteriaMapping> KpiProductGroupingContentCriteriaMappings = await DataContext.KpiProductGroupingContentCriteriaMapping
+                .Where(x => ContentIds.Contains(x.KpiProductGroupingContentId))
+                .Select(x => new KpiProductGroupingContentCriteriaMapping
+                {
+                    KpiProductGroupingContentId = x.KpiProductGroupingContentId,
+                    KpiProductGroupingCriteriaId = x.KpiProductGroupingCriteriaId,
+                    KpiProductGroupingCriteria = new KpiProductGroupingCriteria
+                    {
+                        Id = x.KpiProductGroupingCriteria.Id,
+                        Code = x.KpiProductGroupingCriteria.Code,
+                        Name = x.KpiProductGroupingCriteria.Name,
+                    },
+                    KpiProductGroupingContent = new KpiProductGroupingContent { 
+                        Id = x.KpiProductGroupingContent.Id,
+                        KpiProductGroupingId = x.KpiProductGroupingContent.KpiProductGroupingId,
+                        ProductGroupingId = x.KpiProductGroupingContent.ProductGroupingId,
+                        ProductGrouping = new ProductGrouping { 
+                            Id = x.KpiProductGroupingContent.ProductGrouping.Id,
+                            Code = x.KpiProductGroupingContent.ProductGrouping.Code,
+                            Name = x.KpiProductGroupingContent.ProductGrouping.Name,
+                        },
+                    },
+                    Value = x.Value,
+                }).ToListAsync();
+
+            List<KpiProductGroupingContentItemMapping> KpiProductGroupingContentItemMappings = await DataContext.KpiProductGroupingContentItemMapping
+             .Where(x => ContentIds.Contains(x.KpiProductGroupingContentId))
+             .Select(x => new KpiProductGroupingContentItemMapping
+             {
+                 KpiProductGroupingContentId = x.KpiProductGroupingContentId,
+                 ItemId = x.ItemId,
+                 Item = new Item
+                 {
+                     Id = x.Item.Id,
+                     Code = x.Item.Code,
+                     Name = x.Item.Name,
+                 },
+                 KpiProductGroupingContent = new KpiProductGroupingContent
+                 {
+                     Id = x.KpiProductGroupingContent.Id,
+                     KpiProductGroupingId = x.KpiProductGroupingContent.KpiProductGroupingId,
+                     ProductGroupingId = x.KpiProductGroupingContent.ProductGroupingId,
+                     ProductGrouping = new ProductGrouping
+                     {
+                         Id = x.KpiProductGroupingContent.ProductGrouping.Id,
+                         Code = x.KpiProductGroupingContent.ProductGrouping.Code,
+                         Name = x.KpiProductGroupingContent.ProductGrouping.Name,
+                     },
+                 },
+             }).ToListAsync();
+
+            foreach(var Content in KpiProductGroupingContents)
+            {
+
+                Content.KpiProductGroupingContentCriteriaMappings = KpiProductGroupingContentCriteriaMappings
+                    .Where(x => x.KpiProductGroupingContentId == Content.Id)
+                    .ToList();
+                Content.KpiProductGroupingContentItemMappings = KpiProductGroupingContentItemMappings
+                    .Where(x => x.KpiProductGroupingContentId == Content.Id)
+                    .ToList();
+            }
+
             return KpiProductGroupingContents;
         }
 
