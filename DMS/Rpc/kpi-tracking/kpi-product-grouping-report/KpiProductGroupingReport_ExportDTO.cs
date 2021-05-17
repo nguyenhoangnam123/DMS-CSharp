@@ -8,22 +8,40 @@ namespace DMS.Rpc.kpi_tracking.kpi_product_grouping_report
 {
     public class KpiProductGroupingReport_ExportDTO : DataDTO
     {
-        public string Username { get; set; }
-        public string DisplayName { get; set; }
-        public List<KpiProductGroupingReport_KpiProductGroupingContentDTO> Lines { get; set; }
+        public long OrganizationId { get; set; }
+        public string OrganizationName { get; set; }
+        public List<KpiProductGroupingReport_KpiSaleEmployeeReportDTO> SaleEmployees { get; set; }
         public KpiProductGroupingReport_ExportDTO(KpiProductGroupingReport_KpiProductGroupingReportDTO KpiProductGroupingReport_KpiProductGroupingReportDTO)
         {
-            this.Username = KpiProductGroupingReport_KpiProductGroupingReportDTO.Username;
-            this.DisplayName = KpiProductGroupingReport_KpiProductGroupingReportDTO.DisplayName;
-            this.Lines = KpiProductGroupingReport_KpiProductGroupingReportDTO.ItemContents;
+            this.OrganizationId = KpiProductGroupingReport_KpiProductGroupingReportDTO.OrganizationId;
+            this.OrganizationName = KpiProductGroupingReport_KpiProductGroupingReportDTO.OrganizationName;
+            this.SaleEmployees = KpiProductGroupingReport_KpiProductGroupingReportDTO.SaleEmployees == null ? null : KpiProductGroupingReport_KpiProductGroupingReportDTO.SaleEmployees
+                .Select(x => new KpiProductGroupingReport_KpiSaleEmployeeReportDTO(x)).ToList();
         }
     }
 
-    public class KpiProductGroupingReport_LineDTO : DataDTO
+    public class KpiProductGroupingReport_KpiSaleEmployeeReportDTO : DataDTO
     {
         public long STT { get; set; }
-        public string ItemCode { get; set; }
-        public string ItemName { get; set; }
+        public long OrganizationId { get; set; }
+        public string UserName { get; set; }
+        public string DisplayName { get; set; }
+        public List<KpiProductGroupingReport_KpiProductGroupingContentExportDTO> Contents { get; set; }
+        public KpiProductGroupingReport_KpiSaleEmployeeReportDTO(KpiProductGroupingReport_KpiSaleEmployeetDTO KpiProductGroupingReport_KpiSaleEmployeetDTO)
+        {
+            this.STT = KpiProductGroupingReport_KpiSaleEmployeetDTO.STT;
+            this.UserName = KpiProductGroupingReport_KpiSaleEmployeetDTO.UserName;
+            this.DisplayName = KpiProductGroupingReport_KpiSaleEmployeetDTO.DisplayName;
+            this.Contents = KpiProductGroupingReport_KpiSaleEmployeetDTO.Contents == null ? null : KpiProductGroupingReport_KpiSaleEmployeetDTO.Contents
+                .Select(x => new KpiProductGroupingReport_KpiProductGroupingContentExportDTO(x)).ToList();
+        }
+    }
+
+    public class KpiProductGroupingReport_KpiProductGroupingContentExportDTO : DataDTO
+    {
+        public long STT { get; set; }
+        public string ProductGroupingCode { get; set; }
+        public string ProductGroupingName { get; set; }
 
         //Sản lượng theo đơn hàng gián tiếp
         public string IndirectQuantityPlanned { get; set; }
@@ -65,11 +83,11 @@ namespace DMS.Rpc.kpi_tracking.kpi_product_grouping_report
         public string DirectStore { get; set; }
         public string DirectStoreRatio { get; set; }
 
-        public KpiProductGroupingReport_LineDTO(KpiProductGroupingReport_KpiProductGroupingContentDTO KpiProductGroupingReport_KpiProductGroupingContentDTO)
+        public KpiProductGroupingReport_KpiProductGroupingContentExportDTO(KpiProductGroupingReport_KpiProductGroupingContentDTO KpiProductGroupingReport_KpiProductGroupingContentDTO)
         {
             this.STT = KpiProductGroupingReport_KpiProductGroupingContentDTO.STT;
-            this.ItemCode = KpiProductGroupingReport_KpiProductGroupingContentDTO.ItemCode;
-            this.ItemName = KpiProductGroupingReport_KpiProductGroupingContentDTO.ItemName;
+            this.ProductGroupingCode = KpiProductGroupingReport_KpiProductGroupingContentDTO.ProductGroupingCode;
+            this.ProductGroupingName = KpiProductGroupingReport_KpiProductGroupingContentDTO.ProductGroupingName;
             this.IndirectQuantityPlanned = KpiProductGroupingReport_KpiProductGroupingContentDTO.IndirectQuantityPlanned == null ? "" : ((long)KpiProductGroupingReport_KpiProductGroupingContentDTO.IndirectQuantityPlanned).ToString();
             this.IndirectQuantity = KpiProductGroupingReport_KpiProductGroupingContentDTO.IndirectQuantity == null ? "" : KpiProductGroupingReport_KpiProductGroupingContentDTO.IndirectQuantity.ToString();
             this.IndirectQuantityRatio = KpiProductGroupingReport_KpiProductGroupingContentDTO.IndirectQuantityRatio == null ? "" : KpiProductGroupingReport_KpiProductGroupingContentDTO.IndirectQuantityRatio.ToString();

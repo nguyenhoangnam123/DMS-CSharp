@@ -17,6 +17,8 @@ using DMS.Services.MProductGrouping;
 using DMS.Helpers;
 using System.Runtime.InteropServices;
 using Microsoft.EntityFrameworkCore;
+using System.IO;
+using System.Dynamic;
 
 namespace DMS.Rpc.kpi_tracking.kpi_product_grouping_report
 {
@@ -485,7 +487,53 @@ namespace DMS.Rpc.kpi_tracking.kpi_product_grouping_report
         [Route(KpiProductGroupingReportRoute.Export), HttpPost]
         public async Task<ActionResult> Export([FromBody] KpiProductGroupingReport_KpiProductGroupingReportFilterDTO KpiProductGroupingReport_KpiProductGroupingReportFilterDTO)
         {
-            return null;
+            #region validate dữ liệu filter bắt buộc có 
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+            if (KpiProductGroupingReport_KpiProductGroupingReportFilterDTO.KpiPeriodId?.Equal.HasValue == false)
+                return BadRequest(new { message = "Chưa chọn kì KPI" });
+            if (KpiProductGroupingReport_KpiProductGroupingReportFilterDTO.KpiYearId?.Equal.HasValue == false)
+                return BadRequest(new { message = "Chưa chọn năm KPI" });
+            if (KpiProductGroupingReport_KpiProductGroupingReportFilterDTO.KpiProductGroupingTypeId?.Equal.HasValue == false)
+                return BadRequest(new { message = "Chưa chọn loại KPI" });
+            #endregion
+
+            #region tính thời gian bắt đầu, kết thúc, lấy ra Id nhân viên và orgUnit từ filter
+            var KpiPeriod = KpiPeriodEnum.KpiPeriodEnumList.Where(x => x.Id == KpiProductGroupingReport_KpiProductGroupingReportFilterDTO.KpiPeriodId.Equal.Value).FirstOrDefault();
+            var KpiYear = KpiYearEnum.KpiYearEnumList.Where(x => x.Id == KpiProductGroupingReport_KpiProductGroupingReportFilterDTO.KpiYearId.Equal.Value).FirstOrDefault();
+            var KpiProductGroupingCriteriaType = KpiItemTypeEnum.KpiItemTypeEnumList.Where(x => x.Id == KpiProductGroupingReport_KpiProductGroupingReportFilterDTO.KpiProductGroupingTypeId.Equal.Value).FirstOrDefault();
+
+            KpiProductGroupingReport_KpiProductGroupingReportFilterDTO.Skip = 0;
+            KpiProductGroupingReport_KpiProductGroupingReportFilterDTO.Take = int.MaxValue;
+            List<KpiProductGroupingReport_KpiProductGroupingReportDTO> KpiProductGroupingReport_KpiProductGroupingReportDTOs = (await List(KpiProductGroupingReport_KpiProductGroupingReportFilterDTO)).Value;
+            #endregion
+
+            long stt = 1;
+            foreach (KpiProductGroupingReport_KpiProductGroupingReportDTO KpiProductGroupingReport_KpiProductGroupingReportDTO in KpiProductGroupingReport_KpiProductGroupingReportDTOs)
+            {
+                foreach (var Employee in KpiProductGroupingReport_KpiProductGroupingReportDTO.SaleEmployees)
+                {
+                    Employee.STT = stt;
+                    stt++;
+                }
+            }
+
+            List<KpiProductGroupingReport_ExportDTO> KpiProductGroupingReport_ExportDTOs = KpiProductGroupingReport_KpiProductGroupingReportDTOs?.Select(x => new KpiProductGroupingReport_ExportDTO(x)).ToList();
+            string path = "Templates/Kpi_Product_Grouping_Report.xlsx";
+            byte[] arr = System.IO.File.ReadAllBytes(path);
+            MemoryStream input = new MemoryStream(arr);
+            MemoryStream output = new MemoryStream();
+            dynamic Data = new ExpandoObject();
+            Data.KpiPeriod = KpiPeriod.Name;
+            Data.KpiYear = KpiYear.Name;
+            Data.KpiProductGroupingType = KpiProductGroupingCriteriaType.Name;
+            Data.KpiItemReports = KpiProductGroupingReport_ExportDTOs;
+            using (var document = StaticParams.DocumentFactory.Open(input, output, "xlsx"))
+            {
+                document.Process(Data);
+            };
+
+            return File(output.ToArray(), "application/octet-stream", "KpiProductGroupingReport.xlsx");
         }
 
         private Tuple<DateTime, DateTime> DateTimeConvert(long KpiPeriodId, long KpiYearId)

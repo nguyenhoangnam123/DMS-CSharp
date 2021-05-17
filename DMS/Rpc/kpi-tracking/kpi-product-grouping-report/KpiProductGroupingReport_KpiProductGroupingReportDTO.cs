@@ -14,6 +14,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_product_grouping_report
 
     public class KpiProductGroupingReport_KpiSaleEmployeetDTO : DataDTO
     {
+        public long STT { get; set; }
         public long Id { get; set; }
         public long OrganizationId { get; set; }
         public string UserName {get; set; }
