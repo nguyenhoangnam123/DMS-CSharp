@@ -449,6 +449,22 @@ namespace DMS.Rpc.kpi_tracking.kpi_product_grouping_report
                             Content.ProductGroupingCode = ProductGrouping.Code;
                             Content.ProductGroupingName = ProductGrouping.Name;
 
+                            List<KpiProductGroupingReport_KpiProductGroupingContentCriteriaMappingDTO> SubContentCriteriaMappings = ContentCriteriaMappings
+                                .Where(x => x.ProductGroupingId == ProductGrouping.Id)
+                                .ToList();
+                            List<long> SubContentIds = SubContentCriteriaMappings.Select(x => x.KpiProductGroupingContentId)
+                                .Distinct()
+                                .ToList();
+                            List<long> SubItemIds = KpiProductGroupingContentItemMappingDAOs.Where(x => SubContentIds.Contains(x.KpiProductGroupingContentId))
+                                .Select(x => x.ItemId)
+                                .Distinct()
+                                .ToList();
+                            List<IndirectSalesOrderTransactionDAO> SubIndirectTransactions = IndirectTransactionDAOs
+                                .Where(x => x.SalesEmployeeId == Employee.Id)
+                                .Where(x => ItemIds.Contains(x.ItemId))
+                                .ToList(); // lay transaction don gian tiep theo SalesEmployee va Item
+
+                            #region thống kê doanh thu đơn gián tiếp
                             Content.IndirectRevenuePlanned = ContentCriteriaMappings
                                 .Where(x => x.ProductGroupingId == ProductGrouping.Id)
                                 .Where(x => x.KpiProductGroupingCriteriaId == KpiProductGroupingCriteriaEnum.INDIRECT_REVENUE.Id)
@@ -457,20 +473,6 @@ namespace DMS.Rpc.kpi_tracking.kpi_product_grouping_report
                                 .FirstOrDefault(); // lấy ra giá trị kế hoạch theo nhóm sản phẩm, user và loại kpi
                             if (Content.IndirectRevenuePlanned.HasValue)
                             {
-                                List<KpiProductGroupingReport_KpiProductGroupingContentCriteriaMappingDTO> SubContentCriteriaMappings = ContentCriteriaMappings
-                                    .Where(x => x.ProductGroupingId == ProductGrouping.Id)
-                                    .ToList();
-                                List<long> SubContentIds = SubContentCriteriaMappings.Select(x => x.KpiProductGroupingContentId)
-                                    .Distinct()
-                                    .ToList();
-                                List<long> SubItemIds = KpiProductGroupingContentItemMappingDAOs.Where(x => SubContentIds.Contains(x.KpiProductGroupingContentId))
-                                    .Select(x => x.ItemId)
-                                    .Distinct()
-                                    .ToList();
-                                List<IndirectSalesOrderTransactionDAO> SubIndirectTransactions = IndirectTransactionDAOs
-                                    .Where(x => x.SalesEmployeeId == Employee.Id)
-                                    .Where(x => ItemIds.Contains(x.ItemId))
-                                    .ToList(); // lay transaction don gian tiep theo SalesEmployee va Item
                                 Content.IndirectRevenue = SubIndirectTransactions
                                     .Where(x => x.Revenue.HasValue)
                                     .Sum(x => x.Revenue);
@@ -479,6 +481,28 @@ namespace DMS.Rpc.kpi_tracking.kpi_product_grouping_report
                                     null : (decimal?)
                                     Math.Round((Content.IndirectRevenue.Value / Content.IndirectRevenuePlanned.Value) * 100, 2);
                             }
+                            #endregion
+
+                            #region thống kê số đại lý đơn gián tiếp
+                            Content.IndirectStorePlanned = ContentCriteriaMappings
+                                .Where(x => x.ProductGroupingId == ProductGrouping.Id)
+                                .Where(x => x.KpiProductGroupingCriteriaId == KpiProductGroupingCriteriaEnum.INDIRECT_STORE.Id)
+                                .Where(x => x.SaleEmployeeId == Employee.Id)
+                                .Select(x => x.Value)
+                                .FirstOrDefault(); // lấy ra giá trị kế hoạch theo nhóm sản phẩm, user và loại kpi
+
+                            if(Content.IndirectStorePlanned.HasValue)
+                            {
+                                var BuyStoreIds = SubIndirectTransactions
+                                    .Select(x => x.BuyerStoreId)
+                                    .Distinct().ToList();
+                                Content.StoreIndirectIds = new HashSet<long>(BuyStoreIds);
+                                Content.IndirectStoreRatio = Content.IndirectStorePlanned == 0 || Content.IndirectStorePlanned == null ?
+                                    null : (decimal?)
+                                    Math.Round((Content.IndirectRevenue.Value / Content.IndirectRevenuePlanned.Value) * 100, 2);
+                            }
+                            #endregion
+
                             Employee.Contents.Add(Content); // thêm content
                         }
                     }
@@ -500,18 +524,24 @@ namespace DMS.Rpc.kpi_tracking.kpi_product_grouping_report
             #region validate dữ liệu filter bắt buộc có 
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            if (KpiProductGroupingReport_KpiProductGroupingReportFilterDTO.KpiPeriodId?.Equal.HasValue == false)
+            if (KpiProductGroupingReport_KpiProductGroupingReportFilterDTO.KpiPeriodId?.Equal == null)
                 return BadRequest(new { message = "Chưa chọn kì KPI" });
-            if (KpiProductGroupingReport_KpiProductGroupingReportFilterDTO.KpiYearId?.Equal.HasValue == false)
+            if (KpiProductGroupingReport_KpiProductGroupingReportFilterDTO.KpiYearId?.Equal == null)
                 return BadRequest(new { message = "Chưa chọn năm KPI" });
-            if (KpiProductGroupingReport_KpiProductGroupingReportFilterDTO.KpiProductGroupingTypeId?.Equal.HasValue == false)
+            if (KpiProductGroupingReport_KpiProductGroupingReportFilterDTO.KpiProductGroupingTypeId?.Equal == null)
                 return BadRequest(new { message = "Chưa chọn loại KPI" });
             #endregion
 
             #region tính thời gian bắt đầu, kết thúc, lấy ra Id nhân viên và orgUnit từ filter
-            var KpiPeriod = KpiPeriodEnum.KpiPeriodEnumList.Where(x => x.Id == KpiProductGroupingReport_KpiProductGroupingReportFilterDTO.KpiPeriodId.Equal.Value).FirstOrDefault();
-            var KpiYear = KpiYearEnum.KpiYearEnumList.Where(x => x.Id == KpiProductGroupingReport_KpiProductGroupingReportFilterDTO.KpiYearId.Equal.Value).FirstOrDefault();
-            var KpiProductGroupingType = KpiProductGroupingTypeEnum.KpiProductGroupingTypeEnumList.Where(x => x.Id == KpiProductGroupingReport_KpiProductGroupingReportFilterDTO.KpiProductGroupingTypeId.Equal.Value).FirstOrDefault();
+            var KpiPeriod = KpiPeriodEnum.KpiPeriodEnumList
+                .Where(x => x.Id == KpiProductGroupingReport_KpiProductGroupingReportFilterDTO.KpiPeriodId.Equal.Value)
+                .FirstOrDefault();
+            var KpiYear = KpiYearEnum.KpiYearEnumList
+                .Where(x => x.Id == KpiProductGroupingReport_KpiProductGroupingReportFilterDTO.KpiYearId.Equal.Value)
+                .FirstOrDefault();
+            var KpiProductGroupingType = KpiProductGroupingTypeEnum.KpiProductGroupingTypeEnumList
+                .Where(x => x.Id == KpiProductGroupingReport_KpiProductGroupingReportFilterDTO.KpiProductGroupingTypeId.Equal.Value)
+                .FirstOrDefault();
 
             KpiProductGroupingReport_KpiProductGroupingReportFilterDTO.Skip = 0;
             KpiProductGroupingReport_KpiProductGroupingReportFilterDTO.Take = int.MaxValue;
