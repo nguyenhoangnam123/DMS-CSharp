@@ -83,6 +83,7 @@ namespace DMS.Rpc.kpi_product_grouping
             ItemFilter.ProductGroupingId = KpiProductGrouping_ItemFilterDTO.ProductGroupingId;
             ItemFilter.ProductTypeId = KpiProductGrouping_ItemFilterDTO.ProductTypeId;
             ItemFilter.BrandId = KpiProductGrouping_ItemFilterDTO.BrandId;
+            ItemFilter.IsNew = KpiProductGrouping_ItemFilterDTO.IsNew;
 
             List<Item> Items = await ItemService.List(ItemFilter);
             List<KpiProductGrouping_ItemDTO> KpiProductGrouping_ItemDTOs = Items
@@ -104,6 +105,7 @@ namespace DMS.Rpc.kpi_product_grouping
             ItemFilter.ProductGroupingId = KpiProductGrouping_ItemFilterDTO.ProductGroupingId;
             ItemFilter.ProductTypeId = KpiProductGrouping_ItemFilterDTO.ProductTypeId;
             ItemFilter.BrandId = KpiProductGrouping_ItemFilterDTO.BrandId;
+            ItemFilter.IsNew = KpiProductGrouping_ItemFilterDTO.IsNew;
 
             int Count = await ItemService.Count(ItemFilter);
             return Count;

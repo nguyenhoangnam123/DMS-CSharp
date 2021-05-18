@@ -55,6 +55,7 @@ namespace DMS.Rpc.kpi_product_grouping
         public IdFilter StatusId { get; set; }
         public IdFilter StoreId { get; set; }
         public IdFilter SalesEmployeeId { get; set; }
+        public bool? IsNew { get; set; }
         public string Search { get; set; }
         public ItemOrder OrderBy { get; set; }
     }
