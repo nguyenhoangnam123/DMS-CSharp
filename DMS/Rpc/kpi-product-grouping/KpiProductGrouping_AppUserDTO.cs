@@ -131,7 +131,7 @@ namespace DMS.Rpc.kpi_product_grouping
 
         public IdFilter KpiYearId { get; set; }
         public IdFilter KpiPeriodId { get; set; }
-        public IdFilter KpiItemTypeId { get; set; }
+        public IdFilter KpiProductGroupingTypeId { get; set; }
 
         public AppUserOrder OrderBy { get; set; }
     }

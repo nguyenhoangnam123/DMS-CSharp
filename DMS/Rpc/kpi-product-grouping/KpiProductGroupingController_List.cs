@@ -29,7 +29,7 @@ namespace DMS.Rpc.kpi_product_grouping
                 if (AppUserFilter.Id.In == null) AppUserFilter.Id.In = new List<long>();
                 AppUserFilter.Id.In.AddRange(await FilterAppUser(AppUserService, OrganizationService, CurrentContext));
             }
-            return await KpiProductGroupingService.CountAppUser(AppUserFilter, KpiProductGrouping_AppUserFilterDTO.KpiYearId, KpiProductGrouping_AppUserFilterDTO.KpiPeriodId, KpiProductGrouping_AppUserFilterDTO.KpiItemTypeId); ;
+            return await KpiProductGroupingService.CountAppUser(AppUserFilter, KpiProductGrouping_AppUserFilterDTO.KpiYearId, KpiProductGrouping_AppUserFilterDTO.KpiPeriodId, KpiProductGrouping_AppUserFilterDTO.KpiProductGroupingTypeId); ;
         }
 
         [Route(KpiProductGroupingRoute.ListAppUser), HttpPost]
@@ -58,7 +58,7 @@ namespace DMS.Rpc.kpi_product_grouping
                 AppUserFilter.Id.In.AddRange(await FilterAppUser(AppUserService, OrganizationService, CurrentContext));
             }
 
-            List<AppUser> AppUsers = await KpiProductGroupingService.ListAppUser(AppUserFilter, KpiProductGrouping_AppUserFilterDTO.KpiYearId, KpiProductGrouping_AppUserFilterDTO.KpiPeriodId, KpiProductGrouping_AppUserFilterDTO.KpiItemTypeId);
+            List<AppUser> AppUsers = await KpiProductGroupingService.ListAppUser(AppUserFilter, KpiProductGrouping_AppUserFilterDTO.KpiYearId, KpiProductGrouping_AppUserFilterDTO.KpiPeriodId, KpiProductGrouping_AppUserFilterDTO.KpiProductGroupingTypeId);
             List<KpiProductGrouping_AppUserDTO> KpiProductGrouping_AppUserDTOs = AppUsers
                 .Select(x => new KpiProductGrouping_AppUserDTO(x)).ToList();
             return KpiProductGrouping_AppUserDTOs;
