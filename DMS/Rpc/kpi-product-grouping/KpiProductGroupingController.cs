@@ -28,6 +28,7 @@ using System.Collections.Generic;
 using System.Dynamic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace DMS.Rpc.kpi_product_grouping
@@ -247,128 +248,388 @@ namespace DMS.Rpc.kpi_product_grouping
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            AppUserFilter CreatorFilter = new AppUserFilter
+
+            #region validate file
+            StringBuilder errorContent = new StringBuilder();
+            FileInfo FileInfo = new FileInfo(file.FileName);
+            if (!FileInfo.Extension.Equals(".xlsx"))
             {
-                Skip = 0,
-                Take = int.MaxValue,
-                Selects = AppUserSelect.ALL
-            };
-            List<AppUser> Creators = await AppUserService.List(CreatorFilter);
+                errorContent.AppendLine("Định dạng file không hợp lệ");
+                return BadRequest(errorContent.ToString());
+            }
+
+            GenericEnum KpiYear;
+            GenericEnum KpiPeriod;
+            using (ExcelPackage excelPackage = new ExcelPackage(file.OpenReadStream()))
+            {
+                ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets["KPI san pham"];
+                if (worksheet == null)
+                {
+                    errorContent.AppendLine("File không đúng biểu mẫu import");
+                    return BadRequest(errorContent.ToString());
+                }
+
+                string KpiPeriodValue = worksheet.Cells[2, 3].Value?.ToString();
+
+                if (!string.IsNullOrWhiteSpace(KpiPeriodValue))
+                    KpiPeriod = KpiPeriodEnum.KpiPeriodEnumList.Where(x => x.Name == KpiPeriodValue).FirstOrDefault();
+                else
+                {
+                    errorContent.AppendLine("Chưa chọn kỳ Kpi hoặc kỳ Kpi không hợp lệ");
+                    return BadRequest(errorContent.ToString());
+                }
+
+                string KpiYearValue = worksheet.Cells[2, 5].Value?.ToString();
+
+                if (!string.IsNullOrWhiteSpace(KpiYearValue))
+                    KpiYear = KpiYearEnum.KpiYearEnumList.Where(x => x.Name == KpiYearValue.Trim()).FirstOrDefault();
+                else
+                {
+                    errorContent.AppendLine("Chưa chọn năm Kpi hoặc năm Kpi không hợp lệ");
+                    return BadRequest(errorContent.ToString());
+                }
+            }
+
+            HashSet<long> KpiPeriodIds = new HashSet<long>();
+            long CurrentMonth = 100 + StaticParams.DateTimeNow.Month;
+            long CurrentQuater = 0;
+            if (Enums.KpiPeriodEnum.PERIOD_MONTH01.Id <= CurrentMonth && CurrentMonth <= Enums.KpiPeriodEnum.PERIOD_MONTH03.Id)
+                CurrentQuater = Enums.KpiPeriodEnum.PERIOD_QUATER01.Id;
+            if (Enums.KpiPeriodEnum.PERIOD_MONTH04.Id <= CurrentMonth && CurrentMonth <= Enums.KpiPeriodEnum.PERIOD_MONTH06.Id)
+                CurrentQuater = Enums.KpiPeriodEnum.PERIOD_QUATER02.Id;
+            if (Enums.KpiPeriodEnum.PERIOD_MONTH07.Id <= CurrentMonth && CurrentMonth <= Enums.KpiPeriodEnum.PERIOD_MONTH09.Id)
+                CurrentQuater = Enums.KpiPeriodEnum.PERIOD_QUATER03.Id;
+            if (Enums.KpiPeriodEnum.PERIOD_MONTH10.Id <= CurrentMonth && CurrentMonth <= Enums.KpiPeriodEnum.PERIOD_MONTH12.Id)
+                CurrentQuater = Enums.KpiPeriodEnum.PERIOD_QUATER04.Id;
+            if (KpiYear.Id >= StaticParams.DateTimeNow.Year)
+            {
+                KpiPeriodIds.Add(KpiYear.Id);
+            }
+            foreach (var kpiPeriod in KpiPeriodEnum.KpiPeriodEnumList)
+            {
+                if (CurrentMonth <= kpiPeriod.Id && kpiPeriod.Id <= Enums.KpiPeriodEnum.PERIOD_MONTH12.Id)
+                    KpiPeriodIds.Add(kpiPeriod.Id);
+                if (CurrentQuater <= kpiPeriod.Id && kpiPeriod.Id <= Enums.KpiPeriodEnum.PERIOD_QUATER04.Id)
+                    KpiPeriodIds.Add(kpiPeriod.Id);
+            }
+
+            if (!KpiPeriodIds.Contains(KpiPeriod.Id))
+            {
+                errorContent.AppendLine("Không thể nhập Kpi cho các kỳ trong quá khứ");
+                return BadRequest(errorContent.ToString());
+            }
+            #endregion
+
+            #region filter dữ liệu
             AppUserFilter EmployeeFilter = new AppUserFilter
             {
                 Skip = 0,
                 Take = int.MaxValue,
-                Selects = AppUserSelect.ALL
+                Selects = AppUserSelect.Id | AppUserSelect.Username | AppUserSelect.DisplayName | AppUserSelect.Organization,
+                Id = new IdFilter { }
             };
+
+            EmployeeFilter.Id.In = await FilterAppUser(AppUserService, OrganizationService, CurrentContext);
             List<AppUser> Employees = await AppUserService.List(EmployeeFilter);
-            KpiPeriodFilter KpiPeriodFilter = new KpiPeriodFilter
+            var AppUserIds = Employees.Select(x => x.Id).ToList();
+
+            List<KpiProductGrouping> KpiProductGroupings = await KpiProductGroupingService.List(new KpiProductGroupingFilter
             {
                 Skip = 0,
                 Take = int.MaxValue,
-                Selects = KpiPeriodSelect.ALL
-            };
-            List<KpiPeriod> KpiPeriods = await KpiPeriodService.List(KpiPeriodFilter);
-            KpiProductGroupingTypeFilter KpiProductGroupingTypeFilter = new KpiProductGroupingTypeFilter
+                EmployeeId = new IdFilter { In = AppUserIds },
+                KpiYearId = new IdFilter { Equal = KpiYear.Id },
+                KpiPeriodId = new IdFilter { Equal = KpiPeriod.Id },
+                Selects = KpiProductGroupingSelect.ALL
+            });
+            List<long> KpiProductGroupingIds = KpiProductGroupings.Select(x => x.Id).ToList();
+            List<KpiProductGroupingContent> KpiProductGroupingContents = await KpiProductGroupingContentService.List(new KpiProductGroupingContentFilter
             {
                 Skip = 0,
                 Take = int.MaxValue,
-                Selects = KpiProductGroupingTypeSelect.ALL
-            };
-            List<KpiProductGroupingType> KpiProductGroupingTypes = await KpiProductGroupingTypeService.List(KpiProductGroupingTypeFilter);
-            StatusFilter StatusFilter = new StatusFilter
+                Selects = KpiProductGroupingContentSelect.ALL,
+                KpiProductGroupingId = new IdFilter { In = KpiProductGroupingIds }
+            });
+            Parallel.ForEach(KpiProductGroupings, KpiProductGrouping =>
+            {
+                KpiProductGrouping.KpiProductGroupingContents = KpiProductGroupingContents.Where(x => x.KpiProductGroupingId == KpiProductGrouping.Id).ToList();
+            });
+            List<ProductGrouping> ProductGroupings = await ProductGroupingService.List(new ProductGroupingFilter
             {
                 Skip = 0,
                 Take = int.MaxValue,
-                Selects = StatusSelect.ALL
-            };
-            List<Status> Statuses = await StatusService.List(StatusFilter);
-            List<KpiProductGrouping> KpiProductGroupings = new List<KpiProductGrouping>();
+                Selects = ProductGroupingSelect.Id | ProductGroupingSelect.Code | ProductGroupingSelect.Name,
+            }); // lay ra tat ca productGrouping de validate
+
+            var item_query = from i in DataContext.Item
+                             join pr in DataContext.Product on i.ProductId equals pr.Id
+                             join prgm in DataContext.ProductProductGroupingMapping on pr.Id equals prgm.ProductId
+                             join prg in DataContext.ProductGrouping on prgm.ProductGroupingId equals prg.Id
+                             select new KpiProductGrouping_ItemImportDTO
+                             {
+                                 Id = i.Id,
+                                 Code = i.Code,
+                                 Name = i.Name,
+                                 ProductGroupingId = prg.Id,
+                             };
+            List<KpiProductGrouping_ItemImportDTO> Items = await item_query.ToListAsync();
+            #endregion
+
+            #region lấy ra dữ liệu
+            var AppUser = await AppUserService.Get(CurrentContext.UserId);
+            List<KpiProductGrouping_ImportDTO> KpiProductGrouping_ImportDTOs = new List<KpiProductGrouping_ImportDTO>();
             using (ExcelPackage excelPackage = new ExcelPackage(file.OpenReadStream()))
             {
-                ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets.FirstOrDefault();
-                if (worksheet == null)
-                    return Ok(KpiProductGroupings);
-                int StartColumn = 1;
-                int StartRow = 1;
-                int IdColumn = 0 + StartColumn;
-                int OrganizationIdColumn = 1 + StartColumn;
-                int KpiYearIdColumn = 2 + StartColumn;
-                int KpiPeriodIdColumn = 3 + StartColumn;
-                int KpiProductGroupingTypeIdColumn = 4 + StartColumn;
-                int StatusIdColumn = 5 + StartColumn;
-                int EmployeeIdColumn = 6 + StartColumn;
-                int CreatorIdColumn = 7 + StartColumn;
-                int RowIdColumn = 11 + StartColumn;
+                ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets["KPI nhom san pham"];
+
+                int StartColumn = 1; // cot bat dau tinh du lieu
+                int StartRow = 5; // dong bat dau tinh du lieu
+                int UsernameColumn = 0 + StartColumn;
+                int KpiProductGroupingTypeColumnValue = 2 + StartColumn;
+                int ProductGroupingCodeColumn = 3 + StartColumn;
+                int ItemCodeColumn = 4 + StartColumn;
+                int RevenueColumn = 5 + StartColumn;
+                int StoreColumn = 6 + StartColumn;
 
                 for (int i = StartRow; i <= worksheet.Dimension.End.Row; i++)
                 {
-                    if (string.IsNullOrEmpty(worksheet.Cells[i + StartRow, StartColumn].Value?.ToString()))
+                    string UsernameValue = worksheet.Cells[i, UsernameColumn].Value?.ToString();
+                    string KpiProductGroupingTypeValue = worksheet.Cells[i, KpiProductGroupingTypeColumnValue].Value?.ToString();
+                    string ProductGroupingCodeValue = worksheet.Cells[i, ProductGroupingCodeColumn].Value?.ToString();
+                    string ItemCodeValue = worksheet.Cells[i, ItemCodeColumn].Value?.ToString();
+
+                    KpiProductGrouping_ImportDTO KpiProductGrouping_ImportDTO = new KpiProductGrouping_ImportDTO();
+
+                    #region validate nhan vien
+                    if (UsernameValue != null && UsernameValue.ToLower() == "END".ToLower())
                         break;
-                    string IdValue = worksheet.Cells[i + StartRow, IdColumn].Value?.ToString();
-                    string OrganizationIdValue = worksheet.Cells[i + StartRow, OrganizationIdColumn].Value?.ToString();
-                    string KpiYearIdValue = worksheet.Cells[i + StartRow, KpiYearIdColumn].Value?.ToString();
-                    string KpiPeriodIdValue = worksheet.Cells[i + StartRow, KpiPeriodIdColumn].Value?.ToString();
-                    string KpiProductGroupingTypeIdValue = worksheet.Cells[i + StartRow, KpiProductGroupingTypeIdColumn].Value?.ToString();
-                    string StatusIdValue = worksheet.Cells[i + StartRow, StatusIdColumn].Value?.ToString();
-                    string EmployeeIdValue = worksheet.Cells[i + StartRow, EmployeeIdColumn].Value?.ToString();
-                    string CreatorIdValue = worksheet.Cells[i + StartRow, CreatorIdColumn].Value?.ToString();
-                    string RowIdValue = worksheet.Cells[i + StartRow, RowIdColumn].Value?.ToString();
+                    else if (!string.IsNullOrWhiteSpace(UsernameValue) && string.IsNullOrWhiteSpace(ItemCodeValue))
+                    {
+                        continue;
+                    }
 
-                    KpiProductGrouping KpiProductGrouping = new KpiProductGrouping();
-                    AppUser Creator = Creators.Where(x => x.Id.ToString() == CreatorIdValue).FirstOrDefault();
-                    KpiProductGrouping.CreatorId = Creator == null ? 0 : Creator.Id;
-                    KpiProductGrouping.Creator = Creator;
-                    AppUser Employee = Employees.Where(x => x.Id.ToString() == EmployeeIdValue).FirstOrDefault();
-                    KpiProductGrouping.EmployeeId = Employee == null ? 0 : Employee.Id;
-                    KpiProductGrouping.Employee = Employee;
-                    KpiPeriod KpiPeriod = KpiPeriods.Where(x => x.Id.ToString() == KpiPeriodIdValue).FirstOrDefault();
-                    KpiProductGrouping.KpiPeriodId = KpiPeriod == null ? 0 : KpiPeriod.Id;
-                    KpiProductGrouping.KpiPeriod = KpiPeriod;
-                    KpiProductGroupingType KpiProductGroupingType = KpiProductGroupingTypes.Where(x => x.Id.ToString() == KpiProductGroupingTypeIdValue).FirstOrDefault();
-                    KpiProductGrouping.KpiProductGroupingTypeId = KpiProductGroupingType == null ? 0 : KpiProductGroupingType.Id;
-                    KpiProductGrouping.KpiProductGroupingType = KpiProductGroupingType;
-                    Status Status = Statuses.Where(x => x.Id.ToString() == StatusIdValue).FirstOrDefault();
-                    KpiProductGrouping.StatusId = Status == null ? 0 : Status.Id;
-                    KpiProductGrouping.Status = Status;
+                    if (string.IsNullOrWhiteSpace(UsernameValue) && i != worksheet.Dimension.End.Row)
+                    {
+                        errorContent.AppendLine($"Lỗi dòng thứ {i}: Chưa nhập mã nhân viên");
+                        continue;
+                    }
+                    else if (string.IsNullOrWhiteSpace(UsernameValue) && i == worksheet.Dimension.End.Row)
+                        break;
 
-                    KpiProductGroupings.Add(KpiProductGrouping);
+                    AppUser Employee = Employees.Where(x => x.Username.ToLower() == UsernameValue.ToLower()).FirstOrDefault();
+                    if (Employee == null)
+                    {
+                        errorContent.AppendLine($"Lỗi dòng thứ {i}: Nhân viên không tồn tại");
+                        continue;
+                    }
+                    else
+                    {
+                        KpiProductGrouping_ImportDTO.EmployeeId = Employee.Id;
+                    }
+                    #endregion
+
+                    #region validate loai kpi
+                    GenericEnum KpiProductGroupingType;
+                    if (!string.IsNullOrWhiteSpace(KpiProductGroupingTypeValue))
+                    {
+                        KpiProductGroupingType = KpiProductGroupingTypeEnum.KpiProductGroupingTypeEnumList.Where(x => x.Name == KpiProductGroupingTypeValue.Trim()).FirstOrDefault();
+                        if (KpiProductGroupingType == null)
+                        {
+                            errorContent.AppendLine($"Lỗi dòng thứ {i + 1}: Loại KPI sản phẩm không tồn tại");
+                            continue;
+                        }
+                        else
+                        {
+                            KpiProductGrouping_ImportDTO.KpiProductGroupingTypeId = KpiProductGroupingType.Id;
+                        }
+                    }
+                    else
+                    {
+                        errorContent.AppendLine($"Lỗi dòng thứ {i}: Chưa chọn loại KPI sản phẩm");
+                        continue;
+                    }
+                    #endregion
+
+                    #region validate nhom san pham va item
+                    ProductGrouping ProductGrouping;
+                    if (!string.IsNullOrWhiteSpace(ProductGroupingCodeValue))
+                    {
+                        ProductGrouping = ProductGroupings.Where(x => x.Code == ProductGroupingCodeValue.Trim()).FirstOrDefault();
+                        if (ProductGrouping == null)
+                        {
+                            errorContent.AppendLine($"Lỗi dòng thứ {i}: Nhóm sản phẩm không tồn tại");
+                            continue;
+                        }
+                        KpiProductGrouping_ImportDTO.ProductGroupingId = ProductGrouping.Id;
+                    }
+                    else
+                    {
+                        errorContent.AppendLine($"Lỗi dòng thứ {i}: Chưa chọn nhóm sản phẩm");
+                        continue;
+                    }
+
+                    KpiProductGrouping_ItemImportDTO Item;
+                    if (!string.IsNullOrWhiteSpace(ItemCodeValue))
+                    {
+                        Item = Items.Where(x => x.Code.ToLower() == ItemCodeValue.ToLower().Trim()).FirstOrDefault();
+                        if (Item == null)
+                        {
+                            errorContent.AppendLine($"Lỗi dòng thứ {i + 1}: Sản phẩm không tồn tại");
+                            continue;
+                        }
+                        if (ProductGrouping.Id != Item.ProductGroupingId)
+                        {
+                            errorContent.AppendLine($"Lỗi dòng thứ {i + 1}: Sản phẩm không thuộc nhóm sản phẩm");
+                            continue;
+                        }
+                        KpiProductGrouping_ImportDTO.ItemId = Item.Id;
+                    }
+
+                    #endregion
+
+                    KpiProductGrouping_ImportDTO.Stt = i;
+                    KpiProductGrouping_ImportDTO.Username = UsernameValue;
+                    KpiProductGrouping_ImportDTO.ProductGroupingCode = ProductGroupingCodeValue;
+                    KpiProductGrouping_ImportDTO.ItemCode = ItemCodeValue;
+                    KpiProductGrouping_ImportDTO.IndirectRevenue = worksheet.Cells[i, RevenueColumn].Value?.ToString();
+                    KpiProductGrouping_ImportDTO.IndirectStoreCounter = worksheet.Cells[i, StoreColumn].Value?.ToString();
+                    KpiProductGrouping_ImportDTO.KpiPeriodId = KpiPeriod.Id;
+                    KpiProductGrouping_ImportDTO.KpiYearId = KpiYear.Id;
+                    KpiProductGrouping_ImportDTOs.Add(KpiProductGrouping_ImportDTO);
                 }
             }
-            KpiProductGroupings = await KpiProductGroupingService.Import(KpiProductGroupings);
-            if (KpiProductGroupings.All(x => x.IsValidated))
-                return Ok(true);
-            else
+
+            Dictionary<long, StringBuilder> Errors = new Dictionary<long, StringBuilder>();
+            HashSet<KpiProductGrouping_RowDTO> KpiProductGrouping_RowDTOs = new HashSet<KpiProductGrouping_RowDTO>(KpiProductGroupings.Select(x => new KpiProductGrouping_RowDTO
             {
-                List<string> Errors = new List<string>();
-                for (int i = 0; i < KpiProductGroupings.Count; i++)
+                EmployeeId = x.EmployeeId,
+                KpiPeriodId = x.KpiPeriodId,
+                KpiYearId = x.KpiYearId,
+                KpiProductGroupingTypeId = x.KpiProductGroupingTypeId
+            }).ToList());
+            foreach (KpiProductGrouping_ImportDTO KpiProductGrouping_ImportDTO in KpiProductGrouping_ImportDTOs)
+            {
+                Errors.Add(KpiProductGrouping_ImportDTO.Stt, new StringBuilder(""));
+                KpiProductGrouping_ImportDTO.IsNew = false;
+                if (!KpiProductGrouping_RowDTOs.Contains(new KpiProductGrouping_RowDTO
                 {
-                    KpiProductGrouping KpiProductGrouping = KpiProductGroupings[i];
-                    if (!KpiProductGrouping.IsValidated)
+                    EmployeeId = KpiProductGrouping_ImportDTO.EmployeeId,
+                    KpiPeriodId = KpiProductGrouping_ImportDTO.KpiPeriodId,
+                    KpiYearId = KpiProductGrouping_ImportDTO.KpiYearId,
+                    KpiProductGroupingTypeId = KpiProductGrouping_ImportDTO.KpiProductGroupingTypeId
+                }))
+                {
+                    KpiProductGrouping_RowDTOs.Add(new KpiProductGrouping_RowDTO
                     {
-                        string Error = $"Dòng {i + 2} có lỗi:";
-                        if (KpiProductGrouping.Errors.ContainsKey(nameof(KpiProductGrouping.Id)))
-                            Error += KpiProductGrouping.Errors[nameof(KpiProductGrouping.Id)];
-                        if (KpiProductGrouping.Errors.ContainsKey(nameof(KpiProductGrouping.OrganizationId)))
-                            Error += KpiProductGrouping.Errors[nameof(KpiProductGrouping.OrganizationId)];
-                        if (KpiProductGrouping.Errors.ContainsKey(nameof(KpiProductGrouping.KpiYearId)))
-                            Error += KpiProductGrouping.Errors[nameof(KpiProductGrouping.KpiYearId)];
-                        if (KpiProductGrouping.Errors.ContainsKey(nameof(KpiProductGrouping.KpiPeriodId)))
-                            Error += KpiProductGrouping.Errors[nameof(KpiProductGrouping.KpiPeriodId)];
-                        if (KpiProductGrouping.Errors.ContainsKey(nameof(KpiProductGrouping.KpiProductGroupingTypeId)))
-                            Error += KpiProductGrouping.Errors[nameof(KpiProductGrouping.KpiProductGroupingTypeId)];
-                        if (KpiProductGrouping.Errors.ContainsKey(nameof(KpiProductGrouping.StatusId)))
-                            Error += KpiProductGrouping.Errors[nameof(KpiProductGrouping.StatusId)];
-                        if (KpiProductGrouping.Errors.ContainsKey(nameof(KpiProductGrouping.EmployeeId)))
-                            Error += KpiProductGrouping.Errors[nameof(KpiProductGrouping.EmployeeId)];
-                        if (KpiProductGrouping.Errors.ContainsKey(nameof(KpiProductGrouping.CreatorId)))
-                            Error += KpiProductGrouping.Errors[nameof(KpiProductGrouping.CreatorId)];
-                        if (KpiProductGrouping.Errors.ContainsKey(nameof(KpiProductGrouping.RowId)))
-                            Error += KpiProductGrouping.Errors[nameof(KpiProductGrouping.RowId)];
-                        Errors.Add(Error);
+                        EmployeeId = KpiProductGrouping_ImportDTO.EmployeeId,
+                        KpiPeriodId = KpiProductGrouping_ImportDTO.KpiPeriodId,
+                        KpiYearId = KpiProductGrouping_ImportDTO.KpiYearId,
+                        KpiProductGroupingTypeId = KpiProductGrouping_ImportDTO.KpiProductGroupingTypeId
+                    });
+                    KpiProductGrouping_ImportDTO.IsNew = true;
+                    var Employee = Employees
+                        .Where(x => x.Username.ToLower() == KpiProductGrouping_ImportDTO.Username.ToLower())
+                        .FirstOrDefault();
+                    KpiProductGrouping_ImportDTO.EmployeeId = Employee.Id;
+                    KpiProductGrouping_ImportDTO.OrganizationId = Employee.OrganizationId;
+                }
+            } // thiet lap kpiDTO, xac dinh xem kpi nao la them moi, kpi nao la cap nhat
+
+            foreach (KpiProductGrouping_ImportDTO KpiProductGrouping_ImportDTO in KpiProductGrouping_ImportDTOs)
+            {
+                if (KpiProductGrouping_ImportDTO.HasValue == false)
+                {
+                    Errors[KpiProductGrouping_ImportDTO.Stt].Append($"Lỗi dòng thứ {KpiProductGrouping_ImportDTO.Stt}: Chưa nhập chỉ tiêu");
+                    continue;
+                }
+                KpiProductGrouping KpiProductGrouping;
+                List<KpiProductGrouping_ItemImportDTO> SubItems = Items
+                            .Where(x => x.ProductGroupingId == KpiProductGrouping_ImportDTO.ProductGroupingId)
+                            .ToList();
+                if (KpiProductGrouping_ImportDTO.IsNew)
+                {
+                    KpiProductGrouping = new KpiProductGrouping();
+                    KpiProductGrouping.EmployeeId = KpiProductGrouping_ImportDTO.EmployeeId;
+                    KpiProductGrouping.OrganizationId = KpiProductGrouping_ImportDTO.OrganizationId;
+                    KpiProductGrouping.KpiPeriodId = KpiProductGrouping_ImportDTO.KpiPeriodId;
+                    KpiProductGrouping.KpiYearId = KpiProductGrouping_ImportDTO.KpiYearId;
+                    KpiProductGrouping.KpiProductGroupingTypeId = KpiProductGrouping_ImportDTO.KpiProductGroupingTypeId;
+                    KpiProductGrouping.RowId = Guid.NewGuid();
+                    KpiProductGrouping.KpiProductGroupingContents = new List<KpiProductGroupingContent>();
+                    KpiProductGrouping.KpiProductGroupingContents.Add(new KpiProductGroupingContent
+                    {
+                        ProductGroupingId = KpiProductGrouping_ImportDTO.ProductGroupingId,
+                        RowId = Guid.NewGuid(),
+                        KpiProductGroupingContentCriteriaMappings = KpiProductGroupingCriteriaEnum.KpiProductGroupingCriteriaEnumList.Select(x => new KpiProductGroupingContentCriteriaMapping
+                        {
+                            KpiProductGroupingCriteriaId = x.Id,
+                        }).ToList(),
+                        KpiProductGroupingContentItemMappings = SubItems.Select(x => new KpiProductGroupingContentItemMapping
+                        {
+                            ItemId = x.Id
+                        }).ToList()
+                    });
+                } // neu them moi Kpi
+                else
+                {
+                    KpiProductGrouping = KpiProductGroupings.Where(x => x.EmployeeId == KpiProductGrouping_ImportDTO.EmployeeId &&
+                    x.KpiPeriodId == KpiProductGrouping_ImportDTO.KpiPeriodId &&
+                    x.KpiYearId == KpiProductGrouping_ImportDTO.KpiYearId &&
+                    x.KpiProductGroupingTypeId == KpiProductGrouping_ImportDTO.KpiProductGroupingTypeId)
+                        .FirstOrDefault();
+                    var KpiProductGroupingContent = KpiProductGrouping.KpiProductGroupingContents
+                        .Where(x => x.KpiProductGroupingId == KpiProductGrouping_ImportDTO.ProductGroupingId)
+                        .FirstOrDefault();
+                    if (KpiProductGroupingContent == null)
+                    {
+                        KpiProductGrouping.KpiProductGroupingContents.Add(new KpiProductGroupingContent
+                        {
+                            ProductGroupingId = KpiProductGrouping_ImportDTO.ProductGroupingId,
+                            RowId = Guid.NewGuid(),
+                            KpiProductGroupingContentCriteriaMappings = KpiProductGroupingCriteriaEnum.KpiProductGroupingCriteriaEnumList.Select(x => new KpiProductGroupingContentCriteriaMapping
+                            {
+                                KpiProductGroupingCriteriaId = x.Id,
+                            }).ToList(),
+                            KpiProductGroupingContentItemMappings = SubItems.Select(x => new KpiProductGroupingContentItemMapping
+                            {
+                                ItemId = x.Id
+                            }).ToList()
+                        });
                     }
                 }
-                return BadRequest(Errors);
-            }
+                var Content = KpiProductGrouping.KpiProductGroupingContents
+                            .Where(x => x.KpiProductGroupingId == KpiProductGrouping_ImportDTO.ProductGroupingId)
+                            .FirstOrDefault();
+                if (Content != null)
+                {
+                    foreach(var KpiProductGroupingContentCriteriaMapping in Content.KpiProductGroupingContentCriteriaMappings)
+                    {
+                        if (long.TryParse(KpiProductGrouping_ImportDTO.IndirectRevenue, out long IndirectRevenue) && KpiProductGroupingContentCriteriaMapping.KpiProductGroupingCriteriaId == KpiProductGroupingCriteriaEnum.INDIRECT_REVENUE.Id)
+                        {
+                            KpiProductGroupingContentCriteriaMapping.Value = IndirectRevenue;
+                        }
+                        else if (long.TryParse(KpiProductGrouping_ImportDTO.IndirectStoreCounter, out long IndirectStoreCounter) && KpiProductGroupingContentCriteriaMapping.KpiProductGroupingCriteriaId == KpiProductGroupingCriteriaEnum.INDIRECT_STORE.Id)
+                        {
+                            KpiProductGroupingContentCriteriaMapping.Value = IndirectStoreCounter;
+                        }
+                    } // update list mapping content voi chi tieu
+                }
+
+                KpiProductGrouping.CreatorId = AppUser.Id;
+                KpiProductGrouping.StatusId = StatusEnum.ACTIVE.Id;
+            } // thiet lap Kpi, KpiContent tu DTOs
+
+            #endregion
+            if (errorContent.Length > 0)
+                return BadRequest(errorContent.ToString()); // tra ve loi khi lay du lieu
+            string error = string.Join("\n", Errors.Where(x => !string.IsNullOrWhiteSpace(x.Value.ToString())).Select(x => x.Value.ToString()).ToList());
+            if (!string.IsNullOrWhiteSpace(error))
+                return BadRequest(error);
+            KpiProductGroupings = await KpiProductGroupingService.Import(KpiProductGroupings);
+            List<KpiProductGrouping_KpiProductGroupingDTO> KpiProductGrouping_KpiProductGroupingDTOs = KpiProductGroupings
+                .Select(x => new KpiProductGrouping_KpiProductGroupingDTO(x))
+                .ToList();
+            return Ok(KpiProductGroupings);
         }
 
         [Route(KpiProductGroupingRoute.Export), HttpPost]
@@ -420,7 +681,8 @@ namespace DMS.Rpc.kpi_product_grouping
             List<KpiProductGroupingContentCriteriaMapping> kpiProductGroupingContentCriteriaMappings = KpiProductGroupingContents
                 .SelectMany(x => x.KpiProductGroupingContentCriteriaMappings)
                 .ToList(); // lay ra mapping content voi chi tieu
-            List<Organization> Organizations = await OrganizationService.List(new OrganizationFilter{ 
+            List<Organization> Organizations = await OrganizationService.List(new OrganizationFilter
+            {
                 Skip = 0,
                 Take = int.MaxValue,
                 Selects = OrganizationSelect.Id | OrganizationSelect.Name,
@@ -468,7 +730,7 @@ namespace DMS.Rpc.kpi_product_grouping
                     if (SubKpiProductGrouping != null)
                     {
                         KpiProductGrouping_AppUserExportDTO.KpiProductGroupingTypeName = SubKpiProductGrouping.KpiProductGroupingType.Name;
-                        List<KpiProductGroupingContent> SubContents =  KpiProductGroupingContents
+                        List<KpiProductGroupingContent> SubContents = KpiProductGroupingContents
                             .Where(x => x.KpiProductGroupingId == SubKpiProductGrouping.Id)
                             .ToList();
                         List<ProductGrouping> SubProductGroupings = SubContents
@@ -507,11 +769,11 @@ namespace DMS.Rpc.kpi_product_grouping
                                 List<KpiProductGroupingContentCriteriaMapping> SubCriteriaMappings = kpiProductGroupingContentCriteriaMappings
                                     .Where(x => x.KpiProductGroupingContentId == ItemMapping.KpiProductGroupingContentId)
                                     .ToList();
-                                if(SubCriteriaMappings != null && SubCriteriaMappings.Any())
+                                if (SubCriteriaMappings != null && SubCriteriaMappings.Any())
                                 {
-                                    foreach(var CriteriaMapping in SubCriteriaMappings)
+                                    foreach (var CriteriaMapping in SubCriteriaMappings)
                                     {
-                                        if(CriteriaMapping.KpiProductGroupingCriteriaId == KpiProductGroupingCriteriaEnum.INDIRECT_REVENUE.Id)
+                                        if (CriteriaMapping.KpiProductGroupingCriteriaId == KpiProductGroupingCriteriaEnum.INDIRECT_REVENUE.Id)
                                         {
                                             KpiProductGrouping_ExportItemDTO.IndirectRevenue = CriteriaMapping.Value;
                                         }
