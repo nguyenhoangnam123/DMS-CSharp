@@ -267,24 +267,27 @@ namespace DMS.Services.MKpiProductGrouping
 
         private async Task<bool> ValidateOldKpi(KpiProductGrouping KpiProductGrouping)
         {
-            var EmployeeIds = KpiProductGrouping.Employees.Select(x => x.Id).ToList();
-            KpiProductGroupingFilter KpiProductGroupingFilter = new KpiProductGroupingFilter
+            if(KpiProductGrouping.Employees != null && KpiProductGrouping.Employees.Any())
             {
-                Skip = 0,
-                Take = int.MaxValue,
-                Selects = KpiProductGroupingSelect.Id | KpiProductGroupingSelect.Employee,
-                EmployeeId = new IdFilter { In = EmployeeIds },
-                StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id },
-                KpiPeriodId = new IdFilter { Equal = KpiProductGrouping.KpiPeriodId },
-                KpiYearId = new IdFilter { Equal = KpiProductGrouping.KpiYearId },
-            };
-            var OldKpiProductGroupings = await UOW.KpiProductGroupingRepository.List(KpiProductGroupingFilter);
-            var oldEmployeeIds = OldKpiProductGroupings.Select(x => x.EmployeeId).ToList();
-            foreach (var Employee in KpiProductGrouping.Employees)
-            {
-                if (oldEmployeeIds.Contains(Employee.Id))
+                var EmployeeIds = KpiProductGrouping.Employees.Select(x => x.Id).ToList();
+                KpiProductGroupingFilter KpiProductGroupingFilter = new KpiProductGroupingFilter
                 {
-                    KpiProductGrouping.AddError(nameof(KpiProductGroupingValidator), nameof(KpiProductGrouping.Employee), ErrorCode.EmployeeHasKpi);
+                    Skip = 0,
+                    Take = int.MaxValue,
+                    Selects = KpiProductGroupingSelect.Id | KpiProductGroupingSelect.Employee,
+                    EmployeeId = new IdFilter { In = EmployeeIds },
+                    StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id },
+                    KpiPeriodId = new IdFilter { Equal = KpiProductGrouping.KpiPeriodId },
+                    KpiYearId = new IdFilter { Equal = KpiProductGrouping.KpiYearId },
+                };
+                var OldKpiProductGroupings = await UOW.KpiProductGroupingRepository.List(KpiProductGroupingFilter);
+                var oldEmployeeIds = OldKpiProductGroupings.Select(x => x.EmployeeId).ToList();
+                foreach (var Employee in KpiProductGrouping.Employees)
+                {
+                    if (oldEmployeeIds.Contains(Employee.Id))
+                    {
+                        KpiProductGrouping.AddError(nameof(KpiProductGroupingValidator), nameof(KpiProductGrouping.Employee), ErrorCode.EmployeeHasKpi);
+                    }
                 }
             }
             return KpiProductGrouping.IsValidated;
