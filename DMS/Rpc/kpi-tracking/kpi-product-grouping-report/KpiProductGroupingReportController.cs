@@ -334,7 +334,8 @@ namespace DMS.Rpc.kpi_tracking.kpi_product_grouping_report
                                     join kc in DataContext.KpiProductGroupingContent on km.KpiProductGroupingContentId equals kc.Id
                                     join k in DataContext.KpiProductGrouping on kc.KpiProductGroupingId equals k.Id
                                     join pg in DataContext.ProductGrouping on kc.ProductGroupingId equals pg.Id
-                                    where KpiProductGroupingIds.Contains(k.Id)
+                                    where KpiProductGroupingIds.Contains(k.Id) &&
+                                    (ProductGroupingId.HasValue == false || pg.Id == ProductGroupingId.Value)
                                     select new
                                     {
                                         SaleEmployeeId = k.EmployeeId,
