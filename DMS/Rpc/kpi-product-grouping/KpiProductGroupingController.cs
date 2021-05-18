@@ -180,11 +180,14 @@ namespace DMS.Rpc.kpi_product_grouping
 
             KpiProductGrouping KpiProductGrouping = ConvertDTOToEntity(KpiProductGrouping_KpiProductGroupingDTO);
             KpiProductGrouping = await KpiProductGroupingService.Create(KpiProductGrouping);
-            KpiProductGrouping_KpiProductGroupingDTO = new KpiProductGrouping_KpiProductGroupingDTO(KpiProductGrouping);
+            KpiProductGrouping_KpiProductGroupingDTO NewKpiProductGroupingDTO = new KpiProductGrouping_KpiProductGroupingDTO(KpiProductGrouping);
             if (KpiProductGrouping.IsValidated)
-                return KpiProductGrouping_KpiProductGroupingDTO;
+            {
+                NewKpiProductGroupingDTO.Employees = KpiProductGrouping_KpiProductGroupingDTO.Employees; // map lai Employees neu xay ra loi
+                return NewKpiProductGroupingDTO;
+            }
             else
-                return BadRequest(KpiProductGrouping_KpiProductGroupingDTO);
+                return BadRequest(NewKpiProductGroupingDTO);
         }
 
         [Route(KpiProductGroupingRoute.Update), HttpPost]
