@@ -224,11 +224,11 @@ namespace DMS.Rpc.kpi_tracking.kpi_product_grouping_report
                         join pg in DataContext.ProductGrouping on kpgc.ProductGroupingId equals pg.Id
                         where OrganizationIds.Contains(kpg.OrganizationId) &&
                         AppUserIds.Contains(kpg.EmployeeId) &&
-                        (SaleEmployeeId == null || kpg.Id == SaleEmployeeId.Value) &&
-                        (ProductGroupingId == null || pg.Id == ProductGroupingId.Value) &&
+                        (SaleEmployeeId.HasValue == false || kpg.EmployeeId == SaleEmployeeId.Value) &&
+                        (ProductGroupingId.HasValue == false || pg.Id == ProductGroupingId.Value) &&
                         (kpg.KpiPeriodId == KpiPeriodId.Value) &&
                         (kpg.KpiYearId == KpiYearId) &&
-                        (kpg.KpiProductGroupingTypeId == KpiProductGroupingTypeId.Value) &&
+                        (KpiProductGroupingTypeId.HasValue == false || kpg.KpiProductGroupingTypeId == KpiProductGroupingTypeId.Value) &&
                         kpg.DeletedAt == null &&
                         kpg.StatusId == StatusEnum.ACTIVE.Id
                         select new
@@ -276,11 +276,11 @@ namespace DMS.Rpc.kpi_tracking.kpi_product_grouping_report
                             join pg in DataContext.ProductGrouping on kpgc.ProductGroupingId equals pg.Id
                             where OrganizationIds.Contains(kpg.OrganizationId) &&
                             AppUserIds.Contains(kpg.EmployeeId) &&
-                            (SaleEmployeeId == null || kpg.Id == SaleEmployeeId.Value) &&
-                            (ProductGroupingId == null || pg.Id == ProductGroupingId.Value) &&
+                            (SaleEmployeeId.HasValue == false || kpg.EmployeeId == SaleEmployeeId.Value) &&
+                            (ProductGroupingId.HasValue == false || pg.Id == ProductGroupingId.Value) &&
                             (kpg.KpiPeriodId == KpiPeriodId.Value) &&
                             (kpg.KpiYearId == KpiYearId) &&
-                            (kpg.KpiProductGroupingTypeId == KpiProductGroupingTypeId.Value) &&
+                            (KpiProductGroupingTypeId.HasValue == false || kpg.KpiProductGroupingTypeId == KpiProductGroupingTypeId.Value) &&
                             kpg.DeletedAt == null &&
                             kpg.StatusId == StatusEnum.ACTIVE.Id
                             select new
@@ -296,8 +296,8 @@ namespace DMS.Rpc.kpi_tracking.kpi_product_grouping_report
                             }; // grouping kpi nhóm sản phẩm theo Organization và ProductGrouping
 
                 var datas = await query.Distinct()
-                    //.OrderBy(x => x.OrganizationId)
-                    //.ThenBy(x => x.DisplayName)
+                    .OrderBy(x => x.OrganizationId)
+                    .ThenBy(x => x.DisplayName)
                     .Skip(KpiProductGroupingReport_KpiProductGroupingReportFilterDTO.Skip)
                     .Take(KpiProductGroupingReport_KpiProductGroupingReportFilterDTO.Take)
                     .ToListAsync(); // lấy ra toàn bộ dữ liệu theo filter
@@ -326,6 +326,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_product_grouping_report
                         Id = x.Id,
                         Username = x.Username,
                         DisplayName = x.DisplayName,
+                        OrganizationId = x.OrganizationId
                     }).ToListAsync(); // lấy ra toàn bộ Nhân viên trong danh sách phân trang
 
 
@@ -419,7 +420,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_product_grouping_report
                         UserName = x.Username,
                         DisplayName = x.DisplayName,
                         OrganizationId = x.OrganizationId,
-                    }).ToList();
+                    }).Distinct().ToList();
                     KpiProductGroupingReport_KpiProductGroupingReportDTOs.Add(KpiProductGroupingReport_KpiProductGroupingReportDTO);
                 }
 
