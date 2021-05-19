@@ -478,7 +478,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_product_grouping_report
                                     .Where(x => x.Revenue.HasValue)
                                     .Sum(x => x.Revenue);
                                 Content.IndirectRevenue = Math.Round(Content.IndirectRevenue.Value, 0);
-                                Content.IndirectRevenueRatio = Content.IndirectRevenuePlanned == 0 || Content.IndirectRevenuePlanned == null ?
+                                Content.IndirectRevenueRatio = Content.IndirectRevenuePlanned == 0 || Content.IndirectRevenuePlanned == null || Content.IndirectRevenue == null ?
                                     null : (decimal?)
                                     Math.Round((Content.IndirectRevenue.Value / Content.IndirectRevenuePlanned.Value) * 100, 2);
                             }
@@ -498,9 +498,9 @@ namespace DMS.Rpc.kpi_tracking.kpi_product_grouping_report
                                     .Select(x => x.BuyerStoreId)
                                     .Distinct().ToList();
                                 Content.StoreIndirectIds = new HashSet<long>(BuyStoreIds);
-                                Content.IndirectStoreRatio = Content.IndirectStorePlanned == 0 || Content.IndirectStorePlanned == null ?
+                                Content.IndirectStoreRatio = Content.IndirectStorePlanned == 0 || Content.IndirectStorePlanned == null || Content.IndirectStore == null ?
                                     null : (decimal?)
-                                    Math.Round((Content.IndirectRevenue.Value / Content.IndirectRevenuePlanned.Value) * 100, 2);
+                                    Math.Round((Content.IndirectStore.Value / Content.IndirectStorePlanned.Value) * 100, 2);
                             }
                             #endregion
 
