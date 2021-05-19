@@ -1072,7 +1072,7 @@ namespace DMS.Rpc.store
             {
                 Skip = 0,
                 Take = int.MaxValue,
-                Selects = StoreSelect.Code | StoreSelect.Name | StoreSelect.Address | StoreSelect.Telephone,
+                Selects = StoreSelect.Id | StoreSelect.Code | StoreSelect.Name | StoreSelect.Address | StoreSelect.Telephone,
                 StatusId = new IdFilter { Equal = Enums.StatusEnum.ACTIVE.Id }
             });
 
