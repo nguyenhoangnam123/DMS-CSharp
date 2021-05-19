@@ -182,12 +182,9 @@ namespace DMS.Rpc.kpi_product_grouping
             KpiProductGrouping = await KpiProductGroupingService.Create(KpiProductGrouping);
             KpiProductGrouping_KpiProductGroupingDTO NewKpiProductGroupingDTO = new KpiProductGrouping_KpiProductGroupingDTO(KpiProductGrouping);
             if (KpiProductGrouping.IsValidated)
-            {
-                NewKpiProductGroupingDTO.Employees = KpiProductGrouping_KpiProductGroupingDTO.Employees; // map lai Employees neu xay ra loi
                 return NewKpiProductGroupingDTO;
-            }
-            else
-                return BadRequest(NewKpiProductGroupingDTO);
+            NewKpiProductGroupingDTO.Employees = KpiProductGrouping_KpiProductGroupingDTO.Employees; // map lai Employees neu xay ra loi
+            return BadRequest(NewKpiProductGroupingDTO);
         }
 
         [Route(KpiProductGroupingRoute.Update), HttpPost]
