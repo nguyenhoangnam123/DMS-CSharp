@@ -286,6 +286,7 @@ namespace DMS.Services.MKpiProductGrouping
                     StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id },
                     KpiPeriodId = new IdFilter { Equal = KpiProductGrouping.KpiPeriodId },
                     KpiYearId = new IdFilter { Equal = KpiProductGrouping.KpiYearId },
+                    KpiProductGroupingTypeId = new IdFilter { Equal = KpiProductGrouping.KpiProductGroupingTypeId }
                 };
                 var OldKpiProductGroupings = await UOW.KpiProductGroupingRepository.List(KpiProductGroupingFilter);
                 var oldEmployeeIds = OldKpiProductGroupings.Select(x => x.EmployeeId).ToList();
