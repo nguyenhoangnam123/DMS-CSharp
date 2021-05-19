@@ -1,7 +1,8 @@
 ﻿{
   "KpiProductGrouping": {
     "Id": {
-      "IdNotExisted": "Kpi nhóm sản phẩm không tồn tại"
+      "IdNotExisted": "Kpi nhóm sản phẩm không tồn tại",
+      "ValueCannotBeNull": "Chưa nhập giá trị chỉ tiêu KPI"
     },
     "Employees": {
       "EmployeesEmpty": "Chưa chọn nhân viên"
