@@ -480,14 +480,14 @@ namespace DMS.Rpc.kpi_product_grouping
                             KpiProductGrouping_ItemImportDTO Item = Items.Where(x => x.Code.ToLower() == ItemCode.ToLower().Trim()).FirstOrDefault();
                             if (Item == null)
                             {
-                                errorContent.AppendLine($"Lỗi dòng thứ {i + 1}: Sản phẩm không tồn tại");
+                                errorContent.AppendLine($"Lỗi dòng thứ {i}: Sản phẩm không tồn tại");
                                 continue;
                             }
-                            else if (ProductGrouping.Id != Item.ProductGroupingId)
-                            {
-                                errorContent.AppendLine($"Lỗi dòng thứ {i + 1}: Sản phẩm không thuộc nhóm sản phẩm");
-                                continue;
-                            }
+                            //else if (ProductGrouping.Id != Item.ProductGroupingId)
+                            //{
+                            //    errorContent.AppendLine($"Lỗi dòng thứ {i + 1}: Sản phẩm không thuộc nhóm sản phẩm");
+                            //    continue;
+                            //} // ko cần validate Item trong group vì có thể chọn Item khác Group
                             else
                             {
                                 LineItems.Add(Item);
