@@ -943,6 +943,7 @@ namespace DMS.Rpc.mobile.permission_mobile
                             Value = c.Value,
                             KpiProductGroupingContent = c.KpiProductGroupingContent == null ? null : new KpiProductGroupingContentDAO
                             {
+                                KpiProductGroupingId = c.KpiProductGroupingContent.KpiProductGroupingId,
                                 ProductGroupingId = c.KpiProductGroupingContent.ProductGroupingId
                             }
                         }).ToListAsync(); // lấy ra toàn bộ mapping content với chỉ tiêu
@@ -1026,7 +1027,9 @@ namespace DMS.Rpc.mobile.permission_mobile
                                     PermissionMobile_EmployeeKpiProductGroupingReportDTO.CurrentKpiProductGroupings
                                         .Add(PermissionMobile_EmployeeKpiProductGrouping);
                                     PermissionMobile_EmployeeKpiProductGrouping.PlannedValue = SubContentCriteriaMappings
-                                        .Where(x => x.KpiProductGroupingCriteriaId == KpiProductGroupingCriteria.Id && x.KpiProductGroupingContent.ProductGroupingId == ProductGroupingId)
+                                        .Where(x => x.KpiProductGroupingCriteriaId == KpiProductGroupingCriteria.Id)
+                                        .Where(x => x.KpiProductGroupingContent.ProductGroupingId == ProductGroupingId)
+                                        .Where(x => x.KpiProductGroupingContent.KpiProductGroupingId == KpiProductGrouping.Id)
                                         .Where(x => x.Value.HasValue)
                                         .Select(x => (decimal)x.Value.Value)
                                         .Sum(); // lấy ra số kế hoạch
