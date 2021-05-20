@@ -109,6 +109,12 @@ namespace DMS.Rpc.kpi_product_grouping
             KpiProductGroupingFilter KpiProductGroupingFilter = ConvertFilterDTOToFilterEntity(KpiProductGrouping_KpiProductGroupingFilterDTO);
             KpiProductGroupingFilter = await KpiProductGroupingService.ToFilter(KpiProductGroupingFilter);
             List<KpiProductGrouping> KpiProductGroupings = await KpiProductGroupingService.List(KpiProductGroupingFilter);
+            for(int i =0; i< KpiProductGroupings.Count; i++)
+            {
+                KpiProductGroupings[i] = Utils.Clone(KpiProductGroupings[i]);
+                KpiProductGroupings[i].Organization = KpiProductGroupings[i].Employee.Organization;
+                KpiProductGroupings[i].OrganizationId = KpiProductGroupings[i].Employee.OrganizationId;
+            } // BA yêu cầu trả về đơn vị tổ chức của Employee, không phải của Kpi
             List<KpiProductGrouping_KpiProductGroupingDTO> KpiProductGrouping_KpiProductGroupingDTOs = KpiProductGroupings
                 .Select(c => new KpiProductGrouping_KpiProductGroupingDTO(c)).ToList();
             return KpiProductGrouping_KpiProductGroupingDTOs;
