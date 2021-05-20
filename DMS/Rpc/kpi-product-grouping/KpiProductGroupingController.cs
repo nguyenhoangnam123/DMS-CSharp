@@ -511,7 +511,7 @@ namespace DMS.Rpc.kpi_product_grouping
             }
 
             Dictionary<long, StringBuilder> Errors = new Dictionary<long, StringBuilder>();
-
+            Dictionary<long, int> OldKpiCountDict = new Dictionary<long, int>();
             foreach (KpiProductGrouping_ImportDTO ImportDTO in KpiProductGrouping_ImportDTOs)
             {
                 if (ImportDTO.HasValue == false)
@@ -551,17 +551,11 @@ namespace DMS.Rpc.kpi_product_grouping
                 } // neu them moi Kpi
                 else
                 {
-                    KpiProductGroupingInDB = KpiProductGroupings.Where(x => x.EmployeeId == ImportDTO.EmployeeId &&
-                    x.KpiPeriodId == ImportDTO.KpiPeriodId &&
-                    x.KpiYearId == ImportDTO.KpiYearId &&
-                    x.KpiProductGroupingTypeId == ImportDTO.KpiProductGroupingTypeId)
-                        .FirstOrDefault();
-                    var KpiProductGroupingContent = KpiProductGroupingInDB.KpiProductGroupingContents
-                        .Where(x => x.KpiProductGroupingId == ImportDTO.ProductGroupingId)
-                        .FirstOrDefault();
-                    if (KpiProductGroupingContent == null)
+                    int OldKpiCount = default(int);
+                    if (!OldKpiCountDict.TryGetValue(KpiProductGroupingInDB.Id, out OldKpiCount))
                     {
-                        KpiProductGroupingInDB.KpiProductGroupingContents.Add(new KpiProductGroupingContent
+                        OldKpiCountDict.Add(KpiProductGroupingInDB.Id, 1);
+                        KpiProductGroupingInDB.KpiProductGroupingContents = new List<KpiProductGroupingContent> {new KpiProductGroupingContent
                         {
                             ProductGroupingId = ImportDTO.ProductGroupingId,
                             RowId = Guid.NewGuid(),
@@ -573,8 +567,31 @@ namespace DMS.Rpc.kpi_product_grouping
                             {
                                 ItemId = x.Id
                             }).ToList()
-                        });
+                        }};
+                    } // nếu là lần đầu tiên update kpi thì xóa hết content của kpi đó và thêm mới một kpi content tương ứng
+                    else
+                    {
+                        var KpiProductGroupingContent = KpiProductGroupingInDB.KpiProductGroupingContents
+                            .Where(x => x.KpiProductGroupingId == ImportDTO.ProductGroupingId)
+                            .FirstOrDefault();
+                        if (KpiProductGroupingContent == null)
+                        {
+                            KpiProductGroupingInDB.KpiProductGroupingContents.Add(new KpiProductGroupingContent
+                            {
+                                ProductGroupingId = ImportDTO.ProductGroupingId,
+                                RowId = Guid.NewGuid(),
+                                KpiProductGroupingContentCriteriaMappings = KpiProductGroupingCriteriaEnum.KpiProductGroupingCriteriaEnumList.Select(x => new KpiProductGroupingContentCriteriaMapping
+                                {
+                                    KpiProductGroupingCriteriaId = x.Id,
+                                }).ToList(),
+                                KpiProductGroupingContentItemMappings = ImportDTO.Items.Select(x => new KpiProductGroupingContentItemMapping
+                                {
+                                    ItemId = x.Id
+                                }).ToList()
+                            });
+                        }
                     }
+                   
                 }
                 var Content = KpiProductGroupingInDB.KpiProductGroupingContents
                             .Where(x => x.ProductGroupingId == ImportDTO.ProductGroupingId)
