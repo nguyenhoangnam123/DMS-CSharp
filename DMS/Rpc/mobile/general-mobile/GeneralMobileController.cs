@@ -713,6 +713,7 @@ namespace DMS.Rpc.mobile.general_mobile
                 OwnerName = GeneralMobile_StoreDTO.OwnerName,
                 OwnerPhone = GeneralMobile_StoreDTO.OwnerPhone,
                 StoreTypeId = GeneralMobile_StoreDTO.StoreTypeId,
+                StoreGroupingId = GeneralMobile_StoreDTO.StoreGroupingId,
                 ProvinceId = GeneralMobile_StoreDTO.ProvinceId,
                 DistrictId = GeneralMobile_StoreDTO.DistrictId,
                 WardId = GeneralMobile_StoreDTO.WardId,
@@ -731,6 +732,12 @@ namespace DMS.Rpc.mobile.general_mobile
                     Id = GeneralMobile_StoreDTO.StoreType.Id,
                     Code = GeneralMobile_StoreDTO.StoreType.Code,
                     Name = GeneralMobile_StoreDTO.StoreType.Name,
+                },
+                StoreGrouping = GeneralMobile_StoreDTO.StoreGrouping == null ? null : new StoreGrouping
+                {
+                    Id = GeneralMobile_StoreDTO.StoreGrouping.Id,
+                    Code = GeneralMobile_StoreDTO.StoreGrouping.Code,
+                    Name = GeneralMobile_StoreDTO.StoreGrouping.Name,
                 },
                 Province = GeneralMobile_StoreDTO.Province == null ? null : new Province
                 {
