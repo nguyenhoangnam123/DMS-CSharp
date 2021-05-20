@@ -425,6 +425,7 @@ namespace DMS.Rpc.kpi_product_grouping
                     else
                     {
                         KpiProductGrouping_ImportDTO.EmployeeId = Employee.Id;
+                        KpiProductGrouping_ImportDTO.OrganizationId = Employee.OrganizationId;
                     }
                     #endregion
 
