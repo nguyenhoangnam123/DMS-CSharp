@@ -729,8 +729,12 @@ namespace DMS.Rpc.mobile.permission_mobile
                         }).ToListAsync(); // lấy ra toàn bộ mapping content với Item
                     if (KpiProductGroupingContentCriteriaMappingDAOs.Count > 0 && KpiProductGroupingContentItemMappingDAOs.Count > 0)
                     {
-                        List<long> ProductGroupingIds = KpiProductGroupingContentDAOs.Select(x => x.ProductGroupingId).ToList();
-                        List<long> ItemIds = KpiProductGroupingContentItemMappingDAOs.Select(x => x.ItemId).ToList();
+                        List<long> ProductGroupingIds = KpiProductGroupingContentDAOs.Select(x => x.ProductGroupingId)
+                            .Distinct()
+                            .ToList();
+                        List<long> ItemIds = KpiProductGroupingContentItemMappingDAOs.Select(x => x.ItemId)
+                            .Distinct()
+                            .ToList();
                         List<ProductGroupingDAO> ProductGroupingDAOs = await DataContext.ProductGrouping.AsNoTracking()
                             .Where(x => ProductGroupingIds.Contains(x.Id))
                             .ToListAsync();
@@ -760,7 +764,9 @@ namespace DMS.Rpc.mobile.permission_mobile
                                 .Where(x => x.KpiProductGroupingId == KpiProductGrouping.Id)
                                 .ToList(); // lấy ra Content của Kpi
                             List<long> SubContentIds = SubContents.Select(x => x.Id).ToList();
-                            List<long> SubProductGroupingIds = SubContents.Select(x => x.ProductGroupingId).ToList();
+                            List<long> SubProductGroupingIds = SubContents.Select(x => x.ProductGroupingId)
+                                .Distinct()
+                                .ToList();
                             List<KpiProductGroupingContentCriteriaMappingDAO> SubProductGroupingContentCriteriaMappings = KpiProductGroupingContentCriteriaMappingDAOs
                                 .Where(x => SubContentIds.Contains(x.KpiProductGroupingContentId))
                                 .ToList(); // lay ra mapping chi tieu cua content phu
@@ -940,8 +946,12 @@ namespace DMS.Rpc.mobile.permission_mobile
                         }).ToListAsync(); // lấy ra toàn bộ mapping content với Item
                     if (KpiProductGroupingContentCriteriaMappingDAOs.Count > 0 && KpiProductGroupingContentItemMappingDAOs.Count > 0)
                     {
-                        List<long> ProductGroupingIds = KpiProductGroupingContentDAOs.Select(x => x.ProductGroupingId).ToList();
-                        List<long> ItemIds = KpiProductGroupingContentItemMappingDAOs.Select(x => x.ItemId).ToList();
+                        List<long> ProductGroupingIds = KpiProductGroupingContentDAOs.Select(x => x.ProductGroupingId)
+                            .Distinct()
+                            .ToList();
+                        List<long> ItemIds = KpiProductGroupingContentItemMappingDAOs.Select(x => x.ItemId)
+                            .Distinct()
+                            .ToList();
                         List<ProductGroupingDAO> ProductGroupingDAOs = await DataContext.ProductGrouping.AsNoTracking()
                             .Where(x => ProductGroupingIds.Contains(x.Id))
                             .ToListAsync();
@@ -971,7 +981,9 @@ namespace DMS.Rpc.mobile.permission_mobile
                                 .Where(x => x.KpiProductGroupingId == KpiProductGrouping.Id)
                                 .ToList(); // lấy ra Content của Kpi
                             List<long> SubContentIds = SubContents.Select(x => x.Id).ToList();
-                            List<long> SubProductGroupingIds = SubContents.Select(x => x.ProductGroupingId).ToList();
+                            List<long> SubProductGroupingIds = SubContents.Select(x => x.ProductGroupingId)
+                                .Distinct()
+                                .ToList();
                             List<KpiProductGroupingContentCriteriaMappingDAO> SubProductGroupingContentCriteriaMappings = KpiProductGroupingContentCriteriaMappingDAOs
                                 .Where(x => SubContentIds.Contains(x.KpiProductGroupingContentId))
                                 .ToList(); // lay ra mapping chi tieu cua content phu
