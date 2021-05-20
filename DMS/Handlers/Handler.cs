@@ -43,7 +43,7 @@ namespace DMS.Handlers
                 Exception = ex.ToString(),
                 Time = StaticParams.DateTimeNow,
             };
-            RabbitManager.PublishSingle(new EventMessage<SystemLog>(SystemLog, SystemLog.RowId), RoutingKeyEnum.SystemLogSend);
+            RabbitManager.PublishSingle(SystemLog, RoutingKeyEnum.SystemLogSend);
         }
 
         protected void AuditLog(object newData, object oldData, string className, [CallerMemberName]string methodName = "")
@@ -60,7 +60,7 @@ namespace DMS.Handlers
                 Time = StaticParams.DateTimeNow,
                 RowId = Guid.NewGuid(),
             };
-            RabbitManager.PublishSingle(new EventMessage<AuditLog>(AuditLog, AuditLog.RowId), RoutingKeyEnum.AuditLogSend);
+            RabbitManager.PublishSingle(AuditLog, RoutingKeyEnum.AuditLogSend);
         }
     }
 }

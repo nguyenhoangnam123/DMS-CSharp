@@ -287,7 +287,7 @@ namespace DMS.Repositories
         public IKpiProductGroupingCriteriaRepository KpiProductGroupingCriteriaRepository { get; private set; }
         public IKpiProductGroupingTypeRepository KpiProductGroupingTypeRepository { get; private set; }
 
-        public UOW(DataContext DataContext)
+        public UOW(DataContext DataContext, IConfiguration Configuration)
         {
             this.DataContext = DataContext;
             DataContext.Database.ExecuteSqlCommand("SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;");

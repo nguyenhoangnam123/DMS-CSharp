@@ -12,8 +12,8 @@ namespace DMS.Handlers
 {
     public interface IRabbitManager
     {
-        void PublishList<T>(List<EventMessage<T>> message, GenericEnum routeKey) where T : DataEntity;
-        void PublishSingle<T>(EventMessage<T> message, GenericEnum routeKey) where T : DataEntity;
+        void PublishList<T>(List<T> message, GenericEnum routeKey) where T : DataEntity;
+        void PublishSingle<T>(T message, GenericEnum routeKey) where T : DataEntity;
     }
     public class RabbitManager : IRabbitManager
     {
@@ -24,7 +24,7 @@ namespace DMS.Handlers
             _objectPool = new DefaultObjectPool<IModel>(objectPolicy, Environment.ProcessorCount * 16);
         }
 
-        public void PublishList<T>(List<EventMessage<T>> message, GenericEnum routeKey) where T : DataEntity
+        public void PublishList<T>(List<T> message, GenericEnum routeKey) where T : DataEntity
         {
             if (!StaticParams.EnableExternalService)
                 return;
@@ -54,12 +54,12 @@ namespace DMS.Handlers
             }
         }
 
-        public void PublishSingle<T>(EventMessage<T> message, GenericEnum routeKey) where T : DataEntity
+        public void PublishSingle<T>(T message, GenericEnum routeKey) where T : DataEntity
         {
             if (message == null)
                 return;
 
-            List<EventMessage<T>> list = new List<EventMessage<T>> { message };
+            List<T> list = new List<T> { message };
             PublishList(list, routeKey);
         }
     }

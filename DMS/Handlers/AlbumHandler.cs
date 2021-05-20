@@ -28,7 +28,7 @@ namespace DMS.Handlers
 
         private async Task Used(DataContext context, string json)
         {
-            List<EventMessage<Album>> EventMessageReviced = JsonConvert.DeserializeObject<List<EventMessage<Album>>>(json);
+            List<Album> EventMessageReviced = JsonConvert.DeserializeObject<List<Album>>(json);
             List<Album> Albums = EventMessageReviced.Select(em => em.Content).ToList();
             IUOW UOW = new UOW(context);
             await UOW.AlbumRepository.BulkUsed(Albums);

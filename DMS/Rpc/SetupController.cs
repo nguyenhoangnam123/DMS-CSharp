@@ -70,15 +70,13 @@ namespace DMS.Rpc
             List<long> DirectSalesOrderIds = DirectSalesOrders.Select(x => x.Id).ToList();
             DirectSalesOrders = await UOW.DirectSalesOrderRepository.List(DirectSalesOrderIds);
 
-            List<EventMessage<DirectSalesOrder>> DirectSalesOrderEventMessages = DirectSalesOrders
-                .Select(x => new EventMessage<DirectSalesOrder>(x, Guid.NewGuid())).ToList();
-            var count = DirectSalesOrderEventMessages.Count();
+            var count = DirectSalesOrders.Count();
             var BatchCounter = (count / 1000) + 1;
             for (int i = 0; i < count; i += 1000)
             {
                 int skip = i * 1000;
                 int take = 1000;
-                var Batch = DirectSalesOrderEventMessages.Skip(skip).Take(take).ToList();
+                var Batch = DirectSalesOrders.Skip(skip).Take(take).ToList();
                 RabbitManager.PublishList(Batch, RoutingKeyEnum.DirectSalesOrderSync);
             }
         }
@@ -152,8 +150,7 @@ namespace DMS.Rpc
             List<long> StoreGroupingIds = StoreGroupinges.Select(x => x.Id).ToList();
             StoreGroupinges = await UOW.StoreGroupingRepository.List(StoreGroupingIds);
 
-            List<EventMessage<StoreGrouping>> StoreGroupingEventMessages = StoreGroupinges.Select(x => new EventMessage<StoreGrouping>(x, Guid.NewGuid())).ToList();
-            RabbitManager.PublishList(StoreGroupingEventMessages, RoutingKeyEnum.StoreGroupingSync);
+            RabbitManager.PublishList(StoreGroupinges, RoutingKeyEnum.StoreGroupingSync);
         }
         #endregion
 
