@@ -462,7 +462,7 @@ namespace DMS.Rpc.kpi_tracking.kpi_product_grouping_report
                                 .ToList();
                             List<IndirectSalesOrderTransactionDAO> SubIndirectTransactions = IndirectTransactionDAOs
                                 .Where(x => x.SalesEmployeeId == Employee.Id)
-                                .Where(x => ItemIds.Contains(x.ItemId))
+                                .Where(x => SubItemIds.Contains(x.ItemId))
                                 .ToList(); // lay transaction don gian tiep theo SalesEmployee va Item
 
                             #region thống kê doanh thu đơn gián tiếp
