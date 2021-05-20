@@ -85,34 +85,59 @@ namespace DMS.Rpc.kpi_tracking.kpi_product_grouping_report
 
         public KpiProductGroupingReport_KpiProductGroupingContentExportDTO(KpiProductGroupingReport_KpiProductGroupingContentDTO KpiProductGroupingReport_KpiProductGroupingContentDTO)
         {
+            var culture = System.Globalization.CultureInfo.GetCultureInfo("en-EN");
             this.STT = KpiProductGroupingReport_KpiProductGroupingContentDTO.STT;
             this.ProductGroupingCode = KpiProductGroupingReport_KpiProductGroupingContentDTO.ProductGroupingCode;
             this.ProductGroupingName = KpiProductGroupingReport_KpiProductGroupingContentDTO.ProductGroupingName;
-            this.IndirectQuantityPlanned = KpiProductGroupingReport_KpiProductGroupingContentDTO.IndirectQuantityPlanned == null ? "" : ((long)KpiProductGroupingReport_KpiProductGroupingContentDTO.IndirectQuantityPlanned).ToString();
-            this.IndirectQuantity = KpiProductGroupingReport_KpiProductGroupingContentDTO.IndirectQuantity == null ? "" : KpiProductGroupingReport_KpiProductGroupingContentDTO.IndirectQuantity.ToString();
-            this.IndirectQuantityRatio = KpiProductGroupingReport_KpiProductGroupingContentDTO.IndirectQuantityRatio == null ? "" : KpiProductGroupingReport_KpiProductGroupingContentDTO.IndirectQuantityRatio.ToString();
-            this.IndirectRevenuePlanned = KpiProductGroupingReport_KpiProductGroupingContentDTO.IndirectRevenuePlanned == null ? "" : ((long)KpiProductGroupingReport_KpiProductGroupingContentDTO.IndirectRevenuePlanned).ToString();
-            this.IndirectRevenue = KpiProductGroupingReport_KpiProductGroupingContentDTO.IndirectRevenue == null ? "" : KpiProductGroupingReport_KpiProductGroupingContentDTO.IndirectRevenue.ToString();
-            this.IndirectRevenueRatio = KpiProductGroupingReport_KpiProductGroupingContentDTO.IndirectRevenueRatio == null ? "" : KpiProductGroupingReport_KpiProductGroupingContentDTO.IndirectRevenueRatio.ToString();
-            this.IndirectAmountPlanned = KpiProductGroupingReport_KpiProductGroupingContentDTO.IndirectAmountPlanned == null ? "" : ((long)KpiProductGroupingReport_KpiProductGroupingContentDTO.IndirectAmountPlanned).ToString();
-            this.IndirectAmount = KpiProductGroupingReport_KpiProductGroupingContentDTO.IndirectAmount == null ? "" : KpiProductGroupingReport_KpiProductGroupingContentDTO.IndirectAmount.ToString();
-            this.IndirectAmountRatio = KpiProductGroupingReport_KpiProductGroupingContentDTO.IndirectAmountRatio == null ? "" : KpiProductGroupingReport_KpiProductGroupingContentDTO.IndirectAmountRatio.ToString();
-            this.IndirectStorePlanned = KpiProductGroupingReport_KpiProductGroupingContentDTO.IndirectStorePlanned == null ? "" : ((long)KpiProductGroupingReport_KpiProductGroupingContentDTO.IndirectStorePlanned).ToString();
-            this.IndirectStore = KpiProductGroupingReport_KpiProductGroupingContentDTO.IndirectStore == null ? "" : KpiProductGroupingReport_KpiProductGroupingContentDTO.IndirectStore.ToString();
-            this.IndirectStoreRatio = KpiProductGroupingReport_KpiProductGroupingContentDTO.IndirectStoreRatio == null ? "" : KpiProductGroupingReport_KpiProductGroupingContentDTO.IndirectStoreRatio.ToString();
+            this.IndirectQuantityPlanned = KpiProductGroupingReport_KpiProductGroupingContentDTO.IndirectQuantityPlanned == null ? "" : ((long)KpiProductGroupingReport_KpiProductGroupingContentDTO.IndirectQuantityPlanned)
+                .ToString("N0", culture);
+            this.IndirectQuantity = KpiProductGroupingReport_KpiProductGroupingContentDTO.IndirectQuantity == null ? "" : ((long)KpiProductGroupingReport_KpiProductGroupingContentDTO.IndirectQuantity)
+                .ToString("N0", culture);
+            this.IndirectQuantityRatio = KpiProductGroupingReport_KpiProductGroupingContentDTO.IndirectQuantityRatio == null ? "" : ((long)KpiProductGroupingReport_KpiProductGroupingContentDTO.IndirectQuantityRatio)
+                .ToString("N0", culture);
+            this.IndirectRevenuePlanned = KpiProductGroupingReport_KpiProductGroupingContentDTO.IndirectRevenuePlanned == null ? "" : ((long)KpiProductGroupingReport_KpiProductGroupingContentDTO.IndirectRevenuePlanned)
+                .ToString("N0", culture);
+            this.IndirectRevenue = KpiProductGroupingReport_KpiProductGroupingContentDTO.IndirectRevenue == null ? "" : ((long)KpiProductGroupingReport_KpiProductGroupingContentDTO.IndirectRevenue)
+                .ToString("N0", culture);
+            this.IndirectRevenueRatio = KpiProductGroupingReport_KpiProductGroupingContentDTO.IndirectRevenueRatio == null ? "" : ((long)KpiProductGroupingReport_KpiProductGroupingContentDTO.IndirectRevenueRatio)
+                .ToString("N0", culture);
+            this.IndirectAmountPlanned = KpiProductGroupingReport_KpiProductGroupingContentDTO.IndirectAmountPlanned == null ? "" : ((long)KpiProductGroupingReport_KpiProductGroupingContentDTO.IndirectAmountPlanned)
+                .ToString("N0", culture);
+            this.IndirectAmount = KpiProductGroupingReport_KpiProductGroupingContentDTO.IndirectAmount == null ? "" : ((long)KpiProductGroupingReport_KpiProductGroupingContentDTO.IndirectAmount)
+                .ToString("N0", culture);
+            this.IndirectAmountRatio = KpiProductGroupingReport_KpiProductGroupingContentDTO.IndirectAmountRatio == null ? "" : ((long)KpiProductGroupingReport_KpiProductGroupingContentDTO.IndirectAmountRatio)
+                .ToString("N0", culture);
+            this.IndirectStorePlanned = KpiProductGroupingReport_KpiProductGroupingContentDTO.IndirectStorePlanned == null ? "" : ((long)KpiProductGroupingReport_KpiProductGroupingContentDTO.IndirectStorePlanned)
+                .ToString("N0", culture);
+            this.IndirectStore = KpiProductGroupingReport_KpiProductGroupingContentDTO.IndirectStore == null ? "" : ((long)KpiProductGroupingReport_KpiProductGroupingContentDTO.IndirectStore)
+                .ToString("N0", culture);
+            this.IndirectStoreRatio = KpiProductGroupingReport_KpiProductGroupingContentDTO.IndirectStoreRatio == null ? "" : ((long)KpiProductGroupingReport_KpiProductGroupingContentDTO.IndirectStoreRatio)
+                .ToString("N0", culture);
 
-            this.DirectQuantityPlanned = KpiProductGroupingReport_KpiProductGroupingContentDTO.DirectQuantityPlanned == null ? "" : ((long)KpiProductGroupingReport_KpiProductGroupingContentDTO.DirectQuantityPlanned).ToString();
-            this.DirectQuantity = KpiProductGroupingReport_KpiProductGroupingContentDTO.DirectQuantity == null ? "" : KpiProductGroupingReport_KpiProductGroupingContentDTO.DirectQuantity.ToString();
-            this.DirectQuantityRatio = KpiProductGroupingReport_KpiProductGroupingContentDTO.DirectQuantityRatio == null ? "" : KpiProductGroupingReport_KpiProductGroupingContentDTO.DirectQuantityRatio.ToString();
-            this.DirectRevenuePlanned = KpiProductGroupingReport_KpiProductGroupingContentDTO.DirectRevenuePlanned == null ? "" : ((long)KpiProductGroupingReport_KpiProductGroupingContentDTO.DirectRevenuePlanned).ToString();
-            this.DirectRevenue = KpiProductGroupingReport_KpiProductGroupingContentDTO.DirectRevenue == null ? "" : KpiProductGroupingReport_KpiProductGroupingContentDTO.DirectRevenue.ToString();
-            this.DirectRevenueRatio = KpiProductGroupingReport_KpiProductGroupingContentDTO.DirectRevenueRatio == null ? "" : KpiProductGroupingReport_KpiProductGroupingContentDTO.DirectRevenueRatio.ToString();
-            this.DirectAmountPlanned = KpiProductGroupingReport_KpiProductGroupingContentDTO.DirectAmountPlanned == null ? "" : ((long)KpiProductGroupingReport_KpiProductGroupingContentDTO.DirectAmountPlanned).ToString();
-            this.DirectAmount = KpiProductGroupingReport_KpiProductGroupingContentDTO.DirectAmount == null ? "" : KpiProductGroupingReport_KpiProductGroupingContentDTO.DirectAmount.ToString();
-            this.DirectAmountRatio = KpiProductGroupingReport_KpiProductGroupingContentDTO.DirectAmountRatio == null ? "" : KpiProductGroupingReport_KpiProductGroupingContentDTO.DirectAmountRatio.ToString();
-            this.DirectStorePlanned = KpiProductGroupingReport_KpiProductGroupingContentDTO.DirectStorePlanned == null ? "" : ((long)KpiProductGroupingReport_KpiProductGroupingContentDTO.DirectStorePlanned).ToString();
-            this.DirectStore = KpiProductGroupingReport_KpiProductGroupingContentDTO.DirectStore == null ? "" : KpiProductGroupingReport_KpiProductGroupingContentDTO.DirectStore.ToString();
-            this.DirectStoreRatio = KpiProductGroupingReport_KpiProductGroupingContentDTO.DirectStoreRatio == null ? "" : KpiProductGroupingReport_KpiProductGroupingContentDTO.DirectStoreRatio.ToString();
+            this.DirectQuantityPlanned = KpiProductGroupingReport_KpiProductGroupingContentDTO.DirectQuantityPlanned == null ? "" : ((long)KpiProductGroupingReport_KpiProductGroupingContentDTO.DirectQuantityPlanned)
+                .ToString("N0", culture);
+            this.DirectQuantity = KpiProductGroupingReport_KpiProductGroupingContentDTO.DirectQuantity == null ? "" : ((long)KpiProductGroupingReport_KpiProductGroupingContentDTO.DirectQuantity)
+                .ToString("N0", culture);
+            this.DirectQuantityRatio = KpiProductGroupingReport_KpiProductGroupingContentDTO.DirectQuantityRatio == null ? "" : ((long)KpiProductGroupingReport_KpiProductGroupingContentDTO.DirectQuantityRatio)
+                .ToString("N0", culture);
+            this.DirectRevenuePlanned = KpiProductGroupingReport_KpiProductGroupingContentDTO.DirectRevenuePlanned == null ? "" : ((long)KpiProductGroupingReport_KpiProductGroupingContentDTO.DirectRevenuePlanned)
+                .ToString("N0", culture);
+            this.DirectRevenue = KpiProductGroupingReport_KpiProductGroupingContentDTO.DirectRevenue == null ? "" : ((long)KpiProductGroupingReport_KpiProductGroupingContentDTO.DirectRevenue)
+                .ToString("N0", culture);
+            this.DirectRevenueRatio = KpiProductGroupingReport_KpiProductGroupingContentDTO.DirectRevenueRatio == null ? "" : ((long)KpiProductGroupingReport_KpiProductGroupingContentDTO.DirectRevenueRatio)
+                .ToString("N0", culture);
+            this.DirectAmountPlanned = KpiProductGroupingReport_KpiProductGroupingContentDTO.DirectAmountPlanned == null ? "" : ((long)KpiProductGroupingReport_KpiProductGroupingContentDTO.DirectAmountPlanned)
+                .ToString("N0", culture);
+            this.DirectAmount = KpiProductGroupingReport_KpiProductGroupingContentDTO.DirectAmount == null ? "" : ((long)KpiProductGroupingReport_KpiProductGroupingContentDTO.DirectAmount)
+                .ToString("N0", culture);
+            this.DirectAmountRatio = KpiProductGroupingReport_KpiProductGroupingContentDTO.DirectAmountRatio == null ? "" : ((long)KpiProductGroupingReport_KpiProductGroupingContentDTO.DirectAmountRatio)
+                .ToString("N0", culture);
+            this.DirectStorePlanned = KpiProductGroupingReport_KpiProductGroupingContentDTO.DirectStorePlanned == null ? "" : ((long)KpiProductGroupingReport_KpiProductGroupingContentDTO.DirectStorePlanned)
+                .ToString("N0", culture);
+            this.DirectStore = KpiProductGroupingReport_KpiProductGroupingContentDTO.DirectStore == null ? "" : ((long)KpiProductGroupingReport_KpiProductGroupingContentDTO.DirectStore)
+                .ToString("N0", culture);
+            this.DirectStoreRatio = KpiProductGroupingReport_KpiProductGroupingContentDTO.DirectStoreRatio == null ? "" : ((long)KpiProductGroupingReport_KpiProductGroupingContentDTO.DirectStoreRatio)
+                .ToString("N0", culture);
         }
     }
 }
