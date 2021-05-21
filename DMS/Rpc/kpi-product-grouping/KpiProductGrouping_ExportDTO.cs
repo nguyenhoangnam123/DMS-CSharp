@@ -5,21 +5,23 @@ namespace DMS.Rpc.kpi_product_grouping
 {
     public class KpiProductGrouping_ExportDTO : DataDTO
     {
+        public long OrganizationId { get; set; }
         public string OrganizationName { get; set; }
-        public List<KpiProductGrouping_AppUserExportDTO> Employees { get; set; }
+        public List<KpiProductGrouping_KpiProductGroupingExportDTO> Kpis { get; set; }
     }
 
-    public class KpiProductGrouping_AppUserExportDTO : DataDTO
+    public class KpiProductGrouping_KpiProductGroupingExportDTO : DataDTO
     {
         public long STT { get; set; }
-        public string Username { get; set; }
+        public long Id { get; set; }
+        public string UserName { get; set; }
         public string DisplayName { get; set; }
-        public List<KpiProductGrouping_ContentExportDTO> Contents { get; set; }
+        public string KpiProductGroupingTypeName { get; set; }
+        public List<KpiProductGrouping_ProductGroupingExportDTO> ProductGroupings { get; set; }
     }
 
-    public class KpiProductGrouping_ContentExportDTO : DataDTO
+    public class KpiProductGrouping_ProductGroupingExportDTO : DataDTO
     {
-        public string KpiProductGroupingTypeName { get; set; }
         public string Code { get; set; }
         public string Name { get; set; }
         public long ItemCount { get; set; }
