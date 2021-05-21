@@ -11,21 +11,15 @@ namespace DMS.Rpc.kpi_product_grouping
 
     public class KpiProductGrouping_AppUserExportDTO : DataDTO
     {
+        public long STT { get; set; }
         public string Username { get; set; }
         public string DisplayName { get; set; }
-        public List<KpiProductGrouping_KpiProductGroupingExportDTO> KpiProductGroupings { get; set; }
-    }
-
-    public class KpiProductGrouping_KpiProductGroupingExportDTO : DataDTO
-    {
-        public long Id { get; set; }
-        public string KpiProductGroupingTypeName { get; set; }
         public List<KpiProductGrouping_ContentExportDTO> Contents { get; set; }
     }
 
-
     public class KpiProductGrouping_ContentExportDTO : DataDTO
     {
+        public string KpiProductGroupingTypeName { get; set; }
         public string Code { get; set; }
         public string Name { get; set; }
         public long ItemCount { get; set; }

@@ -404,6 +404,8 @@ namespace DMS.Rpc.kpi_product_grouping
                     string KpiProductGroupingTypeValue = worksheet.Cells[i, KpiProductGroupingTypeColumnValue].Value?.ToString();
                     string ProductGroupingCodeValue = worksheet.Cells[i, ProductGroupingCodeColumn].Value?.ToString();
                     string ItemCodeValue = worksheet.Cells[i, ItemCodeColumn].Value?.ToString();
+                    string RevenueValue = worksheet.Cells[i, RevenueColumn].Value?.ToString();
+                    string StoreValue = worksheet.Cells[i, StoreColumn].Value?.ToString();
 
                     KpiProductGrouping_ImportDTO KpiProductGrouping_ImportDTO = new KpiProductGrouping_ImportDTO();
 
@@ -493,7 +495,7 @@ namespace DMS.Rpc.kpi_product_grouping
                             }
                             else if(KpiProductGroupingType.Id == KpiProductGroupingTypeEnum.NEW_PRODUCT_GROUPING.Id && !Item.IsNew)
                             {
-                                errorContent.AppendLine($"Lỗi dòng thứ {i}: Không phải sản phẩm mới");
+                                errorContent.AppendLine($"Lỗi dòng thứ {i}: {Item.Name} Không phải sản phẩm mới");
                                 continue;
                             }    
                             //else if (ProductGrouping.Id != Item.ProductGroupingId)
@@ -508,7 +510,34 @@ namespace DMS.Rpc.kpi_product_grouping
                         }
                         KpiProductGrouping_ImportDTO.Items = LineItems; // lay ra tat ca cac item hop le
                     }
-
+                    if(string.IsNullOrWhiteSpace(RevenueValue))
+                    {
+                        errorContent.AppendLine($"Lỗi dòng thứ {i}: Chưa nhập chỉ tiêu doanh thu");
+                        continue;
+                    }
+                    else
+                    {
+                        decimal Revenue;
+                        if(!decimal.TryParse(RevenueValue, out Revenue))
+                        {
+                            errorContent.AppendLine($"Lỗi dòng thứ {i}: Chỉ tiêu doanh thu không hợp lệ");
+                            continue;
+                        }
+                    }
+                    if (string.IsNullOrWhiteSpace(StoreValue))
+                    {
+                        errorContent.AppendLine($"Lỗi dòng thứ {i}: Chưa nhập chỉ tiêu số cửa hàng");
+                        continue;
+                    }
+                    else
+                    {
+                        long StoreCount;
+                        if (!long.TryParse(StoreValue, out StoreCount))
+                        {
+                            errorContent.AppendLine($"Lỗi dòng thứ {i}: Chỉ tiêu số cửa hàng không hợp lệ");
+                            continue;
+                        }
+                    }
                     #endregion
 
                     KpiProductGrouping_ImportDTO.Stt = i;
@@ -710,6 +739,7 @@ namespace DMS.Rpc.kpi_product_grouping
             #endregion
 
             #region tổ hợp dữ liệu
+            long stt = 1;
             List<KpiProductGrouping_ExportDTO> KpiProductGrouping_ExportDTOs = new List<KpiProductGrouping_ExportDTO>();
             foreach (var Organization in Organizations)
             {
@@ -731,9 +761,11 @@ namespace DMS.Rpc.kpi_product_grouping
                 foreach (var SubAppUser in SubAppUsers)
                 {
                     KpiProductGrouping_AppUserExportDTO KpiProductGrouping_AppUserExportDTO = new KpiProductGrouping_AppUserExportDTO();
+                    KpiProductGrouping_AppUserExportDTO.STT = stt;
+                    stt++;
                     KpiProductGrouping_AppUserExportDTO.Username = SubAppUser.Username;
                     KpiProductGrouping_AppUserExportDTO.DisplayName = SubAppUser.DisplayName;
-                    KpiProductGrouping_AppUserExportDTO.KpiProductGroupings = new List<KpiProductGrouping_KpiProductGroupingExportDTO>();
+                    KpiProductGrouping_AppUserExportDTO.Contents = new List<KpiProductGrouping_ContentExportDTO>();
                     kpiProductGrouping_ExportDTO.Employees.Add(KpiProductGrouping_AppUserExportDTO);
 
                     List<KpiProductGrouping_KpiProductGroupingDTO> AppUserKpis = SubKpiProductGroupings
@@ -742,18 +774,13 @@ namespace DMS.Rpc.kpi_product_grouping
 
                     foreach(KpiProductGrouping_KpiProductGroupingDTO AppUserKpi in AppUserKpis)
                     {
-                        KpiProductGrouping_KpiProductGroupingExportDTO KpiProductGrouping_KpiProductGroupingExportDTO = new KpiProductGrouping_KpiProductGroupingExportDTO();
-                        KpiProductGrouping_KpiProductGroupingExportDTO.Id = AppUserKpi.Id;
-                        KpiProductGrouping_KpiProductGroupingExportDTO.KpiProductGroupingTypeName = AppUserKpi.KpiProductGroupingType.Name;
-                        KpiProductGrouping_KpiProductGroupingExportDTO.Contents = new List<KpiProductGrouping_ContentExportDTO>();
-                        KpiProductGrouping_AppUserExportDTO.KpiProductGroupings.Add(KpiProductGrouping_KpiProductGroupingExportDTO);
-
                         List<KpiProductGroupingContent> SubContents = KpiProductGroupingContents
                             .Where(x => x.KpiProductGroupingId == AppUserKpi.Id)
                             .ToList();
                         foreach (KpiProductGroupingContent KpiProductGroupingContent in SubContents)
                         {
                             KpiProductGrouping_ContentExportDTO KpiProductGrouping_ContentExportDTO = new KpiProductGrouping_ContentExportDTO();
+                            KpiProductGrouping_ContentExportDTO.KpiProductGroupingTypeName = AppUserKpi.KpiProductGroupingType.Name;
                             KpiProductGrouping_ContentExportDTO.Code = KpiProductGroupingContent.ProductGrouping.Code;
                             KpiProductGrouping_ContentExportDTO.Name = KpiProductGroupingContent.ProductGrouping.Name;
                             KpiProductGrouping_ContentExportDTO.ItemCount = KpiProductGroupingContent.KpiProductGroupingContentItemMappings.Count;
@@ -771,7 +798,7 @@ namespace DMS.Rpc.kpi_product_grouping
                             } // them chi tieu kpi cho item
 
                             KpiProductGrouping_ContentExportDTO.Items = new List<KpiProductGrouping_ExportItemDTO>();
-                            KpiProductGrouping_KpiProductGroupingExportDTO.Contents.Add(KpiProductGrouping_ContentExportDTO);
+                            KpiProductGrouping_AppUserExportDTO.Contents.Add(KpiProductGrouping_ContentExportDTO);
 
                             foreach(var SubItemMapping in KpiProductGroupingContent.KpiProductGroupingContentItemMappings)
                             {
