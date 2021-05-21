@@ -70,7 +70,6 @@ namespace DMS.ABE
             services.AddSingleton<ObjectPoolProvider, DefaultObjectPoolProvider>();
             services.AddSingleton<IPooledObjectPolicy<IModel>, RabbitModelPooledObjectPolicy>();
             services.AddSingleton<IRabbitManager, RabbitManager>();
-            services.AddHostedService<ConsumeRabbitMQHostedService>();
 
             services.AddDbContext<DataContext>(options =>
               options.UseSqlServer(Configuration.GetConnectionString("DataContext"), sqlOptions =>
