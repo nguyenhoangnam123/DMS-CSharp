@@ -751,12 +751,25 @@ namespace DMS.Rpc.kpi_product_grouping
                         List<KpiProductGroupingContent> SubContents = KpiProductGroupingContents
                             .Where(x => x.KpiProductGroupingId == AppUserKpi.Id)
                             .ToList();
-                        foreach(KpiProductGroupingContent KpiProductGroupingContent in SubContents)
+                        foreach (KpiProductGroupingContent KpiProductGroupingContent in SubContents)
                         {
                             KpiProductGrouping_ContentExportDTO KpiProductGrouping_ContentExportDTO = new KpiProductGrouping_ContentExportDTO();
                             KpiProductGrouping_ContentExportDTO.Code = KpiProductGroupingContent.ProductGrouping.Code;
                             KpiProductGrouping_ContentExportDTO.Name = KpiProductGroupingContent.ProductGrouping.Name;
                             KpiProductGrouping_ContentExportDTO.ItemCount = KpiProductGroupingContent.KpiProductGroupingContentItemMappings.Count;
+                            List<KpiProductGroupingContentCriteriaMapping> SubCriteriaMappings = KpiProductGroupingContent.KpiProductGroupingContentCriteriaMappings;
+                            foreach (var CriteriaMapping in SubCriteriaMappings)
+                            {
+                                if (CriteriaMapping.KpiProductGroupingCriteriaId == KpiProductGroupingCriteriaEnum.INDIRECT_REVENUE.Id)
+                                {
+                                    KpiProductGrouping_ContentExportDTO.IndirectRevenue = CriteriaMapping.Value;
+                                }
+                                if (CriteriaMapping.KpiProductGroupingCriteriaId == KpiProductGroupingCriteriaEnum.INDIRECT_STORE.Id)
+                                {
+                                    KpiProductGrouping_ContentExportDTO.IndirectStoreCounter = CriteriaMapping.Value;
+                                }
+                            } // them chi tieu kpi cho item
+
                             KpiProductGrouping_ContentExportDTO.Items = new List<KpiProductGrouping_ExportItemDTO>();
                             KpiProductGrouping_KpiProductGroupingExportDTO.Contents.Add(KpiProductGrouping_ContentExportDTO);
 
@@ -766,24 +779,6 @@ namespace DMS.Rpc.kpi_product_grouping
                                 kpiProductGrouping_ExportItemDTO.Code = SubItemMapping.Item.Code;
                                 kpiProductGrouping_ExportItemDTO.Name = SubItemMapping.Item.Name;
                                 KpiProductGrouping_ContentExportDTO.Items.Add(kpiProductGrouping_ExportItemDTO);
-
-                                List<KpiProductGroupingContentCriteriaMapping> SubCriteriaMappings = kpiProductGroupingContentCriteriaMappings
-                                    .Where(x => x.KpiProductGroupingContentId == SubItemMapping.KpiProductGroupingContentId)
-                                    .ToList();
-                                if (SubCriteriaMappings != null && SubCriteriaMappings.Any())
-                                {
-                                    foreach (var CriteriaMapping in SubCriteriaMappings)
-                                    {
-                                        if (CriteriaMapping.KpiProductGroupingCriteriaId == KpiProductGroupingCriteriaEnum.INDIRECT_REVENUE.Id)
-                                        {
-                                            kpiProductGrouping_ExportItemDTO.IndirectRevenue = CriteriaMapping.Value;
-                                        }
-                                        if (CriteriaMapping.KpiProductGroupingCriteriaId == KpiProductGroupingCriteriaEnum.INDIRECT_STORE.Id)
-                                        {
-                                            kpiProductGrouping_ExportItemDTO.IndirectStoreCounter = CriteriaMapping.Value;
-                                        }
-                                    } // them chi tieu kpi cho item
-                                }
                             }
                         }
                     }

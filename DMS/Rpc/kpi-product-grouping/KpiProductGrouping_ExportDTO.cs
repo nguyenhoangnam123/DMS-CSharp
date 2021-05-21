@@ -29,6 +29,8 @@ namespace DMS.Rpc.kpi_product_grouping
         public string Code { get; set; }
         public string Name { get; set; }
         public long ItemCount { get; set; }
+        public decimal? IndirectRevenue { get; set; }
+        public long? IndirectStoreCounter { get; set; }
         public List<KpiProductGrouping_ExportItemDTO> Items { get; set; }
     }
 
@@ -36,8 +38,6 @@ namespace DMS.Rpc.kpi_product_grouping
     {
         public string Code { get; set; }
         public string Name { get; set; }
-        public decimal? IndirectRevenue { get; set; }
-        public long? IndirectStoreCounter { get; set; }
     }
 }
 
