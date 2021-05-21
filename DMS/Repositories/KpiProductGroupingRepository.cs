@@ -250,6 +250,12 @@ namespace DMS.Repositories
                     StatusId = q.Employee.StatusId,
                     GPSUpdatedAt = q.Employee.GPSUpdatedAt,
                     RowId = q.Employee.RowId,
+                    Organization = new Organization
+                    {
+                        Id = q.Employee.Organization.Id,
+                        Code = q.Employee.Organization.Code,
+                        Name = q.Employee.Organization.Name,
+                    }
                 } : null,
                 KpiPeriod = filter.Selects.Contains(KpiProductGroupingSelect.KpiPeriod) && q.KpiPeriod != null ? new KpiPeriod
                 {

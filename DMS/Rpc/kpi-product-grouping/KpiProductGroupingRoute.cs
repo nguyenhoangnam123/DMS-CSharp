@@ -15,9 +15,11 @@ using DMS.Services.MAppUser;
 using DMS.Services.MKpiPeriod;
 using DMS.Services.MKpiProductGroupingType;
 using DMS.Services.MStatus;
+using System.ComponentModel;
 
 namespace DMS.Rpc.kpi_product_grouping
 {
+    [DisplayName("Kpi nhóm sản phẩm")]
     public class KpiProductGroupingRoute : Root
     {
         public const string Parent = Module + "/kpi-management";

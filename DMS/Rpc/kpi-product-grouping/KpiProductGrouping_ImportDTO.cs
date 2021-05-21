@@ -1,5 +1,6 @@
 ﻿using DMS.Common;
 using System;
+using System.Collections.Generic;
 
 namespace DMS.Rpc.kpi_product_grouping
 {
@@ -8,7 +9,6 @@ namespace DMS.Rpc.kpi_product_grouping
         public long Stt { get; set; }
         public string Username { get; set; }
         public string ProductGroupingCode { get; set; }
-        public string ItemCode { get; set; }
         public string IndirectRevenue { get; set; }
         public string IndirectStoreCounter { get; set; }
 
@@ -16,8 +16,7 @@ namespace DMS.Rpc.kpi_product_grouping
         {
             get
             {
-                if (!string.IsNullOrWhiteSpace(ItemCode) ||
-                    !string.IsNullOrWhiteSpace(ProductGroupingCode) ||
+                if (!string.IsNullOrWhiteSpace(ProductGroupingCode) ||
                     !string.IsNullOrWhiteSpace(IndirectRevenue) ||
                     !string.IsNullOrWhiteSpace(IndirectStoreCounter))
                     return true;
@@ -28,11 +27,11 @@ namespace DMS.Rpc.kpi_product_grouping
         public bool IsNew { get; set; }
         public long EmployeeId { get; set; }
         public long ProductGroupingId { get; set; }
-        public long ItemId { get; set; }
         public long KpiYearId { get; set; }
         public long KpiPeriodId { get; set; }
         public long KpiProductGroupingTypeId { get; set; }
         public long OrganizationId { get; set; }
+        public List<KpiProductGrouping_ItemImportDTO> Items { get; set; }
     }
 
     public class KpiProductGrouping_RowDTO : IEquatable<KpiProductGrouping_RowDTO>

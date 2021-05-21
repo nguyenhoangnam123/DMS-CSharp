@@ -127,6 +127,10 @@ namespace DMS.Rpc.mobile.general_mobile
         public const string CountBrand = Default + "/count-brand";
         public const string ListBrand = Default + "/list-brand";
 
+        // appUsers for chatting
+        public const string ListAppUser = Default + "/list-app-user";
+        public const string CountAppUser = Default + "/count-app-user";
+
         // list path
         public const string ListPath = Default + "/list-path";
 
@@ -156,7 +160,10 @@ namespace DMS.Rpc.mobile.general_mobile
                 SingleListSalesOrderType, SingleListCategory,
                 ListPath
             } },
-       
+            {"Trò chuyện", new List<string>{
+                ListPath,
+                ListAppUser, CountAppUser
+            } }
         };
     }
 }

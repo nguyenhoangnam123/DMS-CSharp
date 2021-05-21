@@ -690,7 +690,7 @@ namespace DMS.Rpc.mobile.permission_mobile
             #endregion
 
             #region tổng hợp dữ liệu
-            if(KpiProductGroupings.Count > 0)
+            if (KpiProductGroupings.Count > 0)
             {
                 List<long> KpiProductGroupingIds = KpiProductGroupings.Select(x => x.Id).ToList();
                 List<KpiProductGroupingContentDAO> KpiProductGroupingContentDAOs = await DataContext.KpiProductGroupingContent.AsNoTracking()
@@ -701,11 +701,11 @@ namespace DMS.Rpc.mobile.permission_mobile
                         ProductGroupingId = c.ProductGroupingId,
                         KpiProductGroupingId = c.KpiProductGroupingId,
                         KpiProductGrouping = c.KpiProductGrouping == null ? null : new KpiProductGroupingDAO
-                        { 
+                        {
                             EmployeeId = c.KpiProductGrouping.EmployeeId
                         }
                     }).ToListAsync(); // lấy ra toàn bộ content của kpi
-                if(KpiProductGroupingContentDAOs.Count > 0)
+                if (KpiProductGroupingContentDAOs.Count > 0)
                 {
                     List<long> KpiProductGroupingContentIds = KpiProductGroupingContentDAOs.Select(x => x.Id).ToList();
                     List<KpiProductGroupingContentCriteriaMappingDAO> KpiProductGroupingContentCriteriaMappingDAOs = await DataContext.KpiProductGroupingContentCriteriaMapping.AsNoTracking()
@@ -717,6 +717,7 @@ namespace DMS.Rpc.mobile.permission_mobile
                             Value = c.Value,
                             KpiProductGroupingContent = c.KpiProductGroupingContent == null ? null : new KpiProductGroupingContentDAO
                             {
+                                KpiProductGroupingId = c.KpiProductGroupingContent.KpiProductGroupingId,
                                 ProductGroupingId = c.KpiProductGroupingContent.ProductGroupingId
                             }
                         }).ToListAsync(); // lấy ra toàn bộ mapping content với chỉ tiêu
@@ -758,44 +759,52 @@ namespace DMS.Rpc.mobile.permission_mobile
                         List<IndirectSalesOrderTransactionDAO> IndirectSalesOrderTransactionDAOs = await query.ToListAsync(); // lấy ra toàn bộ đơn hàng thỏa mãn điều kiện thời gian, nhân viên, Item
                         List<GenericEnum> KpiProductGroupingCriterias = KpiProductGroupingCriteriaEnum.KpiProductGroupingCriteriaEnumList; // lấy ra toàn bộ chỉ tiêu kpi
                         List<PermissionMobile_EmployeeKpiProductGroupingReportDTO> SubResults = new List<PermissionMobile_EmployeeKpiProductGroupingReportDTO>(); // lấy ra kết quả chưa group theo ProductGrouping
-                        foreach(var KpiProductGrouping in KpiProductGroupings)
+                        foreach (var KpiProductGrouping in KpiProductGroupings)
                         {
-                            List<KpiProductGroupingContentDAO> SubContents = KpiProductGroupingContentDAOs
+                            List<KpiProductGroupingContentDAO> Contents = KpiProductGroupingContentDAOs
                                 .Where(x => x.KpiProductGroupingId == KpiProductGrouping.Id)
                                 .ToList(); // lấy ra Content của Kpi
-                            List<long> SubContentIds = SubContents.Select(x => x.Id).ToList();
-                            List<long> SubProductGroupingIds = SubContents.Select(x => x.ProductGroupingId)
+                            List<long> ContentIds = Contents.Select(x => x.Id).ToList();
+                            List<long> ContentProductGroupingIds = Contents.Select(x => x.ProductGroupingId)
                                 .Distinct()
                                 .ToList();
-                            List<KpiProductGroupingContentCriteriaMappingDAO> SubProductGroupingContentCriteriaMappings = KpiProductGroupingContentCriteriaMappingDAOs
-                                .Where(x => SubContentIds.Contains(x.KpiProductGroupingContentId))
-                                .ToList(); // lay ra mapping chi tieu cua content phu
-                            List<KpiProductGroupingContentItemMappingDAO> SubKpiProductGroupingContentItemMappingDAOs = KpiProductGroupingContentItemMappingDAOs
-                                 .Where(x => SubContentIds.Contains(x.KpiProductGroupingContentId))
-                                .ToList(); // lay ra mapping item cua content phu
-                            List<long> SubItemIds = SubKpiProductGroupingContentItemMappingDAOs.Select(x => x.ItemId).ToList(); // list item duoc tinh vao don hang cua content phu
-                            List<IndirectSalesOrderTransactionDAO> SubOrders = IndirectSalesOrderTransactionDAOs
-                                .Where(x => x.SalesEmployeeId == KpiProductGrouping.EmployeeId && SubItemIds.Contains(x.ItemId))
-                                .ToList();
 
-                            foreach (var ProductGroupingId in SubProductGroupingIds)
+                            foreach (var ProductGroupingId in ContentProductGroupingIds)
                             {
-                                PermissionMobile_EmployeeKpiProductGroupingReportDTO PermissionMobile_EmployeeKpiProductGroupingReportDTO = new PermissionMobile_EmployeeKpiProductGroupingReportDTO {
+                                List<KpiProductGroupingContentDAO> SubContents = KpiProductGroupingContentDAOs
+                                    .Where(x => x.ProductGroupingId == ProductGroupingId)
+                                    .ToList(); // lấy ra Content của từng nhóm sp
+                                List<long> SubContentIds = SubContents.Select(x => x.Id).ToList();
+                                List<KpiProductGroupingContentCriteriaMappingDAO> SubContentCriteriaMappings = KpiProductGroupingContentCriteriaMappingDAOs
+                                    .Where(x => SubContentIds.Contains(x.KpiProductGroupingContentId))
+                                    .ToList(); // lay ra mapping item cua content phu
+                                List<KpiProductGroupingContentItemMappingDAO> SubContentItemMappings = KpiProductGroupingContentItemMappingDAOs
+                                    .Where(x => SubContentIds.Contains(x.KpiProductGroupingContentId))
+                                    .ToList(); // lay ra mapping item cua content phu
+                                List<long> SubItemIds = SubContentItemMappings.Select(x => x.ItemId).ToList();
+                                List<IndirectSalesOrderTransactionDAO> SubOrders = IndirectSalesOrderTransactionDAOs
+                                    .Where(x => x.SalesEmployeeId == KpiProductGrouping.EmployeeId && SubItemIds.Contains(x.ItemId))
+                                    .ToList();
+
+                                PermissionMobile_EmployeeKpiProductGroupingReportDTO PermissionMobile_EmployeeKpiProductGroupingReportDTO = new PermissionMobile_EmployeeKpiProductGroupingReportDTO
+                                {
                                     ProductGroupingId = ProductGroupingId,
                                     ProductGroupingName = ProductGroupingDAOs.Where(x => x.Id == ProductGroupingId).Select(x => x.Name).FirstOrDefault(),
                                     CurrentKpiProductGroupings = new List<PermissionMobile_EmployeeKpiProductGrouping>()
                                 };
-                                foreach(var KpiProductGroupingCriteria in KpiProductGroupingCriterias)
+                                foreach (var KpiProductGroupingCriteria in KpiProductGroupingCriterias)
                                 {
                                     PermissionMobile_EmployeeKpiProductGrouping PermissionMobile_EmployeeKpiProductGrouping = new PermissionMobile_EmployeeKpiProductGrouping
                                     {
-                                         ProductGroupingId = ProductGroupingId,
-                                         KpiProductGroupingCriteriaName = KpiProductGroupingCriteria.Name
+                                        ProductGroupingId = ProductGroupingId,
+                                        KpiProductGroupingCriteriaName = KpiProductGroupingCriteria.Name
                                     };
                                     PermissionMobile_EmployeeKpiProductGroupingReportDTO.CurrentKpiProductGroupings
                                         .Add(PermissionMobile_EmployeeKpiProductGrouping);
-                                    PermissionMobile_EmployeeKpiProductGrouping.PlannedValue = SubProductGroupingContentCriteriaMappings
-                                        .Where(x => x.KpiProductGroupingCriteriaId == KpiProductGroupingCriteria.Id && x.KpiProductGroupingContent.ProductGroupingId == ProductGroupingId)
+                                    PermissionMobile_EmployeeKpiProductGrouping.PlannedValue = SubContentCriteriaMappings
+                                        .Where(x => x.KpiProductGroupingCriteriaId == KpiProductGroupingCriteria.Id)
+                                        .Where(x => x.KpiProductGroupingContent.ProductGroupingId == ProductGroupingId)
+                                        .Where(x => x.KpiProductGroupingContent.KpiProductGroupingId == KpiProductGrouping.Id)
                                         .Where(x => x.Value.HasValue)
                                         .Select(x => (decimal)x.Value.Value)
                                         .Sum(); // lấy ra số kế hoạch
@@ -851,8 +860,8 @@ namespace DMS.Rpc.mobile.permission_mobile
                                         .Select(x => x.CurrentValue)
                                         .Sum();
                                     PermissionMobile_EmployeeKpiProductGrouping.Percentage = CalculatePercentage(PermissionMobile_EmployeeKpiProductGrouping.PlannedValue, PermissionMobile_EmployeeKpiProductGrouping.CurrentValue);
-                                }    
-                            }    
+                                }
+                            }
                         }
                     }
                 }
@@ -934,6 +943,7 @@ namespace DMS.Rpc.mobile.permission_mobile
                             Value = c.Value,
                             KpiProductGroupingContent = c.KpiProductGroupingContent == null ? null : new KpiProductGroupingContentDAO
                             {
+                                KpiProductGroupingId = c.KpiProductGroupingContent.KpiProductGroupingId,
                                 ProductGroupingId = c.KpiProductGroupingContent.ProductGroupingId
                             }
                         }).ToListAsync(); // lấy ra toàn bộ mapping content với chỉ tiêu
@@ -977,26 +987,30 @@ namespace DMS.Rpc.mobile.permission_mobile
                         List<PermissionMobile_EmployeeKpiProductGroupingReportDTO> SubResults = new List<PermissionMobile_EmployeeKpiProductGroupingReportDTO>(); // lấy ra kết quả chưa group theo ProductGrouping
                         foreach (var KpiProductGrouping in KpiProductGroupings)
                         {
-                            List<KpiProductGroupingContentDAO> SubContents = KpiProductGroupingContentDAOs
+                            List<KpiProductGroupingContentDAO> Contents = KpiProductGroupingContentDAOs
                                 .Where(x => x.KpiProductGroupingId == KpiProductGrouping.Id)
                                 .ToList(); // lấy ra Content của Kpi
-                            List<long> SubContentIds = SubContents.Select(x => x.Id).ToList();
-                            List<long> SubProductGroupingIds = SubContents.Select(x => x.ProductGroupingId)
+                            List<long> ContentIds = Contents.Select(x => x.Id).ToList();
+                            List<long> ContentProductGroupingIds = Contents.Select(x => x.ProductGroupingId)
                                 .Distinct()
                                 .ToList();
-                            List<KpiProductGroupingContentCriteriaMappingDAO> SubProductGroupingContentCriteriaMappings = KpiProductGroupingContentCriteriaMappingDAOs
-                                .Where(x => SubContentIds.Contains(x.KpiProductGroupingContentId))
-                                .ToList(); // lay ra mapping chi tieu cua content phu
-                            List<KpiProductGroupingContentItemMappingDAO> SubKpiProductGroupingContentItemMappingDAOs = KpiProductGroupingContentItemMappingDAOs
-                                 .Where(x => SubContentIds.Contains(x.KpiProductGroupingContentId))
-                                .ToList(); // lay ra mapping item cua content phu
-                            List<long> SubItemIds = SubKpiProductGroupingContentItemMappingDAOs.Select(x => x.ItemId).ToList(); // list item duoc tinh vao don hang cua content phu
-                            List<IndirectSalesOrderTransactionDAO> SubOrders = IndirectSalesOrderTransactionDAOs
-                                .Where(x => x.SalesEmployeeId == KpiProductGrouping.EmployeeId && SubItemIds.Contains(x.ItemId))
-                                .ToList();
 
-                            foreach (var ProductGroupingId in SubProductGroupingIds)
+                            foreach (var ProductGroupingId in ContentProductGroupingIds)
                             {
+                                List<KpiProductGroupingContentDAO> SubContents = KpiProductGroupingContentDAOs
+                                    .Where(x => x.ProductGroupingId == ProductGroupingId)
+                                    .ToList(); // lấy ra Content của từng nhóm sp
+                                List<long> SubContentIds = SubContents.Select(x => x.Id).ToList();
+                                List<KpiProductGroupingContentCriteriaMappingDAO> SubContentCriteriaMappings = KpiProductGroupingContentCriteriaMappingDAOs
+                                    .Where(x => SubContentIds.Contains(x.KpiProductGroupingContentId))
+                                    .ToList(); // lay ra mapping item cua content phu
+                                List<KpiProductGroupingContentItemMappingDAO> SubContentItemMappings = KpiProductGroupingContentItemMappingDAOs
+                                    .Where(x => SubContentIds.Contains(x.KpiProductGroupingContentId))
+                                    .ToList(); // lay ra mapping item cua content phu
+                                List<long> SubItemIds = SubContentItemMappings.Select(x => x.ItemId).ToList();
+                                List<IndirectSalesOrderTransactionDAO> SubOrders = IndirectSalesOrderTransactionDAOs
+                                    .Where(x => x.SalesEmployeeId == KpiProductGrouping.EmployeeId && SubItemIds.Contains(x.ItemId))
+                                    .ToList();
                                 PermissionMobile_EmployeeKpiProductGroupingReportDTO PermissionMobile_EmployeeKpiProductGroupingReportDTO = new PermissionMobile_EmployeeKpiProductGroupingReportDTO
                                 {
                                     ProductGroupingId = ProductGroupingId,
@@ -1012,8 +1026,10 @@ namespace DMS.Rpc.mobile.permission_mobile
                                     };
                                     PermissionMobile_EmployeeKpiProductGroupingReportDTO.CurrentKpiProductGroupings
                                         .Add(PermissionMobile_EmployeeKpiProductGrouping);
-                                    PermissionMobile_EmployeeKpiProductGrouping.PlannedValue = SubProductGroupingContentCriteriaMappings
-                                        .Where(x => x.KpiProductGroupingCriteriaId == KpiProductGroupingCriteria.Id && x.KpiProductGroupingContent.ProductGroupingId == ProductGroupingId)
+                                    PermissionMobile_EmployeeKpiProductGrouping.PlannedValue = SubContentCriteriaMappings
+                                        .Where(x => x.KpiProductGroupingCriteriaId == KpiProductGroupingCriteria.Id)
+                                        .Where(x => x.KpiProductGroupingContent.ProductGroupingId == ProductGroupingId)
+                                        .Where(x => x.KpiProductGroupingContent.KpiProductGroupingId == KpiProductGrouping.Id)
                                         .Where(x => x.Value.HasValue)
                                         .Select(x => (decimal)x.Value.Value)
                                         .Sum(); // lấy ra số kế hoạch
@@ -1300,7 +1316,7 @@ namespace DMS.Rpc.mobile.permission_mobile
                 Item Item = Items
                     .Where(x => x.Id == ItemId)
                     .FirstOrDefault();
-                if(Item != null)
+                if (Item != null)
                 {
                     PermissionMobile_TopRevenueByItemDTO ResultItem = new PermissionMobile_TopRevenueByItemDTO();
                     ResultItem.ProductId = Item.Product.Id;
@@ -1842,7 +1858,7 @@ namespace DMS.Rpc.mobile.permission_mobile
                 Item Item = Items
                     .Where(x => x.Id == ItemId)
                     .FirstOrDefault();
-                if(Item != null)
+                if (Item != null)
                 {
                     PermissionMobile_TopRevenueByItemDTO ResultItem = new PermissionMobile_TopRevenueByItemDTO();
                     ResultItem.ProductId = Item.Product.Id;

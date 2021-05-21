@@ -109,6 +109,12 @@ namespace DMS.Rpc.kpi_product_grouping
             KpiProductGroupingFilter KpiProductGroupingFilter = ConvertFilterDTOToFilterEntity(KpiProductGrouping_KpiProductGroupingFilterDTO);
             KpiProductGroupingFilter = await KpiProductGroupingService.ToFilter(KpiProductGroupingFilter);
             List<KpiProductGrouping> KpiProductGroupings = await KpiProductGroupingService.List(KpiProductGroupingFilter);
+            for(int i =0; i< KpiProductGroupings.Count; i++)
+            {
+                KpiProductGroupings[i] = Utils.Clone(KpiProductGroupings[i]);
+                KpiProductGroupings[i].Organization = KpiProductGroupings[i].Employee.Organization;
+                KpiProductGroupings[i].OrganizationId = KpiProductGroupings[i].Employee.OrganizationId;
+            } // BA yêu cầu trả về đơn vị tổ chức của Employee, không phải của Kpi
             List<KpiProductGrouping_KpiProductGroupingDTO> KpiProductGrouping_KpiProductGroupingDTOs = KpiProductGroupings
                 .Select(c => new KpiProductGrouping_KpiProductGroupingDTO(c)).ToList();
             return KpiProductGrouping_KpiProductGroupingDTOs;
@@ -262,14 +268,14 @@ namespace DMS.Rpc.kpi_product_grouping
             GenericEnum KpiPeriod;
             using (ExcelPackage excelPackage = new ExcelPackage(file.OpenReadStream()))
             {
-                ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets["KPI san pham"];
+                ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets["KPI nhom san pham"];
                 if (worksheet == null)
                 {
                     errorContent.AppendLine("File không đúng biểu mẫu import");
                     return BadRequest(errorContent.ToString());
                 }
 
-                string KpiPeriodValue = worksheet.Cells[2, 3].Value?.ToString();
+                string KpiPeriodValue = worksheet.Cells[2, 4].Value?.ToString();
 
                 if (!string.IsNullOrWhiteSpace(KpiPeriodValue))
                     KpiPeriod = KpiPeriodEnum.KpiPeriodEnumList.Where(x => x.Name == KpiPeriodValue).FirstOrDefault();
@@ -279,7 +285,7 @@ namespace DMS.Rpc.kpi_product_grouping
                     return BadRequest(errorContent.ToString());
                 }
 
-                string KpiYearValue = worksheet.Cells[2, 5].Value?.ToString();
+                string KpiYearValue = worksheet.Cells[2, 6].Value?.ToString();
 
                 if (!string.IsNullOrWhiteSpace(KpiYearValue))
                     KpiYear = KpiYearEnum.KpiYearEnumList.Where(x => x.Name == KpiYearValue.Trim()).FirstOrDefault();
@@ -425,6 +431,7 @@ namespace DMS.Rpc.kpi_product_grouping
                     else
                     {
                         KpiProductGrouping_ImportDTO.EmployeeId = Employee.Id;
+                        KpiProductGrouping_ImportDTO.OrganizationId = Employee.OrganizationId;
                     }
                     #endregion
 
@@ -468,21 +475,32 @@ namespace DMS.Rpc.kpi_product_grouping
                         continue;
                     }
 
-                    KpiProductGrouping_ItemImportDTO Item;
                     if (!string.IsNullOrWhiteSpace(ItemCodeValue))
                     {
-                        Item = Items.Where(x => x.Code.ToLower() == ItemCodeValue.ToLower().Trim()).FirstOrDefault();
-                        if (Item == null)
+                        List<string> ItemCodes = ItemCodeValue.Trim().Split(";").ToList();
+                        ItemCodes = ItemCodes
+                            .Where(x => !string.IsNullOrWhiteSpace(x))
+                            .ToList(); // bỏ các khoảng trắng hoặc null trong list item code
+                        List<KpiProductGrouping_ItemImportDTO> LineItems = new List<KpiProductGrouping_ItemImportDTO>();
+                        foreach (var ItemCode in ItemCodes)
                         {
-                            errorContent.AppendLine($"Lỗi dòng thứ {i + 1}: Sản phẩm không tồn tại");
-                            continue;
+                            KpiProductGrouping_ItemImportDTO Item = Items.Where(x => x.Code.ToLower() == ItemCode.ToLower().Trim()).FirstOrDefault();
+                            if (Item == null)
+                            {
+                                errorContent.AppendLine($"Lỗi dòng thứ {i}: Sản phẩm không tồn tại");
+                                continue;
+                            }
+                            //else if (ProductGrouping.Id != Item.ProductGroupingId)
+                            //{
+                            //    errorContent.AppendLine($"Lỗi dòng thứ {i + 1}: Sản phẩm không thuộc nhóm sản phẩm");
+                            //    continue;
+                            //} // ko cần validate Item trong group vì có thể chọn Item khác Group
+                            else
+                            {
+                                LineItems.Add(Item);
+                            }
                         }
-                        if (ProductGrouping.Id != Item.ProductGroupingId)
-                        {
-                            errorContent.AppendLine($"Lỗi dòng thứ {i + 1}: Sản phẩm không thuộc nhóm sản phẩm");
-                            continue;
-                        }
-                        KpiProductGrouping_ImportDTO.ItemId = Item.Id;
+                        KpiProductGrouping_ImportDTO.Items = LineItems; // lay ra tat ca cac item hop le
                     }
 
                     #endregion
@@ -490,7 +508,6 @@ namespace DMS.Rpc.kpi_product_grouping
                     KpiProductGrouping_ImportDTO.Stt = i;
                     KpiProductGrouping_ImportDTO.Username = UsernameValue;
                     KpiProductGrouping_ImportDTO.ProductGroupingCode = ProductGroupingCodeValue;
-                    KpiProductGrouping_ImportDTO.ItemCode = ItemCodeValue;
                     KpiProductGrouping_ImportDTO.IndirectRevenue = worksheet.Cells[i, RevenueColumn].Value?.ToString();
                     KpiProductGrouping_ImportDTO.IndirectStoreCounter = worksheet.Cells[i, StoreColumn].Value?.ToString();
                     KpiProductGrouping_ImportDTO.KpiPeriodId = KpiPeriod.Id;
@@ -500,123 +517,110 @@ namespace DMS.Rpc.kpi_product_grouping
             }
 
             Dictionary<long, StringBuilder> Errors = new Dictionary<long, StringBuilder>();
-            HashSet<KpiProductGrouping_RowDTO> KpiProductGrouping_RowDTOs = new HashSet<KpiProductGrouping_RowDTO>(KpiProductGroupings.Select(x => new KpiProductGrouping_RowDTO
+            Dictionary<long, int> OldKpiCountDict = new Dictionary<long, int>();
+            foreach (KpiProductGrouping_ImportDTO ImportDTO in KpiProductGrouping_ImportDTOs)
             {
-                EmployeeId = x.EmployeeId,
-                KpiPeriodId = x.KpiPeriodId,
-                KpiYearId = x.KpiYearId,
-                KpiProductGroupingTypeId = x.KpiProductGroupingTypeId
-            }).ToList());
-            foreach (KpiProductGrouping_ImportDTO KpiProductGrouping_ImportDTO in KpiProductGrouping_ImportDTOs)
-            {
-                Errors.Add(KpiProductGrouping_ImportDTO.Stt, new StringBuilder(""));
-                KpiProductGrouping_ImportDTO.IsNew = false;
-                if (!KpiProductGrouping_RowDTOs.Contains(new KpiProductGrouping_RowDTO
+                if (ImportDTO.HasValue == false)
                 {
-                    EmployeeId = KpiProductGrouping_ImportDTO.EmployeeId,
-                    KpiPeriodId = KpiProductGrouping_ImportDTO.KpiPeriodId,
-                    KpiYearId = KpiProductGrouping_ImportDTO.KpiYearId,
-                    KpiProductGroupingTypeId = KpiProductGrouping_ImportDTO.KpiProductGroupingTypeId
-                }))
-                {
-                    KpiProductGrouping_RowDTOs.Add(new KpiProductGrouping_RowDTO
-                    {
-                        EmployeeId = KpiProductGrouping_ImportDTO.EmployeeId,
-                        KpiPeriodId = KpiProductGrouping_ImportDTO.KpiPeriodId,
-                        KpiYearId = KpiProductGrouping_ImportDTO.KpiYearId,
-                        KpiProductGroupingTypeId = KpiProductGrouping_ImportDTO.KpiProductGroupingTypeId
-                    });
-                    KpiProductGrouping_ImportDTO.IsNew = true;
-                    var Employee = Employees
-                        .Where(x => x.Username.ToLower() == KpiProductGrouping_ImportDTO.Username.ToLower())
-                        .FirstOrDefault();
-                    KpiProductGrouping_ImportDTO.EmployeeId = Employee.Id;
-                    KpiProductGrouping_ImportDTO.OrganizationId = Employee.OrganizationId;
-                }
-            } // thiet lap kpiDTO, xac dinh xem kpi nao la them moi, kpi nao la cap nhat
-
-            foreach (KpiProductGrouping_ImportDTO KpiProductGrouping_ImportDTO in KpiProductGrouping_ImportDTOs)
-            {
-                if (KpiProductGrouping_ImportDTO.HasValue == false)
-                {
-                    Errors[KpiProductGrouping_ImportDTO.Stt].Append($"Lỗi dòng thứ {KpiProductGrouping_ImportDTO.Stt}: Chưa nhập chỉ tiêu");
+                    Errors[ImportDTO.Stt].Append($"Lỗi dòng thứ {ImportDTO.Stt}: Chưa nhập chỉ tiêu");
                     continue;
                 }
-                KpiProductGrouping KpiProductGrouping;
-                List<KpiProductGrouping_ItemImportDTO> SubItems = Items
-                            .Where(x => x.ProductGroupingId == KpiProductGrouping_ImportDTO.ProductGroupingId)
-                            .ToList();
-                if (KpiProductGrouping_ImportDTO.IsNew)
+                KpiProductGrouping KpiProductGroupingInDB = KpiProductGroupings.Where(x => x.EmployeeId == ImportDTO.EmployeeId &&
+                    x.KpiPeriodId == ImportDTO.KpiPeriodId &&
+                    x.KpiYearId == ImportDTO.KpiYearId &&
+                    x.KpiProductGroupingTypeId == ImportDTO.KpiProductGroupingTypeId)
+                    .FirstOrDefault(); // tim trong 
+                if (KpiProductGroupingInDB == null)
                 {
-                    KpiProductGrouping = new KpiProductGrouping();
-                    KpiProductGrouping.EmployeeId = KpiProductGrouping_ImportDTO.EmployeeId;
-                    KpiProductGrouping.OrganizationId = KpiProductGrouping_ImportDTO.OrganizationId;
-                    KpiProductGrouping.KpiPeriodId = KpiProductGrouping_ImportDTO.KpiPeriodId;
-                    KpiProductGrouping.KpiYearId = KpiProductGrouping_ImportDTO.KpiYearId;
-                    KpiProductGrouping.KpiProductGroupingTypeId = KpiProductGrouping_ImportDTO.KpiProductGroupingTypeId;
-                    KpiProductGrouping.RowId = Guid.NewGuid();
-                    KpiProductGrouping.KpiProductGroupingContents = new List<KpiProductGroupingContent>();
-                    KpiProductGrouping.KpiProductGroupingContents.Add(new KpiProductGroupingContent
+                    KpiProductGroupingInDB = new KpiProductGrouping();
+                    KpiProductGroupingInDB.EmployeeId = ImportDTO.EmployeeId;
+                    KpiProductGroupingInDB.OrganizationId = ImportDTO.OrganizationId;
+                    KpiProductGroupingInDB.KpiPeriodId = ImportDTO.KpiPeriodId;
+                    KpiProductGroupingInDB.KpiYearId = ImportDTO.KpiYearId;
+                    KpiProductGroupingInDB.KpiProductGroupingTypeId = ImportDTO.KpiProductGroupingTypeId;
+                    KpiProductGroupingInDB.RowId = Guid.NewGuid();
+                    KpiProductGroupingInDB.KpiProductGroupingContents = new List<KpiProductGroupingContent>();
+                    KpiProductGroupingInDB.KpiProductGroupingContents.Add(new KpiProductGroupingContent
                     {
-                        ProductGroupingId = KpiProductGrouping_ImportDTO.ProductGroupingId,
+                        ProductGroupingId = ImportDTO.ProductGroupingId,
                         RowId = Guid.NewGuid(),
                         KpiProductGroupingContentCriteriaMappings = KpiProductGroupingCriteriaEnum.KpiProductGroupingCriteriaEnumList.Select(x => new KpiProductGroupingContentCriteriaMapping
                         {
                             KpiProductGroupingCriteriaId = x.Id,
                         }).ToList(),
-                        KpiProductGroupingContentItemMappings = SubItems.Select(x => new KpiProductGroupingContentItemMapping
+                        KpiProductGroupingContentItemMappings = ImportDTO.Items.Select(x => new KpiProductGroupingContentItemMapping
                         {
                             ItemId = x.Id
                         }).ToList()
                     });
+                    KpiProductGroupings.Add(KpiProductGroupingInDB);
                 } // neu them moi Kpi
                 else
                 {
-                    KpiProductGrouping = KpiProductGroupings.Where(x => x.EmployeeId == KpiProductGrouping_ImportDTO.EmployeeId &&
-                    x.KpiPeriodId == KpiProductGrouping_ImportDTO.KpiPeriodId &&
-                    x.KpiYearId == KpiProductGrouping_ImportDTO.KpiYearId &&
-                    x.KpiProductGroupingTypeId == KpiProductGrouping_ImportDTO.KpiProductGroupingTypeId)
-                        .FirstOrDefault();
-                    var KpiProductGroupingContent = KpiProductGrouping.KpiProductGroupingContents
-                        .Where(x => x.KpiProductGroupingId == KpiProductGrouping_ImportDTO.ProductGroupingId)
-                        .FirstOrDefault();
-                    if (KpiProductGroupingContent == null)
+                    int OldKpiCount = default(int);
+                    if (!OldKpiCountDict.TryGetValue(KpiProductGroupingInDB.Id, out OldKpiCount))
                     {
-                        KpiProductGrouping.KpiProductGroupingContents.Add(new KpiProductGroupingContent
+                        OldKpiCountDict.Add(KpiProductGroupingInDB.Id, 1);
+                        KpiProductGroupingInDB.KpiProductGroupingContents = new List<KpiProductGroupingContent> {new KpiProductGroupingContent
                         {
-                            ProductGroupingId = KpiProductGrouping_ImportDTO.ProductGroupingId,
+                            ProductGroupingId = ImportDTO.ProductGroupingId,
                             RowId = Guid.NewGuid(),
                             KpiProductGroupingContentCriteriaMappings = KpiProductGroupingCriteriaEnum.KpiProductGroupingCriteriaEnumList.Select(x => new KpiProductGroupingContentCriteriaMapping
                             {
                                 KpiProductGroupingCriteriaId = x.Id,
                             }).ToList(),
-                            KpiProductGroupingContentItemMappings = SubItems.Select(x => new KpiProductGroupingContentItemMapping
+                            KpiProductGroupingContentItemMappings = ImportDTO.Items.Select(x => new KpiProductGroupingContentItemMapping
                             {
                                 ItemId = x.Id
                             }).ToList()
-                        });
+                        }};
+                    } // nếu là lần đầu tiên update kpi thì xóa hết content của kpi đó và thêm mới một kpi content tương ứng
+                    else
+                    {
+                        var KpiProductGroupingContent = KpiProductGroupingInDB.KpiProductGroupingContents
+                            .Where(x => x.KpiProductGroupingId == ImportDTO.ProductGroupingId)
+                            .FirstOrDefault();
+                        if (KpiProductGroupingContent == null)
+                        {
+                            KpiProductGroupingInDB.KpiProductGroupingContents.Add(new KpiProductGroupingContent
+                            {
+                                ProductGroupingId = ImportDTO.ProductGroupingId,
+                                RowId = Guid.NewGuid(),
+                                KpiProductGroupingContentCriteriaMappings = KpiProductGroupingCriteriaEnum.KpiProductGroupingCriteriaEnumList.Select(x => new KpiProductGroupingContentCriteriaMapping
+                                {
+                                    KpiProductGroupingCriteriaId = x.Id,
+                                }).ToList(),
+                                KpiProductGroupingContentItemMappings = ImportDTO.Items.Select(x => new KpiProductGroupingContentItemMapping
+                                {
+                                    ItemId = x.Id
+                                }).ToList()
+                            });
+                        }
                     }
+                   
                 }
-                var Content = KpiProductGrouping.KpiProductGroupingContents
-                            .Where(x => x.KpiProductGroupingId == KpiProductGrouping_ImportDTO.ProductGroupingId)
+                var Content = KpiProductGroupingInDB.KpiProductGroupingContents
+                            .Where(x => x.ProductGroupingId == ImportDTO.ProductGroupingId)
                             .FirstOrDefault();
                 if (Content != null)
                 {
-                    foreach(var KpiProductGroupingContentCriteriaMapping in Content.KpiProductGroupingContentCriteriaMappings)
+                    foreach (var KpiProductGroupingContentCriteriaMapping in Content.KpiProductGroupingContentCriteriaMappings)
                     {
-                        if (long.TryParse(KpiProductGrouping_ImportDTO.IndirectRevenue, out long IndirectRevenue) && KpiProductGroupingContentCriteriaMapping.KpiProductGroupingCriteriaId == KpiProductGroupingCriteriaEnum.INDIRECT_REVENUE.Id)
+                        if (long.TryParse(ImportDTO.IndirectRevenue, out long IndirectRevenue)
+                            && KpiProductGroupingContentCriteriaMapping.KpiProductGroupingCriteriaId == KpiProductGroupingCriteriaEnum.INDIRECT_REVENUE.Id)
                         {
                             KpiProductGroupingContentCriteriaMapping.Value = IndirectRevenue;
                         }
-                        else if (long.TryParse(KpiProductGrouping_ImportDTO.IndirectStoreCounter, out long IndirectStoreCounter) && KpiProductGroupingContentCriteriaMapping.KpiProductGroupingCriteriaId == KpiProductGroupingCriteriaEnum.INDIRECT_STORE.Id)
+                        else if (long.TryParse(ImportDTO.IndirectStoreCounter, out long IndirectStoreCounter)
+                            && KpiProductGroupingContentCriteriaMapping.KpiProductGroupingCriteriaId == KpiProductGroupingCriteriaEnum.INDIRECT_STORE.Id)
                         {
                             KpiProductGroupingContentCriteriaMapping.Value = IndirectStoreCounter;
                         }
                     } // update list mapping content voi chi tieu
                 }
 
-                KpiProductGrouping.CreatorId = AppUser.Id;
-                KpiProductGrouping.StatusId = StatusEnum.ACTIVE.Id;
+                KpiProductGroupingInDB.CreatorId = AppUser.Id;
+                KpiProductGroupingInDB.StatusId = StatusEnum.ACTIVE.Id;
             } // thiet lap Kpi, KpiContent tu DTOs
 
             #endregion
@@ -659,6 +663,8 @@ namespace DMS.Rpc.kpi_product_grouping
             KpiProductGrouping_KpiProductGroupingFilterDTO.Skip = 0;
             KpiProductGrouping_KpiProductGroupingFilterDTO.Take = int.MaxValue;
             KpiProductGrouping_KpiProductGroupingFilterDTO.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+            KpiProductGrouping_KpiProductGroupingFilterDTO.KpiPeriodId = new IdFilter { Equal = KpiPeriodId };
+            KpiProductGrouping_KpiProductGroupingFilterDTO.KpiYearId = new IdFilter { Equal = KpiYearId };
 
             List<KpiProductGrouping_KpiProductGroupingDTO> KpiProductGrouping_KpiProductGroupingDTOs = await List(KpiProductGrouping_KpiProductGroupingFilterDTO);
             List<long> KpiProductGroupingIds = KpiProductGrouping_KpiProductGroupingDTOs.Select(x => x.Id)
@@ -721,53 +727,42 @@ namespace DMS.Rpc.kpi_product_grouping
                     KpiProductGrouping_AppUserExportDTO KpiProductGrouping_AppUserExportDTO = new KpiProductGrouping_AppUserExportDTO();
                     KpiProductGrouping_AppUserExportDTO.Username = SubAppUser.Username;
                     KpiProductGrouping_AppUserExportDTO.DisplayName = SubAppUser.DisplayName;
-                    KpiProductGrouping_AppUserExportDTO.ProductGroupings = new List<KpiProductGrouping_ProductGroupingExportDTO>();
+                    KpiProductGrouping_AppUserExportDTO.KpiProductGroupings = new List<KpiProductGrouping_KpiProductGroupingExportDTO>();
                     kpiProductGrouping_ExportDTO.Employees.Add(KpiProductGrouping_AppUserExportDTO);
 
-                    var SubKpiProductGrouping = SubKpiProductGroupings
+                    List<KpiProductGrouping_KpiProductGroupingDTO> AppUserKpis = SubKpiProductGroupings
                         .Where(x => x.EmployeeId == SubAppUser.Id)
-                        .FirstOrDefault();
-                    if (SubKpiProductGrouping != null)
-                    {
-                        KpiProductGrouping_AppUserExportDTO.KpiProductGroupingTypeName = SubKpiProductGrouping.KpiProductGroupingType.Name;
-                        List<KpiProductGroupingContent> SubContents = KpiProductGroupingContents
-                            .Where(x => x.KpiProductGroupingId == SubKpiProductGrouping.Id)
-                            .ToList();
-                        List<ProductGrouping> SubProductGroupings = SubContents
-                            .Select(x => x.ProductGrouping)
-                            .Distinct()
-                            .ToList();
-                        List<KpiProductGroupingContentItemMapping> SubItemMappings = SubContents
-                            .SelectMany(x => x.KpiProductGroupingContentItemMappings)
-                            .ToList();
-                        foreach (var ProductGrouping in SubProductGroupings)
-                        {
-                            KpiProductGrouping_ProductGroupingExportDTO KpiProductGrouping_ProductGroupingExportDTO = new KpiProductGrouping_ProductGroupingExportDTO();
-                            KpiProductGrouping_ProductGroupingExportDTO.Code = ProductGrouping.Code;
-                            KpiProductGrouping_ProductGroupingExportDTO.Name = ProductGrouping.Name;
-                            KpiProductGrouping_ProductGroupingExportDTO.ItemCount = SubItemMappings.Where(x => x.KpiProductGroupingContent.ProductGroupingId == ProductGrouping.Id)
-                                .Select(x => x.ItemId)
-                                .Distinct()
-                                .Count(); // dem so item trong productGrouping
-                            KpiProductGrouping_ProductGroupingExportDTO.Items = new List<KpiProductGrouping_ExportItemDTO>();
-                            KpiProductGrouping_AppUserExportDTO.ProductGroupings.Add(KpiProductGrouping_ProductGroupingExportDTO);
+                        .ToList(); // lay tat cac kpi cua User
 
-                            List<KpiProductGroupingContent> LeafContents = SubContents
-                                .Where(x => x.ProductGroupingId == ProductGrouping.Id)
-                                .ToList();
-                            List<KpiProductGroupingContentItemMapping> LeafSubItemMappings = LeafContents
-                                .SelectMany(x => x.KpiProductGroupingContentItemMappings)
-                                .Distinct()
-                                .ToList();
-                            foreach (var ItemMapping in LeafSubItemMappings)
+                    foreach(KpiProductGrouping_KpiProductGroupingDTO AppUserKpi in AppUserKpis)
+                    {
+                        KpiProductGrouping_KpiProductGroupingExportDTO KpiProductGrouping_KpiProductGroupingExportDTO = new KpiProductGrouping_KpiProductGroupingExportDTO();
+                        KpiProductGrouping_KpiProductGroupingExportDTO.Id = AppUserKpi.Id;
+                        KpiProductGrouping_KpiProductGroupingExportDTO.KpiProductGroupingTypeName = AppUserKpi.KpiProductGroupingType.Name;
+                        KpiProductGrouping_KpiProductGroupingExportDTO.Contents = new List<KpiProductGrouping_ContentExportDTO>();
+                        KpiProductGrouping_AppUserExportDTO.KpiProductGroupings.Add(KpiProductGrouping_KpiProductGroupingExportDTO);
+
+                        List<KpiProductGroupingContent> SubContents = KpiProductGroupingContents
+                            .Where(x => x.KpiProductGroupingId == AppUserKpi.Id)
+                            .ToList();
+                        foreach(KpiProductGroupingContent KpiProductGroupingContent in SubContents)
+                        {
+                            KpiProductGrouping_ContentExportDTO KpiProductGrouping_ContentExportDTO = new KpiProductGrouping_ContentExportDTO();
+                            KpiProductGrouping_ContentExportDTO.Code = KpiProductGroupingContent.ProductGrouping.Code;
+                            KpiProductGrouping_ContentExportDTO.Name = KpiProductGroupingContent.ProductGrouping.Name;
+                            KpiProductGrouping_ContentExportDTO.ItemCount = KpiProductGroupingContent.KpiProductGroupingContentItemMappings.Count;
+                            KpiProductGrouping_ContentExportDTO.Items = new List<KpiProductGrouping_ExportItemDTO>();
+                            KpiProductGrouping_KpiProductGroupingExportDTO.Contents.Add(KpiProductGrouping_ContentExportDTO);
+
+                            foreach(var SubItemMapping in KpiProductGroupingContent.KpiProductGroupingContentItemMappings)
                             {
-                                KpiProductGrouping_ExportItemDTO KpiProductGrouping_ExportItemDTO = new KpiProductGrouping_ExportItemDTO();
-                                KpiProductGrouping_ExportItemDTO.Code = ItemMapping.Item.Code;
-                                KpiProductGrouping_ExportItemDTO.Name = ItemMapping.Item.Name;
-                                KpiProductGrouping_ProductGroupingExportDTO.Items.Add(KpiProductGrouping_ExportItemDTO);
+                                KpiProductGrouping_ExportItemDTO kpiProductGrouping_ExportItemDTO = new KpiProductGrouping_ExportItemDTO();
+                                kpiProductGrouping_ExportItemDTO.Code = SubItemMapping.Item.Code;
+                                kpiProductGrouping_ExportItemDTO.Name = SubItemMapping.Item.Name;
+                                KpiProductGrouping_ContentExportDTO.Items.Add(kpiProductGrouping_ExportItemDTO);
 
                                 List<KpiProductGroupingContentCriteriaMapping> SubCriteriaMappings = kpiProductGroupingContentCriteriaMappings
-                                    .Where(x => x.KpiProductGroupingContentId == ItemMapping.KpiProductGroupingContentId)
+                                    .Where(x => x.KpiProductGroupingContentId == SubItemMapping.KpiProductGroupingContentId)
                                     .ToList();
                                 if (SubCriteriaMappings != null && SubCriteriaMappings.Any())
                                 {
@@ -775,18 +770,17 @@ namespace DMS.Rpc.kpi_product_grouping
                                     {
                                         if (CriteriaMapping.KpiProductGroupingCriteriaId == KpiProductGroupingCriteriaEnum.INDIRECT_REVENUE.Id)
                                         {
-                                            KpiProductGrouping_ExportItemDTO.IndirectRevenue = CriteriaMapping.Value;
+                                            kpiProductGrouping_ExportItemDTO.IndirectRevenue = CriteriaMapping.Value;
                                         }
                                         if (CriteriaMapping.KpiProductGroupingCriteriaId == KpiProductGroupingCriteriaEnum.INDIRECT_STORE.Id)
                                         {
-                                            KpiProductGrouping_ExportItemDTO.IndirectStoreCounter = CriteriaMapping.Value;
+                                            kpiProductGrouping_ExportItemDTO.IndirectStoreCounter = CriteriaMapping.Value;
                                         }
                                     } // them chi tieu kpi cho item
                                 }
-                            } // them item
-                        } // them productGrouping
+                            }
+                        }
                     }
-
                 } // thêm Employee
             } // thêm orgName
             KpiProductGrouping_ExportDTOs = KpiProductGrouping_ExportDTOs.Where(x => x.Employees.Count > 0).ToList(); // chỉ lấy org nào có dữ liệu

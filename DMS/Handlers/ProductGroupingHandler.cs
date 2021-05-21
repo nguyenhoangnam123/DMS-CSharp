@@ -33,6 +33,7 @@ namespace DMS.Handlers
         {
             List<EventMessage<ProductGrouping>> ProductGroupingEventMessages = JsonConvert.DeserializeObject<List<EventMessage<ProductGrouping>>>(json);
             List<ProductGrouping> ProductGroupings = ProductGroupingEventMessages.Select(x => x.Content).ToList();
+            List<ProductProductGroupingMappingDAO> ProductProductGroupingMappingDAOs = new List<ProductProductGroupingMappingDAO>();
             List<ProductGroupingDAO> ProductGroupingInDB = await context.ProductGrouping.ToListAsync();
             try
             {
@@ -57,8 +58,26 @@ namespace DMS.Handlers
                     ProductGroupingDAO.ParentId = ProductGrouping.ParentId;
                     ProductGroupingDAO.Path = ProductGrouping.Path;
                     ProductGroupingDAOs.Add(ProductGroupingDAO);
+
+                    // add product productgrouping mapping 
+                    foreach (var ProductProductGroupingMapping in ProductGrouping.ProductProductGroupingMappings)
+                    {
+                        ProductProductGroupingMappingDAO ProductProductGroupingMappingDAO = new ProductProductGroupingMappingDAO
+                        {
+                            ProductId = ProductProductGroupingMapping.ProductId,
+                            ProductGroupingId = ProductProductGroupingMapping.ProductGroupingId,
+                        };
+                        ProductProductGroupingMappingDAOs.Add(ProductProductGroupingMappingDAO);
+                    }
                 }
+                List<long> Ids = ProductGroupings.Select(x => x.Id).ToList();
+
+                await context.ProductProductGroupingMapping
+                  .Where(x => Ids.Contains(x.ProductGroupingId))
+                  .DeleteFromQueryAsync();
+
                 await context.BulkMergeAsync(ProductGroupingDAOs);
+                await context.BulkMergeAsync(ProductProductGroupingMappingDAOs);
             }
             catch (Exception ex)
             {
