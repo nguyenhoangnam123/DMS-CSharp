@@ -1177,7 +1177,7 @@ namespace DMS.Rpc
             InitAction(routeTypes);
 
             DataContext.ActionPageMapping.Where(ap => ap.Action.IsDeleted || ap.Page.IsDeleted).DeleteFromQuery();
-            DataContext.PermissionActionMapping.Where(ap => ap.Action.IsDeleted).DeleteFromQuery();
+            DataContext.PermissionActionMapping.Where(ap => ap.Action.IsDeleted || ap.Action.Menu.IsDeleted).DeleteFromQuery();
             DataContext.Action.Where(p => p.IsDeleted || p.Menu.IsDeleted).DeleteFromQuery();
             DataContext.Page.Where(p => p.IsDeleted).DeleteFromQuery();
             DataContext.PermissionContent.Where(f => f.Field.IsDeleted == true || f.Field.Menu.IsDeleted).DeleteFromQuery();
