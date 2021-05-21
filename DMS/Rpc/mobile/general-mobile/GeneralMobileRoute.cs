@@ -131,6 +131,11 @@ namespace DMS.Rpc.mobile.general_mobile
         public const string ListAppUser = Default + "/list-app-user";
         public const string CountAppUser = Default + "/count-app-user";
 
+        // resize Image
+        public const string GetCroppedImage = Default + "/get/{FileName}";
+        public const string CroppedImage = Default + "/crop/{FileName}";
+        public const string ResizeImage = Default + "/resize/{FileName}";
+
         // list path
         public const string ListPath = Default + "/list-path";
 

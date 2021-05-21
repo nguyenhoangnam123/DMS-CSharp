@@ -46,4 +46,18 @@ namespace DMS.Rpc.mobile.general_mobile
 
         public ImageOrder OrderBy { get; set; }
     }
+
+    public class GeneralMobile_ImageCropped : DataDTO
+    {
+        public long Id { get; set; }
+        public string Name { get; set; }
+        public string MimeType { get; set; }
+        public long Width { get; set; }
+        public long Height { get; set; }
+        public byte[] Content { get; set; }
+
+        public GeneralMobile_ImageCropped()
+        {
+        }
+    }
 }
