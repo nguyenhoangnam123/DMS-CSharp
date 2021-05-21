@@ -376,6 +376,7 @@ namespace DMS.Rpc.kpi_product_grouping
                                  Id = i.Id,
                                  Code = i.Code,
                                  Name = i.Name,
+                                 IsNew = pr.IsNew,
                                  ProductGroupingId = prg.Id,
                              };
             List<KpiProductGrouping_ItemImportDTO> Items = await item_query.ToListAsync();
@@ -490,6 +491,11 @@ namespace DMS.Rpc.kpi_product_grouping
                                 errorContent.AppendLine($"Lỗi dòng thứ {i}: Sản phẩm không tồn tại");
                                 continue;
                             }
+                            else if(KpiProductGroupingType.Id == KpiProductGroupingTypeEnum.NEW_PRODUCT_GROUPING.Id && !Item.IsNew)
+                            {
+                                errorContent.AppendLine($"Lỗi dòng thứ {i}: Không phải sản phẩm mới");
+                                continue;
+                            }    
                             //else if (ProductGrouping.Id != Item.ProductGroupingId)
                             //{
                             //    errorContent.AppendLine($"Lỗi dòng thứ {i + 1}: Sản phẩm không thuộc nhóm sản phẩm");
