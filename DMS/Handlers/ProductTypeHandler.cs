@@ -1,6 +1,7 @@
 ﻿using DMS.Common;
 using DMS.Entities;
 using DMS.Models;
+using DMS.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
@@ -21,42 +22,18 @@ namespace DMS.Handlers
         {
             channel.QueueBind(queue, exchange, $"{Name}.*", null);
         }
-        public override async Task Handle(DataContext context, string routingKey, string content)
+        public override async Task Handle(IUOW UOW, string routingKey, string content)
         {
             if (routingKey == SyncKey)
-                await Sync(context, content);
+                await Sync(UOW, content);
         }
 
-        private async Task Sync(DataContext context, string json)
+        private async Task Sync(IUOW UOW, string json)
         {
-            List<EventMessage<ProductType>> ProductTypeEventMessages = JsonConvert.DeserializeObject<List<EventMessage<ProductType>>>(json);
-            List<ProductType> ProductTypes = ProductTypeEventMessages.Select(x => x.Content).ToList();
-
-            List<ProductTypeDAO> ProductTypeInDB = await context.ProductType.ToListAsync();
             try
             {
-                List<ProductTypeDAO> ProductTypeDAOs = new List<ProductTypeDAO>();
-                foreach (var ProductType in ProductTypes)
-                {
-                    ProductTypeDAO ProductTypeDAO = ProductTypeInDB.Where(x => x.Id == ProductType.Id).FirstOrDefault();
-                    if (ProductTypeDAO == null)
-                    {
-                        ProductTypeDAO = new ProductTypeDAO();
-                    }
-                    ProductTypeDAO.Id = ProductType.Id;
-                    ProductTypeDAO.CreatedAt = ProductType.CreatedAt;
-                    ProductTypeDAO.UpdatedAt = ProductType.UpdatedAt;
-                    ProductTypeDAO.DeletedAt = ProductType.DeletedAt;
-                    ProductTypeDAO.Id = ProductType.Id;
-                    ProductTypeDAO.Code = ProductType.Code;
-                    ProductTypeDAO.Name = ProductType.Name;
-                    ProductTypeDAO.StatusId = ProductType.StatusId;
-                    ProductTypeDAO.Description = ProductType.Description;
-                    ProductTypeDAO.Used = ProductType.Used;
-                    ProductTypeDAO.RowId = ProductType.RowId;
-                    ProductTypeDAOs.Add(ProductTypeDAO);
-                }
-                await context.BulkMergeAsync(ProductTypeDAOs);
+                List<ProductType> ProductTypes = JsonConvert.DeserializeObject<List<ProductType>>(json);
+                await UOW.ProductTypeRepository.BulkMerge(ProductTypes);
             }
             catch (Exception ex)
             {

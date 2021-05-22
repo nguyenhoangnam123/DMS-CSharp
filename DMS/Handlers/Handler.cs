@@ -2,6 +2,7 @@
 using DMS.Enums;
 using DMS.Helpers;
 using DMS.Models;
+using DMS.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
@@ -19,7 +20,7 @@ namespace DMS.Handlers
         string Name { get; }
         IRabbitManager RabbitManager { get; set; }
         void QueueBind(IModel channel, string queue, string exchange);
-        Task Handle(DataContext context, string routingKey, string content);
+        Task Handle(IUOW UOW, string routingKey, string content);
     }
 
     public abstract class Handler : IHandler
@@ -27,7 +28,7 @@ namespace DMS.Handlers
         public abstract string Name { get; }
         public IRabbitManager RabbitManager { get; set; }
 
-        public abstract Task Handle(DataContext context, string routingKey, string content);
+        public abstract Task Handle(IUOW UOW, string routingKey, string content);
 
         public abstract void QueueBind(IModel channel, string queue, string exchange);
 

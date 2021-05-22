@@ -1,6 +1,7 @@
 ﻿using DMS.Common;
 using DMS.Entities;
 using DMS.Models;
+using DMS.Repositories;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
 using System;
@@ -20,43 +21,18 @@ namespace DMS.Handlers
         {
             channel.QueueBind(queue, exchange, $"{Name}.*", null);
         }
-        public override async Task Handle(DataContext context, string routingKey, string content)
+        public override async Task Handle(IUOW UOW, string routingKey, string content)
         {
             if (routingKey == SyncKey)
-                await Sync(context, content);
+                await Sync(UOW, content);
         }
 
-        private async Task Sync(DataContext context, string json)
+        private async Task Sync(IUOW UOW, string json)
         {
-            List<EventMessage<Supplier>> SupplierEventMessages = JsonConvert.DeserializeObject<List<EventMessage<Supplier>>>(json);
-            List<Supplier> Suppliers = SupplierEventMessages.Select(x => x.Content).ToList();
             try
             {
-                List<SupplierDAO> SupplierDAOs = Suppliers
-                    .Select(x => new SupplierDAO
-                    {
-                        CreatedAt = x.CreatedAt,
-                        UpdatedAt = x.UpdatedAt,
-                        DeletedAt = x.DeletedAt,
-                        Id = x.Id,
-                        Code = x.Code,
-                        Name = x.Name,
-                        TaxCode = x.TaxCode,
-                        Phone = x.Phone,
-                        Email = x.Email,
-                        Address = x.Address,
-                        NationId = x.NationId,
-                        ProvinceId = x.ProvinceId,
-                        DistrictId = x.DistrictId,
-                        WardId = x.WardId,
-                        OwnerName = x.OwnerName,
-                        PersonInChargeId = x.PersonInChargeId,
-                        StatusId = x.StatusId,
-                        Description = x.Description,
-                        Used = x.Used,
-                        RowId = x.RowId,
-                    }).ToList();
-                await context.BulkMergeAsync(SupplierDAOs);
+                List<Supplier> Suppliers = JsonConvert.DeserializeObject<List<Supplier>>(json);
+                await UOW.SupplierRepository.BulkMerge(Suppliers);
             }
             catch (Exception ex)
             {

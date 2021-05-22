@@ -21,24 +21,22 @@ namespace DMS.Handlers
         {
             channel.QueueBind(queue, exchange, $"{Name}.*", null);
         }
-        public override async Task Handle(DataContext context, string routingKey, string content)
+        public override async Task Handle(IUOW UOW, string routingKey, string content)
         {
             if (routingKey == SyncKey)
-                await Sync(context, content);
+                await Sync(UOW, content);
         }
 
-        private async Task Sync(DataContext context, string json)
+        private async Task Sync(IUOW UOW, string json)
         {
             try
             {
-                List<EventMessage<Brand>> BrandEventMessages = JsonConvert.DeserializeObject<List<EventMessage<Brand>>>(json);
-                List<Brand> Brands = BrandEventMessages.Select(x => x.Content).ToList();
-                IUOW UOW = new UOW(context);
+                List<Brand> Brands = JsonConvert.DeserializeObject<List<Brand>>(json);
                 await UOW.BrandRepository.BulkMerge(Brands);
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                SystemLog(ex, nameof(BrandHandler));
+                SystemLog(e, nameof(BrandHandler));
             }
         }
     }

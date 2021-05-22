@@ -14,6 +14,7 @@ namespace DMS.Repositories
         Task<int> Count(DistrictFilter DistrictFilter);
         Task<List<District>> List(DistrictFilter DistrictFilter);
         Task<District> Get(long Id);
+        Task<bool> BulkMerge(List<District> Districts);
     }
     public class DistrictRepository : IDistrictRepository
     {
@@ -196,6 +197,25 @@ namespace DMS.Repositories
                 return null;
 
             return District;
+        }
+
+        public async Task<bool> BulkMerge(List<District> Districts)
+        {
+            List<DistrictDAO> DistrictDAOs = Districts.Select(x => new DistrictDAO
+            {
+                Id = x.Id,
+                Code = x.Code,
+                Name = x.Name,
+                CreatedAt = x.CreatedAt,
+                UpdatedAt = x.UpdatedAt,
+                DeletedAt = x.DeletedAt,
+                ProvinceId = x.ProvinceId,
+                Priority = x.Priority,
+                RowId = x.RowId,
+                StatusId = x.StatusId,
+            }).ToList();
+            await DataContext.BulkMergeAsync(DistrictDAOs);
+            return true;
         }
     }
 }

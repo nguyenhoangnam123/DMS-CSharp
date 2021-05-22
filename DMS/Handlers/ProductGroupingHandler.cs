@@ -11,6 +11,7 @@ using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using DMS.Enums;
+using DMS.Repositories;
 
 namespace DMS.Handlers
 {
@@ -23,48 +24,23 @@ namespace DMS.Handlers
         {
             channel.QueueBind(queue, exchange, $"{Name}.*", null);
         }
-        public override async Task Handle(DataContext context, string routingKey, string content)
+        public override async Task Handle(IUOW UOW, string routingKey, string content)
         {
             if (routingKey == SyncKey)
-                await Sync(context, content);
+                await Sync(UOW, content);
         }
 
-        private async Task Sync(DataContext context, string json)
+        private async Task Sync(IUOW UOW, string json)
         {
-            List<EventMessage<ProductGrouping>> ProductGroupingEventMessages = JsonConvert.DeserializeObject<List<EventMessage<ProductGrouping>>>(json);
-            List<ProductGrouping> ProductGroupings = ProductGroupingEventMessages.Select(x => x.Content).ToList();
-            List<ProductGroupingDAO> ProductGroupingInDB = await context.ProductGrouping.ToListAsync();
             try
             {
-                List<ProductGroupingDAO> ProductGroupingDAOs = new List<ProductGroupingDAO>();
-                foreach (ProductGrouping ProductGrouping in ProductGroupings)
-                {
-                    ProductGroupingDAO ProductGroupingDAO = ProductGroupingInDB.Where(x => x.Id == ProductGrouping.Id).FirstOrDefault();
-                    if (ProductGroupingDAO == null)
-                    {
-                        ProductGroupingDAO = new ProductGroupingDAO();
-                    }
-                    ProductGroupingDAO.Id = ProductGrouping.Id;
-                    ProductGroupingDAO.Code = ProductGrouping.Code;
-                    ProductGroupingDAO.CreatedAt = ProductGrouping.CreatedAt;
-                    ProductGroupingDAO.UpdatedAt = ProductGrouping.UpdatedAt;
-                    ProductGroupingDAO.DeletedAt = ProductGrouping.DeletedAt;
-                    ProductGroupingDAO.Id = ProductGrouping.Id;
-                    ProductGroupingDAO.Name = ProductGrouping.Name;
-                    ProductGroupingDAO.RowId = ProductGrouping.RowId;
-                    ProductGroupingDAO.Description = ProductGrouping.Description;
-                    ProductGroupingDAO.Level = ProductGrouping.Level;
-                    ProductGroupingDAO.ParentId = ProductGrouping.ParentId;
-                    ProductGroupingDAO.Path = ProductGrouping.Path;
-                    ProductGroupingDAOs.Add(ProductGroupingDAO);
-                }
-                await context.BulkMergeAsync(ProductGroupingDAOs);
+                List<ProductGrouping> ProductGroupings = JsonConvert.DeserializeObject<List<ProductGrouping>>(json);
+                await UOW.ProductGroupingRepository.BulkMerge(ProductGroupings);
             }
             catch (Exception ex)
             {
                 SystemLog(ex, nameof(ProductGroupingHandler));
             }
-
         }
     }
 }

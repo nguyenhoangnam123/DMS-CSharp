@@ -15,6 +15,7 @@ namespace DMS.Repositories
         Task<int> Count(UnitOfMeasureGroupingFilter UnitOfMeasureGroupingFilter);
         Task<List<UnitOfMeasureGrouping>> List(UnitOfMeasureGroupingFilter UnitOfMeasureGroupingFilter);
         Task<UnitOfMeasureGrouping> Get(long Id);
+        Task<bool> BulkMerge(List<UnitOfMeasureGrouping> UnitOfMeasureGroupings);
     }
     public class UnitOfMeasureGroupingRepository : IUnitOfMeasureGroupingRepository
     {
@@ -234,6 +235,38 @@ namespace DMS.Repositories
                 }).ToListAsync();
 
             return UnitOfMeasureGrouping;
+        }
+        public async Task<bool> BulkMerge(List<UnitOfMeasureGrouping> UnitOfMeasureGroupings)
+        {
+            List<UnitOfMeasureGroupingDAO> UnitOfMeasureGroupingDAOs = UnitOfMeasureGroupings.Select(x => new UnitOfMeasureGroupingDAO
+            {
+                Id = x.Id,
+                Code = x.Code,
+                Name = x.Name,
+                CreatedAt = x.CreatedAt,
+                UpdatedAt = x.UpdatedAt,
+                DeletedAt = x.DeletedAt,
+                Used = x.Used,
+                RowId = x.RowId,
+                StatusId = x.StatusId,
+                Description = x.Description,
+                UnitOfMeasureId = x.UnitOfMeasureId,
+            }).ToList();
+
+            var Ids = UnitOfMeasureGroupings.Select(x => x.Id).ToList();
+            await DataContext.UnitOfMeasureGroupingContent.Where(x => Ids.Contains(x.UnitOfMeasureGroupingId)).DeleteFromQueryAsync();
+            List<UnitOfMeasureGroupingContentDAO> UnitOfMeasureGroupingContentDAOs = UnitOfMeasureGroupings
+                .SelectMany(x => x.UnitOfMeasureGroupingContents.Select(y => new UnitOfMeasureGroupingContentDAO
+                {
+                    Id = y.Id,
+                    Factor = y.Factor,
+                    RowId = y.RowId,
+                    UnitOfMeasureId = y.UnitOfMeasureId,
+                    UnitOfMeasureGroupingId = y.UnitOfMeasureGroupingId,
+                })).ToList();
+            await DataContext.BulkMergeAsync(UnitOfMeasureGroupingDAOs);
+            await DataContext.BulkMergeAsync(UnitOfMeasureGroupingContentDAOs);
+            return true;
         }
     }
 }

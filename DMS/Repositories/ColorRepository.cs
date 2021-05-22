@@ -15,6 +15,7 @@ namespace DMS.Repositories
         Task<int> Count(ColorFilter ColorFilter);
         Task<List<Color>> List(ColorFilter ColorFilter);
         Task<Color> Get(long Id);
+        Task<bool> BulkMerge(List<Color> Colors);
     }
     public class ColorRepository : IColorRepository
     {
@@ -143,6 +144,18 @@ namespace DMS.Repositories
                 return null;
 
             return Color;
+        }
+            
+        public async Task<bool> BulkMerge(List<Color> Colors)
+        {
+            List<ColorDAO> ColorDAOs = Colors.Select(x => new ColorDAO
+            {
+                Code = x.Code,
+                Id = x.Id,
+                Name = x.Name,
+            }).ToList();
+            await DataContext.BulkMergeAsync(ColorDAOs);
+            return true;
         }
     }
 }

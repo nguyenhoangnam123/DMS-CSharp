@@ -1,6 +1,7 @@
 ﻿using DMS.Common;
 using DMS.Entities;
 using DMS.Models;
+using DMS.Repositories;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
 using System;
@@ -20,34 +21,18 @@ namespace DMS.Handlers
         {
             channel.QueueBind(queue, exchange, $"{Name}.*", null);
         }
-        public override async Task Handle(DataContext context, string routingKey, string content)
+        public override async Task Handle(IUOW UOW, string routingKey, string content)
         {
             if (routingKey == SyncKey)
-                await Sync(context, content);
+                await Sync(UOW, content);
         }
 
-        private async Task Sync(DataContext context, string json)
+        private async Task Sync(IUOW UOW, string json)
         {
-            List<EventMessage<TaxType>> TaxTypeEventMessages = JsonConvert.DeserializeObject<List<EventMessage<TaxType>>>(json);
-            List<TaxType> TaxTypes = TaxTypeEventMessages.Select(x => x.Content).ToList();
             try
             {
-                List<TaxTypeDAO> TaxTypeDAOs = TaxTypes
-                    .Select(x => new TaxTypeDAO
-                    {
-                        CreatedAt = x.CreatedAt,
-                        UpdatedAt = x.UpdatedAt,
-                        DeletedAt = x.DeletedAt,
-                        Id = x.Id,
-                        Code = x.Code,
-                        Name = x.Name,
-                        StatusId = x.StatusId,
-                        Percentage = x.Percentage,
-                        Used = x.Used,
-                        RowId = x.RowId,
-
-                    }).ToList();
-                await context.BulkMergeAsync(TaxTypeDAOs);
+                List<TaxType> TaxTypes = JsonConvert.DeserializeObject<List<TaxType>>(json);
+                await UOW.TaxTypeRepository.BulkMerge(TaxTypes);
             }
             catch (Exception ex)
             {

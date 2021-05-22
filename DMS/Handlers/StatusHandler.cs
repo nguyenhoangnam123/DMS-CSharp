@@ -1,6 +1,7 @@
 ﻿using DMS.Common;
 using DMS.Entities;
 using DMS.Models;
+using DMS.Repositories;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
 using System;
@@ -20,25 +21,18 @@ namespace DMS.Handlers
         {
             channel.QueueBind(queue, exchange, $"{Name}.*", null);
         }
-        public override async Task Handle(DataContext context, string routingKey, string content)
+        public override async Task Handle(IUOW UOW, string routingKey, string content)
         {
             if (routingKey == SyncKey)
-                await Sync(context, content);
+                await Sync(UOW, content);
         }
 
-        private async Task Sync(DataContext context, string json)
+        private async Task Sync(IUOW UOW, string json)
         {
-            List<EventMessage<Status>> StatusEventMessages = JsonConvert.DeserializeObject<List<EventMessage<Status>>>(json);
-            List<Status> Statuss = StatusEventMessages.Select(x => x.Content).ToList();
             try
             {
-                List<StatusDAO> StatusDAOs = Statuss.Select(x => new StatusDAO
-                {
-                    Code = x.Code,
-                    Id = x.Id,
-                    Name = x.Name,
-                }).ToList();
-                await context.BulkMergeAsync(StatusDAOs);
+                List<Status> Statuses = JsonConvert.DeserializeObject<List<Status>>(json);
+                await UOW.StatusRepository.BulkMerge(Statuses);
             }
             catch (Exception ex)
             {

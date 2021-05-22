@@ -1,6 +1,7 @@
 ﻿using DMS.Common;
 using DMS.Entities;
 using DMS.Models;
+using DMS.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
@@ -20,57 +21,18 @@ namespace DMS.Handlers
         {
             channel.QueueBind(queue, exchange, $"{Name}.*", null);
         }
-        public override async Task Handle(DataContext context, string routingKey, string content)
+        public override async Task Handle(IUOW UOW, string routingKey, string content)
         {
             if (routingKey == SyncKey)
-                await Sync(context, content);
+                await Sync(UOW, content);
         }
 
-        private async Task Sync(DataContext context, string json)
+        private async Task Sync(IUOW UOW, string json)
         {
-            List<EventMessage<CodeGeneratorRule>> CodeGeneratorRuleEventMessages = JsonConvert.DeserializeObject<List<EventMessage<CodeGeneratorRule>>>(json);
-
-            List<CodeGeneratorRule> CodeGeneratorRules = CodeGeneratorRuleEventMessages.Select(x => x.Content).ToList();
-           
             try
             {
-                List<long> Ids = CodeGeneratorRules.Select(x => x.Id).ToList();
-
-                List<CodeGeneratorRuleDAO> CodeGeneratorRuleDAOs = await context.CodeGeneratorRule.Where(x => Ids.Contains(x.Id)).ToListAsync();
-                List<CodeGeneratorRuleEntityComponentMappingDAO> CodeGeneratorRuleEntityComponentMappingDAOs = new List<CodeGeneratorRuleEntityComponentMappingDAO>();
-
-                foreach (CodeGeneratorRule CodeGeneratorRule in CodeGeneratorRules)
-                {
-                    CodeGeneratorRuleDAO CodeGeneratorRuleDAO = CodeGeneratorRuleDAOs.Where(x => x.Id == CodeGeneratorRule.Id).FirstOrDefault();
-                    if (CodeGeneratorRuleDAO == null)
-                    {
-                        CodeGeneratorRuleDAO = new CodeGeneratorRuleDAO();
-                        CodeGeneratorRuleDAOs.Add(CodeGeneratorRuleDAO);
-                    }
-                    CodeGeneratorRuleDAO.Id = CodeGeneratorRule.Id;
-                    CodeGeneratorRuleDAO.EntityTypeId = CodeGeneratorRule.EntityTypeId;
-                    CodeGeneratorRuleDAO.StatusId = CodeGeneratorRule.StatusId;
-                    CodeGeneratorRuleDAO.CreatedAt = CodeGeneratorRule.CreatedAt;
-                    CodeGeneratorRuleDAO.UpdatedAt = CodeGeneratorRule.UpdatedAt;
-                    CodeGeneratorRuleDAO.DeletedAt = CodeGeneratorRule.DeletedAt;
-                    CodeGeneratorRuleDAO.AutoNumberLenth = CodeGeneratorRule.AutoNumberLenth;
-                    CodeGeneratorRuleDAO.RowId = CodeGeneratorRule.RowId;
-                    CodeGeneratorRuleDAO.Used = CodeGeneratorRule.Used;
-
-                    foreach (CodeGeneratorRuleEntityComponentMapping CodeGeneratorRuleEntityComponentMapping in CodeGeneratorRule.CodeGeneratorRuleEntityComponentMappings)
-                    {
-                        CodeGeneratorRuleEntityComponentMappingDAO CodeGeneratorRuleEntityComponentMappingDAO = new CodeGeneratorRuleEntityComponentMappingDAO
-                        {
-                            CodeGeneratorRuleId = CodeGeneratorRule.Id,
-                            Sequence = CodeGeneratorRuleEntityComponentMapping.Sequence,
-                            Value = CodeGeneratorRuleEntityComponentMapping.Value,
-                            EntityComponentId = CodeGeneratorRuleEntityComponentMapping.EntityComponentId,
-                        };
-                        CodeGeneratorRuleEntityComponentMappingDAOs.Add(CodeGeneratorRuleEntityComponentMappingDAO);
-                    }
-                }
-                await context.BulkMergeAsync(CodeGeneratorRuleDAOs);
-                await context.BulkMergeAsync(CodeGeneratorRuleEntityComponentMappingDAOs);
+                List<CodeGeneratorRule> CodeGeneratorRules = JsonConvert.DeserializeObject<List<CodeGeneratorRule>>(json);
+                await UOW.CodeGeneratorRuleRepository.BulkMerge(CodeGeneratorRules);
             }
             catch (Exception ex)
             {

@@ -15,6 +15,7 @@ namespace DMS.Repositories
         Task<int> Count(ProductTypeFilter ProductTypeFilter);
         Task<List<ProductType>> List(ProductTypeFilter ProductTypeFilter);
         Task<ProductType> Get(long Id);
+        Task<bool> BulkMerge(List<ProductType> ProductTypes);
     }
     public class ProductTypeRepository : IProductTypeRepository
     {
@@ -187,6 +188,28 @@ namespace DMS.Repositories
                 return null;
 
             return ProductType;
+        }
+        public async Task<bool> BulkMerge(List<ProductType> ProductTypes)
+        {
+            List<ProductTypeDAO> ProductTypeDAOs = new List<ProductTypeDAO>();
+            foreach (var ProductType in ProductTypes)
+            {
+                ProductTypeDAO ProductTypeDAO = new ProductTypeDAO();
+                ProductTypeDAO.Id = ProductType.Id;
+                ProductTypeDAO.CreatedAt = ProductType.CreatedAt;
+                ProductTypeDAO.UpdatedAt = ProductType.UpdatedAt;
+                ProductTypeDAO.DeletedAt = ProductType.DeletedAt;
+                ProductTypeDAO.Id = ProductType.Id;
+                ProductTypeDAO.Code = ProductType.Code;
+                ProductTypeDAO.Name = ProductType.Name;
+                ProductTypeDAO.StatusId = ProductType.StatusId;
+                ProductTypeDAO.Description = ProductType.Description;
+                ProductTypeDAO.Used = ProductType.Used;
+                ProductTypeDAO.RowId = ProductType.RowId;
+                ProductTypeDAOs.Add(ProductTypeDAO);
+            }
+            await DataContext.BulkMergeAsync(ProductTypeDAOs);
+            return true;
         }
     }
 }

@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using DMS.Repositories;
 
 namespace DMS.Handlers
 {
@@ -21,31 +22,17 @@ namespace DMS.Handlers
         {
             channel.QueueBind(queue, exchange, $"{Name}.*", null);
         }
-        public override async Task Handle(DataContext context, string routingKey, string content)
+        public override async Task Handle(IUOW UOW, string routingKey, string content)
         {
             if (routingKey == SyncKey)
-                await Sync(context, content);
+                await Sync(UOW, content);
         }
-        public async Task Sync(DataContext context, string json)
+        public async Task Sync(IUOW UOW, string json)
         {
-            List<EventMessage<Nation>> NationEventMessages = JsonConvert.DeserializeObject<List<EventMessage<Nation>>>(json);
-            List<Nation> Nations = NationEventMessages.Select(x => x.Content).ToList();
             try
             {
-                List<NationDAO> NationDAOs = Nations.Select(x => new NationDAO
-                {
-                    Id = x.Id,
-                    Code = x.Code,
-                    Name = x.Name,
-                    CreatedAt = x.CreatedAt,
-                    UpdatedAt = x.UpdatedAt,
-                    DeletedAt = x.DeletedAt,
-                    Used = x.Used,
-                    Priority = x.Priority,
-                    RowId = x.RowId,
-                    StatusId = x.StatusId,
-                }).ToList();
-                await context.BulkMergeAsync(NationDAOs);
+                List<Nation> Nations = JsonConvert.DeserializeObject<List<Nation>>(json);
+                await UOW.NationRepository.BulkMerge(Nations);
             }
             catch (Exception ex)
             {

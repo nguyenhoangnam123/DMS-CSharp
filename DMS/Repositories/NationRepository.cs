@@ -14,6 +14,7 @@ namespace DMS.Repositories
         Task<int> Count(NationFilter NationFilter);
         Task<List<Nation>> List(NationFilter NationFilter);
         Task<Nation> Get(long Id);
+        Task<bool> BulkMerge(List<Nation> Nations);
     }
     public class NationRepository : INationRepository
     {
@@ -170,6 +171,24 @@ namespace DMS.Repositories
                 return null;
 
             return Nation;
+        }
+        public async Task<bool> BulkMerge(List<Nation> Nations)
+        {
+            List<NationDAO> NationDAOs = Nations.Select(x => new NationDAO
+            {
+                Id = x.Id,
+                Code = x.Code,
+                Name = x.Name,
+                CreatedAt = x.CreatedAt,
+                UpdatedAt = x.UpdatedAt,
+                DeletedAt = x.DeletedAt,
+                Used = x.Used,
+                Priority = x.Priority,
+                RowId = x.RowId,
+                StatusId = x.StatusId,
+            }).ToList();
+            await DataContext.BulkMergeAsync(NationDAOs);
+            return true;
         }
     }
 }

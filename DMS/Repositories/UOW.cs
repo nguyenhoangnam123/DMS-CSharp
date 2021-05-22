@@ -1,6 +1,7 @@
 using DMS.Common;
 using DMS.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Threading.Tasks;
 
@@ -19,10 +20,13 @@ namespace DMS.Repositories
         IBrandRepository BrandRepository { get; }
         ICategoryRepository CategoryRepository { get; }
         IColorRepository ColorRepository { get; }
+        ICodeGeneratorRuleRepository CodeGeneratorRuleRepository { get; }
         IDirectSalesOrderContentRepository DirectSalesOrderContentRepository { get; }
         IDirectSalesOrderRepository DirectSalesOrderRepository { get; }
         IDirectSalesOrderPromotionRepository DirectSalesOrderPromotionRepository { get; }
         IDistrictRepository DistrictRepository { get; }
+        IEntityComponentRepository EntityComponentRepository { get; }
+        IEntityTypeRepository EntityTypeRepository { get; }
         IEditedPriceStatusRepository EditedPriceStatusRepository { get; }
         IERouteChangeRequestContentRepository ERouteChangeRequestContentRepository { get; }
         IERouteChangeRequestRepository ERouteChangeRequestRepository { get; }
@@ -159,11 +163,14 @@ namespace DMS.Repositories
         public IBrandRepository BrandRepository { get; private set; }
         public ICategoryRepository CategoryRepository { get; private set; }
         public IColorRepository ColorRepository { get; private set; }
+        public ICodeGeneratorRuleRepository CodeGeneratorRuleRepository { get; private set; }
         public IDirectSalesOrderContentRepository DirectSalesOrderContentRepository { get; private set; }
         public IDirectSalesOrderRepository DirectSalesOrderRepository { get; private set; }
         public IDirectSalesOrderPromotionRepository DirectSalesOrderPromotionRepository { get; private set; }
         public IDistrictRepository DistrictRepository { get; private set; }
         public IEditedPriceStatusRepository EditedPriceStatusRepository { get; private set; }
+        public IEntityComponentRepository EntityComponentRepository { get; private set; }
+        public IEntityTypeRepository EntityTypeRepository { get; private set; }
         public IERouteChangeRequestContentRepository ERouteChangeRequestContentRepository { get; private set; }
         public IERouteChangeRequestRepository ERouteChangeRequestRepository { get; private set; }
         public IERouteContentRepository ERouteContentRepository { get; private set; }
@@ -298,11 +305,14 @@ namespace DMS.Repositories
             BannerRepository = new BannerRepository(DataContext);
             CategoryRepository = new CategoryRepository(DataContext);
             ColorRepository = new ColorRepository(DataContext);
+            CodeGeneratorRuleRepository = new CodeGeneratorRuleRepository(DataContext);
             DirectSalesOrderContentRepository = new DirectSalesOrderContentRepository(DataContext);
             DirectSalesOrderRepository = new DirectSalesOrderRepository(DataContext);
             DirectSalesOrderPromotionRepository = new DirectSalesOrderPromotionRepository(DataContext);
             DistrictRepository = new DistrictRepository(DataContext);
             EditedPriceStatusRepository = new EditedPriceStatusRepository(DataContext);
+            EntityComponentRepository = new EntityComponentRepository(DataContext);
+            EntityTypeRepository = new EntityTypeRepository(DataContext);
             ERouteChangeRequestContentRepository = new ERouteChangeRequestContentRepository(DataContext);
             ERouteChangeRequestRepository = new ERouteChangeRequestRepository(DataContext);
             ERouteContentRepository = new ERouteContentRepository(DataContext);

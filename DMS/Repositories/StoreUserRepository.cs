@@ -21,6 +21,7 @@ namespace DMS.Repositories
         Task<bool> Delete(StoreUser StoreUser);
         Task<bool> BulkMerge(List<StoreUser> StoreUsers);
         Task<bool> BulkDelete(List<StoreUser> StoreUsers);
+        Task<bool> Used(List<long> Ids);
     }
     public class StoreUserRepository : IStoreUserRepository
     {
@@ -448,6 +449,12 @@ namespace DMS.Repositories
             return true;
         }
 
+        public async Task<bool> Used(List<long> Ids)
+        {
+            await DataContext.StoreUser.Where(x => Ids.Contains(x.Id))
+                .UpdateFromQueryAsync(x => new StoreUserDAO { Used = true });
+            return true;
+        }
         private async Task SaveReference(StoreUser StoreUser)
         {
         }

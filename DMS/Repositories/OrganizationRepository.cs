@@ -16,6 +16,7 @@ namespace DMS.Repositories
         Task<List<Organization>> List(OrganizationFilter OrganizationFilter);
         Task<List<Organization>> List(List<long> Ids);
         Task<Organization> Get(long Id);
+        Task<bool> BulkMerge(List<Organization> Organizations);
         Task<bool> UpdateIsDisplay(Organization Organization);
     }
     public class OrganizationRepository : IOrganizationRepository
@@ -504,6 +505,38 @@ namespace DMS.Repositories
                     IsDisplay = Organization.IsDisplay,
                     UpdatedAt = StaticParams.DateTimeNow
                 });
+            }
+            await DataContext.SaveChangesAsync();
+            return true;
+        }
+        public async Task<bool> BulkMerge(List<Organization> Organizations)
+        {
+            var AppUsers = Organizations.Where(x => x.AppUsers != null).SelectMany(x => x.AppUsers).ToList();
+            var AppUserIds = AppUsers.Select(x => x.Id).ToList();
+            var AppUserDAOs = await DataContext.AppUser.Where(x => AppUserIds.Contains(x.Id)).ToListAsync();
+
+            List<OrganizationDAO> OrganizationDAOs = Organizations.Select(o => new OrganizationDAO
+            {
+                Id = o.Id,
+                Code = o.Code,
+                Name = o.Name,
+                Address = o.Address,
+                CreatedAt = o.CreatedAt,
+                UpdatedAt = o.UpdatedAt,
+                DeletedAt = o.DeletedAt,
+                Email = o.Email,
+                Level = o.Level,
+                ParentId = o.ParentId,
+                Path = o.Path,
+                Phone = o.Phone,
+                RowId = o.RowId,
+                StatusId = o.StatusId,
+            }).ToList();
+            await DataContext.Organization.BulkMergeAsync(OrganizationDAOs);
+
+            foreach (var AppUserDAO in AppUserDAOs)
+            {
+                AppUserDAO.OrganizationId = AppUsers.Where(x => x.Id == AppUserDAO.Id).Select(x => x.OrganizationId).FirstOrDefault();
             }
             await DataContext.SaveChangesAsync();
             return true;

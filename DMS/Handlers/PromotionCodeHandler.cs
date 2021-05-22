@@ -1,6 +1,7 @@
 ﻿using DMS.Common;
 using DMS.Entities;
 using DMS.Models;
+using DMS.Repositories;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
 using System;
@@ -19,17 +20,24 @@ namespace DMS.Handlers
         {
             channel.QueueBind(queue, exchange, $"{Name}.*", null);
         }
-        public override async Task Handle(DataContext context, string routingKey, string content)
+        public override async Task Handle(IUOW UOW, string routingKey, string content)
         {
             if (routingKey == UsedKey)
-                await Used(context, content);
+                await Used(UOW, content);
         }
 
-        private async Task Used(DataContext context, string json)
+        private async Task Used(IUOW UOW, string json)
         {
-            List<EventMessage<PromotionCode>> EventMessageReviced = JsonConvert.DeserializeObject<List<EventMessage<PromotionCode>>>(json);
-            List<long> PromotionCodeIds = EventMessageReviced.Select(em => em.Content.Id).ToList();
-            await context.PromotionCode.Where(a => PromotionCodeIds.Contains(a.Id)).UpdateFromQueryAsync(a => new PromotionCodeDAO { Used = true });
+            try
+            {
+                List<PromotionCode> ProblemType = JsonConvert.DeserializeObject<List<PromotionCode>>(json);
+                List<long> Ids = ProblemType.Select(a => a.Id).ToList();
+                await UOW.PromotionCodeRepository.Used(Ids);
+            }
+            catch (Exception ex)
+            {
+                SystemLog(ex, nameof(PromotionCodeHandler));
+            }
         }
     }
 }
