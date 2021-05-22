@@ -269,22 +269,19 @@ namespace DMS.Services.MShowingItem
             return filter;
         }
 
-        private void Sync(List<ShowingItem> ShowingItems)
+        private void Sync(List<ShowingItem> showingItems)
         {
-            List<EventMessage<ShowingCategory>> ShowingCategoryMessages = new List<EventMessage<ShowingCategory>>();
-            List<EventMessage<UnitOfMeasure>> UnitOfMeasureMessages = new List<EventMessage<UnitOfMeasure>>();
-            foreach (var ShowingItem in ShowingItems)
+            List<ShowingCategory> ShowingCategorys = new List<ShowingCategory>();
+            List<UnitOfMeasure> UnitOfMeasures = new List<UnitOfMeasure>();
+            foreach (var ShowingItem in showingItems)
             {
-                EventMessage<ShowingCategory> ShowingCategoryMessage = new EventMessage<ShowingCategory>(ShowingItem.ShowingCategory, ShowingItem.ShowingCategory.RowId);
-                ShowingCategoryMessages.Add(ShowingCategoryMessage);
-
-                EventMessage<UnitOfMeasure> UnitOfMeasureMessage = new EventMessage<UnitOfMeasure>(ShowingItem.UnitOfMeasure, ShowingItem.UnitOfMeasure.RowId);
-                UnitOfMeasureMessages.Add(UnitOfMeasureMessage);
+                ShowingCategorys.Add(ShowingItem.ShowingCategory);
+                UnitOfMeasures.Add(ShowingItem.UnitOfMeasure);
             }
-            ShowingCategoryMessages = ShowingCategoryMessages.Distinct().ToList();
-            UnitOfMeasureMessages = UnitOfMeasureMessages.Distinct().ToList();
-            RabbitManager.PublishList(ShowingCategoryMessages, RoutingKeyEnum.ShowingCategoryUsed);
-            RabbitManager.PublishList(UnitOfMeasureMessages, RoutingKeyEnum.UnitOfMeasureUsed);
+            ShowingCategorys = ShowingCategorys.Distinct().ToList();
+            UnitOfMeasures = UnitOfMeasures.Distinct().ToList();
+            RabbitManager.PublishList(ShowingCategorys, RoutingKeyEnum.ShowingCategoryUsed);
+            RabbitManager.PublishList(UnitOfMeasures, RoutingKeyEnum.UnitOfMeasureUsed);
         }
     }
 }

@@ -233,11 +233,10 @@ namespace DMS.Services.MStoreType
 
         private void Sync(List<StoreType> StoreTypes)
         {
-            List<EventMessage<StoreType>> EventMessageSyncStoreTypes = new List<EventMessage<StoreType>>();
+            List<StoreType> EventMessageSyncStoreTypes = new List<StoreType>();
             foreach (StoreType StoreType in StoreTypes)
             {
-                EventMessage<StoreType> EventMessageSyncStoreType = new EventMessage<StoreType>(StoreType, StoreType.RowId);
-                EventMessageSyncStoreTypes.Add(EventMessageSyncStoreType);
+                EventMessageSyncStoreTypes.Add(StoreType);
             }
             RabbitManager.PublishList(EventMessageSyncStoreTypes, RoutingKeyEnum.StoreTypeSync);
         }

@@ -164,8 +164,7 @@ namespace DMS.Services.MProblem
                     UserNotifications.Add(UserNotification);
                 }
 
-                List<EventMessage<UserNotification>> EventUserNotifications = UserNotifications.Select(x => new EventMessage<UserNotification>(x, x.RowId)).ToList();
-                RabbitManager.PublishList(EventUserNotifications, RoutingKeyEnum.UserNotificationSend);
+                RabbitManager.PublishList(UserNotifications, RoutingKeyEnum.UserNotificationSend);
 
                 await Logging.CreateAuditLog(Problem, new { }, nameof(ProblemService));
                 return await UOW.ProblemRepository.Get(Problem.Id);
@@ -252,8 +251,7 @@ namespace DMS.Services.MProblem
                         Problem.ProblemHistories = new List<ProblemHistory>();
                     Problem.ProblemHistories.Add(ProblemHistory);
 
-                    List<EventMessage<UserNotification>> EventUserNotifications = UserNotifications.Select(x => new EventMessage<UserNotification>(x, x.RowId)).ToList();
-                    RabbitManager.PublishList(EventUserNotifications, RoutingKeyEnum.UserNotificationSend);
+                    RabbitManager.PublishList(UserNotifications, RoutingKeyEnum.UserNotificationSend);
                 }
                 await UOW.Begin();
                 await UOW.ProblemRepository.Update(Problem);
@@ -455,24 +453,12 @@ namespace DMS.Services.MProblem
         private void NotifyUsed(Problem Problem)
         {
             {
-                EventMessage<ProblemType> ProblemTypeMessage = new EventMessage<ProblemType>
-                {
-                    Content = new ProblemType { Id = Problem.ProblemTypeId },
-                    EntityName = nameof(Item),
-                    RowId = Guid.NewGuid(),
-                    Time = StaticParams.DateTimeNow,
-                };
+                ProblemType ProblemTypeMessage = new ProblemType { Id = Problem.ProblemTypeId };
                 RabbitManager.PublishSingle(ProblemTypeMessage, RoutingKeyEnum.ProblemTypeUsed);
             }
 
             {
-                EventMessage<Store> StoreMessage = new EventMessage<Store>
-                {
-                    Content = new Store { Id = Problem.StoreId },
-                    EntityName = nameof(Store),
-                    RowId = Guid.NewGuid(),
-                    Time = StaticParams.DateTimeNow,
-                };
+                Store StoreMessage = new Store { Id = Problem.StoreId };
                 RabbitManager.PublishSingle(StoreMessage, RoutingKeyEnum.StoreUsed);
             }
         }

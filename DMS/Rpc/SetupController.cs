@@ -96,15 +96,14 @@ namespace DMS.Rpc
             List<long> IndirectSalesOrderIds = IndirectSalesOrders.Select(x => x.Id).ToList();
             IndirectSalesOrders = await UOW.IndirectSalesOrderRepository.List(IndirectSalesOrderIds);
 
-            List<EventMessage<IndirectSalesOrder>> IndirectSalesOrderEventMessages = IndirectSalesOrders
-                .Select(x => new EventMessage<IndirectSalesOrder>(x, Guid.NewGuid())).ToList();
-            var count = IndirectSalesOrderEventMessages.Count();
+            
+            var count = IndirectSalesOrders.Count();
             var BatchCounter = (count / 1000) + 1;
             for (int i = 0; i < count; i += 1000)
             {
                 int skip = i * 1000;
                 int take = 1000;
-                var Batch = IndirectSalesOrderEventMessages.Skip(skip).Take(take).ToList();
+                var Batch = IndirectSalesOrders.Skip(skip).Take(take).ToList();
                 RabbitManager.PublishList(Batch, RoutingKeyEnum.IndirectSalesOrderSync);
             }
         }
@@ -123,14 +122,14 @@ namespace DMS.Rpc
             List<long> StoreIds = Stores.Select(x => x.Id).ToList();
             Stores = await UOW.StoreRepository.List(StoreIds);
 
-            List<EventMessage<Store>> StoreEventMessages = Stores.Select(x => new EventMessage<Store>(x, Guid.NewGuid())).ToList();
-            var count = StoreEventMessages.Count();
+            
+            var count = Stores.Count();
             var BatchCounter = (count / 1000) + 1;
             for (int i = 0; i < count; i += 1000)
             {
                 int skip = i * 1000;
                 int take = 1000;
-                var Batch = StoreEventMessages.Skip(skip).Take(take).ToList();
+                var Batch = Stores.Skip(skip).Take(take).ToList();
                 RabbitManager.PublishList(Batch, RoutingKeyEnum.StoreSync);
             }
         }
@@ -168,8 +167,8 @@ namespace DMS.Rpc
             List<long> StoreTypeIds = StoreTypees.Select(x => x.Id).ToList();
             StoreTypees = await UOW.StoreTypeRepository.List(StoreTypeIds);
 
-            List<EventMessage<StoreType>> StoreTypeEventMessages = StoreTypees.Select(x => new EventMessage<StoreType>(x, Guid.NewGuid())).ToList();
-            RabbitManager.PublishList(StoreTypeEventMessages, RoutingKeyEnum.StoreTypeSync);
+            List<StoreType> StoreTypes = StoreTypees.Select(x => new StoreType()).ToList();
+            RabbitManager.PublishList(StoreTypes, RoutingKeyEnum.StoreTypeSync);
         }
         #endregion
 
@@ -187,8 +186,7 @@ namespace DMS.Rpc
             List<long> StoreStatusIds = StoreStatuses.Select(x => x.Id).ToList();
             StoreStatuses = await UOW.StoreStatusRepository.List(StoreStatusIds);
 
-            List<EventMessage<StoreStatus>> StoreStatusEventMessages = StoreStatuses.Select(x => new EventMessage<StoreStatus>(x, Guid.NewGuid())).ToList();
-            RabbitManager.PublishList(StoreStatusEventMessages, RoutingKeyEnum.StoreStatusSync);
+            RabbitManager.PublishList(StoreStatuses, RoutingKeyEnum.StoreStatusSync);
         }
         #endregion
 
@@ -203,9 +201,8 @@ namespace DMS.Rpc
 
             List<long> ShowingItemIds = ShowingItems.Select(x => x.Id).ToList();
             ShowingItems = await UOW.ShowingItemRepository.List(ShowingItemIds);
-            List<EventMessage<ShowingItem>> ShowingItemEventMessages = ShowingItems.Select(x => new EventMessage<ShowingItem>
-            (x, Guid.NewGuid())).ToList();
-            RabbitManager.PublishList(ShowingItemEventMessages, RoutingKeyEnum.ShowingItemSync);
+            
+            RabbitManager.PublishList(ShowingItems, RoutingKeyEnum.ShowingItemSync);
         }
         #endregion
 
@@ -1525,8 +1522,7 @@ namespace DMS.Rpc
                 Name = x.Name,
             }).ToList();
 
-            List<EventMessage<StoreStatus>> messages = StoreStatuses.Select(x => new EventMessage<StoreStatus>(x, Guid.NewGuid())).ToList();
-            RabbitManager.PublishList(messages, RoutingKeyEnum.StoreStatusSync);
+            RabbitManager.PublishList(StoreStatuses, RoutingKeyEnum.StoreStatusSync);
         }
 
         private void InitERouteTypeEnum()
