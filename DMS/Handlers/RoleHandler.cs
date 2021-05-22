@@ -36,7 +36,7 @@ namespace DMS.Handlers
             }
             catch (Exception ex)
             {
-                SystemLog(ex, nameof(RoleHandler));
+                Log(ex, nameof(RoleHandler));
             }
         }
     }

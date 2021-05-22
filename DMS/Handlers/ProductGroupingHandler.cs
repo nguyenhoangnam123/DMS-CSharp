@@ -39,7 +39,7 @@ namespace DMS.Handlers
             }
             catch (Exception ex)
             {
-                SystemLog(ex, nameof(ProductGroupingHandler));
+                Log(ex, nameof(ProductGroupingHandler));
             }
         }
     }

@@ -35,7 +35,7 @@ namespace DMS.Handlers
             }
             catch (Exception ex)
             {
-                SystemLog(ex, nameof(DistrictHandler));
+                Log(ex, nameof(DistrictHandler));
             }
         }
     }

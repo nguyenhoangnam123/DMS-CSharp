@@ -36,7 +36,7 @@ namespace DMS.Handlers
             }
             catch (Exception e)
             {
-                SystemLog(e, nameof(BrandHandler));
+                Log(e, nameof(BrandHandler));
             }
         }
     }

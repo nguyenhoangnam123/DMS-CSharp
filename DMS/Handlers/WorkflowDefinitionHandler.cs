@@ -13,12 +13,12 @@ namespace DMS.Handlers
 {
     public class WorkflowDefinitionHandler : Handler
     {
-        private string UsedKey => Name + ".Used";
+        private string UsedKey => $"DMS.{Name}.Used";
         public override string Name => nameof(WorkflowDefinition);
 
         public override void QueueBind(IModel channel, string queue, string exchange)
         {
-            channel.QueueBind(queue, exchange, $"{Name}.*", null);
+            channel.QueueBind(queue, exchange, $"DMS.{Name}.*", null);
         }
         public override async Task Handle(IUOW UOW, string routingKey, string content)
         {
@@ -37,7 +37,7 @@ namespace DMS.Handlers
             }
             catch (Exception ex)
             {
-                SystemLog(ex, nameof(WorkflowDefinitionHandler));
+                Log(ex, nameof(WorkflowDefinitionHandler));
             }
         }
     }

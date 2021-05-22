@@ -35,7 +35,7 @@ namespace DMS.Handlers
             }
             catch (Exception ex)
             {
-                SystemLog(ex, nameof(WardHandler));
+                Log(ex, nameof(WardHandler));
             }
         }
     }

@@ -35,7 +35,7 @@ namespace DMS.Handlers
             }
             catch (Exception ex)
             {
-                SystemLog(ex, nameof(PositionHandler));
+                Log(ex, nameof(PositionHandler));
             }
         }
     }

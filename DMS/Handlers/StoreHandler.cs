@@ -37,7 +37,7 @@ namespace DMS.Handlers
             }
             catch (Exception ex)
             {
-                SystemLog(ex, nameof(StoreHandler));
+                Log(ex, nameof(StoreHandler));
             }
         }
     }

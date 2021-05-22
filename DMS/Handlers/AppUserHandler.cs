@@ -15,7 +15,7 @@ namespace DMS.Handlers
     public class AppUserHandler : Handler
     {
         private string SyncKey => Name + ".Sync";
-        public override string Name => "AppUser";
+        public override string Name => nameof(AppUser);
 
         public override void QueueBind(IModel channel, string queue, string exchange)
         {
@@ -36,7 +36,7 @@ namespace DMS.Handlers
             }
             catch (Exception ex)
             {
-                SystemLog(ex, nameof(AppUserHandler));
+                Log(ex, nameof(AppUserHandler));
             }
         }
     }

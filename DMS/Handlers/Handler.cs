@@ -32,7 +32,7 @@ namespace DMS.Handlers
 
         public abstract void QueueBind(IModel channel, string queue, string exchange);
 
-        protected void SystemLog(Exception ex, string className, [CallerMemberName] string methodName = "")
+        protected void Log(Exception ex, string className, [CallerMemberName] string methodName = "")
         {
             SystemLog SystemLog = new SystemLog
             {
