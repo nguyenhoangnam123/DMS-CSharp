@@ -766,13 +766,7 @@ namespace DMS.Services.MStoreChecking
         private void NotifyUsed(StoreChecking StoreChecking)
         {
             {
-                EventMessage<Store> StoreMessage = new EventMessage<Store>
-                {
-                    Content = new Store { Id = StoreChecking.StoreId },
-                    EntityName = nameof(Store),
-                    RowId = Guid.NewGuid(),
-                    Time = StaticParams.DateTimeNow,
-                };
+                Store StoreMessage = new Store { Id = StoreChecking.StoreId };
                 RabbitManager.PublishSingle(StoreMessage, RoutingKeyEnum.StoreUsed);
             }
             {
@@ -784,13 +778,7 @@ namespace DMS.Services.MStoreChecking
                         AlbumIds.Add(StoreCheckingImageMapping.AlbumId);
                     }
                 }
-                List<EventMessage<Album>> messages = AlbumIds.Select(a => new EventMessage<Album>
-                {
-                    RowId = Guid.NewGuid(),
-                    Time = StaticParams.DateTimeNow,
-                    EntityName = nameof(Album),
-                    Content = new Album { Id = a },
-                }).ToList();
+                List<Album> messages = AlbumIds.Select(a => new Album { Id = a }).ToList();
                 // phai check quan he lien ket 1:1, hay 1:n hay n:m de publishSingle, hay publishList
                 RabbitManager.PublishList(messages, RoutingKeyEnum.AlbumUsed);
             }

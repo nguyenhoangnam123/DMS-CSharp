@@ -229,7 +229,7 @@ namespace DMS.Services.MStoreUser
                     RowId = Guid.NewGuid()
                 };
                 Sync(new List<StoreUser> { newData });
-                RabbitManager.PublishSingle(new EventMessage<Mail>(mail, mail.RowId), RoutingKeyEnum.MailSend);
+                RabbitManager.PublishSingle(mail, RoutingKeyEnum.MailSend);
                 return newData;
             }
             catch (Exception ex)
@@ -287,7 +287,7 @@ namespace DMS.Services.MStoreUser
                     RowId = Guid.NewGuid()
                 };
                 Sync(new List<StoreUser> { newData });
-                RabbitManager.PublishSingle(new EventMessage<Mail>(mail, mail.RowId), RoutingKeyEnum.MailSend);
+                RabbitManager.PublishSingle(mail, RoutingKeyEnum.MailSend);
                 await Logging.CreateAuditLog(newData, oldData, nameof(StoreUserService));
                 return newData;
             }
@@ -677,17 +677,16 @@ namespace DMS.Services.MStoreUser
 
         private void Sync(List<StoreUser> StoreUsers)
         {
-            List<EventMessage<StoreUser>> StoreUserEventMessages = new List<EventMessage<StoreUser>>(); // Sync to AMS
-            List<EventMessage<Store>> StoreEventMessages = new List<EventMessage<Store>>(); // Used
+            List<StoreUser> StoreUserEventMessages = new List<StoreUser>(); // Sync to AMS
+            List<Store> StoreEventMessages = new List<Store>(); // Used
             foreach (StoreUser StoreUser in StoreUsers)
             {
                 if(StoreUser.StoreId != 0)
                 {
-                    EventMessage<Store> StoreEventMessage = new EventMessage<Store>(new Store { Id = StoreUser.StoreId}, StoreUser.RowId);
+                    Store StoreEventMessage = new Store { Id = StoreUser.StoreId};
                     StoreEventMessages.Add(StoreEventMessage);
                 }
-                EventMessage<StoreUser> StoreUserEventMessage = new EventMessage<StoreUser>(StoreUser, StoreUser.RowId);
-                StoreUserEventMessages.Add(StoreUserEventMessage);
+                StoreUserEventMessages.Add(StoreUser);
             }
             RabbitManager.PublishList(StoreEventMessages, RoutingKeyEnum.StoreUsed);
             RabbitManager.PublishList(StoreUserEventMessages, RoutingKeyEnum.StoreUserSync);

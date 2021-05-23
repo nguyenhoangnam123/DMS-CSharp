@@ -18,7 +18,6 @@ namespace DMS.Repositories
         Task<bool> BulkInsertNewProduct(List<Product> Products);
         Task<bool> BulkDeleteNewProduct(List<Product> Products);
         Task<bool> BulkMerge(List<Product> Products);
-        Task<bool> Used(List<long> Ids);
     }
     public class ProductRepository : IProductRepository
     {
@@ -961,13 +960,6 @@ namespace DMS.Repositories
             await DataContext.BulkMergeAsync(VariationDAOs);
             await DataContext.BulkMergeAsync(ItemDAOs);
             await DataContext.BulkMergeAsync(ItemImageMappingDAOs);
-            return true;
-        }
-
-        public async Task<bool> Used(List<long> Ids)
-        {
-            await DataContext.Product.Where(x => Ids.Contains(x.Id))
-                .UpdateFromQueryAsync(x => new ProductDAO { Used = true });
             return true;
         }
     }

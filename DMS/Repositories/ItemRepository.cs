@@ -16,7 +16,6 @@ namespace DMS.Repositories
         Task<int> Count(ItemFilter ItemFilter);
         Task<List<Item>> List(ItemFilter ItemFilter);
         Task<Item> Get(long Id);
-        Task<bool> Used(List<long> ItemIds);
     }
     public class ItemRepository : IItemRepository
     {
@@ -626,12 +625,6 @@ namespace DMS.Repositories
                 }
             }
             return Item;
-        }
-        public async Task<bool> Used(List<long> ItemIds)
-        {
-            await DataContext.ProblemType.Where(x => ItemIds.Contains(x.Id))
-                .UpdateFromQueryAsync(x => new ProblemTypeDAO { Used = true });
-            return true;
         }
     }
 }
