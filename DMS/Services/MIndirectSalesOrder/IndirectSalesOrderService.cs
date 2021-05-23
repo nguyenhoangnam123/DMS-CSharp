@@ -425,7 +425,7 @@ namespace DMS.Services.MIndirectSalesOrder
                 }
                 RabbitManager.PublishList(UserNotifications, RoutingKeyEnum.UserNotificationSend);
 
-                NotifyUsed(IndirectSalesOrder);
+                Sync(new List<IndirectSalesOrder> { IndirectSalesOrder });
                 await Logging.CreateAuditLog(IndirectSalesOrder, new { }, nameof(IndirectSalesOrderService));
                 return IndirectSalesOrder;
             }
@@ -485,7 +485,7 @@ namespace DMS.Services.MIndirectSalesOrder
                 RabbitManager.PublishList(UserNotifications, RoutingKeyEnum.UserNotificationSend);
 
                 IndirectSalesOrder = await UOW.IndirectSalesOrderRepository.Get(IndirectSalesOrder.Id);
-                NotifyUsed(IndirectSalesOrder);
+                Sync(new List<IndirectSalesOrder> { IndirectSalesOrder });
                 await Logging.CreateAuditLog(IndirectSalesOrder, oldData, nameof(IndirectSalesOrderService));
                 return IndirectSalesOrder;
             }
@@ -541,6 +541,8 @@ namespace DMS.Services.MIndirectSalesOrder
 
                 RabbitManager.PublishList(UserNotifications, RoutingKeyEnum.UserNotificationSend);
 
+                var IndirectSalesOrders = await UOW.IndirectSalesOrderRepository.List(new List<long> { IndirectSalesOrder.Id });
+                Sync(IndirectSalesOrders);
                 await Logging.CreateAuditLog(new { }, IndirectSalesOrder, nameof(IndirectSalesOrderService));
                 return IndirectSalesOrder;
             }
@@ -1053,7 +1055,10 @@ namespace DMS.Services.MIndirectSalesOrder
             GenericEnum RequestState = await WorkflowService.Send(IndirectSalesOrder.RowId, WorkflowTypeEnum.INDIRECT_SALES_ORDER.Id, IndirectSalesOrder.OrganizationId, Parameters);
             IndirectSalesOrder.RequestStateId = RequestState.Id;
             await UOW.IndirectSalesOrderRepository.UpdateState(IndirectSalesOrder);
-            return await Get(IndirectSalesOrder.Id);
+          
+            IndirectSalesOrder = await UOW.IndirectSalesOrderRepository.Get(IndirectSalesOrder.Id);
+            Sync(new List<IndirectSalesOrder> { IndirectSalesOrder });
+            return IndirectSalesOrder;
         }
 
         public async Task<IndirectSalesOrder> Approve(IndirectSalesOrder IndirectSalesOrder)
@@ -1067,7 +1072,10 @@ namespace DMS.Services.MIndirectSalesOrder
             RequestState RequestState = await WorkflowService.GetRequestState(IndirectSalesOrder.RowId);
             IndirectSalesOrder.RequestStateId = RequestState.Id;
             await UOW.IndirectSalesOrderRepository.UpdateState(IndirectSalesOrder);
-            return await Get(IndirectSalesOrder.Id);
+
+            IndirectSalesOrder = await UOW.IndirectSalesOrderRepository.Get(IndirectSalesOrder.Id);
+            Sync(new List<IndirectSalesOrder> { IndirectSalesOrder });
+            return IndirectSalesOrder;
         }
 
         public async Task<IndirectSalesOrder> Reject(IndirectSalesOrder IndirectSalesOrder)
@@ -1078,7 +1086,10 @@ namespace DMS.Services.MIndirectSalesOrder
             RequestState RequestState = await WorkflowService.GetRequestState(IndirectSalesOrder.RowId);
             IndirectSalesOrder.RequestStateId = RequestState.Id;
             await UOW.IndirectSalesOrderRepository.UpdateState(IndirectSalesOrder);
-            return await Get(IndirectSalesOrder.Id);
+
+            IndirectSalesOrder = await UOW.IndirectSalesOrderRepository.Get(IndirectSalesOrder.Id);
+            Sync(new List<IndirectSalesOrder> { IndirectSalesOrder });
+            return IndirectSalesOrder;
         }
 
         public async Task<List<IndirectSalesOrder>> BulkApprove(List<IndirectSalesOrder> IndirectSalesOrders)
@@ -1091,7 +1102,9 @@ namespace DMS.Services.MIndirectSalesOrder
                 IndirectSalesOrder.RequestStateId = RequestState.Id;
                 await UOW.IndirectSalesOrderRepository.UpdateState(IndirectSalesOrder);
             }
-
+            var IndirectSalesOrderIds = IndirectSalesOrders.Select(x => x.Id).ToList();
+            IndirectSalesOrders = await UOW.IndirectSalesOrderRepository.List(IndirectSalesOrderIds);
+            Sync(IndirectSalesOrders);
             return IndirectSalesOrders;
         }
 
@@ -1105,7 +1118,9 @@ namespace DMS.Services.MIndirectSalesOrder
                 IndirectSalesOrder.RequestStateId = RequestState.Id;
                 await UOW.IndirectSalesOrderRepository.UpdateState(IndirectSalesOrder);
             }
-
+            var IndirectSalesOrderIds = IndirectSalesOrders.Select(x => x.Id).ToList();
+            IndirectSalesOrders = await UOW.IndirectSalesOrderRepository.List(IndirectSalesOrderIds);
+            Sync(IndirectSalesOrders);
             return IndirectSalesOrders;
         }
 
@@ -1164,34 +1179,38 @@ namespace DMS.Services.MIndirectSalesOrder
             return AppUserIds;
         }
 
-        private void NotifyUsed(IndirectSalesOrder IndirectSalesOrder)
+        private void Sync(List<IndirectSalesOrder> IndirectSalesOrders)
         {
-            {
-                List<long> ItemIds = IndirectSalesOrder.IndirectSalesOrderContents.Select(i => i.ItemId).ToList();
-                List<Item> itemMessages = ItemIds.Select(i => new Item { Id = i }).ToList();
-                RabbitManager.PublishList(itemMessages, RoutingKeyEnum.ItemUsed);
-            }
+            List<AppUser> AppUsers = new List<AppUser>();
+            AppUsers.AddRange(IndirectSalesOrders.Select(x => x.SaleEmployee));
+            AppUsers.AddRange(IndirectSalesOrders.Select(x => x.Creator));
+            AppUsers = AppUsers.Distinct().ToList();
 
-            {
-                List<long> PrimaryUOMIds = IndirectSalesOrder.IndirectSalesOrderContents.Select(i => i.PrimaryUnitOfMeasureId).ToList();
-                List<long> UOMIds = IndirectSalesOrder.IndirectSalesOrderContents.Select(i => i.UnitOfMeasureId).ToList();
-                UOMIds.AddRange(PrimaryUOMIds);
-                List<UnitOfMeasure> UnitOfMeasureMessages = UOMIds.Select(x => new UnitOfMeasure { Id = x }).ToList();
-                RabbitManager.PublishList(UnitOfMeasureMessages, RoutingKeyEnum.UnitOfMeasureUsed);
-            }
-            {
-                List<Store> storeMessages = new List<Store>();
-                Store BuyerStore = new Store { Id = IndirectSalesOrder.BuyerStoreId };
-                storeMessages.Add(BuyerStore);
-                Store SellerStore = new Store { Id = IndirectSalesOrder.SellerStoreId };
-                storeMessages.Add(SellerStore);
-                RabbitManager.PublishList(storeMessages, RoutingKeyEnum.StoreUsed);
-            }
+            List<Organization> Organizations = IndirectSalesOrders.Select(x => x.Organization).Distinct().ToList();
 
-            {
-                AppUser AppUserMessage = new AppUser { Id = IndirectSalesOrder.SaleEmployeeId };
-                RabbitManager.PublishSingle(AppUserMessage, RoutingKeyEnum.AppUserUsed);
-            }
+            List<Store> Stores = new List<Store>();
+            Stores.AddRange(IndirectSalesOrders.Select(x => x.BuyerStore));
+            Stores.AddRange(IndirectSalesOrders.Select(x => x.SellerStore));
+            Stores = Stores.Distinct().ToList();
+
+            List<Item> Items = new List<Item>();
+            Items.AddRange(IndirectSalesOrders.Where(x => x.IndirectSalesOrderContents != null).SelectMany(x => x.IndirectSalesOrderContents).Select(x => x.Item));
+            Items.AddRange(IndirectSalesOrders.Where(x => x.IndirectSalesOrderPromotions != null).SelectMany(x => x.IndirectSalesOrderPromotions).Select(x => x.Item));
+            Items = Items.Distinct().ToList();
+
+            List<UnitOfMeasure> UnitOfMeasures = new List<UnitOfMeasure>();
+            UnitOfMeasures.AddRange(IndirectSalesOrders.Where(x => x.IndirectSalesOrderContents != null).SelectMany(x => x.IndirectSalesOrderContents).Select(x => x.UnitOfMeasure));
+            UnitOfMeasures.AddRange(IndirectSalesOrders.Where(x => x.IndirectSalesOrderContents != null).SelectMany(x => x.IndirectSalesOrderContents).Select(x => x.PrimaryUnitOfMeasure));
+            UnitOfMeasures.AddRange(IndirectSalesOrders.Where(x => x.IndirectSalesOrderPromotions != null).SelectMany(x => x.IndirectSalesOrderPromotions).Select(x => x.UnitOfMeasure));
+            UnitOfMeasures.AddRange(IndirectSalesOrders.Where(x => x.IndirectSalesOrderPromotions != null).SelectMany(x => x.IndirectSalesOrderPromotions).Select(x => x.PrimaryUnitOfMeasure));
+            UnitOfMeasures = UnitOfMeasures.Distinct().ToList();
+
+            RabbitManager.PublishList(IndirectSalesOrders, RoutingKeyEnum.IndirectSalesOrderSync);
+            RabbitManager.PublishList(AppUsers, RoutingKeyEnum.AppUserUsed);
+            RabbitManager.PublishList(Organizations, RoutingKeyEnum.OrganizationUsed);
+            RabbitManager.PublishList(Stores, RoutingKeyEnum.StoreUsed);
+            RabbitManager.PublishList(Items, RoutingKeyEnum.ItemUsed);
+            RabbitManager.PublishList(UnitOfMeasures, RoutingKeyEnum.UnitOfMeasureUsed);
         }
     }
 }

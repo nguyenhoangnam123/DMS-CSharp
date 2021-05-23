@@ -677,19 +677,9 @@ namespace DMS.Services.MStoreUser
 
         private void Sync(List<StoreUser> StoreUsers)
         {
-            List<StoreUser> StoreUserEventMessages = new List<StoreUser>(); // Sync to AMS
-            List<Store> StoreEventMessages = new List<Store>(); // Used
-            foreach (StoreUser StoreUser in StoreUsers)
-            {
-                if(StoreUser.StoreId != 0)
-                {
-                    Store StoreEventMessage = new Store { Id = StoreUser.StoreId};
-                    StoreEventMessages.Add(StoreEventMessage);
-                }
-                StoreUserEventMessages.Add(StoreUser);
-            }
-            RabbitManager.PublishList(StoreEventMessages, RoutingKeyEnum.StoreUsed);
-            RabbitManager.PublishList(StoreUserEventMessages, RoutingKeyEnum.StoreUserSync);
+            List<Store> Stores = StoreUsers.Select(x => new Store { Id = x.StoreId }).Distinct().ToList();
+            RabbitManager.PublishList(StoreUsers, RoutingKeyEnum.StoreUserSync);
+            RabbitManager.PublishList(Stores, RoutingKeyEnum.StoreUsed);
         }
     }
 

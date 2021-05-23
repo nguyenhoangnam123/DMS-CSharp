@@ -723,9 +723,8 @@ namespace DMS.Services.MStore
         private void Sync(List<Store> Stores)
         {
             List<Brand> Brands = new List<Brand>();
-            List<Store> SyncStores = new List<Store>();
             List<AppUser> AppUsers = new List<AppUser>();
-            List<Store> Storess = new List<Store>();
+            List<Store> ParentStores = new List<Store>();
             List<StoreType> StoreTypes = new List<StoreType>();
             List<StoreGrouping> StoreGroupings = new List<StoreGrouping>();
             List<Province> Provinces = new List<Province>();
@@ -734,8 +733,6 @@ namespace DMS.Services.MStore
             List<Organization> Organizations = new List<Organization>();
             foreach (var Store in Stores)
             {
-                SyncStores.Add(Store);
-
                 StoreTypes.Add(Store.StoreType);
                 if (Store.AppUserId.HasValue)
                 {
@@ -743,7 +740,7 @@ namespace DMS.Services.MStore
                 }
                 if (Store.ParentStoreId.HasValue)
                 {
-                    Storess.Add(Store.ParentStore);
+                    ParentStores.Add(Store.ParentStore);
                 }
                 if (Store.StoreGroupingId.HasValue)
                 {
@@ -770,18 +767,20 @@ namespace DMS.Services.MStore
                     }
                 }
             }
-            RabbitManager.PublishList(SyncStores, RoutingKeyEnum.StoreSync);
             AppUsers = AppUsers.Distinct().ToList();
-            Stores = Stores.Distinct().ToList();
+            Brands = Brands.Distinct().ToList();
+            ParentStores = ParentStores.Distinct().ToList();
             StoreTypes = StoreTypes.Distinct().ToList();
             StoreGroupings = StoreGroupings.Distinct().ToList();
             Provinces = Provinces.Distinct().ToList();
             Districts = Districts.Distinct().ToList();
             Wards = Wards.Distinct().ToList();
             Organizations = Organizations.Distinct().ToList();
+
+            RabbitManager.PublishList(Stores, RoutingKeyEnum.StoreSync);
             RabbitManager.PublishList(AppUsers, RoutingKeyEnum.AppUserUsed);
             RabbitManager.PublishList(Brands, RoutingKeyEnum.BrandUsed);
-            RabbitManager.PublishList(Stores, RoutingKeyEnum.StoreUsed);
+            RabbitManager.PublishList(ParentStores, RoutingKeyEnum.StoreUsed);
             RabbitManager.PublishList(StoreTypes, RoutingKeyEnum.StoreTypeUsed);
             RabbitManager.PublishList(StoreGroupings, RoutingKeyEnum.StoreGroupingUsed);
             RabbitManager.PublishList(Provinces, RoutingKeyEnum.ProvinceUsed);

@@ -63,7 +63,6 @@ namespace DMS.Rpc
             {
                 Skip = 0,
                 Take = int.MaxValue,
-
                 Selects = DirectSalesOrderSelect.Id,
             });
 
@@ -89,13 +88,11 @@ namespace DMS.Rpc
             {
                 Skip = 0,
                 Take = int.MaxValue,
-
                 Selects = IndirectSalesOrderSelect.Id,
             });
 
             List<long> IndirectSalesOrderIds = IndirectSalesOrders.Select(x => x.Id).ToList();
             IndirectSalesOrders = await UOW.IndirectSalesOrderRepository.List(IndirectSalesOrderIds);
-
             
             var count = IndirectSalesOrders.Count();
             var BatchCounter = (count / 1000) + 1;
@@ -121,7 +118,6 @@ namespace DMS.Rpc
 
             List<long> StoreIds = Stores.Select(x => x.Id).ToList();
             Stores = await UOW.StoreRepository.List(StoreIds);
-
             
             var count = Stores.Count();
             var BatchCounter = (count / 1000) + 1;
@@ -160,7 +156,6 @@ namespace DMS.Rpc
             {
                 Skip = 0,
                 Take = int.MaxValue,
-
                 Selects = StoreTypeSelect.Id,
             });
 
@@ -179,7 +174,6 @@ namespace DMS.Rpc
             {
                 Skip = 0,
                 Take = int.MaxValue,
-
                 Selects = StoreStatusSelect.Id,
             });
 
@@ -1948,7 +1942,6 @@ namespace DMS.Rpc
                 Name = item.Name,
             }).ToList();
             DataContext.RequestState.BulkSynchronize(RequestStateEnumList);
-
         }
 
         private void InitStoreApprovalStateEnum()
