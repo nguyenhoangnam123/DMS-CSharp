@@ -20,6 +20,7 @@ namespace DMS.Repositories
         Task<bool> Delete(Role Role);
         Task<bool> BulkMerge(List<Role> Roles);
         Task<bool> BulkDelete(List<Role> Roles);
+        Task<bool> Used(List<long> Ids);
     }
     public class RoleRepository : IRoleRepository
     {
@@ -301,6 +302,12 @@ namespace DMS.Repositories
                 }
                 await DataContext.AppUserRoleMapping.BulkMergeAsync(AppUserRoleMappingDAOs);
             }
+        }
+        public async Task<bool> Used(List<long> Ids)
+        {
+            await DataContext.Role.Where(x => Ids.Contains(x.Id))
+                .UpdateFromQueryAsync(x => new RoleDAO { Used = true });
+            return true;
         }
     }
 }

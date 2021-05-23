@@ -30,21 +30,18 @@ namespace DMS.ABE.Services.MProduct
         private ILogging Logging;
         private ICurrentContext CurrentContext;
         private IImageService ImageService;
-        private IItemValidator ItemValidator;
 
         public ItemService(
             IUOW UOW,
             ILogging Logging,
             ICurrentContext CurrentContext,
-            IImageService ImageService,
-            IItemValidator ItemValidator
+            IImageService ImageService
         )
         {
             this.UOW = UOW;
             this.Logging = Logging;
             this.CurrentContext = CurrentContext;
             this.ImageService = ImageService;
-            this.ItemValidator = ItemValidator;
         }
         public async Task<int> Count(ItemFilter ItemFilter)
         {

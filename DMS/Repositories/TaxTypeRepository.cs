@@ -15,6 +15,7 @@ namespace DMS.Repositories
         Task<int> Count(TaxTypeFilter TaxTypeFilter);
         Task<List<TaxType>> List(TaxTypeFilter TaxTypeFilter);
         Task<TaxType> Get(long Id);
+        Task<bool> BulkMerge(List<TaxType> TaxTypes);
     }
     public class TaxTypeRepository : ITaxTypeRepository
     {
@@ -174,6 +175,24 @@ namespace DMS.Repositories
                 return null;
 
             return TaxType;
+        }
+        public async Task<bool> BulkMerge(List<TaxType> TaxTypes)
+        {
+            List<TaxTypeDAO> TaxTypeDAOs = TaxTypes.Select(x => new TaxTypeDAO
+            {
+                CreatedAt = x.CreatedAt,
+                UpdatedAt = x.UpdatedAt,
+                DeletedAt = x.DeletedAt,
+                Id = x.Id,
+                Code = x.Code,
+                Name = x.Name,
+                StatusId = x.StatusId,
+                Percentage = x.Percentage,
+                Used = x.Used,
+                RowId = x.RowId,
+            }).ToList();
+            await DataContext.BulkMergeAsync(TaxTypeDAOs);
+            return true;
         }
     }
 }

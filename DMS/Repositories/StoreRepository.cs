@@ -26,6 +26,7 @@ namespace DMS.Repositories
         Task<bool> Delete(Store Store);
         Task<bool> BulkMerge(List<Store> Stores);
         Task<bool> BulkDelete(List<Store> Stores);
+        Task<bool> Used(List<long> Ids);
     }
     public class StoreRepository : IStoreRepository
     {
@@ -1476,6 +1477,12 @@ namespace DMS.Repositories
             await DataContext.Store
                 .Where(x => Ids.Contains(x.Id))
                 .UpdateFromQueryAsync(x => new StoreDAO { DeletedAt = StaticParams.DateTimeNow });
+            return true;
+        }
+        public async Task<bool> Used(List<long> Ids)
+        {
+            await DataContext.Store.Where(x => Ids.Contains(x.Id))
+                .UpdateFromQueryAsync(x => new StoreDAO { Used = true });
             return true;
         }
 

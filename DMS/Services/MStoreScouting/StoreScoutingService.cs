@@ -147,8 +147,7 @@ namespace DMS.Services.MStoreScouting
                     UserNotifications.Add(UserNotification);
                 }
 
-                List<EventMessage<UserNotification>> EventUserNotifications = UserNotifications.Select(x => new EventMessage<UserNotification>(x, x.RowId)).ToList();
-                RabbitManager.PublishList(EventUserNotifications, RoutingKeyEnum.UserNotificationSend);
+                RabbitManager.PublishList(UserNotifications, RoutingKeyEnum.UserNotificationSend);
 
                 await Logging.CreateAuditLog(StoreScouting, new { }, nameof(StoreScoutingService));
                 return await UOW.StoreScoutingRepository.Get(StoreScouting.Id);
@@ -260,8 +259,7 @@ namespace DMS.Services.MStoreScouting
                     RecipientId = Creator.Id,
                     RowId = Guid.NewGuid(),
                 };
-                EventMessage<UserNotification> EventUserNotification = new EventMessage<UserNotification>(UserNotification, UserNotification.RowId);
-                RabbitManager.PublishSingle(EventUserNotification, RoutingKeyEnum.UserNotificationSend);
+                RabbitManager.PublishSingle(UserNotification, RoutingKeyEnum.UserNotificationSend);
 
                 Mail mail = new Mail
                 {
@@ -270,7 +268,7 @@ namespace DMS.Services.MStoreScouting
                     Recipients = new List<string> { Creator.Email },
                     RowId = Guid.NewGuid()
                 };
-                RabbitManager.PublishSingle(new EventMessage<Mail>(mail, mail.RowId), RoutingKeyEnum.MailSend);
+                RabbitManager.PublishSingle(mail, RoutingKeyEnum.MailSend);
                 await Logging.CreateAuditLog(StoreScouting, oldData, nameof(StoreScoutingService));
                 return StoreScouting;
             }

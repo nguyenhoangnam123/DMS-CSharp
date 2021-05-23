@@ -1,6 +1,7 @@
 ﻿using DMS.Common;
 using DMS.Entities;
 using DMS.Models;
+using DMS.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
@@ -20,77 +21,22 @@ namespace DMS.Handlers
         {
             channel.QueueBind(queue, exchange, $"{Name}.*", null);
         }
-        public override async Task Handle(DataContext context, string routingKey, string content)
+        public override async Task Handle(IUOW UOW, string routingKey, string content)
         {
             if (routingKey == SyncKey)
-                await Sync(context, content);
+                await Sync(UOW, content);
         }
 
-        private async Task Sync(DataContext context, string json)
+        private async Task Sync(IUOW UOW, string json)
         {
-            List<EventMessage<Organization>> OrganizationEventMessages = JsonConvert.DeserializeObject<List<EventMessage<Organization>>>(json);
-            List<Organization> Organizations = OrganizationEventMessages.Select(x => x.Content).ToList();
-            List<OrganizationDAO> OrganizationDAOs = await context.Organization.ToListAsync();
-            var AppUsers = Organizations.Where(x => x.AppUsers != null).SelectMany(x => x.AppUsers).ToList();
-            var AppUserIds = AppUsers.Select(x => x.Id).ToList();
-            var AppUserDAOs = await context.AppUser.Where(x => AppUserIds.Contains(x.Id)).ToListAsync();
-
             try
             {
-                foreach (var Organization in Organizations)
-                {
-                    OrganizationDAO OrganizationDAO = OrganizationDAOs.Where(x => x.Id == Organization.Id).FirstOrDefault();
-                    if(OrganizationDAO == null)
-                    {
-                        OrganizationDAO = new OrganizationDAO
-                        {
-                            Id = Organization.Id,
-                            Code = Organization.Code,
-                            Name = Organization.Name,
-                            Address = Organization.Address,
-                            CreatedAt = Organization.CreatedAt,
-                            UpdatedAt = Organization.UpdatedAt,
-                            DeletedAt = Organization.DeletedAt,
-                            Email = Organization.Email,
-                            Level = Organization.Level,
-                            ParentId = Organization.ParentId,
-                            Path = Organization.Path,
-                            Phone = Organization.Phone,
-                            RowId = Organization.RowId,
-                            StatusId = Organization.StatusId,
-                            IsDisplay = true
-                        };
-                        OrganizationDAOs.Add(OrganizationDAO);
-                    }
-                    else
-                    {
-                        OrganizationDAO.Id = Organization.Id;
-                        OrganizationDAO.Code = Organization.Code;
-                        OrganizationDAO.Name = Organization.Name;
-                        OrganizationDAO.Address = Organization.Address;
-                        OrganizationDAO.CreatedAt = Organization.CreatedAt;
-                        OrganizationDAO.UpdatedAt = Organization.UpdatedAt;
-                        OrganizationDAO.DeletedAt = Organization.DeletedAt;
-                        OrganizationDAO.Email = Organization.Email;
-                        OrganizationDAO.Level = Organization.Level;
-                        OrganizationDAO.ParentId = Organization.ParentId;
-                        OrganizationDAO.Path = Organization.Path;
-                        OrganizationDAO.Phone = Organization.Phone;
-                        OrganizationDAO.RowId = Organization.RowId;
-                        OrganizationDAO.StatusId = Organization.StatusId;
-                    }
-                }
-                await context.Organization.BulkMergeAsync(OrganizationDAOs);
-
-                foreach (var AppUserDAO in AppUserDAOs)
-                {
-                    AppUserDAO.OrganizationId = AppUsers.Where(x => x.Id == AppUserDAO.Id).Select(x => x.OrganizationId).FirstOrDefault();
-                }
-                await context.SaveChangesAsync();
+                List<Organization> Organizations = JsonConvert.DeserializeObject<List<Organization>>(json);
+                await UOW.OrganizationRepository.BulkMerge(Organizations);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                SystemLog(ex, nameof(OrganizationHandler));
+                Log(ex, nameof(OrganizationHandler));
             }
         }
     }

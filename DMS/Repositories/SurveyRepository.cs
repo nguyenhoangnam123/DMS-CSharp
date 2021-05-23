@@ -19,6 +19,7 @@ namespace DMS.Repositories
         Task<bool> Create(Survey Survey);
         Task<bool> Update(Survey Survey);
         Task<bool> Delete(Survey Survey);
+        Task<bool> Used(List<long> Ids);
     }
     public class SurveyRepository : ISurveyRepository
     {
@@ -339,6 +340,12 @@ namespace DMS.Repositories
             return true;
         }
 
+        public async Task<bool> Used(List<long> Ids)
+        {
+            await DataContext.Survey.Where(x => Ids.Contains(x.Id))
+                .UpdateFromQueryAsync(x => new SurveyDAO { Used = true });
+            return true;
+        }
         public async Task<bool> Delete(Survey Survey)
         {
             var SurveyQuestionIds = await DataContext.SurveyQuestion.Where(x => x.SurveyId == Survey.Id).Select(x => x.Id).ToListAsync();

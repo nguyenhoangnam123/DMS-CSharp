@@ -14,6 +14,7 @@ namespace DMS.Repositories
         Task<int> Count(ProvinceFilter ProvinceFilter);
         Task<List<Province>> List(ProvinceFilter ProvinceFilter);
         Task<Province> Get(long Id);
+        Task<bool> BulkMerge(List<Province> Provinces);
     }
     public class ProvinceRepository : IProvinceRepository
     {
@@ -181,6 +182,55 @@ namespace DMS.Repositories
                 return null;
 
             return Province;
+        }
+        public async Task<bool> BulkMerge(List<Province> Provinces)
+        {
+            List<District> Districts = Provinces.SelectMany(x => x.Districts).ToList();
+            List<Ward> Wards = Districts.SelectMany(x => x.Wards).ToList();
+
+            List<ProvinceDAO> ProvinceDAOs = Provinces.Select(x => new ProvinceDAO
+            {
+                Code = x.Code,
+                CreatedAt = x.CreatedAt,
+                UpdatedAt = x.UpdatedAt,
+                DeletedAt = x.DeletedAt,
+                Id = x.Id,
+                Name = x.Name,
+                Priority = x.Priority,
+                RowId = x.RowId,
+                StatusId = x.StatusId,
+            }).ToList();
+            await DataContext.BulkMergeAsync(ProvinceDAOs);
+
+            List<DistrictDAO> DistrictDAOs = Districts.Select(x => new DistrictDAO
+            {
+                Id = x.Id,
+                Code = x.Code,
+                Name = x.Name,
+                CreatedAt = x.CreatedAt,
+                UpdatedAt = x.UpdatedAt,
+                DeletedAt = x.DeletedAt,
+                ProvinceId = x.ProvinceId,
+                Priority = x.Priority,
+                RowId = x.RowId,
+                StatusId = x.StatusId,
+            }).ToList();
+            await DataContext.BulkMergeAsync(DistrictDAOs);
+            List<WardDAO> WardDAOs = Wards.Select(x => new WardDAO
+            {
+                Id = x.Id,
+                Code = x.Code,
+                Name = x.Name,
+                CreatedAt = x.CreatedAt,
+                UpdatedAt = x.UpdatedAt,
+                DeletedAt = x.DeletedAt,
+                DistrictId = x.DistrictId,
+                Priority = x.Priority,
+                RowId = x.RowId,
+                StatusId = x.StatusId,
+            }).ToList();
+            await DataContext.BulkMergeAsync(WardDAOs);
+            return true;
         }
     }
 }

@@ -13,20 +13,15 @@ namespace DMS.ABE.Services.MRole
         Task<int> Count(PermissionFilter PermissionFilter);
         Task<List<Permission>> List(PermissionFilter PermissionFilter);
         Task<Permission> Get(long Id);
-        Task<Permission> Create(Permission Permission);
-        Task<Permission> Update(Permission Permission);
-        Task<Permission> Delete(Permission Permission);
         Task<List<string>> ListPath(long AppUserId);
     }
     public class PermissionService : IPermissionService
     {
         private IUOW UOW;
-        private IPermissionValidator PermissionValidator;
         private ILogging Logging;
-        public PermissionService(IUOW UOW, IPermissionValidator PermissionValidator, ILogging Logging)
+        public PermissionService(IUOW UOW, ILogging Logging)
         {
             this.UOW = UOW;
-            this.PermissionValidator = PermissionValidator;
             this.Logging = Logging;
         }
 
@@ -77,79 +72,6 @@ namespace DMS.ABE.Services.MRole
             try
             {
                 Permission Permission = await UOW.PermissionRepository.Get(Id);
-                return Permission;
-            }
-            catch (Exception ex)
-            {
-                if (ex.InnerException == null)
-                {
-                    await Logging.CreateSystemLog(ex, nameof(PermissionService));
-                    throw new MessageException(ex);
-                }
-                else
-                {
-                    await Logging.CreateSystemLog(ex.InnerException, nameof(PermissionService));
-                    throw new MessageException(ex.InnerException);
-                }
-            }
-        }
-
-        public async Task<Permission> Create(Permission Permission)
-        {
-            if (!await PermissionValidator.Create(Permission))
-                return Permission;
-            try
-            {
-                await UOW.PermissionRepository.Create(Permission);
-                return await UOW.PermissionRepository.Get(Permission.Id);
-            }
-            catch (Exception ex)
-            {
-                if (ex.InnerException == null)
-                {
-                    await Logging.CreateSystemLog(ex, nameof(PermissionService));
-                    throw new MessageException(ex);
-                }
-                else
-                {
-                    await Logging.CreateSystemLog(ex.InnerException, nameof(PermissionService));
-                    throw new MessageException(ex.InnerException);
-                }
-            }
-        }
-
-        public async Task<Permission> Update(Permission Permission)
-        {
-            if (!await PermissionValidator.Update(Permission))
-                return Permission;
-            try
-            {
-                await UOW.PermissionRepository.Update(Permission);
-                return await UOW.PermissionRepository.Get(Permission.Id);
-            }
-            catch (Exception ex)
-            {
-                if (ex.InnerException == null)
-                {
-                    await Logging.CreateSystemLog(ex, nameof(PermissionService));
-                    throw new MessageException(ex);
-                }
-                else
-                {
-                    await Logging.CreateSystemLog(ex.InnerException, nameof(PermissionService));
-                    throw new MessageException(ex.InnerException);
-                }
-            }
-        }
-
-        public async Task<Permission> Delete(Permission Permission)
-        {
-            if (!await PermissionValidator.Delete(Permission))
-                return Permission;
-
-            try
-            {
-                await UOW.PermissionRepository.Delete(Permission);
                 return Permission;
             }
             catch (Exception ex)

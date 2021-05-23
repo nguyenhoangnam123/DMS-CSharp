@@ -290,8 +290,7 @@ namespace DMS.Services.MStore
                     UserNotifications.Add(UserNotification);
                 }
 
-                List<EventMessage<UserNotification>> EventUserNotifications = UserNotifications.Select(x => new EventMessage<UserNotification>(x, x.RowId)).ToList();
-                RabbitManager.PublishList(EventUserNotifications, RoutingKeyEnum.UserNotificationSend);
+                RabbitManager.PublishList(UserNotifications, RoutingKeyEnum.UserNotificationSend);
 
                 await Logging.CreateAuditLog(Store, new { }, nameof(StoreService));
                 return await UOW.StoreRepository.Get(Store.Id);
@@ -407,8 +406,7 @@ namespace DMS.Services.MStore
                     }
                 }
 
-                List<EventMessage<UserNotification>> EventUserNotifications = UserNotifications.Select(x => new EventMessage<UserNotification>(x, x.RowId)).ToList();
-                RabbitManager.PublishList(EventUserNotifications, RoutingKeyEnum.UserNotificationSend);
+                RabbitManager.PublishList(UserNotifications, RoutingKeyEnum.UserNotificationSend);
 
                 var newData = await UOW.StoreRepository.Get(Store.Id);
                 Sync(new List<Store> { newData });
@@ -471,8 +469,7 @@ namespace DMS.Services.MStore
                     UserNotifications.Add(UserNotification);
                 }
 
-                List<EventMessage<UserNotification>> EventUserNotifications = UserNotifications.Select(x => new EventMessage<UserNotification>(x, x.RowId)).ToList();
-                RabbitManager.PublishList(EventUserNotifications, RoutingKeyEnum.UserNotificationSend);
+                RabbitManager.PublishList(UserNotifications, RoutingKeyEnum.UserNotificationSend);
 
                 await Logging.CreateAuditLog(new { }, Store, nameof(StoreService));
                 return Store;
@@ -525,8 +522,7 @@ namespace DMS.Services.MStore
                     }
                 }
 
-                List<EventMessage<UserNotification>> EventUserNotifications = UserNotifications.Select(x => new EventMessage<UserNotification>(x, x.RowId)).ToList();
-                RabbitManager.PublishList(EventUserNotifications, RoutingKeyEnum.UserNotificationSend);
+                RabbitManager.PublishList(UserNotifications, RoutingKeyEnum.UserNotificationSend);
 
                 var Ids = Stores.Select(x => x.Id).ToList();
                 Stores = await UOW.StoreRepository.List(Ids);
@@ -726,81 +722,71 @@ namespace DMS.Services.MStore
 
         private void Sync(List<Store> Stores)
         {
-            List<EventMessage<Brand>> EventMessageBrands = new List<EventMessage<Brand>>();
-            List<EventMessage<Store>> EventMessageSyncStores = new List<EventMessage<Store>>();
-            List<EventMessage<AppUser>> EventMessageAppUsers = new List<EventMessage<AppUser>>();
-            List<EventMessage<Store>> EventMessageStores = new List<EventMessage<Store>>();
-            List<EventMessage<StoreType>> EventMessageStoreTypes = new List<EventMessage<StoreType>>();
-            List<EventMessage<StoreGrouping>> EventMessageStoreGroupings = new List<EventMessage<StoreGrouping>>();
-            List<EventMessage<Province>> EventMessageProvinces = new List<EventMessage<Province>>();
-            List<EventMessage<District>> EventMessageDistricts = new List<EventMessage<District>>();
-            List<EventMessage<Ward>> EventMessageWards = new List<EventMessage<Ward>>();
-            List<EventMessage<Organization>> OrganizationEventMessages = new List<EventMessage<Organization>>();
+            List<Brand> Brands = new List<Brand>();
+            List<AppUser> AppUsers = new List<AppUser>();
+            List<Store> ParentStores = new List<Store>();
+            List<StoreType> StoreTypes = new List<StoreType>();
+            List<StoreGrouping> StoreGroupings = new List<StoreGrouping>();
+            List<Province> Provinces = new List<Province>();
+            List<District> Districts = new List<District>();
+            List<Ward> Wards = new List<Ward>();
+            List<Organization> Organizations = new List<Organization>();
             foreach (var Store in Stores)
             {
-                EventMessage<Store> EventMessagesSyncStore = new EventMessage<Store>(Store, Store.RowId);
-                EventMessageSyncStores.Add(EventMessagesSyncStore);
-
-                EventMessage<StoreType> EventMessagesSyncStoreType = new EventMessage<StoreType>(Store.StoreType, Store.StoreType.RowId);
-                EventMessageStoreTypes.Add(EventMessagesSyncStoreType);
+                StoreTypes.Add(Store.StoreType);
                 if (Store.AppUserId.HasValue)
                 {
-                    EventMessage<AppUser> EventMessageAppUser = new EventMessage<AppUser>(Store.AppUser, Store.AppUser.RowId);
-                    EventMessageAppUsers.Add(EventMessageAppUser);
+                    AppUsers.Add(Store.AppUser);
                 }
                 if (Store.ParentStoreId.HasValue)
                 {
-                    EventMessage<Store> EventMessageStore = new EventMessage<Store>(Store.ParentStore, Store.ParentStore.RowId);
-                    EventMessageStores.Add(EventMessageStore);
+                    ParentStores.Add(Store.ParentStore);
                 }
                 if (Store.StoreGroupingId.HasValue)
                 {
-                    EventMessage<StoreGrouping> EventMessageStoreGrouping = new EventMessage<StoreGrouping>(Store.StoreGrouping, Store.StoreGrouping.RowId);
-                    EventMessageStoreGroupings.Add(EventMessageStoreGrouping);
+                    StoreGroupings.Add(Store.StoreGrouping);
                 }
                 if (Store.ProvinceId.HasValue)
                 {
-                    EventMessage<Province> EventMessageProvince = new EventMessage<Province>(Store.Province, Store.Province.RowId);
-                    EventMessageProvinces.Add(EventMessageProvince);
+                    Provinces.Add(Store.Province);
                 }
                 if (Store.DistrictId.HasValue)
                 {
-                    EventMessage<District> EventMessageDistrict = new EventMessage<District>(Store.District, Store.District.RowId);
-                    EventMessageDistricts.Add(EventMessageDistrict);
+                    Districts.Add(Store.District);
                 }
                 if (Store.WardId.HasValue)
                 {
-                    EventMessage<Ward> EventMessageWard = new EventMessage<Ward>(Store.Ward, Store.Ward.RowId);
-                    EventMessageWards.Add(EventMessageWard);
+                    Wards.Add(Store.Ward);
                 }
 
                 if (Store.BrandInStores != null)
                 {
                     foreach (var BrandInStore in Store.BrandInStores)
                     {
-                        EventMessage<Brand> EventMessageBrand = new EventMessage<Brand>(BrandInStore.Brand, BrandInStore.Brand.RowId);
-                        EventMessageBrands.Add(EventMessageBrand);
+                        Brands.Add(BrandInStore.Brand);
                     }
                 }
             }
-            RabbitManager.PublishList(EventMessageSyncStores, RoutingKeyEnum.StoreSync);
-            EventMessageAppUsers = EventMessageAppUsers.Distinct().ToList();
-            EventMessageStores = EventMessageStores.Distinct().ToList();
-            EventMessageStoreTypes = EventMessageStoreTypes.Distinct().ToList();
-            EventMessageStoreGroupings = EventMessageStoreGroupings.Distinct().ToList();
-            EventMessageProvinces = EventMessageProvinces.Distinct().ToList();
-            EventMessageDistricts = EventMessageDistricts.Distinct().ToList();
-            EventMessageWards = EventMessageWards.Distinct().ToList();
-            OrganizationEventMessages = OrganizationEventMessages.Distinct().ToList();
-            RabbitManager.PublishList(EventMessageAppUsers, RoutingKeyEnum.AppUserUsed);
-            RabbitManager.PublishList(EventMessageBrands, RoutingKeyEnum.BrandUsed);
-            RabbitManager.PublishList(EventMessageStores, RoutingKeyEnum.StoreUsed);
-            RabbitManager.PublishList(EventMessageStoreTypes, RoutingKeyEnum.StoreTypeUsed);
-            RabbitManager.PublishList(EventMessageStoreGroupings, RoutingKeyEnum.StoreGroupingUsed);
-            RabbitManager.PublishList(EventMessageProvinces, RoutingKeyEnum.ProvinceUsed);
-            RabbitManager.PublishList(EventMessageDistricts, RoutingKeyEnum.DistrictUsed);
-            RabbitManager.PublishList(EventMessageWards, RoutingKeyEnum.WardUsed);
-            RabbitManager.PublishList(OrganizationEventMessages, RoutingKeyEnum.OrganizationUsed);
+            AppUsers = AppUsers.Distinct().ToList();
+            Brands = Brands.Distinct().ToList();
+            ParentStores = ParentStores.Distinct().ToList();
+            StoreTypes = StoreTypes.Distinct().ToList();
+            StoreGroupings = StoreGroupings.Distinct().ToList();
+            Provinces = Provinces.Distinct().ToList();
+            Districts = Districts.Distinct().ToList();
+            Wards = Wards.Distinct().ToList();
+            Organizations = Organizations.Distinct().ToList();
+
+            RabbitManager.PublishList(Stores, RoutingKeyEnum.StoreSync);
+            RabbitManager.PublishList(AppUsers, RoutingKeyEnum.AppUserUsed);
+            RabbitManager.PublishList(Brands, RoutingKeyEnum.BrandUsed);
+            RabbitManager.PublishList(ParentStores, RoutingKeyEnum.StoreUsed);
+            RabbitManager.PublishList(StoreTypes, RoutingKeyEnum.StoreTypeUsed);
+            RabbitManager.PublishList(StoreGroupings, RoutingKeyEnum.StoreGroupingUsed);
+            RabbitManager.PublishList(Provinces, RoutingKeyEnum.ProvinceUsed);
+            RabbitManager.PublishList(Districts, RoutingKeyEnum.DistrictUsed);
+            RabbitManager.PublishList(Wards, RoutingKeyEnum.WardUsed);
+            RabbitManager.PublishList(Organizations, RoutingKeyEnum.OrganizationUsed);
         }
 
         private void StoreCodeGenerate(Store Store, long? Counter = null)

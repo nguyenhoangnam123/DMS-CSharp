@@ -1,6 +1,7 @@
 ﻿using DMS.Common;
 using DMS.Entities;
 using DMS.Models;
+using DMS.Repositories;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
 using System;
@@ -19,31 +20,23 @@ namespace DMS.Handlers
         {
             channel.QueueBind(queue, exchange, $"{Name}.*", null);
         }
-        public override async Task Handle(DataContext context, string routingKey, string content)
+        public override async Task Handle(IUOW UOW, string routingKey, string content)
         {
             if (routingKey == SyncKey)
-                await Sync(context, content);
+                await Sync(UOW, content);
         }
 
-        private async Task Sync(DataContext context, string json)
+        private async Task Sync(IUOW UOW, string json)
         {
-            List<EventMessage<Ward>> WardEventMessages = JsonConvert.DeserializeObject<List<EventMessage<Ward>>>(json);
-            List<Ward> Wards = WardEventMessages.Select(x => x.Content).ToList();
-
-            List<WardDAO> WardDAOs = Wards.Select(x => new WardDAO
+            try
             {
-                Code = x.Code,
-                CreatedAt = x.CreatedAt,
-                UpdatedAt = x.UpdatedAt,
-                DeletedAt = x.DeletedAt,
-                DistrictId = x.DistrictId,
-                Id = x.Id,
-                Name = x.Name,
-                Priority = x.Priority,
-                RowId = x.RowId,
-                StatusId = x.StatusId,
-            }).ToList();
-            await context.BulkMergeAsync(WardDAOs);
+                List<Ward> Wards = JsonConvert.DeserializeObject<List<Ward>>(json);
+                await UOW.WardRepository.BulkMerge(Wards);
+            }
+            catch (Exception ex)
+            {
+                Log(ex, nameof(WardHandler));
+            }
         }
     }
 }

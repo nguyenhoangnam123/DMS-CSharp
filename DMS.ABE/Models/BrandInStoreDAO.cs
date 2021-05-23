@@ -3,6 +3,9 @@ using System.Collections.Generic;
 
 namespace DMS.ABE.Models
 {
+    /// <summary>
+    /// Danh s&#225;ch c&#225;c th&#432;&#417;ng hi&#7879;u trong 1 c&#7917;a h&#224;ng
+    /// </summary>
     public partial class BrandInStoreDAO
     {
         public BrandInStoreDAO()

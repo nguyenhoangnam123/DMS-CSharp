@@ -423,8 +423,7 @@ namespace DMS.Services.MWorkflow
                     Mails.Add(MailForNextStep);
                 }
                 Mails = Mails.Distinct().ToList();
-                List<EventMessage<Mail>> messages = Mails.Select(m => new EventMessage<Mail>(m, m.RowId)).ToList();
-                RabbitManager.PublishList(messages, RoutingKeyEnum.MailSend);
+                RabbitManager.PublishList(Mails, RoutingKeyEnum.MailSend);
                 return true;
             }
 
@@ -473,8 +472,7 @@ namespace DMS.Services.MWorkflow
                         return true;
                     }
                 }
-                List<EventMessage<Mail>> messages = Mails.Select(m => new EventMessage<Mail>(m, m.RowId)).ToList();
-                RabbitManager.PublishList(messages, RoutingKeyEnum.MailSend);
+                RabbitManager.PublishList(Mails, RoutingKeyEnum.MailSend);
             }
             return false;
         }
@@ -801,10 +799,7 @@ namespace DMS.Services.MWorkflow
         private void NotifyUsed(WorkflowDefinition WorkflowDefinition)
         {
             {
-                EventMessage<WorkflowDefinition> WorkflowDefinitionMessage = new EventMessage<WorkflowDefinition>(
-                    new WorkflowDefinition { Id = WorkflowDefinition.Id },
-                    Guid.NewGuid());
-                RabbitManager.PublishSingle(WorkflowDefinitionMessage, RoutingKeyEnum.WorkflowDefinitionUsed);
+                RabbitManager.PublishSingle(WorkflowDefinition, RoutingKeyEnum.WorkflowDefinitionUsed);
             }
         }
 

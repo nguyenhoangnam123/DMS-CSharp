@@ -1,6 +1,7 @@
 using DMS.Common;
 using DMS.Entities;
 using DMS.Models;
+using DMS.Repositories;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
 using System;
@@ -19,17 +20,24 @@ namespace DMS.Handlers
         {
             channel.QueueBind(queue, exchange, $"{Name}.*", null);
         }
-        public override async Task Handle(DataContext context, string routingKey, string content)
+        public override async Task Handle(IUOW UOW, string routingKey, string content)
         {
             if (routingKey == UsedKey)
-                await Used(context, content);
+                await Used(UOW, content);
         }
 
-        private async Task Used(DataContext context, string json)
+        private async Task Used(IUOW UOW, string json)
         {
-            List<EventMessage<ShowingCategory>> EventMessageRecieved = JsonConvert.DeserializeObject<List<EventMessage<ShowingCategory>>>(json);
-            List<long> ShowingCategoryIds = EventMessageRecieved.Select(x => x.Content.Id).ToList();
-            await context.ShowingCategory.Where(a => ShowingCategoryIds.Contains(a.Id)).UpdateFromQueryAsync(x => new ShowingCategoryDAO { Used = true });
+            try
+            {
+                List<ShowingCategory> ShowingCategory = JsonConvert.DeserializeObject<List<ShowingCategory>>(json);
+                List<long> Ids = ShowingCategory.Select(a => a.Id).ToList();
+                await UOW.ShowingCategoryRepository.Used(Ids);
+            }
+            catch (Exception ex)
+            {
+                Log(ex, nameof(ShowingCategoryHandler));
+            }
         }
     }
 }

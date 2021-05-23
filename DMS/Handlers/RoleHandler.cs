@@ -1,6 +1,7 @@
 ﻿using DMS.Common;
 using DMS.Entities;
 using DMS.Models;
+using DMS.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
@@ -20,16 +21,23 @@ namespace DMS.Handlers
         {
             channel.QueueBind(queue, exchange, $"DMS.{Name}.*", null);
         }
-        public override async Task Handle(DataContext context, string routingKey, string content)
+        public override async Task Handle(IUOW UOW, string routingKey, string content)
         {
             if (routingKey == UsedKey)
-                await Used(context, content);
+                await Used(UOW, content);
         }
-        private async Task Used(DataContext context, string json)
+        private async Task Used(IUOW UOW, string json)
         {
-            List<EventMessage<Role>> EventMessageReviced = JsonConvert.DeserializeObject<List<EventMessage<Role>>>(json);
-            List<long> RoleIds = EventMessageReviced.Select(em => em.Content.Id).ToList();
-            await context.Role.Where(a => RoleIds.Contains(a.Id)).UpdateFromQueryAsync(a => new RoleDAO { Used = true });
+            try
+            {
+                List<Role> Role = JsonConvert.DeserializeObject<List<Role>>(json);
+                List<long> Ids = Role.Select(a => a.Id).ToList();
+                await UOW.RoleRepository.Used(Ids);
+            }
+            catch (Exception ex)
+            {
+                Log(ex, nameof(RoleHandler));
+            }
         }
     }
 }

@@ -21,6 +21,7 @@ namespace DMS.Repositories
         Task<bool> Delete(ShowingCategory ShowingCategory);
         Task<bool> BulkMerge(List<ShowingCategory> ShowingCategories);
         Task<bool> BulkDelete(List<ShowingCategory> ShowingCategories);
+        Task<bool> Used(List<long> Ids);
     }
     public class ShowingCategoryRepository : IShowingCategoryRepository
     {
@@ -467,6 +468,12 @@ namespace DMS.Repositories
                 }
             }
             await DataContext.BulkMergeAsync(ShowingCategoryDAOs);
+        }
+        public async Task<bool> Used(List<long> Ids)
+        {
+            await DataContext.ShowingCategory.Where(x => Ids.Contains(x.Id))
+                .UpdateFromQueryAsync(x => new ShowingCategoryDAO { Used = true });
+            return true;
         }
     }
 }

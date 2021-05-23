@@ -19,6 +19,7 @@ namespace DMS.ABE.Models
             IndirectSalesOrderTransactions = new HashSet<IndirectSalesOrderTransactionDAO>();
             Products = new HashSet<ProductDAO>();
             ShowingItems = new HashSet<ShowingItemDAO>();
+            ShowingOrderContentWithDraws = new HashSet<ShowingOrderContentWithDrawDAO>();
             ShowingOrderContents = new HashSet<ShowingOrderContentDAO>();
             UnitOfMeasureGroupingContents = new HashSet<UnitOfMeasureGroupingContentDAO>();
             UnitOfMeasureGroupings = new HashSet<UnitOfMeasureGroupingDAO>();
@@ -48,6 +49,7 @@ namespace DMS.ABE.Models
         public virtual ICollection<IndirectSalesOrderTransactionDAO> IndirectSalesOrderTransactions { get; set; }
         public virtual ICollection<ProductDAO> Products { get; set; }
         public virtual ICollection<ShowingItemDAO> ShowingItems { get; set; }
+        public virtual ICollection<ShowingOrderContentWithDrawDAO> ShowingOrderContentWithDraws { get; set; }
         public virtual ICollection<ShowingOrderContentDAO> ShowingOrderContents { get; set; }
         public virtual ICollection<UnitOfMeasureGroupingContentDAO> UnitOfMeasureGroupingContents { get; set; }
         public virtual ICollection<UnitOfMeasureGroupingDAO> UnitOfMeasureGroupings { get; set; }

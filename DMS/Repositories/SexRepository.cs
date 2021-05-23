@@ -14,6 +14,7 @@ namespace DMS.Repositories
         Task<int> Count(SexFilter SexFilter);
         Task<List<Sex>> List(SexFilter SexFilter);
         Task<Sex> Get(long Id);
+        Task<bool> BulkMerge(List<Sex> Sexes);
     }
     public class SexRepository : ISexRepository
     {
@@ -134,6 +135,17 @@ namespace DMS.Repositories
                 return null;
 
             return Sex;
+        }
+        public async Task<bool> BulkMerge(List<Sex> Sexes)
+        {
+            List<SexDAO> SexDAOs = Sexes.Select(x => new SexDAO
+            {
+                Id = x.Id,
+                Code = x.Code,
+                Name = x.Name,
+            }).ToList();
+            await DataContext.BulkMergeAsync(SexDAOs);
+            return true;
         }
     }
 }

@@ -20,6 +20,7 @@ namespace DMS.Repositories
         Task<bool> Delete(ProblemType ProblemType);
         Task<bool> BulkMerge(List<ProblemType> ProblemTypes);
         Task<bool> BulkDelete(List<ProblemType> ProblemTypes);
+        Task<bool> Used(List<long> Ids);
     }
     public class ProblemTypeRepository : IProblemTypeRepository
     {
@@ -228,7 +229,12 @@ namespace DMS.Repositories
                 .UpdateFromQueryAsync(x => new ProblemTypeDAO { DeletedAt = StaticParams.DateTimeNow });
             return true;
         }
-
+        public async Task<bool> Used(List<long> Ids)
+        {
+            await DataContext.ProblemType.Where(x => Ids.Contains(x.Id))
+                .UpdateFromQueryAsync(x => new ProblemTypeDAO { Used = true });
+            return true;
+        }
         private async Task SaveReference(ProblemType ProblemType)
         {
         }

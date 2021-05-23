@@ -1,6 +1,7 @@
 ﻿using DMS.Common;
 using DMS.Entities;
 using DMS.Models;
+using DMS.Repositories;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
 using System;
@@ -19,36 +20,22 @@ namespace DMS.Handlers
         {
             channel.QueueBind(queue, exchange, $"{Name}.*", null);
         }
-        public override async Task Handle(DataContext context, string routingKey, string content)
+        public override async Task Handle(IUOW UOW, string routingKey, string content)
         {
             if (routingKey == SyncKey)
-                await Sync(context, content);
+                await Sync(UOW, content);
         }
 
-        private async Task Sync(DataContext context, string json)
+        private async Task Sync(IUOW UOW, string json)
         {
-            List<EventMessage<District>> DistrictEventMessages = JsonConvert.DeserializeObject<List<EventMessage<District>>>(json);
-            List<District> Districts = DistrictEventMessages.Select(x => x.Content).ToList();
             try
             {
-                List<DistrictDAO> DistrictDAOs = Districts.Select(x => new DistrictDAO
-                {
-                    Code = x.Code,
-                    CreatedAt = x.CreatedAt,
-                    UpdatedAt = x.UpdatedAt,
-                    DeletedAt = x.DeletedAt,
-                    ProvinceId = x.ProvinceId,
-                    Id = x.Id,
-                    Name = x.Name,
-                    Priority = x.Priority,
-                    RowId = x.RowId,
-                    StatusId = x.StatusId,
-                }).ToList();
-                await context.BulkMergeAsync(DistrictDAOs);
+                List<District> Districts = JsonConvert.DeserializeObject<List<District>>(json);
+                await UOW.DistrictRepository.BulkMerge(Districts);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                SystemLog(ex, nameof(DistrictHandler));
+                Log(ex, nameof(DistrictHandler));
             }
         }
     }

@@ -23,19 +23,16 @@ namespace DMS.ABE.Services.MProductType
         private IUOW UOW;
         private ILogging Logging;
         private ICurrentContext CurrentContext;
-        private IProductTypeValidator ProductTypeValidator;
 
         public ProductTypeService(
             IUOW UOW,
             ILogging Logging,
-            ICurrentContext CurrentContext,
-            IProductTypeValidator ProductTypeValidator
+            ICurrentContext CurrentContext
         )
         {
             this.UOW = UOW;
             this.Logging = Logging;
             this.CurrentContext = CurrentContext;
-            this.ProductTypeValidator = ProductTypeValidator;
         }
         public async Task<int> Count(ProductTypeFilter ProductTypeFilter)
         {

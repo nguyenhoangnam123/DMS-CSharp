@@ -8,6 +8,8 @@ namespace DMS.ABE.Models
         public SurveyQuestionDAO()
         {
             SurveyOptions = new HashSet<SurveyOptionDAO>();
+            SurveyQuestionFileMappings = new HashSet<SurveyQuestionFileMappingDAO>();
+            SurveyQuestionImageMappings = new HashSet<SurveyQuestionImageMappingDAO>();
             SurveyResultCells = new HashSet<SurveyResultCellDAO>();
             SurveyResultSingles = new HashSet<SurveyResultSingleDAO>();
             SurveyResultTexts = new HashSet<SurveyResultTextDAO>();
@@ -22,6 +24,8 @@ namespace DMS.ABE.Models
         public virtual SurveyDAO Survey { get; set; }
         public virtual SurveyQuestionTypeDAO SurveyQuestionType { get; set; }
         public virtual ICollection<SurveyOptionDAO> SurveyOptions { get; set; }
+        public virtual ICollection<SurveyQuestionFileMappingDAO> SurveyQuestionFileMappings { get; set; }
+        public virtual ICollection<SurveyQuestionImageMappingDAO> SurveyQuestionImageMappings { get; set; }
         public virtual ICollection<SurveyResultCellDAO> SurveyResultCells { get; set; }
         public virtual ICollection<SurveyResultSingleDAO> SurveyResultSingles { get; set; }
         public virtual ICollection<SurveyResultTextDAO> SurveyResultTexts { get; set; }

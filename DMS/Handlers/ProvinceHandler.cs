@@ -1,6 +1,7 @@
 ﻿using DMS.Common;
 using DMS.Entities;
 using DMS.Models;
+using DMS.Repositories;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
 using System;
@@ -19,30 +20,23 @@ namespace DMS.Handlers
         {
             channel.QueueBind(queue, exchange, $"{Name}.*", null);
         }
-        public override async Task Handle(DataContext context, string routingKey, string content)
+        public override async Task Handle(IUOW UOW, string routingKey, string content)
         {
             if (routingKey == SyncKey)
-                await Sync(context, content);
+                await Sync(UOW, content);
         }
 
-        private async Task Sync(DataContext context, string json)
+        private async Task Sync(IUOW UOW, string json)
         {
-            List<EventMessage<Province>> ProvinceEventMessages = JsonConvert.DeserializeObject<List<EventMessage<Province>>>(json);
-            List<Province> Provinces = ProvinceEventMessages.Select(x => x.Content).ToList();
-
-            List<ProvinceDAO> ProvinceDAOs = Provinces.Select(x => new ProvinceDAO
+            try
             {
-                Code = x.Code,
-                CreatedAt = x.CreatedAt,
-                UpdatedAt = x.UpdatedAt,
-                DeletedAt = x.DeletedAt,
-                Id = x.Id,
-                Name = x.Name,
-                Priority = x.Priority,
-                RowId = x.RowId,
-                StatusId = x.StatusId,
-            }).ToList();
-            await context.BulkMergeAsync(ProvinceDAOs);
+                List<Province> Provinces = JsonConvert.DeserializeObject<List<Province>>(json);
+                await UOW.ProvinceRepository.BulkMerge(Provinces);
+            }
+            catch (Exception ex)
+            {
+                Log(ex, nameof(ProvinceHandler));
+            }
         }
     }
 }

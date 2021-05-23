@@ -2,6 +2,7 @@
 using DMS.Enums;
 using DMS.Helpers;
 using DMS.Models;
+using DMS.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
@@ -19,7 +20,7 @@ namespace DMS.Handlers
         string Name { get; }
         IRabbitManager RabbitManager { get; set; }
         void QueueBind(IModel channel, string queue, string exchange);
-        Task Handle(DataContext context, string routingKey, string content);
+        Task Handle(IUOW UOW, string routingKey, string content);
     }
 
     public abstract class Handler : IHandler
@@ -27,11 +28,11 @@ namespace DMS.Handlers
         public abstract string Name { get; }
         public IRabbitManager RabbitManager { get; set; }
 
-        public abstract Task Handle(DataContext context, string routingKey, string content);
+        public abstract Task Handle(IUOW UOW, string routingKey, string content);
 
         public abstract void QueueBind(IModel channel, string queue, string exchange);
 
-        protected void SystemLog(Exception ex, string className, [CallerMemberName] string methodName = "")
+        protected void Log(Exception ex, string className, [CallerMemberName] string methodName = "")
         {
             SystemLog SystemLog = new SystemLog
             {
@@ -43,7 +44,7 @@ namespace DMS.Handlers
                 Exception = ex.ToString(),
                 Time = StaticParams.DateTimeNow,
             };
-            RabbitManager.PublishSingle(new EventMessage<SystemLog>(SystemLog, SystemLog.RowId), RoutingKeyEnum.SystemLogSend);
+            RabbitManager.PublishSingle(SystemLog, RoutingKeyEnum.SystemLogSend);
         }
 
         protected void AuditLog(object newData, object oldData, string className, [CallerMemberName]string methodName = "")
@@ -60,7 +61,7 @@ namespace DMS.Handlers
                 Time = StaticParams.DateTimeNow,
                 RowId = Guid.NewGuid(),
             };
-            RabbitManager.PublishSingle(new EventMessage<AuditLog>(AuditLog, AuditLog.RowId), RoutingKeyEnum.AuditLogSend);
+            RabbitManager.PublishSingle(AuditLog, RoutingKeyEnum.AuditLogSend);
         }
     }
 }

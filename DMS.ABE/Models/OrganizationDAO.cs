@@ -17,12 +17,14 @@ namespace DMS.ABE.Models
             InverseParent = new HashSet<OrganizationDAO>();
             KpiGenerals = new HashSet<KpiGeneralDAO>();
             KpiItems = new HashSet<KpiItemDAO>();
+            KpiProductGroupings = new HashSet<KpiProductGroupingDAO>();
             LuckyNumberGroupings = new HashSet<LuckyNumberGroupingDAO>();
             Notifications = new HashSet<NotificationDAO>();
             PriceLists = new HashSet<PriceListDAO>();
             PromotionCodeOrganizationMappings = new HashSet<PromotionCodeOrganizationMappingDAO>();
             PromotionCodes = new HashSet<PromotionCodeDAO>();
             Promotions = new HashSet<PromotionDAO>();
+            ShowingOrderWithDraws = new HashSet<ShowingOrderWithDrawDAO>();
             ShowingOrders = new HashSet<ShowingOrderDAO>();
             StoreCheckings = new HashSet<StoreCheckingDAO>();
             StoreScoutings = new HashSet<StoreScoutingDAO>();
@@ -61,12 +63,14 @@ namespace DMS.ABE.Models
         public virtual ICollection<OrganizationDAO> InverseParent { get; set; }
         public virtual ICollection<KpiGeneralDAO> KpiGenerals { get; set; }
         public virtual ICollection<KpiItemDAO> KpiItems { get; set; }
+        public virtual ICollection<KpiProductGroupingDAO> KpiProductGroupings { get; set; }
         public virtual ICollection<LuckyNumberGroupingDAO> LuckyNumberGroupings { get; set; }
         public virtual ICollection<NotificationDAO> Notifications { get; set; }
         public virtual ICollection<PriceListDAO> PriceLists { get; set; }
         public virtual ICollection<PromotionCodeOrganizationMappingDAO> PromotionCodeOrganizationMappings { get; set; }
         public virtual ICollection<PromotionCodeDAO> PromotionCodes { get; set; }
         public virtual ICollection<PromotionDAO> Promotions { get; set; }
+        public virtual ICollection<ShowingOrderWithDrawDAO> ShowingOrderWithDraws { get; set; }
         public virtual ICollection<ShowingOrderDAO> ShowingOrders { get; set; }
         public virtual ICollection<StoreCheckingDAO> StoreCheckings { get; set; }
         public virtual ICollection<StoreScoutingDAO> StoreScoutings { get; set; }

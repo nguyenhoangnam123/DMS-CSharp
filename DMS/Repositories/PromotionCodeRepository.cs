@@ -20,6 +20,7 @@ namespace DMS.Repositories
         Task<bool> Delete(PromotionCode PromotionCode);
         Task<bool> BulkMerge(List<PromotionCode> PromotionCodes);
         Task<bool> BulkDelete(List<PromotionCode> PromotionCodes);
+        Task<bool> Used(List<long> Ids);
     }
     public class PromotionCodeRepository : IPromotionCodeRepository
     {
@@ -626,6 +627,12 @@ namespace DMS.Repositories
                 await DataContext.PromotionCodeStoreMapping.BulkMergeAsync(PromotionCodeStoreMappingDAOs);
             }
         }
-        
+        public async Task<bool> Used(List<long> Ids)
+        {
+            await DataContext.PromotionCode.Where(x => Ids.Contains(x.Id))
+                .UpdateFromQueryAsync(x => new PromotionCode { Used = true });
+            return true;
+        }
+
     }
 }

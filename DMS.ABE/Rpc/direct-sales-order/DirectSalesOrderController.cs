@@ -3,7 +3,6 @@ using DMS.ABE.Entities;
 using DMS.ABE.Helpers;
 using DMS.ABE.Services.MAppUser;
 using DMS.ABE.Services.MDirectSalesOrder;
-using DMS.ABE.Services.MExportTemplate;
 using DMS.ABE.Services.MOrganization;
 using DMS.ABE.Services.MStore;
 using DMS.ABE.Services.MStoreUser;
@@ -21,7 +20,6 @@ namespace DMS.ABE.Rpc.direct_sales_order
         private IAppUserService AppUserService;
         private IOrganizationService OrganizationService;
         private IDirectSalesOrderService DirectSalesOrderService;
-        private IExportTemplateService ExportTemplateService;
         private ICurrentContext CurrentContext;
         public DirectSalesOrderController(
             IStoreService StoreService,
@@ -29,7 +27,6 @@ namespace DMS.ABE.Rpc.direct_sales_order
             IOrganizationService OrganizationService,
             IDirectSalesOrderService DirectSalesOrderService,
             IStoreUserService StoreUserService,
-            IExportTemplateService ExportTemplateService,
             ICurrentContext CurrentContext
         )
         {
@@ -38,7 +35,6 @@ namespace DMS.ABE.Rpc.direct_sales_order
             this.OrganizationService = OrganizationService;
             this.DirectSalesOrderService = DirectSalesOrderService;
             this.StoreUserService = StoreUserService;
-            this.ExportTemplateService = ExportTemplateService;
             this.CurrentContext = CurrentContext;
         }
 

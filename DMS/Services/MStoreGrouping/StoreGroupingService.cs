@@ -245,22 +245,19 @@ namespace DMS.Services.MStoreGrouping
             return filter;
         }
 
-        private void Sync(List<StoreGrouping> StoreGroupings)
+        private void Sync(List<StoreGrouping> storeGroupings)
         {
-            List<EventMessage<StoreGrouping>> EventMessageSyncStoreGroupings = new List<EventMessage<StoreGrouping>>();
-            List<EventMessage<StoreGrouping>> EventMessageStoreGroupings = new List<EventMessage<StoreGrouping>>();
-            foreach (StoreGrouping StoreGrouping in StoreGroupings)
+            List<StoreGrouping> StoreGroupings = new List<StoreGrouping>();
+            foreach (StoreGrouping StoreGrouping in storeGroupings)
             {
-                EventMessage<StoreGrouping> EventMessageSyncStoreGrouping = new EventMessage<StoreGrouping>(StoreGrouping, StoreGrouping.RowId);
-                EventMessageSyncStoreGroupings.Add(EventMessageSyncStoreGrouping);
                 if (StoreGrouping.ParentId.HasValue)
                 {
-                    EventMessage<StoreGrouping> EventMessageStoreGrouping = new EventMessage<StoreGrouping>(StoreGrouping.Parent, StoreGrouping.Parent.RowId);
-                    EventMessageStoreGroupings.Add(EventMessageStoreGrouping);
+                    StoreGroupings.Add(StoreGrouping.Parent);
                 }
             }
-            RabbitManager.PublishList(EventMessageSyncStoreGroupings, RoutingKeyEnum.StoreGroupingSync);
-            RabbitManager.PublishList(EventMessageStoreGroupings, RoutingKeyEnum.StoreGroupingUsed);
+            storeGroupings = storeGroupings.Distinct().ToList();
+            RabbitManager.PublishList(storeGroupings, RoutingKeyEnum.StoreGroupingSync);
+            RabbitManager.PublishList(StoreGroupings, RoutingKeyEnum.StoreGroupingUsed);
         }
     }
 }

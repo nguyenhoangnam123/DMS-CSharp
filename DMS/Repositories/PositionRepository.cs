@@ -14,6 +14,7 @@ namespace DMS.Repositories
         Task<int> Count(PositionFilter PositionFilter);
         Task<List<Position>> List(PositionFilter PositionFilter);
         Task<Position> Get(long Id);
+        Task<bool> BulkMerge(List<Position> Positions);
     }
     public class PositionRepository : IPositionRepository
     {
@@ -168,6 +169,25 @@ namespace DMS.Repositories
                 return null;
 
             return Position;
+        }
+        public async Task<bool> BulkMerge(List<Position> Positions)
+        {
+            List<PositionDAO> PositionDAOs = new List<PositionDAO>();
+            foreach (Position Position in Positions)
+            {
+                PositionDAO PositionDAO = new PositionDAO();
+                PositionDAO.Id = Position.Id;
+                PositionDAO.Code = Position.Code;
+                PositionDAO.Name = Position.Name;
+                PositionDAO.StatusId = Position.StatusId;
+                PositionDAO.CreatedAt = Position.CreatedAt;
+                PositionDAO.UpdatedAt = Position.UpdatedAt;
+                PositionDAO.DeletedAt = Position.DeletedAt;
+                PositionDAO.RowId = Position.RowId;
+                PositionDAOs.Add(PositionDAO);
+            }
+            await DataContext.BulkMergeAsync(PositionDAOs);
+            return true;
         }
     }
 }

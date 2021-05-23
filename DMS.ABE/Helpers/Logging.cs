@@ -46,7 +46,7 @@ namespace DMS.ABE.Helpers
                     Time = StaticParams.DateTimeNow,
                     RowId = Guid.NewGuid(),
                 };
-                RabbitManager.PublishSingle(new EventMessage<AuditLog>(AuditLog, AuditLog.RowId), RoutingKeyEnum.AuditLogSend);
+                RabbitManager.PublishSingle(AuditLog, RoutingKeyEnum.AuditLogSend);
             }
 
             return true;
@@ -66,7 +66,7 @@ namespace DMS.ABE.Helpers
                     Exception = ex.ToString(),
                     Time = StaticParams.DateTimeNow,
                 };
-                RabbitManager.PublishSingle(new EventMessage<SystemLog>(SystemLog, SystemLog.RowId), RoutingKeyEnum.SystemLogSend);
+                RabbitManager.PublishSingle(SystemLog, RoutingKeyEnum.SystemLogSend);
             }
 
             return true;

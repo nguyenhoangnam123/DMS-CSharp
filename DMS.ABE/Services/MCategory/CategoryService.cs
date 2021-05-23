@@ -18,7 +18,6 @@ namespace DMS.ABE.Services.MCategory
         Task<int> Count(CategoryFilter CategoryFilter);
         Task<List<Category>> List(CategoryFilter CategoryFilter);
         Task<Category> Get(long Id);
-        Task<Image> SaveImage(Image Image);
         Task<CategoryFilter> ToFilter(CategoryFilter CategoryFilter);
     }
 
@@ -28,21 +27,18 @@ namespace DMS.ABE.Services.MCategory
         private ILogging Logging;
         private ICurrentContext CurrentContext;
         private IImageService ImageService;
-        private ICategoryValidator CategoryValidator;
 
         public CategoryService(
             IUOW UOW,
             ILogging Logging,
             ICurrentContext CurrentContext,
-            IImageService ImageService,
-            ICategoryValidator CategoryValidator
+            IImageService ImageService
         )
         {
             this.UOW = UOW;
             this.Logging = Logging;
             this.CurrentContext = CurrentContext;
             this.ImageService = ImageService;
-            this.CategoryValidator = CategoryValidator;
         }
         public async Task<int> Count(CategoryFilter CategoryFilter)
         {

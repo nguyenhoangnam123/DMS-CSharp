@@ -21,6 +21,7 @@ namespace DMS.Repositories
         Task<bool> BulkMerge(List<Album> Albums);
         Task<bool> BulkDelete(List<Album> Albums);
         Task<bool> BulkUsed(List<Album> Albums);
+        Task<bool> Used(List<long> Ids);
     }
     public class AlbumRepository : IAlbumRepository
     {
@@ -328,6 +329,12 @@ namespace DMS.Repositories
         {
             List<long> Ids = Albums.Select(x => x.Id).ToList();
             await DataContext.Album.Where(a => Ids.Contains(a.Id)).UpdateFromQueryAsync(a => new AlbumDAO { Used = true });
+            return true;
+        }
+        public async Task<bool> Used(List<long> Ids)
+        {
+            await DataContext.Album.Where(x => Ids.Contains(x.Id))
+                .UpdateFromQueryAsync(x => new AlbumDAO { Used = true });
             return true;
         }
     }

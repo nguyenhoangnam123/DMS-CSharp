@@ -11,7 +11,6 @@ namespace DMS.ABE.Services
 {
     public interface IMaintenanceService : IServiceScoped
     {
-        Task CleanEventMessage();
         Task CleanHangfire();
     }
     public class MaintenanceService : IMaintenanceService
@@ -20,11 +19,6 @@ namespace DMS.ABE.Services
         public MaintenanceService(DataContext DataContext)
         {
             this.DataContext = DataContext;
-        }
-
-        public async Task CleanEventMessage()
-        {
-            DateTime Checkpoint = StaticParams.DateTimeNow.AddDays(-1);
         }
 
         public async Task CleanHangfire()
