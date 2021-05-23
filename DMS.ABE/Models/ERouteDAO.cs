@@ -3,6 +3,9 @@ using System.Collections.Generic;
 
 namespace DMS.ABE.Models
 {
+    /// <summary>
+    /// Thi&#7871;t l&#7853;p tuy&#7871;n
+    /// </summary>
     public partial class ERouteDAO
     {
         public ERouteDAO()

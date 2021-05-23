@@ -3,6 +3,9 @@ using System.Collections.Generic;
 
 namespace DMS.ABE.Models
 {
+    /// <summary>
+    /// KPI chung
+    /// </summary>
     public partial class KpiGeneralDAO
     {
         public KpiGeneralDAO()

@@ -41,6 +41,7 @@ namespace DMS.ABE.Models
         public virtual DbSet<ExportTemplateDAO> ExportTemplate { get; set; }
         public virtual DbSet<FieldDAO> Field { get; set; }
         public virtual DbSet<FieldTypeDAO> FieldType { get; set; }
+        public virtual DbSet<FileDAO> File { get; set; }
         public virtual DbSet<IdGeneratorDAO> IdGenerator { get; set; }
         public virtual DbSet<ImageDAO> Image { get; set; }
         public virtual DbSet<IndirectSalesOrderDAO> IndirectSalesOrder { get; set; }
@@ -62,8 +63,13 @@ namespace DMS.ABE.Models
         public virtual DbSet<KpiItemContentKpiCriteriaItemMappingDAO> KpiItemContentKpiCriteriaItemMapping { get; set; }
         public virtual DbSet<KpiItemTypeDAO> KpiItemType { get; set; }
         public virtual DbSet<KpiPeriodDAO> KpiPeriod { get; set; }
+        public virtual DbSet<KpiProductGroupingDAO> KpiProductGrouping { get; set; }
+        public virtual DbSet<KpiProductGroupingContentDAO> KpiProductGroupingContent { get; set; }
+        public virtual DbSet<KpiProductGroupingContentCriteriaMappingDAO> KpiProductGroupingContentCriteriaMapping { get; set; }
+        public virtual DbSet<KpiProductGroupingContentItemMappingDAO> KpiProductGroupingContentItemMapping { get; set; }
+        public virtual DbSet<KpiProductGroupingCriteriaDAO> KpiProductGroupingCriteria { get; set; }
+        public virtual DbSet<KpiProductGroupingTypeDAO> KpiProductGroupingType { get; set; }
         public virtual DbSet<KpiYearDAO> KpiYear { get; set; }
-        public virtual DbSet<LastestEventMessageDAO> LastestEventMessage { get; set; }
         public virtual DbSet<LuckyNumberDAO> LuckyNumber { get; set; }
         public virtual DbSet<LuckyNumberGroupingDAO> LuckyNumberGrouping { get; set; }
         public virtual DbSet<MenuDAO> Menu { get; set; }
@@ -143,6 +149,8 @@ namespace DMS.ABE.Models
         public virtual DbSet<ShowingItemImageMappingDAO> ShowingItemImageMapping { get; set; }
         public virtual DbSet<ShowingOrderDAO> ShowingOrder { get; set; }
         public virtual DbSet<ShowingOrderContentDAO> ShowingOrderContent { get; set; }
+        public virtual DbSet<ShowingOrderContentWithDrawDAO> ShowingOrderContentWithDraw { get; set; }
+        public virtual DbSet<ShowingOrderWithDrawDAO> ShowingOrderWithDraw { get; set; }
         public virtual DbSet<StatusDAO> Status { get; set; }
         public virtual DbSet<StoreDAO> Store { get; set; }
         public virtual DbSet<StoreApprovalStateDAO> StoreApprovalState { get; set; }
@@ -167,6 +175,8 @@ namespace DMS.ABE.Models
         public virtual DbSet<SurveyOptionDAO> SurveyOption { get; set; }
         public virtual DbSet<SurveyOptionTypeDAO> SurveyOptionType { get; set; }
         public virtual DbSet<SurveyQuestionDAO> SurveyQuestion { get; set; }
+        public virtual DbSet<SurveyQuestionFileMappingDAO> SurveyQuestionFileMapping { get; set; }
+        public virtual DbSet<SurveyQuestionImageMappingDAO> SurveyQuestionImageMapping { get; set; }
         public virtual DbSet<SurveyQuestionTypeDAO> SurveyQuestionType { get; set; }
         public virtual DbSet<SurveyRespondentTypeDAO> SurveyRespondentType { get; set; }
         public virtual DbSet<SurveyResultDAO> SurveyResult { get; set; }
@@ -203,7 +213,7 @@ namespace DMS.ABE.Models
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-                optionsBuilder.UseSqlServer("data source=192.168.20.200;initial catalog=DMS.ABE;persist security info=True;user id=sa;password=123@123a;multipleactiveresultsets=True;");
+                optionsBuilder.UseSqlServer("data source=192.168.20.200;initial catalog=dms;persist security info=True;user id=sa;password=123@123a;multipleactiveresultsets=True;");
             }
         }
 
@@ -1289,6 +1299,29 @@ namespace DMS.ABE.Models
                     .HasMaxLength(50);
             });
 
+            modelBuilder.Entity<FileDAO>(entity =>
+            {
+                entity.ToTable("File", "MDM");
+
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.MimeType).HasMaxLength(50);
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(4000);
+
+                entity.Property(e => e.Path)
+                    .IsRequired()
+                    .HasMaxLength(4000);
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+            });
+
             modelBuilder.Entity<IdGeneratorDAO>(entity =>
             {
                 entity.ToTable("IdGenerator", "MDM");
@@ -2005,6 +2038,136 @@ namespace DMS.ABE.Models
                 entity.Property(e => e.Name).HasMaxLength(50);
             });
 
+            modelBuilder.Entity<KpiProductGroupingDAO>(entity =>
+            {
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.HasOne(d => d.Creator)
+                    .WithMany(p => p.KpiProductGroupingCreators)
+                    .HasForeignKey(d => d.CreatorId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_KpiProductGrouping_AppUser1");
+
+                entity.HasOne(d => d.Employee)
+                    .WithMany(p => p.KpiProductGroupingEmployees)
+                    .HasForeignKey(d => d.EmployeeId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_KpiProductGrouping_AppUser");
+
+                entity.HasOne(d => d.KpiPeriod)
+                    .WithMany(p => p.KpiProductGroupings)
+                    .HasForeignKey(d => d.KpiPeriodId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_KpiProductGrouping_KpiPeriod");
+
+                entity.HasOne(d => d.KpiProductGroupingType)
+                    .WithMany(p => p.KpiProductGroupings)
+                    .HasForeignKey(d => d.KpiProductGroupingTypeId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_KpiProductGrouping_KpiProductGroupingType");
+
+                entity.HasOne(d => d.KpiYear)
+                    .WithMany(p => p.KpiProductGroupings)
+                    .HasForeignKey(d => d.KpiYearId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_KpiProductGrouping_KpiYear");
+
+                entity.HasOne(d => d.Organization)
+                    .WithMany(p => p.KpiProductGroupings)
+                    .HasForeignKey(d => d.OrganizationId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_KpiProductGrouping_Organization");
+
+                entity.HasOne(d => d.Status)
+                    .WithMany(p => p.KpiProductGroupings)
+                    .HasForeignKey(d => d.StatusId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_KpiProductGrouping_Status");
+            });
+
+            modelBuilder.Entity<KpiProductGroupingContentDAO>(entity =>
+            {
+                entity.HasOne(d => d.KpiProductGrouping)
+                    .WithMany(p => p.KpiProductGroupingContents)
+                    .HasForeignKey(d => d.KpiProductGroupingId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_KpiProductGroupingContent_KpiProductGrouping");
+
+                entity.HasOne(d => d.ProductGrouping)
+                    .WithMany(p => p.KpiProductGroupingContents)
+                    .HasForeignKey(d => d.ProductGroupingId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_KpiProductGroupingContent_KpiProductGroupingContent");
+            });
+
+            modelBuilder.Entity<KpiProductGroupingContentCriteriaMappingDAO>(entity =>
+            {
+                entity.HasKey(e => new { e.KpiProductGroupingContentId, e.KpiProductGroupingCriteriaId });
+
+                entity.HasOne(d => d.KpiProductGroupingContent)
+                    .WithMany(p => p.KpiProductGroupingContentCriteriaMappings)
+                    .HasForeignKey(d => d.KpiProductGroupingContentId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_KpiProductGroupingContentCriteriaMapping_KpiProductGroupingContent");
+
+                entity.HasOne(d => d.KpiProductGroupingCriteria)
+                    .WithMany(p => p.KpiProductGroupingContentCriteriaMappings)
+                    .HasForeignKey(d => d.KpiProductGroupingCriteriaId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_KpiProductGroupingContentCriteriaMapping_KpiProductGroupingCriteria");
+            });
+
+            modelBuilder.Entity<KpiProductGroupingContentItemMappingDAO>(entity =>
+            {
+                entity.HasKey(e => new { e.KpiProductGroupingContentId, e.ItemId });
+
+                entity.HasOne(d => d.Item)
+                    .WithMany(p => p.KpiProductGroupingContentItemMappings)
+                    .HasForeignKey(d => d.ItemId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_KpiProductGroupingContentItemMapping_Item");
+
+                entity.HasOne(d => d.KpiProductGroupingContent)
+                    .WithMany(p => p.KpiProductGroupingContentItemMappings)
+                    .HasForeignKey(d => d.KpiProductGroupingContentId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_KpiProductGroupingContentItemMapping_KpiProductGroupingContent");
+            });
+
+            modelBuilder.Entity<KpiProductGroupingCriteriaDAO>(entity =>
+            {
+                entity.ToTable("KpiProductGroupingCriteria", "ENUM");
+
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(500);
+            });
+
+            modelBuilder.Entity<KpiProductGroupingTypeDAO>(entity =>
+            {
+                entity.ToTable("KpiProductGroupingType", "ENUM");
+
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(50);
+            });
+
             modelBuilder.Entity<KpiYearDAO>(entity =>
             {
                 entity.ToTable("KpiYear", "ENUM");
@@ -2018,27 +2181,6 @@ namespace DMS.ABE.Models
                 entity.Property(e => e.Name)
                     .IsRequired()
                     .HasMaxLength(500);
-            });
-
-            modelBuilder.Entity<LastestEventMessageDAO>(entity =>
-            {
-                entity.HasNoKey();
-
-                entity.ToView("LastestEventMessage");
-
-                entity.Property(e => e.Content).IsRequired();
-
-                entity.Property(e => e.EntityName)
-                    .IsRequired()
-                    .HasMaxLength(500);
-
-                entity.Property(e => e.Id).ValueGeneratedOnAdd();
-
-                entity.Property(e => e.RoutingKey)
-                    .IsRequired()
-                    .HasMaxLength(500);
-
-                entity.Property(e => e.Time).HasColumnType("datetime");
             });
 
             modelBuilder.Entity<LuckyNumberDAO>(entity =>
@@ -3903,6 +4045,8 @@ namespace DMS.ABE.Models
 
                 entity.Property(e => e.DeletedAt).HasColumnType("datetime");
 
+                entity.Property(e => e.Description).HasMaxLength(1000);
+
                 entity.Property(e => e.Name)
                     .IsRequired()
                     .HasMaxLength(500);
@@ -4058,6 +4202,74 @@ namespace DMS.ABE.Models
                     .HasForeignKey(d => d.UnitOfMeasureId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_ShowingOrderContent_UnitOfMeasure");
+            });
+
+            modelBuilder.Entity<ShowingOrderContentWithDrawDAO>(entity =>
+            {
+                entity.ToTable("ShowingOrderContentWithDraw", "POSM");
+
+                entity.Property(e => e.Amount).HasColumnType("decimal(18, 4)");
+
+                entity.Property(e => e.SalePrice).HasColumnType("decimal(18, 4)");
+
+                entity.HasOne(d => d.ShowingItem)
+                    .WithMany(p => p.ShowingOrderContentWithDraws)
+                    .HasForeignKey(d => d.ShowingItemId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ShowingOrderContentWithDraw_ShowingItem");
+
+                entity.HasOne(d => d.ShowingOrderWithDraw)
+                    .WithMany(p => p.ShowingOrderContentWithDraws)
+                    .HasForeignKey(d => d.ShowingOrderWithDrawId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ShowingOrderContentWithDraw_ShowingOrderContentWithDraw2");
+
+                entity.HasOne(d => d.UnitOfMeasure)
+                    .WithMany(p => p.ShowingOrderContentWithDraws)
+                    .HasForeignKey(d => d.UnitOfMeasureId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ShowingOrderContentWithDraw_ShowingOrderWithDraw");
+            });
+
+            modelBuilder.Entity<ShowingOrderWithDrawDAO>(entity =>
+            {
+                entity.ToTable("ShowingOrderWithDraw", "POSM");
+
+                entity.Property(e => e.Code).HasMaxLength(50);
+
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.Date).HasColumnType("datetime");
+
+                entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.Total).HasColumnType("decimal(18, 4)");
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.HasOne(d => d.AppUser)
+                    .WithMany(p => p.ShowingOrderWithDraws)
+                    .HasForeignKey(d => d.AppUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ShowingOrderWithDraw_AppUser");
+
+                entity.HasOne(d => d.Organization)
+                    .WithMany(p => p.ShowingOrderWithDraws)
+                    .HasForeignKey(d => d.OrganizationId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ShowingOrderWithDraw_Organization");
+
+                entity.HasOne(d => d.Status)
+                    .WithMany(p => p.ShowingOrderWithDraws)
+                    .HasForeignKey(d => d.StatusId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ShowingOrderWithDraw_Status");
+
+                entity.HasOne(d => d.Store)
+                    .WithMany(p => p.ShowingOrderWithDraws)
+                    .HasForeignKey(d => d.StoreId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ShowingOrderWithDraw_Store");
             });
 
             modelBuilder.Entity<StatusDAO>(entity =>
@@ -4800,6 +5012,40 @@ namespace DMS.ABE.Models
                     .HasForeignKey(d => d.SurveyQuestionTypeId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_SurveyQuestion_SurveyQuestionType");
+            });
+
+            modelBuilder.Entity<SurveyQuestionFileMappingDAO>(entity =>
+            {
+                entity.HasKey(e => new { e.SurveyQuestionId, e.FileId });
+
+                entity.HasOne(d => d.File)
+                    .WithMany(p => p.SurveyQuestionFileMappings)
+                    .HasForeignKey(d => d.FileId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_SurveyQuestionFileMapping_File");
+
+                entity.HasOne(d => d.SurveyQuestion)
+                    .WithMany(p => p.SurveyQuestionFileMappings)
+                    .HasForeignKey(d => d.SurveyQuestionId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_SurveyQuestionFileMapping_SurveyQuestion");
+            });
+
+            modelBuilder.Entity<SurveyQuestionImageMappingDAO>(entity =>
+            {
+                entity.HasKey(e => new { e.SurveyQuestionId, e.ImageId });
+
+                entity.HasOne(d => d.Image)
+                    .WithMany(p => p.SurveyQuestionImageMappings)
+                    .HasForeignKey(d => d.ImageId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_SurveyQuestionImageMapping_Image");
+
+                entity.HasOne(d => d.SurveyQuestion)
+                    .WithMany(p => p.SurveyQuestionImageMappings)
+                    .HasForeignKey(d => d.SurveyQuestionId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_SurveyQuestionImageMapping_SurveyQuestion");
             });
 
             modelBuilder.Entity<SurveyQuestionTypeDAO>(entity =>

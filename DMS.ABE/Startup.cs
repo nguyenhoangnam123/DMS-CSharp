@@ -183,7 +183,6 @@ namespace DMS.ABE
 
                 string daily = "59 16 * * *";
                 RecurringJob.AddOrUpdate<MaintenanceService>("CleanHangfire", x => x.CleanHangfire(), daily);
-                RecurringJob.AddOrUpdate<MaintenanceService>("CleanEventMessage", x => x.CleanEventMessage(), daily);
             };
             onChange();
             ChangeToken.OnChange(() => Configuration.GetReloadToken(), onChange);

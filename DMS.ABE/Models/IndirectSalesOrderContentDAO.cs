@@ -3,6 +3,9 @@ using System.Collections.Generic;
 
 namespace DMS.ABE.Models
 {
+    /// <summary>
+    /// &#160;C&#225;c s&#7843;n ph&#7849;m b&#225;n c&#7911;a &#273;&#417;n h&#224;ng gi&#225;n ti&#7871;p
+    /// </summary>
     public partial class IndirectSalesOrderContentDAO
     {
         /// <summary>
