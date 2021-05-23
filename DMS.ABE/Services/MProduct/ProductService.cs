@@ -11,7 +11,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using DMS.ABE.Services.MNotification;
 using DMS.ABE.Models;
 
 namespace DMS.ABE.Services.MProduct
@@ -30,8 +29,6 @@ namespace DMS.ABE.Services.MProduct
         private IUOW UOW;
         private ILogging Logging;
         private ICurrentContext CurrentContext;
-        private INotificationService NotificationService;
-        private IProductValidator ProductValidator;
         private IImageService ImageService;
         private IRabbitManager RabbitManager;
 
@@ -39,8 +36,6 @@ namespace DMS.ABE.Services.MProduct
             IUOW UOW,
             ILogging Logging,
             ICurrentContext CurrentContext,
-            INotificationService NotificationService,
-            IProductValidator ProductValidator,
             IImageService ImageService,
             IRabbitManager RabbitManager
         )
@@ -48,8 +43,6 @@ namespace DMS.ABE.Services.MProduct
             this.UOW = UOW;
             this.Logging = Logging;
             this.CurrentContext = CurrentContext;
-            this.NotificationService = NotificationService;
-            this.ProductValidator = ProductValidator;
             this.ImageService = ImageService;
             this.RabbitManager = RabbitManager;
         }

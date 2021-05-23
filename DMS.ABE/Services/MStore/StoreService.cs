@@ -10,7 +10,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using DMS.ABE.Services.MNotification;
 
 namespace DMS.ABE.Services.MStore
 {
@@ -27,26 +26,20 @@ namespace DMS.ABE.Services.MStore
         private IUOW UOW;
         private ILogging Logging;
         private ICurrentContext CurrentContext;
-        private IStoreValidator StoreValidator;
         private IImageService ImageService;
-        private INotificationService NotificationService;
         private IRabbitManager RabbitManager;
         public StoreService(
             IUOW UOW,
             ILogging Logging,
             ICurrentContext CurrentContext,
             IImageService ImageService,
-            IStoreValidator StoreValidator,
-            INotificationService NotificationService,
             IRabbitManager RabbitManager
         )
         {
             this.UOW = UOW;
             this.Logging = Logging;
             this.CurrentContext = CurrentContext;
-            this.StoreValidator = StoreValidator;
             this.ImageService = ImageService;
-            this.NotificationService = NotificationService;
             this.RabbitManager = RabbitManager;
         }
         public async Task<int> Count(StoreFilter StoreFilter)

@@ -3,7 +3,6 @@ using DMS.ABE.Entities;
 using DMS.ABE.Enums;
 using DMS.ABE.Handlers;
 using DMS.ABE.Repositories;
-using DMS.ABE.Services.MSex;
 using DMS.ABE.Helpers;
 using System;
 using System.Collections.Generic;
@@ -25,25 +24,19 @@ namespace DMS.ABE.Services.MAppUser
         private IUOW UOW;
         private ILogging Logging;
         private ICurrentContext CurrentContext;
-        private IAppUserValidator AppUserValidator;
         private IRabbitManager RabbitManager;
-        private ISexService SexService;
 
         public AppUserService(
             IUOW UOW,
             ILogging Logging,
             ICurrentContext CurrentContext,
-            IAppUserValidator AppUserValidator,
-            IRabbitManager RabbitManager,
-            ISexService SexService
+            IRabbitManager RabbitManager
         )
         {
             this.UOW = UOW;
             this.Logging = Logging;
             this.CurrentContext = CurrentContext;
-            this.AppUserValidator = AppUserValidator;
             this.RabbitManager = RabbitManager;
-            this.SexService = SexService;
         }
         public async Task<int> Count(AppUserFilter AppUserFilter)
         {
