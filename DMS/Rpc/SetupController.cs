@@ -11,6 +11,7 @@ using DMS.Services.MProduct;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using OfficeOpenXml;
 using RestSharp;
 using System;
 using System.Collections.Generic;
@@ -2030,5 +2031,56 @@ namespace DMS.Rpc
             DataContext.ExportTemplate.BulkSynchronize(ExportTemplateDAOs);
         }
         #endregion
+
+        [HttpPost, Route("rpc/dms/setup/remove-invalid-brand-in-store")]
+        public async Task<IActionResult> RemoveInvalidBrandInStore(IFormFile file)
+        {
+            DataFile DataFile = new DataFile
+            {
+                Name = file.FileName,
+                Content = file.OpenReadStream(),
+            };
+            using (ExcelPackage excelPackage = new ExcelPackage(DataFile.Content))
+            {
+                ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets["code"];
+                if (worksheet == null)
+                    return BadRequest("File không đúng biểu mẫu import");
+                int StoreCodeColumn = 1; // mã code các cửa hàng cần xóa xếp hạng điểm bán
+                int StartRow = 1;
+                List<StoreDAO> StoreDAOs = await DataContext.Store.AsNoTracking()
+                    .Select(x => new StoreDAO
+                    {
+                        Id = x.Id,
+                        Code = x.Code,
+                    }).ToListAsync();
+                List<long> StoreIds = new List<long>();
+                for (int i = 0; i < worksheet.Dimension.End.Row; i++)
+                {
+                    string StoreCode = worksheet.Cells[i + StartRow, StoreCodeColumn].Value?.ToString(); // lấy hết các mã cửa hàng
+                    if(string.IsNullOrEmpty(StoreCode))
+                    {
+
+                    }
+                    StoreDAO Store = StoreDAOs.Where(x => x.Code.Trim().Equals(StoreCode.Trim())).FirstOrDefault();
+                    if (Store != null)
+                        StoreIds.Add(Store.Id);
+                    if(Store == null)
+                    {
+
+                    }
+                }
+                List<long> BrandInStoreIds = await DataContext.BrandInStore.AsNoTracking()
+                    .Where(x => StoreIds.Contains(x.StoreId))
+                    .Select(x => x.Id)
+                    .ToListAsync();
+                await DataContext.BrandInStoreProductGroupingMapping
+                    .Where(x => BrandInStoreIds.Contains(x.BrandInStoreId))
+                    .DeleteFromQueryAsync();
+                await DataContext.BrandInStore
+                    .Where(x => BrandInStoreIds.Contains(x.Id))
+                    .DeleteFromQueryAsync();
+            }
+            return Ok();
+        }
     }
 }

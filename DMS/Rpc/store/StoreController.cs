@@ -430,6 +430,11 @@ namespace DMS.Rpc.store
                         Errors[Store_ImportDTO.Stt].AppendLine($"Lỗi dòng thứ {Store_ImportDTO.Stt}: Mã đại lý không tồn tại");
                         return;
                     }
+                    if(!FilterExtension.ChangeToEnglishChar(Store_ImportDTO.CodeValue).Equals(Store_ImportDTO.CodeValue))
+                    {
+                        Errors[Store_ImportDTO.Stt].AppendLine($"Lỗi dòng thứ {Store_ImportDTO.Stt}: Mã đại lý không thể chứa khoảng trắng hoặc ký tự Tiếng Việt");
+                        return;
+                    }
                 }
                 else
                 {
