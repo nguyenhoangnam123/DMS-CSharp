@@ -455,9 +455,16 @@ namespace DMS.Rpc.reports.report_sales_order.report_indirect_sales_order_by_stor
                     ProductGroupingId = new IdFilter { Equal = ProductGroupingId.Value },
                     Selects = ItemSelect.Id
                 });
-                ItemIds = ItemIds.Union(ItemDAOs.Select(x => x.Id).ToList())
-                    .Distinct()
-                    .ToList();
+                if (ItemIds != null)
+                {
+                    ItemIds = ItemIds.Union(ItemDAOs.Select(x => x.Id).ToList())
+                            .Distinct()
+                            .ToList();
+                }
+                else
+                {
+                    ItemIds = ItemDAOs.Select(x => x.Id).ToList();
+                }
             }
 
             List<long> OrganizationIds = await FilterOrganization(OrganizationService, CurrentContext);
