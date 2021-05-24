@@ -14,6 +14,7 @@ namespace DMS.Repositories
         Task<int> Count(StatusFilter StatusFilter);
         Task<List<Status>> List(StatusFilter StatusFilter);
         Task<Status> Get(long Id);
+        Task<bool> BulkMerge(List<Status> Statuses);
     }
     public class StatusRepository : IStatusRepository
     {
@@ -134,6 +135,17 @@ namespace DMS.Repositories
                 return null;
 
             return Status;
+        }
+        public async Task<bool> BulkMerge(List<Status> Statuses)
+        {
+            List<StatusDAO> StatusDAOs = Statuses.Select(x => new StatusDAO
+            {
+                Id = x.Id,
+                Code = x.Code,
+                Name = x.Name,
+            }).ToList();
+            await DataContext.BulkMergeAsync(StatusDAOs);
+            return true;
         }
     }
 }

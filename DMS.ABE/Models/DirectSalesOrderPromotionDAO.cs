@@ -3,6 +3,9 @@ using System.Collections.Generic;
 
 namespace DMS.ABE.Models
 {
+    /// <summary>
+    /// Danh s&#225;ch s&#7843;n ph&#7849;m khuy&#7871;n m&#227;i c&#7911;a 1 &#273;&#417;n h&#224;ng tr&#7921;c ti&#7871;p
+    /// </summary>
     public partial class DirectSalesOrderPromotionDAO
     {
         public long Id { get; set; }

@@ -1,6 +1,7 @@
 ﻿using DMS.Common;
 using DMS.Entities;
 using DMS.Models;
+using DMS.Repositories;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
 using System;
@@ -20,37 +21,22 @@ namespace DMS.Handlers
         {
             channel.QueueBind(queue, exchange, $"{Name}.*", null);
         }
-        public override async Task Handle(DataContext context, string routingKey, string content)
+        public override async Task Handle(IUOW UOW, string routingKey, string content)
         {
             if (routingKey == SyncKey)
-                await Sync(context, content);
+                await Sync(UOW, content);
         }
 
-        private async Task Sync(DataContext context, string json)
+        private async Task Sync(IUOW UOW, string json)
         {
-            List<EventMessage<UnitOfMeasure>> UnitOfMeasureEventMessages = JsonConvert.DeserializeObject<List<EventMessage<UnitOfMeasure>>>(json);
-            List<UnitOfMeasure> UnitOfMeasures = UnitOfMeasureEventMessages.Select(x => x.Content).ToList();
             try
             {
-                List<UnitOfMeasureDAO> UnitOfMeasureDAOs = UnitOfMeasures
-                    .Select(x => new UnitOfMeasureDAO
-                    {
-                        CreatedAt = x.CreatedAt,
-                        UpdatedAt = x.UpdatedAt,
-                        DeletedAt = x.DeletedAt,
-                        Id = x.Id,
-                        Code = x.Code,
-                        Name = x.Name,
-                        Description = x.Description,
-                        Used = x.Used,
-                        RowId = x.RowId,
-                        StatusId = x.StatusId
-                    }).ToList();
-                await context.BulkMergeAsync(UnitOfMeasureDAOs);
+                List<UnitOfMeasure> UnitOfMeasures = JsonConvert.DeserializeObject<List<UnitOfMeasure>>(json);
+                await UOW.UnitOfMeasureRepository.BulkMerge(UnitOfMeasures);
             }
             catch (Exception ex)
             {
-                SystemLog(ex, nameof(UnitOfMeasureHandler));
+                Log(ex, nameof(UnitOfMeasureHandler));
             }
         }
     }

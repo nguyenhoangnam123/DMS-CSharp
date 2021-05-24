@@ -15,6 +15,7 @@ namespace DMS.Repositories
         Task<int> Count(ProductGroupingFilter ProductGroupingFilter);
         Task<List<ProductGrouping>> List(ProductGroupingFilter ProductGroupingFilter);
         Task<ProductGrouping> Get(long Id);
+        Task<bool> BulkMerge(List<ProductGrouping> ProductGroupings);
     }
     public class ProductGroupingRepository : IProductGroupingRepository
     {
@@ -268,6 +269,29 @@ namespace DMS.Repositories
                 }).ToListAsync();
 
             return ProductGrouping;
+        }
+        public async Task<bool> BulkMerge(List<ProductGrouping> ProductGroupings)
+        {
+            List<ProductGroupingDAO> ProductGroupingDAOs = new List<ProductGroupingDAO>();
+            foreach (ProductGrouping ProductGrouping in ProductGroupings)
+            {
+                ProductGroupingDAO ProductGroupingDAO = new ProductGroupingDAO();
+                ProductGroupingDAO.Id = ProductGrouping.Id;
+                ProductGroupingDAO.Code = ProductGrouping.Code;
+                ProductGroupingDAO.CreatedAt = ProductGrouping.CreatedAt;
+                ProductGroupingDAO.UpdatedAt = ProductGrouping.UpdatedAt;
+                ProductGroupingDAO.DeletedAt = ProductGrouping.DeletedAt;
+                ProductGroupingDAO.Id = ProductGrouping.Id;
+                ProductGroupingDAO.Name = ProductGrouping.Name;
+                ProductGroupingDAO.RowId = ProductGrouping.RowId;
+                ProductGroupingDAO.Description = ProductGrouping.Description;
+                ProductGroupingDAO.Level = ProductGrouping.Level;
+                ProductGroupingDAO.ParentId = ProductGrouping.ParentId;
+                ProductGroupingDAO.Path = ProductGrouping.Path;
+                ProductGroupingDAOs.Add(ProductGroupingDAO);
+            }
+            await DataContext.BulkMergeAsync(ProductGroupingDAOs);
+            return true;
         }
     }
 }

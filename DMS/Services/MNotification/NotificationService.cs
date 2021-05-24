@@ -159,8 +159,7 @@ namespace DMS.Services.MNotification
                         RowId = Guid.NewGuid(),
                     }).ToList();
 
-                    List<EventMessage<UserNotification>> EventUserNotifications = UserNotifications.Select(x => new EventMessage<UserNotification>(x, x.RowId)).ToList();
-                    RabbitManager.PublishList(EventUserNotifications, RoutingKeyEnum.UserNotificationSend);
+                    RabbitManager.PublishList(UserNotifications, RoutingKeyEnum.UserNotificationSend);
                 }
 
                 var newData = await UOW.NotificationRepository.Get(Notification.Id);

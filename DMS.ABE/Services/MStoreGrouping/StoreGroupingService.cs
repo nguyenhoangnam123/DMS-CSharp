@@ -24,19 +24,16 @@ namespace DMS.ABE.Services.MStoreGrouping
         private IUOW UOW;
         private ILogging Logging;
         private ICurrentContext CurrentContext;
-        private IStoreGroupingValidator StoreGroupingValidator;
 
         public StoreGroupingService(
             IUOW UOW,
             ILogging Logging,
-            ICurrentContext CurrentContext,
-            IStoreGroupingValidator StoreGroupingValidator
+            ICurrentContext CurrentContext
         )
         {
             this.UOW = UOW;
             this.Logging = Logging;
             this.CurrentContext = CurrentContext;
-            this.StoreGroupingValidator = StoreGroupingValidator;
         }
         public async Task<int> Count(StoreGroupingFilter StoreGroupingFilter)
         {

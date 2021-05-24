@@ -316,13 +316,7 @@ namespace DMS.Services.MWorkflow
         private void NotifyUsed(WorkflowStep WorkflowStep)
         {
             {
-                EventMessage<Role> RoleMessage = new EventMessage<Role>
-                {
-                    Content = new Role { Id = WorkflowStep.RoleId },
-                    EntityName = nameof(StoreType),
-                    RowId = Guid.NewGuid(),
-                    Time = StaticParams.DateTimeNow,
-                };
+                Role RoleMessage = new Role { Id = WorkflowStep.RoleId };
                 RabbitManager.PublishSingle(RoleMessage, RoutingKeyEnum.RoleUsed);
             }
         }

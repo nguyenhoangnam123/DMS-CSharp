@@ -21,6 +21,7 @@ namespace DMS.Repositories
         Task<bool> Delete(ShowingItem ShowingItem);
         Task<bool> BulkMerge(List<ShowingItem> ShowingItems);
         Task<bool> BulkDelete(List<ShowingItem> ShowingItems);
+        Task<bool> Used(List<long> Ids);
     }
     public class ShowingItemRepository : IShowingItemRepository
     {
@@ -513,6 +514,12 @@ namespace DMS.Repositories
                 }
                 await DataContext.ShowingItemImageMapping.BulkMergeAsync(ShowingItemImageMappingDAOs);
             }
+        }
+        public async Task<bool> Used(List<long> Ids)
+        {
+            await DataContext.ShowingItem.Where(x => Ids.Contains(x.Id))
+                .UpdateFromQueryAsync(x => new ShowingItemDAO { Used = true });
+            return true;
         }
 
     }

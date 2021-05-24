@@ -20,18 +20,24 @@ namespace DMS.Handlers
         {
             channel.QueueBind(queue, exchange, $"{Name}.*", null);
         }
-        public override async Task Handle(DataContext context, string routingKey, string content)
+        public override async Task Handle(IUOW UOW, string routingKey, string content)
         {
             if (routingKey == UsedKey)
-                await Used(context, content);
+                await Used(UOW, content);
         }
 
-        private async Task Used(DataContext context, string json)
+        private async Task Used(IUOW UOW, string json)
         {
-            List<EventMessage<Album>> EventMessageReviced = JsonConvert.DeserializeObject<List<EventMessage<Album>>>(json);
-            List<Album> Albums = EventMessageReviced.Select(em => em.Content).ToList();
-            IUOW UOW = new UOW(context);
-            await UOW.AlbumRepository.BulkUsed(Albums);
+            try
+            {
+                List<Album> Album = JsonConvert.DeserializeObject<List<Album>>(json);
+                List<long> Ids = Album.Select(a => a.Id).ToList();
+                await UOW.AlbumRepository.Used(Ids);
+            }
+            catch (Exception ex)
+            {
+                Log(ex, nameof(AlbumHandler));
+            }
         }
     }
 }

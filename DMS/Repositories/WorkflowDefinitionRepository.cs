@@ -20,6 +20,7 @@ namespace DMS.Repositories
         Task<bool> Delete(WorkflowDefinition WorkflowDefinition);
         Task<bool> BulkMerge(List<WorkflowDefinition> WorkflowDefinitions);
         Task<bool> BulkDelete(List<WorkflowDefinition> WorkflowDefinitions);
+        Task<bool> Used(List<long> Ids);
     }
     public class WorkflowDefinitionRepository : IWorkflowDefinitionRepository
     {
@@ -543,6 +544,12 @@ namespace DMS.Repositories
             await DataContext.WorkflowDefinition
                 .Where(x => Ids.Contains(x.Id))
                 .UpdateFromQueryAsync(x => new WorkflowDefinitionDAO { DeletedAt = StaticParams.DateTimeNow });
+            return true;
+        }
+        public async Task<bool> Used(List<long> Ids)
+        {
+            await DataContext.WorkflowDefinition.Where(x => Ids.Contains(x.Id))
+                .UpdateFromQueryAsync(x => new WorkflowDefinitionDAO { Used = true });
             return true;
         }
     }

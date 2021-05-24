@@ -280,25 +280,13 @@ namespace DMS.Services.MShowingOrderWithDraw
         {
             {
                 List<long> ShowingItemIds = ShowingOrderWithDraw.ShowingOrderContentWithDraws.Select(i => i.ShowingItemId).ToList();
-                List<EventMessage<ShowingItem>> ShowingItemMessages = ShowingItemIds.Select(i => new EventMessage<ShowingItem>
-                {
-                    Content = new ShowingItem { Id = i },
-                    EntityName = nameof(ShowingItem),
-                    RowId = Guid.NewGuid(),
-                    Time = StaticParams.DateTimeNow,
-                }).ToList();
+                List<ShowingItem> ShowingItemMessages = ShowingItemIds.Select(i => new ShowingItem { Id = i }).ToList();
                 RabbitManager.PublishList(ShowingItemMessages, RoutingKeyEnum.ShowingItemUsed);
             }
 
             {
                 List<long> UOMIds = ShowingOrderWithDraw.ShowingOrderContentWithDraws.Select(i => i.UnitOfMeasureId).ToList();
-                List<EventMessage<UnitOfMeasure>> UnitOfMeasureMessages = UOMIds.Select(x => new EventMessage<UnitOfMeasure>
-                {
-                    Content = new UnitOfMeasure { Id = x },
-                    EntityName = nameof(UnitOfMeasure),
-                    RowId = Guid.NewGuid(),
-                    Time = StaticParams.DateTimeNow,
-                }).ToList();
+                List<UnitOfMeasure> UnitOfMeasureMessages = UOMIds.Select(x => new UnitOfMeasure{ Id = x }).ToList();
                 RabbitManager.PublishList(UnitOfMeasureMessages, RoutingKeyEnum.UnitOfMeasureUsed);
             }
 
@@ -306,36 +294,18 @@ namespace DMS.Services.MShowingOrderWithDraw
                 if (ShowingOrderWithDraw.Stores != null)
                 {
                     List<long> StoreIds = ShowingOrderWithDraw.Stores.Select(x => x.Id).Distinct().ToList();
-                    List<EventMessage<Store>> storeMessages = StoreIds.Select(x => new EventMessage<Store>
-                    {
-                        Content = new Store { Id = x },
-                        EntityName = nameof(Store),
-                        RowId = Guid.NewGuid(),
-                        Time = StaticParams.DateTimeNow,
-                    }).ToList();
+                    List<Store> storeMessages = StoreIds.Select(x => new Store { Id = x }).ToList();
                     RabbitManager.PublishList(storeMessages, RoutingKeyEnum.StoreUsed);
                 }
             }
 
             {
-                EventMessage<AppUser> AppUserMessage = new EventMessage<AppUser>
-                {
-                    Content = new AppUser { Id = ShowingOrderWithDraw.AppUserId },
-                    EntityName = nameof(AppUser),
-                    RowId = Guid.NewGuid(),
-                    Time = StaticParams.DateTimeNow,
-                };
+                AppUser AppUserMessage = new AppUser { Id = ShowingOrderWithDraw.AppUserId };
                 RabbitManager.PublishSingle(AppUserMessage, RoutingKeyEnum.AppUserUsed);
             }
 
             {
-                EventMessage<Organization> OrganizationMessage = new EventMessage<Organization>
-                {
-                    Content = new Organization { Id = ShowingOrderWithDraw.OrganizationId },
-                    EntityName = nameof(Organization),
-                    RowId = Guid.NewGuid(),
-                    Time = StaticParams.DateTimeNow,
-                };
+                Organization OrganizationMessage = new Organization { Id = ShowingOrderWithDraw.OrganizationId };
                 RabbitManager.PublishSingle(OrganizationMessage, RoutingKeyEnum.OrganizationUsed);
             }
         }
@@ -347,14 +317,7 @@ namespace DMS.Services.MShowingOrderWithDraw
                 ShowingOrderWithDraw.CreatedAt = StaticParams.DateTimeNow;
                 ShowingOrderWithDraw.UpdatedAt = StaticParams.DateTimeNow;
             }
-            List<EventMessage<ShowingOrderWithDraw>> TransactionMessages = ShowingOrderWithDraws.Select(x => new EventMessage<ShowingOrderWithDraw>
-            {
-                Content = x,
-                EntityName = nameof(ShowingOrderWithDraw),
-                RowId = Guid.NewGuid(),
-                Time = StaticParams.DateTimeNow,
-            }).ToList();
-            RabbitManager.PublishList(TransactionMessages, RoutingKeyEnum.ShowingOrderWithDrawSync); // sync sang report
+            RabbitManager.PublishList(ShowingOrderWithDraws, RoutingKeyEnum.ShowingOrderWithDrawSync); // sync sang report
         }
     }
 }

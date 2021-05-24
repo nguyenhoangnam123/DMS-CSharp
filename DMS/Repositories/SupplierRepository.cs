@@ -15,6 +15,7 @@ namespace DMS.Repositories
         Task<int> Count(SupplierFilter SupplierFilter);
         Task<List<Supplier>> List(SupplierFilter SupplierFilter);
         Task<Supplier> Get(long Id);
+        Task<bool> BulkMerge(List<Supplier> Suppliers);
     }
     public class SupplierRepository : ISupplierRepository
     {
@@ -393,6 +394,34 @@ namespace DMS.Repositories
                 return null;
 
             return Supplier;
+        }
+        public async Task<bool> BulkMerge(List<Supplier> Suppliers)
+        {
+            List<SupplierDAO> SupplierDAOs = Suppliers.Select(x => new SupplierDAO
+            {
+                CreatedAt = x.CreatedAt,
+                UpdatedAt = x.UpdatedAt,
+                DeletedAt = x.DeletedAt,
+                Id = x.Id,
+                Code = x.Code,
+                Name = x.Name,
+                TaxCode = x.TaxCode,
+                Phone = x.Phone,
+                Email = x.Email,
+                Address = x.Address,
+                NationId = x.NationId,
+                ProvinceId = x.ProvinceId,
+                DistrictId = x.DistrictId,
+                WardId = x.WardId,
+                OwnerName = x.OwnerName,
+                PersonInChargeId = x.PersonInChargeId,
+                StatusId = x.StatusId,
+                Description = x.Description,
+                Used = x.Used,
+                RowId = x.RowId,
+            }).ToList();
+            await DataContext.BulkMergeAsync(SupplierDAOs);
+            return true;
         }
     }
 }

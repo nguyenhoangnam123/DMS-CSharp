@@ -93,7 +93,7 @@ namespace DMS.Handlers
             var optionsBuilder = new DbContextOptionsBuilder<DataContext>();
             optionsBuilder.UseSqlServer(Configuration.GetConnectionString("DataContext"));
             DataContext context = new DataContext(optionsBuilder.Options);
-            IUOW UOW = new UOW(context);
+            IUOW UOW = new UOW(context, Configuration);
             List<string> path = routingKey.Split(".").ToList();
             if (path.Count < 1)
                 throw new Exception();
@@ -102,10 +102,11 @@ namespace DMS.Handlers
                 if (path.Any(p => p == handler.Name))
                 {
                     handler.RabbitManager = RabbitManager;
-                    await handler.Handle(context, routingKey, content);
+                    await handler.Handle(UOW, routingKey, content);
                 }
             }
         }
+
 
         private void OnConsumerCancelled(object sender, ConsumerEventArgs e) { }
         private void OnConsumerUnregistered(object sender, ConsumerEventArgs e) { }

@@ -14,6 +14,7 @@ namespace DMS.Repositories
         Task<int> Count(WardFilter WardFilter);
         Task<List<Ward>> List(WardFilter WardFilter);
         Task<Ward> Get(long Id);
+        Task<bool> BulkMerge(List<Ward> Wards);
     }
     public class WardRepository : IWardRepository
     {
@@ -208,6 +209,24 @@ namespace DMS.Repositories
                 return null;
 
             return Ward;
+        }
+        public async Task<bool> BulkMerge(List<Ward> Wards)
+        {
+            List<WardDAO> WardDAOs = Wards.Select(x => new WardDAO
+            {
+                Id = x.Id,
+                Code = x.Code,
+                Name = x.Name,
+                CreatedAt = x.CreatedAt,
+                UpdatedAt = x.UpdatedAt,
+                DeletedAt = x.DeletedAt,
+                DistrictId = x.DistrictId,
+                Priority = x.Priority,
+                RowId = x.RowId,
+                StatusId = x.StatusId,
+            }).ToList();
+            await DataContext.BulkMergeAsync(WardDAOs);
+            return true;
         }
     }
 }

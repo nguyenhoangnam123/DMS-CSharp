@@ -19,6 +19,7 @@ namespace DMS.ABE.Models
             KpiGeneralContents = new HashSet<KpiGeneralContentDAO>();
             KpiGenerals = new HashSet<KpiGeneralDAO>();
             KpiItems = new HashSet<KpiItemDAO>();
+            KpiProductGroupings = new HashSet<KpiProductGroupingDAO>();
             LuckyNumberGroupings = new HashSet<LuckyNumberGroupingDAO>();
             Nations = new HashSet<NationDAO>();
             Organizations = new HashSet<OrganizationDAO>();
@@ -34,6 +35,7 @@ namespace DMS.ABE.Models
             Roles = new HashSet<RoleDAO>();
             ShowingCategories = new HashSet<ShowingCategoryDAO>();
             ShowingItems = new HashSet<ShowingItemDAO>();
+            ShowingOrderWithDraws = new HashSet<ShowingOrderWithDrawDAO>();
             ShowingOrders = new HashSet<ShowingOrderDAO>();
             StoreGroupings = new HashSet<StoreGroupingDAO>();
             StoreScoutingTypes = new HashSet<StoreScoutingTypeDAO>();
@@ -68,6 +70,7 @@ namespace DMS.ABE.Models
         public virtual ICollection<KpiGeneralContentDAO> KpiGeneralContents { get; set; }
         public virtual ICollection<KpiGeneralDAO> KpiGenerals { get; set; }
         public virtual ICollection<KpiItemDAO> KpiItems { get; set; }
+        public virtual ICollection<KpiProductGroupingDAO> KpiProductGroupings { get; set; }
         public virtual ICollection<LuckyNumberGroupingDAO> LuckyNumberGroupings { get; set; }
         public virtual ICollection<NationDAO> Nations { get; set; }
         public virtual ICollection<OrganizationDAO> Organizations { get; set; }
@@ -83,6 +86,7 @@ namespace DMS.ABE.Models
         public virtual ICollection<RoleDAO> Roles { get; set; }
         public virtual ICollection<ShowingCategoryDAO> ShowingCategories { get; set; }
         public virtual ICollection<ShowingItemDAO> ShowingItems { get; set; }
+        public virtual ICollection<ShowingOrderWithDrawDAO> ShowingOrderWithDraws { get; set; }
         public virtual ICollection<ShowingOrderDAO> ShowingOrders { get; set; }
         public virtual ICollection<StoreGroupingDAO> StoreGroupings { get; set; }
         public virtual ICollection<StoreScoutingTypeDAO> StoreScoutingTypes { get; set; }

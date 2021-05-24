@@ -22,19 +22,16 @@ namespace DMS.ABE.Services.MOrganization
         private IUOW UOW;
         private ILogging Logging;
         private ICurrentContext CurrentContext;
-        private IOrganizationValidator OrganizationValidator;
 
         public OrganizationService(
             IUOW UOW,
             ILogging Logging,
-            ICurrentContext CurrentContext,
-            IOrganizationValidator OrganizationValidator
+            ICurrentContext CurrentContext
         )
         {
             this.UOW = UOW;
             this.Logging = Logging;
             this.CurrentContext = CurrentContext;
-            this.OrganizationValidator = OrganizationValidator;
         }
         public async Task<int> Count(OrganizationFilter OrganizationFilter)
         {

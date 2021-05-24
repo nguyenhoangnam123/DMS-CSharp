@@ -14,6 +14,7 @@ namespace DMS.Repositories
         Task<int> Count(UsedVariationFilter UsedVariationFilter);
         Task<List<UsedVariation>> List(UsedVariationFilter UsedVariationFilter);
         Task<UsedVariation> Get(long Id);
+        Task<bool> BulkMerge(List<UsedVariation> UsedVariations);
     }
     public class UsedVariationRepository : IUsedVariationRepository
     {
@@ -135,6 +136,17 @@ namespace DMS.Repositories
                 return null;
 
             return UsedVariation;
+        }
+        public async Task<bool> BulkMerge(List<UsedVariation> UsedVariations)
+        {
+            List<UsedVariationDAO> UsedVariationDAOs = UsedVariations.Select(x => new UsedVariationDAO
+            {
+                Id = x.Id,
+                Code = x.Code,
+                Name = x.Name,
+            }).ToList();
+            await DataContext.BulkMergeAsync(UsedVariationDAOs);
+            return true;
         }
     }
 }

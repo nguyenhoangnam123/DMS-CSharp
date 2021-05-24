@@ -17,6 +17,7 @@ namespace DMS.ABE.Models
             ItemHistories = new HashSet<ItemHistoryDAO>();
             ItemImageMappings = new HashSet<ItemImageMappingDAO>();
             KpiItemContents = new HashSet<KpiItemContentDAO>();
+            KpiProductGroupingContentItemMappings = new HashSet<KpiProductGroupingContentItemMappingDAO>();
             PriceListItemHistories = new HashSet<PriceListItemHistoryDAO>();
             PriceListItemMappings = new HashSet<PriceListItemMappingDAO>();
             PromotionComboInItemMappings = new HashSet<PromotionComboInItemMappingDAO>();
@@ -56,6 +57,7 @@ namespace DMS.ABE.Models
         public virtual ICollection<ItemHistoryDAO> ItemHistories { get; set; }
         public virtual ICollection<ItemImageMappingDAO> ItemImageMappings { get; set; }
         public virtual ICollection<KpiItemContentDAO> KpiItemContents { get; set; }
+        public virtual ICollection<KpiProductGroupingContentItemMappingDAO> KpiProductGroupingContentItemMappings { get; set; }
         public virtual ICollection<PriceListItemHistoryDAO> PriceListItemHistories { get; set; }
         public virtual ICollection<PriceListItemMappingDAO> PriceListItemMappings { get; set; }
         public virtual ICollection<PromotionComboInItemMappingDAO> PromotionComboInItemMappings { get; set; }

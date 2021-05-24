@@ -22,7 +22,7 @@ namespace DMS.ABE.Rpc
             this.CurrentContext = CurrentContext;
         }
 
-        [HttpPost, Route("rpc/ams/permission/list-path")]
+        [HttpPost, Route("rpc/dms/permission/list-path")]
         public async Task<List<string>> ListPath()
         {
             return await PermissionService.ListPath(CurrentContext.UserId);

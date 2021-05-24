@@ -10,6 +10,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using DMS.Enums;
+using DMS.Repositories;
 
 namespace DMS.Handlers
 {
@@ -22,51 +23,22 @@ namespace DMS.Handlers
         {
             channel.QueueBind(queue, exchange, $"{Name}.*", null);
         }
-        public override async Task Handle(DataContext context, string routingKey, string content)
+        public override async Task Handle(IUOW UOW, string routingKey, string content)
         {
             if (routingKey == SyncKey)
-                await Sync(context, content);
+                await Sync(UOW, content);
         }
 
-        private async Task Sync(DataContext context, string json)
+        private async Task Sync(IUOW UOW , string json)
         {
-            List<EventMessage<UnitOfMeasureGrouping>> UnitOfMeasureGroupingEventMessages = JsonConvert.DeserializeObject<List<EventMessage<UnitOfMeasureGrouping>>>(json);
-            List<UnitOfMeasureGrouping> UnitOfMeasureGroupings = UnitOfMeasureGroupingEventMessages.Select(x => x.Content).ToList();
-
             try
             {
-                List<UnitOfMeasureGroupingDAO> UnitOfMeasureGroupingDAOs = UnitOfMeasureGroupings.Select(x => new UnitOfMeasureGroupingDAO
-                {
-                    Id = x.Id,
-                    Code = x.Code,
-                    Name = x.Name,
-                    CreatedAt = x.CreatedAt,
-                    UpdatedAt = x.UpdatedAt,
-                    DeletedAt = x.DeletedAt,
-                    Used = x.Used,
-                    RowId = x.RowId,
-                    StatusId = x.StatusId,
-                    Description = x.Description,
-                    UnitOfMeasureId = x.UnitOfMeasureId,
-                }).ToList();
-
-                var Ids = UnitOfMeasureGroupings.Select(x => x.Id).ToList();
-                await context.UnitOfMeasureGroupingContent.Where(x => Ids.Contains(x.UnitOfMeasureGroupingId)).DeleteFromQueryAsync();
-                List<UnitOfMeasureGroupingContentDAO> UnitOfMeasureGroupingContentDAOs = UnitOfMeasureGroupings
-                    .SelectMany(x => x.UnitOfMeasureGroupingContents.Select(y => new UnitOfMeasureGroupingContentDAO
-                    {
-                        Id = y.Id,
-                        Factor = y.Factor,
-                        RowId = y.RowId,
-                        UnitOfMeasureId = y.UnitOfMeasureId,
-                        UnitOfMeasureGroupingId = y.UnitOfMeasureGroupingId,
-                    })).ToList();
-                await context.BulkMergeAsync(UnitOfMeasureGroupingDAOs);
-                await context.BulkMergeAsync(UnitOfMeasureGroupingContentDAOs);
+                List<UnitOfMeasureGrouping> UnitOfMeasureGroupings = JsonConvert.DeserializeObject<List<UnitOfMeasureGrouping>>(json);
+                await UOW.UnitOfMeasureGroupingRepository.BulkMerge(UnitOfMeasureGroupings);
             }
             catch (Exception ex)
             {
-                SystemLog(ex, nameof(UnitOfMeasureGroupingHandler));
+                Log(ex, nameof(UnitOfMeasureGroupingHandler));
             }
 
         }

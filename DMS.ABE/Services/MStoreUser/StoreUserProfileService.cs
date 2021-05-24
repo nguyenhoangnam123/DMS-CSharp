@@ -165,7 +165,7 @@ namespace DMS.ABE.Services.MStoreUser
                     Recipients = new List<string> { Store.OwnerEmail },
                     RowId = Guid.NewGuid()
                 };
-                RabbitManager.PublishSingle(new EventMessage<Mail>(mail, mail.RowId), RoutingKeyEnum.MailSend);
+                RabbitManager.PublishSingle(mail, RoutingKeyEnum.MailSend);
                 return newData;
             }
             catch (Exception ex)
@@ -222,7 +222,7 @@ namespace DMS.ABE.Services.MStoreUser
                     Recipients = new List<string> { Store.OwnerEmail },
                     RowId = Guid.NewGuid()
                 };
-                RabbitManager.PublishSingle(new EventMessage<Mail>(mail, mail.RowId), RoutingKeyEnum.MailSend);
+                RabbitManager.PublishSingle(mail, RoutingKeyEnum.MailSend);
                 await Logging.CreateAuditLog(newData, oldData, nameof(StoreUserService));
                 return newData;
             }

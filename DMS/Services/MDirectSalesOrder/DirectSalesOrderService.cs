@@ -458,11 +458,10 @@ namespace DMS.Services.MDirectSalesOrder
                     UserNotifications.Add(UserNotification);
                 }
 
-                List<EventMessage<UserNotification>> EventUserNotifications = UserNotifications.Select(x => new EventMessage<UserNotification>(x, x.RowId)).ToList();
-                RabbitManager.PublishList(EventUserNotifications, RoutingKeyEnum.UserNotificationSend);
+                RabbitManager.PublishList(UserNotifications, RoutingKeyEnum.UserNotificationSend);
 
                 DirectSalesOrder = await UOW.DirectSalesOrderRepository.Get(DirectSalesOrder.Id);
-                Sync(DirectSalesOrder);
+                Sync(new List<DirectSalesOrder> { DirectSalesOrder });
                 await Logging.CreateAuditLog(DirectSalesOrder, new { }, nameof(DirectSalesOrderService));
                 return DirectSalesOrder;
             }
@@ -517,11 +516,10 @@ namespace DMS.Services.MDirectSalesOrder
                 };
                 UserNotifications.Add(UserNotification);
 
-                List<EventMessage<UserNotification>> EventUserNotifications = UserNotifications.Select(x => new EventMessage<UserNotification>(x, x.RowId)).ToList();
-                RabbitManager.PublishList(EventUserNotifications, RoutingKeyEnum.UserNotificationSend);
+                RabbitManager.PublishList(UserNotifications, RoutingKeyEnum.UserNotificationSend);
 
                 DirectSalesOrder = await UOW.DirectSalesOrderRepository.Get(DirectSalesOrder.Id);
-                Sync(DirectSalesOrder);
+                Sync(new List<DirectSalesOrder> { DirectSalesOrder });
                 await Logging.CreateAuditLog(DirectSalesOrder, oldData, nameof(DirectSalesOrderService));
                 return DirectSalesOrder;
             }
@@ -575,11 +573,10 @@ namespace DMS.Services.MDirectSalesOrder
                     UserNotifications.Add(UserNotification);
                 }
 
-                List<EventMessage<UserNotification>> EventUserNotifications = UserNotifications.Select(x => new EventMessage<UserNotification>(x, x.RowId)).ToList();
-                RabbitManager.PublishList(EventUserNotifications, RoutingKeyEnum.UserNotificationSend);
+                RabbitManager.PublishList(UserNotifications, RoutingKeyEnum.UserNotificationSend);
 
                 DirectSalesOrder = await UOW.DirectSalesOrderRepository.Get(DirectSalesOrder.Id);
-                Sync(DirectSalesOrder);
+                Sync(new List<DirectSalesOrder> { DirectSalesOrder });
                 await Logging.CreateAuditLog(new { }, DirectSalesOrder, nameof(DirectSalesOrderService));
                 return DirectSalesOrder;
             }
@@ -1098,7 +1095,7 @@ namespace DMS.Services.MDirectSalesOrder
             await UOW.DirectSalesOrderRepository.UpdateState(DirectSalesOrder);
 
             DirectSalesOrder = await UOW.DirectSalesOrderRepository.Get(DirectSalesOrder.Id);
-            Sync(DirectSalesOrder);
+            Sync(new List<DirectSalesOrder> { DirectSalesOrder });
 
             return DirectSalesOrder;
         }
@@ -1120,7 +1117,7 @@ namespace DMS.Services.MDirectSalesOrder
             await UOW.DirectSalesOrderRepository.UpdateState(DirectSalesOrder);
 
             DirectSalesOrder = await UOW.DirectSalesOrderRepository.Get(DirectSalesOrder.Id);
-            Sync(DirectSalesOrder);
+            Sync(new List<DirectSalesOrder> { DirectSalesOrder });
 
             return DirectSalesOrder;
         }
@@ -1135,7 +1132,7 @@ namespace DMS.Services.MDirectSalesOrder
             await UOW.DirectSalesOrderRepository.UpdateState(DirectSalesOrder);
 
             DirectSalesOrder = await UOW.DirectSalesOrderRepository.Get(DirectSalesOrder.Id);
-            Sync(DirectSalesOrder);
+            Sync(new List<DirectSalesOrder> { DirectSalesOrder });
 
             return DirectSalesOrder;
         }
@@ -1195,76 +1192,37 @@ namespace DMS.Services.MDirectSalesOrder
             return AppUserIds;
         }
 
-        private void Sync(DirectSalesOrder DirectSalesOrder)
+        private void Sync(List<DirectSalesOrder> DirectSalesOrders)
         {
-            List<EventMessage<DirectSalesOrder>> EventMessageDirectSalesOrders = new List<EventMessage<DirectSalesOrder>>();
-            {
-                List<long> ItemIds = DirectSalesOrder.DirectSalesOrderContents.Select(i => i.ItemId).ToList();
-                List<EventMessage<Item>> itemMessages = ItemIds.Select(i => new EventMessage<Item>
-                {
-                    Content = new Item { Id = i },
-                    EntityName = nameof(Item),
-                    RowId = Guid.NewGuid(),
-                    Time = StaticParams.DateTimeNow,
-                }).ToList();
-                RabbitManager.PublishList(itemMessages, RoutingKeyEnum.ItemUsed);
-            }
-            {
-                List<long> PrimaryUOMIds = DirectSalesOrder.DirectSalesOrderContents.Select(i => i.PrimaryUnitOfMeasureId).ToList();
-                List<long> UOMIds = DirectSalesOrder.DirectSalesOrderContents.Select(i => i.UnitOfMeasureId).ToList();
-                UOMIds.AddRange(PrimaryUOMIds);
-                List<EventMessage<UnitOfMeasure>> UnitOfMeasureMessages = UOMIds.Select(x => new EventMessage<UnitOfMeasure>
-                {
-                    Content = new UnitOfMeasure { Id = x },
-                    EntityName = nameof(UnitOfMeasure),
-                    RowId = Guid.NewGuid(),
-                    Time = StaticParams.DateTimeNow,
-                }).ToList();
-                RabbitManager.PublishList(UnitOfMeasureMessages, RoutingKeyEnum.UnitOfMeasureUsed);
-            }
-            {
-                List<EventMessage<Store>> storeMessages = new List<EventMessage<Store>>();
-                EventMessage<Store> BuyerStore = new EventMessage<Store>
-                {
-                    Content = new Store { Id = DirectSalesOrder.BuyerStoreId },
-                    EntityName = nameof(Store),
-                    RowId = Guid.NewGuid(),
-                    Time = StaticParams.DateTimeNow,
-                };
-                storeMessages.Add(BuyerStore);
-                RabbitManager.PublishList(storeMessages, RoutingKeyEnum.StoreUsed);
-            }
-            {
-                EventMessage<AppUser> AppUserMessage = new EventMessage<AppUser>
-                {
-                    Content = new AppUser { Id = DirectSalesOrder.SaleEmployeeId },
-                    EntityName = nameof(AppUser),
-                    RowId = Guid.NewGuid(),
-                    Time = StaticParams.DateTimeNow,
-                };
-                RabbitManager.PublishSingle(AppUserMessage, RoutingKeyEnum.AppUserUsed);
-            }
-            {
-                if(DirectSalesOrder.PromotionCodeId.HasValue && DirectSalesOrder.PromotionCodeId.Value != 0)
-                {
-                    var PromotionCodeId = DirectSalesOrder.PromotionCodeId.Value;
-                    List<EventMessage<PromotionCode>> PromotionCodeMessages = new List<EventMessage<PromotionCode>>
-                    {
-                        new EventMessage<PromotionCode>
-                        {
-                            Content = new PromotionCode { Id = PromotionCodeId },
-                            EntityName = nameof(PromotionCode),
-                            RowId = Guid.NewGuid(),
-                            Time = StaticParams.DateTimeNow,
-                        }
-                    };
-                    RabbitManager.PublishList(PromotionCodeMessages, RoutingKeyEnum.PromotionCodeUsed);
-                }
-            }
+            List<AppUser> AppUsers = new List<AppUser>();
+            AppUsers.AddRange(DirectSalesOrders.Select(x => x.SaleEmployee));
+            AppUsers.AddRange(DirectSalesOrders.Select(x => x.Creator));
+            AppUsers = AppUsers.Distinct().ToList();
 
-            EventMessage<DirectSalesOrder> EventMessageDirectSalesOrder = new EventMessage<DirectSalesOrder>(DirectSalesOrder, DirectSalesOrder.RowId);
-            EventMessageDirectSalesOrders.Add(EventMessageDirectSalesOrder);
-            RabbitManager.PublishList(EventMessageDirectSalesOrders, RoutingKeyEnum.DirectSalesOrderSync);
+            List<Organization> Organizations = DirectSalesOrders.Select(x => x.Organization).Distinct().ToList();
+
+            List<Store> Stores = DirectSalesOrders.Select(x => x.BuyerStore).Distinct().ToList();
+            List<PromotionCode> PromotionCodes = DirectSalesOrders.Where(x => x.PromotionCodeId.HasValue).Select(x => new PromotionCode { Id = x.PromotionCodeId.Value }).Distinct().ToList();
+
+            List<Item> Items = new List<Item>();
+            Items.AddRange(DirectSalesOrders.Where(x => x.DirectSalesOrderContents != null).SelectMany(x => x.DirectSalesOrderContents).Select(x => x.Item));
+            Items.AddRange(DirectSalesOrders.Where(x => x.DirectSalesOrderPromotions != null).SelectMany(x => x.DirectSalesOrderPromotions).Select(x => x.Item));
+            Items = Items.Distinct().ToList();
+
+            List<UnitOfMeasure> UnitOfMeasures = new List<UnitOfMeasure>();
+            UnitOfMeasures.AddRange(DirectSalesOrders.Where(x => x.DirectSalesOrderContents != null).SelectMany(x => x.DirectSalesOrderContents).Select(x => x.UnitOfMeasure));
+            UnitOfMeasures.AddRange(DirectSalesOrders.Where(x => x.DirectSalesOrderContents != null).SelectMany(x => x.DirectSalesOrderContents).Select(x => x.PrimaryUnitOfMeasure));
+            UnitOfMeasures.AddRange(DirectSalesOrders.Where(x => x.DirectSalesOrderPromotions != null).SelectMany(x => x.DirectSalesOrderPromotions).Select(x => x.UnitOfMeasure));
+            UnitOfMeasures.AddRange(DirectSalesOrders.Where(x => x.DirectSalesOrderPromotions != null).SelectMany(x => x.DirectSalesOrderPromotions).Select(x => x.PrimaryUnitOfMeasure));
+            UnitOfMeasures = UnitOfMeasures.Distinct().ToList();
+
+            RabbitManager.PublishList(DirectSalesOrders, RoutingKeyEnum.DirectSalesOrderSync);
+            RabbitManager.PublishList(AppUsers, RoutingKeyEnum.AppUserUsed);
+            RabbitManager.PublishList(Organizations, RoutingKeyEnum.OrganizationUsed);
+            RabbitManager.PublishList(Stores, RoutingKeyEnum.StoreUsed);
+            RabbitManager.PublishList(PromotionCodes, RoutingKeyEnum.PromotionCodeUsed);
+            RabbitManager.PublishList(Items, RoutingKeyEnum.ItemUsed);
+            RabbitManager.PublishList(UnitOfMeasures, RoutingKeyEnum.UnitOfMeasureUsed);
         }
     }
 }

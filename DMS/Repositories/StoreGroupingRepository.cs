@@ -21,6 +21,7 @@ namespace DMS.Repositories
         Task<bool> Delete(StoreGrouping StoreGrouping);
         Task<bool> BulkMerge(List<StoreGrouping> StoreGroupings);
         Task<bool> BulkDelete(List<StoreGrouping> StoreGroupings);
+        Task<bool> Used(List<long> Ids);
     }
     public class StoreGroupingRepository : IStoreGroupingRepository
     {
@@ -584,6 +585,12 @@ namespace DMS.Repositories
                 }
             }
             await DataContext.BulkMergeAsync(StoreGroupingDAOs);
+        }
+        public async Task<bool> Used(List<long> Ids)
+        {
+            await DataContext.StoreGrouping.Where(x => Ids.Contains(x.Id))
+                .UpdateFromQueryAsync(x => new StoreGroupingDAO { Used = true });
+            return true;
         }
     }
 }

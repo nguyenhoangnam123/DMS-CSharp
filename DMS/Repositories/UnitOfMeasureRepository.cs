@@ -16,6 +16,7 @@ namespace DMS.Repositories
         Task<List<UnitOfMeasure>> List(UnitOfMeasureFilter UnitOfMeasureFilter);
         Task<List<UnitOfMeasure>> List(List<long> Ids);
         Task<UnitOfMeasure> Get(long Id);
+        Task<bool> BulkMerge(List<UnitOfMeasure> UnitOfMeasures);
     }
     public class UnitOfMeasureRepository : IUnitOfMeasureRepository
     {
@@ -200,6 +201,24 @@ namespace DMS.Repositories
                 return null;
 
             return UnitOfMeasure;
+        }
+        public async Task<bool> BulkMerge(List<UnitOfMeasure> UnitOfMeasures)
+        {
+            List<UnitOfMeasureDAO> UnitOfMeasureDAOs = UnitOfMeasures.Select(x => new UnitOfMeasureDAO
+            {
+                CreatedAt = x.CreatedAt,
+                UpdatedAt = x.UpdatedAt,
+                DeletedAt = x.DeletedAt,
+                Id = x.Id,
+                Code = x.Code,
+                Name = x.Name,
+                Description = x.Description,
+                Used = x.Used,
+                RowId = x.RowId,
+                StatusId = x.StatusId
+            }).ToList();
+            await DataContext.BulkMergeAsync(UnitOfMeasureDAOs);
+            return true;
         }
     }
 }

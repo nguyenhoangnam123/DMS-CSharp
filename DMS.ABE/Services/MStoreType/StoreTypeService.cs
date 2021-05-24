@@ -23,19 +23,16 @@ namespace DMS.ABE.Services.MStoreType
         private IUOW UOW;
         private ILogging Logging;
         private ICurrentContext CurrentContext;
-        private IStoreTypeValidator StoreTypeValidator;
 
         public StoreTypeService(
             IUOW UOW,
             ILogging Logging,
-            ICurrentContext CurrentContext,
-            IStoreTypeValidator StoreTypeValidator
+            ICurrentContext CurrentContext
         )
         {
             this.UOW = UOW;
             this.Logging = Logging;
             this.CurrentContext = CurrentContext;
-            this.StoreTypeValidator = StoreTypeValidator;
         }
         public async Task<int> Count(StoreTypeFilter StoreTypeFilter)
         {
