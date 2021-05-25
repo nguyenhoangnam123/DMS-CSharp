@@ -14,6 +14,7 @@ namespace DMS.Repositories
     {
         Task<int> Count(ProblemTypeFilter ProblemTypeFilter);
         Task<List<ProblemType>> List(ProblemTypeFilter ProblemTypeFilter);
+        Task<List<ProblemType>> List(List<long> Ids);
         Task<ProblemType> Get(long Id);
         Task<bool> Create(ProblemType ProblemType);
         Task<bool> Update(ProblemType ProblemType);
@@ -144,6 +145,22 @@ namespace DMS.Repositories
             ProblemTypeDAOs = DynamicFilter(ProblemTypeDAOs, filter);
             ProblemTypeDAOs = DynamicOrder(ProblemTypeDAOs, filter);
             List<ProblemType> ProblemTypes = await DynamicSelect(ProblemTypeDAOs, filter);
+            return ProblemTypes;
+        }
+
+        public async Task<List<ProblemType>> List(List<long> Ids)
+        {
+            List<ProblemType> ProblemTypes = await DataContext.ProblemType.AsNoTracking()
+                .Where(x => Ids.Contains(x.Id)).Select(x => new ProblemType
+                {
+                    Id = x.Id,
+                    Name = x.Name,
+                    Code = x.Code,
+                    CreatedAt = x.CreatedAt,
+                    UpdatedAt = x.UpdatedAt,
+                    StatusId = x.StatusId,
+                }).ToListAsync();
+
             return ProblemTypes;
         }
 

@@ -14,6 +14,7 @@ namespace DMS.Repositories
     {
         Task<int> Count(ProblemFilter ProblemFilter);
         Task<List<Problem>> List(ProblemFilter ProblemFilter);
+        Task<List<Problem>> List(List<long> Ids);
         Task<Problem> Get(long Id);
         Task<bool> Create(Problem Problem);
         Task<bool> Update(Problem Problem);
@@ -352,6 +353,111 @@ namespace DMS.Repositories
             ProblemDAOs = DynamicFilter(ProblemDAOs, filter);
             ProblemDAOs = DynamicOrder(ProblemDAOs, filter);
             List<Problem> Problems = await DynamicSelect(ProblemDAOs, filter);
+            return Problems;
+        }
+
+        public async Task<List<Problem>> List(List<long> Ids)
+        {
+            List<Problem> Problems = await DataContext.Problem.AsNoTracking()
+                .Where(x => Ids.Contains(x.Id)).Select(x => new Problem()
+                {
+                    Id = x.Id,
+                    Code = x.Code,
+                    ProblemStatusId = x.ProblemStatusId,
+                    ProblemTypeId = x.ProblemTypeId,
+                    CreatorId = x.CreatorId,
+                    NoteAt = x.NoteAt,
+                    CompletedAt = x.CompletedAt,
+                    Content = x.Content,
+                    StoreCheckingId = x.StoreCheckingId,
+                    StoreId = x.StoreId,
+                    Creator = x.Creator == null ? null : new AppUser
+                    {
+                        Id = x.Creator.Id,
+                        Username = x.Creator.Username,
+                        OrganizationId = x.Creator.OrganizationId,
+                        DisplayName = x.Creator.DisplayName,
+                        Address = x.Creator.Address,
+                        Email = x.Creator.Email,
+                        Phone = x.Creator.Phone,
+                    },
+                    ProblemStatus = x.ProblemStatus == null ? null : new ProblemStatus
+                    {
+                        Id = x.ProblemStatus.Id,
+                        Code = x.ProblemStatus.Code,
+                        Name = x.ProblemStatus.Name,
+                    },
+                    ProblemType = x.ProblemType == null ? null : new ProblemType
+                    {
+                        Id = x.ProblemType.Id,
+                        Code = x.ProblemType.Code,
+                        Name = x.ProblemType.Name,
+                    },
+                    Store = x.Store == null ? null : new Store
+                    {
+                        Id = x.Store.Id,
+                        Code = x.Store.Code,
+                        CodeDraft = x.Store.CodeDraft,
+                        Name = x.Store.Name,
+                        ParentStoreId = x.Store.ParentStoreId,
+                        OrganizationId = x.Store.OrganizationId,
+                        StoreTypeId = x.Store.StoreTypeId,
+                        StoreGroupingId = x.Store.StoreGroupingId,
+                        Telephone = x.Store.Telephone,
+                        ProvinceId = x.Store.ProvinceId,
+                        DistrictId = x.Store.DistrictId,
+                        WardId = x.Store.WardId,
+                        Address = x.Store.Address,
+                        DeliveryAddress = x.Store.DeliveryAddress,
+                        Latitude = x.Store.Latitude,
+                        Longitude = x.Store.Longitude,
+                        OwnerName = x.Store.OwnerName,
+                        OwnerPhone = x.Store.OwnerPhone,
+                        OwnerEmail = x.Store.OwnerEmail,
+                        TaxCode = x.Store.TaxCode,
+                        LegalEntity = x.Store.LegalEntity,
+                        StatusId = x.Store.StatusId,
+                    },
+                    StoreChecking = x.StoreChecking == null ? null : new StoreChecking
+                    {
+                        Id = x.StoreChecking.Id,
+                        StoreId = x.StoreChecking.StoreId,
+                        SaleEmployeeId = x.StoreChecking.SaleEmployeeId,
+                        OrganizationId = x.StoreChecking.OrganizationId,
+                        DeviceName = x.StoreChecking.DeviceName,
+                        Longitude = x.StoreChecking.Longitude,
+                        Latitude = x.StoreChecking.Latitude,
+                        CheckOutLongitude = x.StoreChecking.CheckOutLongitude,
+                        CheckOutLatitude = x.StoreChecking.CheckOutLatitude,
+                        CheckInAt = x.StoreChecking.CheckInAt,
+                        CheckOutAt = x.StoreChecking.CheckOutAt,
+                        CheckInDistance = x.StoreChecking.CheckInDistance,
+                        CheckOutDistance = x.StoreChecking.CheckOutDistance,
+                        CountIndirectSalesOrder = x.StoreChecking.IndirectSalesOrderCounter,
+                        ImageCounter = x.StoreChecking.ImageCounter,
+                        IsOpenedStore = x.StoreChecking.IsOpenedStore,
+                        Planned = x.StoreChecking.Planned,
+                    },
+                }).ToListAsync();
+            List<ProblemImageMapping> ProblemImageMappings = await DataContext.ProblemImageMapping.AsNoTracking()
+               .Where(x => Ids.Contains(x.ProblemId)).Select(x => new ProblemImageMapping()
+               {
+                   ProblemId = x.ProblemId,
+                   ImageId = x.ImageId,
+                   Image = new Image
+                   {
+                       Id = x.Image.Id,
+                       Name = x.Image.Name,
+                       Url = x.Image.Url,
+                       ThumbnailUrl = x.Image.ThumbnailUrl,
+                   },
+               }).ToListAsync();
+            foreach (Problem Problem in Problems)
+            {
+                Problem.ProblemImageMappings = ProblemImageMappings
+                    .Where(x => x.ProblemId == Problem.Id)
+                    .ToList();
+            }
             return Problems;
         }
 

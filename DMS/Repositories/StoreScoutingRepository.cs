@@ -14,6 +14,7 @@ namespace DMS.Repositories
     {
         Task<int> Count(StoreScoutingFilter StoreScoutingFilter);
         Task<List<StoreScouting>> List(StoreScoutingFilter StoreScoutingFilter);
+        Task<List<StoreScouting>> List(List<long> Ids);
         Task<StoreScouting> Get(long Id);
         Task<bool> Create(StoreScouting StoreScouting);
         Task<bool> Update(StoreScouting StoreScouting);
@@ -395,6 +396,154 @@ namespace DMS.Repositories
             StoreScoutingDAOs = DynamicFilter(StoreScoutingDAOs, filter);
             StoreScoutingDAOs = DynamicOrder(StoreScoutingDAOs, filter);
             List<StoreScouting> StoreScoutings = await DynamicSelect(StoreScoutingDAOs, filter);
+            return StoreScoutings;
+        }
+
+        public async Task<List<StoreScouting>> List(List<long> Ids)
+        {
+            List<StoreScouting> StoreScoutings = await DataContext.StoreScouting.AsNoTracking()
+            .Where(x => Ids.Contains(x.Id)).Select(x => new StoreScouting()
+            {
+                CreatedAt = x.CreatedAt,
+                UpdatedAt = x.UpdatedAt,
+                Id = x.Id,
+                Code = x.Code,
+                Name = x.Name,
+                OwnerPhone = x.OwnerPhone,
+                ProvinceId = x.ProvinceId,
+                DistrictId = x.DistrictId,
+                WardId = x.WardId,
+                Address = x.Address,
+                Latitude = x.Latitude,
+                Longitude = x.Longitude,
+                CreatorId = x.CreatorId,
+                OrganizationId = x.OrganizationId,
+                StoreScoutingStatusId = x.StoreScoutingStatusId,
+                StoreScoutingTypeId = x.StoreScoutingTypeId,
+                RowId = x.RowId,
+                Creator = x.Creator == null ? null : new AppUser
+                {
+                    Id = x.Creator.Id,
+                    Username = x.Creator.Username,
+                    DisplayName = x.Creator.DisplayName,
+                    Address = x.Creator.Address,
+                    Email = x.Creator.Email,
+                    Phone = x.Creator.Phone,
+                    PositionId = x.Creator.PositionId,
+                    Department = x.Creator.Department,
+                    OrganizationId = x.Creator.OrganizationId,
+                    StatusId = x.Creator.StatusId,
+                    Avatar = x.Creator.Avatar,
+                    ProvinceId = x.Creator.ProvinceId,
+                    SexId = x.Creator.SexId,
+                    Birthday = x.Creator.Birthday,
+                },
+                Organization = x.Organization == null ? null : new Organization
+                {
+                    Id = x.Organization.Id,
+                    Code = x.Organization.Code,
+                    Name = x.Organization.Name,
+                    ParentId = x.Organization.ParentId,
+                    Path = x.Organization.Path,
+                    Level = x.Organization.Level,
+                    StatusId = x.Organization.StatusId,
+                    Phone = x.Organization.Phone,
+                    Address = x.Organization.Address,
+                    Email = x.Organization.Email,
+                },
+                District = x.District == null ? null : new District
+                {
+                    Id = x.District.Id,
+                    Code = x.District.Code,
+                    Name = x.District.Name,
+                    Priority = x.District.Priority,
+                    ProvinceId = x.District.ProvinceId,
+                    StatusId = x.District.StatusId,
+                },
+                Province = x.Province == null ? null : new Province
+                {
+                    Id = x.Province.Id,
+                    Code = x.Province.Code,
+                    Name = x.Province.Name,
+                    Priority = x.Province.Priority,
+                    StatusId = x.Province.StatusId,
+                },
+                StoreScoutingStatus = x.StoreScoutingStatus == null ? null : new StoreScoutingStatus
+                {
+                    Id = x.StoreScoutingStatus.Id,
+                    Code = x.StoreScoutingStatus.Code,
+                    Name = x.StoreScoutingStatus.Name,
+                },
+                StoreScoutingType = x.StoreScoutingType == null ? null : new StoreScoutingType
+                {
+                    Id = x.StoreScoutingType.Id,
+                    Code = x.StoreScoutingType.Code,
+                    Name = x.StoreScoutingType.Name,
+                },
+                Ward = x.Ward == null ? null : new Ward
+                {
+                    Id = x.Ward.Id,
+                    Code = x.Ward.Code,
+                    Name = x.Ward.Name,
+                    Priority = x.Ward.Priority,
+                    DistrictId = x.Ward.DistrictId,
+                    StatusId = x.Ward.StatusId,
+                },
+            }).ToListAsync();
+
+            List<Store> Stores = await DataContext.Store
+                .Where(x => Ids.Contains((long)x.StoreScoutingId))
+                .Select(x => new Store
+                {
+                    Id = x.Id,
+                    Code = x.Code,
+                    CodeDraft = x.CodeDraft,
+                    Name = x.Name,
+                    ParentStoreId = x.ParentStoreId,
+                    OrganizationId = x.OrganizationId,
+                    StoreTypeId = x.StoreTypeId,
+                    StoreGroupingId = x.StoreGroupingId,
+                    Telephone = x.Telephone,
+                    ProvinceId = x.ProvinceId,
+                    DistrictId = x.DistrictId,
+                    WardId = x.WardId,
+                    Address = x.Address,
+                    DeliveryAddress = x.DeliveryAddress,
+                    Latitude = x.Latitude,
+                    Longitude = x.Longitude,
+                    DeliveryLatitude = x.DeliveryLatitude,
+                    DeliveryLongitude = x.DeliveryLongitude,
+                    OwnerName = x.OwnerName,
+                    OwnerPhone = x.OwnerPhone,
+                    OwnerEmail = x.OwnerEmail,
+                    TaxCode = x.TaxCode,
+                    LegalEntity = x.LegalEntity,
+                    StatusId = x.StatusId,
+                    RowId = x.RowId,
+                    Used = x.Used,
+                }).ToListAsync();
+            List<StoreScoutingImageMapping> StoreScoutingImageMappings = await DataContext.StoreScoutingImageMapping
+                .Where(x => Ids.Contains(x.StoreScoutingId)).Select(x => new StoreScoutingImageMapping
+                {
+                    ImageId = x.ImageId,
+                    StoreScoutingId = x.StoreScoutingId,
+                    Image = new Image
+                    {
+                        Id = x.Image.Id,
+                        Name = x.Image.Name,
+                        Url = x.Image.Url,
+                        ThumbnailUrl = x.Image.ThumbnailUrl,
+                    },
+                }).ToListAsync();
+            foreach (StoreScouting StoreScouting in StoreScoutings)
+            {
+                StoreScouting.Store = Stores
+                    .Where(x => x.StoreScoutingId == StoreScouting.Id)
+                    .FirstOrDefault();
+                StoreScouting.StoreScoutingImageMappings = StoreScoutingImageMappings
+                    .Where(x => x.StoreScoutingId == StoreScouting.Id)
+                    .ToList();
+            }
             return StoreScoutings;
         }
 

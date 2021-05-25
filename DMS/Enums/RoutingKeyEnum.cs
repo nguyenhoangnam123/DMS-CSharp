@@ -15,6 +15,17 @@ namespace DMS.Enums
         public static GenericEnum DirectSalesOrderSync = new GenericEnum { Id = 8, Code = "DirectSalesOrder.Sync", Name = "Đồng bộ DirectSalesOrder" };
         public static GenericEnum StoreUserSync = new GenericEnum { Id = 9, Code = "StoreUser.Sync", Name = "Đồng bộ StoreUser" };
         public static GenericEnum IndirectSalesOrderSync = new GenericEnum { Id = 10, Code = "IndirectSalesOrder.Sync", Name = "Đồng bộ IndirectSalesOrder" };
+        public static GenericEnum ProblemSync = new GenericEnum { Id = 123, Code = "Problem.Sync", Name = "Problem Sync" };
+        public static GenericEnum ProblemTypeSync = new GenericEnum { Id = 124, Code = "ProblemType.Sync", Name = "ProblemType Sync" };
+        public static GenericEnum ShowingOrderSync = new GenericEnum { Id = 125, Code = "ShowingOrder.Sync", Name = "ShowingOrder Sync" };
+        public static GenericEnum ShowingOrderWithDrawSync = new GenericEnum { Id = 126, Code = "ShowingOrderWithDraw.Sync", Name = "ShowingOrderWithDraw Sync" };
+        public static GenericEnum ShowingItemSync = new GenericEnum { Id = 127, Code = "ShowingItem.Sync", Name = "ShowingItem Sync" };
+        public static GenericEnum StoreCheckingSync = new GenericEnum { Id = 128, Code = "StoreChecking.Sync", Name = "StoreChecking Sync" };
+        public static GenericEnum StoreScoutingSync = new GenericEnum { Id = 129, Code = "StoreScouting.Sync", Name = "StoreScouting Sync" };
+        public static GenericEnum StoreScoutingTypeSync = new GenericEnum { Id = 130, Code = "StoreScoutingType.Sync", Name = "StoreScoutingType Sync" };
+        public static GenericEnum StoreStatusHistorySync = new GenericEnum { Id = 131, Code = "StoreStatusHistory.Sync", Name = "StoreStatusHistory Sync" };
+        public static GenericEnum StoreUncheckingSync = new GenericEnum { Id = 132, Code = "StoreUnchecking.Sync", Name = "StoreUnchecking Sync" };
+        public static GenericEnum UnitOfMeasureSync = new GenericEnum { Id = 133, Code = "UnitOfMeasure.Sync", Name = "UnitOfMeasure Sync" };
 
         public static GenericEnum MailSend = new GenericEnum { Id = 4, Code = "Mail.Send", Name = "Gửi Mail" };
         public static GenericEnum AuditLogSend = new GenericEnum { Id = 5, Code = "AuditLog.Send", Name = "Audit Log" };
@@ -50,10 +61,5 @@ namespace DMS.Enums
         public static GenericEnum StoreUserUsed = new GenericEnum { Id = 120, Code = "StoreUser.Used", Name = "StoreUser Used" };
         public static GenericEnum ShowingItemUsed = new GenericEnum { Id = 121, Code = "ShowingItem.Used", Name = "ShowingItem Used" };
         public static GenericEnum ShowingCategoryUsed = new GenericEnum { Id = 122, Code = "ShowingCategory.Used", Name = "ShowingCategory Used" };
-
-        public static GenericEnum ShowingOrderSync = new GenericEnum { Id = 123, Code = "ShowingOrder.Sync", Name = "ShowingOrder Sync" };
-        public static GenericEnum ShowingOrderWithDrawSync = new GenericEnum { Id = 124, Code = "ShowingOrderWithDraw.Sync", Name = "ShowingOrderWithDraw Sync" };
-        public static GenericEnum ShowingItemSync = new GenericEnum { Id = 125, Code = "ShowingItem.Sync", Name = "ShowingItem Sync" };
-        public static GenericEnum UnitOfMeasureSync = new GenericEnum { Id = 126, Code = "UnitOfMeasure.Sync", Name = "UnitOfMeasure Sync" };
     }
 }

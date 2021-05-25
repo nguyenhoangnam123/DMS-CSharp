@@ -15,6 +15,7 @@ namespace DMS.Repositories
     {
         Task<int> Count(StoreCheckingFilter StoreCheckingFilter);
         Task<List<StoreChecking>> List(StoreCheckingFilter StoreCheckingFilter);
+        Task<List<StoreChecking>> List(List<long> Ids);
         Task<StoreChecking> Get(long Id);
         Task<bool> Create(StoreChecking StoreChecking);
         Task<bool> Update(StoreChecking StoreChecking);
@@ -333,6 +334,136 @@ namespace DMS.Repositories
             StoreCheckingDAOs = await DynamicFilter(StoreCheckingDAOs, filter);
             StoreCheckingDAOs = DynamicOrder(StoreCheckingDAOs, filter);
             List<StoreChecking> StoreCheckings = await DynamicSelect(StoreCheckingDAOs, filter);
+            return StoreCheckings;
+        }
+
+        public async Task<List<StoreChecking>> List(List<long> Ids)
+        {
+            List<StoreChecking> StoreCheckings = await DataContext.StoreChecking.AsNoTracking()
+            .Where(x => Ids.Contains(x.Id)).Select(x => new StoreChecking()
+            {
+                Id = x.Id,
+                StoreId = x.StoreId,
+                SaleEmployeeId = x.SaleEmployeeId,
+                OrganizationId = x.OrganizationId,
+                DeviceName = x.DeviceName,
+                Longitude = x.Longitude,
+                Latitude = x.Latitude,
+                CheckOutLongitude = x.CheckOutLongitude,
+                CheckOutLatitude = x.CheckOutLatitude,
+                CheckInAt = x.CheckInAt,
+                CheckOutAt = x.CheckOutAt,
+                CheckInDistance = x.CheckInDistance,
+                CheckOutDistance = x.CheckOutDistance,
+                CountIndirectSalesOrder = x.IndirectSalesOrderCounter,
+                ImageCounter = x.ImageCounter,
+                IsOpenedStore = x.IsOpenedStore,
+                Planned = x.Planned,
+                SaleEmployee = x.SaleEmployee == null ? null : new AppUser
+                {
+                    Id = x.SaleEmployee.Id,
+                    Username = x.SaleEmployee.Username,
+                    DisplayName = x.SaleEmployee.DisplayName,
+                    Email = x.SaleEmployee.Email,
+                    Phone = x.SaleEmployee.Phone,
+                    Address = x.SaleEmployee.Address,
+                    Department = x.SaleEmployee.Department,
+                    PositionId = x.SaleEmployee.PositionId,
+                    RowId = x.SaleEmployee.RowId,
+                    SexId = x.SaleEmployee.SexId,
+                    StatusId = x.SaleEmployee.StatusId,
+                    OrganizationId = x.SaleEmployee.OrganizationId,
+                    Organization = x.SaleEmployee.Organization == null ? null : new Organization
+                    {
+                        Id = x.SaleEmployee.Organization.Id,
+                        Code = x.SaleEmployee.Organization.Code,
+                        Name = x.SaleEmployee.Organization.Name,
+                    },
+                },
+                Organization = x.Organization == null ? null : new Organization
+                {
+                    Id = x.Organization.Id,
+                    Code = x.Organization.Code,
+                    Name = x.Organization.Name,
+                    ParentId = x.Organization.ParentId,
+                    Path = x.Organization.Path,
+                    Level = x.Organization.Level,
+                    StatusId = x.Organization.StatusId,
+                    Phone = x.Organization.Phone,
+                    Address = x.Organization.Address,
+                    Email = x.Organization.Email,
+                },
+                Store = x.Store == null ? null : new Store
+                {
+                    Id = x.Store.Id,
+                    Code = x.Store.Code,
+                    CodeDraft = x.Store.CodeDraft,
+                    Name = x.Store.Name,
+                    ParentStoreId = x.Store.ParentStoreId,
+                    OrganizationId = x.Store.OrganizationId,
+                    StoreTypeId = x.Store.StoreTypeId,
+                    StoreGroupingId = x.Store.StoreGroupingId,
+                    Telephone = x.Store.Telephone,
+                    ProvinceId = x.Store.ProvinceId,
+                    DistrictId = x.Store.DistrictId,
+                    WardId = x.Store.WardId,
+                    Address = x.Store.Address,
+                    DeliveryAddress = x.Store.DeliveryAddress,
+                    Latitude = x.Store.Latitude,
+                    Longitude = x.Store.Longitude,
+                    OwnerName = x.Store.OwnerName,
+                    OwnerPhone = x.Store.OwnerPhone,
+                    OwnerEmail = x.Store.OwnerEmail,
+                    TaxCode = x.Store.TaxCode,
+                    LegalEntity = x.Store.LegalEntity,
+                    StatusId = x.Store.StatusId,
+                }
+            }).ToListAsync();
+            List<StoreCheckingImageMapping> StoreCheckingImageMappings = await DataContext.StoreCheckingImageMapping
+                .Where(x => Ids.Contains(x.StoreCheckingId)).Select(x => new StoreCheckingImageMapping
+                {
+                    ImageId = x.ImageId,
+                    StoreCheckingId = x.StoreCheckingId,
+                    AlbumId = x.AlbumId,
+                    StoreId = x.StoreId,
+                    SaleEmployeeId = x.SaleEmployeeId,
+                    ShootingAt = x.ShootingAt,
+                    Distance = x.Distance,
+                    Album = new Album
+                    {
+                        Id = x.Album.Id,
+                        Name = x.Album.Name,
+                    },
+                    SaleEmployee = new AppUser
+                    {
+                        Id = x.SaleEmployee.Id,
+                        Username = x.SaleEmployee.Username,
+                        DisplayName = x.SaleEmployee.DisplayName,
+                        Email = x.SaleEmployee.Email,
+                        Phone = x.SaleEmployee.Phone,
+                    },
+                    Image = new Image
+                    {
+                        Id = x.Image.Id,
+                        Name = x.Image.Name,
+                        Url = x.Image.Url,
+                        ThumbnailUrl = x.Image.ThumbnailUrl,
+                    },
+                    Store = new Store
+                    {
+                        Id = x.Store.Id,
+                        Code = x.Store.Code,
+                        Name = x.Store.Name,
+                        OwnerName = x.Store.OwnerName,
+                        OwnerPhone = x.Store.OwnerPhone,
+                        OwnerEmail = x.Store.OwnerEmail,
+                    },
+                }).ToListAsync();
+            foreach (StoreChecking StoreChecking in StoreCheckings)
+            {
+                StoreChecking.StoreCheckingImageMappings = StoreCheckingImageMappings
+                    .Where(x => x.StoreCheckingId == StoreChecking.Id).ToList();
+            }
             return StoreCheckings;
         }
 
