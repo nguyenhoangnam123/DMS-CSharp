@@ -795,6 +795,12 @@ namespace DMS.Repositories
         public async Task<bool> BulkMerge(List<Product> Products)
         {
             var ProductIds = Products.Select(x => x.Id).ToList();
+            var VariationGroupingIds = Products.Where(x => x.VariationGroupings != null).SelectMany(x => x.VariationGroupings).Select(x => x.Id).ToList();
+            var ItemIds = Products.Where(x => x.Items != null).SelectMany(x => x.Items).Select(x => x.Id).ToList();
+            List<ProductDAO> ProductInDB = await DataContext.Product.Where(x => ProductIds.Contains(x.Id)).ToListAsync();
+            List<VariationGroupingDAO> VariationGroupingInDB = await DataContext.VariationGrouping.Where(x => VariationGroupingIds.Contains(x.Id)).ToListAsync();
+            List<ItemDAO> ItemInDB = await DataContext.Item.Where(x => ItemIds.Contains(x.Id)).ToListAsync();
+
             List<ProductDAO> ProductDAOs = new List<ProductDAO>();
             List<VariationGroupingDAO> VariationGroupingDAOs = new List<VariationGroupingDAO>();
             List<VariationDAO> VariationDAOs = new List<VariationDAO>();
@@ -805,7 +811,12 @@ namespace DMS.Repositories
             List<ItemImageMappingDAO> ItemImageMappingDAOs = new List<ItemImageMappingDAO>();
             foreach (var Product in Products)
             {
-                ProductDAO ProductDAO = new ProductDAO();
+                ProductDAO ProductDAO = ProductInDB.Where(x => x.Id == Product.Id).FirstOrDefault();
+                if (ProductDAO == null)
+                {
+                    ProductDAO = new ProductDAO();
+                    ProductDAO.IsNew = false;
+                }
                 ProductDAO.Id = Product.Id;
                 ProductDAO.CreatedAt = Product.CreatedAt;
                 ProductDAO.UpdatedAt = Product.UpdatedAt;
@@ -824,7 +835,6 @@ namespace DMS.Repositories
                 ProductDAO.StatusId = Product.StatusId;
                 ProductDAO.OtherName = Product.OtherName;
                 ProductDAO.TechnicalName = Product.TechnicalName;
-                ProductDAO.IsNew = Product.IsNew;
                 ProductDAO.UsedVariationId = Product.UsedVariationId;
                 ProductDAO.RowId = Product.RowId;
                 ProductDAO.Used = Product.Used;
@@ -832,7 +842,11 @@ namespace DMS.Repositories
 
                 foreach (VariationGrouping VariationGrouping in Product.VariationGroupings)
                 {
-                    VariationGroupingDAO VariationGroupingDAO = new VariationGroupingDAO();
+                    VariationGroupingDAO VariationGroupingDAO = VariationGroupingInDB.Where(x => x.Id == VariationGrouping.Id).FirstOrDefault();
+                    if (VariationGroupingDAO == null)
+                    {
+                        VariationGroupingDAO = new VariationGroupingDAO();
+                    }
                     VariationGroupingDAO.Id = VariationGrouping.Id;
                     VariationGroupingDAO.Name = VariationGrouping.Name;
                     VariationGroupingDAO.ProductId = VariationGrouping.ProductId;
@@ -863,7 +877,11 @@ namespace DMS.Repositories
                 // add item
                 foreach (var Item in Product.Items)
                 {
-                    ItemDAO ItemDAO = new ItemDAO();
+                    ItemDAO ItemDAO = ItemInDB.Where(x => x.Id == Item.Id).FirstOrDefault();
+                    if (ItemDAO == null)
+                    {
+                        ItemDAO = new ItemDAO();
+                    }
                     ItemDAO.Id = Item.Id;
                     ItemDAO.ProductId = Item.ProductId;
                     ItemDAO.Code = Item.Code;
