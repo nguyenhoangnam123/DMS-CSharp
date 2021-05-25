@@ -14,6 +14,7 @@ namespace DMS.Repositories
     {
         Task<int> Count(StoreStatusHistoryFilter StoreStatusHistoryFilter);
         Task<List<StoreStatusHistory>> List(StoreStatusHistoryFilter StoreStatusHistoryFilter);
+        Task<List<StoreStatusHistory>> List(List<long> Ids);
         Task<bool> Create(StoreStatusHistory StoreStatusHistory);
     }
     public class StoreStatusHistoryRepository : IStoreStatusHistoryRepository
@@ -138,6 +139,79 @@ namespace DMS.Repositories
             StoreStatusHistoryDAOs = DynamicOrder(StoreStatusHistoryDAOs, filter);
             List<StoreStatusHistory> StoreHistories = await DynamicSelect(StoreStatusHistoryDAOs, filter);
             return StoreHistories;
+        }
+
+        public async Task<List<StoreStatusHistory>> List(List<long> Ids)
+        {
+            List<StoreStatusHistory> StoreStatusHistories = await DataContext.StoreStatusHistory.AsNoTracking()
+                .Where(x => Ids.Contains(x.Id)).Select(x => new StoreStatusHistory
+                {
+                    Id = x.Id,
+                    StoreId = x.StoreId,
+                    AppUserId = x.AppUserId,
+                    StoreStatusId = x.StoreStatusId,
+                    PreviousStoreStatusId = x.PreviousStoreStatusId,
+                    CreatedAt = x.CreatedAt,
+                    Store = x.Store == null ? null : new Store
+                    {
+                        Id = x.Store.Id,
+                        Code = x.Store.Code,
+                        CodeDraft = x.Store.CodeDraft,
+                        Name = x.Store.Name,
+                        ParentStoreId = x.Store.ParentStoreId,
+                        OrganizationId = x.Store.OrganizationId,
+                        StoreTypeId = x.Store.StoreTypeId,
+                        StoreGroupingId = x.Store.StoreGroupingId,
+                        Telephone = x.Store.Telephone,
+                        ProvinceId = x.Store.ProvinceId,
+                        DistrictId = x.Store.DistrictId,
+                        WardId = x.Store.WardId,
+                        Address = x.Store.Address,
+                        DeliveryAddress = x.Store.DeliveryAddress,
+                        Latitude = x.Store.Latitude,
+                        Longitude = x.Store.Longitude,
+                        OwnerName = x.Store.OwnerName,
+                        OwnerPhone = x.Store.OwnerPhone,
+                        OwnerEmail = x.Store.OwnerEmail,
+                        TaxCode = x.Store.TaxCode,
+                        LegalEntity = x.Store.LegalEntity,
+                        StatusId = x.Store.StatusId,
+                    },
+                    AppUser = x.AppUser == null ? null : new AppUser
+                    {
+                        Id = x.AppUser.Id,
+                        Username = x.AppUser.Username,
+                        DisplayName = x.AppUser.DisplayName,
+                        Email = x.AppUser.Email,
+                        Phone = x.AppUser.Phone,
+                        Address = x.AppUser.Address,
+                        Department = x.AppUser.Department,
+                        PositionId = x.AppUser.PositionId,
+                        RowId = x.AppUser.RowId,
+                        SexId = x.AppUser.SexId,
+                        StatusId = x.AppUser.StatusId,
+                        OrganizationId = x.AppUser.OrganizationId,
+                        Organization = x.AppUser.Organization == null ? null : new Organization
+                        {
+                            Id = x.AppUser.Organization.Id,
+                            Code = x.AppUser.Organization.Code,
+                            Name = x.AppUser.Organization.Name,
+                        },
+                    },
+                    StoreStatus = x.StoreStatus == null ? null : new StoreStatus
+                    {
+                        Id = x.StoreStatus.Id,
+                        Code = x.StoreStatus.Code,
+                        Name = x.StoreStatus.Name,
+                    },
+                    PreviousStoreStatus = x.PreviousStoreStatus == null ? null : new StoreStatus
+                    {
+                        Id = x.PreviousStoreStatus.Id,
+                        Code = x.PreviousStoreStatus.Code,
+                        Name = x.PreviousStoreStatus.Name,
+                    },
+                }).ToListAsync();
+            return StoreStatusHistories;
         }
 
 

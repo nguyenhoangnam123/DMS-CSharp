@@ -43,23 +43,27 @@ namespace DMS.Rpc
         }
 
         #region publish Data
-        [HttpGet, Route("rpc/dms/setup/publish-data")]
+        [HttpGet, Route("rpc/dms/setup/rabbitmq/rabbitmq")]
         public async Task<ActionResult> PublishData()
         {
-            await PublishDirectSalesOrder();
-            await PublishIndirectSalesOrder();
-            await PublishStore();
-            await PublishStoreGrouping();
-            await PublishStoreType();
-            await PublishStoreStatus();
-            await PublishShowingItem();
-
+            await DirectSalesOrderPublish();
+            await IndirectSalesOrderPublish();
+            await ProblemPublish();
+            await ProblemTypePublish();
+            await ShowingOrderPublish();
+            await ShowingOrderWithDrawPublish();
+            await ShowingItemPublish();
+            await StoreCheckingPublish();
+            await StoreScoutingTypePublish();
+            await StoreStatusHistoryPublish();
+            await StoreUncheckingPublish();
             return Ok();
         }
 
-        #region DirectSalesOrder
-        public async Task PublishDirectSalesOrder()
+        [HttpGet, Route("rpc/dms/setup/rabbitmq/direct-sales-order")]
+        public async Task<ActionResult> DirectSalesOrderPublish()
         {
+            #region DirectSalesOrder
             List<DirectSalesOrder> DirectSalesOrders = await UOW.DirectSalesOrderRepository.List(new DirectSalesOrderFilter
             {
                 Skip = 0,
@@ -69,22 +73,16 @@ namespace DMS.Rpc
 
             List<long> DirectSalesOrderIds = DirectSalesOrders.Select(x => x.Id).ToList();
             DirectSalesOrders = await UOW.DirectSalesOrderRepository.List(DirectSalesOrderIds);
+            RabbitManager.PublishList(DirectSalesOrders, RoutingKeyEnum.DirectSalesOrderSync);
+            #endregion
 
-            var count = DirectSalesOrders.Count();
-            var BatchCounter = (count / 1000) + 1;
-            for (int i = 0; i < count; i += 1000)
-            {
-                int skip = i * 1000;
-                int take = 1000;
-                var Batch = DirectSalesOrders.Skip(skip).Take(take).ToList();
-                RabbitManager.PublishList(Batch, RoutingKeyEnum.DirectSalesOrderSync);
-            }
+            return Ok();
         }
-        #endregion
 
-        #region IndirectSalesOrder
-        public async Task PublishIndirectSalesOrder()
+        [HttpGet, Route("rpc/dms/setup/rabbitmq/indirect-sales-order")]
+        public async Task<ActionResult> IndirectSalesOrderPublish()
         {
+            #region IndirectSalesOrder
             List<IndirectSalesOrder> IndirectSalesOrders = await UOW.IndirectSalesOrderRepository.List(new IndirectSalesOrderFilter
             {
                 Skip = 0,
@@ -94,98 +92,48 @@ namespace DMS.Rpc
 
             List<long> IndirectSalesOrderIds = IndirectSalesOrders.Select(x => x.Id).ToList();
             IndirectSalesOrders = await UOW.IndirectSalesOrderRepository.List(IndirectSalesOrderIds);
-            
-            var count = IndirectSalesOrders.Count();
-            var BatchCounter = (count / 1000) + 1;
-            for (int i = 0; i < count; i += 1000)
-            {
-                int skip = i * 1000;
-                int take = 1000;
-                var Batch = IndirectSalesOrders.Skip(skip).Take(take).ToList();
-                RabbitManager.PublishList(Batch, RoutingKeyEnum.IndirectSalesOrderSync);
-            }
-        }
-        #endregion
+            RabbitManager.PublishList(IndirectSalesOrders, RoutingKeyEnum.IndirectSalesOrderSync);
+            #endregion
 
-        #region Store
-        public async Task PublishStore()
+            return Ok();
+        }
+
+        [HttpGet, Route("rpc/dms/setup/rabbitmq/problem")]
+        public async Task<ActionResult> ProblemPublish()
         {
-            List<Store> Stores = await UOW.StoreRepository.List(new StoreFilter
+            #region Problem
+            List<Problem> Problems = await UOW.ProblemRepository.List(new ProblemFilter
             {
                 Skip = 0,
                 Take = int.MaxValue,
-                Selects = StoreSelect.Id,
+                Selects = ProblemSelect.Id,
             });
 
-            List<long> StoreIds = Stores.Select(x => x.Id).ToList();
-            Stores = await UOW.StoreRepository.List(StoreIds);
-            
-            var count = Stores.Count();
-            var BatchCounter = (count / 1000) + 1;
-            for (int i = 0; i < count; i += 1000)
-            {
-                int skip = i * 1000;
-                int take = 1000;
-                var Batch = Stores.Skip(skip).Take(take).ToList();
-                RabbitManager.PublishList(Batch, RoutingKeyEnum.StoreSync);
-            }
-        }
-        #endregion
+            List<long> ProblemIds = Problems.Select(x => x.Id).ToList();
+            Problems = await UOW.ProblemRepository.List(ProblemIds);
+            RabbitManager.PublishList(Problems, RoutingKeyEnum.ProblemSync);
+            #endregion
 
-        #region StoreGrouping
-        public async Task PublishStoreGrouping()
+            return Ok();
+        }
+
+        [HttpGet, Route("rpc/dms/setup/rabbitmq/problem-type")]
+        public async Task ProblemTypePublish()
         {
-            List<StoreGrouping> StoreGroupinges = await UOW.StoreGroupingRepository.List(new StoreGroupingFilter
+            List<ProblemType> ProblemTypes = await UOW.ProblemTypeRepository.List(new ProblemTypeFilter
             {
                 Skip = 0,
                 Take = int.MaxValue,
-
-                Selects = StoreGroupingSelect.Id,
+                Selects = ProblemTypeSelect.Id,
             });
 
-            List<long> StoreGroupingIds = StoreGroupinges.Select(x => x.Id).ToList();
-            StoreGroupinges = await UOW.StoreGroupingRepository.List(StoreGroupingIds);
-
-            RabbitManager.PublishList(StoreGroupinges, RoutingKeyEnum.StoreGroupingSync);
+            List<long> ProblemTypeIds = ProblemTypes.Select(x => x.Id).ToList();
+            ProblemTypes = await UOW.ProblemTypeRepository.List(ProblemTypeIds);
+            RabbitManager.PublishList(ProblemTypes, RoutingKeyEnum.ProblemTypeSync);
         }
-        #endregion
 
-        #region StoreType
-        public async Task PublishStoreType()
-        {
-            List<StoreType> StoreTypees = await UOW.StoreTypeRepository.List(new StoreTypeFilter
-            {
-                Skip = 0,
-                Take = int.MaxValue,
-                Selects = StoreTypeSelect.Id,
-            });
-
-            List<long> StoreTypeIds = StoreTypees.Select(x => x.Id).ToList();
-            StoreTypees = await UOW.StoreTypeRepository.List(StoreTypeIds);
-
-            List<StoreType> StoreTypes = StoreTypees.Select(x => new StoreType()).ToList();
-            RabbitManager.PublishList(StoreTypes, RoutingKeyEnum.StoreTypeSync);
-        }
-        #endregion
-
-        #region StoreStatus
-        public async Task PublishStoreStatus()
-        {
-            List<StoreStatus> StoreStatuses = await UOW.StoreStatusRepository.List(new StoreStatusFilter
-            {
-                Skip = 0,
-                Take = int.MaxValue,
-                Selects = StoreStatusSelect.Id,
-            });
-
-            List<long> StoreStatusIds = StoreStatuses.Select(x => x.Id).ToList();
-            StoreStatuses = await UOW.StoreStatusRepository.List(StoreStatusIds);
-
-            RabbitManager.PublishList(StoreStatuses, RoutingKeyEnum.StoreStatusSync);
-        }
-        #endregion
-
-        public async Task PublishShowingItem()
+        [HttpGet, Route("rpc/dms/setup/rabbitmq/showing-item")]
+        public async Task ShowingItemPublish()
         {
             List<ShowingItem> ShowingItems = await UOW.ShowingItemRepository.List(new ShowingItemFilter
             {
@@ -196,9 +144,159 @@ namespace DMS.Rpc
 
             List<long> ShowingItemIds = ShowingItems.Select(x => x.Id).ToList();
             ShowingItems = await UOW.ShowingItemRepository.List(ShowingItemIds);
-            
             RabbitManager.PublishList(ShowingItems, RoutingKeyEnum.ShowingItemSync);
         }
+
+        [HttpGet, Route("rpc/dms/setup/rabbitmq/showing-order")]
+        public async Task ShowingOrderPublish()
+        {
+            List<ShowingOrder> ShowingOrders = await UOW.ShowingOrderRepository.List(new ShowingOrderFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = ShowingOrderSelect.Id,
+            });
+
+            List<long> ShowingOrderIds = ShowingOrders.Select(x => x.Id).ToList();
+            ShowingOrders = await UOW.ShowingOrderRepository.List(ShowingOrderIds);
+            RabbitManager.PublishList(ShowingOrders, RoutingKeyEnum.ShowingOrderSync);
+        }
+
+        [HttpGet, Route("rpc/dms/setup/rabbitmq/showing-order-withdraw")]
+        public async Task ShowingOrderWithDrawPublish()
+        {
+            List<ShowingOrderWithDraw> ShowingOrderWithDraws = await UOW.ShowingOrderWithDrawRepository.List(new ShowingOrderWithDrawFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = ShowingOrderWithDrawSelect.Id,
+            });
+
+            List<long> ShowingOrderWithDrawIds = ShowingOrderWithDraws.Select(x => x.Id).ToList();
+            ShowingOrderWithDraws = await UOW.ShowingOrderWithDrawRepository.List(ShowingOrderWithDrawIds);
+            RabbitManager.PublishList(ShowingOrderWithDraws, RoutingKeyEnum.ShowingOrderWithDrawSync);
+        }
+
+        [HttpGet, Route("rpc/dms/setup/rabbitmq/store-checking")]
+        public async Task StoreCheckingPublish()
+        {
+            List<StoreChecking> StoreCheckings = await UOW.StoreCheckingRepository.List(new StoreCheckingFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = StoreCheckingSelect.Id,
+            });
+
+            List<long> StoreCheckingIds = StoreCheckings.Select(x => x.Id).ToList();
+            StoreCheckings = await UOW.StoreCheckingRepository.List(StoreCheckingIds);
+            RabbitManager.PublishList(StoreCheckings, RoutingKeyEnum.StoreCheckingSync);
+        }
+
+        [HttpGet, Route("rpc/dms/setup/rabbitmq/store-scouting")]
+        public async Task StoreScoutingPublish()
+        {
+            List<StoreScouting> StoreScoutings = await UOW.StoreScoutingRepository.List(new StoreScoutingFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = StoreScoutingSelect.Id,
+            });
+
+            List<long> StoreScoutingIds = StoreScoutings.Select(x => x.Id).ToList();
+            StoreScoutings = await UOW.StoreScoutingRepository.List(StoreScoutingIds);
+            RabbitManager.PublishList(StoreScoutings, RoutingKeyEnum.StoreScoutingSync);
+        }
+
+        [HttpGet, Route("rpc/dms/setup/rabbitmq/store-scouting-type")]
+        public async Task StoreScoutingTypePublish()
+        {
+            List<StoreScoutingType> StoreScoutingTypes = await UOW.StoreScoutingTypeRepository.List(new StoreScoutingTypeFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = StoreScoutingTypeSelect.Id,
+            });
+
+            List<long> StoreScoutingTypeIds = StoreScoutingTypes.Select(x => x.Id).ToList();
+            StoreScoutingTypes = await UOW.StoreScoutingTypeRepository.List(StoreScoutingTypeIds);
+            RabbitManager.PublishList(StoreScoutingTypes, RoutingKeyEnum.StoreScoutingTypeSync);
+        }
+
+        [HttpGet, Route("rpc/dms/setup/rabbitmq/store-status-history")]
+        public async Task StoreStatusHistoryPublish()
+        {
+            List<StoreStatusHistory> StoreStatusHistories = await UOW.StoreStatusHistoryRepository.List(new StoreStatusHistoryFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = StoreStatusHistorySelect.Id,
+            });
+
+            List<long> StoreStatusHistoryIds = StoreStatusHistories.Select(x => x.Id).ToList();
+            StoreStatusHistories = await UOW.StoreStatusHistoryRepository.List(StoreStatusHistoryIds);
+            RabbitManager.PublishList(StoreStatusHistories, RoutingKeyEnum.StoreStatusHistorySync);
+        }
+
+        [HttpGet, Route("rpc/dms/setup/rabbitmq/store-unchecking")]
+        public async Task StoreUncheckingPublish()
+        {
+            List<StoreUnchecking> StoreUncheckings = await DataContext.StoreUnchecking.Select(x => new StoreUnchecking
+            {
+                Id = x.Id,
+                AppUserId = x.AppUserId,
+                OrganizationId = x.OrganizationId,
+                StoreId = x.StoreId,
+                Date = x.Date,
+                Store = x.Store == null ? null : new Store
+                {
+                    Id = x.Store.Id,
+                    Code = x.Store.Code,
+                    CodeDraft = x.Store.CodeDraft,
+                    Name = x.Store.Name,
+                    ParentStoreId = x.Store.ParentStoreId,
+                    OrganizationId = x.Store.OrganizationId,
+                    StoreTypeId = x.Store.StoreTypeId,
+                    StoreGroupingId = x.Store.StoreGroupingId,
+                    Telephone = x.Store.Telephone,
+                    ProvinceId = x.Store.ProvinceId,
+                    DistrictId = x.Store.DistrictId,
+                    WardId = x.Store.WardId,
+                    Address = x.Store.Address,
+                    DeliveryAddress = x.Store.DeliveryAddress,
+                    Latitude = x.Store.Latitude,
+                    Longitude = x.Store.Longitude,
+                    OwnerName = x.Store.OwnerName,
+                    OwnerPhone = x.Store.OwnerPhone,
+                    OwnerEmail = x.Store.OwnerEmail,
+                    TaxCode = x.Store.TaxCode,
+                    LegalEntity = x.Store.LegalEntity,
+                    StatusId = x.Store.StatusId,
+                },
+                AppUser = x.AppUser == null ? null : new AppUser
+                {
+                    Id = x.AppUser.Id,
+                    Username = x.AppUser.Username,
+                    DisplayName = x.AppUser.DisplayName,
+                    Email = x.AppUser.Email,
+                    Phone = x.AppUser.Phone,
+                    Address = x.AppUser.Address,
+                    Department = x.AppUser.Department,
+                    PositionId = x.AppUser.PositionId,
+                    RowId = x.AppUser.RowId,
+                    SexId = x.AppUser.SexId,
+                    StatusId = x.AppUser.StatusId,
+                    OrganizationId = x.AppUser.OrganizationId,
+                    Organization = x.AppUser.Organization == null ? null : new Organization
+                    {
+                        Id = x.AppUser.Organization.Id,
+                        Code = x.AppUser.Organization.Code,
+                        Name = x.AppUser.Organization.Name,
+                    },
+                },
+            }).ToListAsync();
+            RabbitManager.PublishList(StoreUncheckings, RoutingKeyEnum.StoreUncheckingSync);
+        }
+
         #endregion
 
         [HttpGet, Route("rpc/dms/setup/year/{year}")]
