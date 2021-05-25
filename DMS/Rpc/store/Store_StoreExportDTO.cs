@@ -22,10 +22,10 @@ namespace DMS.Rpc.store
         public long? WardId { get; set; }
         public string Address { get; set; }
         public string DeliveryAddress { get; set; }
-        public decimal Latitude { get; set; }
-        public decimal Longitude { get; set; }
-        public decimal? DeliveryLatitude { get; set; }
-        public decimal? DeliveryLongitude { get; set; }
+        public string Latitude { get; set; }
+        public string Longitude { get; set; }
+        public string DeliveryLatitude { get; set; }
+        public string DeliveryLongitude { get; set; }
         public string OwnerName { get; set; }
         public string OwnerPhone { get; set; }
         public string OwnerEmail { get; set; }
@@ -60,6 +60,7 @@ namespace DMS.Rpc.store
         public Store_StoreExportDTO() { }
         public Store_StoreExportDTO(Store Store)
         {
+            var culture = System.Globalization.CultureInfo.GetCultureInfo("en-EN");
             this.Id = Store.Id;
             this.Code = Store.Code;
             this.CodeDraft = Store.CodeDraft;
@@ -74,10 +75,10 @@ namespace DMS.Rpc.store
             this.WardId = Store.WardId;
             this.Address = Store.Address;
             this.DeliveryAddress = Store.DeliveryAddress;
-            this.Latitude = Store.Latitude;
-            this.Longitude = Store.Longitude;
-            this.DeliveryLatitude = Store.DeliveryLatitude;
-            this.DeliveryLongitude = Store.DeliveryLongitude;
+            this.Latitude = Store.Latitude.ToString("F015", culture);
+            this.Longitude = Store.Longitude.ToString("F015", culture);
+            this.DeliveryLatitude = Store.DeliveryLatitude == null ? null : Store.DeliveryLatitude.Value.ToString("F015", culture);
+            this.DeliveryLongitude = Store.DeliveryLongitude == null ? null : Store.DeliveryLongitude.Value.ToString("F015", culture);
             this.OwnerName = Store.OwnerName;
             this.OwnerPhone = Store.OwnerPhone;
             this.OwnerEmail = Store.OwnerEmail;
