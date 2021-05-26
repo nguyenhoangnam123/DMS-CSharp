@@ -93,7 +93,7 @@ namespace DMS.Handlers
             var optionsBuilder = new DbContextOptionsBuilder<DataContext>();
             optionsBuilder.UseSqlServer(Configuration.GetConnectionString("DataContext"));
             DataContext context = new DataContext(optionsBuilder.Options);
-            IUOW UOW = new UOW(context, Configuration);
+            IUOW UOW = new UOW(context);
             List<string> path = routingKey.Split(".").ToList();
             if (path.Count < 1)
                 throw new Exception();

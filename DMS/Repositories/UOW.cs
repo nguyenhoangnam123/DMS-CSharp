@@ -294,10 +294,9 @@ namespace DMS.Repositories
         public IKpiProductGroupingCriteriaRepository KpiProductGroupingCriteriaRepository { get; private set; }
         public IKpiProductGroupingTypeRepository KpiProductGroupingTypeRepository { get; private set; }
 
-        public UOW(DataContext DataContext, IConfiguration Configuration)
+        public UOW(DataContext DataContext)
         {
             this.DataContext = DataContext;
-            DataContext.Database.ExecuteSqlCommand("SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;");
             AlbumRepository = new AlbumRepository(DataContext);
             AppUserRepository = new AppUserRepository(DataContext);
             AppUserStoreMappingRepository = new AppUserStoreMappingRepository(DataContext);
