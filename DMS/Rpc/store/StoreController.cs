@@ -418,7 +418,10 @@ namespace DMS.Rpc.store
             HashSet<string> StoreCodes = new HashSet<string>(All.Select(x => x.Code).Distinct().ToList());
             foreach (Store_ImportDTO Store_ImportDTO in Store_ImportDTOs)
             {
-                Errors.Add(Store_ImportDTO.Stt, new StringBuilder(""));
+                if(!Errors.ContainsKey(Store_ImportDTO.Stt))
+                {
+                    Errors.Add(Store_ImportDTO.Stt, new StringBuilder(""));
+                }
                 Store_ImportDTO.IsNew = false;
             }
             Parallel.ForEach(Store_ImportDTOs, Store_ImportDTO =>
