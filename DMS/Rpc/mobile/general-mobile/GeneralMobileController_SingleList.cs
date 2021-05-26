@@ -480,7 +480,15 @@ namespace DMS.Rpc.mobile.general_mobile
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-
+            var UserId = CurrentContext.UserId;
+            List<AppUser> AppUsers = await AppUserService.List(new AppUserFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Id = new IdFilter { Equal = UserId },
+                Selects = AppUserSelect.Organization,
+            });
+            AppUser AppUser = AppUsers.FirstOrDefault();
             BannerFilter BannerFilter = new BannerFilter();
             BannerFilter.Selects = BannerSelect.ALL;
             BannerFilter.Skip = GeneralMobile_BannerFilterDTO.Skip;
@@ -488,6 +496,8 @@ namespace DMS.Rpc.mobile.general_mobile
             BannerFilter.OrderBy = GeneralMobile_BannerFilterDTO.OrderBy;
             BannerFilter.OrderType = GeneralMobile_BannerFilterDTO.OrderType;
             BannerFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+            if (AppUser != null)
+                BannerFilter.OrganizationId = new IdFilter { Equal = AppUser.OrganizationId };
 
             int count = await BannerService.Count(BannerFilter);
             return count;
@@ -498,7 +508,14 @@ namespace DMS.Rpc.mobile.general_mobile
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-
+            var UserId = CurrentContext.UserId;
+            List<AppUser> AppUsers = await AppUserService.List(new AppUserFilter { 
+                Skip = 0,
+                Take = int.MaxValue,
+                Id = new IdFilter { Equal = UserId },
+                Selects = AppUserSelect.Organization,
+            });
+            AppUser AppUser = AppUsers.FirstOrDefault();
             BannerFilter BannerFilter = new BannerFilter();
             BannerFilter.Selects = BannerSelect.ALL;
             BannerFilter.Skip = GeneralMobile_BannerFilterDTO.Skip;
@@ -506,6 +523,8 @@ namespace DMS.Rpc.mobile.general_mobile
             BannerFilter.OrderBy = BannerOrder.Priority;
             BannerFilter.OrderType = OrderType.ASC;
             BannerFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+            if (AppUser != null)
+                BannerFilter.OrganizationId = new IdFilter { Equal = AppUser.OrganizationId };
 
             List<Banner> Banners = await BannerService.List(BannerFilter);
             List<GeneralMobile_BannerDTO> GeneralMobile_BannerDTOs = Banners
