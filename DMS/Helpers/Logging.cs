@@ -22,20 +22,18 @@ namespace DMS.Helpers
         private IUOW UOW;
         public Logging(
             ICurrentContext CurrentContext,
-            IRabbitManager RabbitManager,
-            IUOW UOW)
+            IRabbitManager RabbitManager
+            )
         {
             this.CurrentContext = CurrentContext;
             this.RabbitManager = RabbitManager;
-            this.UOW = UOW;
         }
         public async Task<bool> CreateAuditLog(object newData, object oldData, string className, [CallerMemberName] string methodName = "")
         {
-            AppUser AppUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
             AuditLog AuditLog = new AuditLog
             {
                 AppUserId = CurrentContext.UserId,
-                AppUser = AppUser.DisplayName,
+                AppUser = CurrentContext.UserName,
                 ClassName = className,
                 MethodName = methodName,
                 ModuleName = StaticParams.ModuleName,
@@ -49,11 +47,10 @@ namespace DMS.Helpers
         }
         public async Task CreateSystemLog(Exception ex, string className, [CallerMemberName] string methodName = "")
         {
-            AppUser AppUser = await UOW.AppUserRepository.Get(CurrentContext.UserId);
             SystemLog SystemLog = new SystemLog
             {
                 AppUserId = CurrentContext.UserId,
-                AppUser = AppUser.DisplayName,
+                AppUser = CurrentContext.UserName,
                 ClassName = className,
                 MethodName = methodName,
                 ModuleName = StaticParams.ModuleName,

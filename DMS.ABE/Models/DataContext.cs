@@ -2274,7 +2274,7 @@ namespace DMS.ABE.Models
 
                 entity.Property(e => e.Code)
                     .IsRequired()
-                    .HasMaxLength(50);
+                    .HasMaxLength(500);
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
@@ -2282,7 +2282,7 @@ namespace DMS.ABE.Models
 
                 entity.Property(e => e.Name)
                     .IsRequired()
-                    .HasMaxLength(50);
+                    .HasMaxLength(500);
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
