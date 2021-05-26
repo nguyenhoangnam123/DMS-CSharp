@@ -23,6 +23,7 @@ namespace DMS.Rpc.product
         public const string FilterListStatus = Default + "/filter-list-status";
         public const string FilterListSupplier = Default + "/filter-list-supplier";
         public const string FilterListProductGrouping = Default + "/filter-list-product-grouping";
+        public const string FilterListBrand = Default + "/filter-list-brand";
 
         public const string CountProduct = Default + "/count-product";
         public const string ListProduct = Default + "/list-product";
@@ -45,24 +46,24 @@ namespace DMS.Rpc.product
             { "Tìm kiếm", new List<string> {
                 Parent,
                 Master, Count, List, Get,
-                FilterListProductType, FilterListStatus, FilterListSupplier, FilterListProductGrouping,
+                FilterListProductType, FilterListStatus, FilterListSupplier, FilterListProductGrouping, FilterListBrand,
                 CountProduct, ListProduct} },
             { "Thêm", new List<string> {
                 Parent,
                 Master, Count, List, Get,
-                FilterListProductType, FilterListStatus, FilterListSupplier, FilterListProductGrouping,
+                FilterListProductType, FilterListStatus, FilterListSupplier, FilterListProductGrouping, FilterListBrand,
                 Create,
                 CountProduct, ListProduct} },
             { "Xoá", new List<string> {
                 Parent,
                 Master, Count, List, Get,
-                FilterListProductType, FilterListStatus, FilterListSupplier, FilterListProductGrouping,
+                FilterListProductType, FilterListStatus, FilterListSupplier, FilterListProductGrouping, FilterListBrand,
                 Delete, BulkDelete,
                 CountProduct, ListProduct} },
              { "Xoá nhiều", new List<string> {
                 Parent,
                 Master, Count, List, Get,
-                FilterListProductType, FilterListStatus, FilterListSupplier, FilterListProductGrouping,
+                FilterListProductType, FilterListStatus, FilterListSupplier, FilterListProductGrouping, FilterListBrand,
                 BulkDelete,
                 CountProduct, ListProduct} },
         };

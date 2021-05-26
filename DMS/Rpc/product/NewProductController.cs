@@ -1,6 +1,7 @@
 ﻿using DMS.Common;
 using DMS.Entities;
 using DMS.Enums;
+using DMS.Services.MBrand;
 using DMS.Services.MProduct;
 using DMS.Services.MProductGrouping;
 using DMS.Services.MProductType;
@@ -26,6 +27,7 @@ namespace DMS.Rpc.product
         private ISupplierService SupplierService;
         private IProductGroupingService ProductGroupingService;
         private IProductService ProductService;
+        private IBrandService BrandService;
         private ICurrentContext CurrentContext;
         public NewProductController(
             IWebHostEnvironment env,
@@ -34,6 +36,7 @@ namespace DMS.Rpc.product
             ISupplierService SupplierService,
             IProductGroupingService ProductGroupingService,
             IProductService ProductService,
+            IBrandService BrandService,
             ICurrentContext CurrentContext
         )
         {
@@ -399,6 +402,27 @@ namespace DMS.Rpc.product
             List<Product_ProductGroupingDTO> Product_ProductGroupingDTOs = ProductGroupings
                 .Select(x => new Product_ProductGroupingDTO(x)).ToList();
             return Product_ProductGroupingDTOs;
+        }
+        [Route(NewProductRoute.FilterListBrand), HttpPost]
+        public async Task<List<Product_BrandDTO>> FilterListBrand([FromBody] Product_BrandFilterDTO Product_BrandFilterDTO)
+        {
+            BrandFilter BrandFilter = new BrandFilter();
+            BrandFilter.Skip = 0;
+            BrandFilter.Take = 20;
+            BrandFilter.OrderBy = BrandOrder.Id;
+            BrandFilter.OrderType = OrderType.ASC;
+            BrandFilter.Selects = BrandSelect.ALL;
+            BrandFilter.Id = Product_BrandFilterDTO.Id;
+            BrandFilter.Code = Product_BrandFilterDTO.Code;
+            BrandFilter.Name = Product_BrandFilterDTO.Name;
+            BrandFilter.Description = Product_BrandFilterDTO.Description;
+            BrandFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+            BrandFilter.UpdateTime = Product_BrandFilterDTO.UpdateTime;
+
+            List<Brand> Brands = await BrandService.List(BrandFilter);
+            List<Product_BrandDTO> Product_BrandDTOs = Brands
+                .Select(x => new Product_BrandDTO(x)).ToList();
+            return Product_BrandDTOs;
         }
 
         [Route(NewProductRoute.CountProduct), HttpPost]
