@@ -108,18 +108,23 @@ namespace DMS.Rpc.mobile.permission_mobile
                     }).ToListAsync();
                 // lấy ra toàn bộ storeChecking để tính số liệu thực hiện bằng filter SaleEmployeeId
 
-                var StoreCheckingDAOs = await DataContext.StoreChecking
-                .Where(x => AppUserIds.Contains(x.SaleEmployeeId) &&
-                x.CheckOutAt.HasValue && x.CheckOutAt.Value >= Start && x.CheckOutAt.Value <= End)
-                .Select(x => new StoreCheckingDAO
-                {
-                    SaleEmployeeId = x.SaleEmployeeId,
-                    Id = x.Id,
-                    CheckInAt = x.CheckInAt,
-                    CheckOutAt = x.CheckOutAt,
-                    StoreId = x.StoreId
-                })
-                .ToListAsync();
+                var query_store_checking = from sc in DataContext.StoreChecking
+                                           join s in DataContext.Store on sc.StoreId equals s.Id
+                                           where AppUserIds.Contains(sc.SaleEmployeeId) &&
+                                           (sc.CheckOutAt.HasValue && Start <= sc.CheckOutAt.Value && sc.CheckOutAt.Value <= End) &&
+                                           s.DeletedAt == null
+                                           select sc;
+
+                var StoreCheckingDAOs = await query_store_checking
+                    .Select(x => new StoreCheckingDAO
+                    {
+                        SaleEmployeeId = x.SaleEmployeeId,
+                        Id = x.Id,
+                        CheckInAt = x.CheckInAt,
+                        CheckOutAt = x.CheckOutAt,
+                        StoreId = x.StoreId
+                    })
+                    .ToListAsync();
 
                 List<decimal> IndirectSalesOrderTotals = await DataContext.IndirectSalesOrder
                     .Where(x => AppUserIds.Contains(x.SaleEmployeeId) &&
