@@ -28,6 +28,7 @@ namespace DMS.Rpc.indirect_sales_order
         public string TechnicalName { get; set; }
         public string Note { get; set; }
         public IndirectSalesOrder_CategoryDTO Category { get; set; }
+        public IndirectSalesOrder_BrandDTO Brand { get; set; }
         public IndirectSalesOrder_ProductTypeDTO ProductType { get; set; }
         public IndirectSalesOrder_SupplierDTO Supplier { get; set; }
         public IndirectSalesOrder_TaxTypeDTO TaxType { get; set; }
@@ -58,6 +59,7 @@ namespace DMS.Rpc.indirect_sales_order
             this.TechnicalName = Product.TechnicalName;
             this.Note = Product.Note;
             this.Category = Product.Category == null ? null : new IndirectSalesOrder_CategoryDTO(Product.Category);
+            this.Brand = Product.Brand == null ? null : new IndirectSalesOrder_BrandDTO(Product.Brand);
             this.ProductType = Product.ProductType == null ? null : new IndirectSalesOrder_ProductTypeDTO(Product.ProductType);
             this.Supplier = Product.Supplier == null ? null : new IndirectSalesOrder_SupplierDTO(Product.Supplier);
             this.TaxType = Product.TaxType == null ? null : new IndirectSalesOrder_TaxTypeDTO(Product.TaxType);
