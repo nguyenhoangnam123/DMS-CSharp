@@ -46,6 +46,7 @@ namespace DMS.Rpc.product
             this.SupplierService = SupplierService;
             this.ProductGroupingService = ProductGroupingService;
             this.ProductService = ProductService;
+            this.BrandService = BrandService;
             this.CurrentContext = CurrentContext;
         }
 
