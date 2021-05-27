@@ -398,7 +398,8 @@ namespace DMS.Rpc.reports.report_store_checking.report_store_unchecked
                     .Select(x => new ReportStoreUnchecked_SaleEmployeeDTO
                     {
                         SaleEmployeeId = x.AppUserId,
-                    }).ToList();
+                    })
+                    .Distinct().ToList();
                 ReportStoreUnchecked_ReportStoreUncheckedDTOs.Add(ReportStoreUnchecked_ReportStoreUncheckedDTO);
             }
 
