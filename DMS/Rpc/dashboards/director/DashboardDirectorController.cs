@@ -17,6 +17,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Thinktecture;
 using Thinktecture.EntityFrameworkCore.TempTables;
+using DMS.Services.MProduct;
 
 namespace DMS.Rpc.dashboards.director
 {

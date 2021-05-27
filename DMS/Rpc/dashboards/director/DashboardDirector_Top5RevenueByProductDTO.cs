@@ -9,6 +9,7 @@ namespace DMS.Rpc.dashboards.director
     public class DashboardDirector_Top5RevenueByProductDTO : DataDTO
     {
         public string ProductName { get; set; }
+        public string ProductCode { get; set; }
         public decimal Revenue { get; set; }
     }
 

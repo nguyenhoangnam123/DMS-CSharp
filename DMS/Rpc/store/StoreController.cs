@@ -1416,6 +1416,28 @@ namespace DMS.Rpc.store
         }
         #endregion
 
+        #region external sync
+        [Route(StoreRoute.BulkCreate), HttpPost]
+        public async Task<ActionResult<Store_StoreDTO>> BulkCreate([FromBody] List<Store_StoreDTO> Store_StoreDTOs)
+        {
+            if (!ModelState.IsValid)
+            {
+                throw new BindException(ModelState);
+            }
+            List<Store> Stores = Store_StoreDTOs
+                .Select(q => ConvertDTOToEntity(q))
+                .ToList();
+
+            Stores.ForEach(q => q.CreatorId = CurrentContext.UserId);
+            Stores = await StoreService.Import(Stores);
+            if (Stores == null)
+                return Ok();
+            else if (Stores != null && Stores.Any(q => q.IsValidated == false))
+                return BadRequest(Stores);
+            return Ok();
+        }
+        #endregion
+
         private Store ConvertDTOToEntity(Store_StoreDTO Store_StoreDTO)
         {
             Store Store = new Store();
