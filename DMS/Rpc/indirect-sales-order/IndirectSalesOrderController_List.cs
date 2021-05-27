@@ -251,6 +251,56 @@ namespace DMS.Rpc.indirect_sales_order
             return IndirectSalesOrder_RequestStateDTOs;
         }
 
+        [Route(IndirectSalesOrderRoute.FilterListBrand), HttpPost]
+        public async Task<List<IndirectSalesOrder_BrandDTO>> FilterListBrand([FromBody] IndirectSalesOrder_BrandFilterDTO IndirectSalesOrder_BrandFilterDTO)
+        {
+            BrandFilter BrandFilter = new BrandFilter();
+            BrandFilter.Skip = 0;
+            BrandFilter.Take = 20;
+            BrandFilter.OrderBy = BrandOrder.Id;
+            BrandFilter.OrderType = OrderType.ASC;
+            BrandFilter.Selects = BrandSelect.ALL;
+            BrandFilter.Id = IndirectSalesOrder_BrandFilterDTO.Id;
+            BrandFilter.Code = IndirectSalesOrder_BrandFilterDTO.Code;
+            BrandFilter.Name = IndirectSalesOrder_BrandFilterDTO.Name;
+            BrandFilter.Description = IndirectSalesOrder_BrandFilterDTO.Description;
+            BrandFilter.StatusId = new IdFilter { Equal = StatusEnum.ACTIVE.Id };
+            BrandFilter.UpdateTime = IndirectSalesOrder_BrandFilterDTO.UpdateTime;
+
+            List<Brand> Brands = await BrandService.List(BrandFilter);
+            List<IndirectSalesOrder_BrandDTO> IndirectSalesOrder_BrandDTOs = Brands
+                .Select(x => new IndirectSalesOrder_BrandDTO(x)).ToList();
+            return IndirectSalesOrder_BrandDTOs;
+        }
+
+        [Route(IndirectSalesOrderRoute.FilterListCategory), HttpPost]
+        public async Task<List<IndirectSalesOrder_CategoryDTO>> FilterListCategory([FromBody] IndirectSalesOrder_CategoryFilterDTO IndirectSalesOrder_CategoryFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            CategoryFilter CategoryFilter = new CategoryFilter();
+            CategoryFilter.Skip = 0;
+            CategoryFilter.Take = int.MaxValue;
+            CategoryFilter.OrderBy = CategoryOrder.Id;
+            CategoryFilter.OrderType = OrderType.ASC;
+            CategoryFilter.Selects = CategorySelect.ALL;
+            CategoryFilter.Id = IndirectSalesOrder_CategoryFilterDTO.Id;
+            CategoryFilter.Code = IndirectSalesOrder_CategoryFilterDTO.Code;
+            CategoryFilter.Name = IndirectSalesOrder_CategoryFilterDTO.Name;
+            CategoryFilter.ParentId = IndirectSalesOrder_CategoryFilterDTO.ParentId;
+            CategoryFilter.Path = IndirectSalesOrder_CategoryFilterDTO.Path;
+            CategoryFilter.Level = IndirectSalesOrder_CategoryFilterDTO.Level;
+            CategoryFilter.StatusId = IndirectSalesOrder_CategoryFilterDTO.StatusId;
+            CategoryFilter.ImageId = IndirectSalesOrder_CategoryFilterDTO.ImageId;
+            CategoryFilter.RowId = IndirectSalesOrder_CategoryFilterDTO.RowId;
+
+            List<Category> Categories = await CategoryService.List(CategoryFilter);
+            List<IndirectSalesOrder_CategoryDTO> IndirectSalesOrder_CategoryDTOs = Categories
+                .Select(x => new IndirectSalesOrder_CategoryDTO(x)).ToList();
+            return IndirectSalesOrder_CategoryDTOs;
+        }
+
 
         [Route(IndirectSalesOrderRoute.SingleListStore), HttpPost]
         public async Task<List<IndirectSalesOrder_StoreDTO>> SingleListStore([FromBody] IndirectSalesOrder_StoreFilterDTO IndirectSalesOrder_StoreFilterDTO)
