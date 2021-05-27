@@ -371,17 +371,25 @@ namespace DMS.Repositories
                     }
                 }).ToListAsync();
 
-            Warehouse.Inventories = await DataContext.Inventory.AsNoTracking()
-                .Where(x => x.WarehouseId == Warehouse.Id)
-                .Where(x => x.DeletedAt == null && x.Item.DeletedAt == null && x.Item.StatusId == StatusEnum.ACTIVE.Id)
-                .Select(x => new Inventory
-                {
-                    Id = x.Id,
-                    WarehouseId = x.WarehouseId,
-                    ItemId = x.ItemId,
-                    SaleStock = x.SaleStock,
-                    AccountingStock = x.AccountingStock,
-                }).ToListAsync();
+            var warehouse_query = from inv in DataContext.Inventory
+                                  join it in DataContext.Item on inv.ItemId equals it.Id
+                                  join pr in DataContext.Product on it.ProductId equals pr.Id
+                                  where (inv.WarehouseId == Warehouse.Id) &&
+                                  inv.DeletedAt == null &&
+                                  it.StatusId == StatusEnum.ACTIVE.Id &&
+                                  pr.StatusId == StatusEnum.ACTIVE.Id &&
+                                  it.DeletedAt == null &&
+                                  pr.DeletedAt == null
+                                  select new Inventory
+                                  {
+                                      Id = inv.Id,
+                                      WarehouseId = inv.WarehouseId,
+                                      ItemId = inv.ItemId,
+                                      SaleStock = inv.SaleStock,
+                                      AccountingStock = inv.AccountingStock
+                                  };
+            Warehouse.Inventories = await warehouse_query
+                .ToListAsync();
             Warehouse.Used = Warehouse.Inventories.Select(i => i.SaleStock).DefaultIfEmpty(0).Sum() > 0;
             foreach (Item Item in Items)
             {
@@ -393,12 +401,18 @@ namespace DMS.Repositories
                         Id = 0,
                         WarehouseId = Warehouse.Id,
                         ItemId = Item.Id,
+                        Item = Item,
                         SaleStock = 0,
                         AccountingStock = 0,
                     };
                     Warehouse.Inventories.Add(Inventory);
                 }
                 Inventory.Item = Item;
+            }   
+            foreach (var Inventory in Warehouse.Inventories)
+            { 
+                if(Inventory.Item == null )
+                {  }
             }
             Warehouse.Inventories = Warehouse.Inventories.OrderBy(i => i.ItemId).ToList();
             return Warehouse;
