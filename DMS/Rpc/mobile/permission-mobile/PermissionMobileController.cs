@@ -1126,12 +1126,14 @@ namespace DMS.Rpc.mobile.permission_mobile
 
             List<long> AppUserIds = await ListAppUserId(filter.EmployeeId); // lấy ra appUserIds
 
-            var query = from sc in DataContext.StoreChecking
-                        where AppUserIds.Contains(sc.SaleEmployeeId)
-                        && (sc.CheckOutAt.HasValue && sc.CheckOutAt.Value >= Start && sc.CheckOutAt.Value <= End)
-                        select sc;
+            var query_store_checking = from sc in DataContext.StoreChecking
+                                       join s in DataContext.Store on sc.StoreId equals s.Id
+                                       where AppUserIds.Contains(sc.SaleEmployeeId) &&
+                                       (sc.CheckOutAt.HasValue && Start <= sc.CheckOutAt.Value && sc.CheckOutAt.Value <= End) &&
+                                       s.DeletedAt == null
+                                       select sc;
 
-            var count = await query.CountAsync();
+            var count = await query_store_checking.CountAsync();
             return count;
         } // số lượt viếng thăm theo nhân viên được phân quyền
 
@@ -1146,8 +1148,10 @@ namespace DMS.Rpc.mobile.permission_mobile
             List<long> AppUserIds = await ListAppUserId(filter.EmployeeId); // lấy ra appUserIds
 
             var query = from sc in DataContext.StoreChecking
-                        where AppUserIds.Contains(sc.SaleEmployeeId)
-                        && (sc.CheckOutAt.HasValue && sc.CheckOutAt.Value >= Start && sc.CheckOutAt.Value <= End)
+                        join s in DataContext.Store on sc.StoreId equals s.Id
+                        where AppUserIds.Contains(sc.SaleEmployeeId) &&
+                        (sc.CheckOutAt.HasValue && Start <= sc.CheckOutAt.Value && sc.CheckOutAt.Value <= End) &&
+                        s.DeletedAt == null
                         select new
                         {
                             Id = sc.StoreId
