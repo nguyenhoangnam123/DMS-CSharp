@@ -172,6 +172,9 @@ namespace DMS.Services.MShowingItem
             try
             {
                 await UOW.ShowingItemRepository.Delete(ShowingItem);
+                var ShowingItems = await UOW.ShowingItemRepository.List(new List<long> { ShowingItem.Id });
+                Sync(ShowingItems);
+                ShowingItem = ShowingItems.FirstOrDefault();
                 await Logging.CreateAuditLog(new { }, ShowingItem, nameof(ShowingItemService));
                 return ShowingItem;
             }
@@ -190,6 +193,9 @@ namespace DMS.Services.MShowingItem
             try
             {
                 await UOW.ShowingItemRepository.BulkDelete(ShowingItems);
+                var Ids = ShowingItems.Select(x => x.Id).Distinct().ToList();
+                ShowingItems = await UOW.ShowingItemRepository.List(Ids);
+                Sync(ShowingItems);
                 await Logging.CreateAuditLog(new { }, ShowingItems, nameof(ShowingItemService));
                 return ShowingItems;
             }
@@ -208,7 +214,9 @@ namespace DMS.Services.MShowingItem
             try
             {
                 await UOW.ShowingItemRepository.BulkMerge(ShowingItems);
-
+                var Ids = ShowingItems.Select(x => x.Id).Distinct().ToList();
+                ShowingItems = await UOW.ShowingItemRepository.List(Ids);
+                Sync(ShowingItems);
                 await Logging.CreateAuditLog(ShowingItems, new { }, nameof(ShowingItemService));
                 return ShowingItems;
             }
@@ -271,15 +279,10 @@ namespace DMS.Services.MShowingItem
 
         private void Sync(List<ShowingItem> showingItems)
         {
-            List<ShowingCategory> ShowingCategorys = new List<ShowingCategory>();
-            List<UnitOfMeasure> UnitOfMeasures = new List<UnitOfMeasure>();
-            foreach (var ShowingItem in showingItems)
-            {
-                ShowingCategorys.Add(ShowingItem.ShowingCategory);
-                UnitOfMeasures.Add(ShowingItem.UnitOfMeasure);
-            }
-            ShowingCategorys = ShowingCategorys.Distinct().ToList();
-            UnitOfMeasures = UnitOfMeasures.Distinct().ToList();
+            List<ShowingCategory> ShowingCategorys = showingItems.Select(x => new ShowingCategory { Id = x.ShowingCategoryId }).Distinct().ToList();
+            List<UnitOfMeasure> UnitOfMeasures = showingItems.Select(x => new UnitOfMeasure { Id = x.UnitOfMeasureId }).Distinct().ToList();
+            
+            RabbitManager.PublishList(showingItems, RoutingKeyEnum.ShowingItemSync);
             RabbitManager.PublishList(ShowingCategorys, RoutingKeyEnum.ShowingCategoryUsed);
             RabbitManager.PublishList(UnitOfMeasures, RoutingKeyEnum.UnitOfMeasureUsed);
         }

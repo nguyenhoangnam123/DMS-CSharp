@@ -247,17 +247,7 @@ namespace DMS.Services.MStoreGrouping
 
         private void Sync(List<StoreGrouping> storeGroupings)
         {
-            List<StoreGrouping> StoreGroupings = new List<StoreGrouping>();
-            foreach (StoreGrouping StoreGrouping in storeGroupings)
-            {
-                if (StoreGrouping.ParentId.HasValue)
-                {
-                    StoreGroupings.Add(StoreGrouping.Parent);
-                }
-            }
-            storeGroupings = storeGroupings.Distinct().ToList();
             RabbitManager.PublishList(storeGroupings, RoutingKeyEnum.StoreGroupingSync);
-            RabbitManager.PublishList(StoreGroupings, RoutingKeyEnum.StoreGroupingUsed);
         }
     }
 }
