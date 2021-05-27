@@ -93,17 +93,6 @@ namespace DMS.Tests
             };
             DataContext.AppUser.Add(Admin);
 
-            ImageDAO ImageDAO = new ImageDAO
-            {
-                Id = 1,
-                Name = "ABC",
-                ThumbnailUrl = "PATH",
-                Url = "PATH",
-                CreatedAt = StaticParams.DateTimeNow,
-                UpdatedAt = StaticParams.DateTimeNow,
-            };
-            DataContext.Image.Add(ImageDAO);
-
             DataContext.SaveChanges();
 
             CurrentContext = new CurrentContext
@@ -156,60 +145,27 @@ namespace DMS.Tests
 
         public async Task<Image> Create(Image Image, string path, string thumbnailPath, int width, int height)
         {
-            Image =  new Image
-            {
-                Id = 1,
-                Name = "ABC",
-                ThumbnailUrl = "PATH",
-                Url = "PATH"
-            };
-            return Image;
+            return null;
         }
 
         public async Task<Image> Create(Image Image, string path)
         {
-            return new Image
-            {
-                Id = 1,
-                Name = "ABC",
-                ThumbnailUrl = "PATH",
-                Url = "PATH"
-            };
+            return null;
         }
 
         public async Task<Image> Delete(Image Image)
         {
-            return new Image
-            {
-                Id = 1,
-                Name = "ABC",
-                ThumbnailUrl = "PATH",
-                Url = "PATH"
-            };
+            return null;
         }
 
         public async Task<Image> Get(long Id)
         {
-            return new Image
-            {
-                Id = 1,
-                Name = "ABC",
-                ThumbnailUrl = "PATH",
-                Url = "PATH"
-            };
+            return null;
         }
 
         public async Task<List<Image>> List(ImageFilter ImageFilter)
         {
-            Image Image =new Image
-            {
-                Id = 1,
-                Name = "ABC",
-                ThumbnailUrl = "PATH",
-                Url = "PATH"
-            };
-
-            return new List<Image> { Image };
+            return null;
         }
     }
 }

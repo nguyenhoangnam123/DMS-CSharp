@@ -31,6 +31,20 @@ namespace DMS.Tests.MBanner
         public async Task Create_Without_Error()
         {
             // Arrange
+            // Update 1 cái ảnh lên trước rồi tạo 1 cái banner theo cái ảnh được up
+            ImageDAO ImageDAO = new ImageDAO
+            {
+                Id = 1,
+                Name = "ABC",
+                ThumbnailUrl = "PATH",
+                Url = "PATH",
+                CreatedAt = StaticParams.DateTimeNow,
+                UpdatedAt = StaticParams.DateTimeNow,
+            };
+            DataContext.Image.Add(ImageDAO);
+            DataContext.SaveChanges();
+
+            // Act
             Banner Banner = new Banner
             {
                 Content = "ABC",
@@ -40,7 +54,6 @@ namespace DMS.Tests.MBanner
                 Priority = 1,
                 Title = "ABC",
             };
-            // Act
             await BannerService.Create(Banner);
             // Assert
             BannerDAO bannerDAO = DataContext.Banner.Where(x => x.Id == 1).FirstOrDefault();
