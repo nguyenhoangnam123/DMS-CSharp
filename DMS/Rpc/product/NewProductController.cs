@@ -2,6 +2,7 @@
 using DMS.Entities;
 using DMS.Enums;
 using DMS.Services.MBrand;
+using DMS.Services.MCategory;
 using DMS.Services.MProduct;
 using DMS.Services.MProductGrouping;
 using DMS.Services.MProductType;
@@ -28,6 +29,7 @@ namespace DMS.Rpc.product
         private IProductGroupingService ProductGroupingService;
         private IProductService ProductService;
         private IBrandService BrandService;
+        private ICategoryService CategoryService;
         private ICurrentContext CurrentContext;
         public NewProductController(
             IWebHostEnvironment env,
@@ -37,6 +39,7 @@ namespace DMS.Rpc.product
             IProductGroupingService ProductGroupingService,
             IProductService ProductService,
             IBrandService BrandService,
+            ICategoryService CategoryService,
             ICurrentContext CurrentContext
         )
         {
@@ -47,6 +50,7 @@ namespace DMS.Rpc.product
             this.ProductGroupingService = ProductGroupingService;
             this.ProductService = ProductService;
             this.BrandService = BrandService;
+            this.CategoryService = CategoryService;
             this.CurrentContext = CurrentContext;
         }
 
@@ -425,6 +429,34 @@ namespace DMS.Rpc.product
                 .Select(x => new Product_BrandDTO(x)).ToList();
             return Product_BrandDTOs;
         }
+        [Route(NewProductRoute.FilterListCategory), HttpPost]
+        public async Task<List<Product_CategoryDTO>> FilterListCategory([FromBody] Product_CategoryFilterDTO Product_CategoryFilterDTO)
+        {
+            if (!ModelState.IsValid)
+                throw new BindException(ModelState);
+
+            CategoryFilter CategoryFilter = new CategoryFilter();
+            CategoryFilter.Skip = 0;
+            CategoryFilter.Take = int.MaxValue;
+            CategoryFilter.OrderBy = CategoryOrder.Id;
+            CategoryFilter.OrderType = OrderType.ASC;
+            CategoryFilter.Selects = CategorySelect.ALL;
+            CategoryFilter.Id = Product_CategoryFilterDTO.Id;
+            CategoryFilter.Code = Product_CategoryFilterDTO.Code;
+            CategoryFilter.Name = Product_CategoryFilterDTO.Name;
+            CategoryFilter.ParentId = Product_CategoryFilterDTO.ParentId;
+            CategoryFilter.Path = Product_CategoryFilterDTO.Path;
+            CategoryFilter.Level = Product_CategoryFilterDTO.Level;
+            CategoryFilter.StatusId = Product_CategoryFilterDTO.StatusId;
+            CategoryFilter.ImageId = Product_CategoryFilterDTO.ImageId;
+            CategoryFilter.RowId = Product_CategoryFilterDTO.RowId;
+
+            List<Category> Categories = await CategoryService.List(CategoryFilter);
+            List<Product_CategoryDTO> Product_CategoryDTOs = Categories
+                .Select(x => new Product_CategoryDTO(x)).ToList();
+            return Product_CategoryDTOs;
+        }
+
 
         [Route(NewProductRoute.CountProduct), HttpPost]
         public async Task<long> CountProduct([FromBody] Product_ProductFilterDTO Product_ProductFilterDTO)

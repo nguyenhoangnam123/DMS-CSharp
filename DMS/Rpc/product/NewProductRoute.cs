@@ -24,6 +24,7 @@ namespace DMS.Rpc.product
         public const string FilterListSupplier = Default + "/filter-list-supplier";
         public const string FilterListProductGrouping = Default + "/filter-list-product-grouping";
         public const string FilterListBrand = Default + "/filter-list-brand";
+        public const string FilterListCategory = Default + "/filter-list-category";
 
         public const string CountProduct = Default + "/count-product";
         public const string ListProduct = Default + "/list-product";
@@ -46,24 +47,24 @@ namespace DMS.Rpc.product
             { "Tìm kiếm", new List<string> {
                 Parent,
                 Master, Count, List, Get,
-                FilterListProductType, FilterListStatus, FilterListSupplier, FilterListProductGrouping, FilterListBrand,
+                FilterListProductType, FilterListStatus, FilterListSupplier, FilterListProductGrouping, FilterListBrand, FilterListCategory,
                 CountProduct, ListProduct} },
             { "Thêm", new List<string> {
                 Parent,
                 Master, Count, List, Get,
-                FilterListProductType, FilterListStatus, FilterListSupplier, FilterListProductGrouping, FilterListBrand,
+                FilterListProductType, FilterListStatus, FilterListSupplier, FilterListProductGrouping, FilterListBrand, FilterListCategory,
                 Create,
                 CountProduct, ListProduct} },
             { "Xoá", new List<string> {
                 Parent,
                 Master, Count, List, Get,
-                FilterListProductType, FilterListStatus, FilterListSupplier, FilterListProductGrouping, FilterListBrand,
+                FilterListProductType, FilterListStatus, FilterListSupplier, FilterListProductGrouping, FilterListBrand, FilterListCategory,
                 Delete, BulkDelete,
                 CountProduct, ListProduct} },
              { "Xoá nhiều", new List<string> {
                 Parent,
                 Master, Count, List, Get,
-                FilterListProductType, FilterListStatus, FilterListSupplier, FilterListProductGrouping, FilterListBrand,
+                FilterListProductType, FilterListStatus, FilterListSupplier, FilterListProductGrouping, FilterListBrand, FilterListCategory,
                 BulkDelete,
                 CountProduct, ListProduct} },
         };
