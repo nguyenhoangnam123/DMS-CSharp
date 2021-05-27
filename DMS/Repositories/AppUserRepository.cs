@@ -617,7 +617,7 @@ namespace DMS.Repositories
             {
                 AppUserDAO AppUserDAO = new AppUserDAO();
                 AppUserDAOs.Add(AppUserDAO);
-                AppUserDAO.GPSUpdatedAt = AppUser.GPSUpdatedAt;
+                AppUserDAO.GPSUpdatedAt = AppUser.GPSUpdatedAt == DateTime.MinValue ? StaticParams.DateTimeNow : AppUser.GPSUpdatedAt;
                 AppUserDAO.Address = AppUser.Address;
                 AppUserDAO.Avatar = AppUser.Avatar;
                 AppUserDAO.CreatedAt = AppUser.CreatedAt;
