@@ -161,7 +161,7 @@ namespace DMS.Services.MProduct
                     }
                 }
 
-                RabbitManager.PublishList(UserNotifications, RoutingKeyEnum.UserNotificationSend);
+                RabbitManager.PublishList(UserNotifications, RoutingKeyEnum.AppUserNotificationSend);
 
                 await Logging.CreateAuditLog(new { }, Products, nameof(ProductService));
                 return Products;

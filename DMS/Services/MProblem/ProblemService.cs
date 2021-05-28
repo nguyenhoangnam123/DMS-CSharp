@@ -164,7 +164,7 @@ namespace DMS.Services.MProblem
                     UserNotifications.Add(UserNotification);
                 }
 
-                RabbitManager.PublishList(UserNotifications, RoutingKeyEnum.UserNotificationSend);
+                RabbitManager.PublishList(UserNotifications, RoutingKeyEnum.AppUserNotificationSend);
 
                 await Logging.CreateAuditLog(Problem, new { }, nameof(ProblemService));
                 return await UOW.ProblemRepository.Get(Problem.Id);
@@ -251,7 +251,7 @@ namespace DMS.Services.MProblem
                         Problem.ProblemHistories = new List<ProblemHistory>();
                     Problem.ProblemHistories.Add(ProblemHistory);
 
-                    RabbitManager.PublishList(UserNotifications, RoutingKeyEnum.UserNotificationSend);
+                    RabbitManager.PublishList(UserNotifications, RoutingKeyEnum.AppUserNotificationSend);
                 }
                 await UOW.Begin();
                 await UOW.ProblemRepository.Update(Problem);

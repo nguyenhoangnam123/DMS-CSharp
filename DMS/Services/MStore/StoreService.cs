@@ -290,7 +290,7 @@ namespace DMS.Services.MStore
                     UserNotifications.Add(UserNotification);
                 }
 
-                RabbitManager.PublishList(UserNotifications, RoutingKeyEnum.UserNotificationSend);
+                RabbitManager.PublishList(UserNotifications, RoutingKeyEnum.AppUserNotificationSend);
 
                 await Logging.CreateAuditLog(Store, new { }, nameof(StoreService));
                 return await UOW.StoreRepository.Get(Store.Id);
@@ -406,7 +406,7 @@ namespace DMS.Services.MStore
                     }
                 }
 
-                RabbitManager.PublishList(UserNotifications, RoutingKeyEnum.UserNotificationSend);
+                RabbitManager.PublishList(UserNotifications, RoutingKeyEnum.AppUserNotificationSend);
 
                 var newData = await UOW.StoreRepository.Get(Store.Id);
                 Sync(new List<Store> { newData });
@@ -469,7 +469,7 @@ namespace DMS.Services.MStore
                     UserNotifications.Add(UserNotification);
                 }
 
-                RabbitManager.PublishList(UserNotifications, RoutingKeyEnum.UserNotificationSend);
+                RabbitManager.PublishList(UserNotifications, RoutingKeyEnum.AppUserNotificationSend);
 
                 await Logging.CreateAuditLog(new { }, Store, nameof(StoreService));
                 return Store;
@@ -522,7 +522,7 @@ namespace DMS.Services.MStore
                     }
                 }
 
-                RabbitManager.PublishList(UserNotifications, RoutingKeyEnum.UserNotificationSend);
+                RabbitManager.PublishList(UserNotifications, RoutingKeyEnum.AppUserNotificationSend);
 
                 var Ids = Stores.Select(x => x.Id).ToList();
                 Stores = await UOW.StoreRepository.List(Ids);

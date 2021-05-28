@@ -30,8 +30,8 @@ namespace DMS.Handlers
         {
             try
             {
-                List<PromotionCode> ProblemType = JsonConvert.DeserializeObject<List<PromotionCode>>(json);
-                List<long> Ids = ProblemType.Select(a => a.Id).ToList();
+                List<PromotionCode> PromotionCodes = JsonConvert.DeserializeObject<List<PromotionCode>>(json);
+                List<long> Ids = PromotionCodes.Select(a => a.Id).ToList();
                 await UOW.PromotionCodeRepository.Used(Ids);
             }
             catch (Exception ex)

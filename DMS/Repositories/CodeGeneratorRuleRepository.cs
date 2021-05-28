@@ -317,6 +317,7 @@ namespace DMS.Repositories
                 CodeGeneratorRuleDAO.AutoNumberLenth = CodeGeneratorRule.AutoNumberLenth;
                 CodeGeneratorRuleDAO.RowId = CodeGeneratorRule.RowId;
                 CodeGeneratorRuleDAO.Used = CodeGeneratorRule.Used;
+                CodeGeneratorRuleDAOs.Add(CodeGeneratorRuleDAO);
 
                 foreach (CodeGeneratorRuleEntityComponentMapping CodeGeneratorRuleEntityComponentMapping in CodeGeneratorRule.CodeGeneratorRuleEntityComponentMappings)
                 {
