@@ -284,13 +284,13 @@ namespace DMS.Rpc.posm.showing_item
                 {
                     new string[] { 
                         "Id",
-                        "Code",
-                        "Name",
-                        "ShowingCategoryId",
-                        "UnitOfMeasureId",
-                        "SalePrice",
-                        "Description",
-                        "StatusId",
+                        "Mã sản phẩm trưng bày",
+                        "Tên sản phẩm trưng bày",
+                        "Danh mục",
+                        "Đơn vị tính",
+                        "Giá",
+                        "Mô tả",
+                        "Trạng thái"
                     }
                 };
                 List<object[]> ShowingItemData = new List<object[]>();
@@ -302,11 +302,11 @@ namespace DMS.Rpc.posm.showing_item
                         ShowingItem.Id,
                         ShowingItem.Code,
                         ShowingItem.Name,
-                        ShowingItem.ShowingCategoryId,
-                        ShowingItem.UnitOfMeasureId,
+                        ShowingItem.ShowingCategory == null ? null : ShowingItem.ShowingCategory.Name,
+                        ShowingItem.UnitOfMeasure == null ? null : ShowingItem.UnitOfMeasure.Name,
                         ShowingItem.SalePrice,
                         ShowingItem.Description,
-                        ShowingItem.StatusId,
+                        ShowingItem.Status == null ? null :  ShowingItem.Status.Name,
                     });
                 }
                 excel.GenerateWorksheet("Sản phẩm trưng bày", ShowingItemHeaders, ShowingItemData);
@@ -339,7 +339,7 @@ namespace DMS.Rpc.posm.showing_item
                         ShowingCategory.Id,
                         ShowingCategory.Code,
                         ShowingCategory.Name,
-                        ShowingCategory.Parent.Name,
+                        ShowingCategory.Parent == null ? null : ShowingCategory.Parent.Name,
                     });
                 }
                 excel.GenerateWorksheet("Danh mục", ShowingCategoryHeaders, ShowingCategoryData);
