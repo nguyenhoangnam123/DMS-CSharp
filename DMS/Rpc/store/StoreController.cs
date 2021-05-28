@@ -1137,7 +1137,7 @@ namespace DMS.Rpc.store
             using (var xlPackage = new ExcelPackage(new FileInfo(tempPath)))
             {
                 #region sheet Organization 
-                var worksheet_Organization = xlPackage.Workbook.Worksheets["Org"];
+                var worksheet_Organization = xlPackage.Workbook.Worksheets["Đơn vị tổ chức"];
                 xlPackage.Workbook.CalcMode = ExcelCalcMode.Manual;
                 int startRow_Organization = 2;
                 int numberCell_Organizations = 1;
@@ -1150,7 +1150,7 @@ namespace DMS.Rpc.store
                 #endregion
 
                 #region sheet ParentStore 
-                var worksheet_ParentStore = xlPackage.Workbook.Worksheets["ParentStore"];
+                var worksheet_ParentStore = xlPackage.Workbook.Worksheets["Đại lý cha"];
                 xlPackage.Workbook.CalcMode = ExcelCalcMode.Manual;
                 int startRow_ParentStore = 2;
                 int numberCell_ParentStores = 1;
@@ -1165,7 +1165,7 @@ namespace DMS.Rpc.store
                 #endregion
 
                 #region sheet StoreType 
-                var worksheet_StoreType = xlPackage.Workbook.Worksheets["StoreType"];
+                var worksheet_StoreType = xlPackage.Workbook.Worksheets["Loại đại lý"];
                 xlPackage.Workbook.CalcMode = ExcelCalcMode.Manual;
                 int startRow_StoreType = 2;
                 int numberCell_StoreTypes = 1;
@@ -1178,7 +1178,7 @@ namespace DMS.Rpc.store
                 #endregion
 
                 #region sheet StoreGrouping 
-                var worksheet_StoreGroup = xlPackage.Workbook.Worksheets["StoreGroup"];
+                var worksheet_StoreGroup = xlPackage.Workbook.Worksheets["Nhóm đại lý"];
                 xlPackage.Workbook.CalcMode = ExcelCalcMode.Manual;
                 int startRow_StoreGroup = 2;
                 int numberCell_StoreGroup = 1;
@@ -1191,7 +1191,7 @@ namespace DMS.Rpc.store
                 #endregion
 
                 #region sheet Province 
-                var worksheet_Province = xlPackage.Workbook.Worksheets["Province"];
+                var worksheet_Province = xlPackage.Workbook.Worksheets["Tỉnh, Thành phố"];
                 xlPackage.Workbook.CalcMode = ExcelCalcMode.Manual;
                 int startRow_Province = 2;
                 int numberCell_Provinces = 1;
@@ -1204,7 +1204,7 @@ namespace DMS.Rpc.store
                 #endregion
 
                 #region sheet District 
-                var worksheet_District = xlPackage.Workbook.Worksheets["District"];
+                var worksheet_District = xlPackage.Workbook.Worksheets["Quận, Huyện"];
                 xlPackage.Workbook.CalcMode = ExcelCalcMode.Manual;
                 int startRow_District = 2;
                 int numberCell_Districts = 1;
@@ -1218,7 +1218,7 @@ namespace DMS.Rpc.store
                 #endregion
 
                 #region sheet Ward 
-                var worksheet_Ward = xlPackage.Workbook.Worksheets["Ward"];
+                var worksheet_Ward = xlPackage.Workbook.Worksheets["Phường, Xã"];
                 xlPackage.Workbook.CalcMode = ExcelCalcMode.Manual;
                 int startRow_Ward = 2;
                 int numberCell_Wards = 1;
