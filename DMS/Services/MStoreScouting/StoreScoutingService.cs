@@ -147,7 +147,7 @@ namespace DMS.Services.MStoreScouting
                     UserNotifications.Add(UserNotification);
                 }
 
-                RabbitManager.PublishList(UserNotifications, RoutingKeyEnum.UserNotificationSend);
+                RabbitManager.PublishList(UserNotifications, RoutingKeyEnum.AppUserNotificationSend);
 
                 await Logging.CreateAuditLog(StoreScouting, new { }, nameof(StoreScoutingService));
                 return await UOW.StoreScoutingRepository.Get(StoreScouting.Id);
@@ -259,7 +259,7 @@ namespace DMS.Services.MStoreScouting
                     RecipientId = Creator.Id,
                     RowId = Guid.NewGuid(),
                 };
-                RabbitManager.PublishSingle(UserNotification, RoutingKeyEnum.UserNotificationSend);
+                RabbitManager.PublishSingle(UserNotification, RoutingKeyEnum.AppUserNotificationSend);
 
                 Mail mail = new Mail
                 {

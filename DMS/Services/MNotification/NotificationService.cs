@@ -159,7 +159,7 @@ namespace DMS.Services.MNotification
                         RowId = Guid.NewGuid(),
                     }).ToList();
 
-                    RabbitManager.PublishList(UserNotifications, RoutingKeyEnum.UserNotificationSend);
+                    RabbitManager.PublishList(UserNotifications, RoutingKeyEnum.AppUserNotificationSend);
                 }
 
                 var newData = await UOW.NotificationRepository.Get(Notification.Id);

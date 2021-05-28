@@ -425,7 +425,7 @@ namespace DMS.Services.MIndirectSalesOrder
                     };
                     UserNotifications.Add(UserNotification);
                 }
-                RabbitManager.PublishList(UserNotifications, RoutingKeyEnum.UserNotificationSend);
+                RabbitManager.PublishList(UserNotifications, RoutingKeyEnum.AppUserNotificationSend);
 
                 Sync(new List<IndirectSalesOrder> { IndirectSalesOrder });
                 await Logging.CreateAuditLog(IndirectSalesOrder, new { }, nameof(IndirectSalesOrderService));
@@ -484,7 +484,7 @@ namespace DMS.Services.MIndirectSalesOrder
                 };
                 UserNotifications.Add(UserNotification);
 
-                RabbitManager.PublishList(UserNotifications, RoutingKeyEnum.UserNotificationSend);
+                RabbitManager.PublishList(UserNotifications, RoutingKeyEnum.AppUserNotificationSend);
 
                 IndirectSalesOrder = await UOW.IndirectSalesOrderRepository.Get(IndirectSalesOrder.Id);
                 Sync(new List<IndirectSalesOrder> { IndirectSalesOrder });
@@ -541,7 +541,7 @@ namespace DMS.Services.MIndirectSalesOrder
                     UserNotifications.Add(UserNotification);
                 }
 
-                RabbitManager.PublishList(UserNotifications, RoutingKeyEnum.UserNotificationSend);
+                RabbitManager.PublishList(UserNotifications, RoutingKeyEnum.AppUserNotificationSend);
 
                 var IndirectSalesOrders = await UOW.IndirectSalesOrderRepository.List(new List<long> { IndirectSalesOrder.Id });
                 Sync(IndirectSalesOrders);

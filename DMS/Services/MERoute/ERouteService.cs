@@ -330,7 +330,7 @@ namespace DMS.Services.MERoute
                     RecipientId = ERoute.SaleEmployeeId,
                     RowId = Guid.NewGuid(),
                 };
-                RabbitManager.PublishSingle(UserNotification, RoutingKeyEnum.UserNotificationSend);
+                RabbitManager.PublishSingle(UserNotification, RoutingKeyEnum.AppUserNotificationSend);
 
                 await Logging.CreateAuditLog(ERoute, new { }, nameof(ERouteService));
                 return await UOW.ERouteRepository.Get(ERoute.Id);
@@ -391,7 +391,7 @@ namespace DMS.Services.MERoute
                     RecipientId = ERoute.SaleEmployeeId,
                     RowId = Guid.NewGuid(),
                 };
-                RabbitManager.PublishSingle(UserNotifications, RoutingKeyEnum.UserNotificationSend);
+                RabbitManager.PublishSingle(UserNotifications, RoutingKeyEnum.AppUserNotificationSend);
 
                 var newData = await UOW.ERouteRepository.Get(ERoute.Id);
                 await Logging.CreateAuditLog(newData, oldData, nameof(ERouteService));
@@ -436,7 +436,7 @@ namespace DMS.Services.MERoute
                     RecipientId = ERoute.SaleEmployeeId,
                     RowId = Guid.NewGuid(),
                 };
-                RabbitManager.PublishSingle(UserNotifications, RoutingKeyEnum.UserNotificationSend);
+                RabbitManager.PublishSingle(UserNotifications, RoutingKeyEnum.AppUserNotificationSend);
 
                 await Logging.CreateAuditLog(new { }, ERoute, nameof(ERouteService));
                 return ERoute;

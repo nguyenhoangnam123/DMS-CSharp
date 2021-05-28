@@ -160,7 +160,7 @@ namespace DMS.Services.MSurvey
                 }
 
                 List<UserNotification> EventUserNotifications = UserNotifications.Select(x => new UserNotification()).ToList();
-                RabbitManager.PublishList(EventUserNotifications, RoutingKeyEnum.UserNotificationSend);
+                RabbitManager.PublishList(EventUserNotifications, RoutingKeyEnum.AppUserNotificationSend);
 
                 await Logging.CreateAuditLog(Survey, new { }, nameof(SurveyService));
                 return await UOW.SurveyRepository.Get(Survey.Id);
@@ -220,7 +220,7 @@ namespace DMS.Services.MSurvey
                 }
 
                 List<UserNotification> EventUserNotifications = UserNotifications.Select(x => new UserNotification()).ToList();
-                RabbitManager.PublishList(EventUserNotifications, RoutingKeyEnum.UserNotificationSend);
+                RabbitManager.PublishList(EventUserNotifications, RoutingKeyEnum.AppUserNotificationSend);
 
                 var newData = await UOW.SurveyRepository.Get(Survey.Id);
                 await Logging.CreateAuditLog(newData, oldData, nameof(SurveyService));
@@ -278,7 +278,7 @@ namespace DMS.Services.MSurvey
                 }
 
                 List<UserNotification> EventUserNotifications = UserNotifications.Select(x => new UserNotification()).ToList();
-                RabbitManager.PublishList(EventUserNotifications, RoutingKeyEnum.UserNotificationSend);
+                RabbitManager.PublishList(EventUserNotifications, RoutingKeyEnum.AppUserNotificationSend);
 
                 await Logging.CreateAuditLog(new { }, Survey, nameof(SurveyService));
                 return Survey;

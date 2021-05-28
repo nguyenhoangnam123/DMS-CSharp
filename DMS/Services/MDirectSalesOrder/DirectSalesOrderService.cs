@@ -458,7 +458,7 @@ namespace DMS.Services.MDirectSalesOrder
                     UserNotifications.Add(UserNotification);
                 }
 
-                RabbitManager.PublishList(UserNotifications, RoutingKeyEnum.UserNotificationSend);
+                RabbitManager.PublishList(UserNotifications, RoutingKeyEnum.AppUserNotificationSend);
 
                 DirectSalesOrder = await UOW.DirectSalesOrderRepository.Get(DirectSalesOrder.Id);
                 Sync(new List<DirectSalesOrder> { DirectSalesOrder });
@@ -516,7 +516,7 @@ namespace DMS.Services.MDirectSalesOrder
                 };
                 UserNotifications.Add(UserNotification);
 
-                RabbitManager.PublishList(UserNotifications, RoutingKeyEnum.UserNotificationSend);
+                RabbitManager.PublishList(UserNotifications, RoutingKeyEnum.AppUserNotificationSend);
 
                 DirectSalesOrder = await UOW.DirectSalesOrderRepository.Get(DirectSalesOrder.Id);
                 Sync(new List<DirectSalesOrder> { DirectSalesOrder });
@@ -573,7 +573,7 @@ namespace DMS.Services.MDirectSalesOrder
                     UserNotifications.Add(UserNotification);
                 }
 
-                RabbitManager.PublishList(UserNotifications, RoutingKeyEnum.UserNotificationSend);
+                RabbitManager.PublishList(UserNotifications, RoutingKeyEnum.AppUserNotificationSend);
 
                 DirectSalesOrder = await UOW.DirectSalesOrderRepository.Get(DirectSalesOrder.Id);
                 Sync(new List<DirectSalesOrder> { DirectSalesOrder });
