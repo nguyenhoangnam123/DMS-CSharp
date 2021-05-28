@@ -356,7 +356,7 @@ namespace DMS.Rpc.e_route
             StringBuilder errorContent = new StringBuilder();
             using (ExcelPackage excelPackage = new ExcelPackage(file.OpenReadStream()))
             {
-                ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets["ERoute"];
+                ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets["Tuyến"];
                 if (worksheet == null)
                     return BadRequest("File không đúng biểu mẫu import");
                 int StartColumn = 1;
