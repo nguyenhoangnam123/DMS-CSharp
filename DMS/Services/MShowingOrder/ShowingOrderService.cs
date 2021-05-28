@@ -310,12 +310,20 @@ namespace DMS.Services.MShowingOrder
 
         private void Sync(List<ShowingOrder> ShowingOrders)
         {
-            foreach(var ShowingOrder in ShowingOrders)
-            {
-                ShowingOrder.CreatedAt = StaticParams.DateTimeNow;
-                ShowingOrder.UpdatedAt = StaticParams.DateTimeNow;
-            }
-            RabbitManager.PublishList(ShowingOrders, RoutingKeyEnum.ShowingOrderSync); // POSMtransaction trên DMS Report
+            List<AppUser> AppUsers = ShowingOrders.Select(x => new AppUser { Id = x.AppUserId }).Distinct().ToList();
+            List<Organization> Organizations = ShowingOrders.Select(x => new Organization { Id = x.OrganizationId }).Distinct().ToList();
+            List<Store> Stores = ShowingOrders.Select(x => new Store { Id = x.StoreId }).Distinct().ToList();
+            List<ShowingItem> ShowingItems = ShowingOrders.Where(x => x.ShowingOrderContents != null)
+                .SelectMany(x => x.ShowingOrderContents).Select(x => new ShowingItem { Id = x.ShowingItemId }).Distinct().ToList();
+            List<UnitOfMeasure> UnitOfMeasures = ShowingOrders.Where(x => x.ShowingOrderContents != null)
+                .SelectMany(x => x.ShowingOrderContents).Select(x => new UnitOfMeasure { Id = x.UnitOfMeasureId }).Distinct().ToList();
+
+            RabbitManager.PublishList(ShowingOrders, RoutingKeyEnum.ShowingOrderSync);
+            RabbitManager.PublishList(AppUsers, RoutingKeyEnum.AppUserUsed);
+            RabbitManager.PublishList(Organizations, RoutingKeyEnum.OrganizationUsed);
+            RabbitManager.PublishList(Stores, RoutingKeyEnum.StoreUsed);
+            RabbitManager.PublishList(ShowingItems, RoutingKeyEnum.ShowingItemUsed);
+            RabbitManager.PublishList(UnitOfMeasures, RoutingKeyEnum.UnitOfMeasureUsed);
         }
     }
 }

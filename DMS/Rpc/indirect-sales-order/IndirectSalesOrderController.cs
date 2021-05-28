@@ -4,6 +4,8 @@ using DMS.Enums;
 using DMS.Helpers;
 using DMS.Models;
 using DMS.Services.MAppUser;
+using DMS.Services.MBrand;
+using DMS.Services.MCategory;
 using DMS.Services.MEditedPriceStatus;
 using DMS.Services.MExportTemplate;
 using DMS.Services.MIndirectSalesOrder;
@@ -52,6 +54,8 @@ namespace DMS.Rpc.indirect_sales_order
         private IStoreStatusService StoreStatusService;
         private IStoreTypeService StoreTypeService;
         private ITaxTypeService TaxTypeService;
+        private ICategoryService CategoryService;
+        private IBrandService BrandService;
         private DataContext DataContext;
         private ICurrentContext CurrentContext;
         public IndirectSalesOrderController(
@@ -72,7 +76,8 @@ namespace DMS.Rpc.indirect_sales_order
             IStoreGroupingService StoreGroupingService,
             IStoreStatusService StoreStatusService,
             IStoreTypeService StoreTypeService,
-            ITaxTypeService TaxTypeService,
+            ICategoryService CategoryService,
+            IBrandService BrandService,
             DataContext DataContext,
             ICurrentContext CurrentContext
         )
@@ -95,6 +100,8 @@ namespace DMS.Rpc.indirect_sales_order
             this.StoreStatusService = StoreStatusService;
             this.StoreTypeService = StoreTypeService;
             this.TaxTypeService = TaxTypeService;
+            this.CategoryService = CategoryService;
+            this.BrandService = BrandService;
             this.DataContext = DataContext;
             this.CurrentContext = CurrentContext;
         }

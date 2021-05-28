@@ -315,40 +315,14 @@ namespace DMS.Rpc.kpi_tracking.kpi_general_period_report
                 })
                 .ToListAsync();
 
-            //var DirectSalesOrderDAOs = await DataContext.DirectSalesOrder
-            //   .Where(x => AppUserIds.Contains(x.SaleEmployeeId) &&
-            //   x.OrderDate >= StartDate && x.OrderDate <= EndDate &&
-            //   x.RequestStateId == RequestStateEnum.APPROVED.Id)
-            //   .Select(x => new DirectSalesOrderDAO
-            //   {
-            //       Id = x.Id,
-            //       Total = x.Total,
-            //       SaleEmployeeId = x.SaleEmployeeId,
-            //       OrderDate = x.OrderDate,
-            //       BuyerStoreId = x.BuyerStoreId,
-            //       BuyerStore = x.BuyerStore == null ? null : new StoreDAO
-            //       {
-            //           StoreType = x.BuyerStore.StoreType == null ? null : new StoreTypeDAO
-            //           {
-            //               Code = x.BuyerStore.StoreType.Code
-            //           }
-            //       },
-            //       DirectSalesOrderContents = x.DirectSalesOrderContents.Select(c => new DirectSalesOrderContentDAO
-            //       {
-            //           RequestedQuantity = c.RequestedQuantity,
-            //           ItemId = c.ItemId
-            //       }).ToList(),
-            //       DirectSalesOrderPromotions = x.DirectSalesOrderPromotions.Select(x => new DirectSalesOrderPromotionDAO
-            //       {
-            //           RequestedQuantity = x.RequestedQuantity,
-            //           ItemId = x.ItemId
-            //       }).ToList()
-            //   })
-            //   .ToListAsync();
+            var query_store_checking = from sc in DataContext.StoreChecking
+                                       join s in DataContext.Store on sc.StoreId equals s.Id
+                                       where AppUserIds.Contains(sc.SaleEmployeeId) &&
+                                       (sc.CheckOutAt.HasValue && StartDate <= sc.CheckOutAt.Value && sc.CheckOutAt.Value <= EndDate) &&
+                                       s.DeletedAt == null
+                                       select sc;
 
-            var StoreCheckingDAOs = await DataContext.StoreChecking
-                .Where(x => AppUserIds.Contains(x.SaleEmployeeId) &&
-                x.CheckOutAt.HasValue && x.CheckOutAt.Value >= StartDate && x.CheckOutAt.Value <= EndDate)
+            var StoreCheckingDAOs = await query_store_checking
                 .Select(x => new StoreCheckingDAO
                 {
                     SaleEmployeeId = x.SaleEmployeeId,

@@ -312,12 +312,20 @@ namespace DMS.Services.MShowingOrderWithDraw
 
         private void Sync(List<ShowingOrderWithDraw> ShowingOrderWithDraws)
         {
-            foreach (var ShowingOrderWithDraw in ShowingOrderWithDraws)
-            {
-                ShowingOrderWithDraw.CreatedAt = StaticParams.DateTimeNow;
-                ShowingOrderWithDraw.UpdatedAt = StaticParams.DateTimeNow;
-            }
-            RabbitManager.PublishList(ShowingOrderWithDraws, RoutingKeyEnum.ShowingOrderWithDrawSync); // sync sang report
+            List<AppUser> AppUsers = ShowingOrderWithDraws.Select(x => new AppUser { Id = x.AppUserId }).Distinct().ToList();
+            List<Organization> Organizations = ShowingOrderWithDraws.Select(x => new Organization { Id = x.OrganizationId }).Distinct().ToList();
+            List<Store> Stores = ShowingOrderWithDraws.Select(x => new Store { Id = x.StoreId }).Distinct().ToList();
+            List<ShowingItem> ShowingItems = ShowingOrderWithDraws.Where(x => x.ShowingOrderContentWithDraws != null)
+                .SelectMany(x => x.ShowingOrderContentWithDraws).Select(x => new ShowingItem { Id = x.ShowingItemId }).Distinct().ToList();
+            List<UnitOfMeasure> UnitOfMeasures = ShowingOrderWithDraws.Where(x => x.ShowingOrderContentWithDraws != null)
+                .SelectMany(x => x.ShowingOrderContentWithDraws).Select(x => new UnitOfMeasure { Id = x.UnitOfMeasureId }).Distinct().ToList();
+
+            RabbitManager.PublishList(ShowingOrderWithDraws, RoutingKeyEnum.ShowingOrderWithDrawSync);
+            RabbitManager.PublishList(AppUsers, RoutingKeyEnum.AppUserUsed);
+            RabbitManager.PublishList(Organizations, RoutingKeyEnum.OrganizationUsed);
+            RabbitManager.PublishList(Stores, RoutingKeyEnum.StoreUsed);
+            RabbitManager.PublishList(ShowingItems, RoutingKeyEnum.ShowingItemUsed);
+            RabbitManager.PublishList(UnitOfMeasures, RoutingKeyEnum.UnitOfMeasureUsed);
         }
     }
 }

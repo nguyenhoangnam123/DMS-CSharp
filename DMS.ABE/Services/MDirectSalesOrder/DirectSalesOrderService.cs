@@ -513,24 +513,29 @@ namespace DMS.ABE.Services.MDirectSalesOrder
         private void Sync(List<DirectSalesOrder> DirectSalesOrders)
         {
             List<AppUser> AppUsers = new List<AppUser>();
-            AppUsers.AddRange(DirectSalesOrders.Select(x => x.SaleEmployee));
-            AppUsers.AddRange(DirectSalesOrders.Select(x => x.Creator));
+            AppUsers.AddRange(DirectSalesOrders.Select(x => new AppUser { Id = x.SaleEmployeeId }));
+            AppUsers.AddRange(DirectSalesOrders.Select(x => new AppUser { Id = x.CreatorId.Value }));
             AppUsers = AppUsers.Distinct().ToList();
 
-            List<Organization> Organizations = DirectSalesOrders.Select(x => x.Organization).Distinct().ToList();
+            List<Organization> Organizations = DirectSalesOrders.Select(x => new Organization { Id = x.OrganizationId }).Distinct().ToList();
 
-            List<Store> Stores = DirectSalesOrders.Select(x => x.BuyerStore).Distinct().ToList();
+            List<Store> Stores = DirectSalesOrders.Select(x => new Store { Id = x.BuyerStoreId }).Distinct().ToList();
 
             List<Item> Items = new List<Item>();
-            Items.AddRange(DirectSalesOrders.Where(x => x.DirectSalesOrderContents != null).SelectMany(x => x.DirectSalesOrderContents).Select(x => x.Item));
-            Items.AddRange(DirectSalesOrders.Where(x => x.DirectSalesOrderPromotions != null).SelectMany(x => x.DirectSalesOrderPromotions).Select(x => x.Item));
+            Items.AddRange(DirectSalesOrders.Where(x => x.DirectSalesOrderContents != null)
+                .SelectMany(x => x.DirectSalesOrderContents).Select(x => new Item { Id = x.ItemId }));
+            Items.AddRange(DirectSalesOrders.Where(x => x.DirectSalesOrderPromotions != null)
+                .SelectMany(x => x.DirectSalesOrderPromotions).Select(x => new Item { Id = x.ItemId }));
             Items = Items.Distinct().ToList();
-
             List<UnitOfMeasure> UnitOfMeasures = new List<UnitOfMeasure>();
-            UnitOfMeasures.AddRange(DirectSalesOrders.Where(x => x.DirectSalesOrderContents != null).SelectMany(x => x.DirectSalesOrderContents).Select(x => x.UnitOfMeasure));
-            UnitOfMeasures.AddRange(DirectSalesOrders.Where(x => x.DirectSalesOrderContents != null).SelectMany(x => x.DirectSalesOrderContents).Select(x => x.PrimaryUnitOfMeasure));
-            UnitOfMeasures.AddRange(DirectSalesOrders.Where(x => x.DirectSalesOrderPromotions != null).SelectMany(x => x.DirectSalesOrderPromotions).Select(x => x.UnitOfMeasure));
-            UnitOfMeasures.AddRange(DirectSalesOrders.Where(x => x.DirectSalesOrderPromotions != null).SelectMany(x => x.DirectSalesOrderPromotions).Select(x => x.PrimaryUnitOfMeasure));
+            UnitOfMeasures.AddRange(DirectSalesOrders.Where(x => x.DirectSalesOrderContents != null)
+                .SelectMany(x => x.DirectSalesOrderContents).Select(x => new UnitOfMeasure { Id = x.UnitOfMeasureId }));
+            UnitOfMeasures.AddRange(DirectSalesOrders.Where(x => x.DirectSalesOrderContents != null)
+                .SelectMany(x => x.DirectSalesOrderContents).Select(x => new UnitOfMeasure { Id = x.PrimaryUnitOfMeasureId }));
+            UnitOfMeasures.AddRange(DirectSalesOrders.Where(x => x.DirectSalesOrderPromotions != null)
+                .SelectMany(x => x.DirectSalesOrderPromotions).Select(x => new UnitOfMeasure { Id = x.UnitOfMeasureId }));
+            UnitOfMeasures.AddRange(DirectSalesOrders.Where(x => x.DirectSalesOrderPromotions != null)
+                .SelectMany(x => x.DirectSalesOrderPromotions).Select(x => new UnitOfMeasure { Id = x.PrimaryUnitOfMeasureId }));
             UnitOfMeasures = UnitOfMeasures.Distinct().ToList();
 
             RabbitManager.PublishList(DirectSalesOrders, RoutingKeyEnum.DirectSalesOrderSync);

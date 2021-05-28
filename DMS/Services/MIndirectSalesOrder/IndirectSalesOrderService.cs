@@ -1184,27 +1184,32 @@ namespace DMS.Services.MIndirectSalesOrder
         private void Sync(List<IndirectSalesOrder> IndirectSalesOrders)
         {
             List<AppUser> AppUsers = new List<AppUser>();
-            AppUsers.AddRange(IndirectSalesOrders.Select(x => x.SaleEmployee));
-            AppUsers.AddRange(IndirectSalesOrders.Select(x => x.Creator));
+            AppUsers.AddRange(IndirectSalesOrders.Select(x => new AppUser { Id = x.SaleEmployeeId }));
+            AppUsers.AddRange(IndirectSalesOrders.Select(x => new AppUser { Id = x.CreatorId }));
             AppUsers = AppUsers.Distinct().ToList();
 
-            List<Organization> Organizations = IndirectSalesOrders.Select(x => x.Organization).Distinct().ToList();
+            List<Organization> Organizations = IndirectSalesOrders.Select(x => new Organization { Id = x.OrganizationId }).Distinct().ToList();
 
             List<Store> Stores = new List<Store>();
-            Stores.AddRange(IndirectSalesOrders.Select(x => x.BuyerStore));
-            Stores.AddRange(IndirectSalesOrders.Select(x => x.SellerStore));
+            Stores.AddRange(IndirectSalesOrders.Select(x => new Store { Id = x.BuyerStoreId }));
+            Stores.AddRange(IndirectSalesOrders.Select(x => new Store { Id = x.SellerStoreId }));
             Stores = Stores.Distinct().ToList();
 
             List<Item> Items = new List<Item>();
-            Items.AddRange(IndirectSalesOrders.Where(x => x.IndirectSalesOrderContents != null).SelectMany(x => x.IndirectSalesOrderContents).Select(x => x.Item));
-            Items.AddRange(IndirectSalesOrders.Where(x => x.IndirectSalesOrderPromotions != null).SelectMany(x => x.IndirectSalesOrderPromotions).Select(x => x.Item));
+            Items.AddRange(IndirectSalesOrders.Where(x => x.IndirectSalesOrderContents != null)
+                .SelectMany(x => x.IndirectSalesOrderContents).Select(x => new Item { Id = x.ItemId }));
+            Items.AddRange(IndirectSalesOrders.Where(x => x.IndirectSalesOrderPromotions != null)
+                .SelectMany(x => x.IndirectSalesOrderPromotions).Select(x => new Item { Id = x.ItemId }));
             Items = Items.Distinct().ToList();
-
             List<UnitOfMeasure> UnitOfMeasures = new List<UnitOfMeasure>();
-            UnitOfMeasures.AddRange(IndirectSalesOrders.Where(x => x.IndirectSalesOrderContents != null).SelectMany(x => x.IndirectSalesOrderContents).Select(x => x.UnitOfMeasure));
-            UnitOfMeasures.AddRange(IndirectSalesOrders.Where(x => x.IndirectSalesOrderContents != null).SelectMany(x => x.IndirectSalesOrderContents).Select(x => x.PrimaryUnitOfMeasure));
-            UnitOfMeasures.AddRange(IndirectSalesOrders.Where(x => x.IndirectSalesOrderPromotions != null).SelectMany(x => x.IndirectSalesOrderPromotions).Select(x => x.UnitOfMeasure));
-            UnitOfMeasures.AddRange(IndirectSalesOrders.Where(x => x.IndirectSalesOrderPromotions != null).SelectMany(x => x.IndirectSalesOrderPromotions).Select(x => x.PrimaryUnitOfMeasure));
+            UnitOfMeasures.AddRange(IndirectSalesOrders.Where(x => x.IndirectSalesOrderContents != null)
+                .SelectMany(x => x.IndirectSalesOrderContents).Select(x => new UnitOfMeasure { Id = x.UnitOfMeasureId }));
+            UnitOfMeasures.AddRange(IndirectSalesOrders.Where(x => x.IndirectSalesOrderContents != null)
+                .SelectMany(x => x.IndirectSalesOrderContents).Select(x => new UnitOfMeasure { Id = x.PrimaryUnitOfMeasureId }));
+            UnitOfMeasures.AddRange(IndirectSalesOrders.Where(x => x.IndirectSalesOrderPromotions != null)
+                .SelectMany(x => x.IndirectSalesOrderPromotions).Select(x => new UnitOfMeasure { Id = x.UnitOfMeasureId }));
+            UnitOfMeasures.AddRange(IndirectSalesOrders.Where(x => x.IndirectSalesOrderPromotions != null)
+                .SelectMany(x => x.IndirectSalesOrderPromotions).Select(x => new UnitOfMeasure { Id = x.PrimaryUnitOfMeasureId }));
             UnitOfMeasures = UnitOfMeasures.Distinct().ToList();
 
             RabbitManager.PublishList(IndirectSalesOrders, RoutingKeyEnum.IndirectSalesOrderSync);

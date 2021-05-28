@@ -722,65 +722,21 @@ namespace DMS.Services.MStore
 
         private void Sync(List<Store> Stores)
         {
-            List<Brand> Brands = new List<Brand>();
             List<AppUser> AppUsers = new List<AppUser>();
-            List<Store> ParentStores = new List<Store>();
-            List<StoreType> StoreTypes = new List<StoreType>();
-            List<StoreGrouping> StoreGroupings = new List<StoreGrouping>();
-            List<Province> Provinces = new List<Province>();
-            List<District> Districts = new List<District>();
-            List<Ward> Wards = new List<Ward>();
-            List<Organization> Organizations = new List<Organization>();
-            foreach (var Store in Stores)
-            {
-                StoreTypes.Add(Store.StoreType);
-                if (Store.AppUserId.HasValue)
-                {
-                    AppUsers.Add(Store.AppUser);
-                }
-                if (Store.ParentStoreId.HasValue)
-                {
-                    ParentStores.Add(Store.ParentStore);
-                }
-                if (Store.StoreGroupingId.HasValue)
-                {
-                    StoreGroupings.Add(Store.StoreGrouping);
-                }
-                if (Store.ProvinceId.HasValue)
-                {
-                    Provinces.Add(Store.Province);
-                }
-                if (Store.DistrictId.HasValue)
-                {
-                    Districts.Add(Store.District);
-                }
-                if (Store.WardId.HasValue)
-                {
-                    Wards.Add(Store.Ward);
-                }
-
-                if (Store.BrandInStores != null)
-                {
-                    foreach (var BrandInStore in Store.BrandInStores)
-                    {
-                        Brands.Add(BrandInStore.Brand);
-                    }
-                }
-            }
+            AppUsers.AddRange(Stores.Select(x => new AppUser { Id = x.CreatorId }));
+            AppUsers.AddRange(Stores.Where(x => x.AppUserId.HasValue).Select(x => new AppUser { Id = x.AppUserId.Value }));
             AppUsers = AppUsers.Distinct().ToList();
-            Brands = Brands.Distinct().ToList();
-            ParentStores = ParentStores.Distinct().ToList();
-            StoreTypes = StoreTypes.Distinct().ToList();
-            StoreGroupings = StoreGroupings.Distinct().ToList();
-            Provinces = Provinces.Distinct().ToList();
-            Districts = Districts.Distinct().ToList();
-            Wards = Wards.Distinct().ToList();
-            Organizations = Organizations.Distinct().ToList();
-
+            List<Brand> Brands = Stores.Where(x => x.BrandInStores != null).SelectMany(x => x.BrandInStores).Select(x => new Brand { Id = x.BrandId }).Distinct().ToList();
+            List<StoreType> StoreTypes = Stores.Select(x => new StoreType { Id = x.StoreTypeId }).Distinct().ToList();
+            List<StoreGrouping> StoreGroupings = Stores.Where(x => x.StoreGroupingId.HasValue).Select(x => new StoreGrouping { Id = x.StoreGroupingId.Value }).Distinct().ToList();
+            List<Province> Provinces = Stores.Where(x => x.ProvinceId.HasValue).Select(x => new Province { Id = x.ProvinceId.Value }).Distinct().ToList();
+            List<District> Districts = Stores.Where(x => x.DistrictId.HasValue).Select(x => new District { Id = x.DistrictId.Value }).Distinct().ToList();
+            List<Ward> Wards = Stores.Where(x => x.WardId.HasValue).Select(x => new Ward { Id = x.WardId.Value }).Distinct().ToList();
+            List<Organization> Organizations = Stores.Select(x => new Organization { Id = x.OrganizationId }).Distinct().ToList();
+         
             RabbitManager.PublishList(Stores, RoutingKeyEnum.StoreSync);
             RabbitManager.PublishList(AppUsers, RoutingKeyEnum.AppUserUsed);
             RabbitManager.PublishList(Brands, RoutingKeyEnum.BrandUsed);
-            RabbitManager.PublishList(ParentStores, RoutingKeyEnum.StoreUsed);
             RabbitManager.PublishList(StoreTypes, RoutingKeyEnum.StoreTypeUsed);
             RabbitManager.PublishList(StoreGroupings, RoutingKeyEnum.StoreGroupingUsed);
             RabbitManager.PublishList(Provinces, RoutingKeyEnum.ProvinceUsed);
