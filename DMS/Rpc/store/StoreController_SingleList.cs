@@ -486,7 +486,7 @@ namespace DMS.Rpc.store
         {
             ProductGroupingFilter ProductGroupingFilter = new ProductGroupingFilter();
             ProductGroupingFilter.Skip = Store_ProductGroupingFilterDTO.Skip;
-            ProductGroupingFilter.Take = Store_ProductGroupingFilterDTO.Take;
+            ProductGroupingFilter.Take = int.MaxValue;
             ProductGroupingFilter.OrderBy = ProductGroupingOrder.Id;
             ProductGroupingFilter.OrderType = OrderType.ASC;
             ProductGroupingFilter.Selects = ProductGroupingSelect.ALL;

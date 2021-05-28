@@ -320,6 +320,7 @@ namespace DMS.Rpc.product
             ProductFilter.Description = Product_ProductFilterDTO.Description;
             ProductFilter.ScanCode = Product_ProductFilterDTO.ScanCode;
             ProductFilter.ProductTypeId = Product_ProductFilterDTO.ProductTypeId;
+            ProductFilter.CategoryId = Product_ProductFilterDTO.CategoryId;
             ProductFilter.SupplierId = Product_ProductFilterDTO.SupplierId;
             ProductFilter.BrandId = Product_ProductFilterDTO.BrandId;
             ProductFilter.UnitOfMeasureId = Product_ProductFilterDTO.UnitOfMeasureId;
