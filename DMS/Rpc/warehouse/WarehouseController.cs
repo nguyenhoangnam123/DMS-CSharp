@@ -232,7 +232,7 @@ namespace DMS.Rpc.warehouse
             Warehouse.Inventories = new List<Inventory>();
             using (ExcelPackage excelPackage = new ExcelPackage(file.OpenReadStream()))
             {
-                ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets["Inventory"];
+                ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets["Hàng tồn kho"];
                 if (worksheet == null)
                     return BadRequest("File không đúng biểu mẫu import");
                 int StartColumn = 1;
