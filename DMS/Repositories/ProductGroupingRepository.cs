@@ -146,7 +146,7 @@ namespace DMS.Repositories
                 } : null,
             }).ToListAsync();
 
-            var ProductGroupingDAOs = await DataContext.ProductGrouping.ToListAsync();
+            var ProductGroupingDAOs = await DataContext.ProductGrouping.Where(x => x.DeletedAt == null).ToListAsync();
             foreach (var ProductGrouping in ProductGroupings)
             {
                 var count = ProductGroupingDAOs.Where(x => x.Path.StartsWith(ProductGrouping.Path) && x.Id != ProductGrouping.Id).Count();
