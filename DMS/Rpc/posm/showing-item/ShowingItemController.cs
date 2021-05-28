@@ -291,8 +291,6 @@ namespace DMS.Rpc.posm.showing_item
                         "SalePrice",
                         "Description",
                         "StatusId",
-                        "Used",
-                        "RowId",
                     }
                 };
                 List<object[]> ShowingItemData = new List<object[]>();
@@ -309,8 +307,6 @@ namespace DMS.Rpc.posm.showing_item
                         ShowingItem.SalePrice,
                         ShowingItem.Description,
                         ShowingItem.StatusId,
-                        ShowingItem.Used,
-                        ShowingItem.RowId,
                     });
                 }
                 excel.GenerateWorksheet("Sản phẩm trưng bày", ShowingItemHeaders, ShowingItemData);
@@ -329,15 +325,9 @@ namespace DMS.Rpc.posm.showing_item
                 {
                     new string[] { 
                         "Id",
-                        "Code",
-                        "Name",
-                        "ParentId",
-                        "Path",
-                        "Level",
-                        "StatusId",
-                        "ImageId",
-                        "RowId",
-                        "Used",
+                        "Mã danh mục",
+                        "Tên danh mục",
+                        "Danh mục cha",
                     }
                 };
                 List<object[]> ShowingCategoryData = new List<object[]>();
@@ -349,46 +339,10 @@ namespace DMS.Rpc.posm.showing_item
                         ShowingCategory.Id,
                         ShowingCategory.Code,
                         ShowingCategory.Name,
-                        ShowingCategory.ParentId,
-                        ShowingCategory.Path,
-                        ShowingCategory.Level,
-                        ShowingCategory.StatusId,
-                        ShowingCategory.ImageId,
-                        ShowingCategory.RowId,
-                        ShowingCategory.Used,
+                        ShowingCategory.Parent.Name,
                     });
                 }
                 excel.GenerateWorksheet("Danh mục", ShowingCategoryHeaders, ShowingCategoryData);
-                #endregion
-                #region Status
-                var StatusFilter = new StatusFilter();
-                StatusFilter.Selects = StatusSelect.ALL;
-                StatusFilter.OrderBy = StatusOrder.Id;
-                StatusFilter.OrderType = OrderType.ASC;
-                StatusFilter.Skip = 0;
-                StatusFilter.Take = int.MaxValue;
-                List<Status> Statuses = await StatusService.List(StatusFilter);
-
-                var StatusHeaders = new List<string[]>()
-                {
-                    new string[] { 
-                        "Id",
-                        "Code",
-                        "Name",
-                    }
-                };
-                List<object[]> StatusData = new List<object[]>();
-                for (int i = 0; i < Statuses.Count; i++)
-                {
-                    var Status = Statuses[i];
-                    StatusData.Add(new Object[]
-                    {
-                        Status.Id,
-                        Status.Code,
-                        Status.Name,
-                    });
-                }
-                excel.GenerateWorksheet("Trạng thái", StatusHeaders, StatusData);
                 #endregion
                 #region UnitOfMeasure
                 var UnitOfMeasureFilter = new UnitOfMeasureFilter();
@@ -403,12 +357,9 @@ namespace DMS.Rpc.posm.showing_item
                 {
                     new string[] { 
                         "Id",
-                        "Code",
-                        "Name",
-                        "Description",
-                        "StatusId",
-                        "Used",
-                        "RowId",
+                        "Mã đơn vị tính",
+                        "Tên đơn vị tính",
+                        "Mô tả",
                     }
                 };
                 List<object[]> UnitOfMeasureData = new List<object[]>();
@@ -421,9 +372,6 @@ namespace DMS.Rpc.posm.showing_item
                         UnitOfMeasure.Code,
                         UnitOfMeasure.Name,
                         UnitOfMeasure.Description,
-                        UnitOfMeasure.StatusId,
-                        UnitOfMeasure.Used,
-                        UnitOfMeasure.RowId,
                     });
                 }
                 excel.GenerateWorksheet("Đơn vị tính", UnitOfMeasureHeaders, UnitOfMeasureData);
