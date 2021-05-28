@@ -900,7 +900,10 @@ namespace DMS.Rpc.kpi_product_grouping
             MemoryStream output = new MemoryStream();
             dynamic Data = new ExpandoObject();
             Data.KpiProductGroupings = KpiProductGrouping_ExportTemplateDTOs; // đổ dữ liệu vào sheet chính
-            Data.ProductGroupings = ProductGroupings; // đổ dữ liệu vào tab nhóm sản phẩm
+            Data.ProductGroupings = ProductGroupings.Select(x => new {
+                Code = Utils.ReplaceHexadecimalSymbols(x.Code),
+                Name = Utils.ReplaceHexadecimalSymbols(x.Name),
+            }); // đổ dữ liệu vào tab nhóm sản phẩm
             Data.Items = Items; // đổ dữ liệu vào tab sản phẩm
             Data.NewItems = NewItems; // đổ dữ liệu vào tab sản phẩm mới
             using (var document = StaticParams.DocumentFactory.Open(input, output, "xlsx"))
