@@ -327,6 +327,7 @@ namespace DMS.Services.MStore
                 {
                     foreach (var BrandInStore in Store.BrandInStores)
                     {
+                        BrandInStore.StoreId = Store.Id;
                         if (BrandInStore.Id == 0)
                             BrandInStore.CreatorId = CurrentContext.UserId;
                     }
