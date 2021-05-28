@@ -1200,7 +1200,16 @@ namespace DMS.Services.MDirectSalesOrder
             AppUsers = AppUsers.Distinct().ToList();
 
             List<Organization> Organizations = DirectSalesOrders.Select(x => new Organization { Id = x.OrganizationId }).Distinct().ToList();
-            List<PromotionCode> PromotionCodes = DirectSalesOrders.Where(x => x.PromotionCodeId.HasValue).Select(x => new PromotionCode { Id = x.PromotionCodeId.Value }).Distinct().ToList();
+            
+            string PromotionCode = DirectSalesOrders.Where(x => !string.IsNullOrWhiteSpace(x.PromotionCode)).Select(x => x.PromotionCode).Distinct().FirstOrDefault();
+            var PromotionCodeFilter = new PromotionCodeFilter
+            {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = PromotionCodeSelect.Id,
+                Code = new StringFilter { Equal = PromotionCode }
+            };
+            var PromotionCodes = (UOW.PromotionCodeRepository.List(PromotionCodeFilter)).Result;
 
             List<Store> Stores = DirectSalesOrders.Select(x => new Store { Id = x.BuyerStoreId }).Distinct().ToList();
 
