@@ -8,6 +8,8 @@ namespace DMS.Rpc.store
 
         public long Id { get; set; }
 
+        public string Code { get; set; }
+
         public string Name { get; set; }
 
         public long? Priority { get; set; }
@@ -23,6 +25,8 @@ namespace DMS.Rpc.store
 
             this.Id = Ward.Id;
 
+            this.Code = Ward.Code;
+            
             this.Name = Ward.Name;
 
             this.Priority = Ward.Priority;
