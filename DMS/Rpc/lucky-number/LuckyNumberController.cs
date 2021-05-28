@@ -221,7 +221,7 @@ namespace DMS.Rpc.lucky_number
 
             using (ExcelPackage excelPackage = new ExcelPackage(file.OpenReadStream()))
             {
-                ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets["LuckyNumber"];
+                ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets["Giải thưởng"];
 
                 if (worksheet == null)
                 {
