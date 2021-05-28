@@ -248,7 +248,7 @@ namespace DMS.Rpc.store_scouting
             StringBuilder errorContent = new StringBuilder();
             using (ExcelPackage excelPackage = new ExcelPackage(DataFile.Content))
             {
-                ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets["StoreScouting"];
+                ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets["Đại lý cắm cờ"];
                 if (worksheet == null)
                     return BadRequest("File không đúng biểu mẫu import");
 

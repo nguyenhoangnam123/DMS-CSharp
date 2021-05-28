@@ -328,7 +328,7 @@ namespace DMS.Rpc.store
             StringBuilder errorContent = new StringBuilder();
             using (ExcelPackage excelPackage = new ExcelPackage(DataFile.Content))
             {
-                ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets["Store"];
+                ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets["Đại lý"];
                 if (worksheet == null)
                     return BadRequest("File không đúng biểu mẫu import");
 
