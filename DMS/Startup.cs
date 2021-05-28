@@ -199,7 +199,6 @@ namespace DMS
             {
                 InternalServices.UTILS = Configuration["InternalServices:UTILS"];
                 InternalServices.ES = Configuration["InternalServices:ES"];
-
                 JobStorage.Current = new SqlServerStorage(Configuration.GetConnectionString("DataContext"));
                 using (var connection = JobStorage.Current.GetConnection())
                 {

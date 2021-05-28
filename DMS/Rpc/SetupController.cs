@@ -46,6 +46,10 @@ namespace DMS.Rpc
         [HttpGet, Route("rpc/dms/setup/publish-data")]
         public async Task<ActionResult> PublishData()
         {
+            await PublishStoreType();
+            await PublishStoreGrouping();
+            await StoreScoutingPublish();
+            await PublishStore();
             await DirectSalesOrderPublish();
             await IndirectSalesOrderPublish();
             await ProblemPublish();
