@@ -507,7 +507,7 @@ namespace DMS.Rpc.store_scouting
             using (var xlPackage = new ExcelPackage(new FileInfo(tempPath)))
             {
                 #region sheet Organization 
-                var worksheet_Organization = xlPackage.Workbook.Worksheets["Org"];
+                var worksheet_Organization = xlPackage.Workbook.Worksheets["Đơn vị tổ chức"];
                 xlPackage.Workbook.CalcMode = ExcelCalcMode.Manual;
                 int startRow_Organization = 2;
                 int numberCell_Organizations = 1;
@@ -520,7 +520,7 @@ namespace DMS.Rpc.store_scouting
                 #endregion
 
                 #region sheet Province 
-                var worksheet_Province = xlPackage.Workbook.Worksheets["Province"];
+                var worksheet_Province = xlPackage.Workbook.Worksheets["Tỉnh, Thành phố"];
                 xlPackage.Workbook.CalcMode = ExcelCalcMode.Manual;
                 int startRow_Province = 2;
                 int numberCell_Provinces = 1;
@@ -533,7 +533,7 @@ namespace DMS.Rpc.store_scouting
                 #endregion
 
                 #region sheet District 
-                var worksheet_District = xlPackage.Workbook.Worksheets["District"];
+                var worksheet_District = xlPackage.Workbook.Worksheets["Quận, Huyện"];
                 xlPackage.Workbook.CalcMode = ExcelCalcMode.Manual;
                 int startRow_District = 2;
                 int numberCell_Districts = 1;
@@ -547,7 +547,7 @@ namespace DMS.Rpc.store_scouting
                 #endregion
 
                 #region sheet Ward 
-                var worksheet_Ward = xlPackage.Workbook.Worksheets["Ward"];
+                var worksheet_Ward = xlPackage.Workbook.Worksheets["Phường, Xã"];
                 xlPackage.Workbook.CalcMode = ExcelCalcMode.Manual;
                 int startRow_Ward = 2;
                 int numberCell_Wards = 1;
