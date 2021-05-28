@@ -880,13 +880,15 @@ namespace DMS.Rpc.kpi_product_grouping
                         join prd in DataContext.Product on i.ProductId equals prd.Id
                         join prdg in DataContext.ProductProductGroupingMapping on prd.Id equals prdg.ProductId
                         join prg in DataContext.ProductGrouping on prdg.ProductGroupingId equals prg.Id
+                        where prg.DeletedAt == null &&
+                        (prd.DeletedAt == null && prd.StatusId == StatusEnum.ACTIVE.Id)
                         select new KpiProductGrouping_ItemExportDTO
                         {
-                            ItemCode = i.Code,
-                            ItemName = i.Name,
+                            ItemCode =  Utils.ReplaceHexadecimalSymbols(i.Code),
+                            ItemName = Utils.ReplaceHexadecimalSymbols(i.Name),
                             IsNew = prd.IsNew,
-                            ProductGroupingCode = prg.Code,
-                            ProductGroupingName = prg.Name,
+                            ProductGroupingCode = Utils.ReplaceHexadecimalSymbols(prg.Code),
+                            ProductGroupingName = Utils.ReplaceHexadecimalSymbols(prg.Name),
                         };
 
             List<KpiProductGrouping_ItemExportDTO> Items = await query.ToListAsync();
@@ -900,7 +902,7 @@ namespace DMS.Rpc.kpi_product_grouping
             MemoryStream output = new MemoryStream();
             dynamic Data = new ExpandoObject();
             Data.KpiProductGroupings = KpiProductGrouping_ExportTemplateDTOs; // đổ dữ liệu vào sheet chính
-            Data.ProductGroupings = ProductGroupings.Select(x => new {
+            Data.ProductGroupings = ProductGroupings.Select(x => new ProductGrouping {
                 Code = Utils.ReplaceHexadecimalSymbols(x.Code),
                 Name = Utils.ReplaceHexadecimalSymbols(x.Name),
             }); // đổ dữ liệu vào tab nhóm sản phẩm

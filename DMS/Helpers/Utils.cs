@@ -150,7 +150,8 @@ namespace DMS.Helpers
         public static string ReplaceHexadecimalSymbols(string txt)
         {
             string r = "[\x00-\x08\x0B\x0C\x0E-\x1F\x26]";
-            return Regex.Replace(txt, r, "", RegexOptions.Compiled);
+            string result = Regex.Replace(txt, r, "", RegexOptions.Compiled);
+            return result;
         } // loai bo nhung ki tu khong hop le trong CSV
     }
 }
