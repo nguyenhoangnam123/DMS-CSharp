@@ -1,3 +1,4 @@
+
 using DMS.Common;
 using DMS.Entities;
 using DMS.Enums;
@@ -344,7 +345,7 @@ namespace DMS.Rpc.warehouse
                         Inventory.AccountingStock
                     });
                 }
-                excel.GenerateWorksheet("Inventory", InventoryHeaders, data);
+                excel.GenerateWorksheet("Hàng tồn kho", InventoryHeaders, data);
                 excel.Save();
             }
             return File(memoryStream.ToArray(), "application/octet-stream", $"{Warehouse.Code}_Inventory.xlsx");
@@ -403,7 +404,7 @@ namespace DMS.Rpc.warehouse
                         0,
                     });
                 }
-                excel.GenerateWorksheet("Inventory", InventoryHeaders, data);
+                excel.GenerateWorksheet("Hàng tồn kho", InventoryHeaders, data);
 
                 data.Clear();
                 var WarehouseHeader = new List<string[]>()
@@ -418,7 +419,7 @@ namespace DMS.Rpc.warehouse
                     Warehouse.Code,
                     Warehouse.Name,
                 });
-                excel.GenerateWorksheet("Warehouse", WarehouseHeader, data);
+                excel.GenerateWorksheet("Kho", WarehouseHeader, data);
                 excel.Save();
             }
             return File(memoryStream.ToArray(), "application/octet-stream", "Template_Inventory.xlsx");
