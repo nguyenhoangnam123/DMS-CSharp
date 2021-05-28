@@ -15,6 +15,7 @@ using DMS.Services.MShowingItem;
 using DMS.Services.MShowingCategory;
 using DMS.Services.MStatus;
 using DMS.Services.MUnitOfMeasure;
+using DMS.Services.MCategory;
 
 namespace DMS.Rpc.posm.showing_item
 {
@@ -24,12 +25,14 @@ namespace DMS.Rpc.posm.showing_item
         private IStatusService StatusService;
         private IUnitOfMeasureService UnitOfMeasureService;
         private IShowingItemService ShowingItemService;
+        private ICategoryService CategoryService;
         private ICurrentContext CurrentContext;
         public ShowingItemController(
             IShowingCategoryService ShowingCategoryService,
             IStatusService StatusService,
             IUnitOfMeasureService UnitOfMeasureService,
             IShowingItemService ShowingItemService,
+            ICategoryService CategoryService,
             ICurrentContext CurrentContext
         )
         {
@@ -37,6 +40,7 @@ namespace DMS.Rpc.posm.showing_item
             this.StatusService = StatusService;
             this.UnitOfMeasureService = UnitOfMeasureService;
             this.ShowingItemService = ShowingItemService;
+            this.CategoryService = CategoryService;
             this.CurrentContext = CurrentContext;
         }
 
@@ -430,16 +434,35 @@ namespace DMS.Rpc.posm.showing_item
         }
 
         [Route(ShowingItemRoute.ExportTemplate), HttpPost]
-        public async Task<ActionResult> ExportTemplate([FromBody] ShowingItem_ShowingItemFilterDTO ShowingItem_ShowingItemFilterDTO)
+        public async Task<ActionResult> ExportTemplate()
         {
             if (!ModelState.IsValid)
                 throw new BindException(ModelState);
-            
+
+            #region lấy dữ liệu đổ vào các sheet
+            List<ShowingCategory> ShowingCategories = await ShowingCategoryService.List(new ShowingCategoryFilter {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = ShowingCategorySelect.Code | ShowingCategorySelect.Name | ShowingCategorySelect.Path,
+                OrderBy = ShowingCategoryOrder.Name,
+                OrderType = OrderType.ASC
+            });
+            List<UnitOfMeasure> UnitOfMeasures = await UnitOfMeasureService.List(new UnitOfMeasureFilter {
+                Skip = 0,
+                Take = int.MaxValue,
+                Selects = UnitOfMeasureSelect.Code | UnitOfMeasureSelect.Name,
+                OrderBy = UnitOfMeasureOrder.Name,
+                OrderType = OrderType.ASC
+            });
+            #endregion
+
             string path = "Templates/ShowingItem_Template.xlsx";
             byte[] arr = System.IO.File.ReadAllBytes(path);
             MemoryStream input = new MemoryStream(arr);
             MemoryStream output = new MemoryStream();
             dynamic Data = new ExpandoObject();
+            Data.Categories = ShowingCategories;
+            Data.UnitOfMeasures = UnitOfMeasures;
             using (var document = StaticParams.DocumentFactory.Open(input, output, "xlsx"))
             {
                 document.Process(Data);
