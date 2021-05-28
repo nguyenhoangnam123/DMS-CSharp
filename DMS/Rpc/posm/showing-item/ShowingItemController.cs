@@ -309,7 +309,7 @@ namespace DMS.Rpc.posm.showing_item
                         ShowingItem.RowId,
                     });
                 }
-                excel.GenerateWorksheet("ShowingItem", ShowingItemHeaders, ShowingItemData);
+                excel.GenerateWorksheet("Sản phẩm trưng bày", ShowingItemHeaders, ShowingItemData);
                 #endregion
                 
                 #region ShowingCategory
@@ -354,7 +354,7 @@ namespace DMS.Rpc.posm.showing_item
                         ShowingCategory.Used,
                     });
                 }
-                excel.GenerateWorksheet("ShowingCategory", ShowingCategoryHeaders, ShowingCategoryData);
+                excel.GenerateWorksheet("Danh mục", ShowingCategoryHeaders, ShowingCategoryData);
                 #endregion
                 #region Status
                 var StatusFilter = new StatusFilter();
@@ -384,7 +384,7 @@ namespace DMS.Rpc.posm.showing_item
                         Status.Name,
                     });
                 }
-                excel.GenerateWorksheet("Status", StatusHeaders, StatusData);
+                excel.GenerateWorksheet("Trạng thái", StatusHeaders, StatusData);
                 #endregion
                 #region UnitOfMeasure
                 var UnitOfMeasureFilter = new UnitOfMeasureFilter();
@@ -422,7 +422,7 @@ namespace DMS.Rpc.posm.showing_item
                         UnitOfMeasure.RowId,
                     });
                 }
-                excel.GenerateWorksheet("UnitOfMeasure", UnitOfMeasureHeaders, UnitOfMeasureData);
+                excel.GenerateWorksheet("Đơn vị tính", UnitOfMeasureHeaders, UnitOfMeasureData);
                 #endregion
                 excel.Save();
             }
