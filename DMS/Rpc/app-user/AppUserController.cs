@@ -178,7 +178,7 @@ namespace DMS.Rpc.app_user
             StringBuilder errorContent = new StringBuilder();
             using (ExcelPackage excelPackage = new ExcelPackage(file.OpenReadStream()))
             {
-                ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets["AppUserStore"];
+                ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets["Phạm vi đi tuyến"];
                 if (worksheet == null)
                     return BadRequest(new { message = "File không đúng biểu mẫu import" });
 
