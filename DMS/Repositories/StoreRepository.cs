@@ -472,6 +472,7 @@ namespace DMS.Repositories
 
         private async Task<List<Store>> DynamicSelect(IQueryable<StoreDAO> query, StoreFilter filter)
         {
+            query = query.Where(x => x.Province != null);
             List<Store> Stores = await query.Select(q => new Store()
             {
                 Id = filter.Selects.Contains(StoreSelect.Id) ? q.Id : default(long),
@@ -776,6 +777,7 @@ namespace DMS.Repositories
                 District = x.District == null ? null : new District
                 {
                     Id = x.District.Id,
+                    Code = x.District.Code,
                     Name = x.District.Name,
                     Priority = x.District.Priority,
                     ProvinceId = x.District.ProvinceId,
@@ -823,6 +825,7 @@ namespace DMS.Repositories
                 Province = x.Province == null ? null : new Province
                 {
                     Id = x.Province.Id,
+                    Code = x.Province.Code,
                     Name = x.Province.Name,
                     Priority = x.Province.Priority,
                     StatusId = x.Province.StatusId,
@@ -902,6 +905,7 @@ namespace DMS.Repositories
                 Ward = x.Ward == null ? null : new Ward
                 {
                     Id = x.Ward.Id,
+                    Code = x.Ward.Code,
                     Name = x.Ward.Name,
                     Priority = x.Ward.Priority,
                     DistrictId = x.Ward.DistrictId,

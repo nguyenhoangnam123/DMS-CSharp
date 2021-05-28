@@ -21,7 +21,7 @@ namespace DMS.Rpc.store
 
             this.Id = Province.Id;
 
-            this.Name = Province.Name;
+            this.Code = Province.Code;
 
             this.Name = Province.Name;
 
