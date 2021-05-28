@@ -472,7 +472,6 @@ namespace DMS.Repositories
 
         private async Task<List<Store>> DynamicSelect(IQueryable<StoreDAO> query, StoreFilter filter)
         {
-            query = query.Where(x => x.Province != null);
             List<Store> Stores = await query.Select(q => new Store()
             {
                 Id = filter.Selects.Contains(StoreSelect.Id) ? q.Id : default(long),
